@@ -51,6 +51,7 @@ model ExpenseCategory {
   code      String    @unique
   name      String
   expenses  Expense[]
+  recurringExpenses RecurringExpense[]
 }
 
 model Bank {
@@ -58,6 +59,7 @@ model Bank {
   name      String    @unique
   expenses  Expense[]
   payments  ExpensePayment[]
+  recurringExpenses RecurringExpense[]
 }
 
 model Supplier {
@@ -70,12 +72,46 @@ model Supplier {
   alias          String?
   internalNotes  String?
   expenses       Expense[]
+  recurringExpenses RecurringExpense[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
   @@index([businessName])
   @@index([alias])
 }
+
+model RecurringExpense {
+  id                   Int       @id @default(autoincrement())
+  startDate            DateTime
+  cadence              String
+  dueDay               Int?
+  dueMonth             Int?
+  accrualType          String    @default("MANUALE")
+  billingPeriodMode    String    @default("SAME_MONTH")
+  billingMonth         Int?
+  merchant             String
+  supplierId           Int?
+  supplier             Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  categoryId           Int?
+  category             ExpenseCategory? @relation(fields: [categoryId], references: [id])
+  description          String?
+  amount               Decimal   @db.Decimal(12, 2)
+  vatRate              Decimal   @db.Decimal(5, 2) @default(22)
+  isDeclared           Boolean   @default(true)
+  hasElectronicInvoice Boolean   @default(true)
+  paymentChannel       String?
+  bankId               Int?
+  bank                 Bank?     @relation(fields: [bankId], references: [id])
+  notes                String?
+  isActive             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([startDate])
+  @@index([supplierId])
+  @@index([isActive])
+}
+
 
 model Expense {
   id                    Int       @id @default(autoincrement())

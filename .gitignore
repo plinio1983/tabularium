@@ -22,3 +22,4 @@ data/Spese-Ricavi.xlsx
 /generated/prisma/commonInputTypes.ts
 /generated/prisma/enums.ts
 /generated/prisma/models.ts
+/tsconfig.tsbuildinfo
