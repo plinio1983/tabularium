@@ -90,4 +90,13 @@
         font-size: 14px;
         padding: 8px;
     }
+
+    .supplier-form {
+        margin-bottom: 86px;
+    }
+
+    .dashboard-actions-bottom .actions-row .btn {
+        padding: 7px;
+        font-size: 14px;
+    }
 }
