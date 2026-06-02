@@ -10,7 +10,7 @@ const BooleanFromForm = z.preprocess((value) => value === true || value === 'tru
 const ExpenseSchema = z.object({
   receivedDate: z.string().optional(),
   dueDate: z.string().optional(),
-  merchant: z.string().min(1),
+  merchant: z.string().optional().default(''),
   supplierId: z.coerce.number().optional().nullable(),
   categoryId: z.coerce.number().optional().nullable(),
   description: z.string().min(1),
@@ -24,6 +24,32 @@ const ExpenseSchema = z.object({
   notes: z.string().optional()
 });
 
+
+
+async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>) {
+  const submittedName = String(data.merchant ?? '').trim();
+
+  if (data.supplierId) {
+    const existing = await prisma.supplier.findUnique({ where: { id: data.supplierId } });
+    if (existing) return { id: existing.id, businessName: existing.businessName };
+  }
+
+  if (!submittedName) {
+    throw new Error('Esercente/Fornitore obbligatorio');
+  }
+
+  const existingByName = await prisma.supplier.findFirst({
+    where: { businessName: { equals: submittedName, mode: 'insensitive' } }
+  });
+
+  if (existingByName) return { id: existingByName.id, businessName: existingByName.businessName };
+
+  const created = await prisma.supplier.create({
+    data: { businessName: submittedName }
+  });
+
+  return { id: created.id, businessName: created.businessName };
+}
 
 function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
   if (!data.isDeclared) {
@@ -121,6 +147,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const invoiceFields = normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data.billingPeriod);
   const payments = parsePayments(formData);
+  const supplierRef = await resolveSupplierReference(data);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const firstPayment = payments[0];
   const firstPaidBy = firstPayment?.paidBy ?? 'HERBAL_MARKET';
@@ -135,8 +162,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     data: {
       receivedDate: data.receivedDate ? new Date(data.receivedDate) : null,
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
-      merchant: data.merchant,
-      supplierId: data.supplierId || null,
+      merchant: supplierRef.businessName,
+      supplierId: supplierRef.id,
       categoryId: data.categoryId || null,
       description: data.description || null,
       amount: data.amount,

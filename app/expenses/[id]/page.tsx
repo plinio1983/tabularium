@@ -61,6 +61,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
   const vatRate = Number(expense.vatRate.toString());
   const paidVat = vatRate ? paidCapped * (vatRate / (100 + vatRate)) : 0;
+  const supplierName = expense.supplier?.businessName || expense.merchant;
   const paidPercent = amount > 0 ? Math.min(100, Math.round((paidCapped / amount) * 100)) : 0;
   const hasResidual = residual > 0;
 
@@ -70,17 +71,17 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
         <header className="expense-detail-hero">
           <div className="expense-detail-title-block">
             <Link className="expense-detail-back" href={returnTo}>← Lista spese</Link>
-            <p className="expense-detail-kicker">Spesa #{expense.id} · {formatPeriod(expense.month, expense.year)}</p>
-            <h1>{expense.description || 'Spesa senza descrizione'}</h1>
+            <p className="expense-detail-kicker">{formatPeriod(expense.month, expense.year)}</p>
+            <h1>{supplierName}</h1>
+            <div className="expense-detail-supplier-name">{expense.description || 'Spesa senza descrizione'}</div>
             <div className="expense-detail-meta-line">
-              <span>{expense.merchant}</span>
               <span>Ordine {dateLabel(expense.receivedDate)}</span>
               <span>Scadenza {dateLabel(expense.dueDate)}</span>
             </div>
           </div>
 
           <div className="expense-detail-amount-panel">
-            <span>Importo IVA inclusa</span>
+            <span>Importo +IVA</span>
             <strong>{euro(amount)}</strong>
             <div className="expense-detail-badge-row">
               <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>
@@ -130,17 +131,16 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <DetailItem label="Categoria">
               {expense.category ? <span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {expense.category.name}</span> : '-'}
             </DetailItem>
-            {/*<DetailItem label="Esercente">{expense.merchant}</DetailItem>*/}
-            <DetailItem label="Fornitore">{expense.supplier?.businessName ?? '-'}</DetailItem>
+            {/*<DetailItem label="Esercente/Fornitore">{supplierName}</DetailItem>*/}
             <DetailItem label="Fattura elettronica">{booleanBadge(expense.hasElectronicInvoice)}</DetailItem>
             <DetailItem label="Stato fattura"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></DetailItem>
             <DetailItem label="Detrazione">{booleanBadge(expense.isDeclared)}</DetailItem>
-            <DetailItem label="Banca principale">{expense.bank ? `${bankIcons[expense.bank.name] ?? '🏦'} ${expense.bank.name}` : '-'}</DetailItem>
+            {/*<DetailItem label="Banca principale">{expense.bank ? `${bankIcons[expense.bank.name] ?? '🏦'} ${expense.bank.name}` : '-'}</DetailItem>*/}
             <DetailItem label="Note" wide>{expense.notes || '-'}</DetailItem>
           </div>
         </section>
 
-        <section className="expense-detail-section expense-detail-two-columns">
+        <section className="expense-detail-section">
           <div>
             <div className="expense-detail-section-heading">
               <h2>Pagamenti</h2>

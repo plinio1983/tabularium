@@ -5567,7 +5567,7 @@ button.bulk-direct-danger {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 18px;
+    margin-top: 12px;
 }
 
 .expense-detail-meta-line span {
@@ -5585,11 +5585,9 @@ button.bulk-direct-danger {
 
 .expense-detail-amount-panel {
     display: grid;
-    align-content: center;
+    align-content: baseline;
     gap: 12px;
-    padding: 22px;
-    border: 1px solid rgba(226, 232, 240, .95);
-    border-radius: 24px;
+    padding: 30px 22px 22px;
     background: rgba(255, 255, 255, .88);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8);
 }
@@ -5746,6 +5744,11 @@ button.bulk-direct-danger {
     align-items: start;
 }
 
+.expense-detail-supplier-name {
+    font-size: 20px;
+    padding: 12px 4px 0 4px;
+}
+
 .expense-payment-timeline {
     position: relative;
     display: grid;
@@ -5862,7 +5865,7 @@ button.bulk-direct-danger {
 @media (max-width: 1020px) {
     .expense-detail-hero,
     .expense-detail-two-columns {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .expense-detail-info-grid {

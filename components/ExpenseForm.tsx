@@ -279,7 +279,7 @@ function SupplierAutocomplete({
         value={selected?.businessName ?? query}
       />
       <label>
-        Esercente
+        Esercente/Fornitore
         <div className="supplier-input-row">
           <input
             value={query}
@@ -323,7 +323,7 @@ function SupplierAutocomplete({
             ))
           ) : (
             <div className="empty-supplier-result">
-              Nessun fornitore trovato.
+              Nessun esercente/fornitore trovato.
             </div>
           )}
         </div>
@@ -332,7 +332,7 @@ function SupplierAutocomplete({
         <div className="modal-backdrop">
           <div className="modal-card">
             <div className="modal-title">
-              <h3>➕ Nuovo fornitore</h3>
+              <h3>➕ Nuovo esercente/fornitore</h3>
               <button type="button" onClick={() => setShowCreate(false)}>
                 ✕
               </button>

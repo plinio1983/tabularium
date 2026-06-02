@@ -175,6 +175,10 @@ function amountMatchesFilter(amount: number, filterValue: AmountFilter | null) {
 }
 
 
+function expenseSupplierName(expense: { supplier?: { businessName?: string | null } | null; merchant?: string | null }) {
+  return expense.supplier?.businessName || expense.merchant || '-';
+}
+
 function isExpenseOverdue(expense: any) {
   if (!expense.dueDate) return false;
   if (expense.paymentStatus === 'COMPLETATO') return false;
@@ -398,7 +402,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
     if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
     if (categoryFilter && expense.category?.name !== categoryFilter) return false;
-    if (merchantFilter && !normalize(expense.merchant).includes(merchantFilter)) return false;
+    if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
     if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
     if (!amountMatchesFilter(amount, amountFilterValue)) return false;
     if (paymentStatusFilter === 'not_complete' && expense.paymentStatus === 'COMPLETATO') return false;
