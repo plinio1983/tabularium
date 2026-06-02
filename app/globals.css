@@ -5355,3 +5355,153 @@ button.bulk-direct-danger {
         grid-template-columns: 1fr;
     }
 }
+
+/* v077: fixed floating bulk actions controller */
+.floating-bulk-actions-bar {
+    position: fixed;
+    top: 10px;
+    left: 18px;
+    right: 18px;
+    z-index: 100000;
+    display: none;
+    pointer-events: none;
+}
+
+.floating-bulk-actions-bar.is-visible {
+    display: block;
+}
+
+.floating-bulk-actions-inner {
+    width: max-content;
+    max-width: calc(100vw - 36px);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .97);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, .20);
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+    overflow: visible;
+}
+
+.floating-bulk-button {
+    min-width: 0;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 850;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.floating-bulk-menu-trigger {
+    color: var(--text);
+}
+
+.floating-bulk-delete {
+    color: #b42318;
+    border-color: #fecdd3;
+}
+
+.floating-bulk-button.is-disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+    color: var(--muted);
+    background: #f8fafc;
+}
+
+.floating-bulk-menu-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.floating-bulk-menu-panel {
+    position: absolute;
+    top: calc(100% + 9px);
+    left: 0;
+    z-index: 100001;
+    min-width: 230px;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: 7px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 22px 52px rgba(15, 23, 42, .25);
+}
+
+.floating-bulk-menu-wrap.is-open .floating-bulk-menu-panel {
+    display: flex;
+}
+
+.floating-bulk-menu-panel button {
+    width: 100%;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 800;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.floating-bulk-menu-panel button:hover {
+    background: #f3f4f6;
+}
+
+@media (max-width: 760px) {
+    .floating-bulk-actions-bar {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+    }
+
+    .floating-bulk-actions-inner {
+        max-width: calc(100vw - 16px);
+        overflow-x: auto;
+        overflow-y: visible;
+        border-radius: 18px;
+    }
+
+    .floating-bulk-button {
+        flex: 0 0 auto;
+        min-width: 44px;
+        height: 40px;
+        padding: 0 12px;
+    }
+
+    .floating-bulk-edit,
+    .floating-bulk-copy,
+    .floating-bulk-delete {
+        width: 44px;
+        padding: 0;
+    }
+
+    .floating-bulk-edit .floating-bulk-label,
+    .floating-bulk-copy .floating-bulk-label,
+    .floating-bulk-delete .floating-bulk-label {
+        display: none;
+    }
+}
