@@ -15,7 +15,9 @@ import {
 } from '@/lib/expense-ui';
 
 function dateLabel(value?: Date | null) {
-  return value ? value.toLocaleDateString('it-IT') : '-';
+  return value
+    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(value)
+    : '-';
 }
 
 function paidByLabel(value: string) {

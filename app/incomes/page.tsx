@@ -26,7 +26,15 @@ const invoiceStatusOptions = [
 ];
 
 function dateLabel(value?: Date | null) {
-  return value ? value.toLocaleDateString('it-IT') : '-';
+  return value
+    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(value)
+    : '-';
+}
+
+function formatDateInputLabel(value: string) {
+  if (!value) return '';
+  const [year, month, day] = value.split('-');
+  return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
@@ -357,8 +365,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const residualVatDebt = recoverableExpenseVat === null ? null : periodTotals.vatDebt - recoverableExpenseVat;
 
   const activeFilterItems = [
-    creditDateFromDefault && { label: 'Data accredito da', value: creditDateFromDefault },
-    creditDateToDefault && { label: 'Data accredito a', value: creditDateToDefault },
+    creditDateFromDefault && { label: 'Data accredito da', value: formatDateInputLabel(creditDateFromDefault) },
+    creditDateToDefault && { label: 'Data accredito a', value: formatDateInputLabel(creditDateToDefault) },
     billingPeriodFromFilter && { label: 'Periodo fatt. da', value: billingPeriodFromFilter },
     billingPeriodToFilter && { label: 'Periodo fatt. a', value: billingPeriodToFilter },
     salesChannelFilter && { label: 'Canale vendita', value: salesChannelFilter },
@@ -569,15 +577,15 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
 
       <form id="incomeBulkForm" action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="incomeBulkForm">
-          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span>Bulk actions</summary>
+          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Bulk actions</span></summary>
           <div className="bulk-action-menu-panel">
-            <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span>Fattura emessa</button>
+            <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
           </div>
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="incomeBulkForm" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-return-to={returnTo}>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span>Modifica</a>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span>Copia</a>
-          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span>Elimina</button>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span><span className="bulk-label">Copia</span></a>
+          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
       </form>
 

@@ -100,6 +100,12 @@ function formatEuro(value: number) {
   }).format(value || 0);
 }
 
+function formatDateInputLabel(value: string) {
+  if (!value) return "";
+  const [year, month, day] = value.split("-");
+  return year && month && day ? `${day}/${month}/${year}` : value;
+}
+
 function emptyPaymentRow(key: number): PaymentRow {
   return {
     key,
@@ -688,7 +694,7 @@ export default function ExpenseForm({
   function paymentSummary(payment: PaymentRow) {
     const bankName = banks.find((bank) => String(bank.id) === payment.bankId)?.name ?? "-";
     return [
-      payment.paymentDate || "Data non impostata",
+      payment.paymentDate ? formatDateInputLabel(payment.paymentDate) : "Data non impostata",
       payment.channel || "Canale non impostato",
       bankName,
       formatEuro(Number(payment.amount || 0)),

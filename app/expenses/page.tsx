@@ -49,7 +49,15 @@ const invoiceStatusFilterLabels = [
 ];
 
 function dateLabel(value?: Date | null) {
-  return value ? value.toLocaleDateString('it-IT') : '-';
+  return value
+    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(value)
+    : '-';
+}
+
+function formatDateInputLabel(value: string) {
+  if (!value) return '';
+  const [year, month, day] = value.split('-');
+  return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
 function booleanBadge(value: boolean) {
@@ -426,8 +434,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
 
   const activeFilterItems = [
-    orderDateFromDefault && { label: 'Data ordine da', value: orderDateFromDefault },
-    orderDateToDefault && { label: 'Data ordine a', value: orderDateToDefault },
+    orderDateFromDefault && { label: 'Data ordine da', value: formatDateInputLabel(orderDateFromDefault) },
+    orderDateToDefault && { label: 'Data ordine a', value: formatDateInputLabel(orderDateToDefault) },
     billingPeriodFromFilter && { label: 'Periodo fatt. da', value: billingPeriodFromFilter },
     billingPeriodToFilter && { label: 'Periodo fatt. a', value: billingPeriodToFilter },
     categoryFilter && { label: 'Categoria', value: categoryFilter },
@@ -664,16 +672,16 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
 
       <form id="expenseBulkForm" action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="expenseBulkForm">
-          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span>Bulk actions</summary>
+          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Bulk actions</span></summary>
           <div className="bulk-action-menu-panel">
-            <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span>Fattura emessa</button>
-            <button type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span>Pagamento completato</button>
+            <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
+            <button type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>
           </div>
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="expenseBulkForm" data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-return-to={returnTo}>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span>Modifica</a>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span>Copia</a>
-          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span>Elimina</button>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span><span className="bulk-label">Copia</span></a>
+          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
       </form>
 

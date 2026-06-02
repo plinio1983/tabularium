@@ -4926,3 +4926,91 @@ button.bulk-direct-link {
 .payment-row .payment-row-actions .remove-row {
     flex: 0 0 auto;
 }
+
+/* v42: date display format and no-wrap action buttons */
+.payment-row .payment-summary-cell {
+    min-width: 0;
+}
+
+.payment-row .payment-row-actions {
+    grid-column: 5 / -1;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.payment-row .payment-row-actions .secondary-button,
+.payment-row .payment-row-actions .remove-row {
+    flex: 0 0 auto;
+}
+
+.bulk-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.bulk-action-menu,
+.bulk-direct-actions {
+    flex: 0 0 auto;
+}
+
+.bulk-direct-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.bulk-direct-link,
+.bulk-action-trigger,
+.bulk-action-menu-panel button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    max-width: none;
+}
+
+.bulk-direct-link .bulk-label,
+.bulk-action-trigger .bulk-label,
+.bulk-action-menu-panel .bulk-label {
+    white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+    .bulk-actions-bar {
+        justify-content: flex-start;
+    }
+
+    .bulk-direct-link .bulk-label,
+    .bulk-action-trigger .bulk-label {
+        display: none;
+    }
+
+    .bulk-direct-link,
+    .bulk-action-trigger {
+        min-width: 38px;
+        width: 38px;
+        height: 38px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .payment-row .payment-row-actions {
+        grid-column: 1 / -1;
+        justify-self: end;
+    }
+}
