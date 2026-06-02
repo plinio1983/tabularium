@@ -91,7 +91,7 @@ model Expense {
   dueDate               DateTime?
   vatRate               Decimal   @db.Decimal(5, 2) @default(22)
   channel               String?
-  bankId                Int?
+  bankId                Int?      // Legacy denormalized first payment bank. Use ExpensePayment.bankId as source of truth.
   bank                  Bank?     @relation(fields: [bankId], references: [id])
   isComplete            Boolean   @default(false)
   isDeclared            Boolean   @default(true)

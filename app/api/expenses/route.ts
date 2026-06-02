@@ -192,6 +192,7 @@ export async function POST(request: Request) {
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const attachments = formData ? await saveAttachments(formData.getAll('attachments')) : [];
   const firstPayment = payments[0];
+  // Expense.bankId is legacy/denormalized. The real bank lives on each ExpensePayment row.
   const firstPaidBy = firstPayment?.paidBy ?? 'HERBAL_MARKET';
 
   await prisma.expense.create({ data: {

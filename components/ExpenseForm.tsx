@@ -966,7 +966,7 @@ export default function ExpenseForm({
               </label>
               <label>
                 {/*🏦 Banca*/}
-                Banca
+                Banca pagamento
                 <select
                     name="paymentBankId[]"
                     value={payment.bankId}

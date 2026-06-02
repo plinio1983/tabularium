@@ -75,7 +75,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <h1>{supplierName}</h1>
             <div className="expense-detail-supplier-name">{expense.description || 'Spesa senza descrizione'}</div>
             <div className="expense-detail-meta-line">
-              <span>Ordine {dateLabel(expense.receivedDate)}</span>
+              {/*<span>Ordine {dateLabel(expense.receivedDate)}</span>*/}
               <span>Scadenza {dateLabel(expense.dueDate)}</span>
             </div>
           </div>

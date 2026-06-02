@@ -150,6 +150,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const supplierRef = await resolveSupplierReference(data);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const firstPayment = payments[0];
+  // Expense.bankId is legacy/denormalized. The real bank lives on each ExpensePayment row.
   const firstPaidBy = firstPayment?.paidBy ?? 'HERBAL_MARKET';
 
   const existing = await prisma.expense.findUnique({ where: { id: expenseId }, include: { attachments: true } });

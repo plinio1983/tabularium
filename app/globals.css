@@ -83,7 +83,8 @@ a {
 
 .kpi-label {
     color: var(--muted);
-    font-size: 13px;
+    font-size: 14px;
+    text-transform: uppercase;
 }
 
 .kpi-value {
@@ -1550,13 +1551,6 @@ table th, table td {
     justify-content: flex-end;
 }
 
-.period-selector select {
-    min-width: 150px;
-    padding: 8px 10px;
-    border-radius: 10px;
-    font-size: 13px;
-}
-
 .period-selector button {
     padding: 8px 10px;
     border-radius: 10px;
@@ -1702,10 +1696,6 @@ table th, table td {
 .period-selector {
     flex-wrap: nowrap;
     white-space: nowrap;
-}
-
-.period-selector select {
-    flex: 0 0 auto;
 }
 
 .period-selector button {
@@ -4849,12 +4839,12 @@ button.bulk-direct-link {
   }
 
   .fiscal-summary-card .summary-metric span {
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.15;
   }
 
   .fiscal-summary-card .summary-metric strong {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.15;
     word-break: break-word;
   }
@@ -5753,6 +5743,7 @@ button.bulk-direct-danger {
     position: relative;
     display: grid;
     gap: 10px;
+    margin-bottom: 21px;
 }
 
 .expense-payment-card {
@@ -5909,6 +5900,14 @@ button.bulk-direct-danger {
     .expense-payment-card,
     .expense-payment-data {
         grid-template-columns: 1fr;
+    }
+
+    .expense-payment-card {
+        grid-template-columns: 1fr 1fr;;
+    }
+
+    .expense-payment-card .expense-payment-data {
+        grid-template-columns: 1fr 1fr;;
     }
 
     .expense-detail-item-wide {
