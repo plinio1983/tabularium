@@ -290,14 +290,37 @@ const quickBillingPeriodOptions = [
 ];
 
 function monthInputToKey(value: string) {
-  if (!value) return null;
-  const [year, month] = value.split('-').map(Number);
-  if (!year || !month) return null;
+  const match = String(value ?? '').trim().match(/^(\d{4})-(\d{2})$/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (!year || month < 1 || month > 12) return null;
   return year * 12 + month;
 }
 
+function normalizePeriodRange(fromKey: number | null, toKey: number | null) {
+  if (fromKey !== null && toKey !== null && fromKey > toKey) {
+    return { fromKey: toKey, toKey: fromKey };
+  }
+  return { fromKey, toKey };
+}
+
 function recordPeriodKey(month: number, year: number) {
-  return year * 12 + month;
+  return Number(year) * 12 + Number(month);
+}
+
+function matchesBillingPeriod(month: number, year: number, fromKey: number | null, toKey: number | null) {
+  const key = recordPeriodKey(month, year);
+  if (fromKey !== null && key < fromKey) return false;
+  if (toKey !== null && key > toKey) return false;
+  return true;
+}
+
+function matchesIsoDate(value: Date | null | undefined, from: string, to: string) {
+  const formatted = value ? value.toISOString().slice(0, 10) : '';
+  if (from && (!formatted || formatted < from)) return false;
+  if (to && (!formatted || formatted > to)) return false;
+  return true;
 }
 
 export default async function ExpensesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
@@ -343,10 +366,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
 
   const billingPeriodFromFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.from || inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'period')) : '';
   const billingPeriodToFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.to || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'period')) : '';
-  const billingPeriodFromKey = monthInputToKey(billingPeriodFromFilter);
-  const billingPeriodToKey = monthInputToKey(billingPeriodToFilter);
-  const orderDateFromFilter = orderDateFromDefault;
-  const orderDateToFilter = orderDateToDefault;
+  const rawBillingPeriodFromKey = monthInputToKey(billingPeriodFromFilter);
+  const rawBillingPeriodToKey = monthInputToKey(billingPeriodToFilter);
+  const { fromKey: billingPeriodFromKey, toKey: billingPeriodToKey } = normalizePeriodRange(rawBillingPeriodFromKey, rawBillingPeriodToKey);
+  const orderDateFromFilter = useOrderDateFilter ? orderDateFromDefault : '';
+  const orderDateToFilter = useOrderDateFilter ? orderDateToDefault : '';
   const categoryFilter = inputDefault(filters, 'category');
   const merchantFilter = normalize(inputDefault(filters, 'merchant'));
   const productFilter = normalize(inputDefault(filters, 'product'));
@@ -361,12 +385,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const attachmentsFilter = inputDefault(filters, 'attachments');
 
   const periodExpenses = expenses.filter(expense => {
-    const expensePeriodKey = recordPeriodKey(expense.month, expense.year);
-    const formattedDate = expense.receivedDate ? expense.receivedDate.toISOString().slice(0, 10) : '';
-    if (billingPeriodFromKey !== null && expensePeriodKey < billingPeriodFromKey) return false;
-    if (billingPeriodToKey !== null && expensePeriodKey > billingPeriodToKey) return false;
-    if (orderDateFromFilter && (!formattedDate || formattedDate < orderDateFromFilter)) return false;
-    if (orderDateToFilter && (!formattedDate || formattedDate > orderDateToFilter)) return false;
+    if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
+    if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
     return true;
   });
 
@@ -374,13 +394,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     const amount = Number(expense.amount.toString());
     const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
     const residual = Math.max(0, amount - paid);
-    const expensePeriodKey = recordPeriodKey(expense.month, expense.year);
-    const formattedDate = expense.receivedDate ? expense.receivedDate.toISOString().slice(0, 10) : '';
 
-    if (billingPeriodFromKey !== null && expensePeriodKey < billingPeriodFromKey) return false;
-    if (billingPeriodToKey !== null && expensePeriodKey > billingPeriodToKey) return false;
-    if (orderDateFromFilter && (!formattedDate || formattedDate < orderDateFromFilter)) return false;
-    if (orderDateToFilter && (!formattedDate || formattedDate > orderDateToFilter)) return false;
+    if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
+    if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
     if (categoryFilter && expense.category?.name !== categoryFilter) return false;
     if (merchantFilter && !normalize(expense.merchant).includes(merchantFilter)) return false;
     if (productFilter && !normalize(expense.description).includes(productFilter)) return false;

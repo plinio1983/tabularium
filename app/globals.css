@@ -2673,7 +2673,7 @@ button {
 @media (max-width: 760px) {
     .income-totals-row,
     .totals-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .totals-row .total-card,
@@ -5372,7 +5372,7 @@ button.bulk-direct-danger {
 }
 
 .floating-bulk-actions-inner {
-    width: max-content;
+    width: 100%;
     max-width: calc(100vw - 36px);
     display: inline-flex;
     align-items: center;
@@ -5380,7 +5380,7 @@ button.bulk-direct-danger {
     padding: 8px;
     border: 1px solid rgba(226, 232, 240, .95);
     background: rgba(255, 255, 255, .97);
-    box-shadow: 3px -1px 45px rgba(15, 23, 42, .20);
+    box-shadow: 3px -1px 25px rgba(15, 23, 42, .20);
     backdrop-filter: blur(10px);
     pointer-events: auto;
     overflow: visible;

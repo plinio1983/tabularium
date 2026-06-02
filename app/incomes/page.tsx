@@ -185,14 +185,37 @@ function periodInputValue(month: number, year: number) {
 }
 
 function monthInputToKey(value: string) {
-  if (!value) return null;
-  const [year, month] = value.split('-').map(Number);
-  if (!year || !month) return null;
+  const match = String(value ?? '').trim().match(/^(\d{4})-(\d{2})$/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (!year || month < 1 || month > 12) return null;
   return year * 12 + month;
 }
 
+function normalizePeriodRange(fromKey: number | null, toKey: number | null) {
+  if (fromKey !== null && toKey !== null && fromKey > toKey) {
+    return { fromKey: toKey, toKey: fromKey };
+  }
+  return { fromKey, toKey };
+}
+
 function recordPeriodKey(month: number, year: number) {
-  return year * 12 + month;
+  return Number(year) * 12 + Number(month);
+}
+
+function matchesBillingPeriod(month: number, year: number, fromKey: number | null, toKey: number | null) {
+  const key = recordPeriodKey(month, year);
+  if (fromKey !== null && key < fromKey) return false;
+  if (toKey !== null && key > toKey) return false;
+  return true;
+}
+
+function matchesIsoDate(value: Date | null | undefined, from: string, to: string) {
+  const formatted = value ? value.toISOString().slice(0, 10) : '';
+  if (from && (!formatted || formatted < from)) return false;
+  if (to && (!formatted || formatted > to)) return false;
+  return true;
 }
 
 function booleanBadge(value: boolean) {
@@ -266,12 +289,13 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     prisma.expense.findMany({ include: { payments: true }, take: 5000 })
   ]);
 
-  const creditDateFromFilter = creditDateFromDefault;
-  const creditDateToFilter = creditDateToDefault;
+  const creditDateFromFilter = useCreditDateFilter ? creditDateFromDefault : '';
+  const creditDateToFilter = useCreditDateFilter ? creditDateToDefault : '';
   const billingPeriodFromFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.from || inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriod')) : '';
   const billingPeriodToFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.to || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod')) : '';
-  const billingPeriodFromKey = monthInputToKey(billingPeriodFromFilter);
-  const billingPeriodToKey = monthInputToKey(billingPeriodToFilter);
+  const rawBillingPeriodFromKey = monthInputToKey(billingPeriodFromFilter);
+  const rawBillingPeriodToKey = monthInputToKey(billingPeriodToFilter);
+  const { fromKey: billingPeriodFromKey, toKey: billingPeriodToKey } = normalizePeriodRange(rawBillingPeriodFromKey, rawBillingPeriodToKey);
   const hasBillingPeriodRange = billingPeriodFromKey !== null || billingPeriodToKey !== null;
   const salesChannelFilter = inputDefault(filters, 'salesChannel');
   const saleCategoryFilter = inputDefault(filters, 'saleCategory');
@@ -285,22 +309,14 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const vatRateFilter = inputDefault(filters, 'vatRate');
 
   const periodIncomes = incomes.filter(income => {
-    const formattedDate = income.creditDate ? income.creditDate.toISOString().slice(0, 10) : '';
-    const incomePeriodKey = recordPeriodKey(income.billingMonth, income.billingYear);
-    if (creditDateFromFilter && (!formattedDate || formattedDate < creditDateFromFilter)) return false;
-    if (creditDateToFilter && (!formattedDate || formattedDate > creditDateToFilter)) return false;
-    if (billingPeriodFromKey !== null && incomePeriodKey < billingPeriodFromKey) return false;
-    if (billingPeriodToKey !== null && incomePeriodKey > billingPeriodToKey) return false;
+    if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
+    if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
     return true;
   });
 
   const filteredIncomes = periodIncomes.filter(income => {
-    const formattedDate = income.creditDate ? income.creditDate.toISOString().slice(0, 10) : '';
-    const incomePeriodKey = recordPeriodKey(income.billingMonth, income.billingYear);
-    if (creditDateFromFilter && (!formattedDate || formattedDate < creditDateFromFilter)) return false;
-    if (creditDateToFilter && (!formattedDate || formattedDate > creditDateToFilter)) return false;
-    if (billingPeriodFromKey !== null && incomePeriodKey < billingPeriodFromKey) return false;
-    if (billingPeriodToKey !== null && incomePeriodKey > billingPeriodToKey) return false;
+    if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
+    if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
     if (salesChannelFilter && income.salesChannel !== salesChannelFilter) return false;
     if (saleCategoryFilter && income.saleCategory !== saleCategoryFilter) return false;
     if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
@@ -354,8 +370,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   let recoverableExpenseVat: number | null = null;
   if (hasBillingPeriodRange) {
     recoverableExpenseVat = expensesForVat.reduce((sum, expense) => {
-      const expensePeriodKey = recordPeriodKey(expense.month, expense.year);
-      if ((billingPeriodFromKey !== null && expensePeriodKey < billingPeriodFromKey) || (billingPeriodToKey !== null && expensePeriodKey > billingPeriodToKey) || !expense.isDeclared) return sum;
+      if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey) || !expense.isDeclared) return sum;
       const amount = Number(expense.amount.toString());
       const paid = Math.min(amount, expense.payments.reduce((partial, payment) => partial + Number(payment.amount.toString()), 0));
       const vatRate = Number(expense.vatRate.toString());
