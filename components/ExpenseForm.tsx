@@ -713,18 +713,22 @@ export default function ExpenseForm({
     >
       <h2 className="full">{title}</h2>
 
-      <div className="expense-type-toggle expense-type-switch-in-form full" role="radiogroup" aria-label="Tipo spesa">
-        <span>Tipo spesa</span>
-        <button type="button" className="toggle-choice is-active" aria-pressed="true">Singola</button>
-        <button
-          type="button"
-          className="toggle-choice"
-          onClick={onSwitchToRecurring}
-          disabled={!onSwitchToRecurring}
-          title={onSwitchToRecurring ? "Passa al form spesa ricorrente" : "Disponibile dal form di creazione spesa"}
-        >
-          Ricorrente
-        </button>
+      <div className="toggle-field switch-toggle-field expense-type-switch-in-form full">
+        <span>Tipo spesa: Singola</span>
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={false}
+            disabled={!onSwitchToRecurring}
+            onChange={(event) => {
+              if (event.currentTarget.checked) {
+                onSwitchToRecurring?.();
+              }
+            }}
+          />
+          <span className="slider" />
+          <span>Ricorrente</span>
+        </label>
       </div>
 
       <label>

@@ -383,7 +383,7 @@ export default function RecurringExpenseForm({
       <h2 className="full">Nuova spesa ricorrente</h2>
 
       <div className="toggle-field switch-toggle-field expense-type-switch-in-form full">
-        <span>Tipo spesa</span>
+        <span>Tipo spesa: Ricorrente</span>
         <label className="switch">
           <input
             type="checkbox"
@@ -467,7 +467,7 @@ export default function RecurringExpenseForm({
       {billingPeriodMode === "CUSTOM_MONTH" && isDeclared ? <label>Mese fatturazione<select name="billingMonth" defaultValue={initialExpense?.billingMonth ?? new Date().getMonth() + 1}>{monthOptions.map(([v, l]) => <option value={v} key={v}>{l}</option>)}</select></label> : null}
 
       <div className="toggle-field switch-toggle-field full recurring-accrual-toggle">
-        <span>Tipo pagamento</span>
+        <span>Tipo pagamento: {isAutomaticAccrual ? "Automatico" : "Manuale"}</span>
         <input type="hidden" name="accrualType" value={isAutomaticAccrual ? "AUTOMATICO" : "MANUALE"} />
         <label className="switch">
           <input
@@ -486,8 +486,8 @@ export default function RecurringExpenseForm({
       <label className="full">Note<textarea name="notes" rows={3} defaultValue={initialExpense?.notes ?? ""} /></label>
 
       <div className="actions-row right-actions full">
-        {onCancel ? <button type="button" className="secondary-button" onClick={onCancel}>↩ &nbsp;Annulla</button> : cancelHref ? <a className="secondary-button" href={cancelHref}>↩ Annulla</a> : null}
-        <button type="submit">✓ &nbsp;Salva</button>
+        {onCancel ? <button type="button" className="secondary-button" onClick={onCancel}>↩ Annulla</button> : cancelHref ? <a className="secondary-button" href={cancelHref}>↩ Annulla</a> : null}
+        <button type="submit">✓ Salva spesa ricorrente</button>
       </div>
     </form>
   );

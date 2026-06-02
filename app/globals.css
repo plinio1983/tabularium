@@ -5974,6 +5974,7 @@ button.bulk-direct-danger {
     flex-direction: column;
 }
 
+.expense-form .expense-type-switch-in-form,
 .recurring-expense-form .expense-type-switch-in-form {
     display: flex;
     flex-direction: column;
@@ -5990,4 +5991,11 @@ button.bulk-direct-danger {
 
 .recurring-accrual-toggle {
     grid-column: 1 / -1;
+}\n
+/* v091: standard expense form recurring toggle parity */
+.expense-form .expense-type-switch-in-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 56px;
 }
