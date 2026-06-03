@@ -38,6 +38,10 @@ function periodRecordKey(record: any, kind: 'income' | 'expense') {
     : periodKey(Number(record.year), Number(record.month));
 }
 
+type SummaryOptions = {
+  declaredExpensesOnlyForOpenTotals?: boolean;
+};
+
 function computeVatBalance(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>) {
   const periodKeys = periods?.length ? periods.map(({ year, month }) => periodKey(year, month)) : [];
 
@@ -68,17 +72,17 @@ function computeVatBalance(incomes: any[], expenses: any[], periods?: Array<{ ye
 }
 
 
-function isExpenseOverdue(expense: any) {
-  if (!expense.dueDate) return false;
-  if (expense.paymentStatus === 'COMPLETATO') return false;
-  const due = new Date(expense.dueDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  due.setHours(0, 0, 0, 0);
-  return due < today;
+function expenseResidualAmount(expense: any) {
+  const expenseAmount = Number(expense.amount);
+  const paidAmount = (expense.payments ?? []).reduce((partial: number, payment: any) => partial + Number(payment.amount), 0);
+  return Math.max(expenseAmount - paidAmount, 0);
 }
 
-function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>) {
+function isExpenseOverdue(expense: any) {
+  return expenseResidualAmount(expense) > 0;
+}
+
+function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const incassoTotale = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
   const incassoFiscale = incomes.reduce((sum, income) => income.isFiscal ? sum + Number(income.amount) : sum, 0);
   const incassoNonFiscale = incassoTotale - incassoFiscale;
@@ -87,22 +91,13 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
   const speseInDetrazione = expenses.reduce((sum, expense) => expense.isDeclared ? sum + Number(expense.amount) : sum, 0);
   const usciteNonFiscali = expenses.reduce((sum, expense) => expense.isDeclared ? sum : sum + Number(expense.amount), 0);
   const usciteFiscali = speseInDetrazione;
-  const nonSaldato = expenses.reduce((sum, expense) => {
-    const expenseAmount = Number(expense.amount);
-    const paidAmount = (expense.payments ?? []).reduce((partial: number, payment: any) => partial + Number(payment.amount), 0);
-    return sum + Math.max(expenseAmount - paidAmount, 0);
-  }, 0);
-  const fattureScadute = expenses.reduce((sum, expense) => {
+  const openTotalExpenses = options.declaredExpensesOnlyForOpenTotals ? expenses.filter(expense => expense.isDeclared) : expenses;
+  const nonSaldato = openTotalExpenses.reduce((sum, expense) => sum + expenseResidualAmount(expense), 0);
+  const fattureScadute = openTotalExpenses.reduce((sum, expense) => {
     if (!isExpenseOverdue(expense)) return sum;
-    const expenseAmount = Number(expense.amount);
-    const paidAmount = (expense.payments ?? []).reduce((partial: number, payment: any) => partial + Number(payment.amount), 0);
-    return sum + Math.max(expenseAmount - paidAmount, 0);
+    return sum + expenseResidualAmount(expense);
   }, 0);
-  const fattureScaduteCount = expenses.reduce((sum, expense) => {
-    if (!isExpenseOverdue(expense)) return sum;
-    const paidAmount = (expense.payments ?? []).reduce((partial: number, payment: any) => partial + Number(payment.amount), 0);
-    return Math.max(Number(expense.amount) - paidAmount, 0) > 0 ? sum + 1 : sum;
-  }, 0);
+  const fattureScaduteCount = openTotalExpenses.reduce((sum, expense) => isExpenseOverdue(expense) ? sum + 1 : sum, 0);
 
   const vatBalance = computeVatBalance(incomes, expenses, periods);
   const ivaGenerataIncassi = vatBalance.generated;
@@ -147,13 +142,13 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
   };
 }
 
-export async function getPeriodSummary(periods: Array<{ year: number; month: number }>) {
+export async function getPeriodSummary(periods: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const [incomes, expenses] = await Promise.all([
     prisma.income.findMany({ where: incomePeriodWhere(periods) }),
     prisma.expense.findMany({ where: periodWhere(periods), include: { payments: true } })
   ]);
 
-  return summarizeRecords(incomes, expenses, periods);
+  return summarizeRecords(incomes, expenses, periods, options);
 }
 
 export async function getOrderDateMonthSummary(year: number, month: number) {
@@ -185,8 +180,8 @@ export async function getAccountingDashboardReport(
   const reportYears = Array.from(new Set([reportYear, annualYear, fiscalMonthPeriods[0].year, fiscalQuarterPeriods[0]?.year ?? reportYear]));
 
   const [currentFiscalMonth, currentFiscalQuarter, yearIncomes, yearExpenses] = await Promise.all([
-    getPeriodSummary(fiscalMonthPeriods),
-    getPeriodSummary(fiscalQuarterPeriods),
+    getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true }),
+    getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true }),
     prisma.income.findMany({ where: { billingYear: { in: reportYears } } }),
     prisma.expense.findMany({ where: { year: { in: reportYears } }, include: { payments: true, category: true } })
   ]);

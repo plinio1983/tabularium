@@ -309,6 +309,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         title="Trimestre fiscale"
         subtitle={fiscalQuarterLabel(report.currentFiscalQuarter.periods)}
         totals={report.currentFiscalQuarter.totals}
+        fiscalOnly
         expensesHref={quarterExpensesHref}
         unpaidExpensesHref={quarterUnpaidExpensesHref}
         incomesHref={quarterIncomesHref}

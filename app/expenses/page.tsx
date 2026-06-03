@@ -179,14 +179,14 @@ function expenseSupplierName(expense: { supplier?: { businessName?: string | nul
   return expense.supplier?.businessName || expense.merchant || '-';
 }
 
+function expenseResidualAmount(expense: { amount: unknown; payments?: Array<{ amount: unknown }> }) {
+  const expenseAmount = Number(expense.amount);
+  const paidAmount = (expense.payments ?? []).reduce((partial, payment) => partial + Number(payment.amount), 0);
+  return Math.max(expenseAmount - paidAmount, 0);
+}
+
 function isExpenseOverdue(expense: any) {
-  if (!expense.dueDate) return false;
-  if (expense.paymentStatus === 'COMPLETATO') return false;
-  const due = new Date(expense.dueDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  due.setHours(0, 0, 0, 0);
-  return due < today;
+  return expenseResidualAmount(expense) > 0;
 }
 
 function vatAmountFromGross(amount: number, vatRate: number) {
@@ -430,7 +430,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
 
     acc.total += amount;
     acc.paidVat += vatAmountFromGross(paid, vatRate);
-    const residualAmount = Math.max(0, amount - paid);
+    const residualAmount = expenseResidualAmount(expense);
     acc.toPay += residualAmount;
     if (isExpenseOverdue(expense)) acc.overdue += residualAmount;
     if (expense.isDeclared) {
