@@ -155,9 +155,13 @@ model Expense {
   payments              ExpensePayment[]
   attachments           ExpenseAttachment[]
 
+  recurringExpenseId    Int?
+  recurringExpense      RecurringExpense? @relation(fields: [recurringExpenseId], references: [id], onDelete: SetNull)
+  recurringExpensePeriodKey String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@unique([recurringExpenseId, recurringExpensePeriodKey])
   @@index([year, month])
   @@index([merchant])
 }

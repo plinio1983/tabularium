@@ -51,26 +51,41 @@ function isCadenceDue(startDate: Date, dueYear: number, dueMonth: number, cadenc
   return diff % cadenceMonths(cadence) === 0;
 }
 
-function calculateDueDate(recurringExpense: any, today: Date) {
-  const normalizedToday = startOfDay(today);
+function calculateDueDates(recurringExpense: any, todayInput: Date) {
+  const today = startOfDay(todayInput);
   const startDate = startOfDay(new Date(recurringExpense.startDate));
-  const candidates: Date[] = [];
+  const limitDate = addDays(today, LOOKAHEAD_DAYS);
 
-  for (let offset = 0; offset <= 2; offset += 1) {
-    const candidateMonth = addMonths(normalizedToday.getFullYear(), normalizedToday.getMonth() + 1, offset);
-    const dueYear = candidateMonth.year;
-    const dueMonth = recurringExpense.dueMonth || candidateMonth.month;
+  if (startDate > limitDate) return [];
 
+  const dueDates: Date[] = [];
+  const cursorStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+  const cursorEnd = new Date(limitDate.getFullYear(), limitDate.getMonth(), 1);
+
+  for (
+    let cursor = cursorStart;
+    cursor <= cursorEnd;
+    cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1)
+  ) {
+    const cursorYear = cursor.getFullYear();
+    const cursorMonth = cursor.getMonth() + 1;
+    const dueYear = cursorYear;
+    const dueMonth = recurringExpense.dueMonth || cursorMonth;
+
+    if (recurringExpense.dueMonth && dueMonth !== cursorMonth) continue;
     if (!isCadenceDue(startDate, dueYear, dueMonth, recurringExpense.cadence)) continue;
 
     const dueDay = clampDay(dueYear, dueMonth, recurringExpense.dueDay || startDate.getDate());
     const dueDate = startOfDay(new Date(dueYear, dueMonth - 1, dueDay));
 
     if (dueDate < startDate) continue;
-    candidates.push(dueDate);
+    if (dueDate > limitDate) continue;
+
+    dueDates.push(dueDate);
   }
 
-  return candidates.sort((a, b) => a.getTime() - b.getTime())[0] ?? null;
+  return Array.from(new Map(dueDates.map(date => [date.toISOString().slice(0, 10), date])).values())
+    .sort((a, b) => a.getTime() - b.getTime());
 }
 
 function billingPeriodFromDueDate(recurringExpense: any, dueDate: Date) {
@@ -93,67 +108,66 @@ function periodKey(year: number, month: number) {
 }
 
 export async function generateRecurringExpenses(todayInput = new Date()): Promise<RecurringExpenseJobResult> {
-  const today = startOfDay(todayInput);
-  const limitDate = addDays(today, LOOKAHEAD_DAYS);
   const result: RecurringExpenseJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
 
   const recurringExpenses = await prisma.recurringExpense.findMany({
-    where: { isActive: true },
-    include: { payments: false } as any
-  }).catch(async () => prisma.recurringExpense.findMany({ where: { isActive: true } }));
+    where: { isActive: true }
+  });
 
   for (const recurringExpense of recurringExpenses as any[]) {
     result.checked += 1;
 
     try {
-      const dueDate = calculateDueDate(recurringExpense, today);
+      const dueDates = calculateDueDates(recurringExpense, todayInput);
 
-      if (!dueDate || dueDate < today || dueDate > limitDate) {
+      if (!dueDates.length) {
         result.skipped += 1;
         continue;
       }
 
-      const billingPeriod = billingPeriodFromDueDate(recurringExpense, dueDate);
-      const recurringExpensePeriodKey = periodKey(billingPeriod.year, billingPeriod.month);
+      for (const dueDate of dueDates) {
+        const billingPeriod = billingPeriodFromDueDate(recurringExpense, dueDate);
+        const recurringExpensePeriodKey = periodKey(billingPeriod.year, billingPeriod.month);
 
-      const existing = await prisma.expense.findFirst({
-        where: {
-          recurringExpenseId: recurringExpense.id,
-          recurringExpensePeriodKey
+        const existing = await prisma.expense.findFirst({
+          where: {
+            recurringExpenseId: recurringExpense.id,
+            recurringExpensePeriodKey
+          }
+        });
+
+        if (existing) {
+          result.skipped += 1;
+          continue;
         }
-      });
 
-      if (existing) {
-        result.skipped += 1;
-        continue;
+        await prisma.expense.create({
+          data: {
+            receivedDate: dueDate,
+            dueDate,
+            merchant: recurringExpense.merchant,
+            supplierId: recurringExpense.supplierId || null,
+            categoryId: recurringExpense.categoryId || null,
+            description: recurringExpense.description,
+            amount: recurringExpense.amount,
+            vatRate: recurringExpense.vatRate,
+            paymentStatus: 'DA_PAGARE',
+            invoiceStatus: recurringExpense.hasElectronicInvoice ? 'IN_ATTESA' : 'NON_PREVISTA',
+            month: billingPeriod.month,
+            year: billingPeriod.year,
+            hasElectronicInvoice: recurringExpense.hasElectronicInvoice,
+            isDeclared: recurringExpense.isDeclared,
+            isRecurring: true,
+            isAutomaticPayment: recurringExpense.accrualType === 'AUTOMATICO',
+            bankId: recurringExpense.bankId || null,
+            notes: recurringExpense.notes || null,
+            recurringExpenseId: recurringExpense.id,
+            recurringExpensePeriodKey
+          }
+        });
+
+        result.created += 1;
       }
-
-      await prisma.expense.create({
-        data: {
-          receivedDate: dueDate,
-          dueDate,
-          merchant: recurringExpense.merchant,
-          supplierId: recurringExpense.supplierId || null,
-          categoryId: recurringExpense.categoryId || null,
-          description: recurringExpense.description,
-          amount: recurringExpense.amount,
-          vatRate: recurringExpense.vatRate,
-          paymentStatus: 'DA_PAGARE',
-          invoiceStatus: recurringExpense.hasElectronicInvoice ? 'IN_ATTESA' : 'NON_PREVISTA',
-          month: billingPeriod.month,
-          year: billingPeriod.year,
-          hasElectronicInvoice: recurringExpense.hasElectronicInvoice,
-          isDeclared: recurringExpense.isDeclared,
-          isRecurring: true,
-          isAutomaticPayment: recurringExpense.accrualType === 'AUTOMATICO',
-          bankId: recurringExpense.bankId || null,
-          notes: recurringExpense.notes || null,
-          recurringExpenseId: recurringExpense.id,
-          recurringExpensePeriodKey
-        }
-      });
-
-      result.created += 1;
     } catch (error) {
       result.errors.push({
         recurringExpenseId: recurringExpense.id,
