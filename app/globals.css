@@ -5890,7 +5890,6 @@ button.bulk-direct-danger {
     }
 
     .expense-detail-action-row {
-        justify-content: stretch;
         padding: 12px 18px;
     }
 
@@ -5902,7 +5901,11 @@ button.bulk-direct-danger {
     .expense-detail-status-strip,
     .expense-payment-card,
     .expense-payment-data {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .expense-detail-status-strip {
+        grid-template-columns: 1fr 1fr;
     }
 
     .expense-payment-card {
