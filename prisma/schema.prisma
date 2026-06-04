@@ -52,6 +52,10 @@ model ExpenseCategory {
   name      String
   expenses  Expense[]
   recurringExpenses RecurringExpense[]
+  recurringExpenseId    Int?
+  recurringExpense      RecurringExpense? @relation(fields: [recurringExpenseId], references: [id], onDelete: SetNull)
+  recurringExpensePeriodKey String?
+  @@unique([recurringExpenseId, recurringExpensePeriodKey])
 }
 
 model Bank {
@@ -107,6 +111,7 @@ model RecurringExpense {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
+  generatedExpenses    Expense[]
   @@index([startDate])
   @@index([supplierId])
   @@index([isActive])
