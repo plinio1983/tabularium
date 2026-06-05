@@ -462,7 +462,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
     if (!amountMatchesFilter(amount, amountFilterValue)) return false;
     if (paymentStatusFilter === 'not_complete' && expense.paymentStatus === 'COMPLETATO') return false;
-    if (paymentStatusFilter === 'overdue' && !isExpenseOverdue(expense)) return false;
+    if (paymentStatusFilter === 'overdue' && !isExpensePastDueForBadge(expense)) return false;
     if (paymentStatusFilter && !['not_complete', 'overdue'].includes(paymentStatusFilter) && expense.paymentStatus !== paymentStatusFilter) return false;
     if (residualFilter === 'open' && residual <= 0) return false;
     if (residualFilter === 'closed' && residual > 0) return false;
@@ -484,18 +484,19 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     const vatRate = Number(expense.vatRate.toString());
     const paid = Math.min(amount, expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0));
     const residualAmount = Math.max(0, amount - paid);
-    const overdueResidualAmount = residualAmount > 0 && isExpenseOverdue(expense) ? residualAmount : 0;
+    const overdueResidualAmount = isExpensePastDueForBadge(expense) ? residualAmount : 0;
 
     acc.total += amount;
     acc.paidVat += vatAmountFromGross(paid, vatRate);
     acc.toPay += residualAmount;
     acc.overdue += overdueResidualAmount;
+    if (isExpensePastDueForBadge(expense)) acc.overdueCount += 1;
     if (expense.isDeclared) {
       acc.declared += amount;
       if (!['RICEVUTA', 'INVIATA_SDI'].includes(String(expense.invoiceStatus))) acc.invoicesNotReceived += 1;
     }
     return acc;
-  }, { total: 0, paidVat: 0, declared: 0, toPay: 0, overdue: 0, invoicesNotReceived: 0 });
+  }, { total: 0, paidVat: 0, declared: 0, toPay: 0, overdue: 0, overdueCount: 0, invoicesNotReceived: 0 });
 
   const periodTotals = summarizeExpenses(periodExpenses);
   const totals = summarizeExpenses(filteredExpenses);
@@ -551,7 +552,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <div className="total-card total-card-declared"><span>Spese dichiarate</span><strong className={moneyTone(periodTotals.declared)}>{euro(periodTotals.declared)}</strong><small>Spese in detrazione del periodo.</small></div>
         <div className="total-card total-card-warning"><span>Non saldato</span><strong className={moneyTone(periodTotals.toPay)}>{euro(periodTotals.toPay)}</strong><small>Residuo del periodo ancora da pagare.</small></div>
         <div className="total-card total-card-warning"><span>Fatture non<br />ricevute</span><strong>{periodTotals.invoicesNotReceived}</strong><small>Spese del periodo in detrazione senza fattura emessa.</small></div>
-        <div className={`total-card ${periodTotals.overdue > 0 ? 'total-card-critical' : 'total-card-neutral'}`}><span>Pagamenti scaduti</span><strong className={moneyTone(periodTotals.overdue)}>{euro(periodTotals.overdue)}</strong><small>Residuo scaduto del periodo selezionato.</small></div>
+        <div className={`total-card ${periodTotals.overdueCount > 0 ? 'total-card-critical' : 'total-card-neutral'}`}><span>Pagamenti scaduti</span><strong>{periodTotals.overdueCount}</strong><small>Spese scadute con residuo nel periodo selezionato.</small></div>
       </div>
 
       <div className="list-heading">
