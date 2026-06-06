@@ -10,6 +10,10 @@
     .app-footer {
         display: none;
     }
+
+    .modal-card.modal-card-wide .expense-form {
+        margin-bottom: 0!important;
+    }
 }
 
 @media (max-width: 576px) {
