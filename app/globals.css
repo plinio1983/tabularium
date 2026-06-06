@@ -229,10 +229,10 @@ button {
 }
 
 .payments-box {
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 14px;
-    background: #fafbff;
+    /*border: 1px solid var(--line);*/
+    /*border-radius: 16px;*/
+    /*padding: 14px;*/
+    /*background: #fafbff;*/
     display: grid;
     gap: 12px;
 }
@@ -6438,7 +6438,7 @@ button.bulk-direct-danger {
 .form-section-stack {
     display: grid;
     gap: 14px;
-    padding: 16px;
+    padding: 12px;
 }
 
 .form-section-grid > .full,
