@@ -113,7 +113,7 @@ function fiscalBadge(value: boolean) {
 }
 function fiscalBadgeMobile(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
-  const label = value ? 'D' : 'ND';
+  const label = value ? 'DF' : 'NF';
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {

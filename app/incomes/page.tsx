@@ -27,7 +27,13 @@ const invoiceStatusOptions = [
 
 function dateLabel(value?: Date | null) {
   return value
-    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(value)
+    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(value)
+    : '-';
+}
+
+function mobileDateLabel(value?: Date | null) {
+  return value
+    ? new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(value).replace('.', '')
     : '-';
 }
 
@@ -643,6 +649,51 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
       </form>
+
+      <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
+        {filteredIncomes.map(income => {
+          const salesStyle = salesChannelStyles[income.salesChannel];
+          const catStyle = saleCategoryStyles[income.saleCategory];
+          const paymentStyle = paymentMethodStyles[income.paymentMethod];
+          const creditStyle = creditChannelStyles[income.creditChannel];
+          const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
+          const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
+          const amount = Number(income.amount.toString());
+          const detailHref = `/incomes/${income.id}?returnTo=${returnTo}`;
+
+          return <div className="income-mobile-item expense-mobile-item" key={`mobile-income-${income.id}`}>
+            <div className="expense-mobile-select">
+              <input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} />
+            </div>
+            <Link className="expense-mobile-link income-mobile-link" href={detailHref}>
+              <div className="expense-mobile-main">
+                <div className="expense-mobile-title-row">
+                  <strong>{income.salesChannel}</strong>
+                  <span className={moneyTone(amount)}>{euro(income.amount.toString())}</span>
+                </div>
+                <div className="expense-mobile-subtitle">{income.saleCategory} · {income.paymentMethod}</div>
+                <div className="expense-mobile-meta">
+                  <span>{mobileDateLabel(income.creditDate)}</span>
+                  <span>{formatPeriod(income.billingMonth, income.billingYear)}</span>
+                  <span>{income.creditChannel}</span>
+                </div>
+                <div className="expense-mobile-badges">
+                  <span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span>
+                  <span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span>
+                  {fiscalBadge(income.isFiscal)}
+                  <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+                </div>
+                <div className="expense-mobile-footer">
+                  <span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span>
+                  <span className={badgeClass(creditStyle?.className)}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span>
+                  <span className={badgeClass(vatStyle.className)}>IVA {Number(income.vatRate.toString())}%</span>
+                </div>
+              </div>
+            </Link>
+          </div>;
+        })}
+        {!filteredIncomes.length && <div className="expense-empty-panel">Nessun incasso trovato con i filtri selezionati.</div>}
+      </div>
 
       <div className="table-scroll incomes-table-scroll"><table className="expenses-table compact-incomes-table"><colgroup>
         <col className="income-col-select" />

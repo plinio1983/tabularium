@@ -6142,7 +6142,7 @@ button.bulk-direct-danger {
 .expense-mobile-item {
     display: grid;
     grid-template-columns: 34px minmax(0, 1fr);
-    gap: 6px;
+    gap: 2px;
     padding: 8px 0;
     border-bottom: 1px solid var(--line);
 }
@@ -6267,7 +6267,6 @@ button.bulk-direct-danger {
 
     .expense-mobile-list {
         display: grid;
-        margin-top: 12px;
     }
 
     .search-totals-row {
@@ -6284,5 +6283,35 @@ button.bulk-direct-danger {
         backdrop-filter: blur(12px);
         border-top: 1px solid var(--line);
         border-bottom: 1px solid var(--line);
+    }
+}
+
+/* Mobile-first income list cards */
+.income-mobile-list {
+    display: none;
+}
+
+.income-mobile-item .expense-mobile-title-row strong {
+    color: #0f766e;
+}
+
+.income-mobile-link:active {
+    background: #ecfdf5;
+}
+
+@media (max-width: 760px) {
+    .incomes-table-scroll {
+        display: none;
+    }
+
+    .income-mobile-list {
+        display: grid;
+        margin-top: 12px;
+    }
+
+    .income-mobile-item .expense-mobile-footer {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 6px;
     }
 }
