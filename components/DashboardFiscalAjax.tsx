@@ -114,6 +114,7 @@ function MonthlyTrendCard({
 }) {
   const totals = state.totals;
   const expensesHref = dateRangeLink('/expenses', state.year, state.month);
+  const nonFiscalExpensesHref = dateRangeLink('/expenses', state.year, state.month, { declared: 'no' });
   const unpaidExpensesHref = dateRangeLink('/expenses', state.year, state.month, { paymentStatus: 'not_complete' });
   const incomesHref = dateRangeLink('/incomes', state.year, state.month);
   const overdueExpensesHref = dateRangeLink('/expenses', state.year, state.month, { paymentStatus: 'overdue' });
@@ -130,7 +131,7 @@ function MonthlyTrendCard({
       <SummaryMetric label="Entrate totali" value={totals.incassoTotale} highlight href={incomesHref} />
       <SummaryMetric label="Uscite totali" value={totals.speseTotali} highlight href={expensesHref} />
       <SummaryMetric label="Utile netto" value={totals.utileNetto} highlight />
-      <SummaryMetric label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={expensesHref} />
+      <SummaryMetric label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />
       <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
       <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
     </div>
@@ -153,6 +154,7 @@ function FiscalSummaryCard({
   const periods = state.periods;
   const totals = state.totals;
   const expensesHref = periodLink('/expenses', periods);
+  const fiscalExpensesHref = periodLink('/expenses', periods, { declared: 'yes' });
   const unpaidExpensesHref = periodLink('/expenses', periods, { paymentStatus: 'not_complete', declared: 'yes' });
   const incomesHref = periodLink('/incomes', periods);
   const invoicesNotSentHref = periodLink('/incomes', periods, { fiscal: 'yes', invoiceStatusMode: 'not_emitted' });
@@ -169,7 +171,7 @@ function FiscalSummaryCard({
     </div>
     <div className="summary-metrics-grid summary-metrics-grid-priority fiscal-summary-metrics-ordered">
       <SummaryMetric label="Entrate fiscali" value={totals.incassoFiscale} highlight href={incomesHref} />
-      <SummaryMetric label="Uscite fiscali" value={totals.usciteFiscali} highlight href={expensesHref} />
+      <SummaryMetric label="Uscite fiscali" value={totals.usciteFiscali} highlight href={fiscalExpensesHref} />
       <SummaryMetric label="Utile fiscale" value={totals.utileFiscale} highlight />
       <SummaryMetric label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
       <CountMetric label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
