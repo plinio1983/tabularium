@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseForm from '@/components/ExpenseForm';
@@ -41,50 +40,41 @@ export default async function EditExpensePage({ params, searchParams }: { params
     .map(name => categories.find(category => category.name === name))
     .filter(Boolean) as typeof categories;
 
-  return <div className="modal-page-wrap edit-expense-dedicated-page">
-    <div className="modal-card modal-card-wide modal-page-card">
-    <div className="toolbar-card modal-toolbar-card">
-      <div>
-        <h2>Modifica spesa #{expense.id}</h2>
-        <p className="muted">Aggiorna dati, pagamenti e nuovi allegati della spesa.</p>
-      </div>
-      <Link className="table-action secondary" href={returnTo}>↩ Annulla</Link>
-    </div>
+  return <div className="grid edit-expense-dedicated-page">
     <ExpenseForm
-      title="Modifica spesa"
-      cancelHref={returnTo}
-      submitLabel="Salva modifiche"
-      action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
-      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
-      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
-      initialExpense={{
-        id: expense.id,
-        receivedDate: expense.receivedDate,
-        dueDate: expense.dueDate,
-        merchant: expense.merchant,
-        supplierId: expense.supplierId,
-        categoryId: expense.categoryId,
-        description: expense.description,
-        amount: expense.amount.toString(),
-        vatRate: expense.vatRate.toString(),
-        paymentStatus: expense.paymentStatus,
-        month: expense.month,
-        year: expense.year,
-        hasElectronicInvoice: expense.hasElectronicInvoice,
-        invoiceStatus: expense.invoiceStatus,
-        isDeclared: expense.isDeclared,
-        notes: expense.notes,
-        payments: expense.payments.map(payment => ({
-          id: payment.id,
-          paymentDate: payment.paymentDate,
-          channel: payment.channel,
-          bankId: payment.bankId,
-          amount: payment.amount.toString(),
-          paidBy: payment.paidBy
-        }))
-      }}
-    />
-    </div>
+          title="Modifica spesa"
+          cancelHref={returnTo}
+          submitLabel="Salva modifiche"
+          action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
+          categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+          banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+          suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+          initialExpense={{
+            id: expense.id,
+            receivedDate: expense.receivedDate,
+            dueDate: expense.dueDate,
+            merchant: expense.merchant,
+            supplierId: expense.supplierId,
+            categoryId: expense.categoryId,
+            description: expense.description,
+            amount: expense.amount.toString(),
+            vatRate: expense.vatRate.toString(),
+            paymentStatus: expense.paymentStatus,
+            month: expense.month,
+            year: expense.year,
+            hasElectronicInvoice: expense.hasElectronicInvoice,
+            invoiceStatus: expense.invoiceStatus,
+            isDeclared: expense.isDeclared,
+            notes: expense.notes,
+            payments: expense.payments.map(payment => ({
+              id: payment.id,
+              paymentDate: payment.paymentDate,
+              channel: payment.channel,
+              bankId: payment.bankId,
+              amount: payment.amount.toString(),
+              paidBy: payment.paidBy
+            }))
+          }}
+        />
   </div>;
 }

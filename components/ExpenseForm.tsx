@@ -712,18 +712,18 @@ export default function ExpenseForm({
       method="post"
       encType="multipart/form-data"
     >
-      <h2 className="full">{title}</h2>
+      {/*<h2 className="full">{title}</h2>*/}
 
-      <div className="form-sticky-summary full">
-        <div>
-          <span className="muted">Residuo</span>
-          <strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong>
-        </div>
-        <div>
-          <span className="muted">Stato</span>
-          <strong className={computedPaymentStatusInfo.className}>{computedPaymentStatusInfo.label}</strong>
-        </div>
-      </div>
+      {/*<div className="form-sticky-summary full">*/}
+      {/*  <div>*/}
+      {/*    <span className="muted">Residuo</span>*/}
+      {/*    <strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong>*/}
+      {/*  </div>*/}
+      {/*  <div>*/}
+      {/*    <span className="muted">Stato</span>*/}
+      {/*    <strong className={computedPaymentStatusInfo.className}>{computedPaymentStatusInfo.label}</strong>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
 
       <details className="form-section full" open>
         <summary>
@@ -943,6 +943,16 @@ export default function ExpenseForm({
           <div>
             {/*<h3>Pagamenti</h3>*/}
             <p>Puoi registrare uno o più pagamenti per la stessa spesa.</p>
+          </div>
+          <div className="form-summary full">
+            <div>
+              <span className="muted">Residuo</span>
+              <strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong>
+            </div>
+            <div>
+              <span className="muted">Stato</span>
+              <strong className={computedPaymentStatusInfo.className}>{computedPaymentStatusInfo.label}</strong>
+            </div>
           </div>
           <button
               type="button"
