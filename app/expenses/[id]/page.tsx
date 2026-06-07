@@ -124,7 +124,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <p>Informazioni operative e fiscali della spesa.</p>
           </div>
 
-          <div className="expense-detail-info-grid">
+          <div className="expense-detail-info-grid detail-page-no-site-header">
             <DetailItem label="Periodo fatturazione">{formatPeriod(expense.month, expense.year)}</DetailItem>
             <DetailItem label="Data ordine">{dateLabel(expense.receivedDate)}</DetailItem>
             <DetailItem label="Data scadenza">{dateLabel(expense.dueDate)}</DetailItem>

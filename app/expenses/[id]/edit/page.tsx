@@ -41,7 +41,7 @@ export default async function EditExpensePage({ params, searchParams }: { params
     .map(name => categories.find(category => category.name === name))
     .filter(Boolean) as typeof categories;
 
-  return <div className="modal-page-wrap">
+  return <div className="modal-page-wrap edit-expense-dedicated-page">
     <div className="modal-card modal-card-wide modal-page-card">
     <div className="toolbar-card modal-toolbar-card">
       <div>

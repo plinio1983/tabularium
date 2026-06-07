@@ -55,7 +55,7 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
   const vatStyle = vatStyles[String(vatRate)] ?? vatStyles['0'];
 
-  return <div className="grid">
+  return <div className="grid detail-page-no-site-header">
     <div className="toolbar-card">
       <div>
         <h2>Dettaglio incasso #{income.id}</h2>

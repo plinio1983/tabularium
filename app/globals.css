@@ -7050,3 +7050,65 @@ button.bulk-direct-danger {
         justify-content: center;
     }
 }
+
+/* Detail pages without global site header */
+body:has(.detail-page-no-site-header) .nav {
+    display: none !important;
+}
+
+body:has(.detail-page-no-site-header) .shell {
+    padding-top: 0;
+}
+
+/* Dedicated expense edit page fixed actions */
+.edit-expense-dedicated-page .expense-form {
+    padding-bottom: 112px;
+}
+
+.edit-expense-dedicated-page .expense-form .form-actions-row,
+.edit-expense-dedicated-page .expense-form .form-sticky-actions {
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: 16px !important;
+    transform: translateX(-50%) !important;
+    z-index: 10000 !important;
+    width: min(1120px, calc(100vw - 32px)) !important;
+    margin: 0 !important;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom)) !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .98);
+    box-shadow: 0 -18px 44px rgba(15, 23, 42, .22);
+    backdrop-filter: blur(12px);
+}
+
+.edit-expense-dedicated-page .expense-form .form-actions-row .button-standard,
+.edit-expense-dedicated-page .expense-form .form-sticky-actions .button-standard {
+    min-width: 150px;
+}
+
+@media (max-width: 760px) {
+    .edit-expense-dedicated-page .expense-form {
+        padding-bottom: calc(118px + env(safe-area-inset-bottom));
+    }
+
+    .edit-expense-dedicated-page .expense-form .form-actions-row,
+    .edit-expense-dedicated-page .expense-form .form-sticky-actions {
+        bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+        width: calc(100vw - 20px) !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        padding: 10px !important;
+    }
+
+    .edit-expense-dedicated-page .expense-form .form-actions-row .button-standard,
+    .edit-expense-dedicated-page .expense-form .form-sticky-actions .button-standard {
+        min-width: 0;
+        width: 100%;
+        justify-content: center;
+    }
+}
