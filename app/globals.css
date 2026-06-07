@@ -6983,3 +6983,65 @@ button.bulk-direct-danger {
         min-height: calc(100vh - 20px);
     }
 }
+
+/* Fixed action bar for expense forms opened in modal */
+.app-form-modal .expense-form {
+    padding-bottom: 96px;
+}
+
+.app-form-modal .expense-form .form-actions-row,
+.app-form-modal .expense-form .form-sticky-actions,
+.edit-expense-client-modal .expense-form .form-actions-row,
+.edit-expense-client-modal .expense-form .form-sticky-actions {
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: 16px !important;
+    transform: translateX(-50%) !important;
+    z-index: 10000 !important;
+    width: min(1120px, calc(100vw - 32px)) !important;
+    margin: 0 !important;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom)) !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .98);
+    box-shadow: 0 -18px 44px rgba(15, 23, 42, .22);
+    backdrop-filter: blur(12px);
+}
+
+.app-form-modal .expense-form .form-actions-row .button-standard,
+.app-form-modal .expense-form .form-sticky-actions .button-standard,
+.edit-expense-client-modal .expense-form .form-actions-row .button-standard,
+.edit-expense-client-modal .expense-form .form-sticky-actions .button-standard {
+    min-width: 150px;
+}
+
+@media (max-width: 760px) {
+    .app-form-modal .expense-form {
+        padding-bottom: calc(104px + env(safe-area-inset-bottom));
+    }
+
+    .app-form-modal .expense-form .form-actions-row,
+    .app-form-modal .expense-form .form-sticky-actions,
+    .edit-expense-client-modal .expense-form .form-actions-row,
+    .edit-expense-client-modal .expense-form .form-sticky-actions {
+        bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+        width: calc(100vw - 20px) !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        padding: 10px !important;
+        border-radius: 18px;
+    }
+
+    .app-form-modal .expense-form .form-actions-row .button-standard,
+    .app-form-modal .expense-form .form-sticky-actions .button-standard,
+    .edit-expense-client-modal .expense-form .form-actions-row .button-standard,
+    .edit-expense-client-modal .expense-form .form-sticky-actions .button-standard {
+        min-width: 0;
+        width: 100%;
+        justify-content: center;
+    }
+}
