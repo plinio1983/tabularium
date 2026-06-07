@@ -7202,3 +7202,14 @@ body:has(.detail-page-no-site-header) .shell {
         justify-content: center;
     }
 }
+
+/* Pages without global site header */
+body:has(.page-no-site-header) .nav,
+body:has(.detail-page-no-site-header) .nav {
+    display: none !important;
+}
+
+body:has(.page-no-site-header) .shell,
+body:has(.detail-page-no-site-header) .shell {
+    padding-top: 0;
+}

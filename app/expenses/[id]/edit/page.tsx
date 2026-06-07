@@ -40,7 +40,7 @@ export default async function EditExpensePage({ params, searchParams }: { params
     .map(name => categories.find(category => category.name === name))
     .filter(Boolean) as typeof categories;
 
-  return <div className="grid edit-expense-dedicated-page">
+  return <div className="grid edit-expense-dedicated-page page-no-site-header">
     <ExpenseForm
           title="Modifica spesa"
           cancelHref={returnTo}
