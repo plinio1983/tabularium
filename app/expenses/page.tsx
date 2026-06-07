@@ -3,6 +3,7 @@ import BulkSelectionController from '@/components/BulkSelectionController';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewExpensePanel from '@/components/NewExpensePanel';
+import ExpenseEditModalController from '@/components/ExpenseEditModalController';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
 import {
   badgeClass,
@@ -676,6 +677,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                 edit.classList.toggle('is-disabled', !singleEnabled);
                 edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
                 edit.href = singleEnabled ? (group.getAttribute('data-edit-base') + firstId + '/edit?returnTo=' + returnTo) : '#';
+                if (singleEnabled) edit.setAttribute('data-expense-edit-id', firstId);
+                else edit.removeAttribute('data-expense-edit-id');
               }
               if (copy) {
                 copy.classList.toggle('is-disabled', !singleEnabled);
@@ -799,6 +802,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
       </form>
+
+      <ExpenseEditModalController
+        categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+        banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
+        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
+        listHref={listHref}
+      />
 
       <div className="expense-mobile-list" aria-label="Lista spese mobile">
         {filteredExpenses.map(e => {

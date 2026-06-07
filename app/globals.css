@@ -6943,3 +6943,43 @@ button.bulk-direct-danger {
         justify-content: center;
     }
 }
+
+/* Client-side expense edit modal */
+.edit-expense-client-modal {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 28px 16px;
+}
+
+.edit-expense-client-modal .modal-card {
+    width: min(1120px, 100%);
+    max-height: none;
+}
+
+.inline-modal-loading,
+.inline-modal-error {
+    position: fixed;
+    left: 50%;
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 450;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: #ffffff;
+    box-shadow: 0 16px 42px rgba(15, 23, 42, .18);
+    font-weight: 900;
+}
+
+.inline-modal-error {
+    color: #b91c1c;
+}
+
+@media (max-width: 760px) {
+    .edit-expense-client-modal {
+        padding: 10px;
+    }
+
+    .edit-expense-client-modal .modal-card {
+        min-height: calc(100vh - 20px);
+    }
+}
