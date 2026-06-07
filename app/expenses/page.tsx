@@ -676,7 +676,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               if (edit) {
                 edit.classList.toggle('is-disabled', !singleEnabled);
                 edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                edit.href = singleEnabled ? (group.getAttribute('data-edit-base') + firstId + '/edit?returnTo=' + returnTo) : '#';
+                edit.href = '#';
+                if (singleEnabled) edit.setAttribute('data-expense-edit-id', firstId);
+                else edit.removeAttribute('data-expense-edit-id');
                 if (singleEnabled) edit.setAttribute('data-expense-edit-id', firstId);
                 else edit.removeAttribute('data-expense-edit-id');
               }

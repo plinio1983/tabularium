@@ -60,14 +60,6 @@ function selectedExpenseIdFromBulk() {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-function expenseIdFromHref(href: string | null) {
-  if (!href) return null;
-  const match = href.match(/\/expenses\/(\d+)\/edit(?:\?|$)/);
-  if (!match) return null;
-  const id = Number(match[1]);
-  return Number.isInteger(id) && id > 0 ? id : null;
-}
-
 export default function ExpenseEditModalController({ categories, banks, suppliers, listHref }: Props) {
   const [expense, setExpense] = useState<EditExpense | null>(null);
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -92,22 +84,20 @@ export default function ExpenseEditModalController({ categories, banks, supplier
   useEffect(() => {
     const handler = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
-      const link = target?.closest<HTMLAnchorElement>("a");
-      if (!link) return;
+      if (!target) return;
 
-      const isBulkEdit = Boolean(link.closest("[data-bulk-direct-actions]") && link.hasAttribute("data-bulk-edit"));
-      const hrefEditId = expenseIdFromHref(link.getAttribute("href"));
-      const dataEditId = Number(link.dataset.expenseEditId || 0);
+      const trigger = target.closest<HTMLElement>("[data-expense-edit-id]");
+      if (!trigger) return;
 
-      let id: number | null = null;
-      if (isBulkEdit) id = selectedExpenseIdFromBulk();
-      else if (Number.isInteger(dataEditId) && dataEditId > 0) id = dataEditId;
-      else id = hrefEditId;
-
-      if (!id) return;
+      let id = Number(trigger.dataset.expenseEditId || 0);
+      if (!Number.isInteger(id) || id <= 0) {
+        id = selectedExpenseIdFromBulk() ?? 0;
+      }
+      if (!Number.isInteger(id) || id <= 0) return;
 
       event.preventDefault();
       event.stopPropagation();
+      event.stopImmediatePropagation();
       openExpense(id);
     };
 
@@ -124,7 +114,7 @@ export default function ExpenseEditModalController({ categories, banks, supplier
         <div className="modal-title">
           <div>
             <h3>Modifica spesa #{expense.id}</h3>
-            <p className="muted">Aggiorna dati, pagamenti e allegati senza uscire dalla lista.</p>
+            <p className="muted">Aggiorna dati e pagamenti senza uscire dalla lista.</p>
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
         </div>
