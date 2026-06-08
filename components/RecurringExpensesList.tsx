@@ -18,10 +18,6 @@ function dueLabel(item: any) {
 
 export default function RecurringExpensesList({ items }: { items: any[] }) {
   return <div className="card recurring-expenses-card">
-    <div className="list-heading">
-      <div><h2>Spese ricorrenti</h2><p className="muted">Regole ricorrenti configurate: {items.length}</p></div>
-      <Link className="button-standard primary-action" href="/recurring-expenses/new"><span className="btn-icon">＋</span> Nuova ricorrente</Link>
-    </div>
     {items.length ? <div className="recurring-expenses-list">{items.map(item => <div className="recurring-expense-row" key={item.id}>
       <div><span className={item.isActive ? 'status-dot is-active' : 'status-dot'} /><strong>{item.description}</strong><small>{item.supplier?.businessName || item.merchant} · {item.category?.name ?? 'Senza categoria'}</small></div>
       <div><span>Cadenza</span><strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong></div>

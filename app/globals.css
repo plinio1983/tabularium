@@ -4036,7 +4036,7 @@ button {
 
 .toolbar-actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.65rem;
     justify-content: flex-end;
     align-items: center;

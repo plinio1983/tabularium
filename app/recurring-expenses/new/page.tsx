@@ -35,7 +35,7 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
   return <div className="modal-page-wrap">
     <div className="modal-card modal-card-wide modal-page-card">
       <div className="toolbar-card modal-toolbar-card">
-        <div><h2>Nuova spesa ricorrente</h2><p className="muted">Configura una regola ricorrente.</p></div>
+        <div><h2>Spesa ricorrente</h2><p className="muted">Configura una regola ricorrente.</p></div>
         <Link className="table-action secondary" href={returnTo}>↩ Annulla</Link>
       </div>
       <RecurringExpenseForm

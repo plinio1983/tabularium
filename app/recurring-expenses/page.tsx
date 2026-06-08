@@ -13,7 +13,7 @@ export default async function RecurringExpensesPage() {
       <div><h2>Spese ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
       <div className="toolbar-actions">
         <Link className="button-standard secondary-action" href="/expenses">↩ Lista spese</Link>
-        <Link className="button-standard primary-action" href="/recurring-expenses/new"><span className="btn-icon">＋</span> Nuova spesa ricorrente</Link>
+        <Link className="button-standard primary-action" href="/recurring-expenses/new"><span className="btn-icon">＋</span>Spesa ricorrente</Link>
       </div>
     </div>
     <RecurringExpensesList items={items} />
