@@ -427,8 +427,10 @@ export default function RecurringExpenseForm({
 
       <ProductServiceAutocomplete initialValue={initialExpense?.description ?? ""} />
 
-      <label>Costo IVA inclusa<MoneyInput name="amount" defaultValue={normalizeMoney(initialExpense?.amount)} required /></label>
-      <label>Applicazione IVA<select name="vatRate" defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}><option value="0">0%</option><option value="4">4%</option><option value="10">10%</option><option value="22">22%</option></select></label>
+      <div className="amount-vat-row">
+        <label>Costo IVA inclusa<MoneyInput name="amount" defaultValue={normalizeMoney(initialExpense?.amount)} required /></label>
+        <label>IVA<select name="vatRate" defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}><option value="0">0%</option><option value="4">4%</option><option value="10">10%</option><option value="22">22%</option></select></label>
+      </div>
         </div>
       </details>
 

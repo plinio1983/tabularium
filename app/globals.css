@@ -245,7 +245,29 @@ button {
 
 @media (max-width: 576px) {
     .recurring-expense-form .recurring-form-section-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .recurring-expense-form .recurring-form-section-grid > *,
+    .recurring-expense-form .form-section-stack > *,
+    .recurring-expense-form .span-2,
+    .recurring-expense-form .span-3,
+    .recurring-expense-form .full,
+    .recurring-expense-form .supplier-picker-wide,
+    .recurring-expense-form .product-suggestion-picker {
+        grid-column: 1 / -1 !important;
+        min-width: 0;
+    }
+
+    .recurring-expense-form .toggle-field-wrap {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 12px;
+        column-gap: 0;
+    }
+
+    .recurring-expense-form .toggle-field-wrap .switch-toggle-field {
+        width: 100%;
     }
 
     .recurring-expense-form .form-actions-row {
@@ -7424,7 +7446,8 @@ button.bulk-direct-danger {
 }
 
 @media (max-width: 760px) {
-    .expense-form .amount-vat-row {
+    .expense-form .amount-vat-row,
+    .recurring-expense-form .amount-vat-row {
         grid-template-columns: minmax(0, 1fr) 112px;
         gap: 10px;
     }
