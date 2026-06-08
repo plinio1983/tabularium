@@ -15,7 +15,15 @@ function isExpenseDetailPath(pathname: string) {
 export default function ShellChrome({ slot }: Props) {
   const pathname = usePathname() || '/';
 
-  if (isExpenseDetailPath(pathname)) return null;
+  if (isExpenseDetailPath(pathname)) {
+    if (slot === 'footer') return null;
+
+    return <div className="expense-detail-mobile-nav-only">
+      <Suspense fallback={null}>
+        <MainNav />
+      </Suspense>
+    </div>;
+  }
 
   if (slot === 'header') {
     return <div className="nav">

@@ -52,6 +52,17 @@ a {
     gap: 10px;
 }
 
+/* dettaglio spesa: mantiene solo la barra mobile, senza intestazione desktop */
+.expense-detail-mobile-nav-only .nav-links {
+    display: none;
+}
+
+@media (min-width: 761px) {
+    .expense-detail-mobile-nav-only {
+        display: none;
+    }
+}
+
 .nav-links a, .btn {
     border: 1px solid var(--line);
     background: #fff;
@@ -987,6 +998,7 @@ button {
 
 .expense-detail-hero-side-overdue::before {
     background: linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%);
+    /*background: linear-gradient(135deg, #ef444470 0%, #7f1d1d54 100%);*/
 }
 
 .expense-detail-hero-side-paid::before {
