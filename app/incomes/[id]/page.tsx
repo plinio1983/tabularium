@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import IncomeEditModalController from '@/components/IncomeEditModalController';
 import { euro } from '@/lib/money';
 import { vatStyles } from '@/lib/expense-ui';
 import {
@@ -56,6 +57,8 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const vatStyle = vatStyles[String(vatRate)] ?? vatStyles['0'];
 
   return <div className="grid detail-page-no-site-header">
+    <IncomeEditModalController returnTo={currentDetailReturnTo} />
+
     <div className="toolbar-card">
       <div>
         <h2>Dettaglio incasso #{income.id}</h2>
@@ -63,7 +66,7 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
       </div>
       <div className="actions-row right-actions">
         <Link className="table-action secondary" href={returnTo}>↩ Lista incassi</Link>
-        <Link className="table-action" href={`/incomes/${income.id}/edit?returnTo=${encodedCurrentDetailReturnTo}`}>✎ Modifica</Link>
+        <Link className="table-action" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
       </div>
     </div>
 

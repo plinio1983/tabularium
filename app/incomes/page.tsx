@@ -4,6 +4,7 @@ import DeleteActionButton from '@/components/DeleteActionButton';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import NewIncomePanel from '@/components/NewIncomePanel';
+import IncomeEditModalController from '@/components/IncomeEditModalController';
 import {
   badgeClass,
   creditChannelStyles,
@@ -448,6 +449,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
 
   return <div className="grid">
     <NewIncomePanel initialOpen={inputDefault(filters, 'new') === '1'} />
+    <IncomeEditModalController returnTo={listHref} />
 
     <div className="card expenses-list-card">
       <p className="totals-period-note">{totalsPeriodLabel}</p>
@@ -568,7 +570,9 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
               if (edit) {
                 edit.classList.toggle('is-disabled', !singleEnabled);
                 edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                edit.href = singleEnabled ? (group.getAttribute('data-edit-base') + firstId + '/edit?returnTo=' + returnTo) : '#';
+                edit.href = '#';
+                if (singleEnabled) edit.setAttribute('data-income-edit-id', firstId);
+                else edit.removeAttribute('data-income-edit-id');
               }
               if (copy) {
                 copy.classList.toggle('is-disabled', !singleEnabled);
