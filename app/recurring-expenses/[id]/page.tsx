@@ -173,7 +173,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
         <span className="badge">{item.generatedExpenses.length} record · {euro(generatedTotal)}</span>
       </div>
 
-      <div className="table-scroll">
+      <div className="table-scroll recurring-generated-desktop">
         <table className="expense-payments-table recurring-generated-table">
           <thead><tr><th>Periodo</th><th>Data ordine</th><th>Descrizione</th><th>Importo</th><th>Dettaglio</th></tr></thead>
           <tbody>

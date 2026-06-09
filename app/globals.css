@@ -5334,6 +5334,18 @@ button.bulk-direct-link {
     text-decoration: none;
 }
 
+@media (max-width: 760px) {
+    .recurring-generated-desktop {
+        display: none;
+    }
+
+    .recurring-generated-mobile-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #fff;
+    }
+}
+
 @media (max-width: 1120px) {
     .recurring-detail-priority-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
