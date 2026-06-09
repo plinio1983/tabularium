@@ -442,6 +442,10 @@ button {
     .recurring-expense-form .form-actions-row .button-standard {
         flex: 1 1 auto;
     }
+
+    .recurring-filter-trigger-text {
+        display: none;
+    }
 }
 
 .recurring-expenses-card .recurring-bulk-actions-bar {
@@ -496,6 +500,119 @@ button {
 
 .recurring-mobile-item-shell .recurring-mobile-item-link {
     min-width: 0;
+}
+
+/* drawer filtri laterale spese ricorrenti */
+body.drawer-open {
+    overflow: hidden;
+}
+
+.recurring-list-heading {
+    align-items: center;
+    flex-direction: row;
+}
+
+.recurring-filter-trigger {
+    white-space: nowrap;
+}
+
+.filter-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(15, 23, 42, .38);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease;
+}
+
+.filter-drawer-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.filter-drawer-panel {
+    width: min(440px, calc(100vw - 28px));
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    background: var(--card);
+    box-shadow: -18px 0 44px rgba(15, 23, 42, .18);
+    transform: translateX(100%);
+    transition: transform .22s ease;
+}
+
+.filter-drawer-backdrop.is-open .filter-drawer-panel {
+    transform: translateX(0);
+}
+
+.filter-drawer-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.filter-drawer-header h3 {
+    margin: 0;
+}
+
+.filter-drawer-header p {
+    margin: 4px 0 0;
+}
+
+.recurring-drawer-filters {
+    margin: 0;
+    padding: 18px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-content: start;
+}
+
+.recurring-drawer-filters label {
+    min-width: 0;
+}
+
+.filter-drawer-actions {
+    position: sticky;
+    bottom: -18px;
+    display: flex;
+    gap: 10px;
+    padding: 14px 0 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.70), #fff 34%);
+}
+
+.filter-drawer-actions .button-standard {
+    flex: 1 1 auto;
+    justify-content: center;
+}
+
+@media (max-width: 576px) {
+    .filter-drawer-panel {
+        width: min(100vw, 420px);
+    }
+
+    .filter-drawer-header,
+    .recurring-drawer-filters {
+        padding: 14px;
+    }
+
+    .filter-drawer-actions a,
+    .filter-drawer-actions button {
+        max-width: initial;
+    }
+
+    .filter-drawer-actions {
+        bottom: -14px;
+    }
 }
 
 /* spese ricorrenti: lista desktop separata e cards mobile dedicate */
@@ -1828,7 +1945,7 @@ button {
     }
 
     .list-heading {
-        flex-direction: column;
+        /*flex-direction: column;*/
     }
 }
 

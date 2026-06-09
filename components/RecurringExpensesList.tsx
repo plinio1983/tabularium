@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
+import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersDrawer';
 import { euro } from '@/lib/money';
 
 const cadenceLabels: Record<string, string> = { MONTHLY:'Ogni mese', EVERY_2_MONTHS:'Ogni 2 mesi', EVERY_3_MONTHS:'Ogni 3 mesi', EVERY_6_MONTHS:'Ogni 6 mesi', YEARLY:'Annuale', EVERY_2_YEARS:'Ogni 2 anni' };
@@ -17,12 +18,27 @@ function dueLabel(item: any) {
   return '-';
 }
 
-export default function RecurringExpensesList({ items }: { items: any[] }) {
+type FilterOption = { id: number; name: string };
+
+export default function RecurringExpensesList({
+  items,
+  filters,
+  categories,
+  banks,
+}: {
+  items: any[];
+  filters?: Record<string, string | string[] | undefined>;
+  categories: FilterOption[];
+  banks: FilterOption[];
+}) {
   const itemCount = items.length;
   return <div className="card recurring-expenses-card">
-    <div className="list-heading">
+    <div className="list-heading recurring-list-heading">
       <div>
         <h2>Lista spese ricorrenti</h2>
+      </div>
+      <div>
+        <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} />
       </div>
     </div>
     <BulkSelectionController />
