@@ -264,7 +264,7 @@ function matchesIsoDate(value: Date | null | undefined, from: string, to: string
 
 function fiscalBadge(value: boolean) {
   const item = value ? fiscalStyles.yes : fiscalStyles.no;
-  const label = value ? 'Fisc.' : 'N.F.';
+  const label = value ? 'DF' : 'NF';
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
@@ -634,11 +634,11 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       ` }} />
 
       <div className="search-totals-row" aria-label="Totali risultati filtrati">
-        <div><span>Risultati</span><strong>{filteredIncomes.length}</strong></div>
+        {/*<div><span>Risultati</span><strong>{filteredIncomes.length}</strong></div>*/}
         <div><span>Entrate filtrate</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></div>
         <div><span>Fiscale</span><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></div>
         <div><span>Non fiscale</span><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></div>
-        <div><span>IVA</span><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></div>
+        <div><span>Tot. IVA</span><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></div>
       </div>
 
       <form id="incomeBulkForm" action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
@@ -672,27 +672,44 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             </div>
             <Link className="expense-mobile-link income-mobile-link" href={detailHref}>
               <div className="expense-mobile-main">
+                <div className="expense-mobile-header">
+                  <div className="left-side">
+                    <span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span>
+                    <span className="text-pre">{formatPeriod(income.billingMonth, income.billingYear)}</span>
+                  </div>
+                  <div className="right-side">
+                    {fiscalBadge(income.isFiscal)}
+                    <span className="text-pre">{mobileDateLabel(income.creditDate)}</span>
+                  </div>
+                </div>
                 <div className="expense-mobile-title-row">
-                  <strong>{income.salesChannel}</strong>
-                  <span className={moneyTone(amount)}>{euro(income.amount.toString())}</span>
+                  <div className="left-side">
+                    <strong>{income.salesChannel}</strong>
+                    <span className={badgeClass(vatStyle.className)}>IVA {Number(income.vatRate.toString())}%</span>
+                  </div>
+                  <div className="right-side">
+                    <span>{paymentStyle?.icon ?? '•'}</span>
+                    <span className={moneyTone(amount)}>{euro(income.amount.toString())}</span>
+                  </div>
                 </div>
-                <div className="expense-mobile-subtitle">{income.description ? `${income.description} · ` : ''}{income.saleCategory} · {income.paymentMethod}</div>
-                <div className="expense-mobile-meta">
-                  <span>{mobileDateLabel(income.creditDate)}</span>
-                  <span>{formatPeriod(income.billingMonth, income.billingYear)}</span>
-                  <span>{income.creditChannel}</span>
-                </div>
-                <div className="expense-mobile-badges">
-                  <span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span>
-                  <span title={income.saleCategory} className={`${badgeClass(catStyle?.className)} income-badge-compact`}>{catStyle?.icon ?? '•'} {income.saleCategory}</span>
-                  {fiscalBadge(income.isFiscal)}
+                <div className="expense-mobile-title-row">
+                  <div className="expense-mobile-subtitle">{income.description ? `${income.description}` : ''}</div>
                   <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
                 </div>
-                <div className="expense-mobile-footer">
-                  <span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span>
-                  <span className={badgeClass(creditStyle?.className)}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span>
-                  <span className={badgeClass(vatStyle.className)}>IVA {Number(income.vatRate.toString())}%</span>
-                </div>
+
+                {/*<div className="expense-mobile-meta">*/}
+                {/*  <span>{income.paymentMethod}</span>*/}
+                {/*  <span>{formatPeriod(income.billingMonth, income.billingYear)}</span>*/}
+                {/*  <span>{income.creditChannel}</span>*/}
+                {/*</div>*/}
+                {/*<div className="expense-mobile-badges">*/}
+                  {/*<span title={income.salesChannel} className={`${badgeClass(salesStyle?.className)} income-badge-compact`}>{salesStyle?.icon ?? '•'} {income.salesChannel}</span>*/}
+                {/*</div>*/}
+                {/*<div className="expense-mobile-footer">*/}
+                {/*  <span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span>*/}
+                {/*  <span className={badgeClass(creditStyle?.className)}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span>*/}
+                  {/*<span className={badgeClass(vatStyle.className)}>IVA {Number(income.vatRate.toString())}%</span>*/}
+                {/*</div>*/}
               </div>
             </Link>
           </div>;

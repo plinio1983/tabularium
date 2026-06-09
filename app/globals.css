@@ -1419,13 +1419,19 @@ button {
 }
 
 .expense-detail-hero-side-wrap .text-pre {
+    padding-right: 12px;
+}
+
+.expense-detail-hero-side-wrap .text-pre,
+.expense-mobile-header .text-pre {
     text-align: right;
     color: var(--muted);
     font-size: 12px;
     font-weight: 900;
-    /*text-transform: uppercase;*/
-    /*letter-spacing: .06em;*/
-    padding-right: 12px;
+}
+
+.expense-mobile-header .left-side .text-pre {
+    font-weight: 400;
 }
 
 .expense-detail-hero-main .badge {
@@ -7300,6 +7306,19 @@ button.bulk-direct-danger {
     display: none;
 }
 
+.expense-mobile-header>.left-side {
+    flex-grow: 1;
+}
+
+.expense-mobile-header>.right-side {
+
+}
+
+.expense-mobile-header {
+    display: flex;
+    font-size: 12px;
+}
+
 .expense-mobile-item {
     display: grid;
     grid-template-columns: 34px minmax(0, 1fr);
@@ -7456,6 +7475,17 @@ button.bulk-direct-danger {
 
 .income-mobile-item .expense-mobile-title-row strong {
     color: #0f766e;
+    padding-left: 4px;
+}
+
+.income-mobile-item .expense-mobile-title-row .left-side {
+    display: flex;
+    gap: 4px;
+}
+
+.income-mobile-item .expense-mobile-title-row .right-side {
+    display: flex;
+    gap: 6px;
 }
 
 .income-mobile-link:active {

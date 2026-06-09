@@ -15,9 +15,13 @@ import {
 } from '@/lib/income-ui';
 
 function dateLabel(value?: Date | null) {
-  return value
-    ? new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(value)
-    : '-';
+  if (!value) return '-';
+  const formatted = new Intl.DateTimeFormat('it-IT', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(value);
+  return formatted.replace(/\b([a-zàèéìòù])/, match => match.toUpperCase());
 }
 
 function vatAmountFromGross(amount: number, vatRate: number) {
@@ -26,7 +30,8 @@ function vatAmountFromGross(amount: number, vatRate: number) {
 }
 
 function formatPeriod(month: number, year: number) {
-  return `${String(month).padStart(2, '0')}/${year}`;
+  const monthName = new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(new Date(year, month - 1, 1));
+  return `${monthName.charAt(0).toUpperCase()}${monthName.slice(1)} ${year}`;
 }
 
 function booleanBadge(value: boolean) {
