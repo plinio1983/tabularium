@@ -312,11 +312,6 @@ button {
         min-width: 0;
     }
 
-    .income-form .income-amount-row {
-        /*display: grid;*/
-        /*grid-template-columns: minmax(0, 1fr);*/
-    }
-
     .income-form .net-amount-inline {
         width: 100%;
         min-width: 0;
@@ -1369,6 +1364,21 @@ button {
     }
 }
 
+.income-row-warning {
+    background: linear-gradient(90deg, rgba(255,243,205,.75) 0%, rgba(255,248,225,.92) 100%);
+}
+
+.compact-incomes-table tbody tr.income-row-warning td {
+    background: transparent;
+}
+
+.income-mobile-item.income-row-warning {
+    /*border-color: #f59e0b;*/
+    /*box-shadow: inset 4px 0 0 #f59e0b;*/
+    background: #f5d49d;
+    background: linear-gradient(90deg, rgb(255 243 188) 0%, rgb(255, 255, 255) 100%);
+}
+
 /* v074: dettaglio spesa con gerarchia reale e pagamenti responsive */
 .expense-detail-hero {
     display: grid;
@@ -1445,11 +1455,6 @@ button {
 }
 
 .expense-detail-supplier {
-    /*display: grid;*/
-    /*gap: 3px;*/
-    /*padding: 13px 15px;*/
-    /*border: 1px solid #dbe3ff;*/
-    /*border-radius: 16px;*/
     background: rgba(255, 255, 255, .78);
     width: fit-content;
     max-width: 100%;
@@ -1493,7 +1498,6 @@ button {
 .recurring-detail-hero .expense-detail-hero-side,
 .recurring-detail-hero .expense-detail-hero-side .expense-detail-side-label,
 .recurring-detail-hero .expense-detail-hero-side .expense-detail-side-label .badge {
-    /*color: var(--text) !important;*/
     color: initial;
 }
 

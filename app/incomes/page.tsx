@@ -666,7 +666,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           const amount = Number(income.amount.toString());
           const detailHref = `/incomes/${income.id}?returnTo=${returnTo}`;
 
-          return <div className="income-mobile-item expense-mobile-item" key={`mobile-income-${income.id}`}>
+          return <div className={income.invoiceStatus === 'NON_INVIATA' ? 'income-mobile-item expense-mobile-item income-row-warning' : 'income-mobile-item expense-mobile-item'} key={`mobile-income-${income.id}`}>
             <div className="expense-mobile-select">
               <input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} />
             </div>
@@ -755,7 +755,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           const creditStyle = creditChannelStyles[income.creditChannel];
           const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
           const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
-          return <tr key={income.id}>
+          return <tr className={income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : undefined} key={income.id}>
             <td className="cell-center"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
             <td className="cell-center"><Link title="Dettaglio" aria-label="Dettaglio" className="table-action secondary icon-action" href={`/incomes/${income.id}?returnTo=${returnTo}`}>👁</Link></td>
             <td className="cell-left nowrap-cell">{formatPeriod(income.billingMonth, income.billingYear)}</td>

@@ -69,9 +69,9 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
           <div className="badge color-badge income-detail-badge">I</div>
           <div className="expense-detail-eyebrow">Dettaglio incasso #{income.id}</div>
         </div>
-        <h2>{income.description || `${income.salesChannel}`}</h2>
+        <h2>{`${income.salesChannel}`}</h2>
         <div className="expense-detail-supplier">
-          <span>{income.description ? `${income.salesChannel} · ${income.saleCategory}` : 'Incasso senza descrizione'}</span>
+          <span>{income.description ? `Incasso ${income.salesChannel} · ${income.saleCategory}` : 'Incasso senza descrizione'}</span>
         </div>
         <div className="expense-detail-hero-meta">
           {/*<span>{salesStyle?.icon ?? '•'} {income.salesChannel}</span>*/}
