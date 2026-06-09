@@ -444,6 +444,60 @@ button {
     }
 }
 
+.recurring-expenses-card .recurring-bulk-actions-bar {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.recurring-bulk-actions-bar .bulk-direct-actions {
+    display: flex !important;
+    flex-grow: 1 !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+}
+
+.recurring-expense-row-with-select {
+    grid-template-columns: 34px repeat(7, minmax(0, 1fr));
+    align-items: center;
+}
+
+.recurring-expense-select,
+.recurring-mobile-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recurring-expense-select input,
+.recurring-mobile-select input {
+    width: 18px;
+    height: 18px;
+}
+
+.recurring-mobile-item-shell:hover,
+.recurring-mobile-item-shell:focus-visible .recurring-mobile-item-shell {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(20, 30, 60, .10);
+    border-color: #b8c7ff;
+}
+
+.recurring-mobile-item-shell {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 6px;
+    padding: 12px 12px 12px 0;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(20, 30, 60, .05);
+    align-items: center;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+.recurring-mobile-item-shell .recurring-mobile-item-link {
+    min-width: 0;
+}
+
 /* spese ricorrenti: lista desktop separata e cards mobile dedicate */
 .recurring-expenses-mobile-list {
     display: none;
@@ -456,11 +510,11 @@ button {
 .recurring-mobile-item {
     display: grid;
     gap: 9px;
-    padding: 12px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 8px 22px rgba(20, 30, 60, .05);
+    /*padding: 12px;*/
+    /*border: 1px solid var(--line);*/
+    /*border-radius: 16px;*/
+    /*background: #fff;*/
+    /*box-shadow: 0 8px 22px rgba(20, 30, 60, .05);*/
 }
 
 .recurring-mobile-item-disabled {
@@ -5602,16 +5656,16 @@ button.bulk-direct-link {
     text-decoration: none;
 }
 
-.recurring-mobile-item-link .recurring-mobile-item {
-    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-}
+/*.recurring-mobile-item-link .recurring-mobile-item {*/
+/*    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;*/
+/*}*/
 
-.recurring-mobile-item-link:hover .recurring-mobile-item,
-.recurring-mobile-item-link:focus-visible .recurring-mobile-item {
-    transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(20, 30, 60, .10);
-    border-color: #b8c7ff;
-}
+/*.recurring-mobile-item-link:hover .recurring-mobile-item,*/
+/*.recurring-mobile-item-link:focus-visible .recurring-mobile-item {*/
+/*    transform: translateY(-1px);*/
+/*    box-shadow: 0 12px 28px rgba(20, 30, 60, .10);*/
+/*    border-color: #b8c7ff;*/
+/*}*/
 
 .recurring-detail-hero .expense-detail-hero-side-paid::before {
     background: linear-gradient(135deg, #1f7a3f 0%, #14532d 100%);

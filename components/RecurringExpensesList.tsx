@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BulkSelectionController from '@/components/BulkSelectionController';
 import { euro } from '@/lib/money';
 
 const cadenceLabels: Record<string, string> = { MONTHLY:'Ogni mese', EVERY_2_MONTHS:'Ogni 2 mesi', EVERY_3_MONTHS:'Ogni 3 mesi', EVERY_6_MONTHS:'Ogni 6 mesi', YEARLY:'Annuale', EVERY_2_YEARS:'Ogni 2 anni' };
@@ -17,15 +18,24 @@ function dueLabel(item: any) {
 }
 
 export default function RecurringExpensesList({ items }: { items: any[] }) {
+  const itemCount = items.length;
   return <div className="card recurring-expenses-card">
     <div className="list-heading">
       <div>
         <h2>Lista spese ricorrenti</h2>
-        <p className="muted">Risultati mostrati: </p>
       </div>
     </div>
+    <BulkSelectionController />
+    <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
+      <p className="muted">Risultati mostrati: {itemCount}</p>
+      <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-return-to="%2Frecurring-expenses">
+        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
+        <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
+      </div>
+    </form>
     {items.length ? <>
-      <div className="recurring-expenses-list recurring-expenses-desktop-list">{items.map(item => <div className="recurring-expense-row" key={item.id}>
+      <div className="recurring-expenses-list recurring-expenses-desktop-list">{items.map(item => <div className="recurring-expense-row recurring-expense-row-with-select" key={item.id}>
+        <div className="recurring-expense-select"><input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} /></div>
         <div><span className={item.isActive ? 'status-dot is-active' : 'status-dot'} /><strong>{item.description}</strong><small>{item.supplier?.businessName || item.merchant} · {item.category?.name ?? 'Senza categoria'}</small></div>
         <div><span>Cadenza</span><strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong></div>
         <div><span>Scadenza</span><strong>{dueLabel(item)}</strong></div>
@@ -41,7 +51,11 @@ export default function RecurringExpensesList({ items }: { items: any[] }) {
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
           const supplier = item.supplier?.businessName || item.merchant || 'Fornitore non impostato';
           const payment = item.paymentChannel ? `${item.paymentChannel}${item.bank ? ` · ${item.bank.name}` : ''}` : 'Pagamento manuale';
-          return <Link className="recurring-mobile-item-link" href={`/recurring-expenses/${item.id}`} key={`mobile-recurring-${item.id}`}>
+          return <div className="recurring-mobile-item-shell" key={`mobile-recurring-${item.id}`}>
+            <div className="recurring-mobile-select">
+              <input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} />
+            </div>
+            <Link className="recurring-mobile-item-link" href={`/recurring-expenses/${item.id}`}>
             <article className={item.isActive ? "recurring-mobile-item recurring-mobile-item-active" : "recurring-mobile-item recurring-mobile-item-disabled"}>
             <div className="recurring-mobile-top">
               <div className="recurring-mobile-main-title">
@@ -69,7 +83,8 @@ export default function RecurringExpensesList({ items }: { items: any[] }) {
               <div><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
             </div>
           </article>
-          </Link>;
+          </Link>
+          </div>;
         })}
       </div>
     </> : <p className="muted">Nessuna spesa ricorrente configurata.</p>}

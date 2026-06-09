@@ -33,8 +33,10 @@ function syncDirectActionGroup(group: HTMLElement) {
   if (edit) {
     edit.classList.toggle("is-disabled", !singleEnabled);
     edit.setAttribute("aria-disabled", singleEnabled ? "false" : "true");
+    const editSuffix = group.getAttribute("data-edit-suffix") ?? "/edit";
+    const editReturnSeparator = editSuffix.includes("?") ? "&" : "?";
     edit.href = singleEnabled
-      ? `${group.getAttribute("data-edit-base") ?? ""}${firstId}/edit?returnTo=${returnTo}`
+      ? `${group.getAttribute("data-edit-base") ?? ""}${firstId}${editSuffix}${editReturnSeparator}returnTo=${returnTo}`
       : "#";
   }
 
