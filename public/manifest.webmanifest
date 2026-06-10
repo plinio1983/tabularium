@@ -1,0 +1,23 @@
+{
+  "name": "Tabularium",
+  "short_name": "Tabularium",
+  "description": "Gestionale interno per incassi, spese, fornitori e report mensili",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b2f66",
+  "theme_color": "#0b2f66",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
