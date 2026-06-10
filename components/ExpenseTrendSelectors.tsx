@@ -83,7 +83,6 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, u
         {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
     </label> : <label>
-      <span>Periodo andamento fiscale</span>
       <select value={andamentoFiscaleValue} onChange={(event) => goWithQuick("fiscal", event.currentTarget.value)}>
         {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
