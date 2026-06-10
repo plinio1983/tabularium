@@ -1,12 +1,25 @@
 import { prisma } from '@/lib/prisma';
 
 const LOOKAHEAD_DAYS = 30;
+const AUTO_PAYMENT_LOOKBACK_DAYS = 30;
 
 export type RecurringExpenseJobResult = {
   checked: number;
   created: number;
   skipped: number;
   errors: Array<{ recurringExpenseId: number; message: string }>;
+};
+
+export type AutomaticRecurringPaymentJobResult = {
+  checked: number;
+  created: number;
+  skipped: number;
+  errors: Array<{ expenseId: number; message: string }>;
+};
+
+export type RecurringExpenseDailyJobResult = {
+  generate: RecurringExpenseJobResult;
+  payments: AutomaticRecurringPaymentJobResult;
 };
 
 function startOfDay(date: Date) {
@@ -177,4 +190,95 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
   }
 
   return result;
+}
+
+export async function settleAutomaticRecurringPayments(todayInput = new Date()): Promise<AutomaticRecurringPaymentJobResult> {
+  const result: AutomaticRecurringPaymentJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
+  const today = startOfDay(todayInput);
+  const fromDate = addDays(today, -AUTO_PAYMENT_LOOKBACK_DAYS);
+
+  const expenses = await prisma.expense.findMany({
+    where: {
+      isAutomaticPayment: true,
+      paymentStatus: { not: 'COMPLETATO' },
+      dueDate: {
+        gte: fromDate,
+        lte: today
+      }
+    },
+    include: {
+      payments: true,
+      recurringExpense: true
+    }
+  });
+
+  for (const expense of expenses as any[]) {
+    result.checked += 1;
+
+    try {
+      if (!expense.dueDate || !expense.recurringExpense) {
+        result.skipped += 1;
+        continue;
+      }
+
+      const amount = Number(expense.amount.toString());
+      const paid = expense.payments.reduce((sum: number, payment: any) => sum + Number(payment.amount.toString()), 0);
+      const residual = Math.max(0, amount - paid);
+
+      if (residual <= 0) {
+        await prisma.expense.update({
+          where: { id: expense.id },
+          data: {
+            paymentStatus: 'COMPLETATO',
+            paidAmount: amount,
+            isComplete: true,
+            paymentDate: expense.dueDate
+          }
+        });
+        result.skipped += 1;
+        continue;
+      }
+
+      await prisma.$transaction([
+        prisma.expensePayment.create({
+          data: {
+            expenseId: expense.id,
+            paymentDate: expense.dueDate,
+            channel: expense.recurringExpense.paymentChannel,
+            bankId: expense.recurringExpense.bankId || null,
+            amount: residual,
+            paidBy: 'HERBAL_MARKET'
+          }
+        }),
+        prisma.expense.update({
+          where: { id: expense.id },
+          data: {
+            paymentDate: expense.dueDate,
+            bankId: expense.recurringExpense.bankId || null,
+            channel: expense.recurringExpense.paymentChannel,
+            paidAmount: amount,
+            paymentStatus: 'COMPLETATO',
+            isComplete: true,
+            paidByCurrentAccount: true,
+            paidBy: 'HERBAL_MARKET'
+          }
+        })
+      ]);
+
+      result.created += 1;
+    } catch (error) {
+      result.errors.push({
+        expenseId: expense.id,
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+
+  return result;
+}
+
+export async function runRecurringExpensesDailyJob(todayInput = new Date()): Promise<RecurringExpenseDailyJobResult> {
+  const generate = await generateRecurringExpenses(todayInput);
+  const payments = await settleAutomaticRecurringPayments(todayInput);
+  return { generate, payments };
 }

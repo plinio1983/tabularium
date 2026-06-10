@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { generateRecurringExpenses } from '@/lib/recurring-expenses-job';
+import { generateRecurringExpenses, runRecurringExpensesDailyJob, settleAutomaticRecurringPayments } from '@/lib/recurring-expenses-job';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,8 +19,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const result = await generateRecurringExpenses();
-  return NextResponse.json(result);
+  const task = new URL(request.url).searchParams.get('task') ?? 'all';
+  const result = task === 'generate'
+    ? await generateRecurringExpenses()
+    : task === 'payments'
+      ? await settleAutomaticRecurringPayments()
+      : await runRecurringExpensesDailyJob();
+
+  return NextResponse.json({ task, result });
 }
 
 export async function POST(request: Request) {
