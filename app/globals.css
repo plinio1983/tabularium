@@ -285,6 +285,30 @@ button {
     justify-content: flex-end;
 }
 
+.supplier-styled-form {
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    gap: 14px;
+}
+
+.supplier-styled-form.card {
+    padding: 0;
+}
+
+.supplier-form-section-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.supplier-form-actions {
+    padding-top: 2px;
+}
+
+.modal-card .supplier-styled-form {
+    margin-top: 2px;
+}
+
 @media (max-width: 900px) {
     .income-form .income-form-section-grid,
     .income-form .income-amount-vat-row {

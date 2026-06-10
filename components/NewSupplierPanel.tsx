@@ -24,15 +24,33 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
           </div>
           <button className="secondary-button modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
         </div>
-        <form className="form supplier-form inline-create-form" action={action} method="post">
-          <label>Ragione Sociale<input name="businessName" required /></label>
-          <label>Email<input name="email" type="email" /></label>
-          <label>Telefono<input name="phone" /></label>
-          <label>PEC<input name="pec" type="email" /></label>
-          <label>Codice SDI/Codice Fiscale<input name="taxCodeSdi" /></label>
-          <label>Alias<input name="alias" placeholder="Nome breve o commerciale" /></label>
-          <label className="full">Note interne<textarea name="internalNotes" rows={3} /></label>
-          <div className="full actions-row right-actions form-actions-row"><button className="secondary-button button-standard" type="button" onClick={() => setIsOpen(false)}>✕ Annulla</button><button className="button-standard primary-action" type="submit">✓ Salva fornitore</button></div>
+        <form className="card form income-form expense-form supplier-form supplier-styled-form inline-create-form" action={action} method="post">
+          <details className="form-section full income-form-section supplier-form-section" open>
+            <summary>
+              <span>Anagrafica</span>
+              <small>Dati principali del fornitore</small>
+            </summary>
+            <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
+              <label className="span-2">Ragione Sociale<input name="businessName" required /></label>
+              <label>Alias<input name="alias" placeholder="Nome breve o commerciale" /></label>
+              <label>Email<input name="email" type="email" /></label>
+              <label>Telefono<input name="phone" /></label>
+              <label>PEC<input name="pec" type="email" /></label>
+              <label>Codice SDI/Codice Fiscale<input name="taxCodeSdi" /></label>
+            </div>
+          </details>
+
+          <details className="form-section full income-form-section supplier-form-section" open>
+            <summary>
+              <span>Note</span>
+              <small>Annotazioni interne e informazioni operative</small>
+            </summary>
+            <div className="form-section-stack income-form-section-stack">
+              <label>Note interne<textarea name="internalNotes" rows={4} /></label>
+            </div>
+          </details>
+
+          <div className="full actions-row right-actions form-actions-row supplier-form-actions"><button className="secondary-button button-standard" type="button" onClick={() => setIsOpen(false)}>✕ Annulla</button><button className="button-standard primary-action" type="submit">✓ Salva fornitore</button></div>
         </form>
       </div>
     </div>}
