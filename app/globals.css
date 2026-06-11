@@ -8165,6 +8165,10 @@ button.bulk-direct-danger {
         display: none;
     }
 
+    .expenses-list-card .dashboard-statement-panel {
+        padding: 14px 0px;
+    }
+
     .expense-mobile-list {
         display: grid;
     }

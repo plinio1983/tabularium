@@ -1014,7 +1014,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           </tr>;
         })}
       </tbody></table></div>
-
+    </div>
+    <div className="card expenses-list-card">
       <ExpenseCategoryChart data={expensesByCategory} />
     </div>
   </div>;

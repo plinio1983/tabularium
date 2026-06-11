@@ -830,7 +830,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         })}
         {!filteredIncomes.length && <tr><td colSpan={14}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
       </tbody></table></div>
-
+    </div>
+    <div className="card expenses-list-card">
       <div className="charts-grid"><IncomeBreakdownChart title="Grafico entrate per canale di vendita" description="Distribuzione degli incassi per canale di vendita sui risultati filtrati." data={incomesBySalesChannel} /><IncomeBreakdownChart title="Grafico entrate fiscale Si/No" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} /></div>
     </div>
   </div>;
