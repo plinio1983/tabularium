@@ -32,19 +32,36 @@ const invoiceStatusOptions = [
   ["RICEVUTA", "Emessa"],
 ];
 
+const monthQuickOptions = [
+  ["month_01", "Gennaio"],
+  ["month_02", "Febbraio"],
+  ["month_03", "Marzo"],
+  ["month_04", "Aprile"],
+  ["month_05", "Maggio"],
+  ["month_06", "Giugno"],
+  ["month_07", "Luglio"],
+  ["month_08", "Agosto"],
+  ["month_09", "Settembre"],
+  ["month_10", "Ottobre"],
+  ["month_11", "Novembre"],
+  ["month_12", "Dicembre"],
+];
+
+const quarterQuickOptions = [
+  ["quarter_1", "T.1 [ Gen - Mar ]"],
+  ["quarter_2", "T.2 [ Apr - Giu ]"],
+  ["quarter_3", "T.3 [ Lug - Set ]"],
+  ["quarter_4", "T.4 [ Ott - Dic ]"],
+];
+
 const quickDateOptions = [
-  ["this_month", "Questo Mese"],
-  ["previous_month", "Mese precedente"],
-  ["two_months_ago", "Due mesi fa"],
-  ["current_quarter", "Trimestre in corso"],
-  ["last_quarter", "Ultimo Trimestre"],
+  ...monthQuickOptions,
+  ...quarterQuickOptions,
 ];
 
 const quickBillingPeriodOptions = [
-  ["this_month", "Questo Mese"],
-  ["previous_month", "Mese precedente"],
-  ["current_quarter", "Trimestre in corso"],
-  ["previous_quarter", "Trimestre precedente"],
+  ...monthQuickOptions,
+  ...quarterQuickOptions,
 ];
 
 function inputDefault(filters: Record<string, string | string[] | undefined>, key: string) {

@@ -8,21 +8,43 @@ type Props = {
   useFiscalPeriodFilter: boolean;
 };
 
+const monthQuickOptions = [
+  ["month_01", "Gennaio"],
+  ["month_02", "Febbraio"],
+  ["month_03", "Marzo"],
+  ["month_04", "Aprile"],
+  ["month_05", "Maggio"],
+  ["month_06", "Giugno"],
+  ["month_07", "Luglio"],
+  ["month_08", "Agosto"],
+  ["month_09", "Settembre"],
+  ["month_10", "Ottobre"],
+  ["month_11", "Novembre"],
+  ["month_12", "Dicembre"],
+];
+
+const quarterQuickOptions = [
+  ["quarter_1", "T.1 [ Gen - Mar ]"],
+  ["quarter_2", "T.2 [ Apr - Giu ]"],
+  ["quarter_3", "T.3 [ Lug - Set ]"],
+  ["quarter_4", "T.4 [ Ott - Dic ]"],
+];
+
 const quickDateOptions = [
-  ["this_month", "Questo Mese"],
-  ["previous_month", "Mese precedente"],
-  ["two_months_ago", "Due mesi fa"],
-  ["current_quarter", "Trimestre in corso"],
-  ["last_quarter", "Ultimo Trimestre"],
+  ...monthQuickOptions,
+  ...quarterQuickOptions,
   ["custom", "Data personalizzata"],
 ];
 
 const quickBillingPeriodOptions = [
-  ["this_month", "Questo Mese"],
-  ["previous_month", "Mese precedente"],
-  ["current_quarter", "Trimestre in corso"],
-  ["previous_quarter", "Trimestre precedente"],
+  ...monthQuickOptions,
+  ...quarterQuickOptions,
+  ["custom", "Periodo personalizzato"],
 ];
+
+function currentMonthQuickValue() {
+  return `month_${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+}
 
 function openFiltersDrawer() {
   const trigger = document.querySelector<HTMLButtonElement>(".recurring-filter-trigger");
@@ -40,7 +62,7 @@ function goWithQuick(type: "date" | "fiscal", value: string) {
     params.delete("period");
     params.delete("orderDateFrom");
     params.delete("orderDateTo");
-    params.set("dateQuick", value || "this_month");
+    params.set("dateQuick", value || currentMonthQuickValue());
   } else {
     params.delete("orderDateFrom");
     params.delete("orderDateTo");
@@ -48,7 +70,7 @@ function goWithQuick(type: "date" | "fiscal", value: string) {
     params.delete("billingPeriodFrom");
     params.delete("billingPeriodTo");
     params.delete("period");
-    params.set("billingPeriodQuick", value || "this_month");
+    params.set("billingPeriodQuick", value || currentMonthQuickValue());
   }
 
   const query = params.toString();
@@ -57,12 +79,12 @@ function goWithQuick(type: "date" | "fiscal", value: string) {
 
 export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, useFiscalPeriodFilter }: Props) {
   const [mode, setMode] = useState<"date" | "fiscal">(useFiscalPeriodFilter ? "fiscal" : "date");
-  const andamentoComplessivoValue = !useFiscalPeriodFilter ? (dateQuick || "this_month") : "this_month";
-  const andamentoFiscaleValue = useFiscalPeriodFilter ? (billingPeriodQuick || "this_month") : "this_month";
+  const andamentoComplessivoValue = !useFiscalPeriodFilter ? (dateQuick || currentMonthQuickValue()) : currentMonthQuickValue();
+  const andamentoFiscaleValue = useFiscalPeriodFilter ? (billingPeriodQuick || currentMonthQuickValue()) : currentMonthQuickValue();
 
   function changeMode(nextMode: "date" | "fiscal") {
     setMode(nextMode);
-    goWithQuick(nextMode, "this_month");
+    goWithQuick(nextMode, currentMonthQuickValue());
   }
 
   return <div className="expense-trend-selectors expense-trend-selectors-switch" aria-label="Selettori andamento spese">
@@ -95,7 +117,13 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, u
         {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
     </label> : <label>
-      <select value={andamentoFiscaleValue} onChange={(event) => goWithQuick("fiscal", event.currentTarget.value)}>
+      <select value={andamentoFiscaleValue} onChange={(event) => {
+        if (event.currentTarget.value === "custom") {
+          openFiltersDrawer();
+          return;
+        }
+        goWithQuick("fiscal", event.currentTarget.value);
+      }}>
         {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
     </label>}

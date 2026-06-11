@@ -284,6 +284,11 @@ function currentMonthStart() {
   return toDateInputValue(new Date(now.getFullYear(), now.getMonth(), 1));
 }
 
+function currentMonthQuickValue() {
+  const now = new Date();
+  return `month_${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
 function fiscalQuarterRange(year: number, quarterIndex: number) {
   const startMonth = quarterIndex * 3;
   return {
@@ -297,6 +302,20 @@ function getQuickDateRange(value: string) {
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
+  const monthMatch = String(value).match(/^month_(\d{2})$/);
+  const quarterMatch = String(value).match(/^quarter_(\d)$/);
+
+  if (monthMatch) {
+    const selectedMonth = Number(monthMatch[1]) - 1;
+    return {
+      from: toDateInputValue(new Date(year, selectedMonth, 1)),
+      to: toDateInputValue(new Date(year, selectedMonth + 1, 0))
+    };
+  }
+
+  if (quarterMatch) {
+    return fiscalQuarterRange(year, Number(quarterMatch[1]) - 1);
+  }
 
   if (value === 'previous_month') {
     return {
@@ -329,12 +348,31 @@ function getQuickDateRange(value: string) {
   };
 }
 
+const monthQuickOptions = [
+  ['month_01', 'Gennaio'],
+  ['month_02', 'Febbraio'],
+  ['month_03', 'Marzo'],
+  ['month_04', 'Aprile'],
+  ['month_05', 'Maggio'],
+  ['month_06', 'Giugno'],
+  ['month_07', 'Luglio'],
+  ['month_08', 'Agosto'],
+  ['month_09', 'Settembre'],
+  ['month_10', 'Ottobre'],
+  ['month_11', 'Novembre'],
+  ['month_12', 'Dicembre']
+];
+
+const quarterQuickOptions = [
+  ["quarter_1", "T.1 [ Gen - Mar ]"],
+  ["quarter_2", "T.2 [ Apr - Giu ]"],
+  ["quarter_3", "T.3 [ Lug - Set ]"],
+  ["quarter_4", "T.4 [ Ott - Dic ]"],
+];
+
 const quickDateOptions = [
-  ['this_month', 'Questo Mese'],
-  ['previous_month', 'Mese precedente'],
-  ['two_months_ago', 'Due mesi fa'],
-  ['current_quarter', 'Trimestre in corso'],
-  ['last_quarter', 'Ultimo Trimestre']
+  ...monthQuickOptions,
+  ...quarterQuickOptions
 ];
 
 
@@ -348,6 +386,18 @@ function getQuickBillingPeriodRange(value: string) {
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
+  const monthMatch = String(value).match(/^month_(\d{2})$/);
+  const quarterMatch = String(value).match(/^quarter_(\d)$/);
+
+  if (monthMatch) {
+    const selectedMonth = Number(monthMatch[1]) - 1;
+    return { from: toMonthInputValue(year, selectedMonth), to: toMonthInputValue(year, selectedMonth) };
+  }
+
+  if (quarterMatch) {
+    const quarter = Number(quarterMatch[1]) - 1;
+    return { from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2) };
+  }
 
   if (value === 'previous_month') {
     return { from: toMonthInputValue(year, month - 1), to: toMonthInputValue(year, month - 1) };
@@ -368,10 +418,8 @@ function getQuickBillingPeriodRange(value: string) {
 }
 
 const quickBillingPeriodOptions = [
-  ['this_month', 'Questo Mese'],
-  ['previous_month', 'Mese precedente'],
-  ['current_quarter', 'Trimestre in corso'],
-  ['previous_quarter', 'Trimestre precedente']
+  ...monthQuickOptions,
+  ...quarterQuickOptions
 ];
 
 function monthInputToKey(value: string) {
@@ -425,7 +473,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const useOrderDateFilter = !useFiscalPeriodFilter;
   const rawDateQuickFilter = useOrderDateFilter ? inputDefault(filters, 'dateQuick') : '';
   const hasCustomOrderDateFilter = useOrderDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo'));
-  const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasOrderDateFilter ? 'this_month' : '')) : '';
+  const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasOrderDateFilter ? currentMonthQuickValue() : '')) : '';
   const dateQuickSelectorValue = hasCustomOrderDateFilter ? 'custom' : quickDateFilter;
   const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter) : null;
   const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom') || (!hasAnyFilter ? currentMonthStart() : '')) : '';
@@ -745,6 +793,16 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
             };
             const currentQuarter = Math.floor(m / 3);
+            const monthMatch = String(value).match(/^month_(\d{2})$/);
+            const quarterMatch = String(value).match(/^quarter_(\d)$/);
+            if (monthMatch) {
+              const selectedMonth = Number(monthMatch[1]) - 1;
+              return { from: fmt(y, selectedMonth), to: fmt(y, selectedMonth) };
+            }
+            if (quarterMatch) {
+              const quarter = Number(quarterMatch[1]) - 1;
+              return { from: fmt(y, quarter * 3), to: fmt(y, quarter * 3 + 2) };
+            }
             if (value === 'previous_month') return { from: fmt(y, m - 1), to: fmt(y, m - 1) };
             if (value === 'current_quarter') return { from: fmt(y, currentQuarter * 3), to: fmt(y, currentQuarter * 3 + 2) };
             if (value === 'previous_quarter') return currentQuarter > 0 ? { from: fmt(y, (currentQuarter - 1) * 3), to: fmt(y, (currentQuarter - 1) * 3 + 2) } : { from: fmt(y - 1, 9), to: fmt(y - 1, 11) };
@@ -777,6 +835,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             };
             const fiscalQuarterRange = (yy, quarter) => ({ from: fmt(new Date(yy, quarter * 3, 1)), to: fmt(new Date(yy, quarter * 3 + 3, 0)) });
             const currentQuarter = Math.floor(m / 3);
+            const monthMatch = String(value).match(/^month_(\d{2})$/);
+            const quarterMatch = String(value).match(/^quarter_(\d)$/);
+            if (monthMatch) {
+              const selectedMonth = Number(monthMatch[1]) - 1;
+              return { from: fmt(new Date(y, selectedMonth, 1)), to: fmt(new Date(y, selectedMonth + 1, 0)) };
+            }
+            if (quarterMatch) return fiscalQuarterRange(y, Number(quarterMatch[1]) - 1);
             if (value === 'previous_month') return { from: fmt(new Date(y, m - 1, 1)), to: fmt(new Date(y, m, 0)) };
             if (value === 'two_months_ago') return { from: fmt(new Date(y, m - 2, 1)), to: fmt(new Date(y, m - 1, 0)) };
             if (value === 'current_quarter') return fiscalQuarterRange(y, currentQuarter);
