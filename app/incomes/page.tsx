@@ -166,6 +166,11 @@ function toDateInputValue(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
+function currentMonthQuickValue() {
+  const now = new Date();
+  return `month_${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
 function fiscalQuarterRange(year: number, quarterIndex: number) {
   const startMonth = quarterIndex * 3;
   return {
@@ -174,12 +179,20 @@ function fiscalQuarterRange(year: number, quarterIndex: number) {
   };
 }
 
-function getQuickDateRange(value: string) {
+function getQuickDateRange(value: string, selectedYear?: string) {
   const now = new Date();
-  const year = now.getFullYear();
+  const parsedYear = Number(selectedYear);
+  const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
+  const monthMatch = String(value).match(/^month_(\d{2})$/);
+  const quarterMatch = String(value).match(/^quarter_(\d)$/);
 
+  if (monthMatch) {
+    const selectedMonth = Number(monthMatch[1]) - 1;
+    return { from: toDateInputValue(new Date(year, selectedMonth, 1)), to: toDateInputValue(new Date(year, selectedMonth + 1, 0)) };
+  }
+  if (quarterMatch) return fiscalQuarterRange(year, Number(quarterMatch[1]) - 1);
   if (value === 'previous_month') return { from: toDateInputValue(new Date(year, month - 1, 1)), to: toDateInputValue(new Date(year, month, 0)) };
   if (value === 'two_months_ago') return { from: toDateInputValue(new Date(year, month - 2, 1)), to: toDateInputValue(new Date(year, month - 1, 0)) };
   if (value === 'current_quarter') return fiscalQuarterRange(year, currentQuarter);
@@ -187,12 +200,31 @@ function getQuickDateRange(value: string) {
   return { from: toDateInputValue(new Date(year, month, 1)), to: toDateInputValue(new Date(year, month + 1, 0)) };
 }
 
+const monthQuickOptions = [
+  ['month_01', 'Gennaio'],
+  ['month_02', 'Febbraio'],
+  ['month_03', 'Marzo'],
+  ['month_04', 'Aprile'],
+  ['month_05', 'Maggio'],
+  ['month_06', 'Giugno'],
+  ['month_07', 'Luglio'],
+  ['month_08', 'Agosto'],
+  ['month_09', 'Settembre'],
+  ['month_10', 'Ottobre'],
+  ['month_11', 'Novembre'],
+  ['month_12', 'Dicembre']
+];
+
+const quarterQuickOptions = [
+  ['quarter_1', 'T.1 [ Gen - Mar ]'],
+  ['quarter_2', 'T.2 [ Apr - Giu ]'],
+  ['quarter_3', 'T.3 [ Lug - Set ]'],
+  ['quarter_4', 'T.4 [ Ott - Dic ]']
+];
+
 const quickDateOptions = [
-  ['this_month', 'Questo Mese'],
-  ['previous_month', 'Mese precedente'],
-  ['two_months_ago', 'Due mesi fa'],
-  ['current_quarter', 'Trimestre in corso'],
-  ['last_quarter', 'Ultimo Trimestre']
+  ...monthQuickOptions,
+  ...quarterQuickOptions
 ];
 
 function toMonthInputValue(year: number, monthIndexZeroBased: number) {
@@ -200,11 +232,23 @@ function toMonthInputValue(year: number, monthIndexZeroBased: number) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function getQuickBillingPeriodRange(value: string) {
+function getQuickBillingPeriodRange(value: string, selectedYear?: string) {
   const now = new Date();
-  const year = now.getFullYear();
+  const parsedYear = Number(selectedYear);
+  const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
+  const monthMatch = String(value).match(/^month_(\d{2})$/);
+  const quarterMatch = String(value).match(/^quarter_(\d)$/);
+
+  if (monthMatch) {
+    const selectedMonth = Number(monthMatch[1]) - 1;
+    return { from: toMonthInputValue(year, selectedMonth), to: toMonthInputValue(year, selectedMonth) };
+  }
+  if (quarterMatch) {
+    const quarter = Number(quarterMatch[1]) - 1;
+    return { from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2) };
+  }
   if (value === 'previous_month') return { from: toMonthInputValue(year, month - 1), to: toMonthInputValue(year, month - 1) };
   if (value === 'current_quarter') return { from: toMonthInputValue(year, currentQuarter * 3), to: toMonthInputValue(year, currentQuarter * 3 + 2) };
   if (value === 'previous_quarter') {
@@ -217,10 +261,8 @@ function getQuickBillingPeriodRange(value: string) {
 }
 
 const quickBillingPeriodOptions = [
-  ['this_month', 'Questo Mese'],
-  ['previous_month', 'Mese precedente'],
-  ['current_quarter', 'Trimestre in corso'],
-  ['previous_quarter', 'Trimestre precedente']
+  ...monthQuickOptions,
+  ...quarterQuickOptions
 ];
 
 
@@ -332,14 +374,19 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const hasAnyFilter = Object.keys(filters).length > 0;
   const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod') || inputDefault(filters, 'billingPeriodQuick'));
   const hasCreditDateFilter = Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo') || inputDefault(filters, 'dateQuick'));
+  const dateYearFilter = inputDefault(filters, 'dateYear');
+  const billingPeriodYearFilter = inputDefault(filters, 'billingPeriodYear');
   const useFiscalPeriodFilter = hasFiscalPeriodFilter;
   const useCreditDateFilter = !useFiscalPeriodFilter;
-  const quickDateFilter = useCreditDateFilter ? (inputDefault(filters, 'dateQuick') || (!hasAnyFilter && !hasCreditDateFilter ? 'this_month' : '')) : '';
-  const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter) : null;
+  const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
+  const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
+  const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasCreditDateFilter ? currentMonthQuickValue() : '')) : '';
+  const dateQuickSelectorValue = hasCustomCreditDateFilter ? 'custom' : quickDateFilter;
+  const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter) : null;
   const creditDateFromDefault = useCreditDateFilter ? (quickDateRange?.from || inputDefault(filters, 'creditDateFrom')) : '';
   const creditDateToDefault = useCreditDateFilter ? (quickDateRange?.to || inputDefault(filters, 'creditDateTo')) : '';
   const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
-  const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter) : null;
+  const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
 
   const [incomes, expensesForVat] = await Promise.all([
     prisma.income.findMany({ orderBy: [{ creditDate: 'desc' }, { id: 'desc' }], take: 500 }),
@@ -464,8 +511,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
 
     <div className="card expenses-list-card">
       <IncomeTrendSelectors
-        dateQuick={quickDateFilter}
+        dateQuick={dateQuickSelectorValue}
         billingPeriodQuick={quickBillingPeriodFilter}
+        dateYear={dateYearFilter}
+        billingPeriodYear={billingPeriodYearFilter}
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
       <p className="totals-period-note">{totalsPeriodLabel}</p>
@@ -521,8 +570,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             if (saved) window.location.replace('/incomes' + saved);
           }
           if (form) form.addEventListener('submit', () => {
-            const billingFields = ['billingPeriodFrom', 'billingPeriodTo', 'billingPeriodQuick'].map(name => form.elements.namedItem(name)).filter(Boolean);
-            const dateFields = ['creditDateFrom', 'creditDateTo', 'dateQuick'].map(name => form.elements.namedItem(name)).filter(Boolean);
+            const billingFields = ['billingPeriodFrom', 'billingPeriodTo', 'billingPeriodQuick', 'billingPeriodYear'].map(name => form.elements.namedItem(name)).filter(Boolean);
+            const dateFields = ['creditDateFrom', 'creditDateTo', 'dateQuick', 'dateYear'].map(name => form.elements.namedItem(name)).filter(Boolean);
             const hasBilling = billingFields.some(field => field.value);
             const hasDate = dateFields.some(field => field.value);
             if (hasBilling) dateFields.forEach(field => { field.value = ''; });
@@ -540,6 +589,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
             const fmt = (year, monthIndex) => { const date = new Date(year, monthIndex, 1); return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0'); };
             const currentQuarter = Math.floor(m / 3);
+            const monthMatch = String(value).match(/^month_(\d{2})$/);
+            const quarterMatch = String(value).match(/^quarter_(\d)$/);
+            if (monthMatch) { const selectedMonth = Number(monthMatch[1]) - 1; return { from: fmt(y, selectedMonth), to: fmt(y, selectedMonth) }; }
+            if (quarterMatch) { const quarter = Number(quarterMatch[1]) - 1; return { from: fmt(y, quarter * 3), to: fmt(y, quarter * 3 + 2) }; }
             if (value === 'previous_month') return { from: fmt(y, m - 1), to: fmt(y, m - 1) };
             if (value === 'current_quarter') return { from: fmt(y, currentQuarter * 3), to: fmt(y, currentQuarter * 3 + 2) };
             if (value === 'previous_quarter') return currentQuarter > 0 ? { from: fmt(y, (currentQuarter - 1) * 3), to: fmt(y, (currentQuarter - 1) * 3 + 2) } : { from: fmt(y - 1, 9), to: fmt(y - 1, 11) };
@@ -623,6 +676,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             const fmt = (date) => date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
             const fiscalQuarterRange = (yy, quarter) => ({ from: fmt(new Date(yy, quarter * 3, 1)), to: fmt(new Date(yy, quarter * 3 + 3, 0)) });
             const currentQuarter = Math.floor(m / 3);
+            const monthMatch = String(value).match(/^month_(\d{2})$/);
+            const quarterMatch = String(value).match(/^quarter_(\d)$/);
+            if (monthMatch) { const selectedMonth = Number(monthMatch[1]) - 1; return { from: fmt(new Date(y, selectedMonth, 1)), to: fmt(new Date(y, selectedMonth + 1, 0)) }; }
+            if (quarterMatch) return fiscalQuarterRange(y, Number(quarterMatch[1]) - 1);
             if (value === 'previous_month') return { from: fmt(new Date(y, m - 1, 1)), to: fmt(new Date(y, m, 0)) };
             if (value === 'two_months_ago') return { from: fmt(new Date(y, m - 2, 1)), to: fmt(new Date(y, m - 1, 0)) };
             if (value === 'current_quarter') return fiscalQuarterRange(y, currentQuarter);

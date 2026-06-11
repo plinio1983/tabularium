@@ -25,19 +25,36 @@ const invoiceStatusOptions = [
   ["not_emitted", "Non emesse"],
 ];
 
+const monthQuickOptions = [
+  ["month_01", "Gennaio"],
+  ["month_02", "Febbraio"],
+  ["month_03", "Marzo"],
+  ["month_04", "Aprile"],
+  ["month_05", "Maggio"],
+  ["month_06", "Giugno"],
+  ["month_07", "Luglio"],
+  ["month_08", "Agosto"],
+  ["month_09", "Settembre"],
+  ["month_10", "Ottobre"],
+  ["month_11", "Novembre"],
+  ["month_12", "Dicembre"],
+];
+
+const quarterQuickOptions = [
+  ["quarter_1", "T.1 [ Gen - Mar ]"],
+  ["quarter_2", "T.2 [ Apr - Giu ]"],
+  ["quarter_3", "T.3 [ Lug - Set ]"],
+  ["quarter_4", "T.4 [ Ott - Dic ]"],
+];
+
 const quickDateOptions = [
-  ["this_month", "Questo Mese"],
-  ["previous_month", "Mese precedente"],
-  ["two_months_ago", "Due mesi fa"],
-  ["current_quarter", "Trimestre in corso"],
-  ["last_quarter", "Ultimo Trimestre"],
+  ...monthQuickOptions,
+  ...quarterQuickOptions,
 ];
 
 const quickBillingPeriodOptions = [
-  ["this_month", "Questo Mese"],
-  ["previous_month", "Mese precedente"],
-  ["current_quarter", "Trimestre in corso"],
-  ["previous_quarter", "Trimestre precedente"],
+  ...monthQuickOptions,
+  ...quarterQuickOptions,
 ];
 
 function inputDefault(filters: Record<string, string | string[] | undefined>, key: string) {
@@ -76,6 +93,33 @@ export default function IncomeFiltersDrawer({
     };
   }, [open]);
 
+  function handleFiltersSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const form = event.currentTarget;
+    const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+
+    const billingPeriodQuick = field("billingPeriodQuick");
+    const billingPeriodFrom = field("billingPeriodFrom");
+    const billingPeriodTo = field("billingPeriodTo");
+    const dateQuick = field("dateQuick");
+    const creditDateFrom = field("creditDateFrom");
+    const creditDateTo = field("creditDateTo");
+
+    const hasBillingPeriod = Boolean(billingPeriodFrom?.value || billingPeriodTo?.value);
+    const hasCreditDate = Boolean(creditDateFrom?.value || creditDateTo?.value);
+
+    if (hasBillingPeriod) {
+      if (billingPeriodQuick) billingPeriodQuick.value = "";
+      if (dateQuick) dateQuick.value = "";
+      if (creditDateFrom) creditDateFrom.value = "";
+      if (creditDateTo) creditDateTo.value = "";
+    } else if (hasCreditDate) {
+      if (dateQuick) dateQuick.value = "";
+      if (billingPeriodQuick) billingPeriodQuick.value = "";
+      if (billingPeriodFrom) billingPeriodFrom.value = "";
+      if (billingPeriodTo) billingPeriodTo.value = "";
+    }
+  }
+
   const drawer = mounted ? createPortal(
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
       <aside className="filter-drawer-panel income-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri incassi" onMouseDown={(event) => event.stopPropagation()}>
@@ -87,7 +131,7 @@ export default function IncomeFiltersDrawer({
           <button className="secondary-button modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="expense-filters recurring-drawer-filters income-drawer-filters" action="/incomes" method="get">
+        <form className="expense-filters recurring-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit}>
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
             <label>Periodo Fatt. da<input id="incomeBillingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} /></label>

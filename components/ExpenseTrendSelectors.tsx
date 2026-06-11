@@ -128,18 +128,18 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
 
     {mode === "date" ? <label>
       <div className="expense-trend-selectors-heading">
-      <select value={andamentoComplessivoValue} onChange={(event) => {
-        if (event.currentTarget.value === "custom") {
-          openFiltersDrawer();
-          return;
-        }
-        goWithQuick("date", event.currentTarget.value, andamentoComplessivoYear);
-      }}>
-        {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-      </select>
-      <select value={andamentoComplessivoYear} onChange={(event) => goWithQuick("date", andamentoComplessivoValue, event.currentTarget.value)}>
-        {years.map(year => <option key={year} value={year}>{year}</option>)}
-      </select>
+        <select value={andamentoComplessivoValue} onChange={(event) => {
+          if (event.currentTarget.value === "custom") {
+            openFiltersDrawer();
+            return;
+          }
+          goWithQuick("date", event.currentTarget.value, andamentoComplessivoYear);
+        }}>
+          {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select>
+        <select value={andamentoComplessivoYear} onChange={(event) => goWithQuick("date", andamentoComplessivoValue, event.currentTarget.value)}>
+          {years.map(year => <option key={year} value={year}>{year}</option>)}
+        </select>
       </div>
     </label> : <label>
       <select value={andamentoFiscaleValue} onChange={(event) => {
