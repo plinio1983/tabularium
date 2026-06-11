@@ -664,6 +664,20 @@ button {
     box-shadow: 0 8px 18px rgba(29, 78, 216, .22);
 }
 
+.expense-trend-selectors .expense-trend-selectors-heading select {
+    max-width: 40%;
+}
+.expense-trend-selectors .expense-trend-selectors-heading select:first-child {
+    max-width: 60%;
+}
+
+.expense-trend-selectors .expense-trend-selectors-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
 @media (max-width: 760px) {
     .expense-trend-selectors {
         grid-template-columns: 1fr;

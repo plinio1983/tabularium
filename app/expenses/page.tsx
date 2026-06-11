@@ -297,9 +297,10 @@ function fiscalQuarterRange(year: number, quarterIndex: number) {
   };
 }
 
-function getQuickDateRange(value: string) {
+function getQuickDateRange(value: string, selectedYear?: string) {
   const now = new Date();
-  const year = now.getFullYear();
+  const parsedYear = Number(selectedYear);
+  const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
   const monthMatch = String(value).match(/^month_(\d{2})$/);
@@ -381,9 +382,10 @@ function toMonthInputValue(year: number, monthIndexZeroBased: number) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function getQuickBillingPeriodRange(value: string) {
+function getQuickBillingPeriodRange(value: string, selectedYear?: string) {
   const now = new Date();
-  const year = now.getFullYear();
+  const parsedYear = Number(selectedYear);
+  const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
   const monthMatch = String(value).match(/^month_(\d{2})$/);
@@ -469,17 +471,19 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const hasAnyFilter = Object.keys(filters).length > 0;
   const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'period') || inputDefault(filters, 'billingPeriodQuick'));
   const hasOrderDateFilter = Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo') || inputDefault(filters, 'dateQuick'));
+  const dateYearFilter = inputDefault(filters, 'dateYear');
+  const billingPeriodYearFilter = inputDefault(filters, 'billingPeriodYear');
   const useFiscalPeriodFilter = hasFiscalPeriodFilter;
   const useOrderDateFilter = !useFiscalPeriodFilter;
   const rawDateQuickFilter = useOrderDateFilter ? inputDefault(filters, 'dateQuick') : '';
   const hasCustomOrderDateFilter = useOrderDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo'));
   const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasOrderDateFilter ? currentMonthQuickValue() : '')) : '';
   const dateQuickSelectorValue = hasCustomOrderDateFilter ? 'custom' : quickDateFilter;
-  const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter) : null;
+  const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter) : null;
   const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom') || (!hasAnyFilter ? currentMonthStart() : '')) : '';
   const orderDateToDefault = useOrderDateFilter ? (quickDateRange?.to || inputDefault(filters, 'orderDateTo')) : '';
   const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
-  const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter) : null;
+  const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
 
   const [expenses, categories, banks, suppliers] = await Promise.all([
     prisma.expense.findMany({
@@ -631,9 +635,10 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       <ExpenseTrendSelectors
         dateQuick={dateQuickSelectorValue}
         billingPeriodQuick={quickBillingPeriodFilter}
+        dateYear={dateYearFilter}
+        billingPeriodYear={billingPeriodYearFilter}
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
-      <p className="totals-period-note">{totalsPeriodLabel}</p>
       <div className="totals-row">
         <div className="total-card total-card-expense"><span>Spese Totali<br />IVA inclusa</span><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong><small>Totale calcolato sui filtri impostati.</small></div>
         <div className="total-card total-card-vat"><span>IVA versata</span><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong><small>IVA calcolata sulle spese filtrate e saldate.</small></div>
