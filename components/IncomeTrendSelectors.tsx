@@ -132,18 +132,20 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
         </select>
       </div>
     </label> : <label>
-      <select value={andamentoFiscaleValue} onChange={(event) => {
-        if (event.currentTarget.value === "custom") {
-          openFiltersDrawer();
-          return;
-        }
-        goWithQuick("fiscal", event.currentTarget.value, andamentoFiscaleYear);
-      }}>
-        {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-      </select>
-      <select value={andamentoFiscaleYear} onChange={(event) => goWithQuick("fiscal", andamentoFiscaleValue, event.currentTarget.value)}>
-        {years.map(year => <option key={year} value={year}>{year}</option>)}
-      </select>
+      <div className="expense-trend-selectors-heading">
+        <select value={andamentoFiscaleValue} onChange={(event) => {
+          if (event.currentTarget.value === "custom") {
+            openFiltersDrawer();
+            return;
+          }
+          goWithQuick("fiscal", event.currentTarget.value, andamentoFiscaleYear);
+        }}>
+          {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select>
+        <select value={andamentoFiscaleYear} onChange={(event) => goWithQuick("fiscal", andamentoFiscaleValue, event.currentTarget.value)}>
+          {years.map(year => <option key={year} value={year}>{year}</option>)}
+        </select>
+      </div>
     </label>}
   </div>;
 }
