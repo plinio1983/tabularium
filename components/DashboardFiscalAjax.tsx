@@ -137,7 +137,7 @@ function MonthlyTrendCard({
     <div className="dashboard-statement-body">
       <table className="dashboard-statement-table">
         <tbody>
-          <StatementMoneyRow label="Entrate totali" value={totals.incassoTotale} href={incomesHref} />
+          <StatementMoneyRow label="Entrate totali" value={totals.incassoTotale} href={incomesHref} highlight={true} />
           <StatementMoneyRow label="Uscite totali" value={totals.speseTotali} href={expensesHref} />
           <StatementMoneyRow label="Utile netto" value={totals.utileNetto} highlight />
           <StatementMoneyRow label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />

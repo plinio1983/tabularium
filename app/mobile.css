@@ -30,6 +30,14 @@
         flex-grow: 1;
         font-weight: 400;
     }
+
+    .dashboard-statement-table {
+        font-size: 15px;
+    }
+
+    .dashboard-statement-table a {
+        font-size: 16px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -133,9 +141,15 @@
         display: inline !important;
     }
 
+    .dashboard-header-card .dashboard-top-actions {
+        justify-content: space-between;
+    }
+
     .dashboard-top-actions .btn {
         font-size: 14px;
-        padding: 8px;
+        max-width: initial;
+        padding: 10px 14px;
+        flex-grow: 1;
     }
 
     .supplier-form {

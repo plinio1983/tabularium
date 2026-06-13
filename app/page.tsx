@@ -269,7 +269,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
       <div className="actions-row dashboard-top-actions">
         <Link className="btn primary-link" href="/expenses?new=1"><span className="btn-icon">＋</span> Spesa</Link>
         <Link className="btn primary-link" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
-        <Link className="btn primary-link" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>
+        {/*<Link className="btn primary-link" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
       </div>
       <form className="period-selector dashboard-year-selector" method="get">
         <span className="selector-label">Anno fiscale</span>
@@ -300,7 +300,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
       <div className="dashboard-statement-body">
         <table className="dashboard-statement-table dashboard-annual-statement-table">
           <tbody>
-          <tr><td>Entrate totali anno</td><td><strong className={moneyTone(report.totals.incassoTotale)}>{euro(report.totals.incassoTotale)}</strong></td></tr>
+          <tr><td>Entrate totali anno</td><td><span className="money-highlight"><strong className={moneyTone(report.totals.incassoTotale)}>{euro(report.totals.incassoTotale)}</strong></span></td></tr>
           <tr><td>Uscite anno</td><td><strong className={moneyTone(report.totals.speseTotali)}>{euro(report.totals.speseTotali)}</strong></td></tr>
           <tr className="dashboard-statement-result"><td>Utile netto anno</td><td><strong className={moneyTone(report.totals.utileNetto, 'money-highlight')}>{euro(report.totals.utileNetto)}</strong></td></tr>
           <tr><td>Entrate non fiscali</td><td><strong className={moneyTone(report.totals.incassoNonFiscale)}>{euro(report.totals.incassoNonFiscale)}</strong></td></tr>
