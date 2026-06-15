@@ -199,10 +199,6 @@
         padding-bottom: 1px;
     }
 
-    .expense-mobile-main {
-        gap: 4px;
-    }
-
     .expense-mobile-meta .expense-mobile-meta-right {
         display: flex;
         gap: 2px;

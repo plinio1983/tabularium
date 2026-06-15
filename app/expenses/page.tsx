@@ -968,8 +968,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                     </span>
                   </div>
                   <div className="expense-mobile-meta-right">
-                    <span className="expense-mobile-date">{mobileDateLabel(e.dueDate)}</span>
                     {fiscalBadgeMobile(e.isDeclared)}
+                    <span className="expense-mobile-date">{mobileDateLabel(e.dueDate)}</span>
                   </div>
                 </div>
                 <div className="expense-mobile-title-row">

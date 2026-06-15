@@ -136,7 +136,12 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   if (edit) inner.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
   if (copy) inner.appendChild(buildFloatingButton(copy, "Copia", "＋", "floating-bulk-copy"));
   if (del) inner.appendChild(buildFloatingButton(del, "Elimina", "🗑", "floating-bulk-delete"));
-  if (newExpense) inner.appendChild(buildFloatingButton(newExpense, "Aggiungi spesa", "+", "floating-bulk-new primary-action"));
+  if (newExpense) {
+    const newExpenseWrap = document.createElement("div");
+    newExpenseWrap.className = "bulk-inner-container";
+    newExpenseWrap.appendChild(buildFloatingButton(newExpense, "Aggiungi spesa", "+", "floating-bulk-new primary-action"));
+    inner.appendChild(newExpenseWrap);
+  }
 
   document.body.appendChild(floating);
   return floating;

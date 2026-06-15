@@ -1498,7 +1498,7 @@ body.drawer-open {
 
 .supplier-linked-expenses-table .cell-payment-state,
 .expenses-table .cell-payment-state {
-    width: 9% !important;
+    width: 8% !important;
     text-align: center;
 }
 
@@ -6772,6 +6772,10 @@ button.bulk-direct-link {
         line-height: 1.15;
         word-break: break-word;
     }
+
+    .expense-mobile-main {
+        gap: 4px;
+    }
 }
 
 @media (max-width: 520px) {
@@ -8258,9 +8262,15 @@ button.bulk-direct-danger {
     padding-left: 4px;
 }
 
-.expense-mobile-subtitle div:nth-child(2) {
-    text-align: right;
+.expense-mobile-subtitle div:first-child {
     flex-grow: 1;
+}
+
+.expense-mobile-subtitle div {
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .expense-mobile-meta {
