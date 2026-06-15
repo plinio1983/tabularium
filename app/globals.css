@@ -1510,6 +1510,7 @@ body.drawer-open {
 
 .expenses-table th, .expenses-table td {
     white-space: nowrap;
+    vertical-align: middle;
 }
 
 .expenses-table th {
@@ -1524,10 +1525,10 @@ body.drawer-open {
     line-height: 1.08;
 }
 
-.expenses-table td:nth-child(5) {
-    white-space: normal;
-    min-width: 220px;
-}
+/*.expenses-table td:nth-child(5) {*/
+/*    white-space: normal;*/
+/*    min-width: 220px;*/
+/*}*/
 
 .color-badge {
     border: 1px solid transparent;
@@ -2515,7 +2516,7 @@ body.drawer-open {
     table-layout: auto;
 }
 
-.compact-expenses-table th, .compact-expenses-table td {
+.compact-expenses-table th {
     padding: 7px 7px;
 }
 
@@ -2533,10 +2534,10 @@ body.drawer-open {
     font-size: 13px;
 }
 
-.compact-expenses-table td:nth-child(5) {
-    min-width: 150px;
-    max-width: 210px;
-}
+/*.compact-expenses-table td:nth-child(5) {*/
+/*    min-width: 150px;*/
+/*    max-width: 210px;*/
+/*}*/
 
 .cell-compact {
     max-width: 130px;
@@ -2585,9 +2586,9 @@ table th, table td {
     min-width: 1080px;
 }
 
-.compact-expenses-table th, .compact-expenses-table td {
-    vertical-align: middle;
-}
+/*.compact-expenses-table th, .compact-expenses-table td {*/
+/*    vertical-align: middle;*/
+/*}*/
 
 /*.compact-expenses-table th:nth-child(1), .compact-expenses-table td:nth-child(1) {*/
 /*    width: 70px;*/
@@ -2868,11 +2869,11 @@ table th, table td {
     text-align: center;
 }
 
-.compact-expenses-table th:nth-child(13), .compact-expenses-table th:nth-child(14), .compact-expenses-table th:nth-child(15), .compact-expenses-table th:nth-child(16),
-.compact-expenses-table td:nth-child(13), .compact-expenses-table td:nth-child(14), .compact-expenses-table td:nth-child(15), .compact-expenses-table td:nth-child(16) {
-    width: 36px;
-    text-align: center;
-}
+/*.compact-expenses-table th:nth-child(13), .compact-expenses-table th:nth-child(14), .compact-expenses-table th:nth-child(15), .compact-expenses-table th:nth-child(16),*/
+/*.compact-expenses-table td:nth-child(13), .compact-expenses-table td:nth-child(14), .compact-expenses-table td:nth-child(15), .compact-expenses-table td:nth-child(16) {*/
+/*    width: 36px;*/
+/*    text-align: center;*/
+/*}*/
 
 .compact-expenses-table form, .suppliers-table form {
     margin: 0;
@@ -6198,6 +6199,11 @@ select:disabled {
     flex-wrap: wrap;
 }
 
+.bulk-inner-container {
+    text-align: right;
+    flex-grow: 1;
+}
+
 .bulk-direct-link {
     display: inline-flex;
     align-items: center;
@@ -7094,7 +7100,8 @@ button.bulk-direct-danger {
         font-size: 12px !important;
     }
 
-    .bulk-direct-link .bulk-label {
+    .bulk-direct-link .bulk-label,
+    .bulk-link .bulk-label {
         display: none !important;
     }
 
@@ -8324,6 +8331,12 @@ button.bulk-direct-danger {
 
     .expense-mobile-list {
         display: grid;
+    }
+
+    .expense-mobile-link .badge {
+        padding: 2px 6px;
+        border: none;
+        font-size: 13px;
     }
 
     .search-totals-row {

@@ -897,15 +897,30 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             <button type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>
           </div>
         </details>
-        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="expenseBulkForm" data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-return-to={returnTo}>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
-          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span><span className="bulk-label">Copia</span></a>
-          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
+        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="expenseBulkForm"
+             data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-return-to={returnTo}>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
+            <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
+          </a>
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
+            <span className="btn-icon">＋</span><span className="bulk-label">Copia</span>
+          </a>
+          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete"
+                  data-bulk-delete data-confirm-label="Elimina" disabled>
+            <span className="btn-icon">🗑</span>
+            <span className="bulk-label">Elimina</span>
+          </button>
+        </div>
+        <div className="bulk-inner-container">
+          <button className="bulk-direct-link button-standard primary-action" type="button">
+            <span className="btn-icon">+</span>
+            <span className="bulk-label">Aggiungi spesa</span>
+          </button>
         </div>
       </form>
 
       <ExpenseEditModalController
-        categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+          categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
         listHref={listHref}
