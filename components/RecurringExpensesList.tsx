@@ -122,6 +122,12 @@ export default function RecurringExpensesList({
         <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
         <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
       </div>
+      <div className="bulk-inner-container">
+        <button className="bulk-direct-link button-standard primary-action" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
+          <span className="btn-icon">+</span>
+          <span className="bulk-label">Spesa ricorrente</span>
+        </button>
+      </div>
     </form>
     {items.length ? <>
       <div className="recurring-expenses-list recurring-expenses-desktop-list">{items.map(item => <div className="recurring-expense-row recurring-expense-row-with-select clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}`} role="link" tabIndex={0} key={item.id}>

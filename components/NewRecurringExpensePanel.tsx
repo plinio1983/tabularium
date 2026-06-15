@@ -23,10 +23,23 @@ export default function NewRecurringExpensePanel({ categories, banks, suppliers 
     setAction(`/api/recurring-expenses?returnTo=${encodeURIComponent(returnTo)}`);
   }, []);
 
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest('[data-recurring-expense-new]')) return;
+
+      event.preventDefault();
+      setIsOpen(true);
+    };
+
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, []);
+
   return <>
     <div className="toolbar-actions expense-toolbar-actions">
       <Link className="button-standard secondary-action" href="/expenses">↩ Lista spese</Link>
-      <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">＋</span>Spesa ricorrente</button>
+      <button className="button-standard primary-action" type="button" data-recurring-expense-new><span className="btn-icon">＋</span>Spesa ricorrente</button>
     </div>
 
     {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi spesa ricorrente" onMouseDown={() => setIsOpen(false)}>
