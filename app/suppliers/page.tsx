@@ -262,7 +262,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
         <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori" /></th><th>Ragione Sociale</th><th>Alias</th><th className="text-center">Ordini da saldare</th><th className="text-right supplier-amount-header">Importo da saldare</th>
       </tr></thead><tbody>
         {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay }) => {
-          return <tr key={supplier.id}>
+          return <tr className="clickable-desktop-row" data-row-href={`/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`} tabIndex={0} key={supplier.id}>
             <td className="cell-center"><input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} /></td>
             <td><strong>{supplier.businessName}</strong></td>
             <td>{supplier.alias ?? '-'}</td>
