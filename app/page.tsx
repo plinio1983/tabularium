@@ -213,6 +213,73 @@ function ExpensesByCategoryChart({ data }: { data: Array<{ name: string; code: s
   </div>;
 }
 
+function IncomeExpenseBreakdownChart({
+  totals,
+  periods
+}: {
+  totals: any;
+  periods: Array<{ year: number; month: number }>;
+}) {
+  const items = [
+    {
+      label: 'Entrate fiscali',
+      value: totals.incassoFiscale,
+      href: periodLink('/incomes', periods, { fiscal: 'yes' }),
+      tone: 'income-fiscal'
+    },
+    {
+      label: 'Entrate non fiscali',
+      value: totals.incassoNonFiscale,
+      href: periodLink('/incomes', periods, { fiscal: 'no' }),
+      tone: 'income-non-fiscal'
+    },
+    {
+      label: 'Uscite fiscali',
+      value: totals.usciteFiscali,
+      href: periodLink('/expenses', periods, { declared: 'yes' }),
+      tone: 'expense-fiscal'
+    },
+    {
+      label: 'Uscite non fiscali',
+      value: totals.usciteNonFiscali,
+      href: periodLink('/expenses', periods, { declared: 'no' }),
+      tone: 'expense-non-fiscal'
+    }
+  ];
+  const max = Math.max(...items.map(item => item.value), 0);
+  const total = items.reduce((sum, item) => sum + item.value, 0);
+
+  return <section className="card income-expense-chart-card" aria-labelledby="income-expense-chart-title">
+    <div className="card-heading-row">
+      <div className="card-title-wrap">
+        <h2 id="income-expense-chart-title">Grafico entrate / uscite</h2>
+        <p className="muted">Ripartizione fiscale e non fiscale anno {periods[0]?.year ?? ''}.</p>
+      </div>
+      <div>
+        <span className="badge">Totale {euro(total)}</span>
+      </div>
+    </div>
+    <div className="income-expense-chart-list">
+      {items.map(item => {
+        const percentage = total ? (item.value / total) * 100 : 0;
+        const width = max ? Math.max((item.value / max) * 100, item.value > 0 ? 4 : 0) : 0;
+
+        return <Link className="income-expense-chart-row" href={item.href} key={item.label}>
+          <span className={`income-expense-chart-marker ${item.tone}`} aria-hidden="true" />
+          <span className="income-expense-chart-label">{item.label}</span>
+          <span className="income-expense-chart-bar-wrap" aria-label={`${item.label}: ${euro(item.value)}`}>
+            <span className={`income-expense-chart-bar ${item.tone}`} style={{ width: `${width}%` }} />
+          </span>
+          <span className="income-expense-chart-value">
+            <strong className={moneyTone(item.value)}>{euro(item.value)}</strong>
+            <small>{percentage.toFixed(1)}%</small>
+          </span>
+        </Link>;
+      })}
+    </div>
+  </section>;
+}
+
 export default async function Dashboard({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const params = (await searchParams) ?? {};
   const now = new Date();
@@ -259,6 +326,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const yearOptions = Array.from(new Set([currentYear + 1, currentYear, currentYear - 1, currentYear - 2, reportYear, annualYear, selectedTrendMonth.year, monthOptionYear, quarterOptionYear])).sort((a, b) => b - a);
   const monthOptions = Array.from({ length: 12 }, (_, index) => ({ year: monthOptionYear, month: index + 1 }));
   const quarterOptions = Array.from({ length: 4 }, (_, index) => ({ year: quarterOptionYear, quarterIndex: index }));
+  const annualPeriods = Array.from({ length: 12 }, (_, index) => ({ year: report.annualYear, month: index + 1 }));
 
   return <div className="grid dashboard-grid">
     <div className="dashboard-actions toolbar-card dashboard-header-card">
@@ -290,6 +358,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
       />
     </div>
 
+    <article className="dashboard-statement-cards">
     <section className="card dashboard-statement-panel dashboard-annual-card">
       <div className="dashboard-statement-heading">
         <div>
@@ -311,6 +380,9 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         </table>
       </div>
     </section>
+
+    <IncomeExpenseBreakdownChart totals={report.totals} periods={annualPeriods} />
+    </article>
 
     <div className="card dashboard-report-card">
       <div className="card-heading-row">

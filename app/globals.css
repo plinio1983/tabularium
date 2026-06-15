@@ -3293,19 +3293,19 @@ table th, table td {
     gap: 10px;
 }
 
-.dashboard-annual-statement-table {
-    max-width: 760px;
-    margin: 0 auto;
-}
+/*.dashboard-annual-statement-table {*/
+/*    max-width: 760px;*/
+/*    margin: 0 auto;*/
+/*}*/
 
-.dashboard-annual-statement-table td {
-    padding-top: 9px;
-    padding-bottom: 9px;
-}
+/*.dashboard-annual-statement-table td {*/
+/*    padding-top: 9px;*/
+/*    padding-bottom: 9px;*/
+/*}*/
 
-.dashboard-annual-statement-table strong {
-    font-size: 16px !important;
-}
+/*.dashboard-annual-statement-table strong {*/
+/*    font-size: 16px !important;*/
+/*}*/
 
 .dashboard-report-card .card-heading-row {
     margin-bottom: 14px;
@@ -3430,6 +3430,11 @@ table th, table td {
     align-items: start;
 }
 
+.dashboard-statement-cards {
+    display: flex;
+    gap: 18px;
+}
+
 .dashboard-statement-body {
     /*margin: 0 12px;*/
 }
@@ -3533,13 +3538,117 @@ table th, table td {
     text-decoration: underline;
 }
 
+.income-expense-chart-card {
+    display: grid;
+    gap: 16px;
+    min-width: 33%;
+}
+
+.income-expense-chart-card h2 {
+    font-size: 18px;
+}
+
+.income-expense-chart-list {
+    display: grid;
+    gap: 10px;
+}
+
+.income-expense-chart-row {
+    display: grid;
+    grid-template-columns: 14px minmax(150px, 210px) minmax(180px, 1fr) 150px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.income-expense-chart-row:last-child {
+    border-bottom: 0;
+}
+
+.income-expense-chart-row:hover .income-expense-chart-label,
+.income-expense-chart-row:hover .income-expense-chart-value strong {
+    text-decoration: underline;
+}
+
+.income-expense-chart-marker {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+}
+
+.income-expense-chart-label {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #374151;
+    font-weight: 750;
+}
+
+.income-expense-chart-bar-wrap {
+    height: 14px;
+    border-radius: 999px;
+    background: #eef1f7;
+    overflow: hidden;
+}
+
+.income-expense-chart-bar {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+}
+
+.income-expense-chart-marker.income-fiscal,
+.income-expense-chart-bar.income-fiscal {
+    background: #2563eb;
+}
+
+.income-expense-chart-marker.income-non-fiscal,
+.income-expense-chart-bar.income-non-fiscal {
+    background: #0f9f7a;
+}
+
+.income-expense-chart-marker.expense-fiscal,
+.income-expense-chart-bar.expense-fiscal {
+    background: #d97706;
+}
+
+.income-expense-chart-marker.expense-non-fiscal,
+.income-expense-chart-bar.expense-non-fiscal {
+    background: #dc2626;
+}
+
+.income-expense-chart-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.income-expense-chart-value small {
+    color: var(--muted);
+    font-weight: 800;
+}
+
 @media (max-width: 1180px) {
     .dashboard-period-cards {
         grid-template-columns: 1fr;
     }
 }
 
+@media (max-width: 900px) {
+    .dashboard-statement-cards {
+        flex-direction: column;
+    }
+}
+
 @media (max-width: 760px) {
+    .dashboard-statement-cards {
+        flex-direction: column;
+    }
+
     .dashboard-statement-heading {
         flex-direction: column;
         align-items: stretch;
@@ -3548,6 +3657,20 @@ table th, table td {
     .dashboard-statement-heading .period-selector,
     .dashboard-statement-heading .period-selector select {
         width: 100%;
+    }
+
+    .income-expense-chart-row {
+        grid-template-columns: 12px minmax(0, 1fr);
+        gap: 8px 10px;
+    }
+
+    .income-expense-chart-bar-wrap,
+    .income-expense-chart-value {
+        grid-column: 2;
+    }
+
+    .income-expense-chart-value {
+        justify-content: space-between;
     }
 }
 
@@ -3640,6 +3763,11 @@ table {
 .total-card strong {
     word-break: normal;
     overflow-wrap: normal;
+}
+
+.card-heading-row .card-title-wrap {
+    text-align: right;
+    flex-grow: 1;
 }
 
 @media (max-width: 900px) {
@@ -4013,6 +4141,7 @@ button {
 
 .dashboard-annual-card {
     background: linear-gradient(135deg, #ffffff 0%, #f7f9ff 100%);
+    min-width: 33%;
 }
 
 .annual-totals-grid {
@@ -9035,4 +9164,3 @@ table .cell-description {
 .supplier-mobile-row-grow {
     flex-grow: 1;
 }
-
