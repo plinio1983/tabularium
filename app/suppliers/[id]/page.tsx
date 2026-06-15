@@ -29,6 +29,19 @@ function booleanBadge(value: boolean) {
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
 }
 
+function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
+  const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
+  let state = invoiceStatus;
+  if (invoiceStatus === "IN_ATTESA") {
+    state = ' - Wait';
+  }
+  if (invoiceStatus === "RICEVUTA") {
+    state = ' - Ok';
+  }
+  const label = !value ? 'Fatt' : '@bill';
+  return <span className={badgeClass(style.className)}>{label}{state}</span>;
+}
+
 function mobileDateLabel(value?: Date | null) {
   return value ? value.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) : '-';
 }
@@ -125,7 +138,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           const categoryStyle = expense.category?.name ? categoryStyles[expense.category.name] : undefined;
           const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
           const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
-          const invoiceLabel = invoiceStatusStyles.IN_ATTESA ? "Att.fatt." : invoiceStyle.label;
+          const invoiceLabel = expense.invoiceStatus === "IN_ATTESA" ? "Attesa" : invoiceStyle.label;
           const overdue = isExpensePastDueForBadge(expense);
           const unpaid = isExpenseUnpaid(expense);
           const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
@@ -143,12 +156,12 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
                 <div className="expense-mobile-meta">
                   <div className="expense-mobile-meta-left">
                     {expense.category ? <span title={expense.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? expense.category.code}</span> : null}
-                    <span className={badgeClass(invoiceStyle.className)}>{invoiceLabel}</span>
+                    <span className={badgeClass("")}>{declaredBadgeLabel}</span>
                     <span className="expense-mobile-date">{formatPeriod(expense.month, expense.year)}</span>
                   </div>
                   <div className="expense-mobile-meta-right">
+                    {electronicInvoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}
                     <span className="expense-mobile-date">{mobileDateLabel(expense.dueDate)}</span>
-                    <span className={badgeClass("")}>{declaredBadgeLabel}</span>
                     {/*{booleanBadge(expense.isDeclared)}*/}
                   </div>
                 </div>

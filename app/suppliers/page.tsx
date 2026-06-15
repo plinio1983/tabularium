@@ -286,7 +286,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             <td className="text-center"><strong>{openExpensesCount}</strong></td>
             <td className="text-right supplier-amount-cell"><strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong></td>
             <td className="text-center"><strong>{annualOrdersCount}</strong></td>
-            <td className="text-right supplier-amount-cell"><strong>{euro(annualPurchasedAmount)}</strong></td>
+            <td className="text-right supplier-amount-cell"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong></td>
           </tr>;
         })}
         {!filteredSupplierRows.length && <tr><td colSpan={7}>Nessun fornitore trovato.</td></tr>}

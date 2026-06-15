@@ -130,9 +130,9 @@ function fiscalBadgeMobile(value: boolean) {
 }
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  let state = "";
+  let state = invoiceStatus;
   if (invoiceStatus === "IN_ATTESA") {
-    state = ' - Att.';
+    state = ' - Wait.';
   }
   if (invoiceStatus === "RICEVUTA") {
     state = ' - Ok';
