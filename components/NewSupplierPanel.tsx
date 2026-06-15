@@ -13,8 +13,21 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
     setAction(`/api/suppliers?returnTo=${encodeURIComponent(returnTo)}`);
   }, []);
 
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest('[data-supplier-new]')) return;
+
+      event.preventDefault();
+      setIsOpen(true);
+    };
+
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, []);
+
   return <>
-    <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">＋</span>Aggiungi nuovo fornitore</button>
+    <button className="button-standard primary-action" type="button" data-supplier-new><span className="btn-icon">＋</span>Aggiungi nuovo fornitore</button>
     {isOpen && <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuovo fornitore" onMouseDown={() => setIsOpen(false)}>
       <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">

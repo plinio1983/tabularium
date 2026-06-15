@@ -726,6 +726,12 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">＋</span><span className="bulk-label">Copia</span></a>
           <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
+        <div className="bulk-inner-container">
+          <button className="bulk-direct-link button-standard primary-action" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
+            <span className="btn-icon">+</span>
+            <span className="bulk-label">Incasso</span>
+          </button>
+        </div>
       </form>
 
       <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">

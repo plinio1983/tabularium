@@ -14,6 +14,19 @@ export default function NewIncomePanel({ initialOpen = false }: { initialOpen?: 
     setReturnAction(`/api/incomes?returnTo=${encodeURIComponent(returnTo)}`);
   }, []);
 
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.closest('[data-income-new]')) return;
+
+      event.preventDefault();
+      setIsOpen(true);
+    };
+
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, []);
+
   return (
     <div className="grid">
       <div className="toolbar-card">
@@ -21,7 +34,7 @@ export default function NewIncomePanel({ initialOpen = false }: { initialOpen?: 
           <h2>Incassi</h2>
           <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
         </div>
-        <button className="button-standard primary-action" type="button" onClick={() => setIsOpen(true)}>
+        <button className="button-standard primary-action" type="button" data-income-new>
           <span className="btn-icon">+</span>Aggiungi nuovo incasso
         </button>
       </div>
