@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
-import DeleteActionButton from '@/components/DeleteActionButton';
 import { prisma } from '@/lib/prisma';
 import { euro } from '@/lib/money';
 import NewSupplierPanel from '@/components/NewSupplierPanel';
@@ -260,7 +259,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       </div>
 
       <div className="table-scroll"><table className="suppliers-table compact-suppliers-table"><thead><tr>
-        <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori" /></th><th>Ragione Sociale</th><th>Alias</th><th className="text-center">Ordini da saldare</th><th className="text-right supplier-amount-header">Importo da saldare</th><th></th><th></th><th></th>
+        <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori" /></th><th>Ragione Sociale</th><th>Alias</th><th className="text-center">Ordini da saldare</th><th className="text-right supplier-amount-header">Importo da saldare</th>
       </tr></thead><tbody>
         {filteredSupplierRows.map(({ supplier, openExpensesCount, amountToPay }) => {
           return <tr key={supplier.id}>
@@ -269,12 +268,9 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             <td>{supplier.alias ?? '-'}</td>
             <td className="text-center"><strong>{openExpensesCount}</strong></td>
             <td className="text-right supplier-amount-cell"><strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong></td>
-            <td><Link className="table-action secondary icon-action" title="Dettaglio" aria-label="Dettaglio" href={`/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`}>👁</Link></td>
-            <td><Link className="table-action icon-action" title="Modifica" aria-label="Modifica" href={`/suppliers/${supplier.id}/edit?returnTo=${encodeURIComponent(supplierListHref)}`}>✎</Link></td>
-            <td><DeleteActionButton action={`/api/suppliers/${supplier.id}`} confirmMessage="Confermi la rimozione del fornitore? Le spese collegate resteranno registrate senza fornitore selezionato." /></td>
           </tr>;
         })}
-        {!filteredSupplierRows.length && <tr><td colSpan={8}>Nessun fornitore trovato.</td></tr>}
+        {!filteredSupplierRows.length && <tr><td colSpan={5}>Nessun fornitore trovato.</td></tr>}
       </tbody></table></div>
     </div>
   </div>;
