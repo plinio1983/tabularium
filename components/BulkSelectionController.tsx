@@ -88,6 +88,24 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   return button;
 }
 
+function submitterAction(submitter: HTMLElement | null) {
+  if (!(submitter instanceof HTMLButtonElement) && !(submitter instanceof HTMLInputElement)) return "";
+  return submitter.name === "bulkAction" ? submitter.value : "";
+}
+
+function submitterLabel(submitter: HTMLElement | null) {
+  if (!submitter) return "questa azione";
+  return submitter.getAttribute("data-confirm-label") || submitter.textContent?.trim() || "questa azione";
+}
+
+function formSubject(form: HTMLFormElement) {
+  if (form.id === "supplierBulkForm") return "fornitori";
+  if (form.id === "incomeBulkForm") return "incassi";
+  if (form.id === "expenseBulkForm") return "spese";
+  if (form.id === "recurringExpenseBulkForm") return "spese ricorrenti";
+  return "record";
+}
+
 function makeFloatingBar(sourceBar: HTMLElement) {
   const floating = document.createElement("div");
   floating.className = "floating-bulk-actions-bar";
@@ -281,6 +299,34 @@ export default function BulkSelectionController() {
       if (selected === 0) menu.removeAttribute("open");
     };
 
+    const onSubmit = (event: SubmitEvent) => {
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      if (!form.classList.contains("confirm-bulk-form")) return;
+
+      event.stopImmediatePropagation();
+
+      const selected = form.id ? selectedInputsForForm(form.id).length : form.querySelectorAll('input[name="ids"]:checked').length;
+      if (!selected) {
+        window.alert("Seleziona almeno una riga.");
+        event.preventDefault();
+        return;
+      }
+
+      const submitter = event.submitter instanceof HTMLElement ? event.submitter : null;
+      const action = submitterAction(submitter) || String(new FormData(form).get("bulkAction") || "");
+      if (!action) {
+        window.alert("Seleziona un'azione bulk.");
+        event.preventDefault();
+        return;
+      }
+
+      const label = submitterLabel(submitter);
+      const subject = formSubject(form);
+      const message = `Confermi di eseguire "${label}" su ${selected} ${subject} selezionati?`;
+      if (!window.confirm(message)) event.preventDefault();
+    };
+
     const onScrollOrResize = () => {
       syncBulkControls();
       updateFloatingVisibility();
@@ -288,6 +334,7 @@ export default function BulkSelectionController() {
 
     document.addEventListener("change", onChange);
     document.addEventListener("click", onClick);
+    document.addEventListener("submit", onSubmit, true);
     document.addEventListener("toggle", onToggle, true);
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
     window.addEventListener("resize", onScrollOrResize);
@@ -300,6 +347,7 @@ export default function BulkSelectionController() {
     return () => {
       document.removeEventListener("change", onChange);
       document.removeEventListener("click", onClick);
+      document.removeEventListener("submit", onSubmit, true);
       document.removeEventListener("toggle", onToggle, true);
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
