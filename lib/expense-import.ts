@@ -181,16 +181,19 @@ function mapInvoiceStatus(value: unknown, hasElectronicInvoice: boolean): Invoic
   return 'IN_ATTESA';
 }
 
-async function ensureReferenceData() {
-  await prisma.company.upsert({ where: { code: 'HM' }, update: { name: 'Herbal Market' }, create: { code: 'HM', name: 'Herbal Market' } });
-  await prisma.company.upsert({ where: { code: 'OTHER' }, update: { name: 'Altro Operatore' }, create: { code: 'OTHER', name: 'Altro Operatore' } });
+async function ensureReferenceData(workspaceId?: number) {
+  await prisma.company.upsert({ where: { code: 'HM' }, update: { name: 'Herbal Market', ...(workspaceId ? { workspaceId } : {}) }, create: { code: 'HM', name: 'Herbal Market', ...(workspaceId ? { workspaceId } : {}) } });
+  await prisma.company.upsert({ where: { code: 'OTHER' }, update: { name: 'Altro Operatore', ...(workspaceId ? { workspaceId } : {}) }, create: { code: 'OTHER', name: 'Altro Operatore', ...(workspaceId ? { workspaceId } : {}) } });
 
   for (const categoryName of fixedCategories) {
     const code = categoryCode(categoryName);
-    await prisma.expenseCategory.upsert({ where: { code }, update: { name: categoryName }, create: { code, name: categoryName } });
+    const existing = await prisma.expenseCategory.findFirst({ where: { workspaceId: workspaceId ?? null, code } });
+    if (existing) await prisma.expenseCategory.update({ where: { id: existing.id }, data: { name: categoryName } });
+    else await prisma.expenseCategory.create({ data: { code, name: categoryName, workspaceId: workspaceId ?? null } });
   }
   for (const bankName of fixedBanks) {
-    await prisma.bank.upsert({ where: { name: bankName }, update: {}, create: { name: bankName } });
+    const existing = await prisma.bank.findFirst({ where: { workspaceId: workspaceId ?? null, name: bankName } });
+    if (!existing) await prisma.bank.create({ data: { name: bankName, workspaceId: workspaceId ?? null } });
   }
 
   return {
@@ -200,7 +203,7 @@ async function ensureReferenceData() {
   };
 }
 
-async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?: string; email?: string; phone?: string; pec?: string; taxCodeSdi?: string; internalNotes?: string } = {}) {
+async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?: string; email?: string; phone?: string; pec?: string; taxCodeSdi?: string; internalNotes?: string; workspaceId?: number } = {}) {
   const businessName = textValue(businessNameRaw) || 'Senza esercente';
   const data = {
     alias: metadata.alias || null,
@@ -210,7 +213,7 @@ async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?:
     taxCodeSdi: metadata.taxCodeSdi || null,
     internalNotes: metadata.internalNotes || null
   };
-  const existing = await prisma.supplier.findFirst({ where: { businessName } });
+  const existing = await prisma.supplier.findFirst({ where: { businessName, ...(metadata.workspaceId ? { workspaceId: metadata.workspaceId } : {}) } });
   if (existing) {
     const updateData = Object.fromEntries(Object.entries(data).filter(([, value]) => value));
     if (Object.keys(updateData).length) {
@@ -219,7 +222,7 @@ async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?:
     }
     return { supplier: existing, created: false };
   }
-  const supplier = await prisma.supplier.create({ data: { businessName, ...data } });
+  const supplier = await prisma.supplier.create({ data: { businessName, ...data, ...(metadata.workspaceId ? { workspaceId: metadata.workspaceId } : {}) } });
   return { supplier, created: true };
 }
 
@@ -274,18 +277,18 @@ function mapAccrualType(value: unknown) {
   return text.includes('auto') ? 'AUTOMATICA' : 'MANUALE';
 }
 
-export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean } = {}): Promise<ExpenseImportResult> {
+export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean; workspaceId?: number } = {}): Promise<ExpenseImportResult> {
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const rows = getRecurringDefinitionRows(workbook);
   const sheets = Array.from(new Set(rows.map(item => item.sheetName)));
   let deleted = 0;
 
   if (options.clearBeforeImport) {
-    const deleteResult = await prisma.recurringExpense.deleteMany({});
+    const deleteResult = await prisma.recurringExpense.deleteMany({ where: options.workspaceId ? { workspaceId: options.workspaceId } : {} });
     deleted = deleteResult.count;
   }
 
-  const refs = await ensureReferenceData();
+  const refs = await ensureReferenceData(options.workspaceId);
   let imported = 0;
   let skipped = 0;
   let suppliersCreated = 0;
@@ -326,7 +329,8 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
       phone: textValue(rowValue(row, ['Telefono fornitore', 'Telefono', 'Phone'])),
       pec: textValue(rowValue(row, ['PEC fornitore', 'PEC'])),
       taxCodeSdi: textValue(rowValue(row, ['Codice SDI', 'SDI', 'Codice destinatario', 'Codice fiscale/SDI'])),
-      internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore']))
+      internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore'])),
+      workspaceId: options.workspaceId
     });
     if (created) suppliersCreated++;
 
@@ -348,6 +352,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     await prisma.recurringExpense.create({
       data: {
         startDate,
+        workspaceId: options.workspaceId,
         cadence,
         dueDay,
         dueMonth,
@@ -374,7 +379,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
   return { imported, skipped, deleted, suppliersCreated, sheets };
 }
 
-export async function importExpensesWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean } = {}): Promise<ExpenseImportResult> {
+export async function importExpensesWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean; workspaceId?: number } = {}): Promise<ExpenseImportResult> {
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const rows = getTabularRows(workbook);
   const sheets = Array.from(new Set(rows.map(item => item.sheetName)));
@@ -382,14 +387,14 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
 
   if (options.clearBeforeImport) {
     const [, , deleteResult] = await prisma.$transaction([
-      prisma.expenseAttachment.deleteMany({}),
-      prisma.expensePayment.deleteMany({}),
-      prisma.expense.deleteMany({})
+      prisma.expenseAttachment.deleteMany({ where: options.workspaceId ? { expense: { workspaceId: options.workspaceId } } : {} }),
+      prisma.expensePayment.deleteMany({ where: options.workspaceId ? { expense: { workspaceId: options.workspaceId } } : {} }),
+      prisma.expense.deleteMany({ where: options.workspaceId ? { workspaceId: options.workspaceId } : {} })
     ]);
     deleted = deleteResult.count;
   }
 
-  const refs = await ensureReferenceData();
+  const refs = await ensureReferenceData(options.workspaceId);
   let imported = 0;
   let skipped = 0;
   let suppliersCreated = 0;
@@ -429,13 +434,15 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const isRecurring = parseBool(rowValue(row, ['Ricorrente', 'Spesa ricorrente', 'Recurring']));
     const isAutomaticPayment = parseBool(rowValue(row, ['Pagamento automatico', 'Automatico', 'Addebito automatico']));
     const { supplier, created } = await getOrCreateSupplier(supplierName, {
-      internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore']))
+      internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore'])),
+      workspaceId: options.workspaceId
     });
     if (created) suppliersCreated++;
 
     await prisma.expense.create({
       data: {
         receivedDate: orderDate,
+        workspaceId: options.workspaceId,
         dueDate,
         merchant: supplier.businessName,
         supplierId: supplier.id,

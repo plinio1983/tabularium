@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { getWorkspaceContext } from '@/lib/auth';
 
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -33,15 +34,18 @@ function redirectAfterFormSave(request: Request, fallback: string) {
 }
 
 export async function GET(request: Request) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const { searchParams } = new URL(request.url);
   const search = searchParams.get('search')?.trim();
   const suppliers = await prisma.supplier.findMany({
     where: search ? {
+      workspaceId: current.workspace.id,
       OR: [
         { businessName: { contains: search, mode: 'insensitive' } },
         { alias: { contains: search, mode: 'insensitive' } }
       ]
-    } : undefined,
+    } : { workspaceId: current.workspace.id },
     orderBy: { businessName: 'asc' },
     take: 50
   });
@@ -49,9 +53,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const isForm = request.headers.get('content-type')?.includes('application/x-www-form-urlencoded') || request.headers.get('content-type')?.includes('multipart/form-data');
   const raw = isForm ? Object.fromEntries((await request.formData()).entries()) : await request.json();
   const data = SupplierSchema.parse(raw);
-  const supplier = await prisma.supplier.create({ data });
+  const supplier = await prisma.supplier.create({ data: { ...data, workspaceId: current.workspace.id } });
   return isForm ? redirectAfterFormSave(request, '/suppliers') : NextResponse.json(supplier);
 }

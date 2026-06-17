@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
+import { requireWorkspace } from '@/lib/auth';
 import {
   badgeClass,
   bankIcons,
@@ -61,6 +62,7 @@ function billingLabel(item: { billingPeriodMode: string; billingMonth?: number |
 }
 
 export default async function RecurringExpenseDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/recurring-expenses');
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
@@ -81,12 +83,12 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       }
     }
   }),
-    prisma.expenseCategory.findMany({ orderBy: { id: 'asc' } }),
-    prisma.bank.findMany(),
-    prisma.supplier.findMany({ orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
-  if (!item) notFound();
+  if (!item || item.workspaceId !== current.workspace.id) notFound();
 
   const categoryStyle = item.category?.name ? categoryStyles[item.category.name] : undefined;
   const vatStyle = vatStyles[vatKey(item.vatRate)] ?? vatStyles['22'];

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { getWorkspaceContext } from '@/lib/auth';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -36,29 +37,32 @@ function safePath(value: string | null, fallback: string, requestUrl: string) {
   }
 }
 
-async function resolveSupplierReference(data: z.infer<typeof RecurringExpenseSchema>) {
+async function resolveSupplierReference(data: z.infer<typeof RecurringExpenseSchema>, workspaceId: number) {
   const submittedName = String(data.merchant ?? '').trim();
   if (data.supplierId) {
-    const existing = await prisma.supplier.findUnique({ where: { id: data.supplierId } });
+    const existing = await prisma.supplier.findFirst({ where: { id: data.supplierId, workspaceId } });
     if (existing) return { id: existing.id, businessName: existing.businessName };
   }
   if (!submittedName) throw new Error('Esercente obbligatorio');
-  const existingByName = await prisma.supplier.findFirst({ where: { businessName: { equals: submittedName, mode: 'insensitive' } } });
+  const existingByName = await prisma.supplier.findFirst({ where: { businessName: { equals: submittedName, mode: 'insensitive' }, workspaceId } });
   if (existingByName) return { id: existingByName.id, businessName: existingByName.businessName };
-  const created = await prisma.supplier.create({ data: { businessName: submittedName } });
+  const created = await prisma.supplier.create({ data: { businessName: submittedName, workspaceId } });
   return { id: created.id, businessName: created.businessName };
 }
 
 export async function POST(request: Request) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const formData = await request.formData();
   const raw = Object.fromEntries(formData.entries());
   const data = RecurringExpenseSchema.parse(raw);
-  const supplierRef = await resolveSupplierReference(data);
+  const supplierRef = await resolveSupplierReference(data, current.workspace.id);
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
   const returnTo = new URL(request.url).searchParams.get('returnTo');
 
   await prisma.recurringExpense.create({
     data: {
+      workspaceId: current.workspace.id,
       startDate: new Date(data.startDate),
       cadence: data.cadence,
       dueDay: data.dueDay || null,

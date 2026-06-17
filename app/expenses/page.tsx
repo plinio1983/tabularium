@@ -7,6 +7,7 @@ import ExpenseEditModalController from '@/components/ExpenseEditModalController'
 import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
+import { requireWorkspace } from '@/lib/auth';
 import {
   badgeClass,
   categoryStyles,
@@ -132,10 +133,10 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
   let state = invoiceStatus;
   if (invoiceStatus === "IN_ATTESA") {
-    state = ' - Wait';
+    state = ""//' Wait';
   }
   if (invoiceStatus === "RICEVUTA") {
-    state = ' - Ok';
+    state = ' Ok';
   }
   const label = !value ? 'Fatt' : '@bill';
   return <span className={badgeClass(style.className)}>{label}{state}</span>;
@@ -479,6 +480,7 @@ function matchesIsoDate(value: Date | null | undefined, from: string, to: string
 }
 
 export default async function ExpensesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/expenses');
   const filters = (await searchParams) ?? {};
   const currentQuery = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
@@ -507,13 +509,14 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
 
   const [expenses, categories, banks, suppliers] = await Promise.all([
     prisma.expense.findMany({
+      where: { workspaceId: current.workspace.id },
       include: { category: true, bank: true, supplier: true, payments: { include: { bank: true } }, attachments: true },
       orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }],
       take: 500
     }),
-    prisma.expenseCategory.findMany({ orderBy: { id: 'asc' } }),
-    prisma.bank.findMany(),
-    prisma.supplier.findMany({ orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
   const orderedBanks = allowedBankOrder

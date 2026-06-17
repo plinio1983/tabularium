@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
+import { requireWorkspace } from '@/lib/auth';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
 const allowedCategoryOrder = [
@@ -18,6 +19,7 @@ const allowedCategoryOrder = [
 ];
 
 export default async function NewExpensePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/expenses/new');
   const params = (await searchParams) ?? {};
   const copyIdValue = Array.isArray(params.copyId) ? params.copyId[0] : params.copyId;
   const rawReturnTo = Array.isArray(params.returnTo) ? params.returnTo[0] : params.returnTo;
@@ -26,10 +28,10 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
   const copyId = copyIdValue ? Number(copyIdValue) : null;
 
   const [copyExpense, categories, banks, suppliers] = await Promise.all([
-    copyId ? prisma.expense.findUnique({ where: { id: copyId }, include: { supplier: true } }) : null,
-    prisma.expenseCategory.findMany({ orderBy: { id: 'asc' } }),
-    prisma.bank.findMany(),
-    prisma.supplier.findMany({ orderBy: { businessName: 'asc' }, take: 100 })
+    copyId ? prisma.expense.findFirst({ where: { id: copyId, workspaceId: current.workspace.id }, include: { supplier: true } }) : null,
+    prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
   const orderedBanks = allowedBankOrder.map(name => banks.find(bank => bank.name === name)).filter(Boolean) as typeof banks;

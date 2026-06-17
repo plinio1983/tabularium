@@ -28,6 +28,7 @@ export type AggregateRecurringExpense = {
 
 export type RecurringExpenseAvgAggregateOutputType = {
   id: number | null
+  workspaceId: number | null
   dueDay: number | null
   dueMonth: number | null
   billingMonth: number | null
@@ -40,6 +41,7 @@ export type RecurringExpenseAvgAggregateOutputType = {
 
 export type RecurringExpenseSumAggregateOutputType = {
   id: number | null
+  workspaceId: number | null
   dueDay: number | null
   dueMonth: number | null
   billingMonth: number | null
@@ -52,6 +54,7 @@ export type RecurringExpenseSumAggregateOutputType = {
 
 export type RecurringExpenseMinAggregateOutputType = {
   id: number | null
+  workspaceId: number | null
   startDate: Date | null
   cadence: string | null
   dueDay: number | null
@@ -77,6 +80,7 @@ export type RecurringExpenseMinAggregateOutputType = {
 
 export type RecurringExpenseMaxAggregateOutputType = {
   id: number | null
+  workspaceId: number | null
   startDate: Date | null
   cadence: string | null
   dueDay: number | null
@@ -102,6 +106,7 @@ export type RecurringExpenseMaxAggregateOutputType = {
 
 export type RecurringExpenseCountAggregateOutputType = {
   id: number
+  workspaceId: number
   startDate: number
   cadence: number
   dueDay: number
@@ -129,6 +134,7 @@ export type RecurringExpenseCountAggregateOutputType = {
 
 export type RecurringExpenseAvgAggregateInputType = {
   id?: true
+  workspaceId?: true
   dueDay?: true
   dueMonth?: true
   billingMonth?: true
@@ -141,6 +147,7 @@ export type RecurringExpenseAvgAggregateInputType = {
 
 export type RecurringExpenseSumAggregateInputType = {
   id?: true
+  workspaceId?: true
   dueDay?: true
   dueMonth?: true
   billingMonth?: true
@@ -153,6 +160,7 @@ export type RecurringExpenseSumAggregateInputType = {
 
 export type RecurringExpenseMinAggregateInputType = {
   id?: true
+  workspaceId?: true
   startDate?: true
   cadence?: true
   dueDay?: true
@@ -178,6 +186,7 @@ export type RecurringExpenseMinAggregateInputType = {
 
 export type RecurringExpenseMaxAggregateInputType = {
   id?: true
+  workspaceId?: true
   startDate?: true
   cadence?: true
   dueDay?: true
@@ -203,6 +212,7 @@ export type RecurringExpenseMaxAggregateInputType = {
 
 export type RecurringExpenseCountAggregateInputType = {
   id?: true
+  workspaceId?: true
   startDate?: true
   cadence?: true
   dueDay?: true
@@ -315,6 +325,7 @@ export type RecurringExpenseGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type RecurringExpenseGroupByOutputType = {
   id: number
+  workspaceId: number | null
   startDate: Date
   cadence: string
   dueDay: number | null
@@ -363,6 +374,7 @@ export type RecurringExpenseWhereInput = {
   OR?: Prisma.RecurringExpenseWhereInput[]
   NOT?: Prisma.RecurringExpenseWhereInput | Prisma.RecurringExpenseWhereInput[]
   id?: Prisma.IntFilter<"RecurringExpense"> | number
+  workspaceId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   startDate?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   cadence?: Prisma.StringFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
@@ -384,6 +396,7 @@ export type RecurringExpenseWhereInput = {
   isActive?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   createdAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  workspace?: Prisma.XOR<Prisma.WorkspaceNullableScalarRelationFilter, Prisma.WorkspaceWhereInput> | null
   supplier?: Prisma.XOR<Prisma.SupplierNullableScalarRelationFilter, Prisma.SupplierWhereInput> | null
   category?: Prisma.XOR<Prisma.ExpenseCategoryNullableScalarRelationFilter, Prisma.ExpenseCategoryWhereInput> | null
   bank?: Prisma.XOR<Prisma.BankNullableScalarRelationFilter, Prisma.BankWhereInput> | null
@@ -392,6 +405,7 @@ export type RecurringExpenseWhereInput = {
 
 export type RecurringExpenseOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
   startDate?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -413,6 +427,7 @@ export type RecurringExpenseOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  workspace?: Prisma.WorkspaceOrderByWithRelationInput
   supplier?: Prisma.SupplierOrderByWithRelationInput
   category?: Prisma.ExpenseCategoryOrderByWithRelationInput
   bank?: Prisma.BankOrderByWithRelationInput
@@ -424,6 +439,7 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.RecurringExpenseWhereInput | Prisma.RecurringExpenseWhereInput[]
   OR?: Prisma.RecurringExpenseWhereInput[]
   NOT?: Prisma.RecurringExpenseWhereInput | Prisma.RecurringExpenseWhereInput[]
+  workspaceId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   startDate?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   cadence?: Prisma.StringFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
@@ -445,6 +461,7 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   createdAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  workspace?: Prisma.XOR<Prisma.WorkspaceNullableScalarRelationFilter, Prisma.WorkspaceWhereInput> | null
   supplier?: Prisma.XOR<Prisma.SupplierNullableScalarRelationFilter, Prisma.SupplierWhereInput> | null
   category?: Prisma.XOR<Prisma.ExpenseCategoryNullableScalarRelationFilter, Prisma.ExpenseCategoryWhereInput> | null
   bank?: Prisma.XOR<Prisma.BankNullableScalarRelationFilter, Prisma.BankWhereInput> | null
@@ -453,6 +470,7 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
 
 export type RecurringExpenseOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
   startDate?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -486,6 +504,7 @@ export type RecurringExpenseScalarWhereWithAggregatesInput = {
   OR?: Prisma.RecurringExpenseScalarWhereWithAggregatesInput[]
   NOT?: Prisma.RecurringExpenseScalarWhereWithAggregatesInput | Prisma.RecurringExpenseScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"RecurringExpense"> | number
+  workspaceId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   startDate?: Prisma.DateTimeWithAggregatesFilter<"RecurringExpense"> | Date | string
   cadence?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
@@ -528,6 +547,7 @@ export type RecurringExpenseCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
@@ -536,6 +556,7 @@ export type RecurringExpenseCreateInput = {
 
 export type RecurringExpenseUncheckedCreateInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -579,6 +600,7 @@ export type RecurringExpenseUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
@@ -587,6 +609,7 @@ export type RecurringExpenseUpdateInput = {
 
 export type RecurringExpenseUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -613,6 +636,7 @@ export type RecurringExpenseUncheckedUpdateInput = {
 
 export type RecurringExpenseCreateManyInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -659,6 +683,7 @@ export type RecurringExpenseUpdateManyMutationInput = {
 
 export type RecurringExpenseUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -694,6 +719,7 @@ export type RecurringExpenseOrderByRelationAggregateInput = {
 
 export type RecurringExpenseCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
@@ -719,6 +745,7 @@ export type RecurringExpenseCountOrderByAggregateInput = {
 
 export type RecurringExpenseAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
@@ -731,6 +758,7 @@ export type RecurringExpenseAvgOrderByAggregateInput = {
 
 export type RecurringExpenseMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
@@ -756,6 +784,7 @@ export type RecurringExpenseMaxOrderByAggregateInput = {
 
 export type RecurringExpenseMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
@@ -781,6 +810,7 @@ export type RecurringExpenseMinOrderByAggregateInput = {
 
 export type RecurringExpenseSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  workspaceId?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
@@ -794,6 +824,48 @@ export type RecurringExpenseSumOrderByAggregateInput = {
 export type RecurringExpenseNullableScalarRelationFilter = {
   is?: Prisma.RecurringExpenseWhereInput | null
   isNot?: Prisma.RecurringExpenseWhereInput | null
+}
+
+export type RecurringExpenseCreateNestedManyWithoutWorkspaceInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutWorkspaceInput, Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput> | Prisma.RecurringExpenseCreateWithoutWorkspaceInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutWorkspaceInput | Prisma.RecurringExpenseCreateOrConnectWithoutWorkspaceInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyWorkspaceInputEnvelope
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+}
+
+export type RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutWorkspaceInput, Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput> | Prisma.RecurringExpenseCreateWithoutWorkspaceInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutWorkspaceInput | Prisma.RecurringExpenseCreateOrConnectWithoutWorkspaceInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyWorkspaceInputEnvelope
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+}
+
+export type RecurringExpenseUpdateManyWithoutWorkspaceNestedInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutWorkspaceInput, Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput> | Prisma.RecurringExpenseCreateWithoutWorkspaceInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutWorkspaceInput | Prisma.RecurringExpenseCreateOrConnectWithoutWorkspaceInput[]
+  upsert?: Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutWorkspaceInput | Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutWorkspaceInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyWorkspaceInputEnvelope
+  set?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  disconnect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  delete?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutWorkspaceInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutWorkspaceInput[]
+  updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutWorkspaceInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutWorkspaceInput[]
+  deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+}
+
+export type RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutWorkspaceInput, Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput> | Prisma.RecurringExpenseCreateWithoutWorkspaceInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutWorkspaceInput | Prisma.RecurringExpenseCreateOrConnectWithoutWorkspaceInput[]
+  upsert?: Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutWorkspaceInput | Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutWorkspaceInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyWorkspaceInputEnvelope
+  set?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  disconnect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  delete?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutWorkspaceInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutWorkspaceInput[]
+  updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutWorkspaceInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutWorkspaceInput[]
+  deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
 }
 
 export type RecurringExpenseCreateNestedManyWithoutCategoryInput = {
@@ -922,24 +994,12 @@ export type RecurringExpenseUncheckedUpdateManyWithoutSupplierNestedInput = {
   deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type DecimalFieldUpdateOperationsInput = {
   set?: runtime.Decimal | runtime.DecimalJsLike | number | string
   increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
   decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
   multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
-}
-
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
 }
 
 export type RecurringExpenseCreateNestedOneWithoutGeneratedExpensesInput = {
@@ -956,6 +1016,112 @@ export type RecurringExpenseUpdateOneWithoutGeneratedExpensesNestedInput = {
   delete?: Prisma.RecurringExpenseWhereInput | boolean
   connect?: Prisma.RecurringExpenseWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.RecurringExpenseUpdateToOneWithWhereWithoutGeneratedExpensesInput, Prisma.RecurringExpenseUpdateWithoutGeneratedExpensesInput>, Prisma.RecurringExpenseUncheckedUpdateWithoutGeneratedExpensesInput>
+}
+
+export type RecurringExpenseCreateWithoutWorkspaceInput = {
+  startDate: Date | string
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  accrualType?: string
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  hasElectronicInvoice?: boolean
+  paymentChannel?: string | null
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
+  bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
+  generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
+}
+
+export type RecurringExpenseUncheckedCreateWithoutWorkspaceInput = {
+  id?: number
+  startDate: Date | string
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  accrualType?: string
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  supplierId?: number | null
+  categoryId?: number | null
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  hasElectronicInvoice?: boolean
+  paymentChannel?: string | null
+  bankId?: number | null
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  generatedExpenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutRecurringExpenseInput
+}
+
+export type RecurringExpenseCreateOrConnectWithoutWorkspaceInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutWorkspaceInput, Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput>
+}
+
+export type RecurringExpenseCreateManyWorkspaceInputEnvelope = {
+  data: Prisma.RecurringExpenseCreateManyWorkspaceInput | Prisma.RecurringExpenseCreateManyWorkspaceInput[]
+  skipDuplicates?: boolean
+}
+
+export type RecurringExpenseUpsertWithWhereUniqueWithoutWorkspaceInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  update: Prisma.XOR<Prisma.RecurringExpenseUpdateWithoutWorkspaceInput, Prisma.RecurringExpenseUncheckedUpdateWithoutWorkspaceInput>
+  create: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutWorkspaceInput, Prisma.RecurringExpenseUncheckedCreateWithoutWorkspaceInput>
+}
+
+export type RecurringExpenseUpdateWithWhereUniqueWithoutWorkspaceInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  data: Prisma.XOR<Prisma.RecurringExpenseUpdateWithoutWorkspaceInput, Prisma.RecurringExpenseUncheckedUpdateWithoutWorkspaceInput>
+}
+
+export type RecurringExpenseUpdateManyWithWhereWithoutWorkspaceInput = {
+  where: Prisma.RecurringExpenseScalarWhereInput
+  data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceInput>
+}
+
+export type RecurringExpenseScalarWhereInput = {
+  AND?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+  OR?: Prisma.RecurringExpenseScalarWhereInput[]
+  NOT?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+  id?: Prisma.IntFilter<"RecurringExpense"> | number
+  workspaceId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  startDate?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  cadence?: Prisma.StringFilter<"RecurringExpense"> | string
+  dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  accrualType?: Prisma.StringFilter<"RecurringExpense"> | string
+  billingPeriodMode?: Prisma.StringFilter<"RecurringExpense"> | string
+  billingMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  merchant?: Prisma.StringFilter<"RecurringExpense"> | string
+  supplierId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  categoryId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  description?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
+  amount?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  vatRate?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  hasElectronicInvoice?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  paymentChannel?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
+  bankId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  notes?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
+  isActive?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
 }
 
 export type RecurringExpenseCreateWithoutCategoryInput = {
@@ -977,6 +1143,7 @@ export type RecurringExpenseCreateWithoutCategoryInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
   generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
@@ -984,6 +1151,7 @@ export type RecurringExpenseCreateWithoutCategoryInput = {
 
 export type RecurringExpenseUncheckedCreateWithoutCategoryInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -1033,34 +1201,6 @@ export type RecurringExpenseUpdateManyWithWhereWithoutCategoryInput = {
   data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutCategoryInput>
 }
 
-export type RecurringExpenseScalarWhereInput = {
-  AND?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
-  OR?: Prisma.RecurringExpenseScalarWhereInput[]
-  NOT?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
-  id?: Prisma.IntFilter<"RecurringExpense"> | number
-  startDate?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
-  cadence?: Prisma.StringFilter<"RecurringExpense"> | string
-  dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  accrualType?: Prisma.StringFilter<"RecurringExpense"> | string
-  billingPeriodMode?: Prisma.StringFilter<"RecurringExpense"> | string
-  billingMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  merchant?: Prisma.StringFilter<"RecurringExpense"> | string
-  supplierId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  categoryId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  description?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
-  amount?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  vatRate?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  isDeclared?: Prisma.BoolFilter<"RecurringExpense"> | boolean
-  hasElectronicInvoice?: Prisma.BoolFilter<"RecurringExpense"> | boolean
-  paymentChannel?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
-  bankId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
-  notes?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
-  isActive?: Prisma.BoolFilter<"RecurringExpense"> | boolean
-  createdAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
-}
-
 export type RecurringExpenseCreateWithoutBankInput = {
   startDate: Date | string
   cadence: string
@@ -1080,6 +1220,7 @@ export type RecurringExpenseCreateWithoutBankInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
@@ -1087,6 +1228,7 @@ export type RecurringExpenseCreateWithoutBankInput = {
 
 export type RecurringExpenseUncheckedCreateWithoutBankInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -1155,6 +1297,7 @@ export type RecurringExpenseCreateWithoutSupplierInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
   generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
@@ -1162,6 +1305,7 @@ export type RecurringExpenseCreateWithoutSupplierInput = {
 
 export type RecurringExpenseUncheckedCreateWithoutSupplierInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -1230,6 +1374,7 @@ export type RecurringExpenseCreateWithoutGeneratedExpensesInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
@@ -1237,6 +1382,7 @@ export type RecurringExpenseCreateWithoutGeneratedExpensesInput = {
 
 export type RecurringExpenseUncheckedCreateWithoutGeneratedExpensesInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -1295,12 +1441,115 @@ export type RecurringExpenseUpdateWithoutGeneratedExpensesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
 }
 
 export type RecurringExpenseUncheckedUpdateWithoutGeneratedExpensesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RecurringExpenseCreateManyWorkspaceInput = {
+  id?: number
+  startDate: Date | string
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  accrualType?: string
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  supplierId?: number | null
+  categoryId?: number | null
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  hasElectronicInvoice?: boolean
+  paymentChannel?: string | null
+  bankId?: number | null
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RecurringExpenseUpdateWithoutWorkspaceInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
+  bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
+  generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
+}
+
+export type RecurringExpenseUncheckedUpdateWithoutWorkspaceInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  accrualType?: Prisma.StringFieldUpdateOperationsInput | string
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generatedExpenses?: Prisma.ExpenseUncheckedUpdateManyWithoutRecurringExpenseNestedInput
+}
+
+export type RecurringExpenseUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1327,6 +1576,7 @@ export type RecurringExpenseUncheckedUpdateWithoutGeneratedExpensesInput = {
 
 export type RecurringExpenseCreateManyCategoryInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -1368,6 +1618,7 @@ export type RecurringExpenseUpdateWithoutCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
   generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
@@ -1375,6 +1626,7 @@ export type RecurringExpenseUpdateWithoutCategoryInput = {
 
 export type RecurringExpenseUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1400,6 +1652,7 @@ export type RecurringExpenseUncheckedUpdateWithoutCategoryInput = {
 
 export type RecurringExpenseUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1424,6 +1677,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutCategoryInput = {
 
 export type RecurringExpenseCreateManyBankInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -1465,6 +1719,7 @@ export type RecurringExpenseUpdateWithoutBankInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
@@ -1472,6 +1727,7 @@ export type RecurringExpenseUpdateWithoutBankInput = {
 
 export type RecurringExpenseUncheckedUpdateWithoutBankInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1497,6 +1753,7 @@ export type RecurringExpenseUncheckedUpdateWithoutBankInput = {
 
 export type RecurringExpenseUncheckedUpdateManyWithoutBankInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1521,6 +1778,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutBankInput = {
 
 export type RecurringExpenseCreateManySupplierInput = {
   id?: number
+  workspaceId?: number | null
   startDate: Date | string
   cadence: string
   dueDay?: number | null
@@ -1562,6 +1820,7 @@ export type RecurringExpenseUpdateWithoutSupplierInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
   generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
@@ -1569,6 +1828,7 @@ export type RecurringExpenseUpdateWithoutSupplierInput = {
 
 export type RecurringExpenseUncheckedUpdateWithoutSupplierInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1594,6 +1854,7 @@ export type RecurringExpenseUncheckedUpdateWithoutSupplierInput = {
 
 export type RecurringExpenseUncheckedUpdateManyWithoutSupplierInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1649,6 +1910,7 @@ export type RecurringExpenseCountOutputTypeCountGeneratedExpensesArgs<ExtArgs ex
 
 export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  workspaceId?: boolean
   startDate?: boolean
   cadence?: boolean
   dueDay?: boolean
@@ -1670,6 +1932,7 @@ export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.Inte
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -1679,6 +1942,7 @@ export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  workspaceId?: boolean
   startDate?: boolean
   cadence?: boolean
   dueDay?: boolean
@@ -1700,6 +1964,7 @@ export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -1707,6 +1972,7 @@ export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
 
 export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  workspaceId?: boolean
   startDate?: boolean
   cadence?: boolean
   dueDay?: boolean
@@ -1728,6 +1994,7 @@ export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -1735,6 +2002,7 @@ export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
 
 export type RecurringExpenseSelectScalar = {
   id?: boolean
+  workspaceId?: boolean
   startDate?: boolean
   cadence?: boolean
   dueDay?: boolean
@@ -1758,8 +2026,9 @@ export type RecurringExpenseSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "startDate" | "cadence" | "dueDay" | "dueMonth" | "accrualType" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentChannel" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
+export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "startDate" | "cadence" | "dueDay" | "dueMonth" | "accrualType" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentChannel" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
 export type RecurringExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -1767,11 +2036,13 @@ export type RecurringExpenseInclude<ExtArgs extends runtime.Types.Extensions.Int
   _count?: boolean | Prisma.RecurringExpenseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RecurringExpenseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
 }
 export type RecurringExpenseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -1780,6 +2051,7 @@ export type RecurringExpenseIncludeUpdateManyAndReturn<ExtArgs extends runtime.T
 export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "RecurringExpense"
   objects: {
+    workspace: Prisma.$WorkspacePayload<ExtArgs> | null
     supplier: Prisma.$SupplierPayload<ExtArgs> | null
     category: Prisma.$ExpenseCategoryPayload<ExtArgs> | null
     bank: Prisma.$BankPayload<ExtArgs> | null
@@ -1787,6 +2059,7 @@ export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.In
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    workspaceId: number | null
     startDate: Date
     cadence: string
     dueDay: number | null
@@ -2202,6 +2475,7 @@ readonly fields: RecurringExpenseFieldRefs;
  */
 export interface Prisma__RecurringExpenseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  workspace<T extends Prisma.RecurringExpense$workspaceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$workspaceArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   supplier<T extends Prisma.RecurringExpense$supplierArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$supplierArgs<ExtArgs>>): Prisma.Prisma__SupplierClient<runtime.Types.Result.GetResult<Prisma.$SupplierPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.RecurringExpense$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$categoryArgs<ExtArgs>>): Prisma.Prisma__ExpenseCategoryClient<runtime.Types.Result.GetResult<Prisma.$ExpenseCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bank<T extends Prisma.RecurringExpense$bankArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$bankArgs<ExtArgs>>): Prisma.Prisma__BankClient<runtime.Types.Result.GetResult<Prisma.$BankPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -2236,6 +2510,7 @@ export interface Prisma__RecurringExpenseClient<T, Null = never, ExtArgs extends
  */
 export interface RecurringExpenseFieldRefs {
   readonly id: Prisma.FieldRef<"RecurringExpense", 'Int'>
+  readonly workspaceId: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly startDate: Prisma.FieldRef<"RecurringExpense", 'DateTime'>
   readonly cadence: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly dueDay: Prisma.FieldRef<"RecurringExpense", 'Int'>
@@ -2655,6 +2930,25 @@ export type RecurringExpenseDeleteManyArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many RecurringExpenses to delete.
    */
   limit?: number
+}
+
+/**
+ * RecurringExpense.workspace
+ */
+export type RecurringExpense$workspaceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Workspace
+   */
+  select?: Prisma.WorkspaceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Workspace
+   */
+  omit?: Prisma.WorkspaceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceWhereInput
 }
 
 /**

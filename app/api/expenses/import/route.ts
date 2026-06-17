@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { importExpensesWorkbook, importRecurringExpenseDefinitionsWorkbook } from '@/lib/expense-import';
+import { getWorkspaceContext } from '@/lib/auth';
 
 function redirectWithParams(request: Request, params: Record<string, string | number | boolean>) {
   const url = new URL('/expenses/import', request.url);
@@ -9,6 +10,8 @@ function redirectWithParams(request: Request, params: Record<string, string | nu
 
 export async function POST(request: Request) {
   try {
+    const current = await getWorkspaceContext();
+    if (!current) return redirectWithParams(request, { error: 'auth_required' });
     const formData = await request.formData();
     const file = formData.get('file');
     const clearBeforeImport = formData.get('clearBeforeImport') === 'on';
@@ -19,8 +22,8 @@ export async function POST(request: Request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const result = importType === 'recurring_definitions'
-      ? await importRecurringExpenseDefinitionsWorkbook(buffer, { clearBeforeImport })
-      : await importExpensesWorkbook(buffer, { clearBeforeImport });
+      ? await importRecurringExpenseDefinitionsWorkbook(buffer, { clearBeforeImport, workspaceId: current.workspace.id })
+      : await importExpensesWorkbook(buffer, { clearBeforeImport, workspaceId: current.workspace.id });
 
     const baseResult = {
       imported: result.imported,

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getWorkspaceContext } from '@/lib/auth';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
@@ -18,6 +19,8 @@ function safeReturnTo(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const formData = await request.formData();
   const action = String(formData.get('bulkAction') || '');
   const ids = selectedIds(formData);
@@ -30,10 +33,10 @@ export async function POST(request: Request) {
   if (action === 'delete') {
     await prisma.$transaction([
       prisma.expense.updateMany({
-        where: { supplierId: { in: ids } },
+        where: { supplierId: { in: ids }, workspaceId: current.workspace.id },
         data: { supplierId: null }
       }),
-      prisma.supplier.deleteMany({ where: { id: { in: ids } } })
+      prisma.supplier.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } })
     ]);
   }
 

@@ -74,11 +74,13 @@ function excelDate(value: unknown): Date | null {
 async function getOrCreateCategory(name?: string) {
   const categoryName = mapCategoryName(name);
   const code = categoryCode(categoryName);
-  return prisma.expenseCategory.upsert({ where: { code }, update: { name: categoryName }, create: { code, name: categoryName } });
+  const existing = await prisma.expenseCategory.findFirst({ where: { workspaceId: null, code } });
+  return existing ? prisma.expenseCategory.update({ where: { id: existing.id }, data: { name: categoryName } }) : prisma.expenseCategory.create({ data: { code, name: categoryName } });
 }
 async function getOrCreateBank(name?: string) {
   const bankName = mapBankName(name);
-  return prisma.bank.upsert({ where: { name: bankName }, update: {}, create: { name: bankName } });
+  const existing = await prisma.bank.findFirst({ where: { workspaceId: null, name: bankName } });
+  return existing ?? prisma.bank.create({ data: { name: bankName } });
 }
 async function getOrCreateSupplier(name?: string) {
   const businessName = String(name || '').trim() || 'Senza esercente';
@@ -92,10 +94,13 @@ async function main() {
   await prisma.company.upsert({ where: { code: 'OTHER' }, update: {}, create: { code: 'OTHER', name: 'Altro' } });
   for (const categoryName of fixedCategories) {
     const code = categoryCode(categoryName);
-    await prisma.expenseCategory.upsert({ where: { code }, update: { name: categoryName }, create: { code, name: categoryName } });
+    const existing = await prisma.expenseCategory.findFirst({ where: { workspaceId: null, code } });
+    if (existing) await prisma.expenseCategory.update({ where: { id: existing.id }, data: { name: categoryName } });
+    else await prisma.expenseCategory.create({ data: { code, name: categoryName } });
   }
   for (const bankName of fixedBanks) {
-    await prisma.bank.upsert({ where: { name: bankName }, update: {}, create: { name: bankName } });
+    const existing = await prisma.bank.findFirst({ where: { workspaceId: null, name: bankName } });
+    if (!existing) await prisma.bank.create({ data: { name: bankName } });
   }
   const companies = Object.fromEntries((await prisma.company.findMany()).map(c => [c.code, c]));
 

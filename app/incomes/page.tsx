@@ -17,6 +17,7 @@ import {
   salesChannelStyles
 } from '@/lib/income-ui';
 import { vatStyles } from '@/lib/expense-ui';
+import { requireWorkspace } from '@/lib/auth';
 
 const salesChannelOptions = ['Shop', 'Online Shop', 'Altro Canale'];
 const saleCategoryOptions = ['B2C', 'B2B', 'Altro'];
@@ -362,6 +363,7 @@ function IncomeBreakdownChart({ title, description, data }: { title: string; des
 }
 
 export default async function IncomesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/incomes');
   const filters = (await searchParams) ?? {};
   const currentQuery = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
@@ -389,8 +391,8 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
 
   const [incomes, expensesForVat] = await Promise.all([
-    prisma.income.findMany({ orderBy: [{ creditDate: 'desc' }, { id: 'desc' }], take: 500 }),
-    prisma.expense.findMany({ include: { payments: true }, take: 5000 })
+    prisma.income.findMany({ where: { workspaceId: current.workspace.id }, orderBy: [{ creditDate: 'desc' }, { id: 'desc' }], take: 500 }),
+    prisma.expense.findMany({ where: { workspaceId: current.workspace.id }, include: { payments: true }, take: 5000 })
   ]);
 
   const creditDateFromFilter = useCreditDateFilter ? creditDateFromDefault : '';

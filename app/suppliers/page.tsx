@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { euro } from '@/lib/money';
 import NewSupplierPanel from '@/components/NewSupplierPanel';
 import SupplierFiltersDrawer from '@/components/SupplierFiltersDrawer';
+import { requireWorkspace } from '@/lib/auth';
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -23,6 +24,7 @@ function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: s
 }
 
 export default async function SuppliersPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/suppliers');
   const filters = (await searchParams) ?? {};
   const currentYear = new Date().getFullYear();
   const currentQuery = new URLSearchParams();
@@ -35,6 +37,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
   const returnTo = encodeURIComponent(supplierListHref);
 
   const suppliers = await prisma.supplier.findMany({
+    where: { workspaceId: current.workspace.id },
     orderBy: { businessName: 'asc' },
     include: { expenses: { include: { payments: true } } }
   });

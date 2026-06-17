@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getWorkspaceContext } from '@/lib/auth';
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const { id } = await params;
   const recurringExpenseId = Number(id);
 
@@ -14,7 +17,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     include: { supplier: true }
   });
 
-  if (!expense) {
+  if (!expense || expense.workspaceId !== current.workspace.id) {
     return NextResponse.json({ error: 'Spesa ricorrente non trovata' }, { status: 404 });
   }
 

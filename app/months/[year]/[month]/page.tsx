@@ -1,11 +1,13 @@
 import { getMonthlyReport } from '@/lib/reports';
 import { euro, monthName } from '@/lib/money';
+import { requireWorkspace } from '@/lib/auth';
 
 export default async function MonthPage({ params }: { params: Promise<{ year: string; month: string }> }) {
+  const current = await requireWorkspace('/months');
   const resolvedParams = await params;
   const year = Number(resolvedParams.year);
   const month = Number(resolvedParams.month);
-  const report = await getMonthlyReport(year, month);
+  const report = await getMonthlyReport(year, month, current.workspace.id);
   return <div className="grid">
     <div className="card">
       <h2>{monthName(month)} {year}</h2>

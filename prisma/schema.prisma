@@ -37,29 +37,118 @@ enum InvoiceStatus {
   RICEVUTA
 }
 
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  ACCOUNTANT
+  VIEWER
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  isActive     Boolean   @default(true)
+  isSystemAdmin Boolean  @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
+  memberships     WorkspaceMember[]
+  sessions        AuthSession[]
+}
+
+model Workspace {
+  id        Int      @id @default(autoincrement())
+  name      String
+  ownerId   Int
+  owner     User     @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members            WorkspaceMember[]
+  sessions           AuthSession[]
+  companies          Company[]
+  expenseCategories  ExpenseCategory[]
+  banks              Bank[]
+  suppliers          Supplier[]
+  recurringExpenses  RecurringExpense[]
+  expenses           Expense[]
+  monthlyRevenues    MonthlyRevenue[]
+  incomes            Income[]
+
+  @@index([ownerId])
+}
+
+model WorkspaceMember {
+  id          Int           @id @default(autoincrement())
+  workspaceId Int
+  userId      Int
+  role        WorkspaceRole @default(VIEWER)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model AuthSession {
+  id          Int       @id @default(autoincrement())
+  tokenHash   String    @unique
+  userId      Int
+  workspaceId Int?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([workspaceId])
+  @@index([expiresAt])
+}
+
 model Company {
   id        Int       @id @default(autoincrement())
   code      CompanyCode @unique
   name      String
+  workspaceId Int?
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   expenses  Expense[]
   revenues  MonthlyRevenue[]
   createdAt DateTime @default(now())
+
+  @@index([workspaceId])
 }
 
 model ExpenseCategory {
   id        Int       @id @default(autoincrement())
-  code      String    @unique
+  code      String
   name      String
+  workspaceId Int?
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   expenses  Expense[]
   recurringExpenses RecurringExpense[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
 }
 
 model Bank {
   id        Int       @id @default(autoincrement())
-  name      String    @unique
+  name      String
+  workspaceId Int?
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   expenses  Expense[]
   payments  ExpensePayment[]
   recurringExpenses RecurringExpense[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
 }
 
 model Supplier {
@@ -71,6 +160,8 @@ model Supplier {
   taxCodeSdi     String?
   alias          String?
   internalNotes  String?
+  workspaceId    Int?
+  workspace      Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   expenses       Expense[]
   recurringExpenses RecurringExpense[]
   createdAt      DateTime  @default(now())
@@ -78,10 +169,13 @@ model Supplier {
 
   @@index([businessName])
   @@index([alias])
+  @@index([workspaceId])
 }
 
 model RecurringExpense {
   id                   Int       @id @default(autoincrement())
+  workspaceId          Int?
+  workspace            Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   startDate            DateTime
   cadence              String
   dueDay               Int?
@@ -108,6 +202,7 @@ model RecurringExpense {
   updatedAt            DateTime  @updatedAt
 
   generatedExpenses    Expense[]
+  @@index([workspaceId])
   @@index([startDate])
   @@index([supplierId])
   @@index([isActive])
@@ -116,6 +211,8 @@ model RecurringExpense {
 
 model Expense {
   id                    Int       @id @default(autoincrement())
+  workspaceId           Int?
+  workspace             Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   receivedDate          DateTime?
   merchant              String
   supplierId            Int?
@@ -158,6 +255,7 @@ model Expense {
   updatedAt             DateTime  @updatedAt
 
   @@unique([recurringExpenseId, recurringExpensePeriodKey])
+  @@index([workspaceId])
   @@index([year, month])
   @@index([merchant])
 }
@@ -193,6 +291,8 @@ model ExpenseAttachment {
 
 model MonthlyRevenue {
   id              Int       @id @default(autoincrement())
+  workspaceId     Int?
+  workspace       Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   companyId       Int
   company         Company   @relation(fields: [companyId], references: [id])
   month           Int
@@ -210,12 +310,15 @@ model MonthlyRevenue {
   updatedAt       DateTime  @updatedAt
 
   @@unique([companyId, year, month])
+  @@index([workspaceId])
   @@index([year, month])
 }
 
 
 model Income {
   id              Int       @id @default(autoincrement())
+  workspaceId     Int?
+  workspace       Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   salesChannel    String
   saleCategory    String    @default("B2C")
   description     String?
@@ -232,6 +335,7 @@ model Income {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  @@index([workspaceId])
   @@index([creditDate])
   @@index([billingYear, billingMonth])
   @@index([salesChannel])

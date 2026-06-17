@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseDetailEditModalController from '@/components/ExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
+import { requireWorkspace } from '@/lib/auth';
 import {
   badgeClass,
   bankIcons,
@@ -53,6 +54,7 @@ function booleanBadge(value: boolean) {
 }
 
 export default async function ExpenseDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/expenses');
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
@@ -65,12 +67,12 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       where: { id: Number(id) },
       include: { category: true, bank: true, supplier: true, payments: { include: { bank: true }, orderBy: { id: 'asc' } }, attachments: true }
     }),
-    prisma.expenseCategory.findMany({ orderBy: { id: 'asc' } }),
-    prisma.bank.findMany(),
-    prisma.supplier.findMany({ orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
-  if (!expense) notFound();
+  if (!expense || expense.workspaceId !== current.workspace.id) notFound();
 
   const orderedBanks = allowedBankOrder
     .map(name => banks.find(bank => bank.name === name))

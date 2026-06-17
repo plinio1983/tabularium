@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import RecurringExpensesList from '@/components/RecurringExpensesList';
 import NewRecurringExpensePanel from '@/components/NewRecurringExpensePanel';
+import { requireWorkspace } from '@/lib/auth';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
 const allowedCategoryOrder = [
@@ -32,6 +33,7 @@ function decimalFilter(minValue: string, maxValue: string) {
 }
 
 export default async function RecurringExpensesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/recurring-expenses');
   const filters = (await searchParams) ?? {};
   const merchantFilter = inputDefault(filters, 'merchant').trim();
   const descriptionFilter = inputDefault(filters, 'description').trim();
@@ -44,7 +46,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   const amountMinFilter = inputDefault(filters, 'amountMin');
   const amountMaxFilter = inputDefault(filters, 'amountMax');
   const amountWhere = decimalFilter(amountMinFilter, amountMaxFilter);
-  const where: Record<string, any> = {};
+  const where: Record<string, any> = { workspaceId: current.workspace.id };
 
   if (merchantFilter) {
     where.OR = [
@@ -68,9 +70,9 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       include: { supplier: true, category: true, bank: true },
       orderBy: [{ isActive: 'desc' }, { startDate: 'asc' }]
     }),
-    prisma.expenseCategory.findMany({ orderBy: { id: 'asc' } }),
-    prisma.bank.findMany(),
-    prisma.supplier.findMany({ orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
   const orderedBanks = allowedBankOrder.map(name => banks.find(bank => bank.name === name)).filter(Boolean) as typeof banks;

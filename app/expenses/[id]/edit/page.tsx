@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseForm from '@/components/ExpenseForm';
+import { requireWorkspace } from '@/lib/auth';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
 const allowedCategoryOrder = [
@@ -18,16 +19,17 @@ const allowedCategoryOrder = [
 ];
 
 export default async function EditExpensePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/expenses');
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/expenses/${id}`;
   const encodedReturnTo = encodeURIComponent(returnTo);
   const [expense, categories, banks, suppliers] = await Promise.all([
-    prisma.expense.findUnique({ where: { id: Number(id) }, include: { payments: { orderBy: { id: 'asc' } }, supplier: true } }),
-    prisma.expenseCategory.findMany({ orderBy: { id: 'asc' } }),
-    prisma.bank.findMany(),
-    prisma.supplier.findMany({ orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.expense.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id }, include: { payments: { orderBy: { id: 'asc' } }, supplier: true } }),
+    prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
+    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
   if (!expense) notFound();

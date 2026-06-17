@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { requireWorkspace } from '@/lib/auth';
 
 export default async function EditSupplierPage({ params }: { params: Promise<{ id: string }> }) {
+  const current = await requireWorkspace('/suppliers');
   const { id } = await params;
-  const supplier = await prisma.supplier.findUnique({ where: { id: Number(id) } });
+  const supplier = await prisma.supplier.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id } });
   if (!supplier) notFound();
 
   return <div className="grid">

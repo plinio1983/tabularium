@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { getWorkspaceContext } from '@/lib/auth';
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -117,11 +118,11 @@ function safePath(value: string | null, fallback: string, requestUrl: string) {
 }
 
 
-async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>) {
+async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>, workspaceId: number) {
   const submittedName = String(data.merchant ?? '').trim();
 
   if (data.supplierId) {
-    const existing = await prisma.supplier.findUnique({ where: { id: data.supplierId } });
+    const existing = await prisma.supplier.findFirst({ where: { id: data.supplierId, workspaceId } });
     if (existing) return { id: existing.id, businessName: existing.businessName };
   }
 
@@ -130,13 +131,13 @@ async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>) {
   }
 
   const existingByName = await prisma.supplier.findFirst({
-    where: { businessName: { equals: submittedName, mode: 'insensitive' } }
+    where: { businessName: { equals: submittedName, mode: 'insensitive' }, workspaceId }
   });
 
   if (existingByName) return { id: existingByName.id, businessName: existingByName.businessName };
 
   const created = await prisma.supplier.create({
-    data: { businessName: submittedName }
+    data: { businessName: submittedName, workspaceId }
   });
 
   return { id: created.id, businessName: created.businessName };
@@ -174,7 +175,10 @@ async function saveAttachments(files: FormDataEntryValue[]) {
 }
 
 export async function GET() {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const expenses = await prisma.expense.findMany({
+    where: { workspaceId: current.workspace.id },
     include: { category: true, bank: true, company: true, supplier: true, payments: { include: { bank: true } }, attachments: true },
     orderBy: { id: 'desc' },
     take: 500
@@ -183,6 +187,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const isForm = request.headers.get('content-type')?.includes('application/x-www-form-urlencoded') || request.headers.get('content-type')?.includes('multipart/form-data');
   const formData = isForm ? await request.formData() : null;
   const raw = formData ? Object.fromEntries(formData.entries()) : await request.json();
@@ -190,7 +196,7 @@ export async function POST(request: Request) {
   const invoiceFields = normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data);
   const payments = parsePayments(formData, (raw as any).payments);
-  const supplierRef = await resolveSupplierReference(data);
+  const supplierRef = await resolveSupplierReference(data, current.workspace.id);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const attachments = formData ? await saveAttachments(formData.getAll('attachments')) : [];
   const firstPayment = payments[0];
@@ -198,6 +204,7 @@ export async function POST(request: Request) {
   const firstPaidBy = firstPayment?.paidBy ?? 'HERBAL_MARKET';
 
   await prisma.expense.create({ data: {
+    workspaceId: current.workspace.id,
     receivedDate: data.receivedDate ? new Date(data.receivedDate) : null,
     dueDate: data.dueDate ? new Date(data.dueDate) : null,
     merchant: supplierRef.businessName,

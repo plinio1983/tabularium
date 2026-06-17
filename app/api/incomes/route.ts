@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { getWorkspaceContext } from '@/lib/auth';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -41,17 +42,22 @@ function redirectAfterFormSave(request: Request, fallback: string) {
 }
 
 export async function GET() {
-  const incomes = await prisma.income.findMany({ orderBy: { creditDate: 'desc' }, take: 500 });
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const incomes = await prisma.income.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { creditDate: 'desc' }, take: 500 });
   return NextResponse.json(incomes);
 }
 
 export async function POST(request: Request) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const isForm = request.headers.get('content-type')?.includes('application/x-www-form-urlencoded') || request.headers.get('content-type')?.includes('multipart/form-data');
   const raw = isForm ? Object.fromEntries((await request.formData()).entries()) : await request.json();
   const parsed = IncomeSchema.parse(raw);
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
   const income = await prisma.income.create({
     data: {
+      workspaceId: current.workspace.id,
       salesChannel: parsed.salesChannel,
       saleCategory: parsed.saleCategory,
       description: parsed.description || null,

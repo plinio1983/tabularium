@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { fiscalQuarterMonthsByIndex, getOrderDateMonthSummary, getPeriodSummary } from '@/lib/reports';
+import { getWorkspaceContext } from '@/lib/auth';
 
 export async function GET(request: Request) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type');
   const year = Number(searchParams.get('year'));
@@ -16,7 +19,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Mese non valido' }, { status: 400 });
     }
 
-    const totals = await getOrderDateMonthSummary(year, month);
+    const totals = await getOrderDateMonthSummary(year, month, current.workspace.id);
     return NextResponse.json({ year, month, totals });
   }
 
@@ -27,7 +30,7 @@ export async function GET(request: Request) {
     }
 
     const periods = [{ year, month }];
-    const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true });
+    const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id });
     return NextResponse.json({ periods, totals });
   }
 
@@ -38,7 +41,7 @@ export async function GET(request: Request) {
     }
 
     const periods = fiscalQuarterMonthsByIndex(year, quarterIndex);
-    const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true });
+    const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id });
     return NextResponse.json({ periods, totals });
   }
 

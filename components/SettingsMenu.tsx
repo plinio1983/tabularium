@@ -5,10 +5,12 @@ import { useEffect, useState } from 'react';
 
 const settingsLinks = [
   { href: '/settings/account', label: 'Account' },
+  { href: '/account/workspace', label: 'Workspace' },
   { href: '/settings/company', label: 'Azienda' },
   { href: '/settings/company-settings', label: 'Impostazioni Società' },
   { href: '/settings/categories', label: 'Categorie' },
-  { href: '/settings/payment-credit', label: 'Pagamento e Accredito' }
+  { href: '/settings/payment-credit', label: 'Pagamento e Accredito' },
+  { href: '/logout', label: 'Logout' }
 ];
 
 export default function SettingsMenu() {

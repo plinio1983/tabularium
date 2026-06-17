@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
+import { requireWorkspace } from '@/lib/auth';
 import {
   badgeClass,
   categoryStyles,
@@ -33,10 +34,10 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
   let state = invoiceStatus;
   if (invoiceStatus === "IN_ATTESA") {
-    state = ' - Wait';
+    state = " Wait";
   }
   if (invoiceStatus === "RICEVUTA") {
-    state = ' - Ok';
+    state = " Ok";
   }
   const label = !value ? 'Fatt' : '@bill';
   return <span className={badgeClass(style.className)}>{label}{state}</span>;
@@ -69,6 +70,7 @@ function CopyableField({ label, value }: { label: string; value?: string | null 
 }
 
 export default async function SupplierDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/suppliers');
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
@@ -77,7 +79,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
     where: { id: Number(id) },
     include: { expenses: { include: { payments: true, category: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] } }
   });
-  if (!supplier) notFound();
+  if (!supplier || supplier.workspaceId !== current.workspace.id) notFound();
 
   const openExpenses = supplier.expenses.map(expense => {
     const amount = Number(expense.amount.toString());

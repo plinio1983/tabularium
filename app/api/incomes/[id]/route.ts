@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { getWorkspaceContext } from '@/lib/auth';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -20,6 +21,8 @@ const IncomeSchema = z.object({
 });
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const { id } = await params;
   const incomeId = Number(id);
   const formData = await request.formData();
@@ -28,11 +31,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const returnTo = new URL(request.url).searchParams.get('returnTo');
 
   if (action === 'delete') {
-    await prisma.income.delete({ where: { id: incomeId } });
+    await prisma.income.deleteMany({ where: { id: incomeId, workspaceId: current.workspace.id } });
     return NextResponse.redirect(new URL(returnTo || '/incomes', request.url), 303);
   }
 
   const parsed = IncomeSchema.parse(raw);
+  const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id }, select: { id: true } });
+  if (!existing) return NextResponse.json({ error: 'Incasso non trovato' }, { status: 404 });
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
   await prisma.income.update({
     where: { id: incomeId },

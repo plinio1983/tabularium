@@ -4,6 +4,7 @@ import { AutoSubmitSelect } from '@/components/AutoSubmitSelect';
 import { euro, moneyTone, monthName } from '@/lib/money';
 import { getAccountingDashboardReport, getOrderDateMonthSummary } from '@/lib/reports';
 import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
+import { requireWorkspace } from '@/lib/auth';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
   if (!periods.length) return '-';
@@ -281,6 +282,7 @@ function IncomeExpenseBreakdownChart({
 }
 
 export default async function Dashboard({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/');
   const params = (await searchParams) ?? {};
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -301,8 +303,8 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const selectedQuarter = { ...rawSelectedQuarter, year: annualYear };
   const reportYear = annualYear;
   const [report, monthlyTrendTotals] = await Promise.all([
-    getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear),
-    getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month)
+    getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id),
+    getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id)
   ]);
   const fiscalMonth = report.currentFiscalMonth.periods[0];
   const trendExpensesHref = dateRangeLink('/expenses', selectedTrendMonth.year, selectedTrendMonth.month);

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { getWorkspaceContext } from '@/lib/auth';
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -27,11 +28,11 @@ const ExpenseSchema = z.object({
 
 
 
-async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>) {
+async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>, workspaceId: number) {
   const submittedName = String(data.merchant ?? '').trim();
 
   if (data.supplierId) {
-    const existing = await prisma.supplier.findUnique({ where: { id: data.supplierId } });
+    const existing = await prisma.supplier.findFirst({ where: { id: data.supplierId, workspaceId } });
     if (existing) return { id: existing.id, businessName: existing.businessName };
   }
 
@@ -40,13 +41,13 @@ async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>) {
   }
 
   const existingByName = await prisma.supplier.findFirst({
-    where: { businessName: { equals: submittedName, mode: 'insensitive' } }
+    where: { businessName: { equals: submittedName, mode: 'insensitive' }, workspaceId }
   });
 
   if (existingByName) return { id: existingByName.id, businessName: existingByName.businessName };
 
   const created = await prisma.supplier.create({
-    data: { businessName: submittedName }
+    data: { businessName: submittedName, workspaceId }
   });
 
   return { id: created.id, businessName: created.businessName };
@@ -134,6 +135,8 @@ async function saveAttachments(files: FormDataEntryValue[], existingCount: numbe
 }
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const current = await getWorkspaceContext();
+  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const { id } = await params;
   const expenseId = Number(id);
   const formData = await request.formData();
@@ -141,20 +144,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const action = String(raw._action || 'update');
   const returnTo = new URL(request.url).searchParams.get('returnTo');
   if (action === 'delete') {
-    await prisma.expense.delete({ where: { id: expenseId } });
+    await prisma.expense.deleteMany({ where: { id: expenseId, workspaceId: current.workspace.id } });
     return NextResponse.redirect(new URL(returnTo || '/expenses', request.url), 303);
   }
   const data = ExpenseSchema.parse(raw);
   const invoiceFields = normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data.billingPeriod);
   const payments = parsePayments(formData);
-  const supplierRef = await resolveSupplierReference(data);
+  const supplierRef = await resolveSupplierReference(data, current.workspace.id);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const firstPayment = payments[0];
   // Expense.bankId is legacy/denormalized. The real bank lives on each ExpensePayment row.
   const firstPaidBy = firstPayment?.paidBy ?? 'HERBAL_MARKET';
 
-  const existing = await prisma.expense.findUnique({ where: { id: expenseId }, include: { attachments: true } });
+  const existing = await prisma.expense.findFirst({ where: { id: expenseId, workspaceId: current.workspace.id }, include: { attachments: true } });
   if (!existing) return NextResponse.json({ error: 'Spesa non trovata' }, { status: 404 });
   const nextIsRecurring = existing.isRecurring ? data.isRecurring : false;
 

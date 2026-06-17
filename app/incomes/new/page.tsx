@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import IncomeForm from '@/components/IncomeForm';
+import { requireWorkspace } from '@/lib/auth';
 
 export default async function NewIncomePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/incomes/new');
   const params = (await searchParams) ?? {};
   const copyIdValue = Array.isArray(params.copyId) ? params.copyId[0] : params.copyId;
   const rawReturnTo = Array.isArray(params.returnTo) ? params.returnTo[0] : params.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/incomes';
   const encodedReturnTo = encodeURIComponent(returnTo);
   const copyId = copyIdValue ? Number(copyIdValue) : null;
-  const copyIncome = copyId ? await prisma.income.findUnique({ where: { id: copyId } }) : null;
+  const copyIncome = copyId ? await prisma.income.findFirst({ where: { id: copyId, workspaceId: current.workspace.id } }) : null;
 
   return <div className="modal-page-wrap">
     <div className="modal-card modal-card-wide modal-page-card">

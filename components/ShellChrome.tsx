@@ -34,6 +34,7 @@ function DesktopHeader({ compactOnMobile = false }: { compactOnMobile?: boolean 
 
 export default function ShellChrome({ slot }: Props) {
   const pathname = usePathname() || '/';
+  if (pathname.startsWith('/admin')) return null;
 
   if (slot === 'header') {
     if (isCompactMobileHeaderPath(pathname)) {

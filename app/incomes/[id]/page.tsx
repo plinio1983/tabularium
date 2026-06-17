@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
 import { euro } from '@/lib/money';
+import { requireWorkspace } from '@/lib/auth';
 import { vatStyles } from '@/lib/expense-ui';
 import {
   badgeClass,
@@ -40,13 +41,14 @@ function booleanBadge(value: boolean) {
 }
 
 export default async function IncomeDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const current = await requireWorkspace('/incomes');
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/incomes';
   const encodedReturnTo = encodeURIComponent(returnTo);
   const currentDetailReturnTo = `/incomes/${id}?returnTo=${encodedReturnTo}`;
-  const income = await prisma.income.findUnique({ where: { id: Number(id) } });
+  const income = await prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id } });
   if (!income) notFound();
 
   const amount = Number(income.amount.toString());

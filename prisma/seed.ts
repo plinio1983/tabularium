@@ -71,10 +71,14 @@ async function main() {
   await prisma.company.upsert({ where: { code: 'OTHER' }, update: { name: 'Altro Operatore' }, create: { code: 'OTHER', name: 'Altro Operatore' } });
 
   for (const categoryName of fixedCategories) {
-    await prisma.expenseCategory.upsert({ where: { code: categoryCode(categoryName) }, update: { name: categoryName }, create: { code: categoryCode(categoryName), name: categoryName } });
+    const code = categoryCode(categoryName);
+    const existing = await prisma.expenseCategory.findFirst({ where: { workspaceId: null, code } });
+    if (existing) await prisma.expenseCategory.update({ where: { id: existing.id }, data: { name: categoryName } });
+    else await prisma.expenseCategory.create({ data: { code, name: categoryName } });
   }
   for (const bankName of fixedBanks) {
-    await prisma.bank.upsert({ where: { name: bankName }, update: {}, create: { name: bankName } });
+    const existing = await prisma.bank.findFirst({ where: { workspaceId: null, name: bankName } });
+    if (!existing) await prisma.bank.create({ data: { name: bankName } });
   }
 
   await prisma.monthlyRevenue.deleteMany({});
