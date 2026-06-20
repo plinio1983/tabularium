@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-type Option = { id: number; name: string };
+type Option = { id: number; name: string; icon?: string | null };
 
 type Props = {
   filters: Record<string, string | string[] | undefined>;

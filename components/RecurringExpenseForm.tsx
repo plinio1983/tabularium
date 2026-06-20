@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { categoryStyles } from "@/lib/expense-ui";
+import { categoryIcon } from "@/lib/expense-ui";
 
-type Option = { id: number; code?: string; name: string };
+type Option = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = {
   id: number;
   businessName: string;
@@ -424,7 +424,7 @@ export default function RecurringExpenseForm({
         <label>Giorno del mese scadenza<input type="number" name="dueDay" min="1" max="31" defaultValue={initialExpense?.dueDay ?? 1} required /></label>
       )}
 
-      <label>Categoria<select name="categoryId" required defaultValue={initialExpense?.categoryId ?? ""}><option value="" disabled>Seleziona categoria</option>{categories.map(c => <option key={c.id} value={c.id}>{categoryStyles[c.name]?.icon ?? "•"} {c.name}</option>)}</select></label>
+      <label>Categoria<select name="categoryId" required defaultValue={initialExpense?.categoryId ?? ""}><option value="" disabled>Seleziona categoria</option>{categories.map(c => <option key={c.id} value={c.id}>{c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}</option>)}</select></label>
 
       <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} />
 

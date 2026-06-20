@@ -4,7 +4,7 @@ import { useState } from "react";
 import ExpenseForm from "@/components/ExpenseForm";
 import RecurringExpenseForm from "@/components/RecurringExpenseForm";
 
-type Option = { id: number; code?: string; name: string };
+type Option = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
 type InitialExpense = Parameters<typeof ExpenseForm>[0]["initialExpense"];
 

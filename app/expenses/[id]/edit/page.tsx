@@ -2,21 +2,9 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseForm from '@/components/ExpenseForm';
 import { requireWorkspace } from '@/lib/auth';
+import { orderExpenseCategories } from '@/lib/workspace-defaults';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
-const allowedCategoryOrder = [
-  'Servizi Bancari',
-  'Assicurazioni',
-  'Affitti/Utenze',
-  'Servizi Web',
-  'Spedizioni/Corrieri',
-  'Tasse/Imposte',
-  'Altri Servizi',
-  'Merce/Forniture',
-  'Articoli di Supporto',
-  'Prestazioni/Dipendenti',
-  'Rateizzazione'
-];
 
 export default async function EditExpensePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/expenses');
@@ -38,9 +26,7 @@ export default async function EditExpensePage({ params, searchParams }: { params
     .map(name => banks.find(bank => bank.name === name))
     .filter(Boolean) as typeof banks;
 
-  const orderedCategories = allowedCategoryOrder
-    .map(name => categories.find(category => category.name === name))
-    .filter(Boolean) as typeof categories;
+  const orderedCategories = orderExpenseCategories(categories);
 
   return <div className="grid edit-expense-dedicated-page page-no-site-header">
     <ExpenseForm
@@ -48,7 +34,7 @@ export default async function EditExpensePage({ params, searchParams }: { params
           cancelHref={returnTo}
           submitLabel="Salva modifiche"
           action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
-          categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+          categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
           banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
           suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
           initialExpense={{

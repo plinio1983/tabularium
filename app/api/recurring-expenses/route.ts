@@ -50,6 +50,13 @@ async function resolveSupplierReference(data: z.infer<typeof RecurringExpenseSch
   return { id: created.id, businessName: created.businessName };
 }
 
+async function resolveCategoryId(categoryId: number | null | undefined, workspaceId: number) {
+  if (!categoryId) return null;
+  const category = await prisma.expenseCategory.findFirst({ where: { id: categoryId, workspaceId } });
+  if (!category) throw new Error('Categoria non valida');
+  return category.id;
+}
+
 export async function POST(request: Request) {
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
@@ -57,6 +64,7 @@ export async function POST(request: Request) {
   const raw = Object.fromEntries(formData.entries());
   const data = RecurringExpenseSchema.parse(raw);
   const supplierRef = await resolveSupplierReference(data, current.workspace.id);
+  const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
   const returnTo = new URL(request.url).searchParams.get('returnTo');
 
@@ -72,7 +80,7 @@ export async function POST(request: Request) {
       billingMonth: data.billingPeriodMode === 'CUSTOM_MONTH' ? (data.billingMonth || null) : null,
       merchant: supplierRef.businessName,
       supplierId: supplierRef.id,
-      categoryId: data.categoryId || null,
+      categoryId,
       description: data.description,
       amount: data.amount,
       vatRate: data.vatRate,

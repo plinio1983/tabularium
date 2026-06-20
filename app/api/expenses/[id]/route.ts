@@ -53,6 +53,13 @@ async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>, wor
   return { id: created.id, businessName: created.businessName };
 }
 
+async function resolveCategoryId(categoryId: number | null | undefined, workspaceId: number) {
+  if (!categoryId) return null;
+  const category = await prisma.expenseCategory.findFirst({ where: { id: categoryId, workspaceId } });
+  if (!category) throw new Error('Categoria non valida');
+  return category.id;
+}
+
 function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
   if (!data.isDeclared) {
     return { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const };
@@ -152,6 +159,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const { year, month } = resolveBillingPeriod(data.billingPeriod);
   const payments = parsePayments(formData);
   const supplierRef = await resolveSupplierReference(data, current.workspace.id);
+  const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const firstPayment = payments[0];
   // Expense.bankId is legacy/denormalized. The real bank lives on each ExpensePayment row.
@@ -170,7 +178,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
       merchant: supplierRef.businessName,
       supplierId: supplierRef.id,
-      categoryId: data.categoryId || null,
+      categoryId,
       description: data.description || null,
       amount: data.amount,
       paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),

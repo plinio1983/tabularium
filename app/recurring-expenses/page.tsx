@@ -2,21 +2,9 @@ import { prisma } from '@/lib/prisma';
 import RecurringExpensesList from '@/components/RecurringExpensesList';
 import NewRecurringExpensePanel from '@/components/NewRecurringExpensePanel';
 import { requireWorkspace } from '@/lib/auth';
+import { orderExpenseCategories } from '@/lib/workspace-defaults';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
-const allowedCategoryOrder = [
-  'Servizi Bancari',
-  'Assicurazioni',
-  'Affitti/Utenze',
-  'Servizi Web',
-  'Spedizioni/Corrieri',
-  'Tasse/Imposte',
-  'Altri Servizi',
-  'Merce/Forniture',
-  'Articoli di Supporto',
-  'Prestazioni/Dipendenti',
-  'Rateizzazione'
-];
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
   const value = searchParams[key];
@@ -76,13 +64,13 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   ]);
 
   const orderedBanks = allowedBankOrder.map(name => banks.find(bank => bank.name === name)).filter(Boolean) as typeof banks;
-  const orderedCategories = allowedCategoryOrder.map(name => categories.find(category => category.name === name)).filter(Boolean) as typeof categories;
+  const orderedCategories = orderExpenseCategories(categories);
 
   return <div className="grid">
     <div className="toolbar-card expense-toolbar-card">
       <div><h2>Spese ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
       <NewRecurringExpensePanel
-        categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+        categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       />
@@ -90,7 +78,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
     <RecurringExpensesList
       items={items}
       filters={filters}
-      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
     />

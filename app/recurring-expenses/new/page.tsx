@@ -2,21 +2,9 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import RecurringExpenseForm from '@/components/RecurringExpenseForm';
 import { requireWorkspace } from '@/lib/auth';
+import { orderExpenseCategories } from '@/lib/workspace-defaults';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
-const allowedCategoryOrder = [
-  'Servizi Bancari',
-  'Assicurazioni',
-  'Affitti/Utenze',
-  'Servizi Web',
-  'Spedizioni/Corrieri',
-  'Tasse/Imposte',
-  'Altri Servizi',
-  'Merce/Forniture',
-  'Articoli di Supporto',
-  'Prestazioni/Dipendenti',
-  'Rateizzazione'
-];
 
 export default async function NewRecurringExpensePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/recurring-expenses/new');
@@ -32,7 +20,7 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
   ]);
 
   const orderedBanks = allowedBankOrder.map(name => banks.find(bank => bank.name === name)).filter(Boolean) as typeof banks;
-  const orderedCategories = allowedCategoryOrder.map(name => categories.find(category => category.name === name)).filter(Boolean) as typeof categories;
+  const orderedCategories = orderExpenseCategories(categories);
 
   return <div className="modal-page-wrap">
     <div className="modal-card modal-card-wide modal-page-card">
@@ -41,7 +29,7 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
         <Link className="table-action secondary" href={returnTo}>↩ Annulla</Link>
       </div>
       <RecurringExpenseForm
-        categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+        categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias }))}
         action={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}

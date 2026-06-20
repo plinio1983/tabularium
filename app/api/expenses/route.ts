@@ -143,6 +143,13 @@ async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>, wor
   return { id: created.id, businessName: created.businessName };
 }
 
+async function resolveCategoryId(categoryId: number | null | undefined, workspaceId: number) {
+  if (!categoryId) return null;
+  const category = await prisma.expenseCategory.findFirst({ where: { id: categoryId, workspaceId } });
+  if (!category) throw new Error('Categoria non valida');
+  return category.id;
+}
+
 function redirectAfterFormSave(request: Request, fallback: string) {
   const requestUrl = request.url;
   const explicitReturnTo = new URL(requestUrl).searchParams.get('returnTo');
@@ -197,6 +204,7 @@ export async function POST(request: Request) {
   const { year, month } = resolveBillingPeriod(data);
   const payments = parsePayments(formData, (raw as any).payments);
   const supplierRef = await resolveSupplierReference(data, current.workspace.id);
+  const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const attachments = formData ? await saveAttachments(formData.getAll('attachments')) : [];
   const firstPayment = payments[0];
@@ -209,7 +217,7 @@ export async function POST(request: Request) {
     dueDate: data.dueDate ? new Date(data.dueDate) : null,
     merchant: supplierRef.businessName,
     supplierId: supplierRef.id,
-    categoryId: data.categoryId || null,
+    categoryId,
     description: data.description || null,
     amount: data.amount,
     paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),

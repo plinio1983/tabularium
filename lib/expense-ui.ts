@@ -51,6 +51,21 @@ export const bankIcons: Record<string, string> = {
   'Altra Banca': '💳'
 };
 
+type CategoryDisplay = { name?: string | null; code?: string | null; icon?: string | null };
+
+export function categoryIcon(category?: CategoryDisplay | null) {
+  return category?.icon || '';
+}
+
+export function categoryTone(category?: CategoryDisplay | null) {
+  return category?.name ? categoryStyles[category.name]?.className : undefined;
+}
+
+export function categoryLabel(category: CategoryDisplay, value = category.name ?? '') {
+  const icon = categoryIcon(category);
+  return `${icon ? `${icon} ` : ''}${value}`;
+}
+
 export function badgeClass(className?: string) {
   return `badge color-badge ${className ?? 'tone-neutral'}`;
 }

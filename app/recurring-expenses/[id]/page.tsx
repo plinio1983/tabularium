@@ -7,7 +7,8 @@ import { requireWorkspace } from '@/lib/auth';
 import {
   badgeClass,
   bankIcons,
-  categoryStyles,
+  categoryLabel,
+  categoryTone,
   formatPeriod,
   vatKey,
   vatStyles,
@@ -90,7 +91,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
 
   if (!item || item.workspaceId !== current.workspace.id) notFound();
 
-  const categoryStyle = item.category?.name ? categoryStyles[item.category.name] : undefined;
+  const categoryClassName = categoryTone(item.category);
   const vatStyle = vatStyles[vatKey(item.vatRate)] ?? vatStyles['22'];
   const generatedTotal = item.generatedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
   const merchant = item.supplier?.businessName || item.merchant;
@@ -98,7 +99,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
 
   return <div className="grid">
     <RecurringExpenseDetailEditModalController
-      categories={categories.map(category => ({ id: category.id, code: category.code, name: category.name }))}
+      categories={categories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
       banks={banks.map(bank => ({ id: bank.id, name: bank.name }))}
       suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, phone: supplier.phone, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes }))}
       returnTo={currentDetailReturnTo}
@@ -119,7 +120,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           <span>{item.description ?? 'Spesa ricorrente senza descrizione'}</span>
         </div>
         <div className="expense-detail-hero-meta">
-          <span>{item.category ? `${categoryStyle?.icon ?? '•'} ${item.category.name}` : 'Senza categoria'}</span>
+          <span>{item.category ? categoryLabel(item.category, item.category.name) : 'Senza categoria'}</span>
           <span>Inizio:<br /><strong>{dateLabel(item.startDate)}</strong></span>
           {/*<span>Stato:<br /><strong>{item.isActive ? 'Attiva' : 'Disattivata'}</strong></span>*/}
         </div>
@@ -141,7 +142,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       <div className="expense-detail-priority-card supplier-card">
         <span>Fornitore</span>
         <strong>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}`}>{merchant}</Link> : merchant}</strong>
-        <small>{item.category ? <span className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {item.category.name}</span> : 'Senza categoria'}</small>
+        <small>{item.category ? <span className={badgeClass(categoryClassName)}>{categoryLabel(item.category, item.category.name)}</span> : 'Senza categoria'}</small>
       </div>
       <div className="expense-detail-priority-card amount-card">
         <span>Importo</span>

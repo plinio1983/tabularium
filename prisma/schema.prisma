@@ -131,6 +131,7 @@ model ExpenseCategory {
   id        Int       @id @default(autoincrement())
   code      String
   name      String
+  icon      String?
   workspaceId Int?
   workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   expenses  Expense[]

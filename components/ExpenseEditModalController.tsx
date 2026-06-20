@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ExpenseForm from "@/components/ExpenseForm";
 
-type Option = { id: number; code?: string; name: string };
+type Option = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = {
   id: number;
   businessName: string;

@@ -3131,15 +3131,19 @@ table th, table td {
     vertical-align: middle;
 }
 
-.suppliers-table td:nth-child(8) {
-    text-align: right;
-    white-space: nowrap;
+.suppliers-table td {
+    white-space: nowrap
 }
 
-.suppliers-table td:nth-last-child(-n+2), .suppliers-table th:nth-last-child(-n+2) {
-    width: 42px;
-    text-align: center;
-}
+/*.suppliers-table td:nth-child(8) {*/
+/*    text-align: right;*/
+/*    white-space: nowrap;*/
+/*}*/
+
+/*.suppliers-table td:nth-last-child(-n+2), .suppliers-table th:nth-last-child(-n+2) {*/
+/*    width: 42px;*/
+/*    text-align: center;*/
+/*}*/
 
 .compact-expenses-table form, .suppliers-table form {
     margin: 0;
@@ -3156,8 +3160,6 @@ table th, table td {
     }
 }
 
-
-/* v13: incassi e trimestri fiscali */
 .income-form {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -3265,9 +3267,9 @@ table th, table td {
     line-height: 1;
 }
 
-.table-action, button.table-action {
-    color: #fff !important;
-}
+/*.table-action, button.table-action {*/
+/*    color: #fff !important;*/
+/*}*/
 
 .table-action.secondary {
     color: var(--accent) !important;
@@ -9558,6 +9560,117 @@ table .cell-description {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.categories-settings-page {
+    align-content: start;
+}
+
+.category-create-panel {
+    display: grid;
+    gap: 14px;
+}
+
+.category-create-toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 900;
+    text-align: left;
+}
+
+.category-create-toggle span:last-child {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #f8fafc;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.category-create-form {
+    grid-template-columns: minmax(220px, 1fr) 160px 120px auto;
+    align-items: end;
+}
+
+.categories-settings-card {
+    display: grid;
+    gap: 10px;
+}
+
+.categories-settings-table-head,
+.category-settings-edit-form {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 140px 120px 120px 92px;
+    gap: 12px;
+    align-items: center;
+}
+
+.categories-settings-table-head {
+    padding: 0 96px 8px 0;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.category-settings-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.category-settings-edit-form label {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.category-settings-edit-form label span {
+    display: none;
+}
+
+.category-settings-usage {
+    display: grid;
+    gap: 2px;
+    color: var(--text);
+}
+
+.category-settings-usage small {
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.category-settings-actions,
+.category-settings-delete-form {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.table-action.danger-action {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.table-action.danger-action:hover {
+    border-color: #fca5a5;
+    background: #fee2e2;
+}
+
 .inline-form-error {
     padding: 10px 12px;
     border: 1px solid #fecaca;
@@ -9570,6 +9683,67 @@ table .cell-description {
 @media (max-width: 760px) {
     .account-settings-form {
         grid-template-columns: 1fr;
+    }
+
+    .category-create-form,
+    .categories-settings-table-head,
+    .category-settings-row,
+    .category-settings-edit-form {
+        grid-template-columns: 1fr;
+    }
+
+    .category-settings-usage-wrap {
+        display: flex;
+        grid-gap: 12px;
+    }
+
+    .categories-settings-table-head {
+        display: none;
+    }
+
+    .category-settings-edit-form label span {
+        display: inline;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .category-settings-actions,
+    .category-settings-delete-form {
+        justify-content: stretch;
+        margin-top: 12px;
+    }
+
+    .category-settings-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .category-settings-edit-form {
+        display: contents;
+    }
+
+    .category-settings-edit-form label,
+    .category-settings-usage {
+        grid-column: 1 / -1;
+        flex-grow: 1;
+        justify-content: flex-end;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .category-settings-actions {
+        grid-column: 1;
+    }
+
+    .category-settings-delete-form {
+        grid-column: 2;
+    }
+
+    .category-settings-actions .table-action,
+    .category-settings-delete-form .table-action {
+        width: 100%;
+        max-width: 100%;
     }
 }
 
@@ -9589,4 +9763,16 @@ table .cell-description {
     background: #fef2f2;
     color: #991b1b;
     font-weight: 800;
+}
+
+@media (max-width: 760px) {
+    .categories-settings-card {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .categories-settings-card {
+        grid-template-columns: 1fr;
+    }
 }

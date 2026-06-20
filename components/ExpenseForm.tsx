@@ -1,9 +1,9 @@
 "use client";
 
 import {useEffect, useMemo, useRef, useState} from "react";
-import {bankIcons, categoryStyles} from "@/lib/expense-ui";
+import {bankIcons, categoryIcon} from "@/lib/expense-ui";
 
-type Option = { id: number; code?: string; name: string };
+type Option = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = {
     id: number;
     businessName: string;
@@ -817,7 +817,7 @@ export default function ExpenseForm({
                         >
                             {categories.map((c) => (
                                 <option key={c.id} value={c.id}>
-                                    {categoryStyles[c.name]?.icon ?? "•"} {c.name}
+                                    {c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}
                                 </option>
                             ))}
                         </select>

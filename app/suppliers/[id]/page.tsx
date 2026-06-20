@@ -5,7 +5,8 @@ import { euro, moneyTone } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import {
   badgeClass,
-  categoryStyles,
+  categoryLabel,
+  categoryTone,
   invoiceStatusStyles,
   paymentStatusStyles,
   yesNoStyles
@@ -137,7 +138,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           const amount = Number(expense.amount.toString());
           const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
           const residual = Math.max(0, amount - paid);
-          const categoryStyle = expense.category?.name ? categoryStyles[expense.category.name] : undefined;
+          const categoryClassName = categoryTone(expense.category);
           const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
           const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           const invoiceLabel = expense.invoiceStatus === "IN_ATTESA" ? "Attesa" : invoiceStyle.label;
@@ -157,7 +158,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
               <div className="expense-mobile-main">
                 <div className="expense-mobile-meta">
                   <div className="expense-mobile-meta-left">
-                    {expense.category ? <span title={expense.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? expense.category.code}</span> : null}
+                    {expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : null}
                     <span className={badgeClass("")}>{declaredBadgeLabel}</span>
                     <span className="expense-mobile-date">{formatPeriod(expense.month, expense.year)}</span>
                   </div>
@@ -204,14 +205,14 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       </tr></thead><tbody>
         {supplier.expenses.map(expense => {
           const amount = Number(expense.amount.toString());
-          const categoryStyle = expense.category?.name ? categoryStyles[expense.category.name] : undefined;
+          const categoryClassName = categoryTone(expense.category);
           const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
           const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           return <tr key={expense.id}>
             <td className="cell-option"><Link className="table-action secondary icon-action" title="Dettaglio spesa" aria-label="Dettaglio spesa" href={`/expenses/${expense.id}?returnTo=${encodedSupplierDetailHref}`}>👁</Link></td>
             <td className="cell-order-date">{dateLabel(expense.receivedDate)}</td>
             <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>
-            <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? expense.category.code}</span> : '-'}</td>
+            <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
             <td className="cell-payment-state"><span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span></td>
             <td className="cell-amount"><strong>{euro(amount)}</strong></td>
             <td className="cell-fiscal">{booleanBadge(expense.isDeclared)}</td>

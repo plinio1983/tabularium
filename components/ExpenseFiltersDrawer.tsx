@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import SupplierFilterInput from "@/components/SupplierFilterInput";
 
-type CategoryOption = { id: number; code: string; name: string };
+type CategoryOption = { id: number; code: string; name: string; icon?: string | null };
 
 type Props = {
   filters: Record<string, string | string[] | undefined>;

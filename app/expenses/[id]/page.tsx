@@ -4,10 +4,12 @@ import { prisma } from '@/lib/prisma';
 import ExpenseDetailEditModalController from '@/components/ExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
+import { orderExpenseCategories } from '@/lib/workspace-defaults';
 import {
   badgeClass,
   bankIcons,
-  categoryStyles,
+  categoryLabel,
+  categoryTone,
   formatPeriod,
   invoiceStatusStyles,
   paymentStatusStyles,
@@ -17,19 +19,6 @@ import {
 } from '@/lib/expense-ui';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
-const allowedCategoryOrder = [
-  'Servizi Bancari',
-  'Assicurazioni',
-  'Affitti/Utenze',
-  'Servizi Web',
-  'Spedizioni/Corrieri',
-  'Tasse/Imposte',
-  'Altri Servizi',
-  'Merce/Forniture',
-  'Articoli di Supporto',
-  'Prestazioni/Dipendenti',
-  'Rateizzazione'
-];
 
 function dateLabel(value?: Date | null) {
   if (!value) return '-';
@@ -78,14 +67,12 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     .map(name => banks.find(bank => bank.name === name))
     .filter(Boolean) as typeof banks;
 
-  const orderedCategories = allowedCategoryOrder
-    .map(name => categories.find(category => category.name === name))
-    .filter(Boolean) as typeof categories;
+  const orderedCategories = orderExpenseCategories(categories);
 
   const amount = Number(expense.amount.toString());
   const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
   const residual = Math.max(0, amount - paid);
-  const categoryStyle = expense.category?.name ? categoryStyles[expense.category.name] : undefined;
+  const categoryClassName = categoryTone(expense.category);
   const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
   const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
   const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
@@ -103,7 +90,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
   return <div className="grid expense-detail-page">
     <ExpenseDetailEditModalController
-      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       returnTo={currentDetailReturnTo}
@@ -119,7 +106,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</h1>
               <div className="expense-detail-meta-line">
                 <span className={expense.isRecurring ? 'recurring-expense-badge' : 'single-expense-badge'}>{expense.isRecurring ? 'Ricorrente' : 'Singola'}</span>
-                <span>{expense.category ? `${categoryStyle?.icon ?? '•'} ${expense.category.name}` : 'Senza categoria'}</span>
+                <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
                 <span>Periodo {formatPeriod(expense.month, expense.year)}</span>
                 <span>Ordine {dateLabel(expense.receivedDate)}</span>
               </div>

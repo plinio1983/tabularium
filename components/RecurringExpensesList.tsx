@@ -3,7 +3,7 @@ import BulkSelectionController from '@/components/BulkSelectionController';
 import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersDrawer';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import { euro } from '@/lib/money';
-import { bankIcons, badgeClass, categoryStyles } from '@/lib/expense-ui';
+import { bankIcons, badgeClass, categoryLabel, categoryTone } from '@/lib/expense-ui';
 
 const cadenceLabels: Record<string, string> = { MONTHLY:'Ogni mese', EVERY_2_MONTHS:'Ogni 2 mesi', EVERY_3_MONTHS:'Ogni 3 mesi', EVERY_6_MONTHS:'Ogni 6 mesi', YEARLY:'Annuale', EVERY_2_YEARS:'Ogni 2 anni' };
 const billingLabels: Record<string, string> = { SAME_MONTH:'Stesso mese', NEXT_MONTH:'Mese successivo', CUSTOM_MONTH:'Mese impostato' };
@@ -60,7 +60,7 @@ const paymentChannelLabels: Record<string, string> = {
 };
 
 type FilterOption = { id: number; name: string };
-type CategoryOption = { id: number; code?: string; name: string };
+type CategoryOption = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; phone?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
 
 export default function RecurringExpensesList({
@@ -164,7 +164,7 @@ export default function RecurringExpensesList({
               const supplier = item.supplier?.businessName || item.merchant || '-';
               const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
               const payment = item.paymentChannel ? `${item.paymentChannel}${item.bank ? ` · ${item.bank.name}` : ''}` : '-';
-              const categoryStyle = item.category?.name ? categoryStyles[item.category.name] : undefined;
+              const categoryClassName = categoryTone(item.category);
               const cadenceStyle = cadenceStyles[item.cadence] ?? { icon: '↻', className: 'tone-neutral' };
               const billingStyle = billingStyles[item.billingPeriodMode] ?? { icon: 'CAL', className: 'tone-neutral' };
               const statusStyle = item.isActive ? { icon: '✓', label: 'Attiva', className: 'tone-yes' } : { icon: '×', label: 'Off', className: 'tone-critical' };
@@ -173,7 +173,7 @@ export default function RecurringExpensesList({
                 <td className="cell-left"><span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span></td>
                 <td className="cell-left recurring-supplier-cell" title={supplier}><span className="recurring-table-supplier-icon">↻</span>{supplier}</td>
                 <td className="cell-left recurring-description-cell" title={item.description ?? ''}>{item.description || '-'}</td>
-                <td className="cell-left">{item.category ? <span title={item.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? item.category.code}</span> : <span className={badgeClass('tone-neutral')}>• ND</span>}</td>
+                <td className="cell-left">{item.category ? <span title={item.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(item.category, item.category.code)}</span> : <span className={badgeClass('tone-neutral')}>• ND</span>}</td>
                 <td className="cell-left"><span className={badgeClass(cadenceStyle.className)}>{cadenceStyle.icon} {cadenceLabels[item.cadence] ?? item.cadence}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass('tone-waiting')}>📅 {dueLabel(item)}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass(billingStyle.className)}>{billingStyle.icon} {billing}</span></td>

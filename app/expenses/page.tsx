@@ -8,9 +8,11 @@ import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
 import SupplierFilterInput from '@/components/SupplierFilterInput';
 import { requireWorkspace } from '@/lib/auth';
+import { orderExpenseCategories } from '@/lib/workspace-defaults';
 import {
   badgeClass,
-  categoryStyles,
+  categoryLabel,
+  categoryTone,
   formatPeriod,
   invoiceStatusStyles,
   paymentStatusStyles,
@@ -18,19 +20,6 @@ import {
 } from '@/lib/expense-ui';
 
 const allowedBankOrder = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
-const allowedCategoryOrder = [
-  'Servizi Bancari',
-  'Assicurazioni',
-  'Affitti/Utenze',
-  'Servizi Web',
-  'Spedizioni/Corrieri',
-  'Tasse/Imposte',
-  'Altri Servizi',
-  'Merce/Forniture',
-  'Articoli di Supporto',
-  'Prestazioni/Dipendenti',
-  'Rateizzazione'
-];
 
 const paymentStatusOptions = [
   ['overdue', 'Scaduto'],
@@ -554,9 +543,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     .map(name => banks.find(bank => bank.name === name))
     .filter(Boolean) as typeof banks;
 
-  const orderedCategories = allowedCategoryOrder
-    .map(name => categories.find(category => category.name === name))
-    .filter(Boolean) as typeof categories;
+  const orderedCategories = orderExpenseCategories(categories);
 
   const billingPeriodFromFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.from || inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'period')) : '';
   const billingPeriodToFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.to || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'period')) : '';
@@ -683,7 +670,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   return <div className="grid">
     {/*<Link className="button-standard secondary-action" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>*/}
     <NewExpensePanel
-      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name }))}
+      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       initialOpen={inputDefault(filters, 'new') === '1'}
@@ -725,7 +712,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <div>
           <ExpenseFiltersDrawer
             filters={filters}
-            categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name }))}
+            categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
             quickDateFilter={quickDateFilter}
             orderDateFromDefault={orderDateFromDefault}
             orderDateToDefault={orderDateToDefault}
@@ -982,7 +969,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       </form>
 
       <ExpenseEditModalController
-          categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name }))}
+          categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, phone: s.phone, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
         listHref={listHref}
@@ -993,7 +980,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           const amount = Number(e.amount.toString());
           const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
           const residual = Math.max(0, amount - paid);
-          const categoryStyle = e.category?.name ? categoryStyles[e.category.name] : undefined;
+          const categoryClassName = categoryTone(e.category);
           const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
           const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
           const overdue = isExpensePastDueForBadge(e);
@@ -1023,7 +1010,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               <div className="expense-mobile-main">
                 <div className="expense-mobile-meta">
                   <div className="expense-mobile-meta-left">
-                    {e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}
+                    {e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : null}
                     {fiscalBadgeMobile(e.isDeclared)}
                     <span className="expense-mobile-date">
                       {formatPeriod(e.month, e.year)}
@@ -1093,7 +1080,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             const amount = Number(e.amount.toString());
             const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
             const residual = Math.max(0, amount - paid);
-            const categoryStyle = e.category?.name ? categoryStyles[e.category.name] : undefined;
+            const categoryClassName = categoryTone(e.category);
             const paymentStyle = paymentStatusStyles[e.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
             const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
             const overdue = isExpensePastDueForBadge(e);
@@ -1103,7 +1090,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               <td className="cell-option cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
               <td className="cell-order-date">{dateLabel(e.receivedDate)}</td>
               <td className="cell-billing-period">{formatPeriod(e.month, e.year)}</td>
-              <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : '-'}</td>
+              <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : '-'}</td>
               <td className="cell-type"><span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span></td>
               <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
               <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
