@@ -968,6 +968,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       ` }} />
 
       <form id="expenseBulkForm" action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
+        <label className="bulk-select-all-inline">
+          <input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese visibili" />
+        </label>
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="expenseBulkForm">
           <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Actions</span></summary>
           <div className="bulk-action-menu-panel">
