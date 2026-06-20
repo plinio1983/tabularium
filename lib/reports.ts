@@ -163,8 +163,17 @@ export async function getPeriodSummary(periods: Array<{ year: number; month: num
 }
 
 export async function getOrderDateMonthSummary(year: number, month: number, workspaceId?: number) {
-  const from = new Date(year, month - 1, 1);
-  const to = new Date(year, month, 1);
+  return getOrderDatePeriodSummary([{ year, month }], workspaceId);
+}
+
+export async function getOrderDatePeriodSummary(periods: Array<{ year: number; month: number }>, workspaceId?: number) {
+  const orderedPeriods = [...periods].sort((a, b) => periodKey(a.year, a.month) - periodKey(b.year, b.month));
+  const first = orderedPeriods[0];
+  const last = orderedPeriods[orderedPeriods.length - 1];
+  if (!first || !last) return summarizeRecords([], []);
+
+  const from = new Date(first.year, first.month - 1, 1);
+  const to = new Date(last.year, last.month, 1);
 
   const [incomes, expenses] = await Promise.all([
     prisma.income.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), creditDate: { gte: from, lt: to } } }),

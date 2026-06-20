@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fiscalQuarterMonthsByIndex, getOrderDateMonthSummary, getPeriodSummary } from '@/lib/reports';
+import { fiscalQuarterMonthsByIndex, getOrderDateMonthSummary, getOrderDatePeriodSummary, getPeriodSummary } from '@/lib/reports';
 import { getWorkspaceContext } from '@/lib/auth';
 
 export async function GET(request: Request) {
@@ -31,6 +31,17 @@ export async function GET(request: Request) {
 
     const periods = [{ year, month }];
     const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id });
+    return NextResponse.json({ periods, totals });
+  }
+
+  if (type === 'trendQuarter') {
+    const quarterIndex = Number(searchParams.get('quarterIndex'));
+    if (!Number.isInteger(quarterIndex) || quarterIndex < 0 || quarterIndex > 3) {
+      return NextResponse.json({ error: 'Trimestre non valido' }, { status: 400 });
+    }
+
+    const periods = fiscalQuarterMonthsByIndex(year, quarterIndex);
+    const totals = await getOrderDatePeriodSummary(periods, current.workspace.id);
     return NextResponse.json({ periods, totals });
   }
 

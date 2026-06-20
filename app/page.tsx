@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { AutoSubmitSelect } from '@/components/AutoSubmitSelect';
 import { euro, moneyTone, monthName } from '@/lib/money';
-import { getAccountingDashboardReport, getOrderDateMonthSummary } from '@/lib/reports';
+import { fiscalQuarterMonthsByIndex, getAccountingDashboardReport, getOrderDateMonthSummary, getOrderDatePeriodSummary } from '@/lib/reports';
 import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
 import { requireWorkspace } from '@/lib/auth';
 
@@ -289,6 +289,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const currentMonth = now.getMonth() + 1;
   const currentQuarterIndex = Math.floor((currentMonth - 1) / 3);
   const trendMonthValue = Array.isArray(params.trendMonth) ? params.trendMonth[0] : params.trendMonth;
+  const trendQuarterValue = Array.isArray(params.trendQuarter) ? params.trendQuarter[0] : params.trendQuarter;
   const fiscalMonthValue = Array.isArray(params.fiscalMonth) ? params.fiscalMonth[0] : params.fiscalMonth;
   const fiscalQuarterValue = Array.isArray(params.fiscalQuarter) ? params.fiscalQuarter[0] : params.fiscalQuarter;
   const annualYearValue = Array.isArray(params.annualYear) ? params.annualYear[0] : params.annualYear;
@@ -296,15 +297,19 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const annualFallbackMonth = annualYear === currentYear ? currentMonth : 1;
   const annualFallbackQuarter = annualYear === currentYear ? currentQuarterIndex : 0;
   const rawSelectedTrendMonth = parseMonthSelection(trendMonthValue, annualYear, annualFallbackMonth);
+  const rawSelectedTrendQuarter = parseQuarterSelection(trendQuarterValue, annualYear, annualFallbackQuarter);
   const rawSelectedMonth = parseMonthSelection(fiscalMonthValue, annualYear, annualFallbackMonth);
   const rawSelectedQuarter = parseQuarterSelection(fiscalQuarterValue, annualYear, annualFallbackQuarter);
   const selectedTrendMonth = { ...rawSelectedTrendMonth, year: annualYear };
+  const selectedTrendQuarter = { ...rawSelectedTrendQuarter, year: annualYear };
   const selectedMonth = { ...rawSelectedMonth, year: annualYear };
   const selectedQuarter = { ...rawSelectedQuarter, year: annualYear };
   const reportYear = annualYear;
-  const [report, monthlyTrendTotals] = await Promise.all([
+  const trendQuarterPeriods = fiscalQuarterMonthsByIndex(selectedTrendQuarter.year, selectedTrendQuarter.quarterIndex);
+  const [report, monthlyTrendTotals, quarterlyTrendTotals] = await Promise.all([
     getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id),
-    getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id)
+    getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id),
+    getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id)
   ]);
   const fiscalMonth = report.currentFiscalMonth.periods[0];
   const trendExpensesHref = dateRangeLink('/expenses', selectedTrendMonth.year, selectedTrendMonth.month);
@@ -325,7 +330,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
   const quarterInvoicesNotReceivedHref = periodLink('/expenses', report.currentFiscalQuarter.periods, { declared: 'yes', invoiceStatusMode: 'not_received' });
   const monthOptionYear = selectedMonth.year || currentYear;
   const quarterOptionYear = selectedQuarter.year || currentYear;
-  const yearOptions = Array.from(new Set([currentYear + 1, currentYear, currentYear - 1, currentYear - 2, reportYear, annualYear, selectedTrendMonth.year, monthOptionYear, quarterOptionYear])).sort((a, b) => b - a);
+  const yearOptions = Array.from(new Set([currentYear + 1, currentYear, currentYear - 1, currentYear - 2, reportYear, annualYear, selectedTrendMonth.year, selectedTrendQuarter.year, monthOptionYear, quarterOptionYear])).sort((a, b) => b - a);
   const monthOptions = Array.from({ length: 12 }, (_, index) => ({ year: monthOptionYear, month: index + 1 }));
   const quarterOptions = Array.from({ length: 4 }, (_, index) => ({ year: quarterOptionYear, quarterIndex: index }));
   const annualPeriods = Array.from({ length: 12 }, (_, index) => ({ year: report.annualYear, month: index + 1 }));
@@ -355,6 +360,7 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
         monthOptions={monthOptions}
         quarterOptions={quarterOptions}
         initialTrend={{ year: selectedTrendMonth.year, month: selectedTrendMonth.month, totals: monthlyTrendTotals }}
+        initialTrendQuarter={{ periods: trendQuarterPeriods, totals: quarterlyTrendTotals }}
         initialMonth={{ periods: report.currentFiscalMonth.periods, totals: report.currentFiscalMonth.totals }}
         initialQuarter={{ periods: report.currentFiscalQuarter.periods, totals: report.currentFiscalQuarter.totals }}
       />

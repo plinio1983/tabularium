@@ -482,7 +482,7 @@ tbody td {
     }
 
     .dashboard-period-cards {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .summary-metrics-grid,

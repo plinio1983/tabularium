@@ -3856,7 +3856,7 @@ table th, table td {
 
 @media (max-width: 1180px) {
     .dashboard-period-cards {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 }
 
@@ -3869,6 +3869,10 @@ table th, table td {
 @media (max-width: 760px) {
     .dashboard-statement-cards {
         flex-direction: column;
+    }
+
+    .dashboard-period-cards {
+        grid-template-columns: 1fr;
     }
 
     .dashboard-statement-heading {
@@ -8036,9 +8040,9 @@ button.bulk-direct-danger {
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
 
-@media (min-width: 980px) {
+@media (min-width: 1180px) {
     .dashboard-period-cards {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 

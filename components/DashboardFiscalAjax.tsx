@@ -49,6 +49,18 @@ function fiscalQuarterLabel(periods: Period[]) {
   return `${monthName(first.month)} ${first.year} - ${monthName(last.month)} ${last.year}`;
 }
 
+function shortMonthName(month: number) {
+  return new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(new Date(2026, month - 1, 1)).replace('.', '');
+}
+
+function compactQuarterLabel(periods: Period[]) {
+  if (!periods.length) return '-';
+  const first = periods[0];
+  const last = periods[periods.length - 1];
+  if (first.year === last.year) return `${shortMonthName(first.month)} - ${shortMonthName(last.month)} ${last.year}`;
+  return `${shortMonthName(first.month)} ${first.year} - ${shortMonthName(last.month)} ${last.year}`;
+}
+
 function periodRangeQuery(periods: Period[]) {
   if (!periods.length) return '';
   const first = periods[0];
@@ -104,7 +116,7 @@ function StatementCountRow({ label, value, warning = false, href }: { label: str
   </tr>;
 }
 
-function updateUrlParam(key: 'trendMonth' | 'fiscalMonth' | 'fiscalQuarter', value: string, annualYear: number) {
+function updateUrlParam(key: 'trendMonth' | 'trendQuarter' | 'fiscalMonth' | 'fiscalQuarter', value: string, annualYear: number) {
   const url = new URL(window.location.href);
   url.searchParams.set(key, value);
   url.searchParams.set('annualYear', String(annualYear));
@@ -133,6 +145,70 @@ function MonthlyTrendCard({
       <div>
         <h2>Andamento mensile</h2>
         <p className="muted">{monthName(state.month)} {state.year}</p>
+      </div>
+      {selector}
+    </div>
+    <div className="dashboard-statement-body">
+      <table className="dashboard-statement-table">
+        <tbody>
+          <StatementMoneyRow label="Entrate totali" value={totals.incassoTotale} href={incomesHref} highlight={true} />
+          <StatementMoneyRow label="Uscite totali" value={totals.speseTotali} href={expensesHref} />
+          <StatementMoneyRow label="Utile netto" value={totals.utileNetto} highlight />
+          <StatementMoneyRow label="Incasso non fiscale" value={totals.incassoNonFiscale} href={nonFiscalIncomesHref} />
+          <StatementMoneyRow label="Spese non fiscali" value={totals.usciteNonFiscali} warning={totals.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />
+          <StatementMoneyRow label="Non saldato" value={totals.nonSaldato} warning={totals.nonSaldato > 0} href={unpaidExpensesHref} />
+          <StatementCountRow label="Pagamenti scaduti" value={totals.fattureScaduteCount} warning={totals.fattureScaduteCount > 0} href={overdueExpensesHref} />
+        </tbody>
+      </table>
+    </div>
+  </section>;
+}
+
+function dateRangeForPeriods(periods: Period[]) {
+  if (!periods.length) return null;
+  const orderedPeriods = [...periods].sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
+  const first = orderedPeriods[0];
+  const last = orderedPeriods[orderedPeriods.length - 1];
+  const from = new Date(first.year, first.month - 1, 1);
+  const to = new Date(last.year, last.month, 0);
+  return {
+    from: `${from.getFullYear()}-${String(from.getMonth() + 1).padStart(2, '0')}-${String(from.getDate()).padStart(2, '0')}`,
+    to: `${to.getFullYear()}-${String(to.getMonth() + 1).padStart(2, '0')}-${String(to.getDate()).padStart(2, '0')}`
+  };
+}
+
+function dateRangeLinkForPeriods(path: '/expenses' | '/incomes', periods: Period[], extra?: Record<string, string>) {
+  const range = dateRangeForPeriods(periods);
+  if (!range) return path;
+  const query = new URLSearchParams(path === '/expenses'
+    ? { orderDateFrom: range.from, orderDateTo: range.to }
+    : { creditDateFrom: range.from, creditDateTo: range.to });
+  Object.entries(extra ?? {}).forEach(([key, value]) => query.set(key, value));
+  return `${path}?${query.toString()}`;
+}
+
+function QuarterlyTrendCard({
+  state,
+  selector,
+  loading = false
+}: {
+  state: FiscalState;
+  selector: React.ReactNode;
+  loading?: boolean;
+}) {
+  const totals = state.totals;
+  const expensesHref = dateRangeLinkForPeriods('/expenses', state.periods);
+  const nonFiscalExpensesHref = dateRangeLinkForPeriods('/expenses', state.periods, { declared: 'no' });
+  const unpaidExpensesHref = dateRangeLinkForPeriods('/expenses', state.periods, { paymentStatus: 'not_complete' });
+  const incomesHref = dateRangeLinkForPeriods('/incomes', state.periods);
+  const nonFiscalIncomesHref = dateRangeLinkForPeriods('/incomes', state.periods, { fiscal: 'no' });
+  const overdueExpensesHref = dateRangeLinkForPeriods('/expenses', state.periods, { paymentStatus: 'overdue' });
+
+  return <section className={`card dashboard-statement-panel monthly-trend-card quarterly-trend-card ${loading ? 'is-loading' : ''}`}>
+    <div className="dashboard-statement-heading">
+      <div>
+        <h2>Andamento trimestre</h2>
+        <p className="muted">{compactQuarterLabel(state.periods)}</p>
       </div>
       {selector}
     </div>
@@ -204,6 +280,7 @@ export default function DashboardFiscalAjax({
   monthOptions,
   quarterOptions,
   initialTrend,
+  initialTrendQuarter,
   initialMonth,
   initialQuarter
 }: {
@@ -211,17 +288,25 @@ export default function DashboardFiscalAjax({
   monthOptions: MonthOption[];
   quarterOptions: QuarterOption[];
   initialTrend: TrendState;
+  initialTrendQuarter: FiscalState;
   initialMonth: FiscalState;
   initialQuarter: FiscalState;
 }) {
   const [trendState, setTrendState] = useState(initialTrend);
+  const [trendQuarterState, setTrendQuarterState] = useState(initialTrendQuarter);
   const [monthState, setMonthState] = useState(initialMonth);
   const [quarterState, setQuarterState] = useState(initialQuarter);
   const [trendLoading, setTrendLoading] = useState(false);
+  const [trendQuarterLoading, setTrendQuarterLoading] = useState(false);
   const [monthLoading, setMonthLoading] = useState(false);
   const [quarterLoading, setQuarterLoading] = useState(false);
 
   const selectedTrendValue = monthValue(trendState.year, trendState.month);
+  const selectedTrendQuarterValue = useMemo(() => {
+    const first = trendQuarterState.periods[0];
+    if (!first) return '';
+    return quarterValue(first.year, Math.floor((first.month - 1) / 3));
+  }, [trendQuarterState.periods]);
   const selectedMonthValue = monthState.periods[0] ? monthValue(monthState.periods[0].year, monthState.periods[0].month) : '';
   const selectedQuarterValue = useMemo(() => {
     const first = quarterState.periods[0];
@@ -255,6 +340,22 @@ export default function DashboardFiscalAjax({
     }
   }
 
+  async function loadTrendQuarter(value: string) {
+    const match = value.match(/^(\d{4})-Q([1-4])$/);
+    if (!match) return;
+    const year = Number(match[1]);
+    const quarterIndex = Number(match[2]) - 1;
+    setTrendQuarterLoading(true);
+    try {
+      const response = await fetch(`/api/dashboard/fiscal-summary?type=trendQuarter&year=${year}&quarterIndex=${quarterIndex}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Errore nel caricamento dell’andamento trimestrale');
+      setTrendQuarterState(await response.json());
+      updateUrlParam('trendQuarter', value, annualYear);
+    } finally {
+      setTrendQuarterLoading(false);
+    }
+  }
+
   async function loadQuarter(value: string) {
     const match = value.match(/^(\d{4})-Q([1-4])$/);
     if (!match) return;
@@ -282,6 +383,16 @@ export default function DashboardFiscalAjax({
       </form>}
     />
 
+    <QuarterlyTrendCard
+      state={trendQuarterState}
+      loading={trendQuarterLoading}
+      selector={<form className="period-selector" onSubmit={(event) => event.preventDefault()}>
+        <select name="trendQuarter" value={selectedTrendQuarterValue} aria-label="Andamento trimestre" onChange={(event) => loadTrendQuarter(event.currentTarget.value)}>
+          {quarterOptions.map(option => <option key={`trend-quarter-${quarterValue(option.year, option.quarterIndex)}`} value={quarterValue(option.year, option.quarterIndex)}>T{option.quarterIndex + 1} {option.year}</option>)}
+        </select>
+      </form>}
+    />
+
     <FiscalSummaryCard
       title="Mese fiscale"
       subtitle={monthState.periods[0] ? `${monthName(monthState.periods[0].month)} ${monthState.periods[0].year}` : '-'}
@@ -296,7 +407,7 @@ export default function DashboardFiscalAjax({
 
     <FiscalSummaryCard
       title="Trimestre fiscale"
-      subtitle={fiscalQuarterLabel(quarterState.periods)}
+      subtitle={compactQuarterLabel(quarterState.periods)}
       state={quarterState}
       loading={quarterLoading}
       selector={<form className="period-selector" onSubmit={(event) => event.preventDefault()}>
