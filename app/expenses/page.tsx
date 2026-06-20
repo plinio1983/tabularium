@@ -1064,7 +1064,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             const invoiceStyle = invoiceStatusStyles[e.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
             const overdue = isExpensePastDueForBadge(e);
             const invoicePendingAfterPayment = e.paymentStatus === 'COMPLETATO' && e.invoiceStatus === 'IN_ATTESA';
-            return <tr key={e.id} className={['clickable-desktop-row', invoicePendingAfterPayment ? 'expense-row-invoice-waiting' : ''].filter(Boolean).join(' ')} data-row-href={`/expenses/${e.id}?returnTo=${returnTo}`} tabIndex={0}>
+            return <tr key={e.id} className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : invoicePendingAfterPayment ? 'expense-row-invoice-waiting' : ''].filter(Boolean).join(' ')} data-row-href={`/expenses/${e.id}?returnTo=${returnTo}`} tabIndex={0}>
               <td className="cell-option cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
               <td className="cell-order-date">{dateLabel(e.receivedDate)}</td>
               <td className="cell-billing-period">{formatPeriod(e.month, e.year)}</td>

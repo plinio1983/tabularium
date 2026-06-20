@@ -1950,6 +1950,18 @@ body.drawer-open {
     border-left: 4px solid #f59e0b;
 }
 
+.compact-expenses-table tbody tr.expense-row-overdue td {
+    background: #fff1f1;
+}
+
+.compact-expenses-table tbody tr.expense-row-overdue td:first-child {
+    border-left: 4px solid #dc2626;
+}
+
+.compact-expenses-table tbody tr.expense-row-overdue:hover td {
+    background: #ffe7e7;
+}
+
 .expense-mobile-item-invoice-waiting {
     background: linear-gradient(135deg, #fffaf0 0%, #ffffff 72%);
     border-color: #f7d78b;
