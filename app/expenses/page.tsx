@@ -121,6 +121,7 @@ function fiscalBadgeMobile(value: boolean) {
 }
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
+  let label = !value ? 'Fatt' : '@bill';
   let state = invoiceStatus;
   if (invoiceStatus === "IN_ATTESA") {
     state = ""//' Wait';
@@ -128,7 +129,11 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   if (invoiceStatus === "RICEVUTA") {
     state = ' Ok';
   }
-  const label = !value ? 'Fatt' : '@bill';
+  if (invoiceStatus === "NON_PREVISTA") {
+    state = '';
+    label = 'N.P.';
+  }
+
   return <span className={badgeClass(style.className)}>{label}{state}</span>;
 }
 function InvoiceBadge(value: boolean, invoiceStatus?: string) {

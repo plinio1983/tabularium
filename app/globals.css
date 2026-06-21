@@ -3745,25 +3745,6 @@ table th, table td {
     }
 }
 
-.dashboard-annual-card {
-    display: grid;
-    gap: 10px;
-}
-
-/*.dashboard-annual-statement-table {*/
-/*    max-width: 760px;*/
-/*    margin: 0 auto;*/
-/*}*/
-
-/*.dashboard-annual-statement-table td {*/
-/*    padding-top: 9px;*/
-/*    padding-bottom: 9px;*/
-/*}*/
-
-/*.dashboard-annual-statement-table strong {*/
-/*    font-size: 16px !important;*/
-/*}*/
-
 .dashboard-report-card .card-heading-row {
     margin-bottom: 14px;
 }
@@ -4605,7 +4586,31 @@ button {
 
 .dashboard-annual-card {
     background: linear-gradient(135deg, #ffffff 0%, #f7f9ff 100%);
-    min-width: 33%;
+    min-width: 40%;
+    display: grid;
+    gap: 10px;
+}
+
+@media (min-width: 1180px) {
+    .dashboard-annual-card {
+        min-width: 33%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .income-expense-chart-label {
+        max-width: 100px;
+        width: 100px;
+        font-size: 14px;
+        white-space: break-spaces;
+    }
+    .income-expense-chart-row {
+        display: flex;
+        padding: 6px 0;
+    }
+    .income-expense-chart-bar-wrap {
+        flex-grow: 1;
+    }
 }
 
 .annual-totals-grid {
