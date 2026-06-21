@@ -7792,13 +7792,9 @@ button.bulk-direct-danger {
 
 .expense-detail-action-row {
     display: flex;
-    /*justify-content: flex-end;*/
     align-items: center;
     gap: 20px;
     padding: 16px 28px;
-    /*border-bottom: 1px solid rgba(226, 232, 240, .9);*/
-    /*background: #fff;*/
-    /*background: transparent;*/
 }
 
 .expense-detail-action-row .right-side {
