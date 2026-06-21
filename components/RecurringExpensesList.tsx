@@ -133,6 +133,9 @@ export default function RecurringExpensesList({
     ` }} />
     <p className="muted">Risultati mostrati: {itemCount}</p>
     <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
+      <label className="bulk-select-all-inline">
+        <input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le spese ricorrenti visibili" />
+      </label>
       <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
         <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span></summary>
         <div className="bulk-action-menu-panel">

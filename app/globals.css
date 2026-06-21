@@ -981,8 +981,8 @@ button {
 
 .recurring-expense-select input,
 .recurring-mobile-select input {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
 }
 
 .recurring-mobile-item-shell:hover,
@@ -7231,7 +7231,11 @@ button.bulk-direct-link {
 }
 
 .floating-bulk-actions-inner .floating-bulk-select-all-inline {
-    /*display: none;*/
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    min-height: 30px;
     padding-left: 25px;
 }
 
