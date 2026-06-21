@@ -69,7 +69,13 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   const button = document.createElement("button");
   button.type = "button";
   button.className = `floating-bulk-button ${className}`.trim();
-  button.innerHTML = `<span class="btn-icon">${icon}</span><span class="floating-bulk-label">${label}</span>`;
+  const sicon = document.createElement("span");
+  const slabel = document.createElement("span");
+  sicon.className = "btn-icon";
+  slabel.className = "floating-bulk-label";
+  button.appendChild(sicon);
+  button.appendChild(slabel);
+  //button.innerHTML = `<span class="btn-icon">${icon}</span><span class="floating-bulk-label">${label}</span>`;
   button.addEventListener("click", () => {
     if (original instanceof HTMLAnchorElement) {
       if (original.classList.contains("is-disabled") || original.getAttribute("aria-disabled") === "true") return;
@@ -147,7 +153,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     const trigger = document.createElement("button");
     trigger.type = "button";
     trigger.className = "floating-bulk-button floating-bulk-menu-trigger";
-    trigger.innerHTML = `<span class="btn-icon">⚙</span><span class="floating-bulk-label">Bulk</span><span> Actions</span><span class="floating-bulk-caret">▾</span>`;
+    trigger.innerHTML = `<span class="btn-icon">⚙</span><span><span class="floating-bulk-label">Bulk </span>Actions</span><span class="floating-bulk-caret">▾</span>`;
 
     const panel = document.createElement("div");
     panel.className = "floating-bulk-menu-panel";

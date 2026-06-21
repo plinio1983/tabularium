@@ -972,7 +972,12 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           <input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese visibili" />
         </label>
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="expenseBulkForm">
-          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Actions</span></summary>
+          <summary className="bulk-action-trigger">
+            <span className="btn-icon">⚙</span>
+            <span className="bulk-label">
+              <span class="floating-bulk-label">Bulk </span>Actions
+            </span>
+          </summary>
           <div className="bulk-action-menu-panel">
             <button type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
             <button type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>

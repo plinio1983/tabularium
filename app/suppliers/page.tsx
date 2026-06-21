@@ -217,7 +217,12 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
 
       <form id="supplierBulkForm" action={`/api/suppliers/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="supplierBulkForm">
-          <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label">Actions</span></summary>
+          <summary className="bulk-action-trigger">
+            <span className="btn-icon">⚙</span>
+            <span className="bulk-label">
+              <span class="floating-bulk-label">Bulk </span>Actions
+            </span>
+          </summary>
           <div className="bulk-action-menu-panel">
             <button type="submit" name="bulkAction" value="delete"><span className="btn-icon">🗑</span><span className="bulk-label">Elimina selezionati</span></button>
           </div>
