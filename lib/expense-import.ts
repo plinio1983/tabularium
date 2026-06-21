@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
 import type { CompanyCode, InvoiceStatus, PaidBy, PaymentStatus } from '../generated/prisma/client';
+import { defaultPaymentMethods, fallbackPaymentMethodName } from '@/lib/workspace-defaults';
 
 const fixedCategories = [
   'Servizi Bancari',
@@ -160,6 +161,11 @@ function mapChannel(value: unknown) {
   return text;
 }
 
+function mapPaymentMethodKind(name: string) {
+  const found = defaultPaymentMethods.find(([methodName]) => methodName === name);
+  return found ? found[1] : 'BOTH';
+}
+
 function mapPaidBy(value: unknown): PaidBy {
   const text = textValue(value).toLowerCase();
   return text.includes('altro') ? 'ALTRO_OPERATORE' : 'HERBAL_MARKET';
@@ -195,12 +201,41 @@ async function ensureReferenceData(workspaceId?: number) {
     const existing = await prisma.bank.findFirst({ where: { workspaceId: workspaceId ?? null, name: bankName } });
     if (!existing) await prisma.bank.create({ data: { name: bankName, workspaceId: workspaceId ?? null } });
   }
+  for (const [name, kind] of defaultPaymentMethods) {
+    const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId: workspaceId ?? null, name } });
+    if (!existing) {
+      await prisma.paymentMethod.create({ data: { workspaceId: workspaceId ?? null, name, kind, isFallback: name === fallbackPaymentMethodName } });
+    } else if (name === fallbackPaymentMethodName && !existing.isFallback) {
+      await prisma.paymentMethod.update({ where: { id: existing.id }, data: { isFallback: true } });
+    }
+  }
 
   return {
     categories: Object.fromEntries((await prisma.expenseCategory.findMany()).map(category => [category.name, category])),
     banks: Object.fromEntries((await prisma.bank.findMany()).map(bank => [bank.name, bank])),
-    companies: Object.fromEntries((await prisma.company.findMany()).map(company => [company.code, company]))
+    companies: Object.fromEntries((await prisma.company.findMany()).map(company => [company.code, company])),
+    paymentMethods: Object.fromEntries((await prisma.paymentMethod.findMany({ where: workspaceId ? { workspaceId } : {} })).map(method => [method.name, method]))
   };
+}
+
+async function getOrCreatePaymentMethod(nameRaw: unknown, workspaceId?: number) {
+  const name = textValue(nameRaw);
+  if (!name) return null;
+  const existing = await prisma.paymentMethod.findFirst({
+    where: {
+      workspaceId: workspaceId ?? null,
+      name: { equals: name, mode: 'insensitive' }
+    }
+  });
+  if (existing) return existing;
+  return prisma.paymentMethod.create({
+    data: {
+      workspaceId: workspaceId ?? null,
+      name,
+      kind: mapPaymentMethodKind(name),
+      isFallback: name === fallbackPaymentMethodName
+    }
+  });
 }
 
 async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?: string; email?: string; phone?: string; pec?: string; taxCodeSdi?: string; internalNotes?: string; workspaceId?: number } = {}) {
@@ -312,6 +347,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     const bankName = mapBankName(rowValue(row, ['Banca']));
     const bank = refs.banks[bankName] ?? refs.banks['Altra Banca'];
     const channel = mapChannel(rowValue(row, ['Canale Pagamento', 'Canale']));
+    const paymentMethod = channel ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId)) : null;
     const vatRate = parseMoney(rowValue(row, ['Aliquota IVA', '% IVA', 'Applicazione IVA', 'IVA']));
     const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
     const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
@@ -367,7 +403,8 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
         vatRate,
         isDeclared,
         hasElectronicInvoice,
-        paymentChannel: channel,
+        paymentChannel: paymentMethod?.name ?? channel,
+        paymentMethodId: paymentMethod?.id ?? null,
         bankId: bank?.id ?? null,
         notes: notes || null,
         isActive
@@ -423,6 +460,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const bankName = mapBankName(rowValue(row, ['Banca']));
     const bank = refs.banks[bankName] ?? refs.banks['Altra Banca'];
     const channel = mapChannel(rowValue(row, ['Canale Pagamento', 'Canale']));
+    const paymentMethod = channel ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId)) : null;
     const paidBy = mapPaidBy(rowValue(row, ['Pagamento effettuato da', 'Pagato da']));
     const paidCompleted = parseBool(rowValue(row, ['Pagamento completato', 'Compl.', 'Completato']));
     const explicitPaidAmount = parseMoney(rowValue(row, ['Importo pagamento', 'Importo pagato']));
@@ -468,7 +506,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         paidBy,
         month: billingDate.getMonth() + 1,
         year: billingDate.getFullYear(),
-        payments: paidAmount > 0 ? { create: [{ paymentDate, channel, bankId: bank?.id ?? null, amount: paidAmount, paidBy }] } : undefined
+        payments: paidAmount > 0 ? { create: [{ paymentDate, channel: paymentMethod?.name ?? channel, paymentMethodId: paymentMethod?.id ?? null, bankId: bank?.id ?? null, amount: paidAmount, paidBy }] } : undefined
       }
     });
     imported++;

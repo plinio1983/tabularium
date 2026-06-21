@@ -26,6 +26,19 @@ const fixedCategories = [
   'Rateizzazione'
 ];
 const fixedBanks = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+const fixedPaymentMethods = [
+  ['Bonifico', 'BOTH'],
+  ['Carta di Debito/Credit', 'BOTH'],
+  ['Criptovaluta', 'INCOME'],
+  ['Stripe', 'INCOME'],
+  ['Cash', 'BOTH'],
+  ['Addebito', 'EXPENSE'],
+  ['RID Bancario', 'EXPENSE'],
+  ['Modello F24', 'EXPENSE'],
+  ['PayPal', 'EXPENSE'],
+  ['Mooney', 'EXPENSE'],
+  ['Altro metodo', 'BOTH']
+] as const;
 function normalizeCode(value: string) {
   return value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');
 }
@@ -58,6 +71,23 @@ function mapBankName(value?: string) {
   const text = String(value || '').trim();
   return fixedBanks.includes(text) ? text : 'Altra Banca';
 }
+function mapChannel(value?: string) {
+  const text = String(value || '').trim();
+  const lower = text.toLowerCase();
+  if (!text) return null;
+  if (lower === 'rid') return 'RID Bancario';
+  if (lower.includes('mooney')) return 'Mooney';
+  if (lower.includes('bonifico')) return 'Bonifico';
+  if (lower.includes('paypal')) return 'PayPal';
+  if (lower.includes('addebito')) return 'Addebito';
+  if (lower.includes('f24')) return 'Modello F24';
+  if (lower.includes('cash') || lower.includes('contanti')) return 'Cash';
+  return text;
+}
+function paymentMethodKind(name: string) {
+  const found = fixedPaymentMethods.find(([methodName]) => methodName === name);
+  return found ? found[1] : 'BOTH';
+}
 
 
 function asNumber(value: unknown) { return typeof value === 'number' ? value : Number(value || 0); }
@@ -82,6 +112,12 @@ async function getOrCreateBank(name?: string) {
   const existing = await prisma.bank.findFirst({ where: { workspaceId: null, name: bankName } });
   return existing ?? prisma.bank.create({ data: { name: bankName } });
 }
+async function getOrCreatePaymentMethod(name?: string) {
+  const methodName = mapChannel(name);
+  if (!methodName) return null;
+  const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId: null, name: { equals: methodName, mode: 'insensitive' } } });
+  return existing ?? prisma.paymentMethod.create({ data: { name: methodName, kind: paymentMethodKind(methodName), isFallback: methodName === 'Altro metodo' } });
+}
 async function getOrCreateSupplier(name?: string) {
   const businessName = String(name || '').trim() || 'Senza esercente';
   const existing = await prisma.supplier.findFirst({ where: { businessName } });
@@ -101,6 +137,10 @@ async function main() {
   for (const bankName of fixedBanks) {
     const existing = await prisma.bank.findFirst({ where: { workspaceId: null, name: bankName } });
     if (!existing) await prisma.bank.create({ data: { name: bankName } });
+  }
+  for (const [name, kind] of fixedPaymentMethods) {
+    const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId: null, name } });
+    if (!existing) await prisma.paymentMethod.create({ data: { name, kind, isFallback: name === 'Altro metodo' } });
   }
   const companies = Object.fromEntries((await prisma.company.findMany()).map(c => [c.code, c]));
 
@@ -126,6 +166,7 @@ async function main() {
       if (!row[1] && !row[4]) continue;
       const category = await getOrCreateCategory(row[2]?.toString().trim());
       const bank = await getOrCreateBank(row[8]?.toString().trim());
+      const paymentMethod = await getOrCreatePaymentMethod(row[7]?.toString().trim());
       const supplier = await getOrCreateSupplier(row[1]?.toString().trim());
       const code = row[13]?.toString().trim().toUpperCase();
       const company = code === 'HM' || code === 'TS' ? companies[code] : code ? companies.OTHER : null;
@@ -133,7 +174,7 @@ async function main() {
       await prisma.expense.create({ data: {
         receivedDate: excelDate(row[0]), merchant: supplier.businessName, supplierId: supplier.id, categoryId: category?.id,
         description: row[3]?.toString().trim() || null, amount: asNumber(row[4]), paymentDate: excelDate(row[5]), vatRate: asNumber(row[6]),
-        channel: row[7]?.toString().trim() || null, bankId: bank?.id, isComplete: Boolean(row[9]),
+        channel: paymentMethod?.name ?? row[7]?.toString().trim() ?? null, bankId: bank?.id, isComplete: Boolean(row[9]),
         isDeclared: row[10]?.toString().toLowerCase() === 'si', hasElectronicInvoice: row[11]?.toString().toLowerCase() === 'si',
         invoiceStatus: (row[11]?.toString().toLowerCase() === 'si' ? 'IN_ATTESA' : 'RICEVUTA') as InvoiceStatus,
         companyId: company?.id, paidByCurrentAccount: Boolean(row[14]),
@@ -143,7 +184,8 @@ async function main() {
         year, month,
         payments: paidAmount > 0 ? { create: [{
           paymentDate: excelDate(row[5]),
-          channel: row[7]?.toString().trim() || null,
+          channel: paymentMethod?.name ?? row[7]?.toString().trim() ?? null,
+          paymentMethodId: paymentMethod?.id ?? null,
           bankId: bank?.id,
           amount: paidAmount,
           paidBy: 'HERBAL_MARKET'
