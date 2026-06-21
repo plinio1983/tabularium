@@ -12,6 +12,7 @@ type EditIncome = {
   paymentMethod?: string | null;
   creditChannel?: string | null;
   creditDate?: string | Date | null;
+  isCredited?: boolean;
   billingMonth?: number | null;
   billingYear?: number | null;
   isFiscal?: boolean;

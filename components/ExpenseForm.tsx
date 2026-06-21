@@ -943,27 +943,29 @@ export default function ExpenseForm({
                 </summary>
                 <div className="form-section-stack">
 
-                    <div className="field-note payment-note payment-status-note full">
-                        <div>
-                            <span className="muted">Stato &nbsp;</span>
-                            <strong className={computedPaymentStatusInfo.className}>
-                                {computedPaymentStatusInfo.icon} {computedPaymentStatusInfo.label}
-                            </strong>
-                        </div>
-                        <div>
-                            <span className="muted">Residuo &nbsp;</span>
-                            <strong className={residual > 0 ? "text-critical" : "text-ok"}>
-                                {formatEuro(residual)}
-                            </strong>
-                        </div>
-                    </div>
+                    {/*<div className="field-note payment-note payment-status-note full">*/}
+                    {/*    <div>*/}
+                    {/*        <span className="muted">Stato &nbsp;</span>*/}
+                    {/*        <strong className={computedPaymentStatusInfo.className}>*/}
+                    {/*            {computedPaymentStatusInfo.icon} {computedPaymentStatusInfo.label}*/}
+                    {/*        </strong>*/}
+                    {/*    </div>*/}
+                    {/*    <div>*/}
+                    {/*        <span className="muted">Residuo &nbsp;</span>*/}
+                    {/*        <strong className={residual > 0 ? "text-critical" : "text-ok"}>*/}
+                    {/*            {formatEuro(residual)}*/}
+                    {/*        </strong>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
 
+
+                    <div className="section-title">
+                        {/*<h3>Pagamenti</h3>*/}
+                        <p>Puoi registrare uno o più pagamenti per la stessa spesa.</p>
+                    </div>
                     <section className="payments-box full">
                         <div className="section-title">
-                            <div>
-                                {/*<h3>Pagamenti</h3>*/}
-                                <p>Puoi registrare uno o più pagamenti per la stessa spesa.</p>
-                            </div>
+
                             <div className="form-summary full">
                                 <div>
                                     <span className="muted">Residuo</span>

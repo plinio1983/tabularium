@@ -329,6 +329,7 @@ model Income {
   paymentMethod   String
   creditChannel   String
   creditDate      DateTime
+  isCredited      Boolean   @default(true)
   billingMonth    Int       @default(1)
   billingYear     Int       @default(2026)
   isFiscal        Boolean   @default(true)

@@ -12,6 +12,7 @@ import {
   badgeClass,
   creditChannelStyles,
   fiscalStyles,
+  incomeCreditStatusStyles,
   incomeInvoiceStatusStyles,
   paymentMethodStyles,
   saleCategoryStyles,
@@ -332,6 +333,19 @@ function matchesIsoDate(value: Date | null | undefined, from: string, to: string
   if (from && (!formatted || formatted < from)) return false;
   if (to && (!formatted || formatted > to)) return false;
   return true;
+}
+
+function localDateKey(value: Date) {
+  return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
+}
+
+function isIncomeCreditOverdue(income: { isCredited: boolean; creditDate: Date | null }) {
+  return !income.isCredited && Boolean(income.creditDate) && localDateKey(income.creditDate!) < localDateKey(new Date());
+}
+
+function incomeCreditStatus(income: { isCredited: boolean; creditDate: Date | null }) {
+  if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
+  return isIncomeCreditOverdue(income) ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
 }
 
 function fiscalBadge(value: boolean) {
@@ -778,11 +792,18 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           const paymentStyle = paymentMethodStyles[income.paymentMethod];
           const creditStyle = creditChannelStyles[income.creditChannel];
           const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
+          const creditStatus = incomeCreditStatus(income);
+          const creditOverdue = isIncomeCreditOverdue(income);
           const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
           const amount = Number(income.amount.toString());
           const detailHref = `/incomes/${income.id}?returnTo=${returnTo}`;
+          const recordClass = [
+            'income-mobile-item',
+            'expense-mobile-item',
+            creditOverdue ? 'expense-mobile-item-overdue' : income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''
+          ].filter(Boolean).join(' ');
 
-          return <div className={income.invoiceStatus === 'NON_INVIATA' ? 'income-mobile-item expense-mobile-item income-row-warning' : 'income-mobile-item expense-mobile-item'} key={`mobile-income-${income.id}`}>
+          return <div className={recordClass} key={`mobile-income-${income.id}`}>
             <div className="expense-mobile-select">
               <input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} />
             </div>
@@ -796,6 +817,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
                   <div className="right-side">
                     {fiscalBadge(income.isFiscal)}
                     <span className="text-pre">{mobileDateLabel(income.creditDate)}</span>
+                    <span title={creditStatus.label} className={`${badgeClass(creditStatus.className)} income-badge-compact`}>{creditStatus.icon} {creditStatus.label}</span>
                   </div>
                 </div>
                 <div className="expense-mobile-title-row">
@@ -843,6 +865,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         <col className="cell-amount" />
         <col className="cell-supplier" />
         <col className="cell-cchannel" />
+        <col className="cell-invoice-state" />
         <col className="cell-fiscal" />
         <col className="cell-invoice-state" />
         <col className="cell-amount" />
@@ -856,6 +879,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         <th className="cell-amount">Importo</th>
         <th className="cell-supplier"><span className="th-wrap">Metodo<br />pag.</span></th>
         <th className="cell-cchannel"><span className="th-wrap">Canale<br />accr.</span></th>
+        <th className="cell-invoice-state">Accr.</th>
         <th className="cell-fiscal">Fisc.</th>
         <th className="cell-invoice-state"><span className="th-wrap">Stato<br />fatt.</span></th>
         <th className="cell-amount">IVA</th>
@@ -867,8 +891,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           const paymentStyle = paymentMethodStyles[income.paymentMethod];
           const creditStyle = creditChannelStyles[income.creditChannel];
           const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
+          const creditStatus = incomeCreditStatus(income);
+          const creditOverdue = isIncomeCreditOverdue(income);
           const vatStyle = vatStyles[String(Number(income.vatRate.toString()))] ?? vatStyles['0'];
-          return <tr className={['clickable-desktop-row', income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} tabIndex={0} key={income.id}>
+          return <tr className={['clickable-desktop-row', creditOverdue ? 'income-row-overdue' : income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} tabIndex={0} key={income.id}>
             <td className="cell-option"><input form="incomeBulkForm" type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`} /></td>
             <td className="cell-billing-period">{formatPeriod(income.billingMonth, income.billingYear)}</td>
             <td className="cell-order-date">{dateLabel(income.creditDate)}</td>
@@ -878,13 +904,14 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             <td className="cell-amount"><strong className={moneyTone(Number(income.amount.toString()))}>{euro(income.amount.toString())}</strong></td>
             <td className="cell-supplier"><span title={income.paymentMethod} className={`${badgeClass(paymentStyle?.className)} income-badge-compact`}>{paymentStyle?.icon ?? '•'} {income.paymentMethod}</span></td>
             <td className="cell-cchannel"><span title={income.creditChannel} className={`${badgeClass(creditStyle?.className)} income-badge-compact`}>{creditStyle?.icon ?? '•'} {income.creditChannel}</span></td>
+            <td className="cell-invoice-state"><span title={creditStatus.label} className={`${badgeClass(creditStatus.className)} income-badge-compact`}>{creditStatus.icon} {creditStatus.label}</span></td>
             <td className="cell-fiscal">{fiscalBadge(income.isFiscal)}</td>
             <td className="cell-invoice-state"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
             <td className="cell-amount"><span className={`${badgeClass(vatStyle.className)} income-badge-compact`}>{Number(income.vatRate.toString())}%</span></td>
             {/*<td className="cell-center"><DeleteActionButton action={`/api/incomes/${income.id}?returnTo=${returnTo}`} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." /></td>*/}
           </tr>;
         })}
-        {!filteredIncomes.length && <tr><td colSpan={12}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
+        {!filteredIncomes.length && <tr><td colSpan={13}>Nessun incasso trovato con i filtri selezionati.</td></tr>}
       </tbody></table></div>
     </div>
     <div className="card expenses-list-card">

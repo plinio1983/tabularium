@@ -9,6 +9,7 @@ import {
   badgeClass,
   creditChannelStyles,
   fiscalStyles,
+  incomeCreditStatusStyles,
   incomeInvoiceStatusStyles,
   paymentMethodStyles,
   saleCategoryStyles,
@@ -40,6 +41,19 @@ function booleanBadge(value: boolean) {
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
 }
 
+function localDateKey(value: Date) {
+  return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
+}
+
+function isIncomeCreditOverdue(income: { isCredited: boolean; creditDate: Date | null }) {
+  return !income.isCredited && Boolean(income.creditDate) && localDateKey(income.creditDate!) < localDateKey(new Date());
+}
+
+function incomeCreditStatus(income: { isCredited: boolean; creditDate: Date | null }) {
+  if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
+  return isIncomeCreditOverdue(income) ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
+}
+
 export default async function IncomeDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/incomes');
   const { id } = await params;
@@ -60,6 +74,7 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
   const paymentStyle = paymentMethodStyles[income.paymentMethod];
   const creditStyle = creditChannelStyles[income.creditChannel];
   const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
+  const creditStatus = incomeCreditStatus(income);
   const vatStyle = vatStyles[String(vatRate)] ?? vatStyles['0'];
 
   return <div className="grid income-detail-page">
@@ -116,6 +131,11 @@ export default async function IncomeDetailPage({ params, searchParams }: { param
         <span>Canale pagamento</span>
         <strong>{income.paymentMethod}</strong>
         <small>{income.creditChannel}</small>
+      </div>
+      <div>
+        <span>Accredito</span>
+        <strong><span className={badgeClass(creditStatus.className)}>{creditStatus.icon} {creditStatus.label}</span></strong>
+        <small>{dateLabel(income.creditDate)}</small>
       </div>
       <div>
         <span>Fattura</span>

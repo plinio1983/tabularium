@@ -11,6 +11,7 @@ type InitialIncome = {
   paymentMethod?: string | null;
   creditChannel?: string | null;
   creditDate?: string | Date | null;
+  isCredited?: boolean;
   billingMonth?: number | null;
   billingYear?: number | null;
   isFiscal?: boolean;
@@ -86,6 +87,7 @@ export default function IncomeForm({
   const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount));
   const [paymentMethod, setPaymentMethod] = useState(initialPaymentMethod);
   const [creditChannel, setCreditChannel] = useState(getInitialCreditChannel(initialPaymentMethod, initialIncome?.creditChannel));
+  const [isCredited, setIsCredited] = useState(initialIncome?.isCredited ?? true);
   const [isFiscal, setIsFiscal] = useState(initialIncome?.isFiscal ?? true);
   const [vatRate, setVatRate] = useState(normalizeMoney(initialIncome?.vatRate) || "22");
   const amountValue = Number(amount || 0);
@@ -172,8 +174,21 @@ export default function IncomeForm({
           </label>
 
           <label>
-            Stato Accredito
-            <br/> TODO...
+            <div className="toggle-field switch-toggle-field">
+              <span>Accreditato</span>
+              <input type="hidden" name="isCredited" value="false" />
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  name="isCredited"
+                  value="true"
+                  checked={isCredited}
+                  onChange={(event) => setIsCredited(event.currentTarget.checked)}
+                />
+                <span className="slider" />
+                <span>{isCredited ? "Si" : "No"}</span>
+              </label>
+            </div>
           </label>
 
           <label>

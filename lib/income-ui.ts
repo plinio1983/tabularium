@@ -36,6 +36,12 @@ export const incomeInvoiceStatusStyles: Record<string, { label: string; icon: st
   NONE: { label: '-', icon: '•', className: 'tone-neutral' }
 };
 
+export const incomeCreditStatusStyles: Record<string, { label: string; icon: string; className: string }> = {
+  ACCREDITATO: { label: 'Accreditato', icon: '✓', className: 'tone-yes' },
+  DA_ACCREDITARE: { label: 'Da accreditare', icon: '⏳', className: 'tone-waiting' },
+  SCADUTO: { label: 'Scaduto', icon: '⛔', className: 'tone-critical' }
+};
+
 export function badgeClass(className?: string) {
   return `badge color-badge ${className ?? 'tone-neutral'}`;
 }

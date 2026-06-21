@@ -28,6 +28,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       paymentMethod: income.paymentMethod,
       creditChannel: income.creditChannel,
       creditDate: income.creditDate,
+      isCredited: income.isCredited,
       billingMonth: income.billingMonth,
       billingYear: income.billingYear,
       isFiscal: income.isFiscal,
