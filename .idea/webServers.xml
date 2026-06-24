@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="966c093a-ac18-4c54-af32-73ccf53f317b" name="contabo.pro">
+        <fileTransfer rootFolder="/app" accessType="SFTP" host="178.18.248.213" port="22" sshConfigId="b00d4f57-76ef-4dd2-a2c4-888390645aac" sshConfig="root@178.18.248.213:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="60000" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
