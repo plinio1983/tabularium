@@ -15,6 +15,8 @@ IMPORT_DB=0
 UPLOADS_ARCHIVE=""
 REMOTE_DB_DUMP=""
 REMOTE_UPLOADS_ARCHIVE=""
+COMPOSE_FILE="docker-compose.prod.yml"
+ENV_FILE=".env.production"
 
 usage() {
   cat <<'USAGE'
@@ -163,6 +165,16 @@ if [[ -z "${SERVER_HOST}" || -z "${SERVER_USER}" || -z "${SSH_KEY}" || -z "${REM
   exit 1
 fi
 
+if [[ ! -f "${COMPOSE_FILE}" ]]; then
+  echo "File Compose non trovato: ${COMPOSE_FILE}" >&2
+  exit 1
+fi
+
+if [[ ! -f "${ENV_FILE}" ]]; then
+  echo "File env produzione non trovato: ${ENV_FILE}" >&2
+  exit 1
+fi
+
 if [[ -n "${DB_DUMP}" && ! -f "${DB_DUMP}" ]]; then
   echo "Dump database non trovato: ${DB_DUMP}" >&2
   exit 1
@@ -181,7 +193,13 @@ fi
 docker build --pull -t "${IMAGE_NAME}" .
 docker save "${IMAGE_NAME}" | gzip > "${ARCHIVE_PATH}"
 
-scp -i "${SSH_KEY}" "${ARCHIVE_PATH}" "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/${ARCHIVE_NAME}"
+ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" "mkdir -p '${REMOTE_DIR}'"
+
+scp -i "${SSH_KEY}" \
+  "${ARCHIVE_PATH}" \
+  "${COMPOSE_FILE}" \
+  "${ENV_FILE}" \
+  "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/"
 
 if [[ "${IMPORT_DB}" == "1" && -n "${DB_DUMP}" ]]; then
   REMOTE_DB_DUMP="${REMOTE_DIR}/$(basename "${DB_DUMP}")"

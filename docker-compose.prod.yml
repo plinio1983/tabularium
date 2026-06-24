@@ -1,5 +1,5 @@
 services:
-  app:
+  tabularium:
     image: ${APP_IMAGE:-tabularium:latest}
     container_name: tabularium
     restart: unless-stopped
@@ -10,12 +10,12 @@ services:
     volumes:
       - tabularium_uploads:/app/public/uploads
     networks:
-      frontend:
+      cluster_frontend:
         aliases:
           - tabularium
-      backend: {}
+      cluster_backend: {}
 
-  db:
+  tabularium-db:
     image: postgres:16-alpine
     container_name: tabularium-db
     restart: unless-stopped
@@ -26,14 +26,14 @@ services:
     volumes:
       - tabularium_pgdata:/var/lib/postgresql/data
     networks:
-      - backend
+      - cluster_backend
 
 volumes:
   tabularium_pgdata:
   tabularium_uploads:
 
 networks:
-  frontend:
+  cluster_frontend:
     external: true
-  backend:
+  cluster_backend:
     external: true
