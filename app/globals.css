@@ -941,7 +941,7 @@ button {
     }
 
     .recurring-filter-trigger-text {
-        display: none;
+        /*display: none;*/
     }
 }
 
@@ -1193,6 +1193,25 @@ body.drawer-open {
 
 .recurring-filter-trigger {
     white-space: nowrap;
+}
+
+.filter-drawer-wrapper {
+    position: relative;
+}
+
+.filter-drawer-wrapper {
+    position: relative;
+}
+
+.filter-drawer-wrapper .recurring-filter-trigger {
+    position: absolute;
+    right: 16px;
+    top: 5px;
+    padding: 6px;
+    min-height: 30px;
+    margin: 0;
+    min-width: 30px;
+    border-radius: 6px;
 }
 
 .filter-drawer-backdrop {
@@ -3535,8 +3554,9 @@ table th, table td {
     margin: 0;
 }
 
-@media (max-width: 400px) {
-    .expense-summary-row .expense-column-panel {
+@media (max-width: 496px) {
+    .expense-summary-row .expense-column-panel,
+    .income-sales-channel-chart {
         display: none !important;
     }
 }
@@ -8670,6 +8690,13 @@ button.bulk-direct-danger {
     text-align: left;
     text-overflow: ellipsis;
     white-space: nowrap;
+    overflow: hidden;
+}
+
+.expense-mobile-meta .badge,
+.expense-mobile-meta .expense-mobile-date {
+    white-space: nowrap;
+    text-overflow: ellipsis;
     overflow: hidden;
 }
 

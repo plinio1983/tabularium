@@ -628,6 +628,19 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     />
 
     <div className="card expenses-list-card">
+      <div className="filter-drawer-wrapper">
+        <IncomeFiltersDrawer
+            filters={filters}
+            quickDateFilter={quickDateFilter}
+            creditDateFromDefault={creditDateFromDefault}
+            creditDateToDefault={creditDateToDefault}
+            quickBillingPeriodFilter={quickBillingPeriodFilter}
+            billingPeriodFromFilter={billingPeriodFromFilter}
+            billingPeriodToFilter={billingPeriodToFilter}
+            banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name }))}
+            paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name }))}
+        />
+      </div>
       <IncomeTrendSelectors
         dateQuick={dateQuickSelectorValue}
         billingPeriodQuick={quickBillingPeriodFilter}
@@ -653,6 +666,16 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         <IncomeVerticalBarChart title="Entrate per canale di vendita" description="Distribuzione degli incassi sui risultati filtrati." data={incomesBySalesChannel} />
       </div>
 
+      {activeFilterItems.length ? <div className="recurring-active-filters">
+        <div>
+          <span className="recurring-active-filters-title">Filtri attivi</span>
+          <div className="recurring-active-filter-tags">
+            {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+          </div>
+        </div>
+        <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/incomes">↺ Reset</Link>
+      </div> : null}
+
       <div className="list-heading recurring-list-heading">
         <div>
           <h2>Lista incassi</h2>
@@ -672,16 +695,6 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
           />
         </div>
       </div>
-
-      {activeFilterItems.length ? <div className="recurring-active-filters">
-        <div>
-          <span className="recurring-active-filters-title">Filtri attivi</span>
-          <div className="recurring-active-filter-tags">
-            {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
-          </div>
-        </div>
-        <Link className="table-action secondary recurring-active-filters-reset reset-button" href="/incomes">↺ Reset</Link>
-      </div> : null}
 
       <BulkSelectionController />
 

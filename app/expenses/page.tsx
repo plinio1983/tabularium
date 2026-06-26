@@ -76,16 +76,49 @@ function formatMonthInputLabel(value: string) {
   return `${monthName.charAt(0).toUpperCase()}${monthName.slice(1)} ${year}`;
 }
 
+function monthNameFromIndex(monthIndex: number) {
+  const label = new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(new Date(2026, monthIndex, 1));
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+function quickOrderDateLabel(quickDateFilter: string, selectedYear: string) {
+  const now = new Date();
+  const parsedYear = Number(selectedYear);
+  const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
+  const monthMatch = quickDateFilter.match(/^month_(\d{2})$/);
+  const quarterMatch = quickDateFilter.match(/^quarter_([1-4])$/);
+
+  if (monthMatch) {
+    return `${monthNameFromIndex(Number(monthMatch[1]) - 1)} ${year}`;
+  }
+
+  if (quarterMatch) {
+    const startMonth = (Number(quarterMatch[1]) - 1) * 3;
+    return `${monthNameFromIndex(startMonth)} - ${monthNameFromIndex(startMonth + 2)} ${year}`;
+  }
+
+  if (quickDateFilter === 'year_to_date') {
+    const endMonth = year === now.getFullYear() ? now.getMonth() : 11;
+    return `${monthNameFromIndex(0)} - ${monthNameFromIndex(endMonth)} ${year}`;
+  }
+
+  return '';
+}
+
 function periodTotalsLabel({
   useFiscalPeriodFilter,
   billingPeriodFromFilter,
   billingPeriodToFilter,
+  quickDateFilter,
+  dateYearFilter,
   orderDateFromDefault,
   orderDateToDefault,
 }: {
   useFiscalPeriodFilter: boolean;
   billingPeriodFromFilter: string;
   billingPeriodToFilter: string;
+  quickDateFilter: string;
+  dateYearFilter: string;
   orderDateFromDefault: string;
   orderDateToDefault: string;
 }) {
@@ -96,6 +129,9 @@ function periodTotalsLabel({
     const value = billingPeriodFromFilter || billingPeriodToFilter;
     return value ? `Totali periodo fiscale ${formatMonthInputLabel(value)}` : 'Totali periodo fiscale selezionato';
   }
+
+  const quickLabel = quickDateFilter ? quickOrderDateLabel(quickDateFilter, dateYearFilter) : '';
+  if (quickLabel) return `Totali andamento ${quickLabel}`;
 
   if (orderDateFromDefault && orderDateToDefault && orderDateFromDefault !== orderDateToDefault) {
     return `Totali andamento\n dal ${formatDateTextInputLabel(orderDateFromDefault)} al ${formatDateTextInputLabel(orderDateToDefault)}`;
@@ -689,6 +725,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     useFiscalPeriodFilter,
     billingPeriodFromFilter,
     billingPeriodToFilter,
+    quickDateFilter,
+    dateYearFilter,
     orderDateFromDefault,
     orderDateToDefault
   });
@@ -748,6 +786,18 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     />
 
     <div className="card expenses-list-card">
+      <div className="filter-drawer-wrapper">
+        <ExpenseFiltersDrawer
+            filters={filters}
+            categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
+            quickDateFilter={quickDateFilter}
+            orderDateFromDefault={orderDateFromDefault}
+            orderDateToDefault={orderDateToDefault}
+            quickBillingPeriodFilter={quickBillingPeriodFilter}
+            billingPeriodFromFilter={billingPeriodFromFilter}
+            billingPeriodToFilter={billingPeriodToFilter}
+        />
+      </div>
       <ExpenseTrendSelectors
         dateQuick={dateQuickSelectorValue}
         billingPeriodQuick={quickBillingPeriodFilter}
@@ -775,25 +825,6 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <ExpenseCategoryColumnChart data={expensesByCategory} total={totals.total} />
       </div>
 
-      <div className="list-heading recurring-list-heading">
-        <div>
-          <h2>Lista spese</h2>
-          <p className="muted">Risultati mostrati: {filteredExpenses.length}</p>
-        </div>
-        <div>
-          <ExpenseFiltersDrawer
-            filters={filters}
-            categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
-            quickDateFilter={quickDateFilter}
-            orderDateFromDefault={orderDateFromDefault}
-            orderDateToDefault={orderDateToDefault}
-            quickBillingPeriodFilter={quickBillingPeriodFilter}
-            billingPeriodFromFilter={billingPeriodFromFilter}
-            billingPeriodToFilter={billingPeriodToFilter}
-          />
-        </div>
-      </div>
-
       {activeFilterItems.length ? <div className="recurring-active-filters">
         <div>
           <div className="flex justify-start align-start">
@@ -810,6 +841,25 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           </div>
         </div>
       </div> : null}
+
+      <div className="list-heading recurring-list-heading">
+        <div>
+          <h2>Lista spese</h2>
+          <p className="muted">Risultati mostrati: {filteredExpenses.length}</p>
+        </div>
+        <div>
+          <ExpenseFiltersDrawer
+              filters={filters}
+              categories={orderedCategories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
+              quickDateFilter={quickDateFilter}
+              orderDateFromDefault={orderDateFromDefault}
+              orderDateToDefault={orderDateToDefault}
+              quickBillingPeriodFilter={quickBillingPeriodFilter}
+              billingPeriodFromFilter={billingPeriodFromFilter}
+              billingPeriodToFilter={billingPeriodToFilter}
+          />
+        </div>
+      </div>
 
       <BulkSelectionController />
 
