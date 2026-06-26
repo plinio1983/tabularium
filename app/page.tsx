@@ -267,11 +267,18 @@ function IncomeExpenseBreakdownChart({
 
         return <Link className="income-expense-chart-row" href={item.href} key={item.label}>
           <span className={`income-expense-chart-marker ${item.tone}`} aria-hidden="true" />
-          <span className="income-expense-chart-label">{item.label}</span>
+          <span className="income-expense-chart-label">
+            <span>{item.label}</span>
+            <span className="income-expense-chart-value">
+              <strong className={moneyTone(item.value)}>{euro(item.value)}</strong>
+              <small>{percentage.toFixed(1)}%</small>
+            </span>
+          </span>
           <span className="income-expense-chart-bar-wrap" aria-label={`${item.label}: ${euro(item.value)}`}>
             <span className={`income-expense-chart-bar ${item.tone}`} style={{ width: `${width}%` }} />
           </span>
-          <span className="income-expense-chart-value">
+
+          <span className="income-expense-chart-value income-expense-chart-value-inline">
             <strong className={moneyTone(item.value)}>{euro(item.value)}</strong>
             <small>{percentage.toFixed(1)}%</small>
           </span>

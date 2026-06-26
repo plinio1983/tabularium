@@ -833,7 +833,28 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         });
         (() => {
           const storageKey = 'dmsAccounting.expenses.filters';
+          const filterMaxAgeMs = 24 * 60 * 60 * 1000;
           const resetLink = document.querySelector('a[href="/expenses"].reset-button');
+          const readStoredFilter = () => {
+            const raw = localStorage.getItem(storageKey);
+            if (!raw) return '';
+            try {
+              const parsed = JSON.parse(raw);
+              if (!parsed || typeof parsed.value !== 'string' || typeof parsed.savedAt !== 'number') {
+                localStorage.removeItem(storageKey);
+                return '';
+              }
+              if (Date.now() - parsed.savedAt > filterMaxAgeMs) {
+                localStorage.removeItem(storageKey);
+                return '';
+              }
+              return parsed.value;
+            } catch (error) {
+              localStorage.removeItem(storageKey);
+              return '';
+            }
+          };
+          const writeStoredFilter = (value) => localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }));
           const sanitizedSearch = (search) => {
             const params = new URLSearchParams(search || '');
             params.delete('new');
@@ -843,11 +864,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
           const query = sanitizedSearch(window.location.search);
           const form = document.querySelector('form.expense-filters');
-          if (query && query !== '?') localStorage.setItem(storageKey, query);
+          if (query && query !== '?') writeStoredFilter(query);
           else {
-            const saved = sanitizedSearch(localStorage.getItem(storageKey) || '');
+            const saved = sanitizedSearch(readStoredFilter());
             if (saved) {
-              localStorage.setItem(storageKey, saved);
+              writeStoredFilter(saved);
               window.location.replace('/expenses' + saved);
             } else {
               localStorage.removeItem(storageKey);
@@ -862,7 +883,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             else if (hasDate) billingFields.forEach(field => { field.value = ''; });
             setTimeout(() => {
               const clean = sanitizedSearch(window.location.search);
-              if (clean) localStorage.setItem(storageKey, clean);
+              if (clean) writeStoredFilter(clean);
               else localStorage.removeItem(storageKey);
             }, 0);
           });

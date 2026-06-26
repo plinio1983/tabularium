@@ -9,7 +9,35 @@ const persistedFilterKeys: Record<string, string> = {
   '/incomes': 'dmsAccounting.incomes.filters',
 };
 
+const filterMaxAgeMs = 24 * 60 * 60 * 1000;
 const transientParams = new Set(['new', 'copyId', 'returnTo']);
+
+function readStoredFilter(storageKey: string) {
+  const raw = window.localStorage.getItem(storageKey);
+  if (!raw) return '';
+
+  try {
+    const parsed = JSON.parse(raw) as { value?: unknown; savedAt?: unknown };
+    if (typeof parsed.value !== 'string' || typeof parsed.savedAt !== 'number') {
+      window.localStorage.removeItem(storageKey);
+      return '';
+    }
+
+    if (Date.now() - parsed.savedAt > filterMaxAgeMs) {
+      window.localStorage.removeItem(storageKey);
+      return '';
+    }
+
+    return parsed.value;
+  } catch {
+    window.localStorage.removeItem(storageKey);
+    return '';
+  }
+}
+
+function writeStoredFilter(storageKey: string, value: string) {
+  window.localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }));
+}
 
 function filterSearch(search: string) {
   const params = new URLSearchParams(search);
@@ -34,7 +62,7 @@ function MainNavContent() {
     const nextSavedFilters: Record<string, string> = {};
 
     Object.entries(persistedFilterKeys).forEach(([path, storageKey]) => {
-      const saved = window.localStorage.getItem(storageKey);
+      const saved = readStoredFilter(storageKey);
       if (saved) nextSavedFilters[path] = saved;
     });
 
@@ -44,7 +72,7 @@ function MainNavContent() {
       const filteredSearch = filterSearch(search ? `?${search}` : '');
 
       if (filteredSearch) {
-        window.localStorage.setItem(storageKey, filteredSearch);
+        writeStoredFilter(storageKey, filteredSearch);
         nextSavedFilters[pathname] = filteredSearch;
       }
     }

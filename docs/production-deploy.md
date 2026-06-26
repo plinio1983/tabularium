@@ -5,6 +5,7 @@
 Copia `.env.production.example` in `.env.production` sul server e imposta:
 
 - `POSTGRES_PASSWORD`
+- `APP_IMAGE`
 - `DATABASE_URL`
 - `APP_URL`
 - `CRON_SECRET`
@@ -25,6 +26,12 @@ Non committare `.env.production`: contiene segreti reali ed e' ignorato da Git.
 
 ```env
 APP_URL="https://tabularium.devmash.it"
+```
+
+`APP_IMAGE` deve puntare all'immagine Docker da avviare:
+
+```env
+APP_IMAGE="tabularium:v0.9-rc"
 ```
 
 Nel Google Cloud Console aggiungi il redirect URI:
@@ -116,7 +123,7 @@ Lo script:
 - copia l'archivio su `178.18.248.213:/app/tabularium`
 - se richiesto, copia un dump PostgreSQL e/o un archivio upload
 - esegue `docker load` sul server
-- riavvia Compose usando `APP_IMAGE=tabularium:<git-sha>`
+- riavvia Compose usando `APP_IMAGE` letto da `.env.production`
 - se richiesto, ripristina il dump nel container `db`
 - applica lo schema Prisma con `npx prisma db push`
 - se richiesto, ripristina gli upload nel volume applicativo
@@ -197,15 +204,15 @@ Sul server:
 ```bash
 cd /app/tabularium
 docker load -i "tabularium-${IMAGE_TAG}.tar.gz"
-APP_IMAGE="${IMAGE_NAME}" docker compose -f docker-compose.prod.yml --env-file .env.production up -d
-APP_IMAGE="${IMAGE_NAME}" docker compose -f docker-compose.prod.yml --env-file .env.production exec app npx prisma db push
-APP_IMAGE="${IMAGE_NAME}" docker compose -f docker-compose.prod.yml --env-file .env.production ps
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d
+docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium npx prisma db push
+docker compose --env-file .env.production -f docker-compose.prod.yml ps
 ```
 
 Verifica HTTP dal server, passando da Nginx o dalla rete Docker:
 
 ```bash
-docker compose -f docker-compose.prod.yml --env-file .env.production exec app wget -qO- http://127.0.0.1:3000/login
+docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium wget -qO- http://127.0.0.1:3000/login
 ```
 
 ## Migrazione dati locale -> server
@@ -226,20 +233,20 @@ scp tabularium.dump tabularium-uploads.tar.gz user@server:/path/tabularium/
 Sul server, con i container avviati, ripristina il DB. Questo comando svuota/sostituisce gli oggetti presenti nel DB target:
 
 ```bash
-docker compose -f docker-compose.prod.yml --env-file .env.production exec -T db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < tabularium.dump
+docker compose --env-file .env.production -f docker-compose.prod.yml exec -T tabularium-db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < tabularium.dump
 ```
 
 Ripristina gli upload:
 
 ```bash
-docker compose -f docker-compose.prod.yml --env-file .env.production cp tabularium-uploads.tar.gz app:/tmp/tabularium-uploads.tar.gz
-docker compose -f docker-compose.prod.yml --env-file .env.production exec app sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'
-docker compose -f docker-compose.prod.yml --env-file .env.production up -d
+docker compose --env-file .env.production -f docker-compose.prod.yml cp tabularium-uploads.tar.gz tabularium:/tmp/tabularium-uploads.tar.gz
+docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 ```
 
 Verifica:
 
 ```bash
-docker compose -f docker-compose.prod.yml --env-file .env.production exec app npx prisma db push
-docker compose -f docker-compose.prod.yml --env-file .env.production logs -f app
+docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium npx prisma db push
+docker compose --env-file .env.production -f docker-compose.prod.yml logs -f tabularium
 ```

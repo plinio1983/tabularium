@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getCurrentSession } from '@/lib/auth';
 import { loginAction } from '@/app/admin/actions';
+import ClearPersistedFilters from '@/components/ClearPersistedFilters';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
   if (current) redirect(next && next.startsWith('/') ? next : '/');
 
   return <div className="admin-auth-page login-page">
+    <ClearPersistedFilters />
     <section className="login-hero-panel" aria-label="Tabularium">
       <div>
         <p className="login-kicker">Tabularium</p>

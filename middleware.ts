@@ -21,23 +21,40 @@ const publicPaths = new Set([
   '/favicon.ico'
 ]);
 
+function noStore(response: NextResponse) {
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  response.headers.set('Pragma', 'no-cache');
+  response.headers.set('Expires', '0');
+  response.headers.append('Vary', 'Cookie');
+  return response;
+}
+
+function cleanNextPath(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  url.searchParams.delete('_rsc');
+  url.searchParams.delete('__flight__');
+  const search = url.searchParams.toString();
+  return `${url.pathname}${search ? `?${search}` : ''}`;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (publicPaths.has(pathname) || publicPrefixes.some(prefix => pathname.startsWith(prefix))) {
-    return NextResponse.next();
+    return noStore(NextResponse.next());
   }
 
   const hasSession = Boolean(request.cookies.get(sessionCookieName)?.value);
-  if (hasSession) return NextResponse.next();
+  if (hasSession) return noStore(NextResponse.next());
 
   if (pathname.startsWith('/api')) {
-    return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+    return noStore(NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 }));
   }
 
   const loginUrl = request.nextUrl.clone();
   loginUrl.pathname = '/login';
-  loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`);
-  return NextResponse.redirect(loginUrl);
+  loginUrl.search = '';
+  loginUrl.searchParams.set('next', cleanNextPath(request));
+  return noStore(NextResponse.redirect(loginUrl));
 }
 
 export const config = {

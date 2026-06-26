@@ -705,13 +705,34 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
         });
         (() => {
           const storageKey = 'dmsAccounting.incomes.filters';
+          const filterMaxAgeMs = 24 * 60 * 60 * 1000;
           const resetLink = document.querySelector('a[href="/incomes"].reset-button');
+          const readStoredFilter = () => {
+            const raw = localStorage.getItem(storageKey);
+            if (!raw) return '';
+            try {
+              const parsed = JSON.parse(raw);
+              if (!parsed || typeof parsed.value !== 'string' || typeof parsed.savedAt !== 'number') {
+                localStorage.removeItem(storageKey);
+                return '';
+              }
+              if (Date.now() - parsed.savedAt > filterMaxAgeMs) {
+                localStorage.removeItem(storageKey);
+                return '';
+              }
+              return parsed.value;
+            } catch (error) {
+              localStorage.removeItem(storageKey);
+              return '';
+            }
+          };
+          const writeStoredFilter = (value) => localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }));
           if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
           const query = window.location.search;
           const form = document.querySelector('form.expense-filters');
-          if (query && query !== '?') localStorage.setItem(storageKey, query);
+          if (query && query !== '?') writeStoredFilter(query);
           else {
-            const saved = localStorage.getItem(storageKey);
+            const saved = readStoredFilter();
             if (saved) window.location.replace('/incomes' + saved);
           }
           if (form) form.addEventListener('submit', () => {
@@ -721,7 +742,10 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             const hasDate = dateFields.some(field => field.value);
             if (hasBilling) dateFields.forEach(field => { field.value = ''; });
             else if (hasDate) billingFields.forEach(field => { field.value = ''; });
-            setTimeout(() => localStorage.setItem(storageKey, window.location.search), 0);
+            setTimeout(() => {
+              if (window.location.search) writeStoredFilter(window.location.search);
+              else localStorage.removeItem(storageKey);
+            }, 0);
           });
         })();
 

@@ -3535,6 +3535,12 @@ table th, table td {
     margin: 0;
 }
 
+@media (max-width: 400px) {
+    .expense-summary-row .expense-column-panel {
+        display: none !important;
+    }
+}
+
 .expense-column-panel {
     min-width: 0;
     display: grid;
@@ -4016,7 +4022,7 @@ table th, table td {
 
 .income-expense-chart-row {
     display: grid;
-    grid-template-columns: 14px minmax(150px, 210px) minmax(180px, 1fr) 150px;
+    grid-template-columns: 14px minmax(100px, 150px) minmax(180px, 1fr) 150px;
     gap: 12px;
     align-items: center;
     padding: 10px 0;
@@ -4093,9 +4099,50 @@ table th, table td {
     font-weight: 800;
 }
 
+.income-expense-chart-value {
+    display: none;
+}
+
+.income-expense-chart-value-inline {
+    display: flex;
+}
+
 @media (max-width: 1180px) {
     .dashboard-period-cards {
         grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 1200px) {
+    .income-expense-chart-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        /*white-space: break-spaces;*/
+    }
+
+    .income-expense-chart-value-inline {
+        display: none !important;
+    }
+
+    .income-expense-chart-row {
+        padding: 6px 0;
+        display: grid;
+        grid-template-columns: 12px minmax(0, 1fr);
+    }
+
+    .income-expense-chart-value {
+        display: flex;
+    }
+
+    .income-expense-chart-bar-wrap,
+    .income-expense-chart-value {
+        grid-column: 2;
+        justify-content: flex-start;
+    }
+
+    .income-expense-chart-value>strong {
+        flex-grow: 1;
     }
 }
 
@@ -4125,6 +4172,7 @@ table th, table td {
     }
 
     .income-expense-chart-row {
+        display: grid;
         grid-template-columns: 12px minmax(0, 1fr);
         gap: 8px 10px;
     }
@@ -4603,22 +4651,6 @@ button {
 @media (min-width: 1180px) {
     .dashboard-annual-card {
         min-width: 33%;
-    }
-}
-
-@media (max-width: 1200px) {
-    .income-expense-chart-label {
-        max-width: 100px;
-        width: 100px;
-        font-size: 14px;
-        white-space: break-spaces;
-    }
-    .income-expense-chart-row {
-        display: flex;
-        padding: 6px 0;
-    }
-    .income-expense-chart-bar-wrap {
-        flex-grow: 1;
     }
 }
 
@@ -8401,6 +8433,7 @@ button.bulk-direct-danger {
     margin-bottom: 0;
     flex-direction: column;
     flex-grow: 1;
+    gap: 4px;
 }
 
 .expense-toolbar-card .expense-toolbar-card-content > h2 {

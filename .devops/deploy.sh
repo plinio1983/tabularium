@@ -17,7 +17,6 @@ REMOTE_DB_DUMP=""
 REMOTE_UPLOADS_ARCHIVE=""
 COMPOSE_FILE="docker-compose.prod.yml"
 ENV_FILE=".env.production"
-COMPOSE_ENV_PATH=""
 
 usage() {
   cat <<'USAGE'
@@ -155,8 +154,14 @@ SERVER_HOST="${SERVER_HOST:-}"
 SERVER_USER="${SERVER_USER:-}"
 SSH_KEY="${SSH_KEY:-}"
 REMOTE_DIR="${REMOTE_DIR:-}"
+if [[ -f "${ENV_FILE}" ]]; then
+  ENV_APP_IMAGE="$(grep -E '^APP_IMAGE=' "${ENV_FILE}" | tail -n 1 | cut -d= -f2- | sed -E 's/^["'\'']?//; s/["'\'']?$//')"
+else
+  ENV_APP_IMAGE=""
+fi
+
 IMAGE_TAG="${IMAGE_TAG:-$(git rev-parse --short HEAD)}"
-IMAGE_NAME="${IMAGE_NAME:-tabularium:${IMAGE_TAG}}"
+IMAGE_NAME="${IMAGE_NAME:-${ENV_APP_IMAGE}}"
 ARCHIVE_NAME="${ARCHIVE_NAME:-tabularium-${IMAGE_TAG}.tar.gz}"
 ARCHIVE_PATH="${ARCHIVE_PATH:-/tmp/${ARCHIVE_NAME}}"
 
@@ -173,6 +178,16 @@ fi
 
 if [[ ! -f "${ENV_FILE}" ]]; then
   echo "File env produzione non trovato: ${ENV_FILE}" >&2
+  exit 1
+fi
+
+if [[ -z "${ENV_APP_IMAGE}" ]]; then
+  echo "APP_IMAGE non configurata in ${ENV_FILE}." >&2
+  exit 1
+fi
+
+if [[ "${IMAGE_NAME}" != "${ENV_APP_IMAGE}" ]]; then
+  echo "IMAGE_NAME (${IMAGE_NAME}) deve coincidere con APP_IMAGE in ${ENV_FILE} (${ENV_APP_IMAGE})." >&2
   exit 1
 fi
 
@@ -193,12 +208,6 @@ fi
 
 docker build --pull -t "${IMAGE_NAME}" .
 docker save "${IMAGE_NAME}" | gzip > "${ARCHIVE_PATH}"
-COMPOSE_ENV_PATH="$(mktemp /tmp/tabularium-compose-env.XXXXXX)"
-trap '[[ -n "${COMPOSE_ENV_PATH}" ]] && rm -f "${COMPOSE_ENV_PATH}"' EXIT
-{
-  echo "APP_IMAGE=\"${IMAGE_NAME}\""
-  cat "${ENV_FILE}"
-} > "${COMPOSE_ENV_PATH}"
 
 ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" "mkdir -p '${REMOTE_DIR}'"
 
@@ -206,11 +215,7 @@ scp -i "${SSH_KEY}" \
   "${ARCHIVE_PATH}" \
   "${COMPOSE_FILE}" \
   "${ENV_FILE}" \
-  "${COMPOSE_ENV_PATH}" \
   "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/"
-
-ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
-  "mv '${REMOTE_DIR}/$(basename "${COMPOSE_ENV_PATH}")' '${REMOTE_DIR}/.env'"
 
 if [[ "${IMPORT_DB}" == "1" && -n "${DB_DUMP}" ]]; then
   REMOTE_DB_DUMP="${REMOTE_DIR}/$(basename "${DB_DUMP}")"
@@ -234,13 +239,13 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
      exit 1; \
    fi; \
    docker load -i '${ARCHIVE_NAME}'; \
-   \$COMPOSE -f docker-compose.prod.yml up -d; \
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d; \
    if [ '${IMPORT_DB}' = '1' ] && [ -n '${REMOTE_DB_DUMP}' ]; then \
-     \$COMPOSE -f docker-compose.prod.yml exec -T tabularium-db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
+     \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium-db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
    fi; \
-   \$COMPOSE -f docker-compose.prod.yml exec -T tabularium npx prisma db push; \
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium npx prisma db push; \
    if [ -n '${REMOTE_UPLOADS_ARCHIVE}' ]; then \
-     \$COMPOSE -f docker-compose.prod.yml cp '${REMOTE_UPLOADS_ARCHIVE}' tabularium:/tmp/tabularium-uploads.tar.gz; \
-     \$COMPOSE -f docker-compose.prod.yml exec -T tabularium sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \
+     \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml cp '${REMOTE_UPLOADS_ARCHIVE}' tabularium:/tmp/tabularium-uploads.tar.gz; \
+     \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \
    fi; \
-   \$COMPOSE -f docker-compose.prod.yml ps"
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml ps"

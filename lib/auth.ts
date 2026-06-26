@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 
 export const sessionCookieName = 'tabularium_session';
 const sessionTtlDays = 14;
+const sessionTtlSeconds = sessionTtlDays * 24 * 60 * 60;
 const passwordIterations = 120000;
 const passwordKeyLength = 64;
 const passwordDigest = 'sha512';
@@ -51,6 +52,7 @@ export async function createSession(userId: number, workspaceId?: number | null)
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
+    maxAge: sessionTtlSeconds,
     expires: expiresAt
   });
 }

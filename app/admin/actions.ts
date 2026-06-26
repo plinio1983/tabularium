@@ -21,7 +21,14 @@ function normalizeEmail(email: string) {
 }
 
 function safeNextPath(next: string) {
-  return next.startsWith('/') && !next.startsWith('//') ? next : '/';
+  if (!next.startsWith('/') || next.startsWith('//')) return '/';
+  const [pathWithQuery] = next.split('#');
+  const [pathname, query = ''] = pathWithQuery.split('?');
+  const params = new URLSearchParams(query);
+  params.delete('_rsc');
+  params.delete('__flight__');
+  const sanitizedQuery = params.toString();
+  return `${pathname}${sanitizedQuery ? `?${sanitizedQuery}` : ''}`;
 }
 
 function parseRole(role: string): WorkspaceRoleName {
