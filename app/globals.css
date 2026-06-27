@@ -4485,10 +4485,6 @@ html, body {
         gap: 7px;
         align-items: stretch;
     }
-
-    /*.category-chart-value {*/
-    /*    justify-content: space-between;*/
-    /*}*/
 }
 
 .money-warning {
@@ -4526,8 +4522,6 @@ html, body {
     }
 }
 
-
-/* v29: UI polish, aligned buttons, colored totals and form actions */
 .button-standard,
 .btn,
 .primary-link,
