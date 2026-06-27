@@ -197,20 +197,25 @@ a {
     gap: 8px;
 }
 
-.settings-drawer-nav a {
+.settings-drawer-nav a,
+.settings-drawer-nav button {
     display: flex;
     align-items: center;
+    width: 100%;
     min-height: 46px;
     padding: 0 14px;
     border: 1px solid #dbe3ff;
     border-radius: 12px;
     background: #f8fafc;
     color: var(--text);
+    font: inherit;
     font-weight: 850;
     text-decoration: none;
+    cursor: pointer;
 }
 
-.settings-drawer-nav a:hover {
+.settings-drawer-nav a:hover,
+.settings-drawer-nav button:hover {
     border-color: #b9c7ff;
     background: #eef2ff;
     color: var(--accent);

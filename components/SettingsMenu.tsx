@@ -9,8 +9,7 @@ const settingsLinks = [
   { href: '/settings/company', label: 'Azienda' },
   { href: '/settings/company-settings', label: 'Impostazioni Società' },
   { href: '/settings/categories', label: 'Categorie' },
-  { href: '/settings/payment-credit', label: 'Pagamento e Accredito' },
-  { href: '/logout', label: 'Logout' }
+  { href: '/settings/payment-credit', label: 'Pagamento e Accredito' }
 ];
 
 export default function SettingsMenu() {
@@ -53,6 +52,9 @@ export default function SettingsMenu() {
       </div>
       <nav className="settings-drawer-nav" aria-label="Menu impostazioni">
         {settingsLinks.map(link => <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>{link.label}</Link>)}
+        <form action="/logout" method="post">
+          <button type="submit" onClick={() => setIsOpen(false)}>Logout</button>
+        </form>
       </nav>
     </aside>
   </div>;

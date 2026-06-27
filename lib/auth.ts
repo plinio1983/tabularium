@@ -100,7 +100,7 @@ export async function getCurrentSession() {
 
 export async function requireSession(nextPath = '/') {
   const current = await getCurrentSession();
-  if (!current) redirect(`/admin/login?next=${encodeURIComponent(nextPath)}`);
+  if (!current) redirect(`/login?next=${encodeURIComponent(nextPath)}`);
   return current;
 }
 
@@ -131,7 +131,8 @@ export async function requireWorkspaceRole(roles: WorkspaceRoleName[], nextPath 
 }
 
 export async function requireSystemAdmin(nextPath = '/admin') {
-  const current = await requireSession(nextPath);
+  const current = await getCurrentSession();
+  if (!current) redirect(`/admin/login?next=${encodeURIComponent(nextPath)}`);
   if (!current.user.isSystemAdmin) {
     redirect(`/admin/login?next=${encodeURIComponent(nextPath)}&error=forbidden`);
   }
