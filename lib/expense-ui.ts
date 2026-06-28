@@ -31,6 +31,13 @@ export const vatStyles: Record<string, { label: string; className: string }> = {
   '22': { label: 'IVA 22%', className: 'tone-vat-22' }
 };
 
+export const vatStylesNoText: Record<string, { label: string; className: string }> = {
+  '0': { label: '0%', className: 'tone-vat-0' },
+  '4': { label: '4%', className: 'tone-vat-4' },
+  '10': { label: '10%', className: 'tone-vat-10' },
+  '22': { label: '22%', className: 'tone-vat-22' }
+};
+
 export const invoiceStatusStyles: Record<string, { label: string; icon: string; className: string }> = {
   NON_PREVISTA: { label: 'N.P.', icon: '—', className: 'tone-neutral' },
   IN_ATTESA: { label: 'In attesa', icon: '⏳', className: 'tone-waiting' },

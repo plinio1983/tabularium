@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { redirectToPath } from '@/lib/redirect';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
@@ -34,29 +35,29 @@ export async function POST(request: Request) {
   const redirectTo = safeReturnTo(request);
 
   if (!ids.length || !action) {
-    return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+    return redirectToPath(redirectTo);
   }
 
   if (action === 'change_category') {
     const categoryId = Number(formData.get('categoryId'));
     if (!Number.isInteger(categoryId) || categoryId <= 0) {
-      return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+      return redirectToPath(redirectTo);
     }
     const category = await prisma.expenseCategory.findFirst({
       where: { id: categoryId, workspaceId: current.workspace.id }
     });
-    if (!category) return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+    if (!category) return redirectToPath(redirectTo);
 
     await prisma.expense.updateMany({
       where: { id: { in: ids }, workspaceId: current.workspace.id },
       data: { categoryId }
     });
-    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_updated' }), request.url), 303);
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 
   if (action === 'delete') {
     await prisma.expense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
-    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_deleted' }), request.url), 303);
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_deleted' }));
   }
 
   if (action === 'invoice_emitted') {
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
       where: { id: expense.id },
       data: { invoiceStatus: 'RICEVUTA' }
     })));
-    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_updated' }), request.url), 303);
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 
   if (action === 'payment_completed') {
@@ -102,8 +103,8 @@ export async function POST(request: Request) {
       }));
       return operations;
     }));
-    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_updated' }), request.url), 303);
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 
-  return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+  return redirectToPath(redirectTo);
 }

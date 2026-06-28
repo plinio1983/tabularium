@@ -15,7 +15,7 @@ import {
   invoiceStatusStyles,
   paymentStatusStyles,
   vatKey,
-  vatStyles,
+  vatStyles, vatStylesNoText,
   yesNoStyles
 } from '@/lib/expense-ui';
 
@@ -39,6 +39,11 @@ function paidByLabel(value: string) {
 function booleanBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
+}
+
+function fiscalBadge(value: boolean) {
+  const item = value ? yesNoStyles.yes : yesNoStyles.no;
+  return <div className="">{item.icon} {item.label}</div>;
 }
 
 export default async function ExpenseDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
@@ -74,7 +79,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const categoryClassName = categoryTone(expense.category);
   const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
   const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
-  const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
+  const vatStyle = vatStylesNoText[vatKey(expense.vatRate)] ?? vatStyles['22'];
   const vatRate = Number(expense.vatRate.toString());
   const paidVat = vatRate ? Math.min(amount, paid) * (vatRate / (100 + vatRate)) : 0;
   const today = new Date();
@@ -129,26 +134,30 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
         <section className="expense-detail-hero">
           <div>
             <div className="expense-detail-title-block">
-              <p className="expense-detail-kicker">Spesa #{expense.id}</p>
-              <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</h1>
+              <p className="expense-detail-kicker">
+                <span>Spesa #{expense.id}</span>
+                <span className={expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</span>
+              </p>
+              <div className="flex align-center">
+                <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</h1>
+              </div>
               <div className="expense-detail-meta-line">
-                <span className={expense.isRecurring ? 'recurring-expense-badge' : 'single-expense-badge'}>{expense.isRecurring ? 'Ricorrente' : 'Singola'}</span>
                 <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
-                <span>Periodo {formatPeriod(expense.month, expense.year)}</span>
-                <span>Ordine {dateLabel(expense.receivedDate)}</span>
+                {/*<span>Periodo {formatPeriod(expense.month, expense.year)}</span>*/}
+                {/*<span>Ordine {dateLabel(expense.receivedDate)}</span>*/}
               </div>
             </div>
           </div>
 
           <aside className="expense-detail-amount-panel">
-            <span>Importo IVA inclusa</span>
+            <span className="expense-detail-amount-panel-header">IVA inclusa</span>
             <strong>{euro(expense.amount.toString())}</strong>
             <div className="expense-detail-badge-row">
               <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
               <span className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>
                 {paymentHeroLabel}
               </span>
-              <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+              {/*<span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>*/}
             </div>
           </aside>
         </section>
@@ -167,14 +176,52 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <span>Residuo</span>
             <strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong>
           </div>
+          <div className="expense-detail-payment span-2">
+            {/*<div className="expense-detail-payment-icon">{paymentStyle.icon}</div>*/}
+            <span>Stato pagamento</span>
+            {/*<strong className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>*/}
+            <strong>
+              {paymentStyle.label}
+              {/*{paymentHeroLabel}*/}
+            </strong>
+          </div>
+          <div>
+            <span>Data ordine</span>
+            <strong>{dateLabel(expense.receivedDate)}</strong>
+          </div>
           <div>
             <span>Scadenza</span>
             <strong>{dateLabel(expense.dueDate)}</strong>
           </div>
           <div>
-            <span>IVA versata</span>
-            <strong>{euro(paidVat)}</strong>
+            <span>Stato fattura</span>
+            <strong>{invoiceStyle.label}</strong>
           </div>
+          <div>
+            <span>Periodo contabile</span>
+            <strong>{formatPeriod(expense.month, expense.year)}</strong>
+          </div>
+          <div>
+            <span>Detrazione</span>
+            <strong>{fiscalBadge(expense.isDeclared)}</strong>
+          </div>
+          <div>
+            <span>Aliquota</span>
+            <strong>{vatStyle.label}</strong>
+          </div>
+          <div>
+            <span>Fornitore</span>
+            <strong className="">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</strong>
+          </div>
+          <div>
+            <span>Descrizione</span>
+            <strong>{expense.description ?? 'Spesa senza descrizione'}</strong>
+          </div>
+
+          {/*<div>*/}
+          {/*  <span>IVA versata</span>*/}
+          {/*  <strong>{euro(paidVat)}</strong>*/}
+          {/*</div>*/}
         </section>
         <div className="expense-detail-progress" aria-label={`Pagamento completato al ${paidPercent.toFixed(0)}%`}>
           <span style={{ width: `${paidPercent}%` }} />
@@ -187,31 +234,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               <p>Dati fiscali, contabili e descrittivi della spesa.</p>
             </div>
           </div>
-          <div className="expense-detail-info-grid">
-            <div className="expense-detail-item expense-detail-item-wide">
-              <span>Fornitore</span>
-              <strong className="expense-detail-supplier-name">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</strong>
-            </div>
-            <div className="expense-detail-item expense-detail-item-wide">
-              <span>Descrizione</span>
-              <strong>{expense.description ?? 'Spesa senza descrizione'}</strong>
-            </div>
-            <div className="expense-detail-item">
-              <span>Detrazione</span>
-              <strong>{booleanBadge(expense.isDeclared)}</strong>
-            </div>
-            <div className="expense-detail-item">
-              <span>Fattura elettronica</span>
-              <strong>{booleanBadge(expense.hasElectronicInvoice)}</strong>
-            </div>
-            <div className="expense-detail-item">
-              <span>Stato fattura</span>
-              <strong><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></strong>
-            </div>
-            <div className="expense-detail-item">
-              <span>Stato pagamento</span>
-              <strong><span className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>{paymentHeroLabel}</span></strong>
-            </div>
+          <div className="">
             <div className="expense-detail-item expense-detail-item-wide">
               <span>Note</span>
               <strong>{expense.notes ?? '-'}</strong>

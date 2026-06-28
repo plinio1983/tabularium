@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { redirectToPath } from '@/lib/redirect';
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -273,6 +274,6 @@ export async function POST(request: Request) {
   }});
 
   return isForm
-    ? NextResponse.redirect(new URL(appendFlash(redirectAfterFormSaveTarget(request, '/expenses'), { saved: 'created' }), request.url), 303)
+    ? redirectToPath(appendFlash(redirectAfterFormSaveTarget(request, '/expenses'), { saved: 'created' }))
     : NextResponse.json({ ok: true });
 }

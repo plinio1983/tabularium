@@ -9,7 +9,8 @@ const settingsLinks = [
   { href: '/settings/company', label: 'Azienda' },
   { href: '/settings/company-settings', label: 'Impostazioni Società' },
   { href: '/settings/categories', label: 'Categorie' },
-  { href: '/settings/payment-credit', label: 'Pagamento e Accredito' }
+  { href: '/settings/payment-credit', label: 'Pagamento e Accredito' },
+  { href: '/expenses/import', label: 'Importazione spese' },
 ];
 
 export default function SettingsMenu() {

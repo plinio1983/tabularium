@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { redirectToPath } from '@/lib/redirect';
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -182,7 +183,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (action === 'delete') {
     await prisma.expense.deleteMany({ where: { id: expenseId, workspaceId: current.workspace.id } });
     const target = safePath(returnTo, '/expenses', request.url);
-    return NextResponse.redirect(new URL(appendFlash(target, { saved: 'deleted' }), request.url), 303);
+    return redirectToPath(appendFlash(target, { saved: 'deleted' }));
   }
   const data = ExpenseSchema.parse(raw);
   const invoiceFields = normalizeInvoiceFields(data);
@@ -198,7 +199,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const existing = await prisma.expense.findFirst({ where: { id: expenseId, workspaceId: current.workspace.id }, include: { attachments: true } });
   if (!existing) {
     const target = safePath(returnTo, '/expenses', request.url);
-    return NextResponse.redirect(new URL(appendFlash(target, { error: 'not_found' }), request.url), 303);
+    return redirectToPath(appendFlash(target, { error: 'not_found' }));
   }
   const nextIsRecurring = existing.isRecurring ? data.isRecurring : false;
 
@@ -247,5 +248,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   });
 
   const target = safePath(returnTo, `/expenses/${expenseId}`, request.url);
-  return NextResponse.redirect(new URL(appendFlash(target, { saved: 'updated' }), request.url), 303);
+  return redirectToPath(appendFlash(target, { saved: 'updated' }));
 }

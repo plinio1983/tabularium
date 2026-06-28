@@ -1231,8 +1231,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           <th className="cell-option cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese" /></th>
           <th className="cell-order-date"><span className="th-wrap">Data<br />ordine</span></th>
           <th className="cell-billing-period"><span className="th-wrap">Per.<br />Cont.</span></th>
-          <th className="cell-category">Categ.</th>
-          <th className="cell-type"><span className="th-wrap">Tipo</span></th>
+            <th className="cell-type"><span className="th-wrap">Tipo</span></th>
+            <th className="cell-category">Categ.</th>
           <th className="cell-supplier">Esercente</th>
           <th className="cell-amount">Importo</th>
             <th className="cell-description">Descrizione</th>
@@ -1257,8 +1257,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               <td className="cell-option cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
               <td className="cell-order-date">{dateLabel(e.receivedDate)}</td>
               <td className="cell-billing-period">{formatPeriod(e.month, e.year)}</td>
-              <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : '-'}</td>
               <td className="cell-type"><span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span></td>
+              <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : '-'}</td>
               <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
               <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
               <td className="cell-description" title={e.description ?? ''}>{e.description}</td>

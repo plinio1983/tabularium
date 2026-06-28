@@ -7847,6 +7847,9 @@ button.bulk-direct-danger {
 }
 
 .expense-detail-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin: 0 0 8px;
     color: var(--muted);
     font-size: 12px;
@@ -7867,12 +7870,13 @@ button.bulk-direct-danger {
 .expense-detail-meta-line {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 4px;
     margin-top: 12px;
 }
 
 .expense-detail-meta-line span {
     display: inline-flex;
+    white-space: nowrap;
     align-items: center;
     min-height: 30px;
     padding: 6px 10px;
@@ -7888,9 +7892,14 @@ button.bulk-direct-danger {
     display: grid;
     align-content: baseline;
     gap: 12px;
-    padding: 30px 12px 12px;
+    padding: 0 12px 12px;
     /*background: rgba(255, 255, 255, .88);*/
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+
+.expense-detail-amount-panel-header {
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .expense-detail-amount-panel > span {
@@ -7912,6 +7921,7 @@ button.bulk-direct-danger {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    margin-top: 4px;
 }
 
 .expense-detail-action-row {
@@ -7944,6 +7954,13 @@ button.bulk-direct-danger {
     min-width: 0;
     padding: 18px 22px;
     border-right: 1px solid rgba(226, 232, 240, .85);
+    border-bottom: 1px solid rgba(226, 232, 240, .85);
+}
+
+@media (max-width: 760px) {
+    .expense-detail-status-strip strong {
+        font-size: 16px !important;
+    }
 }
 
 .expense-detail-status-strip > div:last-child {
@@ -8026,226 +8043,247 @@ button.bulk-direct-danger {
     background: #fff;
 }
 
+.expense-detail-item.compact {
+    border-radius: initial;
+    border: 0;
+    border-bottom: 1px solid rgba(226, 232, 240, .9);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.expense-detail-item.compact>span {
+    margin-bottom: 0;
+}
+
 .expense-detail-item-wide {
     grid-column: span 2;
 }
 
+.expense-detail-item-wide.compact {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 21px;
+}
+
 .expense-detail-item > span {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--muted);
-    font-size: 10.5px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: .04em;
+display: block;
+margin-bottom: 8px;
+color: var(--muted);
+font-size: 10.5px;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: .04em;
 }
 
 .expense-detail-item > strong {
-    display: block;
-    min-height: 22px;
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
+display: block;
+min-height: 22px;
+color: var(--text);
+font-size: 14px;
+line-height: 1.35;
+overflow-wrap: anywhere;
 }
 
 .expense-detail-two-columns {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
-    gap: 26px;
-    align-items: start;
+display: grid;
+grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+gap: 26px;
+align-items: start;
 }
 
 .expense-detail-supplier-name {
-    font-size: 20px;
-    padding: 12px 4px 0 4px;
+font-size: 20px;
+padding: 12px 4px 0 4px;
 }
 
 .expense-payment-timeline {
-    position: relative;
-    display: grid;
-    gap: 10px;
-    margin-bottom: 21px;
+position: relative;
+display: grid;
+gap: 10px;
+margin-bottom: 21px;
 }
 
 .expense-payment-card {
-    display: grid;
-    grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
-    gap: 14px;
-    padding: 14px;
-    border: 1px solid rgba(226, 232, 240, .95);
-    border-radius: 18px;
-    background: #fff;
+display: grid;
+grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+gap: 14px;
+padding: 14px;
+border: 1px solid rgba(226, 232, 240, .95);
+border-radius: 18px;
+background: #fff;
 }
 
 .expense-payment-date {
-    display: grid;
-    align-content: center;
-    gap: 6px;
-    padding-right: 14px;
-    border-right: 1px solid rgba(226, 232, 240, .9);
+display: grid;
+align-content: center;
+gap: 6px;
+padding-right: 14px;
+border-right: 1px solid rgba(226, 232, 240, .9);
 }
 
 .expense-payment-date span {
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 850;
+color: var(--muted);
+font-size: 12px;
+font-weight: 850;
 }
 
 .expense-payment-date strong {
-    color: var(--accent);
-    font-size: 18px;
-    line-height: 1.1;
+color: var(--accent);
+font-size: 18px;
+line-height: 1.1;
 }
 
 .expense-payment-data {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 10px;
 }
 
 .expense-payment-data span {
-    display: block;
-    margin-bottom: 4px;
-    color: var(--muted);
-    font-size: 10px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: .04em;
+display: block;
+margin-bottom: 4px;
+color: var(--muted);
+font-size: 10px;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: .04em;
 }
 
 .expense-payment-data strong {
-    display: block;
-    overflow: hidden;
-    color: var(--text);
-    font-size: 13px;
-    line-height: 1.3;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+display: block;
+overflow: hidden;
+color: var(--text);
+font-size: 13px;
+line-height: 1.3;
+text-overflow: ellipsis;
+white-space: nowrap;
 }
 
 .expense-attachment-panel {
-    display: grid;
-    gap: 10px;
+display: grid;
+gap: 10px;
 }
 
 .expense-attachment-item {
-    display: grid;
-    grid-template-columns: 34px minmax(0, 1fr) auto;
-    gap: 10px;
-    align-items: center;
-    padding: 12px;
-    border: 1px solid rgba(226, 232, 240, .95);
-    border-radius: 16px;
-    background: #fff;
-    text-decoration: none;
+display: grid;
+grid-template-columns: 34px minmax(0, 1fr) auto;
+gap: 10px;
+align-items: center;
+padding: 12px;
+border: 1px solid rgba(226, 232, 240, .95);
+border-radius: 16px;
+background: #fff;
+text-decoration: none;
 }
 
 .expense-attachment-item > span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 12px;
-    background: #eef2ff;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 34px;
+height: 34px;
+border-radius: 12px;
+background: #eef2ff;
 }
 
 .expense-attachment-item strong {
-    overflow: hidden;
-    color: var(--text);
-    font-size: 13px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+overflow: hidden;
+color: var(--text);
+font-size: 13px;
+text-overflow: ellipsis;
+white-space: nowrap;
 }
 
 .expense-attachment-item small {
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 800;
+color: var(--muted);
+font-size: 11px;
+font-weight: 800;
 }
 
 .expense-empty-panel {
-    padding: 18px;
-    border: 1px dashed rgba(148, 163, 184, .75);
-    border-radius: 18px;
-    background: #f8fafc;
-    color: var(--muted);
-    font-weight: 800;
-    text-align: center;
+padding: 18px;
+border: 1px dashed rgba(148, 163, 184, .75);
+border-radius: 18px;
+background: #f8fafc;
+color: var(--muted);
+font-weight: 800;
+text-align: center;
 }
 
 @media (max-width: 760px) {
-    .expense-detail-info-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.expense-detail-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 }
 
 @media (max-width: 1020px) {
-    .expense-detail-hero,
-    .expense-detail-two-columns {
-        grid-template-columns: 1fr 1fr;
-    }
+.expense-detail-hero,
+.expense-detail-two-columns {
+    grid-template-columns: 1fr 1fr;
+}
 
-    .expense-detail-status-strip {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.expense-detail-status-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 
-    .expense-detail-status-strip > div:nth-child(2) {
-        border-right: 0;
-    }
+.expense-detail-status-strip > div:nth-child(2) {
+    border-right: 0;
+}
 
-    .expense-detail-status-strip > div:nth-child(-n+2) {
-        border-bottom: 1px solid rgba(226, 232, 240, .85);
-    }
+.expense-detail-status-strip > div:nth-child(-n+2) {
+    border-bottom: 1px solid rgba(226, 232, 240, .85);
+}
 }
 
 @media (max-width: 760px) {
-    .expense-payment-data {
-        grid-template-columns: 1fr 1fr;
-    }
+.expense-payment-data {
+    grid-template-columns: 1fr 1fr;
+}
 
-    .expense-detail-hero,
-    .expense-detail-section {
-        padding: 18px 12px;
-    }
+.expense-detail-hero,
+.expense-detail-section {
+    padding: 18px 12px;
+}
 
-    .expense-detail-action-row {
-        padding: 12px 18px;
-        gap: 10px;
-    }
+.expense-detail-action-row {
+    padding: 12px 18px;
+    gap: 10px;
+}
 
-    .expense-detail-action-row button,
-    .expense-detail-action-row a {
-        flex-grow: 1;
-        max-width: 100%;
-    }
+.expense-detail-action-row button,
+.expense-detail-action-row a {
+    flex-grow: 1;
+    max-width: 100%;
+}
 
-    .expense-detail-action-row .left-side {
-        flex: 1 1 0;
-    }
+.expense-detail-action-row .left-side {
+    flex: 1 1 0;
+}
 
-    .expense-detail-action-row .right-side {
-        display: flex;
-        gap: 8px;
-        flex-grow: 1;
-    }
+.expense-detail-action-row .right-side {
+    display: flex;
+    gap: 8px;
+    flex-grow: 1;
+}
 }
 
 @media (max-width: 760px) {
-    .expense-payment-card {
+.expense-payment-card {
 
-    }
+}
 }
 
 @media (max-width: 700px) {
-    .expense-detail-document {
-        border-radius: 20px;
-    }
+.expense-detail-document {
+    border-radius: 20px;
+}
 
-    .expense-detail-info-grid,
-    .expense-detail-status-strip,
-    /*.expense-payment-card,*/
+.expense-detail-info-grid,
+.expense-detail-status-strip,
+/*.expense-payment-card,*/
     .expense-payment-data {
         grid-template-columns: 1fr 1fr;
     }
@@ -9139,7 +9177,6 @@ button.bulk-direct-danger {
     }
 }
 
-/* Recurring/single expense badges */
 .recurring-expense-badge {
     background: #ede9fe;
     color: #6d28d9;
@@ -9147,9 +9184,11 @@ button.bulk-direct-danger {
 }
 
 .single-expense-badge {
-    background: #ecfdf5;
-    color: #047857;
-    border-color: #bbf7d0;
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border-color: #04785763 !important;
+    border-width: 1px;
+    border-style: solid;
 }
 
 .expense-mobile-title-row > .recurring-expense-badge,
@@ -10546,4 +10585,12 @@ table .cell-description {
         box-shadow: none;
         backdrop-filter: none;
     }
+}
+
+.expense-detail-payment {
+
+}
+
+.expense-detail-payment .expense-detail-payment-icon {
+
 }
