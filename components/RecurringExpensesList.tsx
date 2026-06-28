@@ -169,12 +169,12 @@ export default function RecurringExpensesList({
             <th className="cell-left">Fornitore</th>
             <th className="cell-left">Descrizione</th>
             <th className="cell-left">Categoria</th>
+            <th className="cell-right">Importo</th>
             <th className="cell-left">Cadenza</th>
             <th className="cell-left">Scadenza</th>
             <th className="cell-left"><span className="th-wrap">Periodo<br />fatt.</span></th>
             <th className="cell-left">Pagamento</th>
             <th className="cell-left">Inizio</th>
-            <th className="cell-right">Importo</th>
           </tr></thead>
           <tbody>
             {items.map(item => {
@@ -192,12 +192,12 @@ export default function RecurringExpensesList({
                 <td className="cell-left recurring-supplier-cell" title={supplier}><span className="recurring-table-supplier-icon">↻</span>{supplier}</td>
                 <td className="cell-left recurring-description-cell" title={item.description ?? ''}>{item.description || '-'}</td>
                 <td className="cell-left">{item.category ? <span title={item.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(item.category, item.category.code)}</span> : <span className={badgeClass('tone-neutral')}>• ND</span>}</td>
+                <td className="cell-right nowrap-cell"><strong className="recurring-table-amount">€ {euro(item.amount.toString()).replace('€', '').trim()}</strong></td>
                 <td className="cell-left"><span className={badgeClass(cadenceStyle.className)}>{cadenceStyle.icon} {cadenceLabels[item.cadence] ?? item.cadence}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass('tone-waiting')}>📅 {dueLabel(item)}</span></td>
                 <td className="cell-left nowrap-cell"><span className={badgeClass(billingStyle.className)}>{billingStyle.icon} {billing}</span></td>
                 <td className="cell-left recurring-payment-cell" title={payment}>{paymentChannelName ? <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ` : '• '}{payment}</span> : <span className={badgeClass('tone-neutral')}>• Manuale</span>}</td>
                 <td className="cell-left nowrap-cell">{dateLabel(item.startDate)}</td>
-                <td className="cell-right nowrap-cell"><strong className="recurring-table-amount">€ {euro(item.amount.toString()).replace('€', '').trim()}</strong></td>
               </tr>;
             })}
           </tbody>
