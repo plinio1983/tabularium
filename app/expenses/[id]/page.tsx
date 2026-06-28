@@ -15,7 +15,8 @@ import {
   invoiceStatusStyles,
   paymentStatusStyles,
   vatKey,
-  vatStyles, vatStylesNoText,
+  vatStyles,
+  vatStylesNoText,
   yesNoStyles
 } from '@/lib/expense-ui';
 
@@ -41,9 +42,15 @@ function booleanBadge(value: boolean) {
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
 }
 
-function fiscalBadge(value: boolean) {
+function fiscalLabel(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   return <div className="">{item.icon} {item.label}</div>;
+}
+
+function fiscalBadge(value: boolean) {
+  const item = value ? yesNoStyles.yes : yesNoStyles.no;
+  const label = value ? '✓ Fiscale' : '× Non dich.';
+  return <span className={badgeClass(item.className)}>{label}</span>;
 }
 
 export default async function ExpenseDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
@@ -143,19 +150,22 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               </div>
               <div className="expense-detail-meta-line">
                 <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
+                {/*<strong>{fiscalBadge(expense.isDeclared)}</strong>*/}
               </div>
             </div>
           </div>
 
           <aside className="expense-detail-amount-panel">
-            <span className="expense-detail-amount-panel-header">IVA inclusa</span>
+            <div className="expense-detail-amount-panel-header-row">
+              <span className="expense-detail-amount-panel-header">IVA inclusa </span>
+              <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
+            </div>
             <strong>{euro(expense.amount.toString())}</strong>
             <div className="expense-detail-badge-row">
-              <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
               <span className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>
                 {paymentHeroLabel}
               </span>
-              {/*<span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>*/}
+              <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span>
             </div>
           </aside>
         </section>
@@ -172,12 +182,14 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           <div className="expense-detail-payment span-2">
             <div className="expense-detail-payment-icon">{paymentStyle.icon}</div>
             <span>Stato pagamento</span>
-            {/*<strong className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>*/}
-            <strong>
-              {paymentStyle.label}
-              {/*{paymentHeroLabel}*/}
-            </strong>
+            {/*<strong className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>{/*{paymentHeroLabel}}</strong>*/}
+            <strong>{paymentStyle.label}</strong>
           </div>
+        </section>
+          <div className="expense-detail-progress" aria-label={`Pagamento completato al ${paidPercent.toFixed(0)}%`}>
+            <span style={{ width: `${paidPercent}%` }} />
+          </div>
+        <section className="expense-detail-status-strip">
           <div>
             <span>Data ordine</span>
             <strong>{dateLabel(expense.receivedDate)}</strong>
@@ -196,10 +208,10 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </div>
           <div>
             <span>Detrazione</span>
-            <strong>{fiscalBadge(expense.isDeclared)}</strong>
+            <strong>{fiscalLabel(expense.isDeclared)}</strong>
           </div>
           <div>
-            <span>Aliquota</span>
+            <span>IVA</span>
             <strong>{vatStyle.label}</strong>
           </div>
           <div>
@@ -216,9 +228,6 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           {/*  <strong>{euro(paidVat)}</strong>*/}
           {/*</div>*/}
         </section>
-        <div className="expense-detail-progress" aria-label={`Pagamento completato al ${paidPercent.toFixed(0)}%`}>
-          <span style={{ width: `${paidPercent}%` }} />
-        </div>
 
         <section className="expense-detail-section">
           <div className="expense-detail-section-heading">
@@ -238,10 +247,32 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
                 <div><span>Importo</span><strong>{euro(payment.amount.toString())}</strong></div>
                 <div><span>Canale</span><strong>{payment.channel ?? '-'}</strong></div>
                 <div><span>Banca</span><strong>{payment.bank ? `${bankIcons[payment.bank.name] ?? '🏦'} ${payment.bank.name}` : '-'}</strong></div>
-                <div><span>Effettuato da</span><strong>{paidByLabel(payment.paidBy)}</strong></div>
+                <div><span>Operatore</span><strong>{paidByLabel(payment.paidBy)}</strong></div>
               </div>
             </article>)}
           </div> : <div className="expense-empty-panel">Nessun pagamento registrato.</div>}
+
+          {expense.payments.length ? <div className="mobile-expense-payment-timeline">
+            {expense.payments.map(payment => <article className="expense-payment-card" key={payment.id}>
+              <div className="expense-payment-header">
+                <div className="expense-payment-date">
+                  <span>Data pagamento</span>
+                  <strong>{dateLabel(payment.paymentDate)}</strong>
+                </div>
+                <div className="expense-payment-date">
+                  <span>Importo</span>
+                  <strong>{euro(payment.amount.toString())}</strong>
+                </div>
+              </div>
+
+              <div className="expense-payment-data">
+                <div><span>Canale</span><strong>{payment.channel ?? '-'}</strong></div>
+                <div><span>Banca</span><strong>{payment.bank ? `${bankIcons[payment.bank.name] ?? '🏦'} ${payment.bank.name}` : '-'}</strong></div>
+                <div className=""><span>Operatore</span><strong>{paidByLabel(payment.paidBy)}</strong></div>
+              </div>
+            </article>)}
+          </div> : <div className="expense-empty-panel">Nessun pagamento registrato.</div>}
+
         </section>
 
         <section className="expense-detail-section">

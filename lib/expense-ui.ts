@@ -82,6 +82,12 @@ export function vatKey(value: unknown) {
   return String(numberValue).replace(/\.00$/, '');
 }
 
+export function vatRateLabel(value: { toString(): string } | number | null | undefined) {
+  if (value === null || value === undefined) return '-';
+  const rate = Number(value.toString());
+  return Number.isFinite(rate) ? `${rate.toLocaleString('it-IT')}%` : '-';
+}
+
 export function formatPeriod(month: number, year: number) {
   const monthName = new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(new Date(year, month - 1, 1));
   const normalized = monthName.charAt(0).toUpperCase() + monthName.slice(1).replace('.', '');

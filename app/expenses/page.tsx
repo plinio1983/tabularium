@@ -17,7 +17,8 @@ import {
   categoryTone,
   formatPeriod,
   invoiceStatusStyles,
-  paymentStatusStyles,
+  paymentStatusStyles, vatKey,
+  vatRateLabel, vatStyles,
   yesNoStyles
 } from '@/lib/expense-ui';
 
@@ -144,6 +145,7 @@ function booleanBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
 }
+
 function fiscalBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   const label = value ? 'Fisc.' : 'N.F.';
@@ -1145,6 +1147,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       <div className="expense-mobile-list" aria-label="Lista spese mobile">
         {mobileSortedExpenses.map(e => {
           const amount = Number(e.amount.toString());
+          const vatStyle = vatStyles[vatKey(e.vatRate)] ?? vatStyles['22'];
           const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
           const residual = Math.max(0, amount - paid);
           const categoryClassName = categoryTone(e.category);
@@ -1198,27 +1201,15 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                   </div>
                 </div>
                 <div className="expense-mobile-subtitle">
-                  <div>{e.description || 'Spesa senza descrizione'}</div>
+                  <div className="expense-mobile-subtitle-left">
+                    <span>{e.description || 'Spesa senza descrizione'} </span>
+                    <span className={badgeClass(vatStyle.className)}>{Number(e.vatRate.toString())}%</span>
+                  </div>
                   <div>
                     {/*<span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span>*/}
                     <span className={badgeClass(statusStyle.className)}> {statusStyle.label}</span>
                   </div>
                 </div>
-                {/*<div className="expense-mobile-meta">*/}
-                  {/*<span>{mobileDateLabel(e.receivedDate)}</span>*/}
-                  {/*<span>Scad. {mobileDateLabel(e.dueDate)}</span>*/}
-                  {/*<span>{formatPeriod(e.month, e.year)}</span>*/}
-                {/*</div>*/}
-                {/*<div className="expense-mobile-badges">*/}
-                  {/*{e.category ? <span title={e.category.name} className={badgeClass(categoryStyle?.className)}>{categoryStyle?.icon ?? '•'} {categoryStyle?.acronym ?? e.category.code}</span> : null}*/}
-                  {/*<span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span>*/}
-                  {/*{fiscalBadge(e.isDeclared)}*/}
-                {/*</div>*/}
-                {/*<div className="expense-mobile-footer">*/}
-                  {/*<span>{electronicInvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</span>*/}
-                  {/*<span>{formatPeriod(e.month, e.year)}</span>*/}
-                  {/*<strong className={residual > 0 ? 'text-warning' : 'text-ok'}>Residuo {euro(residual)}</strong>*/}
-                {/*</div>*/}
               </div>
             </Link>
           </div>;
@@ -1228,23 +1219,25 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       <div className="table-scroll">
         <table className="expenses-table compact-expenses-table">
           <thead><tr>
-          <th className="cell-option cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese" /></th>
-          <th className="cell-order-date"><span className="th-wrap">Data<br />ordine</span></th>
-          <th className="cell-billing-period"><span className="th-wrap">Periodo<br />Cont.</span></th>
+            <th className="cell-option cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="expenseBulkForm" aria-label="Seleziona tutte le spese" /></th>
+            <th className="cell-order-date"><span className="th-wrap">Data<br />ordine</span></th>
+            <th className="cell-billing-period"><span className="th-wrap">Periodo<br />Cont.</span></th>
             <th className="cell-type"><span className="th-wrap">Tipo</span></th>
             <th className="cell-category">Categ.</th>
-          <th className="cell-supplier">Esercente</th>
-          <th className="cell-amount">Importo</th>
+            <th className="cell-supplier">Esercente</th>
+            <th className="cell-amount">Importo</th>
+            <th className="cell-vat">IVA</th>
             <th className="cell-description">Descrizione</th>
             <th className="cell-fiscal">Fiscale</th>
             <th className="cell-payment-state"><span className="th-wrap">Stato Pag.</span></th>
             <th className="cell-invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
             <th className="cell-ebilling"><span className="th-wrap">E-Bill</span></th>
-          <th className="cell-residual">Residuo</th>
+            <th className="cell-residual">Residuo</th>
           </tr></thead>
           <tbody>
             {filteredExpenses.map(e => {
             const amount = Number(e.amount.toString());
+            const vatStyle = vatStyles[vatKey(e.vatRate)] ?? vatStyles['22'];
             const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
             const residual = Math.max(0, amount - paid);
             const categoryClassName = categoryTone(e.category);
@@ -1261,6 +1254,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : '-'}</td>
               <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
               <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
+              <td className="cell-vat">
+                <span className={badgeClass(vatStyle.className)}>{Number(e.vatRate.toString())}%</span>
+              </td>
               <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
               <td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>
               <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>

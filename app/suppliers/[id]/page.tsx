@@ -8,7 +8,8 @@ import {
   categoryLabel,
   categoryTone,
   invoiceStatusStyles,
-  paymentStatusStyles,
+  paymentStatusStyles, vatKey,
+  vatRateLabel, vatStyles,
   yesNoStyles
 } from '@/lib/expense-ui';
 
@@ -158,6 +159,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           const unpaid = isExpenseUnpaid(expense);
           const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
           const declaredBadgeLabel = expense.isDeclared ? "DF" : "NF";
+          const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
           let recordAddClass = "";
           if (overdue) {
             recordAddClass = "expense-mobile-item-overdue";
@@ -190,7 +192,10 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
                   </div>
                 </div>
                 <div className="expense-mobile-subtitle">
-                  <div>{expense.description || 'Spesa senza descrizione'}</div>
+                  <div className="expense-mobile-subtitle-left">
+                    <span>{expense.description || 'Spesa senza descrizione'}</span>
+                    <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate.toString())}%</span>
+                  </div>
                   <div><span className={badgeClass(statusStyle.className)}>{statusStyle.label}</span></div>
                 </div>
                 {/*{residual > 0 ? <div className="expense-mobile-footer">*/}
@@ -208,6 +213,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         <th className="cell-billing-period">Periodo<br/> Cont.</th>
         <th className="cell-category">Categ.</th>
         <th className="cell-amount">Importo</th>
+        <th className="cell-vat">IVA</th>
         <th className="cell-description">Desc.</th>
         <th className="cell-fiscal">Fisc.</th>
         <th className="cell-payment-state">Stato<br/> Pagam.</th>
@@ -224,6 +230,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           const overdue = isExpensePastDueForBadge(expense);
           const paymentWaiting = expense.paymentStatus !== 'COMPLETATO' || residual > 0;
           const invoiceWaiting = expense.invoiceStatus === 'IN_ATTESA';
+          const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
           return <tr
             key={expense.id}
             className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : paymentWaiting || invoiceWaiting ? 'expense-row-warning' : ''].filter(Boolean).join(' ')}
@@ -234,6 +241,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>
             <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
             <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(amount)}</strong></td>
+            <td className="cell-vat"><span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate.toString())}%</span></td>
             <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
             <td className="cell-fiscal">{fiscalBadge(expense.isDeclared)}</td>
             <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
@@ -241,7 +249,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <td className="cell-ebilling">{invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
           </tr>;
         })}
-        {!supplier.expenses.length && <tr><td colSpan={9}>Nessuna spesa collegata a questo fornitore.</td></tr>}
+        {!supplier.expenses.length && <tr><td colSpan={10}>Nessuna spesa collegata a questo fornitore.</td></tr>}
       </tbody></table></div>
     </div>
   </div>;

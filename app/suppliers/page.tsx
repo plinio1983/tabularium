@@ -316,7 +316,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             <td className="cell-center"><input form="supplierBulkForm" className="bulk-select-all" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} /></td>
             <td><strong>{supplier.businessName}</strong></td>
             <td>{supplier.alias ?? '-'}</td>
-            <td className="text-center"><strong>{openExpensesCount}</strong></td>
+            <td className="text-center"><strong className={openExpensesCount > 0 ? 'text-warning' : ''}>{openExpensesCount}</strong></td>
             <td className="text-right supplier-amount-cell"><strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong></td>
             <td className="text-center"><strong>{annualOrdersCount}</strong></td>
             <td className="text-right supplier-amount-cell"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong></td>
