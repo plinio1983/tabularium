@@ -187,6 +187,12 @@ function MoneyCell({ value, highlight = false, tone = '' }: { value: number; hig
   return <strong className={moneyTone(value, [highlight ? 'money-highlight' : '', tone].filter(Boolean).join(' '))}>{euro(value)}</strong>;
 }
 
+function PercentCell({ value, total, tone = '' }: { value: number; total: number; tone?: string }) {
+  const percentage = total ? value / total : 0;
+  const label = new Intl.NumberFormat('it-IT', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(percentage);
+  return <strong className={tone}>{label}</strong>;
+}
+
 function ExpensesByCategoryChart({ data }: { data: Array<{ name: string; code: string; total: number }> }) {
   const max = Math.max(...data.map(item => item.total), 0);
   const total = data.reduce((sum, item) => sum + item.total, 0);
@@ -428,8 +434,8 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
             <td className="money-value-col"><MoneyCell value={m.totals.utileNetto} highlight /></td>
             <td className="money-value-col"><MoneyCell value={m.totals.utileFiscale} highlight /></td>
             {/*<td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'yes' })}><MoneyCell value={m.totals.incassoFiscale} /></Link></td>*/}
-            <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'no' })}><MoneyCell value={m.totals.incassoNonFiscale} /></Link></td>
-            <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { declared: 'no' })}><MoneyCell value={m.totals.usciteNonFiscali} tone="money-warning" /></Link></td>
+            <td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'no' })}><PercentCell value={m.totals.incassoNonFiscale} total={m.totals.incassoTotale} /></Link></td>
+            <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { declared: 'no' })}><PercentCell value={m.totals.usciteNonFiscali} total={m.totals.speseTotali} tone="money-warning" /></Link></td>
             <td><Link href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'not_complete' })}><MoneyCell value={m.totals.nonSaldato} tone="money-warning" /></Link></td>
             {/*<td><Link className={m.totals.fattureScaduteCount > 0 ? 'count-critical' : 'count-muted'} href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'overdue' })}>{m.totals.fattureScaduteCount}</Link></td>*/}
             <td><MoneyCell value={m.totals.debitoIva} /></td>
