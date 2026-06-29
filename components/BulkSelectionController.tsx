@@ -134,6 +134,81 @@ function formSubject(form: HTMLFormElement) {
   return "record";
 }
 
+function shouldUseBulkModal() {
+  return window.matchMedia("(max-width: 760px)").matches;
+}
+
+function closeBulkActionModal() {
+  document.querySelectorAll<HTMLElement>(".bulk-action-modal-backdrop").forEach((modal) => modal.remove());
+  document.body.classList.remove("bulk-action-modal-open");
+}
+
+function openBulkActionModal(sourceMenu: HTMLElement) {
+  if (sourceMenu.classList.contains("bulk-action-menu-disabled")) return;
+
+  const sourcePanel = sourceMenu.querySelector<HTMLElement>(".bulk-action-menu-panel");
+  if (!sourcePanel) return;
+
+  closeBulkActionModal();
+  sourceMenu.removeAttribute("open");
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "bulk-action-modal-backdrop";
+  backdrop.setAttribute("role", "presentation");
+
+  const modal = document.createElement("div");
+  modal.className = "bulk-action-modal";
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+  modal.setAttribute("aria-label", "Azioni bulk");
+
+  const header = document.createElement("div");
+  header.className = "bulk-action-modal-header";
+
+  const title = document.createElement("h3");
+  title.textContent = "Azioni";
+
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "bulk-action-modal-close";
+  close.setAttribute("aria-label", "Chiudi azioni bulk");
+  close.textContent = "×";
+  close.addEventListener("click", closeBulkActionModal);
+
+  header.appendChild(title);
+  header.appendChild(close);
+  modal.appendChild(header);
+
+  const actions = document.createElement("div");
+  actions.className = "bulk-action-modal-actions";
+
+  Array.from(sourcePanel.children).forEach((child) => {
+    if (!(child instanceof HTMLButtonElement)) return;
+    const sourceButton = child;
+    const cloned = document.createElement("button");
+    cloned.type = "button";
+    cloned.innerHTML = sourceButton.innerHTML;
+    cloned.className = sourceButton.className;
+    cloned.disabled = sourceButton.disabled;
+    cloned.addEventListener("click", () => {
+      if (sourceButton.disabled) return;
+      closeBulkActionModal();
+      sourceButton.click();
+    });
+    actions.appendChild(cloned);
+  });
+
+  modal.appendChild(actions);
+  backdrop.appendChild(modal);
+  backdrop.addEventListener("click", (event) => {
+    if (event.target === backdrop) closeBulkActionModal();
+  });
+
+  document.body.appendChild(backdrop);
+  document.body.classList.add("bulk-action-modal-open");
+  close.focus();
+}
+
 function makeFloatingBar(sourceBar: HTMLElement) {
   const floating = document.createElement("div");
   floating.className = "floating-bulk-actions-bar";
@@ -195,6 +270,10 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     trigger.addEventListener("click", (event) => {
       event.stopPropagation();
       if (sourceMenu.classList.contains("bulk-action-menu-disabled")) return;
+      if (shouldUseBulkModal()) {
+        openBulkActionModal(sourceMenu);
+        return;
+      }
       menuWrap.classList.toggle("is-open");
     });
 
@@ -329,6 +408,15 @@ export default function BulkSelectionController() {
       const target = event.target;
       if (!(target instanceof Element)) return;
 
+      const bulkActionTrigger = target.closest<HTMLElement>(".bulk-action-trigger");
+      const bulkActionMenu = bulkActionTrigger?.closest<HTMLElement>("[data-bulk-menu]");
+      if (bulkActionTrigger && bulkActionMenu && shouldUseBulkModal()) {
+        event.preventDefault();
+        event.stopPropagation();
+        openBulkActionModal(bulkActionMenu);
+        return;
+      }
+
       const disabledLink = target.closest<HTMLAnchorElement>(".bulk-direct-link.is-disabled");
       if (disabledLink) {
         event.preventDefault();
@@ -389,10 +477,15 @@ export default function BulkSelectionController() {
       updateFloatingVisibility();
     };
 
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeBulkActionModal();
+    };
+
     document.addEventListener("change", onChange);
     document.addEventListener("click", onClick);
     document.addEventListener("submit", onSubmit, true);
     document.addEventListener("toggle", onToggle, true);
+    document.addEventListener("keydown", onKeyDown);
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
     window.addEventListener("resize", onScrollOrResize);
 
@@ -406,9 +499,11 @@ export default function BulkSelectionController() {
       document.removeEventListener("click", onClick);
       document.removeEventListener("submit", onSubmit, true);
       document.removeEventListener("toggle", onToggle, true);
+      document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
       document.querySelectorAll(".floating-bulk-actions-bar").forEach((bar) => bar.remove());
+      closeBulkActionModal();
     };
   }, []);
 
