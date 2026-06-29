@@ -227,12 +227,13 @@ export default function RecurringExpensesList({
             </div>
             <div className="recurring-mobile-top">
               <strong>{supplier}</strong>
-              <div><span className="badge">{item.category?.name ?? 'Senza categoria'}</span></div>
+              <div className="recurring-mobile-right"><strong>{payment}</strong></div>
+
             </div>
 
             <div className="recurring-mobile-middle">
               <div className="recurring-mobile-description">{item.description || 'Spesa ricorrente senza descrizione'}</div>
-              <span className="recurring-mobile-right"><strong>{payment}</strong></span>
+              <div><span className="badge">{item.category?.name ?? 'Senza categoria'}</span></div>
             </div>
 
             {/*<div className="recurring-mobile-badges">*/}
@@ -242,7 +243,7 @@ export default function RecurringExpensesList({
 
             <div className="recurring-mobile-meta">
               <div><span>Periodo fatt.</span><strong>{billing}</strong></div>
-              <div><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
+              <div className="recurring-mobile-meta-right"><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
             </div>
           </article>
           </Link>

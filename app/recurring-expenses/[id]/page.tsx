@@ -117,7 +117,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
     }
   };
 
-  return <div className="grid">
+  return <div className="grid expense-detail-page recurring-expense-detail-page">
     <RecurringExpenseDetailEditModalController
       categories={categories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, isFallback: bank.isFallback }))}
@@ -133,117 +133,170 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       defaultErrorMessage="Impossibile completare l’operazione."
     />
 
-    <section className="expense-detail-hero card recurring-detail-hero">
-      <div className="actions-row expense-detail-actions">
-        <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
-        <Link className="table-action" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
-      </div>
-      <div className="expense-detail-hero-main">
-        <div className="expense-detail-hero-main-meta">
-          <div className={badgeClass(activeClass)}>{item.isActive ? 'ON' : 'OFF'}</div>
-          <div className="expense-detail-eyebrow">Spesa ricorrente #{item.id}</div>
-        </div>
-        <h2>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}`}>{merchant}</Link> : merchant}</h2>
-        <div className="expense-detail-supplier">
-          <span>{item.description ?? 'Spesa ricorrente senza descrizione'}</span>
-        </div>
-        <div className="expense-detail-hero-meta">
-          <span>{item.category ? categoryLabel(item.category, item.category.name) : 'Senza categoria'}</span>
-          <span>Inizio:<br /><strong>{dateLabel(item.startDate)}</strong></span>
-          {/*<span>Stato:<br /><strong>{item.isActive ? 'Attiva' : 'Disattivata'}</strong></span>*/}
-        </div>
-      </div>
-      <div className="expense-detail-hero-side-wrap">
-        <span className="text-pre">{cadenceLabels[item.cadence] ?? item.cadence}</span>
-        <div className={item.isActive ? 'expense-detail-hero-side expense-detail-hero-side-paid' : 'expense-detail-hero-side expense-detail-hero-side-unpaid'}>
-          <span className="expense-detail-side-label">Importo ricorrente</span>
-          <strong>{euro(item.amount.toString())}</strong>
-          <div className="detail-money-row">
-            <span className={badgeClass(activeClass)}>{item.isActive ? 'Regola attiva' : 'Regola disattivata'}</span>
-            <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
+    <div className="expense-detail-shell">
+      <article className="expense-detail-document recurring-detail-document">
+        <div className="expense-detail-action-row">
+          <div className="left-side">
+            <Link className="table-action secondary" href={returnTo}>↩ Indietro</Link>
+          </div>
+          <div className="right-side">
+            <Link className="table-action" href="#" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</Link>
           </div>
         </div>
-      </div>
-    </section>
 
-    <section className="expense-detail-priority-grid recurring-detail-priority-grid">
-      <div className="expense-detail-priority-card supplier-card">
-        <span>Fornitore</span>
-        <strong>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}`}>{merchant}</Link> : merchant}</strong>
-        <small>{item.category ? <span className={badgeClass(categoryClassName)}>{categoryLabel(item.category, item.category.name)}</span> : 'Senza categoria'}</small>
-      </div>
-      <div className="expense-detail-priority-card amount-card">
-        <span>Importo</span>
-        <strong>{euro(item.amount.toString())}</strong>
-        <small><span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span></small>
-      </div>
-      <div className="expense-detail-priority-card status-card">
-        <span>Cadenza</span>
-        <strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong>
-        <small>Scadenza: {dueLabel(item)}</small>
-      </div>
-      <div className="expense-detail-priority-card due-card">
-        <span>Periodo fatturazione</span>
-        <strong>{billingLabel(item)}</strong>
-        <small>Competenza: {accrualLabels[item.accrualType] ?? item.accrualType}</small>
-      </div>
-      <div className="expense-detail-priority-card declared-card">
-        <span>Detrazione:&nbsp;&nbsp;<strong>{booleanBadge(item.isDeclared)}</strong></span>
-        <span>Fattura Elett:&nbsp;&nbsp;{booleanBadge(item.hasElectronicInvoice)}</span>
-        <span>Pagamento automatico:&nbsp;&nbsp;{booleanBadge(Boolean(paymentChannelName || item.bankId))}</span>
-      </div>
-    </section>
-
-    <section className="card recurring-detail-grid-card">
-      <div className="expense-detail-section-title">
-        <div>
-          <h2>Regola di pagamento</h2>
-          <p className="muted">Metodo, banca e note configurate per la ricorrenza.</p>
-        </div>
-      </div>
-      <div className="detail-grid expense-detail-secondary-grid">
-        <div><span>Canale pagamento</span><strong>{paymentChannelName ?? '-'}</strong></div>
-        <div><span>Banca</span><strong>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ${item.bank.name}` : '-'}</strong></div>
-        <div><span>Giorno scadenza</span><strong>{dueLabel(item)}</strong></div>
-        <div><span>Data inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
-        <div className="full"><span>Note</span><strong>{item.notes ?? '-'}</strong></div>
-      </div>
-    </section>
-
-    <section className="card expense-detail-payments-card">
-      <div className="expense-detail-section-title">
-        <div>
-          <h2>Spese generate</h2>
-          <p className="muted">Ultime spese create da questa regola ricorrente.</p>
-        </div>
-        <span className="badge">{item.generatedExpenses.length} record · {euro(generatedTotal)}</span>
-      </div>
-
-      <div className="table-scroll recurring-generated-desktop">
-        <table className="expense-payments-table recurring-generated-table">
-          <thead><tr><th>Periodo</th><th>Data ordine</th><th>Descrizione</th><th>Importo</th><th>Dettaglio</th></tr></thead>
-          <tbody>
-            {item.generatedExpenses.length ? item.generatedExpenses.map(expense => <tr key={expense.id}>
-              <td>{formatPeriod(expense.month, expense.year)}</td>
-              <td>{dateLabel(expense.receivedDate)}</td>
-              <td>{expense.description ?? '-'}</td>
-              <td><strong>{euro(expense.amount.toString())}</strong></td>
-              <td><Link className="table-action secondary icon-action" href={`/expenses/${expense.id}?returnTo=${encodeURIComponent(`/recurring-expenses/${item.id}`)}`}>👁</Link></td>
-            </tr>) : <tr><td colSpan={5}>Nessuna spesa generata da questa ricorrenza.</td></tr>}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="expense-payments-mobile">
-        {item.generatedExpenses.length ? item.generatedExpenses.map(expense => <Link className="expense-payment-mobile-card recurring-generated-mobile-card" href={`/expenses/${expense.id}?returnTo=${encodeURIComponent(`/recurring-expenses/${item.id}`)}`} key={`generated-mobile-${expense.id}`}>
-          <div className="expense-payment-mobile-top">
-            <strong>{euro(expense.amount.toString())}</strong>
-            <span>{formatPeriod(expense.month, expense.year)}</span>
+        <section className="expense-detail-hero">
+          <div>
+            <div className="expense-detail-title-block">
+              <p className="expense-detail-kicker">
+                <span>Spesa ricorrente #{item.id}</span>
+                <span className={badgeClass(activeClass)}>{item.isActive ? 'ON' : 'OFF'}</span>
+              </p>
+              <h1>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}`}>{merchant}</Link> : merchant}</h1>
+              <div className="expense-detail-meta-line">
+                <span>{item.category ? categoryLabel(item.category, item.category.name) : 'Senza categoria'}</span>
+                <span>{item.description ?? 'Spesa ricorrente senza descrizione'}</span>
+              </div>
+            </div>
           </div>
-          <div className="expense-payment-mobile-row"><span>Data ordine</span><b>{dateLabel(expense.receivedDate)}</b></div>
-          <div className="expense-payment-mobile-row"><span>Descrizione</span><b>{expense.description ?? '-'}</b></div>
-        </Link>) : <p className="muted">Nessuna spesa generata da questa ricorrenza.</p>}
-      </div>
-    </section>
+
+          <aside className="expense-detail-amount-panel">
+            <div className="expense-detail-amount-panel-header-row">
+              <span className="expense-detail-amount-panel-header">Importo ricorrente</span>
+              <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
+            </div>
+            <strong>{euro(item.amount.toString())}</strong>
+            <div className="expense-detail-badge-row">
+              <span className={badgeClass(activeClass)}>{item.isActive ? 'Regola attiva' : 'Regola disattivata'}</span>
+              <span className="badge">{cadenceLabels[item.cadence] ?? item.cadence}</span>
+            </div>
+          </aside>
+        </section>
+
+        <section className="expense-detail-status-strip">
+          <div>
+            <span>Cadenza</span>
+            <strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong>
+          </div>
+          <div>
+            <span>Scadenza</span>
+            <strong>{dueLabel(item)}</strong>
+          </div>
+          <div>
+            <span>Fatturazione</span>
+            <strong>{billingLabel(item)}</strong>
+          </div>
+          <div>
+            <span>Competenza</span>
+            <strong>{accrualLabels[item.accrualType] ?? item.accrualType}</strong>
+          </div>
+        </section>
+        <div className="expense-detail-progress" aria-label={item.isActive ? 'Regola attiva' : 'Regola disattivata'}>
+          <span style={{ width: item.isActive ? '100%' : '0%' }} />
+        </div>
+
+        <section className="expense-detail-section">
+          <div className="expense-detail-section-heading">
+            <div>
+              <h2>Dati ricorrenza</h2>
+              <p>Fornitore, categoria e impostazioni fiscali della regola.</p>
+            </div>
+          </div>
+          <div className="expense-detail-status-strip">
+            <div>
+              <span>Fornitore</span>
+              <strong>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}`}>{merchant}</Link> : merchant}</strong>
+            </div>
+            <div>
+              <span>Categoria</span>
+              <strong>{item.category ? categoryLabel(item.category, item.category.name) : 'Senza categoria'}</strong>
+            </div>
+            <div>
+              <span>Data inizio</span>
+              <strong>{dateLabel(item.startDate)}</strong>
+            </div>
+            <div>
+              <span>Stato</span>
+              <strong>{item.isActive ? '✓ Attiva' : '× Disattivata'}</strong>
+            </div>
+            <div>
+              <span>Detrazione</span>
+              <strong>{booleanBadge(item.isDeclared)}</strong>
+              <strong>{booleanBadge(item.isDeclared)}</strong>
+            </div>
+            <div>
+              <span>F. elettronica</span>
+              <strong>{booleanBadge(item.hasElectronicInvoice)}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="expense-detail-section">
+          <div className="expense-detail-section-heading">
+            <div>
+              <h2>Regola di pagamento</h2>
+              <p>Metodo, banca e note configurate per la ricorrenza.</p>
+            </div>
+          </div>
+          <div className="expense-detail-status-strip">
+            <div>
+              <span>Canale pagamento</span>
+              <strong>{paymentChannelName ?? '-'}</strong>
+            </div>
+            <div>
+              <span>Banca</span>
+              <strong>{item.bank ? `${bankIcons[item.bank.name] ?? '🏦'} ${item.bank.name}` : '-'}</strong>
+            </div>
+            <div>
+              <span>Pagamento automatico</span>
+              <strong>{Boolean(paymentChannelName || item.bankId) ? '✓ Si' : '× No'}</strong>
+            </div>
+            <div>
+              <span>Giorno scadenza</span>
+              <strong>{dueLabel(item)}</strong>
+            </div>
+          </div>
+          <div className="expense-detail-item expense-detail-item-wide">
+            <span>Note</span>
+            <strong>{item.notes ?? '-'}</strong>
+          </div>
+        </section>
+
+        <section className="expense-detail-section">
+          <div className="expense-detail-section-heading">
+            <div>
+              <h2>Spese generate</h2>
+              <p>Ultime spese create da questa regola ricorrente.</p>
+            </div>
+            <span className="badge">{item.generatedExpenses.length} record · {euro(generatedTotal)}</span>
+          </div>
+
+          <div className="table-scroll recurring-generated-desktop">
+            <table className="expense-payments-table recurring-generated-table">
+              <thead><tr><th>Periodo</th><th>Data ordine</th><th>Descrizione</th><th>Importo</th><th>Dettaglio</th></tr></thead>
+              <tbody>
+                {item.generatedExpenses.length ? item.generatedExpenses.map(expense => <tr key={expense.id}>
+                  <td>{formatPeriod(expense.month, expense.year)}</td>
+                  <td>{dateLabel(expense.receivedDate)}</td>
+                  <td>{expense.description ?? '-'}</td>
+                  <td><strong>{euro(expense.amount.toString())}</strong></td>
+                  <td><Link className="table-action secondary icon-action" href={`/expenses/${expense.id}?returnTo=${encodeURIComponent(`/recurring-expenses/${item.id}`)}`}>👁</Link></td>
+                </tr>) : <tr><td colSpan={5}>Nessuna spesa generata da questa ricorrenza.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="expense-payments-mobile">
+            {item.generatedExpenses.length ? item.generatedExpenses.map(expense => <Link className="expense-payment-mobile-card recurring-generated-mobile-card" href={`/expenses/${expense.id}?returnTo=${encodeURIComponent(`/recurring-expenses/${item.id}`)}`} key={`generated-mobile-${expense.id}`}>
+              <div className="expense-payment-mobile-top">
+                <strong>{euro(expense.amount.toString())}</strong>
+                <span>{formatPeriod(expense.month, expense.year)}</span>
+              </div>
+              <div className="expense-payment-mobile-row"><span>Data ordine</span><b>{dateLabel(expense.receivedDate)}</b></div>
+              <div className="expense-payment-mobile-row"><span>Descrizione</span><b>{expense.description ?? '-'}</b></div>
+            </Link>) : <p className="muted">Nessuna spesa generata da questa ricorrenza.</p>}
+          </div>
+        </section>
+      </article>
+    </div>
   </div>;
 }
