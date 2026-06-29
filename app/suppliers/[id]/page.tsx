@@ -35,14 +35,15 @@ function booleanBadge(value: boolean) {
 
 function fiscalBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
-  const label = value ? 'Fisc.' : 'N.F.';
+  const label = value ? '✓ Fisc.' : '✕ N.F.';
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
 
 function invoiceBadge(value: boolean, invoiceStatus?: string) {
-  const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  const label = !value ? (invoiceStatus === 'NON_PREVISTA' ? 'N.P.' : 'Fatt') : '@bill';
-  return <span className={badgeClass(style.className)}>{label}</span>;
+  // const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
+  const style = !value ? (invoiceStatus === 'NON_PREVISTA' ? yesNoStyles.no.className : "") : yesNoStyles.yes.className;
+  const label = !value ? (invoiceStatus === 'NON_PREVISTA' ? '✕' : 'PDF') : '✓ eBill';
+  return <span className={badgeClass(style)}>{label}</span>;
 }
 
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
@@ -111,6 +112,9 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const amountToPay = openExpenses.reduce((sum, item) => sum + item.residual, 0);
   const supplierDetailHref = `/suppliers/${supplier.id}`;
   const encodedSupplierDetailHref = encodeURIComponent(supplierDetailHref);
+  const currentYear = new Date().getFullYear();
+  const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
+  const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
   return <div className="grid expense-detail-page supplier-detail-page">
     <script dangerouslySetInnerHTML={{ __html: `
@@ -177,7 +181,10 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <span>Importo da saldare</span>
             <strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
           </div>
-          <CopyableField label="Email" value={supplier.email} />
+          <div>
+            <span>Acquistati {currentYear}</span>
+            <strong>{euro(annualPurchasedAmount)}</strong>
+          </div>
         </section>
 
         <section className="expense-detail-section">
@@ -190,6 +197,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           <div className="expense-detail-status-strip supplier-detail-info-strip">
             <CopyableField label="R. Sociale" value={supplier.businessName} />
             <CopyableField label="Alias" value={supplier.alias} />
+            <CopyableField label="Email" value={supplier.email} />
             <CopyableField label="Telefono" value={supplier.phone} />
             <CopyableField label="PEC" value={supplier.pec} />
             <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi} />
@@ -272,11 +280,12 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       <div className="table-scroll"><table className="expenses-table compact-expenses-table supplier-linked-expenses-table"><thead><tr>
         <th className="cell-order-date">Data<br/> ordine</th>
         <th className="cell-billing-period">Periodo<br/> Cont.</th>
+        <th className="cell-type">Tipo</th>
         <th className="cell-category">Categ.</th>
         <th className="cell-amount">Importo</th>
         <th className="cell-vat">IVA</th>
         <th className="cell-description">Desc.</th>
-        <th className="cell-fiscal">Fisc.</th>
+        {/*<th className="cell-fiscal">Fisc.</th>*/}
         <th className="cell-payment-state">Stato<br/> Pagam.</th>
         <th className="cell-invoice-state">Stato <br />Fatt.</th>
         <th className="cell-ebilling">e-Bill</th>
@@ -300,11 +309,12 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           >
             <td className="cell-order-date">{dateLabel(expense.receivedDate)}</td>
             <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>
+            <td className="cell-type"><span className={expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</span></td>
             <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
             <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(amount)}</strong></td>
             <td className="cell-vat"><span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate.toString())}%</span></td>
             <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
-            <td className="cell-fiscal">{fiscalBadge(expense.isDeclared)}</td>
+            {/*<td className="cell-fiscal">{fiscalBadge(expense.isDeclared)}</td>*/}
             <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
             <td className="cell-invoice-state"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
             <td className="cell-ebilling">{invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>

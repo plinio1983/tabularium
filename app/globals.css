@@ -3560,13 +3560,15 @@ table th, table td {
     grid-template-columns: 1fr;
 }
 
-/*.expense-detail-status-strip.supplier-detail-info-strip {*/
-/*    grid-template-columns: repeat(3, minmax(0, 1fr));*/
-/*}*/
+@media (min-width: 576px) {
+    .supplier-detail-page .supplier-detail-info-strip {
+        grid-template-columns: 1fr 1fr;
+    }
+}
 
 @media (max-width: 900px) {
     .income-totals-row {
-        grid-template-columns:1fr;
+        grid-template-columns: 1fr;
     }
 }
 
@@ -10318,8 +10320,12 @@ table .cell-ebilling {
     text-align: center;
 }
 
-table .cell-fiscal,
 table .cell-type {
+    width: 4% !important;
+    text-align: center;
+}
+
+table .cell-fiscal {
     width: 5% !important;
     text-align: center;
 }

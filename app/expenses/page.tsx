@@ -151,44 +151,46 @@ function booleanBadge(value: boolean) {
 
 function fiscalBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
-  const label = value ? 'Fisc.' : 'N.F.';
+  const label = value ? '✓ Fisc.' : '✕ N.F.';
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
 function fiscalBadgeMobile(value: boolean) {
   const item = value ? { className: '' } : yesNoStyles.no;
-  const label = value ? 'DF' : 'NF';
+  const label = value ? '✓ DF' : '✕ NF';
   return <span className={badgeClass(item.className)}>{label}</span>;
 }
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
   const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  let label = !value ? 'Fatt' : '@bill';
+  let label = !value ? 'PDF' : 'Fatt';
   let state = invoiceStatus;
   if (invoiceStatus === "IN_ATTESA") {
-    state = ""//' Wait';
+    state = "✕ "
   }
   if (invoiceStatus === "RICEVUTA") {
-    state = ' Ok';
+    state = '✓ ';
   }
   if (invoiceStatus === "NON_PREVISTA") {
-    state = '';
+    state = '✕ ';
     label = 'N.P.';
   }
 
-  return <span className={badgeClass(style.className)}>{label}{state}</span>;
+  return <span className={badgeClass(style.className)}>{state}{label}</span>;
 }
 function InvoiceBadge(value: boolean, invoiceStatus?: string) {
-  const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-  const label = (status?: string) => {
-    let label = "";
-    if (!value) {
-      label = status === 'NON_PREVISTA' ? '✕ N.P.' : 'Fatt';
-      // style = yesNoStyles.no;
+  //let style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
+  let style = !value ? yesNoStyles.no.className : yesNoStyles.yes.className;
+  let label = "";
+  if (!value) {
+    if (invoiceStatus === 'NON_PREVISTA') {
+      label = '✕';
     } else {
-      label = "✓ @Fatt"
+      style = "";
+      label = 'PDF';
     }
-    return label;
+  } else {
+    label = "✓ eBill."
   }
-  return <span className={badgeClass(style.className)}>{label(invoiceStatus)}</span>;
+  return <span className={badgeClass(style)}>{label}</span>;
 }
 function ActiveFilterSummary({ items }: { items: Array<{ label: string; value: string }> }) {
   return <div className="active-filter-summary">
@@ -1234,7 +1236,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             <th className="cell-amount">Importo</th>
             <th className="cell-vat">IVA</th>
             <th className="cell-description">Descrizione</th>
-            <th className="cell-fiscal">Fiscale</th>
+            {/*<th className="cell-fiscal">Fiscale</th>*/}
             <th className="cell-payment-state"><span className="th-wrap">Stato Pag.</span></th>
             <th className="cell-invoice-state"><span className="th-wrap">Stato<br />Fatt.</span></th>
             <th className="cell-ebilling"><span className="th-wrap">E-Bill</span></th>
@@ -1251,6 +1253,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
             const overdue = isExpensePastDueForBadge(e);
             const paymentWaiting = e.paymentStatus !== 'COMPLETATO' || residual > 0;
             const invoiceWaiting = e.invoiceStatus === 'IN_ATTESA';
+            const vatStyle = vatStyles[vatKey(e.vatRate)] ?? vatStyles['22'];
             return <tr key={e.id} className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : paymentWaiting || invoiceWaiting ? 'expense-row-warning' : ''].filter(Boolean).join(' ')} data-row-href={`/expenses/${e.id}?returnTo=${returnTo}`} tabIndex={0}>
               <td className="cell-option cell-center"><input form="expenseBulkForm" type="checkbox" name="ids" value={e.id} aria-label={`Seleziona spesa ${e.id}`} /></td>
               <td className="cell-order-date">{dateLabel(e.receivedDate)}</td>
@@ -1259,9 +1262,9 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : '-'}</td>
               <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
               <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
-              <td className="cell-vat">{vatRateLabel(e.vatRate)}</td>
+              <td className="cell-vat"><span className={badgeClass(vatStyle.className)}>{Number(e.vatRate.toString())}%</span></td>
               <td className="cell-description" title={e.description ?? ''}>{e.description}</td>
-              <td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>
+              {/*<td className="cell-fiscal">{fiscalBadge(e.isDeclared)}</td>*/}
               <td className="cell-payment-state">{overdue ? <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> : <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
               <td className="cell-invoice-state"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span></td>
               <td className="cell-ebilling">{InvoiceBadge(e.hasElectronicInvoice, e.invoiceStatus)}</td>
