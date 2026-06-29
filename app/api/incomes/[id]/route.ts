@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -32,11 +33,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const formData = await request.formData();
   const raw = Object.fromEntries(formData.entries());
   const action = String(raw._action || 'update');
-  const returnTo = new URL(request.url).searchParams.get('returnTo');
+  const rawReturnTo = new URL(request.url).searchParams.get('returnTo');
+  const returnTo = pathFromUrl(rawReturnTo, `/incomes/${incomeId}`);
 
   if (action === 'delete') {
     await prisma.income.deleteMany({ where: { id: incomeId, workspaceId: current.workspace.id } });
-    return NextResponse.redirect(new URL(appendFlash(returnTo || '/incomes', { saved: 'deleted' }), request.url), 303);
+    return redirectToPath(appendFlash(pathFromUrl(rawReturnTo, '/incomes'), { saved: 'deleted' }));
   }
 
   const parsed = IncomeSchema.parse(raw);
@@ -47,7 +49,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (!paymentMethod || !creditBank) return NextResponse.json({ error: 'Metodo o banca non validi' }, { status: 400 });
   const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id }, select: { id: true } });
   if (!existing) {
-    return NextResponse.redirect(new URL(appendFlash(returnTo || '/incomes', { error: 'not_found' }), request.url), 303);
+    return redirectToPath(appendFlash(returnTo || '/incomes', { error: 'not_found' }));
   }
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
   await prisma.income.update({
@@ -72,5 +74,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
   });
 
-  return NextResponse.redirect(new URL(appendFlash(returnTo || `/incomes/${incomeId}`, { saved: 'updated' }), request.url), 303);
+  return redirectToPath(appendFlash(returnTo || `/incomes/${incomeId}`, { saved: 'updated' }));
 }

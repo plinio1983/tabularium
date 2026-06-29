@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import IncomeForm from '@/components/IncomeForm';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
+import { clampDateToToday, clampPeriodToCurrentMonth } from '@/lib/copy-dates';
 
 export default async function NewIncomePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/incomes/new');
@@ -19,6 +20,7 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
   ]);
   const orderedBanks = orderBanks(banks);
   const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
+  const copyBillingPeriod = copyIncome ? clampPeriodToCurrentMonth(copyIncome.billingMonth, copyIncome.billingYear) : null;
 
   return <div className="modal-page-wrap">
     <div className="modal-card modal-card-wide modal-page-card">
@@ -38,9 +40,9 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
         paymentMethodId: copyIncome.paymentMethodId,
         creditChannel: copyIncome.creditChannel,
         creditBankId: copyIncome.creditBankId,
-        creditDate: copyIncome.creditDate,
-        billingMonth: copyIncome.billingMonth,
-        billingYear: copyIncome.billingYear,
+        creditDate: clampDateToToday(copyIncome.creditDate),
+        billingMonth: copyBillingPeriod?.month,
+        billingYear: copyBillingPeriod?.year,
         isFiscal: copyIncome.isFiscal,
         invoiceStatus: copyIncome.invoiceStatus,
         vatRate: copyIncome.vatRate.toString(),

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import IncomeForm from "@/components/IncomeForm";
+import { clampDateToToday, clampPeriodToCurrentMonth } from "@/lib/copy-dates";
 
 type EditIncome = {
   id: number;
@@ -47,7 +48,18 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
       const response = await fetch(`/api/incomes/${id}/edit-data`, { cache: "no-store" });
       if (!response.ok) throw new Error("Impossibile caricare l'incasso.");
       const payload = await response.json();
-      setIncome(payload.income as EditIncome);
+      const loadedIncome = payload.income as EditIncome;
+      if (nextMode === "copy") {
+        const billingPeriod = clampPeriodToCurrentMonth(loadedIncome.billingMonth, loadedIncome.billingYear);
+        setIncome({
+          ...loadedIncome,
+          creditDate: clampDateToToday(loadedIncome.creditDate),
+          billingMonth: billingPeriod.month,
+          billingYear: billingPeriod.year,
+        });
+      } else {
+        setIncome(loadedIncome);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Errore nel caricamento dell'incasso.");
     } finally {
@@ -91,6 +103,7 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
           <button className="secondary-button modal-close-button" type="button" onClick={() => setIncome(null)}>×</button>
         </div>
         <IncomeForm
+          key={`${mode}-${income.id}`}
           initialIncome={income}
           action={mode === "copy" ? `/api/incomes?returnTo=${encodeURIComponent(returnTo)}` : `/api/incomes/${income.id}?returnTo=${encodeURIComponent(returnTo)}`}
           title={mode === "copy" ? "Nuovo incasso da copia" : `Modifica incasso #${income.id}`}

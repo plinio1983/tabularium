@@ -240,8 +240,8 @@ model Expense {
   workspace             Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   receivedDate          DateTime?
   merchant              String
-  supplierId            Int?
-  supplier              Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  supplierId            Int
+  supplier              Supplier  @relation(fields: [supplierId], references: [id], onDelete: Restrict)
   categoryId            Int?
   category              ExpenseCategory? @relation(fields: [categoryId], references: [id])
   description           String?

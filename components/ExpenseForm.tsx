@@ -93,6 +93,11 @@ function addDaysToDateInput(value: string, days: number) {
     return date.toISOString().slice(0, 10);
 }
 
+function monthInputFromDateInput(value: string) {
+    const [year, month] = value.split("-");
+    return year && month ? `${year}-${month}` : "";
+}
+
 const currentBillingPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
 const defaultChannel = "Bonifico";
 const cashChannel = "Cash";
@@ -602,7 +607,12 @@ export default function ExpenseForm({
     const openPaymentRef = useRef<HTMLDivElement | null>(null);
     const [attachmentError, setAttachmentError] = useState("");
     const initialOrderDate = toDateInput(initialExpense?.receivedDate) || today;
+    const initialBillingPeriod =
+        initialExpense?.year && initialExpense?.month
+            ? `${initialExpense.year}-${String(initialExpense.month).padStart(2, "0")}`
+            : currentBillingPeriod;
     const [orderDate, setOrderDate] = useState(initialOrderDate);
+    const [billingPeriod, setBillingPeriod] = useState(initialBillingPeriod);
     const [dueDate, setDueDate] = useState(
         initialExpense ? toDateInput(initialExpense.dueDate) : addDaysToDateInput(initialOrderDate, 7),
     );
@@ -634,10 +644,6 @@ export default function ExpenseForm({
                 : {icon: "⚪", label: "Non pagato", className: "text-critical"};
     const canAddPayment =
         payments.length === 0 || isPaymentComplete(payments[payments.length - 1]);
-    const initialBillingPeriod =
-        initialExpense?.year && initialExpense?.month
-            ? `${initialExpense.year}-${String(initialExpense.month).padStart(2, "0")}`
-            : currentBillingPeriod;
 
     const invoiceStatuses = useMemo(
         () => {
@@ -657,20 +663,12 @@ export default function ExpenseForm({
         if (!isDeclared) {
             setHasElectronicInvoice(false);
             setInvoiceStatus("NON_PREVISTA");
-            return;
-        }
-        if (invoiceStatus === "NON_PREVISTA") {
-            setInvoiceStatus("IN_ATTESA");
         }
     }, [isDeclared, invoiceStatus]);
 
     useEffect(() => {
         if (!hasElectronicInvoice && !isDeclared) {
             setInvoiceStatus("NON_PREVISTA");
-            return;
-        }
-        if (invoiceStatus === "NON_PREVISTA" && isDeclared) {
-            setInvoiceStatus("IN_ATTESA");
         }
     }, [hasElectronicInvoice, isDeclared, invoiceStatus]);
 
@@ -815,7 +813,11 @@ export default function ExpenseForm({
                             value={orderDate}
                             onChange={(event) => {
                                 const nextOrderDate = event.currentTarget.value;
+                                const nextOrderMonth = monthInputFromDateInput(nextOrderDate);
                                 setOrderDate(nextOrderDate);
+                                if (nextOrderMonth && (!billingPeriod || billingPeriod < nextOrderMonth)) {
+                                    setBillingPeriod(nextOrderMonth);
+                                }
                                 setDueDate(addDaysToDateInput(nextOrderDate, 7));
                             }}
                             required
@@ -901,8 +903,6 @@ export default function ExpenseForm({
                                         if (!checked) {
                                             setHasElectronicInvoice(false);
                                             setInvoiceStatus("NON_PREVISTA");
-                                        } else if (invoiceStatus === "NON_PREVISTA") {
-                                            setInvoiceStatus("IN_ATTESA");
                                         }
                                     }}
                                 />
@@ -936,7 +936,8 @@ export default function ExpenseForm({
                         <input
                             type="month"
                             name="billingPeriod"
-                            defaultValue={initialBillingPeriod}
+                            value={billingPeriod}
+                            onChange={(event) => setBillingPeriod(event.currentTarget.value)}
                             required
                         />
                     </label>
@@ -949,7 +950,7 @@ export default function ExpenseForm({
                             onChange={(e) => setInvoiceStatus(e.currentTarget.value)}
                         >
                             {invoiceStatuses.map(([value, label]) => (
-                                <option key={value} value={value} disabled={value === "NON_PREVISTA" && isDeclared}>
+                                <option key={value} value={value}>
                                     {label}
                                 </option>
                             ))}

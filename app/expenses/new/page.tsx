@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
+import { clampDateToToday, clampPeriodToCurrentMonth } from '@/lib/copy-dates';
 
 export default async function NewExpensePage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await requireWorkspace('/expenses/new');
@@ -24,6 +25,7 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
   const orderedBanks = orderBanks(banks);
   const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
   const orderedCategories = orderExpenseCategories(categories);
+  const copyBillingPeriod = copyExpense ? clampPeriodToCurrentMonth(copyExpense.month, copyExpense.year) : null;
 
   return <div className="modal-page-wrap">
     <div className="modal-card modal-card-wide modal-page-card">
@@ -45,7 +47,7 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
       cancelHref={returnTo}
       submitLabel={copyExpense ? 'Salve spesa copiata' : 'Salva spesa'}
       initialExpense={copyExpense ? {
-        receivedDate: copyExpense.receivedDate,
+        receivedDate: clampDateToToday(copyExpense.receivedDate),
         dueDate: copyExpense.dueDate,
         supplierId: copyExpense.supplierId,
         merchant: copyExpense.merchant,
@@ -54,8 +56,8 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
         amount: copyExpense.amount.toString(),
         vatRate: copyExpense.vatRate.toString(),
         paymentStatus: 'DA_PAGARE',
-        month: copyExpense.month,
-        year: copyExpense.year,
+        month: copyBillingPeriod?.month,
+        year: copyBillingPeriod?.year,
         hasElectronicInvoice: copyExpense.hasElectronicInvoice,
         invoiceStatus: copyExpense.invoiceStatus,
         isDeclared: copyExpense.isDeclared,

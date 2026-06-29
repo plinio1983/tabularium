@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
 const saleCategoryOptions = new Set(['B2C', 'B2B', 'Altro']);
 
@@ -10,15 +11,7 @@ function selectedIds(formData: FormData) {
 }
 
 function safeReturnTo(request: Request) {
-  const requestUrl = new URL(request.url);
-  const returnTo = requestUrl.searchParams.get('returnTo') || '/incomes';
-  try {
-    const url = returnTo.startsWith('http') ? new URL(returnTo) : new URL(returnTo, request.url);
-    if (url.origin !== requestUrl.origin) return '/incomes';
-    return `${url.pathname}${url.search}`;
-  } catch {
-    return returnTo.startsWith('/') ? returnTo : '/incomes';
-  }
+  return pathFromUrl(new URL(request.url).searchParams.get('returnTo'), '/incomes');
 }
 
 export async function POST(request: Request) {
@@ -30,7 +23,7 @@ export async function POST(request: Request) {
   const redirectTo = safeReturnTo(request);
 
   if (!ids.length || !action) {
-    return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+    return redirectToPath(redirectTo);
   }
 
   if (action === 'change_category') {
@@ -41,18 +34,18 @@ export async function POST(request: Request) {
         data: { saleCategory }
       });
     }
-    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_updated' }), request.url), 303);
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 
   if (action === 'delete') {
     await prisma.income.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
-    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_deleted' }), request.url), 303);
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_deleted' }));
   }
 
   if (action === 'invoice_emitted') {
     await prisma.income.updateMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, isFiscal: true }, data: { invoiceStatus: 'EMESSA' } });
-    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_updated' }), request.url), 303);
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 
-  return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+  return redirectToPath(redirectTo);
 }

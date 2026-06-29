@@ -448,8 +448,9 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
       continue;
     }
 
-    const paymentDate = parseDate(rowValue(row, ['Data pagamento', 'Data Pag']));
+    const paymentDateRaw = parseDate(rowValue(row, ['Data pagamento', 'Data Pag']));
     const dueDate = dueDateRaw ?? orderDateRaw;
+    const effectivePaymentDate = paymentDateRaw ?? dueDate ?? orderDate;
     const vatRate = parseMoney(rowValue(row, ['Aliquota IVA', '% IVA', 'Applicazione IVA', 'IVA']));
     const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
     const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
@@ -488,7 +489,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         categoryId: category?.id ?? null,
         description: description || null,
         amount,
-        paymentDate: paymentStatus === 'DA_PAGARE' ? null : paymentDate,
+        paymentDate: paymentStatus === 'DA_PAGARE' ? null : effectivePaymentDate,
         vatRate,
         channel,
         bankId: bank?.id ?? null,
@@ -506,7 +507,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         paidBy,
         month: billingDate.getMonth() + 1,
         year: billingDate.getFullYear(),
-        payments: paidAmount > 0 ? { create: [{ paymentDate, channel: paymentMethod?.name ?? channel, paymentMethodId: paymentMethod?.id ?? null, bankId: bank?.id ?? null, amount: paidAmount, paidBy }] } : undefined
+        payments: paidAmount > 0 ? { create: [{ paymentDate: effectivePaymentDate, channel: paymentMethod?.name ?? channel, paymentMethodId: paymentMethod?.id ?? null, bankId: bank?.id ?? null, amount: paidAmount, paidBy }] } : undefined
       }
     });
     imported++;

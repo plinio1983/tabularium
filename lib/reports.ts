@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { isExpenseInvoiceNotReceived } from './expense-invoice';
 
 export function vatAmountFromGross(amount: number, vatRate: number) {
   if (!vatRate) return 0;
@@ -126,8 +127,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
     return income.invoiceStatus !== 'EMESSA' ? sum + 1 : sum;
   }, 0);
   const fattureNonRicevute = expenses.reduce((sum, expense) => {
-    if (!expense.isDeclared) return sum;
-    return ['RICEVUTA', 'INVIATA_SDI'].includes(String(expense.invoiceStatus)) ? sum : sum + 1;
+    return isExpenseInvoiceNotReceived(expense) ? sum + 1 : sum;
   }, 0);
 
   return {

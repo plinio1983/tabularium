@@ -1,15 +1,11 @@
-import { NextResponse } from 'next/server';
 import { destroyCurrentSession } from '@/lib/auth';
+import { redirectToPath } from '@/lib/redirect';
 
-function loginUrl(request: Request) {
-  return new URL('/login', process.env.APP_URL || request.url);
+export async function GET() {
+  return redirectToPath('/login');
 }
 
-export async function GET(request: Request) {
-  return NextResponse.redirect(loginUrl(request), 303);
-}
-
-export async function POST(request: Request) {
+export async function POST() {
   await destroyCurrentSession();
-  return NextResponse.redirect(loginUrl(request), 303);
+  return redirectToPath('/login');
 }

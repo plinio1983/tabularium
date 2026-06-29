@@ -12,6 +12,7 @@ import SupplierFilterInput from '@/components/SupplierFilterInput';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
+import { isExpenseInvoiceNotReceived } from '@/lib/expense-invoice';
 import {
   badgeClass,
   categoryLabel,
@@ -335,8 +336,8 @@ function amountMatchesFilter(amount: number, filterValue: AmountFilter | null) {
 }
 
 
-function expenseSupplierName(expense: { supplier?: { businessName?: string | null } | null; merchant?: string | null }) {
-  return expense.supplier?.businessName || expense.merchant || '-';
+function expenseSupplierName(expense: { supplier: { businessName: string } }) {
+  return expense.supplier.businessName;
 }
 
 function expenseResidualAmount(expense: { amount: unknown; payments?: Array<{ amount: unknown }> }) {
@@ -657,7 +658,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   };
   const nonDeclaredTotalsHref = totalsFilterHref({ declared: 'no' });
   const unpaidTotalsHref = totalsFilterHref({ residual: 'open' });
-  const invoicesNotReceivedHref = totalsFilterHref({ invoiceStatus: 'not_received' });
+  const invoicesNotReceivedHref = totalsFilterHref({ declared: 'yes', invoiceStatus: 'not_received' });
   const overduePaymentsHref = totalsFilterHref({ paymentStatus: 'overdue' });
   const flashMessages = {
     savedMessages: {
@@ -669,6 +670,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     },
     errorMessages: {
       invalid: 'Controlla i campi della spesa.',
+      supplier_not_found: 'Fornitore non trovato. Aggiungilo prima con il pulsante Nuovo nel campo Esercente, poi salva la spesa.',
       not_found: 'Spesa non trovata.',
       in_use: 'La spesa è collegata ad altri movimenti.'
     }
@@ -698,8 +700,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     if (residualFilter === 'closed' && residual > 0) return false;
     if (electronicInvoiceFilter === 'yes' && !expense.hasElectronicInvoice) return false;
     if (electronicInvoiceFilter === 'no' && expense.hasElectronicInvoice) return false;
-    if (invoiceStatusModeFilter === 'not_received' && ['RICEVUTA', 'INVIATA_SDI'].includes(String(expense.invoiceStatus))) return false;
-    if (invoiceStatusFilter === 'not_received' && ['RICEVUTA', 'INVIATA_SDI'].includes(String(expense.invoiceStatus))) return false;
+    if (invoiceStatusModeFilter === 'not_received' && !isExpenseInvoiceNotReceived(expense)) return false;
+    if (invoiceStatusFilter === 'not_received' && !isExpenseInvoiceNotReceived(expense)) return false;
     if (invoiceStatusFilter && invoiceStatusFilter !== 'not_received' && expense.invoiceStatus !== invoiceStatusFilter) return false;
     if (declaredFilter === 'yes' && !expense.isDeclared) return false;
     if (declaredFilter === 'no' && expense.isDeclared) return false;
@@ -723,7 +725,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     if (isExpensePastDueForBadge(expense)) acc.overdueCount += 1;
     if (expense.isDeclared) {
       acc.declared += amount;
-      if (!['RICEVUTA', 'INVIATA_SDI'].includes(String(expense.invoiceStatus))) acc.invoicesNotReceived += 1;
+      if (isExpenseInvoiceNotReceived(expense)) acc.invoicesNotReceived += 1;
     } else {
       acc.nonDeclared += amount;
     }
@@ -917,7 +919,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           const writeStoredFilter = (value) => localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }));
           const sanitizedSearch = (search) => {
             const params = new URLSearchParams(search || '');
-            params.delete('new');
+            ['new', 'saved', 'error', 'usage'].forEach(key => params.delete(key));
             const clean = params.toString();
             return clean ? '?' + clean : '';
           };
@@ -1155,6 +1157,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
       <div className="expense-mobile-list" aria-label="Lista spese mobile">
         {mobileSortedExpenses.map(e => {
           const amount = Number(e.amount.toString());
+          const supplierName = expenseSupplierName(e);
           const vatStyle = vatStyles[vatKey(e.vatRate)] ?? vatStyles['22'];
           const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
           const residual = Math.max(0, amount - paid);
@@ -1202,7 +1205,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
                 <div className="expense-mobile-title-row">
                   <span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span>
                   <div className="expense-mobile-title-left">
-                    <strong>{e.merchant}</strong>
+                    <strong>{supplierName}</strong>
                   </div>
                   <div className="expense-mobile-title-right">
                     <span className={moneyTone(amount)}>{euro(e.amount.toString())}</span>
@@ -1245,6 +1248,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           <tbody>
             {filteredExpenses.map(e => {
             const amount = Number(e.amount.toString());
+            const supplierName = expenseSupplierName(e);
             const paid = e.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
             const residual = Math.max(0, amount - paid);
             const categoryClassName = categoryTone(e.category);
@@ -1260,7 +1264,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
               <td className="cell-billing-period">{formatPeriod(e.month, e.year)}</td>
               <td className="cell-type"><span className={e.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{e.isRecurring ? 'R' : 'S'}</span></td>
               <td className="cell-category">{e.category ? <span title={e.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(e.category, e.category.code)}</span> : '-'}</td>
-              <td className="cell-supplier cell-compact" title={e.merchant ?? ''}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}`}>{e.merchant}</Link> : e.merchant}</td>
+              <td className="cell-supplier cell-compact" title={supplierName}>{e.supplierId ? <Link className="supplier-table-link" href={`/suppliers/${e.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td>
               <td className="cell-amount"><strong className={moneyTone(amount)}>{euro(e.amount.toString())}</strong></td>
               <td className="cell-vat"><span className={badgeClass(vatStyle.className)}>{Number(e.vatRate.toString())}%</span></td>
               <td className="cell-description" title={e.description ?? ''}>{e.description}</td>

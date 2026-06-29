@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
 import { importExpensesWorkbook, importRecurringExpenseDefinitionsWorkbook } from '@/lib/expense-import';
 import { getWorkspaceContext } from '@/lib/auth';
+import { redirectToPath } from '@/lib/redirect';
 
-function redirectWithParams(request: Request, params: Record<string, string | number | boolean>) {
-  const url = new URL('/expenses/import', request.url);
+function redirectWithParams(_request: Request, params: Record<string, string | number | boolean>) {
+  const url = new URL('/expenses/import', 'http://tabularium.local');
   Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, String(value)));
-  return NextResponse.redirect(url, 303);
+  return redirectToPath(`${url.pathname}${url.search}`);
 }
 
 export async function POST(request: Request) {

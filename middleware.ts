@@ -54,7 +54,10 @@ export function middleware(request: NextRequest) {
   loginUrl.pathname = '/login';
   loginUrl.search = '';
   loginUrl.searchParams.set('next', cleanNextPath(request));
-  return noStore(NextResponse.redirect(loginUrl));
+  return noStore(new NextResponse(null, {
+    status: 307,
+    headers: { Location: `${loginUrl.pathname}${loginUrl.search}` }
+  }));
 }
 
 export const config = {

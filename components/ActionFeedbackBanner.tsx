@@ -4,9 +4,42 @@ import { useEffect, useState } from 'react';
 import { flashParamNames } from '@/lib/flash';
 
 type FeedbackMessages = Record<string, string>;
+const filterStorageKeys = [
+  'dmsAccounting.expenses.filters',
+  'dmsAccounting.incomes.filters',
+  'dmsAccounting.suppliers.filters'
+];
 
 function firstValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function stripFlashFromSearch(value: string) {
+  const params = new URLSearchParams(value || '');
+  flashParamNames.forEach(key => params.delete(key));
+  const clean = params.toString();
+  return clean ? `?${clean}` : '';
+}
+
+function removeFlashFromStoredFilters() {
+  filterStorageKeys.forEach(storageKey => {
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw) return;
+
+    try {
+      const parsed = JSON.parse(raw) as { value?: unknown; savedAt?: unknown };
+      if (typeof parsed.value !== 'string') return;
+      const cleanValue = stripFlashFromSearch(parsed.value);
+      if (cleanValue === parsed.value) return;
+      if (cleanValue) window.localStorage.setItem(storageKey, JSON.stringify({ ...parsed, value: cleanValue }));
+      else window.localStorage.removeItem(storageKey);
+    } catch {
+      const cleanValue = stripFlashFromSearch(raw);
+      if (cleanValue === raw) return;
+      if (cleanValue) window.localStorage.setItem(storageKey, cleanValue);
+      else window.localStorage.removeItem(storageKey);
+    }
+  });
 }
 
 export default function ActionFeedbackBanner({
@@ -32,6 +65,7 @@ export default function ActionFeedbackBanner({
   }, [saved, error, usage]);
 
   useEffect(() => {
+    removeFlashFromStoredFilters();
     if (!saved && !error && !usage) return;
     const url = new URL(window.location.href);
     flashParamNames.forEach(key => url.searchParams.delete(key));

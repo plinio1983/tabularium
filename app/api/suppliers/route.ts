@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -15,15 +16,10 @@ const SupplierSchema = z.object({
 });
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
-  if (!value) return fallback;
-  try {
-    const url = value.startsWith('http') ? new URL(value) : new URL(value, requestUrl);
-    if (url.origin !== new URL(requestUrl).origin) return fallback;
-    if (url.pathname === '/suppliers') url.searchParams.delete('new');
-    return `${url.pathname}${url.search}`;
-  } catch {
-    return value.startsWith('/') ? value : fallback;
-  }
+  const path = pathFromUrl(value, fallback);
+  const url = new URL(path, 'http://tabularium.local');
+  if (url.pathname === '/suppliers') url.searchParams.delete('new');
+  return `${url.pathname}${url.search}`;
 }
 
 function redirectAfterFormSave(request: Request, fallback: string) {
@@ -61,6 +57,6 @@ export async function POST(request: Request) {
   const data = SupplierSchema.parse(raw);
   const supplier = await prisma.supplier.create({ data: { ...data, workspaceId: current.workspace.id } });
   return isForm
-    ? NextResponse.redirect(new URL(appendFlash(redirectAfterFormSave(request, '/suppliers'), { saved: 'created' }), request.url), 303)
+    ? redirectToPath(appendFlash(redirectAfterFormSave(request, '/suppliers'), { saved: 'created' }))
     : NextResponse.json(supplier);
 }

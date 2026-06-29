@@ -22,6 +22,21 @@ function dateLabel(value?: Date | null) {
   return value ? value.toLocaleDateString('it-IT') : '-';
 }
 
+function compactDateLabel(value?: Date | null) {
+  if (!value) return '-';
+  const parts = new Intl.DateTimeFormat('it-IT', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC'
+  }).formatToParts(value);
+  const day = parts.find(part => part.type === 'day')?.value ?? '';
+  const month = (parts.find(part => part.type === 'month')?.value ?? '').replace('.', '');
+  const year = parts.find(part => part.type === 'year')?.value ?? '';
+  const normalizedMonth = month ? `${month.charAt(0).toUpperCase()}${month.slice(1)}` : '';
+  return [day, normalizedMonth, year].filter(Boolean).join(' ');
+}
+
 function formatPeriod(month: number, year: number) {
   const monthName = new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(new Date(year, month - 1, 1));
   const normalized = monthName.charAt(0).toUpperCase() + monthName.slice(1).replace('.', '');
@@ -307,7 +322,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             data-row-href={`/expenses/${expense.id}?returnTo=${encodedSupplierDetailHref}`}
             tabIndex={0}
           >
-            <td className="cell-order-date">{dateLabel(expense.receivedDate)}</td>
+            <td className="cell-order-date">{compactDateLabel(expense.receivedDate)}</td>
             <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>
             <td className="cell-type"><span className={expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</span></td>
             <td className="cell-category">{expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>

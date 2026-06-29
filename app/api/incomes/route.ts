@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -26,15 +27,10 @@ const IncomeSchema = z.object({
 
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
-  if (!value) return fallback;
-  try {
-    const url = value.startsWith('http') ? new URL(value) : new URL(value, requestUrl);
-    if (url.origin !== new URL(requestUrl).origin) return fallback;
-    if (url.pathname === '/incomes') url.searchParams.delete('new');
-    return `${url.pathname}${url.search}`;
-  } catch {
-    return value.startsWith('/') ? value : fallback;
-  }
+  const path = pathFromUrl(value, fallback);
+  const url = new URL(path, 'http://tabularium.local');
+  if (url.pathname === '/incomes') url.searchParams.delete('new');
+  return `${url.pathname}${url.search}`;
 }
 
 function redirectAfterFormSave(request: Request, fallback: string) {
@@ -86,6 +82,6 @@ export async function POST(request: Request) {
     }
   });
   return isForm
-    ? NextResponse.redirect(new URL(appendFlash(redirectAfterFormSave(request, '/incomes'), { saved: 'created' }), request.url), 303)
+    ? redirectToPath(appendFlash(redirectAfterFormSave(request, '/incomes'), { saved: 'created' }))
     : NextResponse.json(income);
 }

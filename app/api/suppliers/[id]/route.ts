@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { redirectToPath } from '@/lib/redirect';
 
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -25,14 +26,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const action = String(raw._action || 'update');
 
   if (action === 'delete') {
-    await prisma.expense.updateMany({ where: { supplierId, workspaceId: current.workspace.id }, data: { supplierId: null } });
+    const linkedUsage = await prisma.expense.count({ where: { supplierId, workspaceId: current.workspace.id } })
+      + await prisma.recurringExpense.count({ where: { supplierId, workspaceId: current.workspace.id } });
+    if (linkedUsage > 0) {
+      return redirectToPath(appendFlash('/suppliers', { error: 'in_use', usage: String(linkedUsage) }));
+    }
     await prisma.supplier.deleteMany({ where: { id: supplierId, workspaceId: current.workspace.id } });
-    return NextResponse.redirect(new URL(appendFlash('/suppliers', { saved: 'deleted' }), request.url), 303);
+    return redirectToPath(appendFlash('/suppliers', { saved: 'deleted' }));
   }
 
   const data = SupplierSchema.parse(raw);
   const existing = await prisma.supplier.findFirst({ where: { id: supplierId, workspaceId: current.workspace.id }, select: { id: true } });
-  if (!existing) return NextResponse.redirect(new URL(appendFlash('/suppliers', { error: 'not_found' }), request.url), 303);
+  if (!existing) return redirectToPath(appendFlash('/suppliers', { error: 'not_found' }));
   await prisma.supplier.update({
     where: { id: supplierId },
     data: {
@@ -45,5 +50,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       internalNotes: data.internalNotes
     }
   });
-  return NextResponse.redirect(new URL(appendFlash('/suppliers', { saved: 'updated' }), request.url), 303);
+  return redirectToPath(appendFlash('/suppliers', { saved: 'updated' }));
 }

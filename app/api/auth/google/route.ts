@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createGoogleAuthorizationUrl } from '@/lib/google-auth';
+import { redirectToPath } from '@/lib/redirect';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -8,6 +9,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(await createGoogleAuthorizationUrl(next));
   } catch (error) {
     console.error(error);
-    return NextResponse.redirect(new URL('/login?error=google_config', request.url));
+    return redirectToPath('/login?error=google_config', 307);
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ExpenseForm from "@/components/ExpenseForm";
+import { clampDateToToday, clampPeriodToCurrentMonth } from "@/lib/copy-dates";
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = {
@@ -68,11 +69,19 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
       if (!response.ok) throw new Error("Impossibile caricare la spesa.");
       const payload = await response.json();
       const loadedExpense = payload.expense as EditExpense;
-      setExpense(nextMode === "copy" ? {
-        ...loadedExpense,
-        paymentStatus: "DA_PAGARE",
-        payments: [],
-      } : loadedExpense);
+      if (nextMode === "copy") {
+        const billingPeriod = clampPeriodToCurrentMonth(loadedExpense.month, loadedExpense.year);
+        setExpense({
+          ...loadedExpense,
+          receivedDate: clampDateToToday(loadedExpense.receivedDate),
+          month: billingPeriod.month,
+          year: billingPeriod.year,
+          paymentStatus: "DA_PAGARE",
+          payments: [],
+        });
+      } else {
+        setExpense(loadedExpense);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Errore nel caricamento della spesa.");
     } finally {
@@ -118,6 +127,7 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
           <button className="secondary-button modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
         </div>
         <ExpenseForm
+          key={`${mode}-${expense.id}`}
           title={mode === "copy" ? "Nuova spesa da copia" : "Modifica spesa"}
           cancelHref={returnTo}
           onCancel={() => setExpense(null)}

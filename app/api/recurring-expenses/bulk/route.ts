@@ -2,16 +2,10 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
-  if (!value) return fallback;
-  try {
-    const url = value.startsWith('http') ? new URL(value) : new URL(value, requestUrl);
-    if (url.origin !== new URL(requestUrl).origin) return fallback;
-    return `${url.pathname}${url.search}`;
-  } catch {
-    return value.startsWith('/') ? value : fallback;
-  }
+  return pathFromUrl(value, fallback);
 }
 
 export async function POST(request: Request) {
@@ -26,7 +20,7 @@ export async function POST(request: Request) {
     .filter(value => Number.isInteger(value) && value > 0);
 
   if (!ids.length) {
-    return NextResponse.redirect(new URL(safePath(returnTo, '/recurring-expenses', request.url), request.url), 303);
+    return redirectToPath(safePath(returnTo, '/recurring-expenses', request.url));
   }
 
   if (bulkAction === 'change_category') {
@@ -42,12 +36,12 @@ export async function POST(request: Request) {
         });
       }
     }
-    return NextResponse.redirect(new URL(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), { saved: 'bulk_updated' }), request.url), 303);
+    return redirectToPath(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), { saved: 'bulk_updated' }));
   }
 
   if (bulkAction === 'delete') {
     await prisma.recurringExpense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
   }
 
-  return NextResponse.redirect(new URL(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), { saved: 'bulk_deleted' }), request.url), 303);
+  return redirectToPath(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), { saved: 'bulk_deleted' }));
 }

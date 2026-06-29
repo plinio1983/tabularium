@@ -2,21 +2,14 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
 }
 
 function safeReturnTo(request: Request) {
-  const requestUrl = new URL(request.url);
-  const returnTo = requestUrl.searchParams.get('returnTo') || '/suppliers';
-  try {
-    const url = returnTo.startsWith('http') ? new URL(returnTo) : new URL(returnTo, request.url);
-    if (url.origin !== requestUrl.origin) return '/suppliers';
-    return `${url.pathname}${url.search}`;
-  } catch {
-    return returnTo.startsWith('/') ? returnTo : '/suppliers';
-  }
+  return pathFromUrl(new URL(request.url).searchParams.get('returnTo'), '/suppliers');
 }
 
 export async function POST(request: Request) {
@@ -28,19 +21,18 @@ export async function POST(request: Request) {
   const redirectTo = safeReturnTo(request);
 
   if (!ids.length || !action) {
-    return NextResponse.redirect(new URL(redirectTo, request.url), 303);
+    return redirectToPath(redirectTo);
   }
 
   if (action === 'delete') {
-    await prisma.$transaction([
-      prisma.expense.updateMany({
-        where: { supplierId: { in: ids }, workspaceId: current.workspace.id },
-        data: { supplierId: null }
-      }),
-      prisma.supplier.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } })
-    ]);
-    return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_deleted' }), request.url), 303);
+    const linkedUsage = await prisma.expense.count({ where: { supplierId: { in: ids }, workspaceId: current.workspace.id } })
+      + await prisma.recurringExpense.count({ where: { supplierId: { in: ids }, workspaceId: current.workspace.id } });
+    if (linkedUsage > 0) {
+      return redirectToPath(appendFlash(redirectTo, { error: 'in_use', usage: String(linkedUsage) }));
+    }
+    await prisma.supplier.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_deleted' }));
   }
 
-  return NextResponse.redirect(new URL(appendFlash(redirectTo, { saved: 'bulk_updated' }), request.url), 303);
+  return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
 }

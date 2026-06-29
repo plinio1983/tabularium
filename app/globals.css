@@ -2567,12 +2567,16 @@ body.drawer-open {
     }
 }
 
-.income-row-warning {
-    /*background: linear-gradient(90deg, rgba(255,243,205,.75) 0%, rgba(255,248,225,.92) 100%);*/
+.compact-incomes-table tbody tr.income-row-warning td {
+    background: #fffaf0;
 }
 
-.compact-incomes-table tbody tr.income-row-warning td {
-    background: transparent;
+.compact-incomes-table tbody tr.income-row-warning td:first-child {
+    border-left: 4px solid #f59e0b;
+}
+
+.compact-incomes-table tbody tr.income-row-warning:hover td {
+    background: #fff4dc;
 }
 
 .income-row-overdue {

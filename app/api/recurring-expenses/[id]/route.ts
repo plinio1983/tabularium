@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -29,33 +31,13 @@ const RecurringExpenseSchema = z.object({
 });
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
-  if (!value) return fallback;
-  try {
-    const url = value.startsWith('http') ? new URL(value) : new URL(value, requestUrl);
-    if (url.origin !== new URL(requestUrl).origin) return fallback;
-    return `${url.pathname}${url.search}`;
-  } catch {
-    return value.startsWith('/') ? value : fallback;
-  }
+  return pathFromUrl(value, fallback);
 }
 
 function redirectTarget(request: Request, fallback: string) {
   const requestUrl = request.url;
   const explicitReturnTo = new URL(requestUrl).searchParams.get('returnTo');
   return safePath(explicitReturnTo, fallback, requestUrl);
-}
-
-async function resolveSupplierReference(data: z.infer<typeof RecurringExpenseSchema>, workspaceId: number) {
-  const submittedName = String(data.merchant ?? '').trim();
-  if (data.supplierId) {
-    const existing = await prisma.supplier.findFirst({ where: { id: data.supplierId, workspaceId } });
-    if (existing) return { id: existing.id, businessName: existing.businessName };
-  }
-  if (!submittedName) throw new Error('Esercente obbligatorio');
-  const existingByName = await prisma.supplier.findFirst({ where: { businessName: { equals: submittedName, mode: 'insensitive' }, workspaceId } });
-  if (existingByName) return { id: existingByName.id, businessName: existingByName.businessName };
-  const created = await prisma.supplier.create({ data: { businessName: submittedName, workspaceId } });
-  return { id: created.id, businessName: created.businessName };
 }
 
 async function resolveCategoryId(categoryId: number | null | undefined, workspaceId: number) {
@@ -89,14 +71,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   if (action === 'delete') {
     await prisma.recurringExpense.deleteMany({ where: { id: recurringExpenseId, workspaceId: current.workspace.id } });
-    return NextResponse.redirect(new URL(appendFlash(redirectTarget(request, '/recurring-expenses'), { saved: 'deleted' }), request.url), 303);
+    return redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { saved: 'deleted' }));
   }
 
   const existing = await prisma.recurringExpense.findFirst({ where: { id: recurringExpenseId, workspaceId: current.workspace.id } });
-  if (!existing) return NextResponse.redirect(new URL(appendFlash(redirectTarget(request, '/recurring-expenses'), { error: 'not_found' }), request.url), 303);
+  if (!existing) return redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { error: 'not_found' }));
 
   const data = RecurringExpenseSchema.parse(raw);
-  const supplierRef = await resolveSupplierReference(data, current.workspace.id);
+  let supplierRef;
+  try {
+    supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
+  } catch (error) {
+    if (error instanceof SupplierReferenceError) {
+      return redirectToPath(appendFlash(redirectTarget(request, `/recurring-expenses/${recurringExpenseId}`), { error: error.code }));
+    }
+    throw error;
+  }
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const paymentMethod = await resolvePaymentMethod(data.paymentMethodId, data.paymentChannel, current.workspace.id);
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
@@ -126,5 +116,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
   });
 
-  return NextResponse.redirect(new URL(appendFlash(redirectTarget(request, `/recurring-expenses/${recurringExpenseId}`), { saved: 'updated' }), request.url), 303);
+  return redirectToPath(appendFlash(redirectTarget(request, `/recurring-expenses/${recurringExpenseId}`), { saved: 'updated' }));
 }

@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
-import { redirectToPath } from '@/lib/redirect';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -34,9 +35,6 @@ const ExpenseSchema = z.object({
 function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
   if (!data.isDeclared) {
     return { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const };
-  }
-  if (data.invoiceStatus === 'NON_PREVISTA') {
-    return { isDeclared: true, hasElectronicInvoice: data.hasElectronicInvoice, invoiceStatus: 'IN_ATTESA' as const };
   }
   return {
     isDeclared: data.isDeclared,
@@ -113,41 +111,9 @@ function parsePayments(formData: FormData | null, jsonPayments: unknown): Paymen
 
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
-  if (!value) return fallback;
-  try {
-    const url = value.startsWith('http') ? new URL(value) : new URL(value, requestUrl);
-    if (url.origin !== new URL(requestUrl).origin) return fallback;
-    return `${url.pathname}${url.search}`;
-  } catch {
-    return value.startsWith('/') ? value : fallback;
-  }
+  return pathFromUrl(value, fallback);
 }
 
-
-async function resolveSupplierReference(data: z.infer<typeof ExpenseSchema>, workspaceId: number) {
-  const submittedName = String(data.merchant ?? '').trim();
-
-  if (data.supplierId) {
-    const existing = await prisma.supplier.findFirst({ where: { id: data.supplierId, workspaceId } });
-    if (existing) return { id: existing.id, businessName: existing.businessName };
-  }
-
-  if (!submittedName) {
-    throw new Error('Esercente obbligatorio');
-  }
-
-  const existingByName = await prisma.supplier.findFirst({
-    where: { businessName: { equals: submittedName, mode: 'insensitive' }, workspaceId }
-  });
-
-  if (existingByName) return { id: existingByName.id, businessName: existingByName.businessName };
-
-  const created = await prisma.supplier.create({
-    data: { businessName: submittedName, workspaceId }
-  });
-
-  return { id: created.id, businessName: created.businessName };
-}
 
 async function resolveCategoryId(categoryId: number | null | undefined, workspaceId: number) {
   if (!categoryId) return null;
@@ -223,7 +189,17 @@ export async function POST(request: Request) {
   const invoiceFields = normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data);
   const payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id);
-  const supplierRef = await resolveSupplierReference(data, current.workspace.id);
+  let supplierRef;
+  try {
+    supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
+  } catch (error) {
+    if (error instanceof SupplierReferenceError) {
+      return isForm
+        ? redirectToPath(appendFlash(redirectAfterFormSaveTarget(request, '/expenses'), { error: error.code }))
+        : NextResponse.json({ error: error.message, code: error.code }, { status: 400 });
+    }
+    throw error;
+  }
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const attachments = formData ? await saveAttachments(formData.getAll('attachments')) : [];

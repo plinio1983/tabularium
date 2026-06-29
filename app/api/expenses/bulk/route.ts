@@ -2,22 +2,14 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
-import { redirectToPath } from '@/lib/redirect';
+import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
 }
 
 function safeReturnTo(request: Request) {
-  const requestUrl = new URL(request.url);
-  const returnTo = requestUrl.searchParams.get('returnTo') || '/expenses';
-  try {
-    const url = returnTo.startsWith('http') ? new URL(returnTo) : new URL(returnTo, request.url);
-    if (url.origin !== requestUrl.origin) return '/expenses';
-    return `${url.pathname}${url.search}`;
-  } catch {
-    return returnTo.startsWith('/') ? returnTo : '/expenses';
-  }
+  return pathFromUrl(new URL(request.url).searchParams.get('returnTo'), '/expenses');
 }
 
 function todayAtMidnight() {

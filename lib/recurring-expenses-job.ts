@@ -134,6 +134,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
   const recurringExpenses = await prisma.recurringExpense.findMany({
     where: { isActive: true },
     include: {
+      supplier: true,
       paymentMethod: true
     }
   });
@@ -150,6 +151,12 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
       }
 
       for (const dueDate of dueDates) {
+        if (!recurringExpense.supplierId || !recurringExpense.supplier) {
+          result.errors.push({ recurringExpenseId: recurringExpense.id, message: 'Fornitore mancante' });
+          result.skipped += 1;
+          continue;
+        }
+
         const billingPeriod = billingPeriodFromDueDate(recurringExpense, dueDate);
         const recurringExpensePeriodKey = periodKey(billingPeriod.year, billingPeriod.month);
 
@@ -171,8 +178,8 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             workspaceId: recurringExpense.workspaceId || null,
             receivedDate: dueDate,
             dueDate,
-            merchant: recurringExpense.merchant,
-            supplierId: recurringExpense.supplierId || null,
+            merchant: recurringExpense.supplier.businessName,
+            supplierId: recurringExpense.supplierId,
             categoryId: recurringExpense.categoryId || null,
             description: recurringExpense.description,
             amount: recurringExpense.amount,

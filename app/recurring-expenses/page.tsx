@@ -78,6 +78,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
     },
     errorMessages: {
       invalid: 'Controlla i dati della spesa ricorrente.',
+      supplier_not_found: 'Fornitore non trovato. Aggiungilo prima con il pulsante Nuovo nel campo Esercente, poi salva la spesa ricorrente.',
       not_found: 'Spesa ricorrente non trovata.',
       in_use: 'La spesa ricorrente è collegata ad altri movimenti.'
     }

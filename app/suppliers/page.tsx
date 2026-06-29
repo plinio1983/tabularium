@@ -145,7 +145,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
           const resetLink = document.querySelector('a[href="/suppliers"].reset-button');
           const sanitizedSearch = (search) => {
             const params = new URLSearchParams(search || '');
-            params.delete('new');
+            ['new', 'saved', 'error', 'usage'].forEach(key => params.delete(key));
             Array.from(params.keys()).forEach(key => {
               if (!params.get(key)) params.delete(key);
             });

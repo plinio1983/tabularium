@@ -76,6 +76,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
   if (!expense || expense.workspaceId !== current.workspace.id) notFound();
 
+  const supplierName = expense.supplier.businessName;
   const orderedBanks = orderBanks(banks);
   const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
 
@@ -107,6 +108,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     },
     errorMessages: {
       invalid: 'Controlla i campi della spesa.',
+      supplier_not_found: 'Fornitore non trovato. Aggiungilo prima con il pulsante Nuovo nel campo Esercente, poi salva la spesa.',
       not_found: 'Spesa non trovata.',
       in_use: 'La spesa è collegata ad altri movimenti.'
     }
@@ -147,7 +149,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
                 <span className={expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</span>
               </p>
               <div className="flex align-center">
-                <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</h1>
+                <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{supplierName}</Link> : supplierName}</h1>
               </div>
               <div className="expense-detail-meta-line">
                 <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
@@ -217,7 +219,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </div>
           <div>
             <span>Fornitore</span>
-            <strong className="">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{expense.merchant}</Link> : expense.merchant}</strong>
+            <strong className="">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{supplierName}</Link> : supplierName}</strong>
           </div>
           <div>
             <span>Descrizione</span>
