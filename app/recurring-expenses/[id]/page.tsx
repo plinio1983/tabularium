@@ -221,7 +221,6 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <div>
               <span>Detrazione</span>
               <strong>{booleanBadge(item.isDeclared)}</strong>
-              <strong>{booleanBadge(item.isDeclared)}</strong>
             </div>
             <div>
               <span>F. elettronica</span>

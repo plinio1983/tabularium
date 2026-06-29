@@ -8076,6 +8076,10 @@ button.bulk-direct-danger {
     background: linear-gradient(90deg, var(--accent), #22c55e);
 }
 
+.recurring-detail-document .expense-detail-section {
+    display: block;
+}
+
 .expense-detail-section {
     padding: 26px 28px;
     /*border-bottom: 1px solid rgba(226, 232, 240, .8);*/
