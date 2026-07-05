@@ -1321,10 +1321,10 @@ body.drawer-open {
 
 .filter-drawer-actions {
     position: sticky;
-    bottom: -18px;
+    bottom: -12px;
     display: flex;
     gap: 10px;
-    padding: 14px 0 0;
+    padding: 14px 0;
     background: linear-gradient(180deg, rgba(255, 255, 255, .70), #fff 34%);
 }
 

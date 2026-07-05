@@ -209,7 +209,18 @@ function optionLabel(options: Array<string[]>, value: string) {
 type ExpenseCategoryDatum = { name: string; code: string; total: number; residual: number };
 
 function ExpenseCategoryColumnChart({ data, total }: { data: ExpenseCategoryDatum[]; total: number }) {
-  const max = Math.max(...data.map(item => item.total), 0);
+  const groupedData = total ? data.reduce((items, item) => {
+    const percentage = (item.total / total) * 100;
+    if (percentage >= 5) return [...items, item];
+    const other = items.find(entry => entry.code === 'ALTRO');
+    if (other) {
+      other.total += item.total;
+      other.residual += item.residual;
+      return items;
+    }
+    return [...items, { name: 'ALTRO', code: 'ALTRO', total: item.total, residual: item.residual }];
+  }, [] as ExpenseCategoryDatum[]).sort((a, b) => b.total - a.total) : data;
+  const max = Math.max(...groupedData.map(item => item.total), 0);
 
   return <div className="expense-column-panel" aria-label="Grafico a colonne per categorie di spesa">
     <div className="expense-column-heading">
@@ -218,8 +229,8 @@ function ExpenseCategoryColumnChart({ data, total }: { data: ExpenseCategoryDatu
         <p className="muted">Colonne per totale speso sui risultati filtrati.</p>
       </div>
     </div>
-    {data.length ? <div className="expense-column-chart">
-      {data.map(item => {
+    {groupedData.length ? <div className="expense-column-chart">
+      {groupedData.map(item => {
         const height = max ? Math.max((item.total / max) * 100, 7) : 0;
         const residualHeight = item.total ? Math.min((item.residual / item.total) * 100, 100) : 0;
         const percentage = total ? (item.total / total) * 100 : 0;
@@ -744,8 +755,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   });
 
   const mobileSortedExpenses = [...filteredExpenses].sort((a, b) => {
-    const aTime = a.dueDate ? new Date(a.dueDate).getTime() : -Infinity;
-    const bTime = b.dueDate ? new Date(b.dueDate).getTime() : -Infinity;
+    const aTime = a.receivedDate ? new Date(a.receivedDate).getTime() : -Infinity;
+    const bTime = b.receivedDate ? new Date(b.receivedDate).getTime() : -Infinity;
     return bTime - aTime;
   });
 

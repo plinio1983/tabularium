@@ -618,6 +618,12 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     vatRateFilter && { label: 'IVA', value: `${vatRateFilter}%` }
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
+  const mobileSortedIncomes = [...filteredIncomes].sort((a, b) => {
+    const aTime = a.creditDate ? new Date(a.creditDate).getTime() : -Infinity;
+    const bTime = b.creditDate ? new Date(b.creditDate).getTime() : -Infinity;
+    return bTime - aTime;
+  });
+
   return <div className="grid">
     <NewIncomePanel
       initialOpen={inputDefault(filters, 'new') === '1'}
@@ -936,7 +942,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
       </form>
 
       <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
-        {filteredIncomes.map(income => {
+        {mobileSortedIncomes.map(income => {
           const salesStyle = salesChannelStyles[income.salesChannel];
           const catStyle = saleCategoryStyles[income.saleCategory];
           const incomePaymentMethodName = income.paymentMethodRef?.name ?? income.paymentMethod;
