@@ -233,6 +233,28 @@ export async function getAccountingDashboardReport(
   }
   const expensesByCategory = Array.from(categoryTotalsMap.values()).sort((a, b) => b.total - a.total);
 
+  const incomesBySalesChannelMap = new Map<string, { name: string; code: string; total: number }>();
+  for (const income of yearlyIncomes) {
+    const name = income.salesChannel ?? 'Senza canale';
+    const code = String(name).split(/\s+/).map(part => part[0]).join('').slice(0, 5).toUpperCase() || 'CAN';
+    const key = `${code}-${name}`;
+    const current = incomesBySalesChannelMap.get(key) ?? { name, code, total: 0 };
+    current.total += Number(income.amount);
+    incomesBySalesChannelMap.set(key, current);
+  }
+  const incomesBySalesChannel = Array.from(incomesBySalesChannelMap.values()).sort((a, b) => b.total - a.total);
+
+  const incomesByFiscalStatusMap = new Map<string, { name: string; code: string; total: number }>();
+  for (const income of yearlyIncomes) {
+    const name = income.isFiscal ? 'Dichiarato' : 'Non dichiarato';
+    const code = income.isFiscal ? 'FISC' : 'NFISC';
+    const key = `${code}-${name}`;
+    const current = incomesByFiscalStatusMap.get(key) ?? { name, code, total: 0 };
+    current.total += Number(income.amount);
+    incomesByFiscalStatusMap.set(key, current);
+  }
+  const incomesByFiscalStatus = Array.from(incomesByFiscalStatusMap.values()).sort((a, b) => b.total - a.total);
+
   return {
     year: reportYear,
     annualYear,
@@ -240,7 +262,9 @@ export async function getAccountingDashboardReport(
     currentFiscalQuarter: { periods: fiscalQuarterPeriods, totals: currentFiscalQuarter },
     months,
     totals,
-    expensesByCategory
+    expensesByCategory,
+    incomesBySalesChannel,
+    incomesByFiscalStatus
   };
 }
 

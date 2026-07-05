@@ -232,6 +232,37 @@ function ExpensesByCategoryChart({ data }: { data: Array<{ name: string; code: s
   </div>;
 }
 
+function IncomeBreakdownChart({ title, description, data }: { title: string; description: string; data: Array<{ name: string; code: string; total: number }> }) {
+  const max = Math.max(...data.map(item => item.total), 0);
+  const total = data.reduce((sum, item) => sum + item.total, 0);
+
+  return <div className="card expense-category-chart-card embedded-chart-card income-chart">
+    <div className="card-heading-row">
+      <div>
+        <h2>{title}</h2>
+        <p className="muted">{description}</p>
+      </div>
+      <span className="badge">Totale {euro(total)}</span>
+    </div>
+    {data.length ? <div className="category-chart-list">
+      {data.map(item => {
+        const percentage = total ? (item.total / total) * 100 : 0;
+        const width = max ? Math.max((item.total / max) * 100, 4) : 0;
+        return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
+          <div className="category-chart-label">
+            <strong>{item.code}</strong>
+            <span>{item.name}</span>
+          </div>
+          <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
+            <div className="category-chart-bar" style={{ width: `${width}%` }} />
+          </div>
+          <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+        </div>;
+      })}
+    </div> : <p className="muted">Nessun incasso presente per l’anno selezionato.</p>}
+  </div>;
+}
+
 function IncomeExpenseBreakdownChart({
   totals,
   periods
@@ -454,6 +485,14 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
             <td><MoneyCell value={m.totals.debitoIva} /></td>
           </tr>)}</tbody>
         </table>
+      </div>
+    </div>
+
+    <div className="dashboard-report-charts">
+      <ExpensesByCategoryChart data={report.expensesByCategory} />
+      <div className="charts-grid">
+        <IncomeBreakdownChart title="Entrate per canale di vendita" description={`Distribuzione degli incassi nell’anno fiscale ${report.annualYear}.`} data={report.incomesBySalesChannel} />
+        <IncomeBreakdownChart title="Grafico entrate dichiarate" description={`Distribuzione degli incassi fiscali e non fiscali nell’anno fiscale ${report.annualYear}.`} data={report.incomesByFiscalStatus} />
       </div>
     </div>
 
