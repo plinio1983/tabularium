@@ -1743,9 +1743,9 @@
         top: 17px;
     }
 
-    .expense-import-btn-large {
-        display: none;
-    }
+    //.expense-import-btn-large {
+    //    display: none;
+    //}
 
     .expense-import-btn .expense-import-btn-text {
         display: none !important;
@@ -1830,5 +1830,17 @@
 @media (max-width: 760px) {
     .app-form-model .expense-form .form-sticky-actions {
         display: grid !important;
+    }
+
+    .expense-impact-pie-row-wrap {
+        margin: 4px 0;
+    }
+
+    .expense-impact-pie-layout {
+        flex-direction: column;
+
+        .expense-impact-pie-legend {
+            max-width: 100%;
+        }
     }
 }
