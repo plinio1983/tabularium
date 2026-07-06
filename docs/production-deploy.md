@@ -217,6 +217,57 @@ Verifica HTTP dal server, passando da Nginx o dalla rete Docker:
 docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium wget -qO- http://127.0.0.1:3000/login
 ```
 
+## Backup e restore produzione
+
+Il backup viene eseguito dall'host, ma il dump PostgreSQL parte dentro al container `tabularium-db` con `docker exec`. Non serve esporre la porta del database fuori dalla rete Docker.
+
+Backup manuale:
+
+```bash
+cd /app/tabularium
+./scripts/backup-prod.sh --backup-dir /var/backups/tabularium
+```
+
+Lo script genera tre file:
+
+```text
+tabularium-YYYYMMDD-HHMMSS.dump
+tabularium-YYYYMMDD-HHMMSS-uploads.tar.gz
+tabularium-YYYYMMDD-HHMMSS.json
+```
+
+Per default mantiene i backup locali per 30 giorni. Per cambiare retention o disattivarla:
+
+```bash
+./scripts/backup-prod.sh --backup-dir /var/backups/tabularium --retention-days 14
+./scripts/backup-prod.sh --backup-dir /var/backups/tabularium --retention-days 0
+```
+
+Crontab sull'host:
+
+```cron
+30 2 * * * cd /app/tabularium && ./scripts/backup-prod.sh --backup-dir /var/backups/tabularium >> /var/log/tabularium-backup.log 2>&1
+```
+
+Se configuri un remoto `rclone`, puoi copiare i backup fuori macchina:
+
+```bash
+./scripts/backup-prod.sh \
+  --backup-dir /var/backups/tabularium \
+  --rclone-dest remote:tabularium-backups
+```
+
+Restore da backup:
+
+```bash
+cd /app/tabularium
+./scripts/restore-prod.sh \
+  --db-dump /var/backups/tabularium/tabularium-YYYYMMDD-HHMMSS.dump \
+  --uploads /var/backups/tabularium/tabularium-YYYYMMDD-HHMMSS-uploads.tar.gz
+```
+
+Il restore e' distruttivo: prima di procedere chiede conferma digitando `RESTORE` e, salvo opzione contraria, crea un backup di sicurezza `pre-restore`. Poi ferma l'app, ripristina database e upload, esegue `prisma db push` e riavvia il servizio.
+
 ## Migrazione dati locale -> server
 
 Sul computer locale crea il dump:

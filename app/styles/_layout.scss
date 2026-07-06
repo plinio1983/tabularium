@@ -4024,12 +4024,19 @@ html, body {
     display: flex;
     align-items: center;
     gap: 9px;
-    padding: 8px 0;
+    padding: 10px 0 5px 0;
+}
+
+.expense-impact-pie-row-wrap {
     border-bottom: 1px solid var(--line);
 }
 
 .expense-impact-pie-legend-row:last-child {
     border-bottom: 0;
+}
+
+.expense-impact-pie-bar {
+    height: 3px;
 }
 
 .expense-impact-pie-dot {

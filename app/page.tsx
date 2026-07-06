@@ -334,10 +334,13 @@ function ExpenseCategoryIncomeImpactPieChart({
       <div className="expense-impact-pie-legend">
         {groupedData.map((item, index) => {
           const percentage = (item.total / incomeTotal) * 100;
-          return <div className="expense-impact-pie-legend-row" key={`${item.code}-${item.name}`}>
-            <span className="expense-impact-pie-dot" style={{ background: colors[index % colors.length] }} />
-            <div><strong>{item.code}</strong><span>{item.name}</span></div>
-            <div><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+          return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
+            <div className="expense-impact-pie-legend-row">
+              <span className="expense-impact-pie-dot" style={{ background: colors[index % colors.length] }} />
+              <div><strong>{item.code}</strong><span>{item.name}</span></div>
+              <div><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+            </div>
+            <div className="expense-impact-pie-bar" style={{ width: `${percentage.toFixed(1)}%`, background: `${colors[index % colors.length]}` }}></div>
           </div>;
         })}
         {incomeTotal > expenseTotal ? <div className="expense-impact-pie-legend-row">

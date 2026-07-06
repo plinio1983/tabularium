@@ -3,6 +3,7 @@ node_modules
 .env
 .env.production
 deploy.conf
+backups/
 .DS_Store
 prisma/migrations
 data/Spese-Ricavi.xlsx
