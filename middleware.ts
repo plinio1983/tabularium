@@ -7,6 +7,8 @@ const publicPrefixes = [
   '/login',
   '/register',
   '/api/auth',
+  '/api/cron',
+  '/api/jobs',
   '/admin/login',
   '/admin/setup',
   '/_next',
