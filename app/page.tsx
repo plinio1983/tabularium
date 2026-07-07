@@ -205,11 +205,103 @@ function nonFiscalExpensePercentTone(value: number, total: number) {
   return '';
 }
 
+const dashboardChartColors = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0f766e', '#db2777', '#64748b'];
+
+type DashboardPieItem = {
+  name: string;
+  code: string;
+  total: number;
+  href?: string;
+};
+
+function DashboardPieChart({
+  title,
+  description,
+  badge,
+  data,
+  total,
+  visualTotal = total,
+  percentageTotal,
+  centerLabel = 'Totale',
+  centerValue,
+  emptyMessage,
+  remainderLabel,
+  remainderName
+}: {
+  title: string;
+  description: string;
+  badge: ReactNode;
+  data: DashboardPieItem[];
+  total: number;
+  visualTotal?: number;
+  percentageTotal?: number;
+  centerLabel?: string;
+  centerValue?: string;
+  emptyMessage: string;
+  remainderLabel?: string;
+  remainderName?: string;
+}) {
+  const chartTotal = data.reduce((sum, item) => sum + item.total, 0);
+  const denominator = Math.max(visualTotal, chartTotal);
+  const percentageDenominator = percentageTotal ?? denominator;
+  let cursor = 0;
+  const segments = data.map((item, index) => {
+    const start = denominator ? (cursor / denominator) * 100 : 0;
+    cursor += item.total;
+    const end = denominator ? (cursor / denominator) * 100 : 0;
+    return `${dashboardChartColors[index % dashboardChartColors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
+  });
+  if (denominator > chartTotal) {
+    segments.push(`#eef1f7 ${((chartTotal / denominator) * 100).toFixed(3)}% 100%`);
+  }
+  const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
+
+  return <div className="card expense-category-chart-card expense-impact-pie-card">
+    <div className="card-heading-row">
+      <div>
+        <h2>{title}</h2>
+        <p className="muted">{description}</p>
+      </div>
+      <div className="text-right chart-total"><span className="badge">{badge}</span></div>
+    </div>
+    {data.length && denominator > 0 ? <div className="expense-impact-pie-layout">
+      <div className="expense-impact-pie" style={{ background }} aria-label={title}>
+        <div>
+          <span>{centerLabel}</span>
+          <strong className="main-label">{centerValue ?? euro(total)}</strong>
+        </div>
+      </div>
+      <div className="expense-impact-pie-legend">
+        {data.map((item, index) => {
+          const percentage = percentageDenominator ? (item.total / percentageDenominator) * 100 : 0;
+          const barWidth = Math.min(percentage, 100);
+          const rowContent = <>
+            <div className="expense-impact-pie-legend-row">
+              <span className="expense-impact-pie-dot" style={{ background: dashboardChartColors[index % dashboardChartColors.length] }} />
+              <div><strong>{item.code}</strong><span>{item.name}</span></div>
+              <div><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+            </div>
+            <div className="expense-impact-pie-bar" style={{ width: `${barWidth.toFixed(1)}%`, background: `${dashboardChartColors[index % dashboardChartColors.length]}` }} />
+          </>;
+          return item.href
+            ? <Link className="expense-impact-pie-row-wrap expense-impact-pie-row-link" href={item.href} key={`${item.code}-${item.name}`}>{rowContent}</Link>
+            : <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>{rowContent}</div>;
+        })}
+        {denominator > chartTotal && remainderLabel && remainderName ? <div className="expense-impact-pie-legend-row">
+          <span className="expense-impact-pie-dot expense-impact-pie-dot-muted" />
+          <div><strong>{remainderLabel}</strong><span>{remainderName}</span></div>
+          <div><strong>{euro(denominator - chartTotal)}</strong><small>{(((denominator - chartTotal) / percentageDenominator) * 100).toFixed(1)}%</small></div>
+        </div> : null}
+      </div>
+    </div> : <p className="muted">{emptyMessage}</p>}
+  </div>;
+}
+
 function ExpensesByCategoryChart({ data }: { data: Array<{ name: string; code: string; total: number }> }) {
   const total = data.reduce((sum, item) => sum + item.total, 0);
   const groupedData = total > 0 ? data.reduce((items, item) => {
     const percentage = (item.total / total) * 100;
-    if (percentage >= 5) return [...items, item];
+    if (percentage >= 3) return [...items, item];
     const other = items.find(entry => entry.code === 'ALTRO');
     if (other) {
       other.total += item.total;
@@ -217,29 +309,15 @@ function ExpensesByCategoryChart({ data }: { data: Array<{ name: string; code: s
     }
     return [...items, { name: 'Altro', code: 'ALTRO', total: item.total }];
   }, [] as Array<{ name: string; code: string; total: number }>).sort((a, b) => b.total - a.total) : data;
-  const max = Math.max(...groupedData.map(item => item.total), 0);
-  return <div className="card expense-category-chart-card">
-    <div className="card-heading-row">
-      <div>
-        <h2>Grafico spese per categoria</h2>
-        <p className="muted">Distribuzione delle spese sullo stesso anno fiscale del report mensile.</p>
-      </div>
-      <div><span className="badge">Totale {euro(total)}</span></div>
-    </div>
-    {groupedData.length ? <div className="category-chart-list">
-      {groupedData.map(item => {
-        const percentage = total ? (item.total / total) * 100 : 0;
-        const width = max ? Math.max((item.total / max) * 100, 4) : 0;
-        return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
-          <div className="category-chart-label"><strong>{item.code}</strong><span>{item.name}</span></div>
-          <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
-            <div className="category-chart-bar" style={{ width: `${width}%` }} />
-          </div>
-          <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
-        </div>;
-      })}
-    </div> : <p className="muted">Nessuna spesa presente per l’anno selezionato.</p>}
-  </div>;
+  return <DashboardPieChart
+    title="Grafico spese per categoria"
+    description="Distribuzione delle spese sullo stesso anno fiscale del report mensile."
+    badge={<>Totale {euro(total)}</>}
+    data={groupedData}
+    total={total}
+    centerLabel="Spese"
+    emptyMessage="Nessuna spesa presente per l’anno selezionato."
+  />;
 }
 
 function groupedExpenseIncomeImpactData(data: Array<{ name: string; code: string; total: number }>, incomeTotal: number) {
@@ -263,125 +341,34 @@ function ExpenseCategoryIncomeImpactChart({
   incomeTotal: number;
 }) {
   const groupedData = groupedExpenseIncomeImpactData(data, incomeTotal);
-  const maxImpact = Math.max(...groupedData.map(item => incomeTotal ? (item.total / incomeTotal) * 100 : 0), 0);
-
-  return <div className="card expense-category-chart-card">
-    <div className="card-heading-row">
-      <div>
-        <h2>Impatto spese su incasso totale</h2>
-        <p className="muted">Percentuale di ogni categoria spese rispetto alle entrate totali dell’anno fiscale.</p>
-      </div>
-      <div>
-        <span className="badge">Incasso {euro(incomeTotal)}</span>
-      </div>
-    </div>
-    {groupedData.length && incomeTotal > 0 ? <div className="category-chart-list">
-      {groupedData.map(item => {
-        const percentage = (item.total / incomeTotal) * 100;
-        const width = maxImpact ? Math.max((percentage / maxImpact) * 100, 4) : 0;
-        return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
-          <div className="category-chart-label"><strong>{item.code}</strong><span>{item.name}</span></div>
-          <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${percentage.toFixed(1)}% dell'incasso totale`}>
-            <div className="category-chart-bar" style={{ width: `${width}%` }} />
-          </div>
-          <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
-        </div>;
-      })}
-    </div> : <p className="muted">Nessun incasso disponibile per calcolare l’impatto percentuale.</p>}
-  </div>;
-}
-
-function ExpenseCategoryIncomeImpactPieChart({
-  data,
-  incomeTotal
-}: {
-  data: Array<{ name: string; code: string; total: number }>;
-  incomeTotal: number;
-}) {
-  const groupedData = groupedExpenseIncomeImpactData(data, incomeTotal);
   const expenseTotal = groupedData.reduce((sum, item) => sum + item.total, 0);
-  const visualTotal = Math.max(incomeTotal, expenseTotal);
-  const colors = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0f766e', '#db2777', '#64748b'];
-  let cursor = 0;
-  const segments = groupedData.map((item, index) => {
-    const start = visualTotal ? (cursor / visualTotal) * 100 : 0;
-    cursor += item.total;
-    const end = visualTotal ? (cursor / visualTotal) * 100 : 0;
-    return `${colors[index % colors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
-  });
-  if (incomeTotal > expenseTotal) {
-    segments.push(`#eef1f7 ${((expenseTotal / incomeTotal) * 100).toFixed(3)}% 100%`);
-  }
-  const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
-
-  return <div className="card expense-category-chart-card expense-impact-pie-card">
-    <div className="card-heading-row">
-      <div>
-        <h2>Impatto spese su incasso totale - torta</h2>
-        <p className="muted">Stessi dati del grafico a barre, visualizzati come quota dell’incasso totale.</p>
-      </div>
-      <div>
-        <span className="badge">Incasso {euro(incomeTotal)}</span>
-      </div>
-    </div>
-    {groupedData.length && incomeTotal > 0 ? <div className="expense-impact-pie-layout">
-      <div className="expense-impact-pie" style={{ background }} aria-label={`Spese per ${((expenseTotal / incomeTotal) * 100).toFixed(1)}% dell'incasso totale`}>
-        <div>
-          <span>Spese</span>
-          <strong>{((expenseTotal / incomeTotal) * 100).toFixed(1)}%</strong>
-        </div>
-      </div>
-      <div className="expense-impact-pie-legend">
-        {groupedData.map((item, index) => {
-          const percentage = (item.total / incomeTotal) * 100;
-          return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
-            <div className="expense-impact-pie-legend-row">
-              <span className="expense-impact-pie-dot" style={{ background: colors[index % colors.length] }} />
-              <div><strong>{item.code}</strong><span>{item.name}</span></div>
-              <div><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
-            </div>
-            <div className="expense-impact-pie-bar" style={{ width: `${percentage.toFixed(1)}%`, background: `${colors[index % colors.length]}` }}></div>
-          </div>;
-        })}
-        {incomeTotal > expenseTotal ? <div className="expense-impact-pie-legend-row">
-          <span className="expense-impact-pie-dot expense-impact-pie-dot-muted" />
-          <div><strong>RESTO</strong><span>Incasso non assorbito</span></div>
-          <div><strong>{euro(incomeTotal - expenseTotal)}</strong><small>{(((incomeTotal - expenseTotal) / incomeTotal) * 100).toFixed(1)}%</small></div>
-        </div> : null}
-      </div>
-    </div> : <p className="muted">Nessun incasso disponibile per calcolare l’impatto percentuale.</p>}
-  </div>;
+  return <DashboardPieChart
+    title="Impatto spese su incasso totale"
+    description="Percentuale di ogni categoria spese rispetto alle entrate totali dell’anno fiscale."
+    badge={<>Incasso {euro(incomeTotal)}</>}
+    data={groupedData}
+    total={expenseTotal}
+    visualTotal={Math.max(incomeTotal, expenseTotal)}
+    percentageTotal={incomeTotal}
+    centerLabel="Spese"
+    centerValue={incomeTotal ? `${((expenseTotal / incomeTotal) * 100).toFixed(1)}%` : '0%'}
+    emptyMessage="Nessun incasso disponibile per calcolare l’impatto percentuale."
+    remainderLabel="RESTO"
+    remainderName="Incasso non assorbito"
+  />;
 }
 
 function IncomeBreakdownChart({ title, description, data }: { title: string; description: string; data: Array<{ name: string; code: string; total: number }> }) {
-  const max = Math.max(...data.map(item => item.total), 0);
   const total = data.reduce((sum, item) => sum + item.total, 0);
-
-  return <div className="card expense-category-chart-card embedded-chart-card income-chart">
-    <div className="card-heading-row">
-      <div>
-        <h2>{title}</h2>
-        <p className="muted">{description}</p>
-      </div>
-      <div><span className="badge">Totale {euro(total)}</span></div>
-    </div>
-    {data.length ? <div className="category-chart-list">
-      {data.map(item => {
-        const percentage = total ? (item.total / total) * 100 : 0;
-        const width = max ? Math.max((item.total / max) * 100, 4) : 0;
-        return <div className="category-chart-row" key={`${item.code}-${item.name}`}>
-          <div className="category-chart-label">
-            <strong>{item.code}</strong>
-            <span>{item.name}</span>
-          </div>
-          <div className="category-chart-bar-wrap" aria-label={`${item.name}: ${euro(item.total)}`}>
-            <div className="category-chart-bar" style={{ width: `${width}%` }} />
-          </div>
-          <div className="category-chart-value"><strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
-        </div>;
-      })}
-    </div> : <p className="muted">Nessun incasso presente per l’anno selezionato.</p>}
-  </div>;
+  return <DashboardPieChart
+    title={title}
+    description={description}
+    badge={<>Totale {euro(total)}</>}
+    data={data}
+    total={total}
+    centerLabel="Entrate"
+    emptyMessage="Nessun incasso presente per l’anno selezionato."
+  />;
 }
 
 function IncomeExpenseBreakdownChart({
@@ -612,9 +599,8 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
     <div className="dashboard-report-charts">
       <div className="charts-grid">
         <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale} />
-        <ExpenseCategoryIncomeImpactPieChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale} />
         <ExpensesByCategoryChart data={report.expensesByCategory} />
-        <IncomeBreakdownChart title="Entrate per canale di vendita" description={`Distribuzione degli incassi nell’anno fiscale ${report.annualYear}.`} data={report.incomesBySalesChannel} />
+        <IncomeBreakdownChart title="Entrate per canale e categoria" description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`} data={report.incomesBySalesChannel} />
       </div>
     </div>
 

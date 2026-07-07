@@ -235,8 +235,10 @@ export async function getAccountingDashboardReport(
 
   const incomesBySalesChannelMap = new Map<string, { name: string; code: string; total: number }>();
   for (const income of yearlyIncomes) {
-    const name = income.salesChannel ?? 'Senza canale';
-    const code = String(name).split(/\s+/).map(part => part[0]).join('').slice(0, 5).toUpperCase() || 'CAN';
+    const salesChannel = income.salesChannel ?? 'Senza canale';
+    const saleCategory = income.saleCategory ?? 'Senza categoria';
+    const name = `${salesChannel} / ${saleCategory}`;
+    const code = `${String(salesChannel).split(/\s+/).map(part => part[0]).join('')}${String(saleCategory).split(/\s+/).map(part => part[0]).join('')}`.slice(0, 6).toUpperCase() || 'CAN';
     const key = `${code}-${name}`;
     const current = incomesBySalesChannelMap.get(key) ?? { name, code, total: 0 };
     current.total += Number(income.amount);

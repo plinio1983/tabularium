@@ -60,7 +60,7 @@ a {
     align-items: flex-end;
 }
 
-.text-rright {
+.text-right {
     text-align: right;
 }
 
@@ -3977,10 +3977,16 @@ html, body {
 .expense-impact-pie {
     position: relative;
     flex: 0 0 auto;
-    width: min(220px, 42vw);
+    width: min(220px, 58vw);
     aspect-ratio: 1;
     border-radius: 50%;
     box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .08);
+
+    .main-label {
+        background: #fff;
+        padding: 4px 6px;
+        border-radius: 999px;
+    }
 }
 
 .expense-impact-pie::after {
@@ -4028,15 +4034,23 @@ html, body {
 }
 
 .expense-impact-pie-row-wrap {
+    display: block;
     border-bottom: 1px solid var(--line);
+    color: inherit;
+    text-decoration: none;
 }
 
 .expense-impact-pie-legend-row:last-child {
     border-bottom: 0;
 }
 
+.expense-impact-pie-row-link:hover .expense-impact-pie-legend-row {
+    background: #f8faff;
+}
+
 .expense-impact-pie-bar {
-    height: 3px;
+    height: 5px;
+    border-radius: 999px;
 }
 
 .expense-impact-pie-dot {
@@ -4071,6 +4085,7 @@ html, body {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: 700;
+    font-size: 14px;
 }
 
 .expense-impact-pie-legend-row > div:last-child {
@@ -4841,6 +4856,19 @@ html, body {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
+
+    @media (min-width: 576px) {
+        .card-heading-row {
+            position: relative;
+            .chart-total {
+                .badge {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                }
+            }
+        }
+    }
 }
 
 .income-summary-row {
@@ -9143,9 +9171,13 @@ table .cell-description {
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
     .charts-grid {
-        grid-template-columns:1fr;
+        grid-template-columns: 1fr;
+
+        .card-heading-row {
+            display: block;
+        }
     }
 
     .income-summary-row {
