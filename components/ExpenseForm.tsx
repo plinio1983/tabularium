@@ -1147,13 +1147,13 @@ export default function ExpenseForm({
                                         >
                                             🗑️ Rimuovi
                                         </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-sm btn-default"
-                                            onClick={() => payment.id ? setOpenPaymentKey(null) : removePaymentRow(index)}
-                                        >
-                                            × Annulla
-                                        </button>
+                                        {/*<button*/}
+                                        {/*    type="button"*/}
+                                        {/*    className="btn btn-sm btn-default"*/}
+                                        {/*    onClick={() => payment.id ? setOpenPaymentKey(null) : removePaymentRow(index)}*/}
+                                        {/*>*/}
+                                        {/*    × Annulla*/}
+                                        {/*</button>*/}
                                     </div>
                                 </div>
                             );

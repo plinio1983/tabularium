@@ -254,7 +254,7 @@
 
 @media (max-width: 760px) {
     .expense-detail-hero {
-        grid-template-columns: 1fr;
+        //grid-template-columns: 1fr;
         padding: 18px;
     }
 
@@ -1118,9 +1118,12 @@
     }
 
     .mobile-expense-payment-timeline .expense-payment-data {
-        /*grid-template-columns: repeat(2, minmax(0, 1fr));*/
         display: flex;
         gap: 40px;
+
+        @media (max-width: 760px) {
+            gap: 19px;
+        }
     }
 
     .mobile-expense-payment-timeline .expense-payment-date {
@@ -1455,10 +1458,6 @@
         grid-template-columns: 1fr;
     }
 
-    .expense-form .toggle-field {
-        //min-height: 54px;
-    }
-
     .expense-form .payments-box {
         padding: 12px;
     }
@@ -1656,6 +1655,10 @@
     .bulk-direct-link .btn-icon {
         font-size: 20px;
     }
+
+    .floating-bulk-actions-inner .btn-icon {
+        font-size: 20px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1727,10 +1730,6 @@
         margin-bottom: 72px;
     }
 
-    .floating-bulk-actions-inner .btn-icon {
-        font-size: 20px;
-    }
-
     .card .expense-form {
         padding: 0;
         border: none;
@@ -1742,10 +1741,6 @@
         right: 12px;
         top: 17px;
     }
-
-    //.expense-import-btn-large {
-    //    display: none;
-    //}
 
     .expense-import-btn .expense-import-btn-text {
         display: none !important;
@@ -1842,5 +1837,15 @@
         .expense-impact-pie-legend {
             max-width: 100%;
         }
+    }
+}
+
+@media (max-width: 351px) {
+    .shell {
+        padding: 6px;
+    }
+
+    .expenses-list-card {
+        padding: 14px 6px;
     }
 }

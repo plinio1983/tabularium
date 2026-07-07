@@ -173,7 +173,7 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
   }
 
   return <div className="expense-trend-selectors expense-trend-selectors-switch" aria-label="Selettori andamento incassi">
-    <span>Andamento</span>
+    <span className="w100">Andamento</span>
     <div className="expense-trend-mode-toggle" role="group" aria-label="Tipo andamento">
       <button type="button" className={mode === "date" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"} onClick={() => changeMode("date")}>
         Complessivo

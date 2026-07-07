@@ -209,6 +209,12 @@ export default function ExpensesList({
             <span className="bulk-label">Elimina</span>
           </button>
         </div>
+        <div className="bulk-inner-container">
+          <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-expense-new data-floating-label="Aggiungi spesa">
+            <span className="btn-icon">+</span>
+            <span className="bulk-label">Spesa</span>
+          </button>
+        </div>
       </form>
 
       <ExpenseEditModalController

@@ -174,7 +174,7 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
 
   return <div className="expense-trend-selectors expense-trend-selectors-switch" aria-label="Selettori andamento spese">
 
-    <span>Andamento</span>
+    <span className="w100">Andamento</span>
 
     <div className="expense-trend-mode-toggle" role="group" aria-label="Tipo andamento">
       <button

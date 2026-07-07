@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import FilterIcon from "@/components/FilterIcon";
 
 type Option = { id: number; name: string; icon?: string | null };
 
@@ -50,8 +51,8 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
   }, [open]);
 
   return <>
-    <button className="btn btn-md btn-default recurring-filter-trigger" type="button" onClick={() => setOpen(true)}>
-      <span className="btn-icon">☰</span> <span className="recurring-filter-trigger-text">Filtri</span>
+    <button className="btn btn-sm btn-default recurring-filter-trigger" type="button" onClick={() => setOpen(true)}>
+      <span className="btn-icon"><FilterIcon /></span> <span className="recurring-filter-trigger-text">Filtri</span>
     </button>
 
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>

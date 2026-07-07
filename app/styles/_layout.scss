@@ -116,6 +116,10 @@ a {
     justify-content: flex-end;
 }
 
+.w100 {
+    width: 100%;
+}
+
 .site-header-actions {
     display: flex;
     align-items: center;
@@ -739,11 +743,16 @@ button {
 
 /* spese ricorrenti: sezioni collassabili coerenti con ExpenseForm */
 .recurring-expense-form .recurring-form-section {
+    position: relative;
     padding: 0;
     border: 1px solid var(--line);
     border-radius: 16px;
     background: #fff;
     overflow: visible;
+}
+
+.recurring-expense-form .recurring-form-section:focus-within {
+    z-index: 60;
 }
 
 .recurring-expense-form .recurring-form-section > summary {
@@ -953,6 +962,7 @@ button {
     cursor: pointer;
     width: 50%;
     max-width: 50%;
+    font-size: 14px;
 
     @media (min-width: 768px) {
         padding-left: 28px;
@@ -2731,6 +2741,12 @@ table th, table td {
     position: relative;
     display: grid;
     gap: 6px;
+    overflow: visible;
+    z-index: 20;
+}
+
+.supplier-picker:focus-within {
+    z-index: 120;
 }
 
 .supplier-picker > label {
@@ -2763,19 +2779,19 @@ table th, table td {
     position: absolute;
     left: 0;
     right: 0;
-    top: 78px;
-    z-index: 30;
+    top: calc(100% + 6px);
+    z-index: 130;
     background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 16px 36px rgba(20, 30, 60, .14);
-    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, .16);
     max-height: 260px;
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
 .supplier-results button {
-    min-width: 100%;
+    width: 100%;
     display: grid;
     gap: 3px;
     justify-content: flex-start;
@@ -2784,12 +2800,13 @@ table th, table td {
     border-radius: 0;
     color: var(--text);
     background: #fff;
+    border: 0;
     border-bottom: 1px solid #edf0f6;
 }
 
 .supplier-results button.active, .supplier-results button:hover {
-    background: #eef2ff;
-    color: #1f3ea8;
+    background: #eff6ff;
+    color: #1d4ed8;
 }
 
 .supplier-results small {
@@ -2872,6 +2889,12 @@ table th, table td {
     gap: 6px;
     color: var(--muted);
     font-size: 13px;
+    overflow: visible;
+    z-index: 20;
+}
+
+.product-suggestion-picker:focus-within {
+    z-index: 120;
 }
 
 .suggestion-results {
@@ -2880,19 +2903,19 @@ table th, table td {
     position: absolute;
     left: 0;
     right: 0;
-    top: 78px;
-    z-index: 35;
+    top: calc(100% + 6px);
+    z-index: 130;
     background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 0 0 14px 14px;
-    box-shadow: 0 16px 36px rgba(20, 30, 60, .14);
-    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, .16);
     max-height: 240px;
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
 .suggestion-results button {
-    min-width: 100%;
+    width: 100%;
     justify-content: flex-start;
     flex-grow: 1;
     display: flex;
@@ -2901,13 +2924,14 @@ table th, table td {
     border-radius: 0;
     color: var(--text);
     background: #fff;
+    border: 0;
     border-bottom: 1px solid #edf0f6;
     font-weight: 700;
 }
 
 .suggestion-results button.active, .suggestion-results button:hover {
-    background: #eef2ff;
-    color: #1f3ea8;
+    background: #eff6ff;
+    color: #1d4ed8;
 }
 
 .new-supplier-panel .no-margin {
@@ -2935,10 +2959,12 @@ table th, table td {
     min-width: 30px;
 }
 
-
-
 .income-form {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    .fiscal-toggle {
+        flex-grow: 0;
+    }
 }
 
 .income-form small {
@@ -3797,6 +3823,7 @@ table th, table td {
 
 .filter-supplier-picker {
     display: block;
+    z-index: 3;
 }
 
 .filter-supplier-picker input {
@@ -3804,11 +3831,12 @@ table th, table td {
 }
 
 .filter-supplier-results {
-    top: 42px;
+    top: calc(100% + 6px);
 }
 
 .supplier-filter-label {
     position: relative;
+    overflow: visible;
 }
 
 .expense-filters, .compact-filters {
@@ -4077,6 +4105,10 @@ html, body {
     min-width: 46px;
     text-align: center;
     font-size: 11px;
+
+    @media (max-width: 576px) {
+        min-width: 35px;
+    }
 }
 
 .expense-impact-pie-legend-row > div:first-of-type span {
@@ -4084,7 +4116,6 @@ html, body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-weight: 700;
     font-size: 14px;
 }
 
@@ -4195,6 +4226,12 @@ html, body {
 .btn-primary:hover {
     background: #1f49bf !important;
     border-color: #1f49bf !important;
+}
+
+.btn-neutral {
+    background: #fff;
+    color: var(--muted);
+    border: 1px solid #c4cce2;
 }
 
 .btn-default,
@@ -6950,11 +6987,15 @@ button.bulk-direct-danger {
     letter-spacing: .055em;
 }
 
-.expense-detail-amount-panel-header-row > .badge {
-    border-width: 1px;
-    border-style: solid;
-    margin-left: 6px;
-    border-color: #cfe5ff;
+.expense-detail-amount-panel-header-row {
+    white-space: nowrap;
+
+    >.badge {
+        border-width: 1px;
+        border-style: solid;
+        margin-left: 6px;
+        border-color: #cfe5ff;
+    }
 }
 
 .expense-detail-amount-panel > strong {
@@ -8198,6 +8239,7 @@ button.bulk-direct-danger {
     color: #334155;
     font-size: 13px;
     font-weight: 850;
+    z-index: 1;
 }
 
 .expense-form label > input,
@@ -8227,10 +8269,16 @@ button.bulk-direct-danger {
 }
 
 .expense-form .form-section {
+    position: relative;
     border-color: #e2e8f0;
     border-radius: 20px;
     background: #ffffff;
     box-shadow: 0 10px 26px rgba(15, 23, 42, .045);
+    overflow: visible;
+}
+
+.expense-form .form-section:focus-within {
+    z-index: 60;
 }
 
 .expense-form .form-section > summary {
@@ -8266,12 +8314,9 @@ button.bulk-direct-danger {
 }
 
 .expense-form .toggle-field-wrap {
-    //display: grid;
-    //grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
 }
 
-// .expense-form .toggle-field,
 .expense-form .field-note {
     border: 1px solid #e2e8f0;
     border-radius: 16px;
@@ -8280,8 +8325,8 @@ button.bulk-direct-danger {
 }
 
 .expense-form .toggle-field {
-    //min-height: 58px;
     align-items: center;
+    flex-grow: 1;
 }
 
 .expense-form .payment-status-note {
@@ -8389,7 +8434,8 @@ button.bulk-direct-danger {
     border-radius: 14px;
     border: 1px solid #dbe3ee;
     box-shadow: 0 18px 38px rgba(15, 23, 42, .12);
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .expense-form .suggestion-results button {
@@ -9375,4 +9421,8 @@ table .cell-description {
         padding-left: 28px;
         padding-right: 28px;
     }
+}
+
+.income-form .fiscal-toggle {
+    flex-grow: 0;
 }

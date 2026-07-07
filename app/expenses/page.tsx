@@ -43,37 +43,37 @@ const expenseMobileSortOptions = [
   { value: 'paymentDate_asc', label: 'Data pagamento meno recente' },
   { value: 'billingPeriod_desc', label: 'Periodo fatt. recente' },
   { value: 'billingPeriod_asc', label: 'Periodo fatt. meno recente' },
-  { value: 'supplier_asc', label: 'Fornitore A-Z' },
-  { value: 'supplier_desc', label: 'Fornitore Z-A' },
-  { value: 'merchant_asc', label: 'Esercente A-Z' },
-  { value: 'merchant_desc', label: 'Esercente Z-A' },
-  { value: 'description_asc', label: 'Descrizione A-Z' },
-  { value: 'description_desc', label: 'Descrizione Z-A' },
-  { value: 'notes_asc', label: 'Note A-Z' },
-  { value: 'category_asc', label: 'Categoria A-Z' },
-  { value: 'category_desc', label: 'Categoria Z-A' },
-  { value: 'bank_asc', label: 'Banca A-Z' },
-  { value: 'channel_asc', label: 'Canale pagamento A-Z' },
+  { value: 'supplier_asc', label: 'Fornitore (A-Z)' },
+  { value: 'supplier_desc', label: 'Fornitore (Z-A)' },
+  { value: 'merchant_asc', label: 'Esercente (A-Z)' },
+  { value: 'merchant_desc', label: 'Esercente (Z-A)' },
+  { value: 'description_asc', label: 'Descrizione (A-Z)' },
+  { value: 'description_desc', label: 'Descrizione (Z-A)' },
+  { value: 'notes_asc', label: 'Note (A-Z)' },
+  { value: 'category_asc', label: 'Categoria (A-Z)' },
+  { value: 'category_desc', label: 'Categoria (Z-A)' },
+  { value: 'bank_asc', label: 'Banca (A-Z)' },
+  { value: 'channel_asc', label: 'Canale pagamento (A-Z)' },
   { value: 'amount_desc', label: 'Importo alto' },
   { value: 'amount_asc', label: 'Importo basso' },
   { value: 'paidAmount_desc', label: 'Pagato alto' },
   { value: 'paidAmount_asc', label: 'Pagato basso' },
   { value: 'residual_desc', label: 'Residuo alto' },
   { value: 'residual_asc', label: 'Residuo basso' },
-  { value: 'paymentStatus_asc', label: 'Stato pagamento A-Z' },
-  { value: 'invoiceStatus_asc', label: 'Stato fattura A-Z' },
+  { value: 'paymentStatus_asc', label: 'Stato pagamento (A-Z)' },
+  { value: 'invoiceStatus_asc', label: 'Stato fattura (A-Z)' },
   { value: 'declared_desc', label: 'Fiscali prima' },
   { value: 'electronicInvoice_desc', label: 'Fattura elettronica prima' },
   { value: 'complete_desc', label: 'Complete prima' },
   { value: 'automaticPayment_desc', label: 'Pagamento automatico prima' },
   { value: 'paidByCurrentAccount_desc', label: 'C/C pagato prima' },
-  { value: 'paidBy_asc', label: 'Pagato da A-Z' },
+  { value: 'paidBy_asc', label: 'Pagato da (A-Z)' },
   { value: 'vatRate_desc', label: 'IVA alta' },
   { value: 'recurring_desc', label: 'Ricorrenti prima' },
   { value: 'createdAt_desc', label: 'Creazione recente' },
   { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
-  { value: 'id_desc', label: 'ID decrescente' },
-  { value: 'id_asc', label: 'ID crescente' }
+  // { value: 'id_desc', label: 'ID decrescente' },
+  // { value: 'id_asc', label: 'ID crescente' }
 ];
 
 function formatDateInputLabel(value: string) {
@@ -868,7 +868,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         <div>
           <div className="flex justify-start align-start">
             <span className="flex-grow recurring-active-filters-title">Filtri attivi</span>
-            <Link className="btn btn-xs btn-default recurring-active-filters-reset reset-button" href="/expenses">↺ Reset</Link>
+            <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/expenses">↺ Reset</Link>
           </div>
           <div className="flex justify-end align-start">
             <div className="recurring-active-filter-tags">

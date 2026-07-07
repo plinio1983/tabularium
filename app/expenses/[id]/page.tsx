@@ -138,15 +138,12 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <Link className="btn btn-sm btn-default" href={returnTo}>↩ Indietro</Link>
           </div>
           <div className="right-side">
-            <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
-            <Link className="btn btn-sm btn-primary" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
-            <DeleteActionButton
-              action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
-              confirmMessage="Confermi la rimozione della spesa? L’operazione non può essere annullata."
-              className="btn btn-sm btn-danger"
-            >
-              🗑 Elimina
-            </DeleteActionButton>
+            <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
+              <span className="--hidden-mobile"> Copia</span>
+            </button>
+            <Link className="btn btn-sm btn-primary" href="#" data-expense-detail-edit-id={expense.id}>✎
+              <span className="--hidden-mobile"> Modifica</span>
+            </Link>
           </div>
         </div>
         <section className="expense-detail-hero">
@@ -317,6 +314,23 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             </a>)}
           </div> : <div className="expense-empty-panel">Nessun allegato caricato.</div>}
         </section>
+
+
+        <section className="expense-detail-section">
+          <DeleteActionButton
+              action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
+              confirmMessage="Confermi la rimozione della spesa? L’operazione non può essere annullata."
+              className="btn btn-sm btn-danger">
+            🗑 <span className="--hidden-mobile"> Rimuovi</span>
+          </DeleteActionButton>
+          <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
+            <span className="--hidden-mobile"> Copy</span>
+          </button>
+          <Link className="btn btn-sm btn-primary" href="#" data-expense-detail-edit-id={expense.id}>✎
+            <span className="--hidden-mobile"> Modifica</span>
+          </Link>
+        </section>
+
       </article>
     </div>
   </div>;

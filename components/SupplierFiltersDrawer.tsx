@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import FilterIcon from "@/components/FilterIcon";
 
 type Props = {
   filters: Record<string, string | string[] | undefined>;
@@ -67,8 +68,8 @@ export default function SupplierFiltersDrawer({ filters }: Props) {
   ) : null;
 
   return <>
-    <button className="btn btn-md btn-default recurring-filter-trigger" type="button" onClick={() => setOpen(true)}>
-      <span className="btn-icon">☰</span> <span className="recurring-filter-trigger-text">Filtri</span>
+    <button className="btn btn-sm btn-default recurring-filter-trigger" type="button" onClick={() => setOpen(true)}>
+      <span className="btn-icon"><FilterIcon /></span> <span className="recurring-filter-trigger-text">Filtri</span>
     </button>
     {drawer}
   </>;

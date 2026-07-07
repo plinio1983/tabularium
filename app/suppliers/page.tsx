@@ -12,16 +12,16 @@ import { stripFlashRecord, stripFlashSearchParams } from '@/lib/flash';
 import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
 
 const supplierMobileSortOptions = [
-  { value: 'businessName_asc', label: 'Ragione sociale A-Z' },
-  { value: 'businessName_desc', label: 'Ragione sociale Z-A' },
-  { value: 'alias_asc', label: 'Alias A-Z' },
-  { value: 'alias_desc', label: 'Alias Z-A' },
-  { value: 'email_asc', label: 'Email A-Z' },
-  { value: 'vatNumber_asc', label: 'P.IVA A-Z' },
-  { value: 'iban_asc', label: 'IBAN A-Z' },
-  { value: 'pec_asc', label: 'PEC A-Z' },
-  { value: 'taxCodeSdi_asc', label: 'Codice SDI/C.F. A-Z' },
-  { value: 'internalNotes_asc', label: 'Note interne A-Z' },
+  { value: 'businessName_asc', label: 'Ragione sociale (A-Z)' },
+  { value: 'businessName_desc', label: 'Ragione sociale (Z-A)' },
+  { value: 'alias_asc', label: 'Alias (A-Z)' },
+  { value: 'alias_desc', label: 'Alias (Z-A)' },
+  { value: 'email_asc', label: 'Email (A-Z)' },
+  { value: 'vatNumber_asc', label: 'P.IVA (A-Z)' },
+  { value: 'iban_asc', label: 'IBAN (A-Z)' },
+  { value: 'pec_asc', label: 'PEC (A-Z)' },
+  { value: 'taxCodeSdi_asc', label: 'Codice SDI/C.F. (A-Z)' },
+  { value: 'internalNotes_asc', label: 'Note interne (A-Z)' },
   { value: 'openExpensesCount_desc', label: 'Ordini da saldare alti' },
   { value: 'openExpensesCount_asc', label: 'Ordini da saldare bassi' },
   { value: 'amountToPay_desc', label: 'Importo da saldare alto' },
@@ -32,8 +32,8 @@ const supplierMobileSortOptions = [
   { value: 'annualPurchasedAmount_asc', label: 'Acquisti anno bassi' },
   { value: 'createdAt_desc', label: 'Creazione recente' },
   { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
-  { value: 'id_desc', label: 'ID decrescente' },
-  { value: 'id_asc', label: 'ID crescente' }
+  // { value: 'id_desc', label: 'ID decrescente' },
+  // { value: 'id_asc', label: 'ID crescente' }
 ];
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
@@ -195,7 +195,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
           </div>
         </div>
-        <Link className="btn btn-xs btn-default recurring-active-filters-reset reset-button" href="/suppliers">↺ Reset</Link>
+        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/suppliers">↺ Reset</Link>
       </div> : null}
 
       <script dangerouslySetInnerHTML={{ __html: `

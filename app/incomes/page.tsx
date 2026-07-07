@@ -40,25 +40,25 @@ const incomeMobileSortOptions = [
   { value: 'creditDate_asc', label: 'Data accredito meno recente' },
   { value: 'billingPeriod_desc', label: 'Periodo fatt. recente' },
   { value: 'billingPeriod_asc', label: 'Periodo fatt. meno recente' },
-  { value: 'salesChannel_asc', label: 'Canale vendita A-Z' },
-  { value: 'salesChannel_desc', label: 'Canale vendita Z-A' },
-  { value: 'saleCategory_asc', label: 'Categoria vendita A-Z' },
-  { value: 'saleCategory_desc', label: 'Categoria vendita Z-A' },
-  { value: 'description_asc', label: 'Descrizione A-Z' },
-  { value: 'description_desc', label: 'Descrizione Z-A' },
-  { value: 'notes_asc', label: 'Note A-Z' },
+  { value: 'salesChannel_asc', label: 'Canale vendita (A-Z)' },
+  { value: 'salesChannel_desc', label: 'Canale vendita (Z-A)' },
+  { value: 'saleCategory_asc', label: 'Categoria vendita (A-Z)' },
+  { value: 'saleCategory_desc', label: 'Categoria vendita (Z-A)' },
+  { value: 'description_asc', label: 'Descrizione (A-Z)' },
+  { value: 'description_desc', label: 'Descrizione (Z-A)' },
+  { value: 'notes_asc', label: 'Note (A-Z)' },
   { value: 'amount_desc', label: 'Importo alto' },
   { value: 'amount_asc', label: 'Importo basso' },
-  { value: 'paymentMethod_asc', label: 'Metodo pagamento A-Z' },
-  { value: 'creditChannel_asc', label: 'Canale accredito A-Z' },
+  { value: 'paymentMethod_asc', label: 'Metodo pagamento (A-Z)' },
+  { value: 'creditChannel_asc', label: 'Canale accredito (A-Z)' },
   { value: 'fiscal_desc', label: 'Fiscali prima' },
-  { value: 'invoiceStatus_asc', label: 'Stato fattura A-Z' },
+  { value: 'invoiceStatus_asc', label: 'Stato fattura (A-Z)' },
   { value: 'credited_desc', label: 'Accreditati prima' },
   { value: 'vatRate_desc', label: 'IVA alta' },
-  { value: 'createdAt_desc', label: 'Creazione recente' },
-  { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
-  { value: 'id_desc', label: 'ID decrescente' },
-  { value: 'id_asc', label: 'ID crescente' }
+  // { value: 'createdAt_desc', label: 'Creazione recente' },
+  // { value: 'updatedAt_desc', label: 'Aggiornamento recente' },
+  // { value: 'id_desc', label: 'ID decrescente' },
+  // { value: 'id_asc', label: 'ID crescente' }
 ];
 
 function dateLabel(value?: Date | null) {
@@ -754,7 +754,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
           </div>
         </div>
-        <Link className="btn btn-xs btn-default recurring-active-filters-reset reset-button" href="/incomes">↺ Reset</Link>
+        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes">↺ Reset</Link>
       </div> : null}
 
       <div className="list-heading recurring-list-heading">
