@@ -7300,6 +7300,11 @@ button.bulk-direct-danger {
     border-bottom: 0;
 }
 
+
+.expense-detail-section.expense-detail-section-actions {
+    display: flex;
+}
+
 .expense-detail-section-heading {
     display: flex;
     align-items: flex-end;

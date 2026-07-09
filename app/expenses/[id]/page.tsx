@@ -316,7 +316,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
         </section>
 
 
-        <section className="expense-detail-section">
+        <section className="expense-detail-section expense-detail-section-actions">
           <DeleteActionButton
               action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
               confirmMessage="Confermi la rimozione della spesa? L’operazione non può essere annullata."

@@ -649,10 +649,12 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     }
   };
 
-  const incomesBySalesChannel = Array.from(filteredIncomes.reduce((map, income) => {
-    const name = income.salesChannel ?? 'Senza canale';
-    const code = String(name).split(/\s+/).map(part => part[0]).join('').slice(0, 5).toUpperCase() || 'CAN';
-    const key = `${code}-${name}`;
+  const incomesBySaleCategoryAndChannel = Array.from(filteredIncomes.reduce((map, income) => {
+    const saleCategory = income.saleCategory ?? 'Senza categoria';
+    const salesChannel = income.salesChannel ?? 'Senza canale';
+    const name = `${saleCategory} / ${salesChannel}`;
+    const code = `${String(saleCategory).split(/\s+/).map(part => part[0]).join('')}${String(salesChannel).split(/\s+/).map(part => part[0]).join('')}`.slice(0, 6).toUpperCase() || 'CATCAN';
+    const key = `${saleCategory}-${salesChannel}`;
     const current = map.get(key) ?? { name, code, total: 0 };
     current.total += Number(income.amount.toString());
     map.set(key, current);
@@ -788,7 +790,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             </tbody>
           </table>
         </div>
-        <IncomePieBreakdownChart title="Entrate per canale di vendita" data={incomesBySalesChannel} />
+        <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel} />
       </div>
 
       {activeFilterItems.length ? <div className="recurring-active-filters">
@@ -1207,7 +1209,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
     </div>
     {/*<div className="card expenses-list-card">*/}
     {/*  <div className="charts-grid">*/}
-    {/*    <IncomePieBreakdownChart title="Entrate per canale di vendita" data={incomesBySalesChannel} />*/}
+    {/*    <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel} />*/}
     {/*    <IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} />*/}
     {/*  </div>*/}
     {/*</div>*/}
