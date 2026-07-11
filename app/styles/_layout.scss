@@ -29,7 +29,7 @@ a {
 }
 
 .flex-grow {
-    flex-grow: 1;
+    flex-grow: 1 !important;
 }
 
 .flex-nowrap {
@@ -4021,6 +4021,10 @@ html, body {
     font-size: 18px;
 }
 
+.monthly-profit-ratio-chart-card h2 {
+    font-size: 18px;
+}
+
 .monthly-non-fiscal-chart-list {
     display: grid;
     gap: 10px;
@@ -4045,6 +4049,10 @@ html, body {
     text-decoration: none;
 }
 
+.monthly-profit-ratio-chart-row {
+    gap: 8px;
+}
+
 .monthly-income-expense-ratio-year-row {
     display: grid;
     gap: 8px;
@@ -4057,6 +4065,28 @@ html, body {
 .monthly-income-expense-ratio-year-row .monthly-non-fiscal-chart-month {
     font-size: 18px;
     color: var(--accent);
+}
+
+.monthly-profit-ratio-bar-stack {
+    display: grid;
+    gap: 6px;
+}
+
+.monthly-profit-ratio-bar-wrap {
+    position: relative;
+    background: linear-gradient(90deg, #f8dfe3 0 50%, #e5edf8 50% 100%);
+}
+
+.monthly-profit-ratio-bar-wrap::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: rgba(15, 23, 42, .24);
+    transform: translateX(-1px);
+    z-index: 1;
 }
 
 .monthly-non-fiscal-chart-row:last-child {
@@ -4092,6 +4122,15 @@ html, body {
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
+
+    @media (max-width: 576px) {
+        flex-direction: column;
+        gap: 6px;
+
+        .summary-text {
+            font-size: 14px;
+        }
+    }
 }
 
 .monthly-non-fiscal-chart-month {
@@ -4186,6 +4225,29 @@ html, body {
 
 .monthly-income-expense-ratio-chart-bar.tone-critical {
     background: #dc2626;
+}
+
+.monthly-profit-ratio-chart-net-bar {
+    background: #2563eb;
+}
+
+.monthly-profit-ratio-chart-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+}
+
+.monthly-profit-ratio-chart-fiscal-bar {
+    background: #0f766e;
+}
+
+.monthly-profit-ratio-chart-bar.tone-critical {
+    background: #dc2626;
+}
+
+.monthly-profit-ratio-chart-bar.money-zero {
+    background: #cbd5e1;
 }
 
 .expense-impact-pie-layout {

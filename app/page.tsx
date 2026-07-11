@@ -299,8 +299,8 @@ function DashboardPieChart({
           const rowContent = <>
             <div className="expense-impact-pie-legend-row">
               <span className="expense-impact-pie-dot" style={{ background: dashboardChartColors[index % dashboardChartColors.length] }} />
-              <div><strong>{item.code}</strong><span>{item.name}</span></div>
-              <div><strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
+              <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
+              <div className="flex-grow justify-end"><strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div>
             </div>
             <div className="expense-impact-pie-bar" style={{ width: `${barWidth.toFixed(1)}%`, background: `${dashboardChartColors[index % dashboardChartColors.length]}` }} />
           </>;
@@ -366,6 +366,39 @@ function IncomeBreakdownChart({ title, description, data }: { title: string; des
     total={total}
     centerLabel="Entrate"
     emptyMessage="Nessun incasso presente per l’anno selezionato."
+  />;
+}
+
+function NetProfitByIncomeChannelChart({
+  data,
+  profit,
+  incomeTotal,
+  year,
+  label
+}: {
+  data: Array<{ name: string; code: string; total: number }>;
+  profit: number;
+  incomeTotal: number;
+  year: number;
+  label: 'netto' | 'fiscale';
+}) {
+  const positiveProfit = Math.max(profit, 0);
+  const titleLabel = `Utile ${label}`;
+  const allocatedData = incomeTotal > 0
+    ? data.map(item => ({
+      ...item,
+      total: positiveProfit * (item.total / incomeTotal)
+    })).filter(item => item.total > 0)
+    : [];
+
+  return <DashboardPieChart
+    title={`${titleLabel} per canale e categoria`}
+    description={`${titleLabel} ripartito in proporzione agli incassi per canale vendita e categoria nell’anno fiscale ${year}.`}
+    badge={<>{titleLabel} {chartEuro(profit)}</>}
+    data={allocatedData}
+    total={positiveProfit}
+    centerLabel={titleLabel}
+    emptyMessage={`Nessun utile ${label} positivo disponibile per la ripartizione.`}
   />;
 }
 
@@ -474,9 +507,9 @@ function MonthlyIncomeExpenseRatioChart({
       <div className="monthly-income-expense-ratio-year-row">
         <div className="monthly-non-fiscal-chart-month-row">
           <span className="monthly-non-fiscal-chart-month">{year}</span>
-          <div>
+          <div className="summary-text">
             <small>Entrate &nbsp;</small> <strong>{chartEuro(totalIncome)}</strong>
-            &nbsp;·&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;
             <small>Uscite &nbsp;</small> <strong>{chartEuro(totalExpenses)}</strong>
           </div>
         </div>
@@ -512,6 +545,110 @@ function MonthlyIncomeExpenseRatioChart({
           </div>
           <span className="monthly-non-fiscal-chart-bar-wrap" aria-label={`${monthLabel} margine lordo su entrate: ${percentage.toFixed(1)}%`}>
             <span className={marginBarClass(monthGrossMargin, percentage)} style={{ width: `${width}%` }} />
+          </span>
+        </Link>;
+      })}
+    </div> : <p className="muted">Nessun mese disponibile per l’anno selezionato.</p>}
+  </section>;
+}
+
+function MonthlyNetFiscalProfitRatioChart({
+  months,
+  year
+}: {
+  months: Array<{ year: number; month: number; totals: any }>;
+  year: number;
+}) {
+  const totalNetProfit = months.reduce((sum, month) => sum + month.totals.utileNetto, 0);
+  const totalFiscalProfit = months.reduce((sum, month) => sum + month.totals.utileFiscale, 0);
+  const totalGrossMargin = months.reduce((sum, month) => sum + month.totals.utileLordo, 0);
+  const marginRatioLabel = (value: number, grossMargin: number) => {
+    if (!grossMargin) return value ? 'n.d.' : '0.0%';
+    return `${((value / Math.abs(grossMargin)) * 100).toFixed(1)}%`;
+  };
+  const profitBarClass = (value: number, kind: 'net' | 'fiscal') => [
+    'monthly-non-fiscal-chart-bar',
+    'monthly-profit-ratio-chart-bar',
+    `monthly-profit-ratio-chart-${kind}-bar`,
+    value < 0 ? 'tone-critical' : '',
+    value === 0 ? 'money-zero' : ''
+  ].filter(Boolean).join(' ');
+  const profitBarStyle = (value: number, grossMargin: number) => {
+    if (!grossMargin || value === 0) return { left: '50%', width: '0%' };
+    const width = Math.min(Math.max((Math.abs(value) / Math.abs(grossMargin)) * 50, 2), 50);
+    return {
+      left: value < 0 ? `${50 - width}%` : '50%',
+      width: `${width}%`
+    };
+  };
+
+  return <section className="card monthly-profit-ratio-chart-card" aria-labelledby="monthly-profit-ratio-chart-title">
+    <div className="card-heading-row">
+      <div>
+        <h2 id="monthly-profit-ratio-chart-title">Rapporto utile netto / utile fiscale per mese</h2>
+        <p className="muted">Percentuale di utile netto e utile fiscale sul margine lordo nell’anno {year}.</p>
+      </div>
+      <div className="text-right chart-total">
+        <span className="badge">Anno {year}</span>
+      </div>
+    </div>
+    {months.length ? <div className="monthly-non-fiscal-chart-list">
+      <div className="monthly-income-expense-ratio-year-row monthly-profit-ratio-year-row">
+        <div className="monthly-non-fiscal-chart-month-row">
+          <span className="monthly-non-fiscal-chart-month">{year}</span>
+          <div className="summary-text flex align-end">
+            <small>Margine lordo &nbsp;</small> <strong className={moneyTone(totalGrossMargin)}>{chartEuro(totalGrossMargin)}</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <div>
+              <small>Netto &nbsp;</small> <strong className={moneyTone(totalNetProfit)}>{chartEuro(totalNetProfit)}</strong>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <small>Fiscale &nbsp;</small> <strong className={moneyTone(totalFiscalProfit)}>{chartEuro(totalFiscalProfit)}</strong>
+            </div>
+          </div>
+        </div>
+        <div className="monthly-income-expense-ratio-chart-values">
+          <span>Rapporto annuale</span>
+          <small>Netto {marginRatioLabel(totalNetProfit, totalGrossMargin)}</small>
+          <strong className="text-accent">Fiscale {marginRatioLabel(totalFiscalProfit, totalGrossMargin)}</strong>
+        </div>
+        <span className="monthly-profit-ratio-bar-stack" aria-label={`${year} utile netto ${chartEuro(totalNetProfit)}, utile fiscale ${chartEuro(totalFiscalProfit)}, margine lordo ${chartEuro(totalGrossMargin)}`}>
+          <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap">
+            <span className={profitBarClass(totalNetProfit, 'net')} style={profitBarStyle(totalNetProfit, totalGrossMargin)} />
+          </span>
+          <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap">
+            <span className={profitBarClass(totalFiscalProfit, 'fiscal')} style={profitBarStyle(totalFiscalProfit, totalGrossMargin)} />
+          </span>
+        </span>
+      </div>
+      {months.map(month => {
+        const netProfit = month.totals.utileNetto;
+        const fiscalProfit = month.totals.utileFiscale;
+        const grossMargin = month.totals.utileLordo;
+        const monthLabel = capitalizedMonthName(month.month);
+
+        return <Link
+          className="monthly-income-expense-ratio-chart-row monthly-profit-ratio-chart-row"
+          href={monthReportLink(month.year, month.month)}
+          key={`${month.year}-${month.month}`}>
+          <div className="monthly-non-fiscal-chart-month-row">
+            <span className="monthly-non-fiscal-chart-month">{monthLabel}</span>
+            <small>Margine lordo {chartEuro(grossMargin)}</small>
+          </div>
+          <div className="monthly-income-expense-ratio-chart-values">
+            <span>Utile netto</span>
+            <small className={moneyTone(netProfit)}>{chartEuro(netProfit)}</small>
+            <strong>{marginRatioLabel(netProfit, grossMargin)}</strong>
+          </div>
+          <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap" aria-label={`${monthLabel} utile netto: ${chartEuro(netProfit)} su margine lordo ${chartEuro(grossMargin)}`}>
+            <span className={profitBarClass(netProfit, 'net')} style={profitBarStyle(netProfit, grossMargin)} />
+          </span>
+          <div className="monthly-income-expense-ratio-chart-values">
+            <span>Utile fiscale</span>
+            <small className={moneyTone(fiscalProfit)}>{chartEuro(fiscalProfit)}</small>
+            <strong>{marginRatioLabel(fiscalProfit, grossMargin)}</strong>
+          </div>
+          <span className="monthly-non-fiscal-chart-bar-wrap monthly-profit-ratio-bar-wrap" aria-label={`${monthLabel} utile fiscale: ${chartEuro(fiscalProfit)} su margine lordo ${chartEuro(grossMargin)}`}>
+            <span className={profitBarClass(fiscalProfit, 'fiscal')} style={profitBarStyle(fiscalProfit, grossMargin)} />
           </span>
         </Link>;
       })}
@@ -667,15 +804,24 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
       </form>
     </div>
 
+    <div className="dashboard-report-charts">
+      <div className="charts-grid">
+        <IncomeBreakdownChart title="Entrate per canale e categoria" description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`} data={report.incomesBySalesChannel} />
+        <NetProfitByIncomeChannelChart data={report.incomesBySalesChannel} profit={report.totals.utileNetto} incomeTotal={report.totals.incassoTotale} year={report.annualYear} label="netto" />
+        <NetProfitByIncomeChannelChart data={report.incomesBySalesChannel} profit={report.totals.utileFiscale} incomeTotal={report.totals.incassoTotale} year={report.annualYear} label="fiscale" />
+        <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale} />
+      </div>
+    </div>
+
     <div className="grid grid-2 dashboard-period-cards">
       <DashboardFiscalAjax
-        annualYear={report.annualYear}
-        monthOptions={monthOptions}
-        quarterOptions={quarterOptions}
-        initialTrend={{ year: selectedTrendMonth.year, month: selectedTrendMonth.month, totals: monthlyTrendTotals }}
-        initialTrendQuarter={{ periods: trendQuarterPeriods, totals: quarterlyTrendTotals }}
-        initialMonth={{ periods: report.currentFiscalMonth.periods, totals: report.currentFiscalMonth.totals }}
-        initialQuarter={{ periods: report.currentFiscalQuarter.periods, totals: report.currentFiscalQuarter.totals }}
+          annualYear={report.annualYear}
+          monthOptions={monthOptions}
+          quarterOptions={quarterOptions}
+          initialTrend={{ year: selectedTrendMonth.year, month: selectedTrendMonth.month, totals: monthlyTrendTotals }}
+          initialTrendQuarter={{ periods: trendQuarterPeriods, totals: quarterlyTrendTotals }}
+          initialMonth={{ periods: report.currentFiscalMonth.periods, totals: report.currentFiscalMonth.totals }}
+          initialQuarter={{ periods: report.currentFiscalQuarter.periods, totals: report.currentFiscalQuarter.totals }}
       />
     </div>
 
@@ -747,10 +893,9 @@ export default async function Dashboard({ searchParams }: { searchParams?: Promi
 
     <div className="dashboard-report-charts">
       <div className="charts-grid">
-        <IncomeBreakdownChart title="Entrate per canale e categoria" description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`} data={report.incomesBySalesChannel} />
-        <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale} />
         <MonthlyNonFiscalRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear} />
         <MonthlyIncomeExpenseRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear} />
+        <MonthlyNetFiscalProfitRatioChart months={nonFiscalExpenseChartMonths} year={report.annualYear} />
       </div>
     </div>
 
