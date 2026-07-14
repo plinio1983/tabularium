@@ -69,6 +69,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? stripFlashParams(rawReturnTo) : '/recurring-expenses';
   const currentDetailReturnTo = `/recurring-expenses/${id}?returnTo=${encodeURIComponent(returnTo)}`;
+  const encodedCurrentDetailReturnTo = encodeURIComponent(currentDetailReturnTo);
 
   const [item, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.recurringExpense.findUnique({
@@ -159,7 +160,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
                 <span>Spesa ricorrente #{item.id}</span>
                 <span className={badgeClass(activeClass)}>{item.isActive ? 'ON' : 'OFF'}</span>
               </p>
-              <h1>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}`}>{merchant}</Link> : merchant}</h1>
+              <h1>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{merchant}</Link> : merchant}</h1>
               <div className="expense-detail-meta-line">
                 <span>{item.category ? categoryLabel(item.category, item.category.name) : 'Senza categoria'}</span>
                 <span>{item.description ?? 'Spesa ricorrente senza descrizione'}</span>
@@ -216,7 +217,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             </div>
             <div>
               <span>Fornitore</span>
-              <strong>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}`}>{merchant}</Link> : merchant}</strong>
+              <strong>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{merchant}</Link> : merchant}</strong>
             </div>
             <div>
               <span>Categoria</span>

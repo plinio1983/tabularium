@@ -154,7 +154,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
                 <span className={expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{expense.isRecurring ? 'R' : 'S'}</span>
               </p>
               <div className="flex align-center">
-                <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{supplierName}</Link> : supplierName}</h1>
+                <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</h1>
               </div>
               <div className="expense-detail-meta-line">
                 <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
@@ -224,7 +224,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </div>
           <div>
             <span>Fornitore</span>
-            <strong className="">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}`}>{supplierName}</Link> : supplierName}</strong>
+            <strong className="">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</strong>
           </div>
           <div>
             <span>Descrizione</span>
