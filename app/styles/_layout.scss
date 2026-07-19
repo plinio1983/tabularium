@@ -854,7 +854,39 @@ button {
 }
 
 .supplier-form-actions {
-    padding-top: 2px;
+    align-items: center;
+    padding: 14px 2px 2px;
+    border-top: 1px solid var(--line);
+}
+
+.supplier-form-section-icon {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.supplier-form-page-card {
+    gap: 16px;
+}
+
+.supplier-form-page-card > .modal-title {
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+}
+
+.supplier-styled-form .supplier-form-section {
+    border-color: #dfe5f2;
+}
+
+.supplier-styled-form .supplier-form-section > summary {
+    background: linear-gradient(135deg, rgba(245, 247, 255, .96), rgba(255, 255, 255, .98));
 }
 
 .modal-card .supplier-styled-form {

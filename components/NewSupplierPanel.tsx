@@ -42,7 +42,7 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
         <form className="card form income-form expense-form supplier-form supplier-styled-form inline-create-form" action={action} method="post">
           <details className="form-section full income-form-section supplier-form-section" open>
             <summary>
-              <span>Anagrafica</span>
+              <span><span className="supplier-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span>
               <small>Dati principali del fornitore</small>
             </summary>
             <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
@@ -58,7 +58,7 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
 
           <details className="form-section full income-form-section supplier-form-section" open>
             <summary>
-              <span>Note</span>
+              <span><span className="supplier-form-section-icon" aria-hidden="true">≡</span>Note</span>
               <small>Annotazioni interne e informazioni operative</small>
             </summary>
             <div className="form-section-stack income-form-section-stack">
@@ -66,7 +66,14 @@ export default function NewSupplierPanel({ initialOpen = false }: { initialOpen?
             </div>
           </details>
 
-          <div className="full actions-row right-actions form-actions-row supplier-form-actions"><button className="btn btn-md btn-default" type="button" onClick={() => setIsOpen(false)}>✕ Annulla</button><button className="btn btn-md btn-primary" type="submit">✓ Salva fornitore</button></div>
+          <div className="full actions-row right-actions form-actions-row supplier-form-actions">
+            <button className="btn btn-md btn-default" type="button" onClick={() => setIsOpen(false)}>
+              <span className="btn-icon">✕</span> Annulla
+            </button>
+            <button className="btn btn-md btn-primary" type="submit">
+              <span className="btn-icon">✓</span> Salva fornitore
+            </button>
+          </div>
         </form>
       </div>
     </div>}
