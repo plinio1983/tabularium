@@ -2140,11 +2140,23 @@ body.drawer-open {
 }
 
 .expense-row-invoice-waiting td {
-    background: #fffaf0;
+    background: #eff6ff;
 }
 
 .expense-row-invoice-waiting td:first-child {
+    border-left: 4px solid #2563eb;
+}
+
+.compact-expenses-table tbody tr.expense-row-unpaid td {
+    background: #fffaf0;
+}
+
+.compact-expenses-table tbody tr.expense-row-unpaid td:first-child {
     border-left: 4px solid #f59e0b;
+}
+
+.compact-expenses-table tbody tr.expense-row-unpaid:hover td {
+    background: #fff4dc;
 }
 
 .compact-expenses-table tbody tr.expense-row-warning td {
@@ -2172,8 +2184,8 @@ body.drawer-open {
 }
 
 .expense-mobile-item-invoice-waiting {
-    background: linear-gradient(135deg, #fffaf0 0%, #ffffff 72%);
-    border-color: #f7d78b;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 72%);
+    border-color: #93c5fd;
     /*box-shadow: 0 10px 24px rgba(161, 92, 0, .10);*/
 }
 
@@ -3451,6 +3463,14 @@ table th, table td {
     align-items: flex-start;
     justify-content: flex-start;
     gap: 12px;
+
+    p {
+      margin-top: 0;
+    }
+
+    h2 {
+      margin-bottom: 6px;
+    }
 }
 
 .summary-metrics-grid {
@@ -8609,9 +8629,12 @@ button.bulk-direct-danger {
 }
 
 .row-warning,
-.income-mobile-item.income-row-warning,
-.expense-mobile-item-unpaid {
+.income-mobile-item.income-row-warning {
     background: linear-gradient(90deg, rgba(255, 248, 223, 0.76), transparent 62%);
+}
+
+.expense-mobile-item-unpaid {
+    background: linear-gradient(90deg, rgba(255, 248, 223, .82), transparent 72%);
 }
 
 .expense-mobile-select {

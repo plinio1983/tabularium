@@ -236,10 +236,9 @@ function getQuickDateRange(value: string, selectedYear?: string) {
   if (value === 'last_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
   if (value === 'previous_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
   if (value === 'year_to_date') {
-    const isCurrentYear = year === now.getFullYear();
     return {
       from: toDateInputValue(new Date(year, 0, 1)),
-      to: toDateInputValue(isCurrentYear ? now : new Date(year, 11, 31))
+      to: toDateInputValue(new Date(year, 11, 31))
     };
   }
   return { from: toDateInputValue(new Date(year, month, 1)), to: toDateInputValue(new Date(year, month + 1, 0)) };
@@ -268,7 +267,7 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
-  ['year_to_date', 'Da inizio anno'],
+  ['year_to_date', 'Anno intero'],
   ...monthQuickOptions,
   ...quarterQuickOptions
 ];
@@ -304,17 +303,16 @@ function getQuickBillingPeriodRange(value: string, selectedYear?: string) {
       : { from: toMonthInputValue(year - 1, 9), to: toMonthInputValue(year - 1, 11) };
   }
   if (value === 'year_to_date') {
-    const isCurrentYear = year === now.getFullYear();
     return {
       from: toMonthInputValue(year, 0),
-      to: toMonthInputValue(year, isCurrentYear ? month : 11)
+      to: toMonthInputValue(year, 11)
     };
   }
   return { from: toMonthInputValue(year, month), to: toMonthInputValue(year, month) };
 }
 
 const quickBillingPeriodOptions = [
-  ['year_to_date', 'Da inizio anno'],
+  ['year_to_date', 'Anno intero'],
   ...monthQuickOptions,
   ...quarterQuickOptions
 ];
@@ -919,6 +917,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             if (value === 'previous_month') return { from: fmt(y, m - 1), to: fmt(y, m - 1) };
             if (value === 'current_quarter') return { from: fmt(y, currentQuarter * 3), to: fmt(y, currentQuarter * 3 + 2) };
             if (value === 'previous_quarter') return currentQuarter > 0 ? { from: fmt(y, (currentQuarter - 1) * 3), to: fmt(y, (currentQuarter - 1) * 3 + 2) } : { from: fmt(y - 1, 9), to: fmt(y - 1, 11) };
+            if (value === 'year_to_date') return { from: fmt(y, 0), to: fmt(y, 11) };
             if (value === 'this_month') return { from: fmt(y, m), to: fmt(y, m) };
             return null;
           };
@@ -1009,6 +1008,7 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
             if (value === 'two_months_ago') return { from: fmt(new Date(y, m - 2, 1)), to: fmt(new Date(y, m - 1, 0)) };
             if (value === 'current_quarter') return fiscalQuarterRange(y, currentQuarter);
             if (value === 'last_quarter') return currentQuarter > 0 ? fiscalQuarterRange(y, currentQuarter - 1) : fiscalQuarterRange(y - 1, 3);
+            if (value === 'year_to_date') return { from: fmt(new Date(y, 0, 1)), to: fmt(new Date(y, 11, 31)) };
             if (value === 'this_month') return { from: fmt(new Date(y, m, 1)), to: fmt(new Date(y, m + 1, 0)) };
             return null;
           };

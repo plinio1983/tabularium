@@ -32,7 +32,7 @@
   .dashboard-monthly-mobile {
     display: grid;
     overflow: hidden;
-    border: 1px solid var(--line);
+    //border: 1px solid var(--line);
     border-radius: 12px;
     background: #fff;
   }
@@ -48,8 +48,7 @@
   .dashboard-monthly-mobile-main {
     //margin-bottom: 9px;
     background: #f6f8ff;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding: 4px 8px;
   }
 
   .dashboard-monthly-mobile-labels {
@@ -72,17 +71,20 @@
   }
 
   .dashboard-monthly-mobile-row {
-    padding: 0 8px 9px 8px;
-    border-bottom: 1px solid #b8b8b8;
+    padding: 0 0 8px 0;
+    border: 1px solid var(--line);
+    margin-bottom: 12px;
+    border-radius: 13px;
+    box-shadow: 0 0 7px 1px #d2d2d2;
 
     .money-positive {
       color: #16a34a;
     }
   }
 
-  .dashboard-monthly-mobile-row:last-child {
-    border-bottom: 0;
-  }
+  //.dashboard-monthly-mobile-row:last-child {
+  //  border-bottom: 0;
+  //}
 
   .dashboard-monthly-mobile-main > * {
     min-width: 0;
@@ -106,12 +108,7 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
-    margin-left: -9px;
-    margin-right: -9px;
-    //background: #f6f8ff;
-    padding-right: 12px;
-    padding-bottom: 7px;
-    margin-bottom: -9px;
+    padding: 4px 8px 2px 8px;
   }
 
   .dashboard-monthly-mobile-secondary > div {

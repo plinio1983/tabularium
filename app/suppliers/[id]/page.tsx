@@ -162,7 +162,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           </div>
         </section>
 
-        <details className="expense-detail-section supplier-detail-collapsible" closed>
+        <details className="expense-detail-section supplier-detail-collapsible">
           <summary className="expense-detail-section-heading">
             <div>
               <h2>Anagrafica</h2>

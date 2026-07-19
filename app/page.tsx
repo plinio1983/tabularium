@@ -1458,10 +1458,11 @@ export default async function Dashboard({searchParams}: {
                 </table>
             </div>
             <div className="dashboard-monthly-mobile" aria-label={`Report mensile ${report.year}`}>
-                <div className="dashboard-monthly-mobile-labels" aria-hidden="true">
-                    <span>Mese</span><span>Entrate</span><span>Spese</span><span>Utile netto</span>
-                </div>
+
                 {report.months.map(m => <div className="dashboard-monthly-mobile-row" key={`mobile-${m.month}`}>
+                    <div className="dashboard-monthly-mobile-labels" aria-hidden="true">
+                        <span>Mese</span><span>Entrate</span><span>Spese</span><span>Utile netto</span>
+                    </div>
                     <div className="dashboard-monthly-mobile-main">
                         <Link className="dashboard-monthly-mobile-month" href={monthReportLink(m.year, m.month)}>
                             {capitalizedMonthName(m.month).slice(0, 3)}
@@ -1472,7 +1473,7 @@ export default async function Dashboard({searchParams}: {
                         <Link href={periodLink('/expenses', [{year: m.year, month: m.month}])}>
                             <MobileMoneyCellNoFormat value={m.totals.speseTotali}/>
                         </Link>
-                        <div><span className="badge"><MobileMoneyCell value={m.totals.utileNetto}/></span></div>
+                        <div><span className=""><MobileMoneyCell value={m.totals.utileNetto}/></span></div>
                     </div>
                     <div className="dashboard-monthly-mobile-secondary">
                         <div><span>Utile fiscale</span><MobileMoneyCell value={m.totals.utileFiscale}/></div>

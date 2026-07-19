@@ -326,7 +326,10 @@ export default function ExpensesList({
 
             return <tr
               key={expense.id}
-              className={['clickable-desktop-row', overdue ? 'expense-row-overdue' : paymentWaiting || invoiceWaiting ? 'expense-row-warning' : ''].filter(Boolean).join(' ')}
+              className={[
+                'clickable-desktop-row',
+                overdue ? 'expense-row-overdue' : paymentWaiting ? 'expense-row-unpaid' : invoiceWaiting ? 'expense-row-invoice-waiting' : ''
+              ].filter(Boolean).join(' ')}
               data-row-href={detailHref}
               data-sort-row
               data-sort-order-date={dateSortValue(expense.receivedDate)}

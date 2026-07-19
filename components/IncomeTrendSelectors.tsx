@@ -33,14 +33,14 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
-  ["year_to_date", "Da inizio anno"],
+  ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
   ["custom", "Data personalizzata"],
 ];
 
 const quickBillingPeriodOptions = [
-  ["year_to_date", "Da inizio anno"],
+  ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
   ["custom", "Periodo personalizzato"],

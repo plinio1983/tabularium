@@ -49,13 +49,13 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
-  ["year_to_date", "Da inizio anno"],
+  ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
 ];
 
 const quickBillingPeriodOptions = [
-  ["year_to_date", "Da inizio anno"],
+  ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
 ];
@@ -94,7 +94,7 @@ function quickBillingPeriodRange(value: string) {
   if (value === "previous_quarter") return currentQuarter > 0
     ? { from: monthInputValue(year, (currentQuarter - 1) * 3), to: monthInputValue(year, (currentQuarter - 1) * 3 + 2) }
     : { from: monthInputValue(year - 1, 9), to: monthInputValue(year - 1, 11) };
-  if (value === "year_to_date") return { from: monthInputValue(year, 0), to: monthInputValue(year, month) };
+  if (value === "year_to_date") return { from: monthInputValue(year, 0), to: monthInputValue(year, 11) };
   return null;
 }
 
@@ -117,7 +117,7 @@ function quickCreditDateRange(value: string) {
   if (quarterMatch) return quarterRange(year, Number(quarterMatch[1]) - 1);
   if (value === "current_quarter") return quarterRange(year, currentQuarter);
   if (value === "previous_quarter") return currentQuarter > 0 ? quarterRange(year, currentQuarter - 1) : quarterRange(year - 1, 3);
-  if (value === "year_to_date") return { from: dateInputValue(new Date(year, 0, 1)), to: dateInputValue(now) };
+  if (value === "year_to_date") return { from: dateInputValue(new Date(year, 0, 1)), to: dateInputValue(new Date(year, 11, 31)) };
   return null;
 }
 

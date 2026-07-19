@@ -1,7 +1,5 @@
 import { prisma } from '@/lib/prisma';
 
-const LOOKAHEAD_DAYS = 30;
-
 export type RecurringExpenseJobResult = {
   checked: number;
   created: number;
@@ -24,12 +22,6 @@ export type RecurringExpenseDailyJobResult = {
 function startOfDay(date: Date) {
   const copy = new Date(date);
   copy.setHours(0, 0, 0, 0);
-  return copy;
-}
-
-function addDays(date: Date, days: number) {
-  const copy = new Date(date);
-  copy.setDate(copy.getDate() + days);
   return copy;
 }
 
@@ -66,13 +58,12 @@ function isCadenceDue(startDate: Date, dueYear: number, dueMonth: number, cadenc
 function calculateDueDates(recurringExpense: any, todayInput: Date) {
   const today = startOfDay(todayInput);
   const startDate = startOfDay(new Date(recurringExpense.startDate));
-  const limitDate = addDays(today, LOOKAHEAD_DAYS);
 
-  if (startDate > limitDate) return [];
+  if (startDate > today) return [];
 
   const dueDates: Date[] = [];
   const cursorStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-  const cursorEnd = new Date(limitDate.getFullYear(), limitDate.getMonth(), 1);
+  const cursorEnd = new Date(today.getFullYear(), today.getMonth(), 1);
 
   for (
     let cursor = cursorStart;
@@ -91,7 +82,7 @@ function calculateDueDates(recurringExpense: any, todayInput: Date) {
     const dueDate = startOfDay(new Date(dueYear, dueMonth - 1, dueDay));
 
     if (dueDate < startDate) continue;
-    if (dueDate > limitDate) continue;
+    if (dueDate > today) continue;
 
     dueDates.push(dueDate);
   }

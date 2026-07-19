@@ -56,13 +56,13 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
-  ["year_to_date", "Da inizio anno"],
+  ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
 ];
 
 const quickBillingPeriodOptions = [
-  ["year_to_date", "Da inizio anno"],
+  ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
 ];
@@ -97,7 +97,7 @@ function quickBillingPeriodRange(value: string) {
     const quarter = Number(quarterMatch[1]) - 1;
     return { from: monthInputValue(year, quarter * 3), to: monthInputValue(year, quarter * 3 + 2) };
   }
-  if (value === "year_to_date") return { from: monthInputValue(year, 0), to: monthInputValue(year, month) };
+  if (value === "year_to_date") return { from: monthInputValue(year, 0), to: monthInputValue(year, 11) };
   return null;
 }
 
@@ -123,7 +123,7 @@ function quickOrderDateRange(value: string) {
     from: dateInputValue(new Date(year - 1, 9, 1)),
     to: dateInputValue(new Date(year - 1, 12, 0)),
   };
-  if (value === "year_to_date") return { from: dateInputValue(new Date(year, 0, 1)), to: dateInputValue(now) };
+  if (value === "year_to_date") return { from: dateInputValue(new Date(year, 0, 1)), to: dateInputValue(new Date(year, 11, 31)) };
   return null;
 }
 
