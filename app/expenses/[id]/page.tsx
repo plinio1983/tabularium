@@ -158,6 +158,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               </div>
               <div className="expense-detail-meta-line">
                 <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
+                <span>{expense.description}</span>
                 {/*<strong>{fiscalBadge(expense.isDeclared)}</strong>*/}
               </div>
             </div>

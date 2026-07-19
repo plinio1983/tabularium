@@ -83,6 +83,21 @@ function formatDateInputLabel(value: string) {
   return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
+function reportMonthFromRange(monthFrom: string, monthTo: string, dateFrom: string, dateTo: string) {
+  if (monthFrom && monthFrom === monthTo) {
+    const [year, month] = monthFrom.split('-').map(Number);
+    if (year && month >= 1 && month <= 12) return { year, month };
+  }
+  if (dateFrom && dateTo) {
+    const [fromYear, fromMonth] = dateFrom.split('-').map(Number);
+    const [toYear, toMonth] = dateTo.split('-').map(Number);
+    if (fromYear === toYear && fromMonth === toMonth && fromYear && fromMonth >= 1 && fromMonth <= 12) {
+      return { year: fromYear, month: fromMonth };
+    }
+  }
+  return null;
+}
+
 function formatDateTextInputLabel(value: string) {
   if (!value) return '';
   const [year, month, day] = value.split('-');
@@ -586,6 +601,15 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
   const fiscalTotalsHref = totalsFilterHref({ fiscal: 'yes' });
   const nonFiscalTotalsHref = totalsFilterHref({ fiscal: 'no' });
   const invoicesNotSentHref = totalsFilterHref({ invoiceStatus: 'NON_INVIATA' });
+  const reportMonth = reportMonthFromRange(
+    billingPeriodFromFilter,
+    billingPeriodToFilter,
+    creditDateFromDefault,
+    creditDateToDefault
+  );
+  const monthlyReportHref = reportMonth
+    ? `/months/${reportMonth.year}/${reportMonth.month}?returnTo=${encodeURIComponent(listHref)}`
+    : null;
 
   const periodIncomes = incomes.filter(income => {
     if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
@@ -787,6 +811,18 @@ export default async function IncomesPage({ searchParams }: { searchParams?: Pro
               <tr><td>Fatture non inviate</td><td><Link href={invoicesNotSentHref}><strong>{totals.invoicesNotSent}</strong></Link></td></tr>
             </tbody>
           </table>
+          {monthlyReportHref ? <div className="dashboard-statement-actions">
+            <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
+              <span className="btn-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="5" width="18" height="16" rx="2" />
+                  <path d="M16 3v4M8 3v4M3 10h18" />
+                  <path d="M8 14h2M14 14h2M8 17h2M14 17h2" />
+                </svg>
+              </span>
+              <span>Report mensile</span>
+            </Link>
+          </div> : null}
         </div>
         <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel} />
       </div>

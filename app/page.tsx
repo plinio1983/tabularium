@@ -531,7 +531,7 @@ function MonthlyProfitPieChart({months, totalProfit, year, kind}: {
     />;
 }
 
-function MonthlyVatBalancePieChart({months, year}: {
+function QuarterlyVatBalancePieChart({months, year}: {
     months: Array<{
         year: number;
         month: number;
@@ -539,22 +539,27 @@ function MonthlyVatBalancePieChart({months, year}: {
     }>;
     year: number;
 }) {
-    const data = months.map(month => {
-        const vatBalance = month.totals.ivaGenerataIncassi - month.totals.ivaVersataSpese;
+    const data = [0, 1, 2, 3].map(quarterIndex => {
+        const quarterMonths = months.filter(month => Math.floor((month.month - 1) / 3) === quarterIndex);
+        const vatBalance = quarterMonths.reduce(
+            (sum, month) => sum + month.totals.ivaGenerataIncassi - month.totals.ivaVersataSpese,
+            0
+        );
+        const firstMonth = quarterIndex * 3 + 1;
+        const lastMonth = firstMonth + 2;
         return {
-            name: capitalizedMonthName(month.month),
-            code: capitalizedMonthName(month.month).slice(0, 3).toUpperCase(),
+            name: `${capitalizedMonthName(firstMonth)} – ${capitalizedMonthName(lastMonth)}`,
+            code: `T${quarterIndex + 1}`,
             total: vatBalance,
-            visualValue: Math.abs(vatBalance),
-            href: monthReportLink(month.year, month.month)
+            visualValue: Math.abs(vatBalance)
         };
     });
     const totalVatBalance = data.reduce((sum, item) => sum + item.total, 0);
     const absoluteVatBalanceTotal = data.reduce((sum, item) => sum + item.visualValue, 0);
 
     return <DashboardPieChart
-        title="Saldo IVA per mese"
-        description={`IVA generata con gli incassi meno IVA versata con le spese fiscali nel ${year}. Le fette negative mantengono il segno in legenda.`}
+        title="Saldo IVA per trimestre"
+        description={`IVA generata con gli incassi meno IVA versata con le spese fiscali, aggregata per trimestre nel ${year}. Le fette negative mantengono il segno in legenda.`}
         badge={<>Saldo IVA {chartEuro(totalVatBalance)}</>}
         data={data}
         total={totalVatBalance}
@@ -563,7 +568,7 @@ function MonthlyVatBalancePieChart({months, year}: {
         centerLabel="Saldo IVA"
         centerValue={chartEuro(totalVatBalance)}
         centerDetail={null}
-        emptyMessage="Nessun saldo IVA disponibile per l’anno selezionato."
+        emptyMessage="Nessun saldo IVA trimestrale disponibile per l’anno selezionato."
     />;
 }
 
@@ -1319,7 +1324,7 @@ export default async function Dashboard({searchParams}: {
                                                incomeTotal={report.totals.incassoTotale} year={report.annualYear}
                                                label="fiscale"/>
                 <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileLordo} year={report.annualYear} kind="lordo"/>
-                <MonthlyVatBalancePieChart months={report.months} year={report.annualYear}/>
+                <QuarterlyVatBalancePieChart months={report.months} year={report.annualYear}/>
             </div>
         </div>
 
