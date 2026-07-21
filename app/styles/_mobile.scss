@@ -2124,4 +2124,55 @@
   .supplier-quick-search {
     width: 100%;
   }
+
+  .dashboard-pie-legend-collapsible {
+    width: 100%;
+    //border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .dashboard-pie-legend-collapsible > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-weight: 800;
+    list-style: none;
+    background: var(--bg);
+  }
+
+  .dashboard-pie-legend-collapsible > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .dashboard-pie-legend-collapsible:not([open]) > .expense-impact-pie-legend {
+    display: none !important;
+  }
+
+  .dashboard-pie-legend-collapsible[open] > .expense-impact-pie-legend {
+    display: grid !important;
+    padding: 0 12px 12px;
+  }
+
+  .dashboard-pie-legend-caret {
+    transition: transform .2s ease;
+  }
+
+  .dashboard-pie-legend-hide {
+    display: none;
+  }
+
+  .dashboard-pie-legend-collapsible[open] .dashboard-pie-legend-show {
+    display: none;
+  }
+
+  .dashboard-pie-legend-collapsible[open] .dashboard-pie-legend-hide {
+    display: inline;
+  }
+
+  .dashboard-pie-legend-collapsible[open] .dashboard-pie-legend-caret {
+    transform: rotate(180deg);
+  }
 }

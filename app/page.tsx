@@ -362,7 +362,13 @@ function DashboardPieChart({
                     {centerDetail === null ? null : <span>{centerDetail ?? chartEuro(total.toFixed(2))}</span>}
                 </div>
             </div>
-            <div className="expense-impact-pie-legend">
+            <details className="dashboard-pie-legend-collapsible">
+              <summary>
+                <span className="dashboard-pie-legend-show">Mostra legenda</span>
+                <span className="dashboard-pie-legend-hide">Nascondi legenda</span>
+                <span className="dashboard-pie-legend-caret" aria-hidden="true">⌄</span>
+              </summary>
+              <div className="expense-impact-pie-legend">
                 {data.map((item, index) => {
                     const percentage = percentageDenominator ? (chartValue(item) / percentageDenominator) * 100 : 0;
                     const barWidth = Math.min(percentage, 100);
@@ -394,7 +400,8 @@ function DashboardPieChart({
                             <strong>{chartEuro(denominator - chartTotal)}</strong><small>{(((denominator - chartTotal) / percentageDenominator) * 100).toFixed(1)}%</small>
                         </div>
                     </div> : null}
-            </div>
+              </div>
+            </details>
         </div> : <p className="muted">{emptyMessage}</p>}
     </div>;
 }

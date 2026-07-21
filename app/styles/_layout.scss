@@ -10450,3 +10450,11 @@ table .cell-description {
 .income-form .fiscal-toggle {
   flex-grow: 0;
 }
+
+.dashboard-pie-legend-collapsible > summary {
+  display: none;
+}
+
+.dashboard-pie-legend-collapsible > .expense-impact-pie-legend {
+  display: grid !important;
+}
