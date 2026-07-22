@@ -664,6 +664,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
   const categoryFilter = inputDefault(filters, 'category');
   const expenseTypeFilter = inputDefault(filters, 'expenseType');
   const merchantFilter = normalize(inputDefault(filters, 'merchant'));
+  const supplierQuickFilter = normalize(inputDefault(filters, 'supplierQuick'));
   const productFilter = normalize(inputDefault(filters, 'product'));
   const amountFilterRaw = inputDefault(filters, 'amount');
   const amountFilterValue = parseAmountFilter(amountFilterRaw);
@@ -738,6 +739,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     if (expenseTypeFilter === 'recurring' && (expense.expenseType === 'VAT_SETTLEMENT' || !expense.isRecurring)) return false;
     if (expenseTypeFilter === 'vat_settlement' && expense.expenseType !== 'VAT_SETTLEMENT') return false;
     if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
+    if (supplierQuickFilter && !normalize(expense.supplier?.businessName).includes(supplierQuickFilter)) return false;
     if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
     if (!amountMatchesFilter(amount, amountFilterValue)) return false;
     if (paymentStatusFilter === 'not_complete' && expense.paymentStatus === 'COMPLETATO') return false;
@@ -862,6 +864,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
     categoryFilter && { label: 'Categoria', value: categoryFilter },
     expenseTypeFilter && { label: 'Tipo spesa', value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : 'Singola' },
     inputDefault(filters, 'merchant') && { label: 'Esercente', value: inputDefault(filters, 'merchant') },
+    inputDefault(filters, 'supplierQuick') && { label: 'Fornitore', value: inputDefault(filters, 'supplierQuick') },
     inputDefault(filters, 'product') && { label: 'Descrizione', value: inputDefault(filters, 'product') },
     amountFilterRaw && { label: 'Importo', value: amountFilterRaw },
     paymentStatusFilter && { label: 'Stato pagamento', value: optionLabel(paymentStatusOptions, paymentStatusFilter) },
@@ -909,23 +912,6 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
         billingPeriodYear={billingPeriodYearFilter}
         useFiscalPeriodFilter={useFiscalPeriodFilter}
       />
-
-      {activeFilterItems.length ? <div className="recurring-active-filters">
-        <div>
-          <div className="flex justify-start align-start">
-            <span className="flex-grow recurring-active-filters-title">Filtri attivi</span>
-            <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/expenses"><span className="btn-icon">×</span> Reset</Link>
-          </div>
-          <div className="flex justify-end align-start">
-            <div className="recurring-active-filter-tags">
-              {activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
-            </div>
-            <div>
-
-            </div>
-          </div>
-        </div>
-      </div> : null}
 
       <div className="expense-summary-row">
         <div className="dashboard-statement-panel list-totals-statement">
@@ -978,7 +964,14 @@ export default async function ExpensesPage({ searchParams }: { searchParams?: Pr
           />
         </div>
       </div>
+      <form className="supplier-quick-search" action="/expenses" method="get" role="search">
+        {Object.entries(filters).flatMap(([key, value]) => key === 'supplierQuick' || key === 'mobileSort' ? [] : (Array.isArray(value) ? value.map(item => <input type="hidden" name={key} value={item} key={`${key}-${item}`} />) : value ? [<input type="hidden" name={key} value={value} key={key} />] : []))}
+        <label htmlFor="expenseSupplierQuickSearch">Ricerca rapida</label>
+        <div className="supplier-quick-search-field"><input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Nome o ragione sociale" autoComplete="off" /><button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore">🔎</button></div>
+      </form>
       <MobileSortControl action="/expenses" currentValue={mobileSort} options={expenseMobileSortOptions} searchParams={filters} />
+
+      {activeFilterItems.length ? <div className="recurring-active-filters"><div><div className="flex justify-start align-start"><span className="flex-grow recurring-active-filters-title">Filtri attivi</span><Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/expenses"><span className="btn-icon">×</span> Reset</Link></div><div className="flex justify-end align-start"><div className="recurring-active-filter-tags">{activeFilterItems.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div></div></div></div> : null}
 
       <script dangerouslySetInnerHTML={{ __html: `
         document.addEventListener('click', function(event) {

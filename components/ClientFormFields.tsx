@@ -3,7 +3,7 @@ type Customer = { businessName?: string; alias?: string | null; email?: string |
 export default function ClientFormFields({ customer }: { customer?: Customer }) {
   return <>
     <details className="form-section full income-form-section supplier-form-section" open>
-      <summary><span>Anagrafica</span><small>Dati principali del cliente</small></summary>
+      <summary><span><span className="supplier-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span><small>Dati principali del cliente</small></summary>
       <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
         <label className="span-2">Nome / Ragione sociale<input name="businessName" required defaultValue={customer?.businessName ?? ''} /></label>
         <label>Alias<input name="alias" defaultValue={customer?.alias ?? ''} /></label>
@@ -16,7 +16,7 @@ export default function ClientFormFields({ customer }: { customer?: Customer }) 
       </div>
     </details>
     <details className="form-section full income-form-section supplier-form-section" open>
-      <summary><span>Note</span><small>Annotazioni interne</small></summary>
+      <summary><span><span className="supplier-form-section-icon" aria-hidden="true">≡</span>Note</span><small>Annotazioni interne</small></summary>
       <div className="form-section-stack income-form-section-stack"><label>Note<textarea name="internalNotes" rows={4} defaultValue={customer?.internalNotes ?? ''} /></label></div>
     </details>
   </>;

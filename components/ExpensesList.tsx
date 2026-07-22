@@ -282,7 +282,7 @@ export default function ExpensesList({
               </div>
               <div className="expense-mobile-subtitle">
                 <div className="expense-mobile-subtitle-left">
-                  {showSupplierColumn ? <span className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'} </span> : null}
+                  {showSupplierColumn ? <span className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'}</span> : supplierName }
                   {isVatSettlement ? <span className="badge tone-neutral">100%</span> : <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}
                 </div>
                 <div>

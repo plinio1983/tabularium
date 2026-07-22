@@ -61,7 +61,10 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
     const currentMonthHref = `/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
     const returnTo = encodeURIComponent(currentMonthHref);
-    const mobileExpenses = [...report.expenses].sort((a, b) => {
+    const supplierQuickValue = Array.isArray(query.supplierQuick) ? query.supplierQuick[0] ?? '' : query.supplierQuick ?? '';
+    const supplierQuick = supplierQuickValue.trim().toLocaleLowerCase('it');
+    const filteredExpenses = report.expenses.filter(expense => !supplierQuick || (expense.supplier?.businessName ?? '').toLocaleLowerCase('it').includes(supplierQuick));
+    const mobileExpenses = [...filteredExpenses].sort((a, b) => {
         const dateA = a.receivedDate ? new Date(a.receivedDate).getTime() : 0;
         const dateB = b.receivedDate ? new Date(b.receivedDate).getTime() : 0;
         return dateB - dateA || b.id - a.id;
@@ -185,8 +188,18 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <div className="month-report-value month-report-inline-total"><span>Spese non saldate</span><strong
                     className="money-warning">{euroInt(fiscalTotals.nonSaldato)}</strong></div>
             </summary>
+            <form className="supplier-quick-search" action={`/months/${year}/${month}`} method="get" role="search">
+                <input type="hidden" name="mode" value={mode}/>
+                <input type="hidden" name="returnTo" value={backHref}/>
+                <label htmlFor="monthExpenseSupplierQuickSearch">Ricerca rapida</label>
+                <div className="supplier-quick-search-field">
+                    <input id="monthExpenseSupplierQuickSearch" name="supplierQuick" defaultValue={supplierQuickValue} placeholder="Nome o ragione sociale" autoComplete="off"/>
+                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore">🔎</button>
+                </div>
+            </form>
+            {supplierQuickValue ? <div className="recurring-active-filters"><div><span className="recurring-active-filters-title">Filtri attivi</span><div className="recurring-active-filter-tags"><span className="badge"><strong>Fornitore:</strong> {supplierQuickValue}</span></div></div><Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href={`/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>× Reset</Link></div> : null}
             <ExpensesList
-                expenses={report.expenses}
+                expenses={filteredExpenses}
                 mobileExpenses={mobileExpenses}
                 returnTo={returnTo}
                 showSupplierColumn
