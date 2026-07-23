@@ -2027,7 +2027,7 @@ body.drawer-open {
 }
 
 .switch {
-  display: flex !important;
+  display: flex;
   grid-template-columns: none !important;
   align-items: center;
   gap: 10px;
@@ -4620,6 +4620,10 @@ table th, table td {
 
 .dashboard-statement-table strong {
   font-size: 15px;
+
+  @media (max-width: 576px) {
+    font-size: 16px;
+  }
 }
 
 .dashboard-statement-actions {
@@ -5588,7 +5592,6 @@ html, body {
 
 .switch-toggle-field {
   align-content: center;
-  //min-height: 72px;
   padding-top: 1px;
 
   .switch-group {
@@ -5607,10 +5610,15 @@ html, body {
 }
 
 .switch-toggle-field .switch {
+  display: flex;
   min-height: 42px;
   align-items: center;
   justify-content: flex-start;
   font-style: italic;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+  }
 }
 
 .income-form .fiscal-toggle-field {

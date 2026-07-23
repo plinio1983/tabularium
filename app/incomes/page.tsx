@@ -1,21 +1,13 @@
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
-import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import {prisma} from '@/lib/prisma';
 import {euro, moneyTone} from '@/lib/money';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
 import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
 import MobileSortControl from '@/components/MobileSortControl';
-import SortableTableController from '@/components/SortableTableController';
 import IncomesList from '@/components/IncomesList';
-import {
-    badgeClass,
-    fiscalStyles,
-    incomeCreditStatusStyles,
-    incomeInvoiceStatusStyles
-} from '@/lib/income-ui';
-import {vatStyles} from '@/lib/expense-ui';
+import {badgeClass, fiscalStyles, incomeCreditStatusStyles} from '@/lib/income-ui';
 import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
@@ -864,7 +856,11 @@ export default async function IncomesPage({searchParams}: {
                     billingPeriodFromFilter={billingPeriodFromFilter}
                     billingPeriodToFilter={billingPeriodToFilter}
                     banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))}
-                    paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon}))}
+                    paymentMethods={incomePaymentMethods.map(method => ({
+                        id: method.id,
+                        name: method.name,
+                        icon: method.icon
+                    }))}
                     incomeCategories={incomeCategories}
                     salesChannels={salesChannels}
                 />
@@ -928,17 +924,6 @@ export default async function IncomesPage({searchParams}: {
                 </div>
                 <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel}/>
             </div>
-
-            {activeFilterItems.length ? <div className="recurring-active-filters">
-                <div>
-                    <span className="recurring-active-filters-title">Filtri attivi</span>
-                    <div className="recurring-active-filter-tags">
-                        {activeFilterItems.map(item =>
-                            <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
-                    </div>
-                </div>
-                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
-            </div> : null}
         </div>
         <div className="card expenses-list-card">
             <div className="list-heading recurring-list-heading">
@@ -956,19 +941,35 @@ export default async function IncomesPage({searchParams}: {
                         billingPeriodFromFilter={billingPeriodFromFilter}
                         billingPeriodToFilter={billingPeriodToFilter}
                         banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))}
-                        paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon}))}
+                        paymentMethods={incomePaymentMethods.map(method => ({
+                            id: method.id,
+                            name: method.name,
+                            icon: method.icon
+                        }))}
                         incomeCategories={incomeCategories}
-                        salesChannels={salesChannels}
-                    />
+                        salesChannels={salesChannels}/>
                 </div>
             </div>
             <form className="supplier-quick-search" action="/incomes" method="get" role="search">
                 <label htmlFor="incomeCustomerQuickSearch">Ricerca rapida</label>
                 <div className="supplier-quick-search-field">
                     <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca cliente"><SearchIcon /></button>
+                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca cliente"><SearchIcon/>
+                    </button>
                 </div>
             </form>
+
+            {activeFilterItems.length ? <div className="recurring-active-filters">
+                <div>
+                    <span className="recurring-active-filters-title">Filtri attivi</span>
+                    <div className="recurring-active-filter-tags">
+                        {activeFilterItems.map(item =>
+                            <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+                    </div>
+                </div>
+                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
+            </div> : null}
+
             <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
             <BulkSelectionController/>
@@ -1173,8 +1174,19 @@ export default async function IncomesPage({searchParams}: {
                 incomes={filteredIncomes}
                 mobileIncomes={mobileSortedIncomes}
                 returnTo={returnTo}
-                banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback }))}
-                paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
+                banks={orderedBanks.map(bank => ({
+                    id: bank.id,
+                    name: bank.name,
+                    icon: bank.icon,
+                    isFallback: bank.isFallback
+                }))}
+                paymentMethods={incomePaymentMethods.map(method => ({
+                    id: method.id,
+                    name: method.name,
+                    icon: method.icon,
+                    kind: method.kind,
+                    isFallback: method.isFallback
+                }))}
                 incomeCategories={incomeCategories}
                 salesChannels={salesChannels}
                 customers={customers}
