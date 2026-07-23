@@ -837,6 +837,16 @@ export default async function IncomesPage({searchParams}: {
     });
 
     return <div className="grid">
+        <div className="toolbar-card">
+            <div>
+                <h2>Incassi</h2>
+                <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
+            </div>
+            <button className="btn btn-md btn-primary income-add-btn" type="button" data-income-new>
+                <span className="btn-icon">+</span>Inserisci incasso
+            </button>
+        </div>
+
         <ActionFeedbackBanner
             searchParams={rawFilters}
             savedMessages={flashMessages.savedMessages}
@@ -970,205 +980,204 @@ export default async function IncomesPage({searchParams}: {
                 <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
             </div> : null}
 
-            <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
-
             <BulkSelectionController/>
 
             <script dangerouslySetInnerHTML={{
                 __html: `
-        document.addEventListener('click', function(event) {
-          const row = event.target.closest && event.target.closest('[data-row-href]');
-          if (!row) return;
-          if (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches) return;
-          if (event.target.closest('a, button, input, select, textarea, label, summary, details')) return;
-          const href = row.getAttribute('data-row-href');
-          if (href) window.location.href = href;
-        });
-        document.addEventListener('keydown', function(event) {
-          if (event.key !== 'Enter' && event.key !== ' ') return;
-          const row = event.target && event.target.matches && event.target.matches('[data-row-href]') ? event.target : null;
-          if (!row) return;
-          if (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches) return;
-          event.preventDefault();
-          const href = row.getAttribute('data-row-href');
-          if (href) window.location.href = href;
-        });
-        (() => {
-          const storageKey = 'dmsAccounting.incomes.filters';
-          const filterMaxAgeMs = 24 * 60 * 60 * 1000;
-          const resetLink = document.querySelector('a[href="/incomes"].reset-button');
-          const readStoredFilter = () => {
-            const raw = localStorage.getItem(storageKey);
-            if (!raw) return '';
-            try {
-              const parsed = JSON.parse(raw);
-              if (!parsed || typeof parsed.value !== 'string' || typeof parsed.savedAt !== 'number') {
-                localStorage.removeItem(storageKey);
-                return '';
-              }
-              if (Date.now() - parsed.savedAt > filterMaxAgeMs) {
-                localStorage.removeItem(storageKey);
-                return '';
-              }
-              return parsed.value;
-            } catch (error) {
-              localStorage.removeItem(storageKey);
-              return '';
-            }
-          };
-          const writeStoredFilter = (value) => localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }));
-          const sanitizedSearch = (search) => {
-            const params = new URLSearchParams(search || '');
-            ['new', 'saved', 'error', 'usage'].forEach(key => params.delete(key));
-            const clean = params.toString();
-            return clean ? '?' + clean : '';
-          };
-          if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
-          const query = sanitizedSearch(window.location.search);
-          const form = document.querySelector('form.expense-filters');
-          if (query && query !== '?') writeStoredFilter(query);
-          else {
-            const saved = sanitizedSearch(readStoredFilter());
-            if (saved) {
-              writeStoredFilter(saved);
-              window.location.replace('/incomes' + saved);
-            } else {
-              localStorage.removeItem(storageKey);
-            }
-          }
-          if (form) form.addEventListener('submit', () => {
-            const billingFields = ['billingPeriodFrom', 'billingPeriodTo', 'billingPeriodQuick', 'billingPeriodYear'].map(name => form.elements.namedItem(name)).filter(Boolean);
-            const dateFields = ['creditDateFrom', 'creditDateTo', 'dateQuick', 'dateYear'].map(name => form.elements.namedItem(name)).filter(Boolean);
-            const hasBilling = billingFields.some(field => field.value);
-            const hasDate = dateFields.some(field => field.value);
-            if (hasBilling) dateFields.forEach(field => { field.value = ''; });
-            else if (hasDate) billingFields.forEach(field => { field.value = ''; });
-            setTimeout(() => {
-              const clean = sanitizedSearch(window.location.search);
-              if (clean) writeStoredFilter(clean);
-              else localStorage.removeItem(storageKey);
-            }, 0);
-          });
-        })();
-
-        (() => {
-          const quick = document.getElementById('incomeBillingPeriodQuick');
-          const from = document.getElementById('incomeBillingPeriodFrom');
-          const to = document.getElementById('incomeBillingPeriodTo');
-          if (!quick || !from || !to) return;
-          const computeRange = (value) => {
-            const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
-            const fmt = (year, monthIndex) => { const date = new Date(year, monthIndex, 1); return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0'); };
-            const currentQuarter = Math.floor(m / 3);
-            const monthMatch = String(value).match(/^month_(\d{2})$/);
-            const quarterMatch = String(value).match(/^quarter_(\d)$/);
-            if (monthMatch) { const selectedMonth = Number(monthMatch[1]) - 1; return { from: fmt(y, selectedMonth), to: fmt(y, selectedMonth) }; }
-            if (quarterMatch) { const quarter = Number(quarterMatch[1]) - 1; return { from: fmt(y, quarter * 3), to: fmt(y, quarter * 3 + 2) }; }
-            if (value === 'previous_month') return { from: fmt(y, m - 1), to: fmt(y, m - 1) };
-            if (value === 'current_quarter') return { from: fmt(y, currentQuarter * 3), to: fmt(y, currentQuarter * 3 + 2) };
-            if (value === 'previous_quarter') return currentQuarter > 0 ? { from: fmt(y, (currentQuarter - 1) * 3), to: fmt(y, (currentQuarter - 1) * 3 + 2) } : { from: fmt(y - 1, 9), to: fmt(y - 1, 11) };
-            if (value === 'year_to_date') return { from: fmt(y, 0), to: fmt(y, 11) };
-            if (value === 'this_month') return { from: fmt(y, m), to: fmt(y, m) };
-            return null;
-          };
-          quick.addEventListener('change', () => { const range = computeRange(quick.value); if (!range) return; from.value = range.from; to.value = range.to; ['creditDateFrom','creditDateTo','incomeDateQuick'].forEach(id => { const field = document.getElementById(id); if (field) field.value = ''; }); });
-          [from, to].forEach((field) => field.addEventListener('change', () => { quick.value = ''; ['creditDateFrom','creditDateTo','incomeDateQuick'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; }); }));
-        })();
-        document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });
-        document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui record selezionati?'; if (!confirm(message)) event.preventDefault(); } });
-        (() => {
-          const syncBulkMenus = () => {
-            document.querySelectorAll('[data-bulk-menu]').forEach(menu => {
-              const formId = menu.getAttribute('data-bulk-form');
-              const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
-              menu.classList.toggle('bulk-action-menu-disabled', selected === 0);
-              if (selected === 0) menu.removeAttribute('open');
-            });
-            document.querySelectorAll('[data-bulk-direct-actions]').forEach(group => {
-              const formId = group.getAttribute('data-bulk-form');
-              const selectedInputs = formId ? Array.from(document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked')) : [];
-              const selected = selectedInputs.length;
-              const firstId = selectedInputs[0] ? selectedInputs[0].value : '';
-              const returnTo = group.getAttribute('data-return-to') || '';
-              const edit = group.querySelector('[data-bulk-edit]');
-              const copy = group.querySelector('[data-bulk-copy]');
-              const del = group.querySelector('[data-bulk-delete]');
-              const singleEnabled = selected === 1;
-              const anyEnabled = selected > 0;
-              if (edit) {
-                edit.classList.toggle('is-disabled', !singleEnabled);
-                edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                edit.href = '#';
-                if (singleEnabled) edit.setAttribute('data-income-edit-id', firstId);
-                else edit.removeAttribute('data-income-edit-id');
-              }
-              if (copy) {
-                copy.classList.toggle('is-disabled', !singleEnabled);
-                copy.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                copy.href = '#';
-                if (singleEnabled) copy.setAttribute('data-income-copy-id', firstId);
-                else copy.removeAttribute('data-income-copy-id');
-              }
-              if (del) del.disabled = !anyEnabled;
-            });
-          };
-          document.addEventListener('change', function(event) {
-            const target = event.target;
-            if (target && target.classList && target.classList.contains('bulk-select-all')) {
-              const formId = target.getAttribute('data-bulk-target');
-              if (!formId) return;
-              document.querySelectorAll('input[form="' + formId + '"][name="ids"]').forEach(input => { input.checked = target.checked; });
-            }
-            if (target && target.matches && (target.matches('input[name="ids"]') || target.classList.contains('bulk-select-all'))) syncBulkMenus();
-          });
-          document.addEventListener('click', function(event) {
-            document.querySelectorAll('[data-bulk-menu][open]').forEach(menu => {
-              if (!menu.contains(event.target)) menu.removeAttribute('open');
-            });
-          });
-          document.addEventListener('click', function(event) {
-            const link = event.target.closest && event.target.closest('.bulk-direct-link.is-disabled');
-            if (link) event.preventDefault();
-          });
-          document.addEventListener('toggle', function(event) {
-            const menu = event.target;
-            if (menu && menu.matches && menu.matches('[data-bulk-menu][open]')) {
-              const formId = menu.getAttribute('data-bulk-form');
-              const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
-              if (!selected) menu.removeAttribute('open');
-            }
-          }, true);
-          syncBulkMenus();
-        })();
-        (() => {
-          const quick = document.getElementById('incomeDateQuick');
-          const from = document.getElementById('creditDateFrom');
-          const to = document.getElementById('creditDateTo');
-          if (!quick || !from || !to) return;
-          const computeRange = (value) => {
-            const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
-            const fmt = (date) => date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-            const fiscalQuarterRange = (yy, quarter) => ({ from: fmt(new Date(yy, quarter * 3, 1)), to: fmt(new Date(yy, quarter * 3 + 3, 0)) });
-            const currentQuarter = Math.floor(m / 3);
-            const monthMatch = String(value).match(/^month_(\d{2})$/);
-            const quarterMatch = String(value).match(/^quarter_(\d)$/);
-            if (monthMatch) { const selectedMonth = Number(monthMatch[1]) - 1; return { from: fmt(new Date(y, selectedMonth, 1)), to: fmt(new Date(y, selectedMonth + 1, 0)) }; }
-            if (quarterMatch) return fiscalQuarterRange(y, Number(quarterMatch[1]) - 1);
-            if (value === 'previous_month') return { from: fmt(new Date(y, m - 1, 1)), to: fmt(new Date(y, m, 0)) };
-            if (value === 'two_months_ago') return { from: fmt(new Date(y, m - 2, 1)), to: fmt(new Date(y, m - 1, 0)) };
-            if (value === 'current_quarter') return fiscalQuarterRange(y, currentQuarter);
-            if (value === 'last_quarter') return currentQuarter > 0 ? fiscalQuarterRange(y, currentQuarter - 1) : fiscalQuarterRange(y - 1, 3);
-            if (value === 'year_to_date') return { from: fmt(new Date(y, 0, 1)), to: fmt(new Date(y, 11, 31)) };
-            if (value === 'this_month') return { from: fmt(new Date(y, m, 1)), to: fmt(new Date(y, m + 1, 0)) };
-            return null;
-          };
-          quick.addEventListener('change', () => { const range = computeRange(quick.value); if (!range) return; from.value = range.from; to.value = range.to; ['incomeBillingPeriodFrom','incomeBillingPeriodTo','incomeBillingPeriodQuick'].forEach(id => { const field = document.getElementById(id); if (field) field.value = ''; }); });
-          [from, to].forEach((field) => field.addEventListener('change', () => { quick.value = ''; ['incomeBillingPeriodFrom','incomeBillingPeriodTo','incomeBillingPeriodQuick'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; }); }));
-          ['incomeBillingPeriodFrom','incomeBillingPeriodTo','incomeBillingPeriodQuick'].forEach((id) => { const field = document.getElementById(id); if (field) field.addEventListener('change', () => { ['creditDateFrom','creditDateTo','incomeDateQuick'].forEach(otherId => { const other = document.getElementById(otherId); if (other) other.value = ''; }); }); });
-        })();
-      `
+                document.addEventListener('click', function(event) {
+                  const row = event.target.closest && event.target.closest('[data-row-href]');
+                  if (!row) return;
+                  if (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches) return;
+                  if (event.target.closest('a, button, input, select, textarea, label, summary, details')) return;
+                  const href = row.getAttribute('data-row-href');
+                  if (href) window.location.href = href;
+                });
+                document.addEventListener('keydown', function(event) {
+                  if (event.key !== 'Enter' && event.key !== ' ') return;
+                  const row = event.target && event.target.matches && event.target.matches('[data-row-href]') ? event.target : null;
+                  if (!row) return;
+                  if (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches) return;
+                  event.preventDefault();
+                  const href = row.getAttribute('data-row-href');
+                  if (href) window.location.href = href;
+                });
+                (() => {
+                  const storageKey = 'dmsAccounting.incomes.filters';
+                  const filterMaxAgeMs = 24 * 60 * 60 * 1000;
+                  const resetLink = document.querySelector('a[href="/incomes"].reset-button');
+                  const readStoredFilter = () => {
+                    const raw = localStorage.getItem(storageKey);
+                    if (!raw) return '';
+                    try {
+                      const parsed = JSON.parse(raw);
+                      if (!parsed || typeof parsed.value !== 'string' || typeof parsed.savedAt !== 'number') {
+                        localStorage.removeItem(storageKey);
+                        return '';
+                      }
+                      if (Date.now() - parsed.savedAt > filterMaxAgeMs) {
+                        localStorage.removeItem(storageKey);
+                        return '';
+                      }
+                      return parsed.value;
+                    } catch (error) {
+                      localStorage.removeItem(storageKey);
+                      return '';
+                    }
+                  };
+                  const writeStoredFilter = (value) => localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }));
+                  const sanitizedSearch = (search) => {
+                    const params = new URLSearchParams(search || '');
+                    ['new', 'saved', 'error', 'usage'].forEach(key => params.delete(key));
+                    const clean = params.toString();
+                    return clean ? '?' + clean : '';
+                  };
+                  if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
+                  const query = sanitizedSearch(window.location.search);
+                  const form = document.querySelector('form.expense-filters');
+                  if (query && query !== '?') writeStoredFilter(query);
+                  else {
+                    const saved = sanitizedSearch(readStoredFilter());
+                    if (saved) {
+                      writeStoredFilter(saved);
+                      window.location.replace('/incomes' + saved);
+                    } else {
+                      localStorage.removeItem(storageKey);
+                    }
+                  }
+                  if (form) form.addEventListener('submit', () => {
+                    const billingFields = ['billingPeriodFrom', 'billingPeriodTo', 'billingPeriodQuick', 'billingPeriodYear'].map(name => form.elements.namedItem(name)).filter(Boolean);
+                    const dateFields = ['creditDateFrom', 'creditDateTo', 'dateQuick', 'dateYear'].map(name => form.elements.namedItem(name)).filter(Boolean);
+                    const hasBilling = billingFields.some(field => field.value);
+                    const hasDate = dateFields.some(field => field.value);
+                    if (hasBilling) dateFields.forEach(field => { field.value = ''; });
+                    else if (hasDate) billingFields.forEach(field => { field.value = ''; });
+                    setTimeout(() => {
+                      const clean = sanitizedSearch(window.location.search);
+                      if (clean) writeStoredFilter(clean);
+                      else localStorage.removeItem(storageKey);
+                    }, 0);
+                  });
+                })();
+        
+                (() => {
+                  const quick = document.getElementById('incomeBillingPeriodQuick');
+                  const from = document.getElementById('incomeBillingPeriodFrom');
+                  const to = document.getElementById('incomeBillingPeriodTo');
+                  if (!quick || !from || !to) return;
+                  const computeRange = (value) => {
+                    const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
+                    const fmt = (year, monthIndex) => { const date = new Date(year, monthIndex, 1); return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0'); };
+                    const currentQuarter = Math.floor(m / 3);
+                    const monthMatch = String(value).match(/^month_(\d{2})$/);
+                    const quarterMatch = String(value).match(/^quarter_(\d)$/);
+                    if (monthMatch) { const selectedMonth = Number(monthMatch[1]) - 1; return { from: fmt(y, selectedMonth), to: fmt(y, selectedMonth) }; }
+                    if (quarterMatch) { const quarter = Number(quarterMatch[1]) - 1; return { from: fmt(y, quarter * 3), to: fmt(y, quarter * 3 + 2) }; }
+                    if (value === 'previous_month') return { from: fmt(y, m - 1), to: fmt(y, m - 1) };
+                    if (value === 'current_quarter') return { from: fmt(y, currentQuarter * 3), to: fmt(y, currentQuarter * 3 + 2) };
+                    if (value === 'previous_quarter') return currentQuarter > 0 ? { from: fmt(y, (currentQuarter - 1) * 3), to: fmt(y, (currentQuarter - 1) * 3 + 2) } : { from: fmt(y - 1, 9), to: fmt(y - 1, 11) };
+                    if (value === 'year_to_date') return { from: fmt(y, 0), to: fmt(y, 11) };
+                    if (value === 'this_month') return { from: fmt(y, m), to: fmt(y, m) };
+                    return null;
+                  };
+                  quick.addEventListener('change', () => { const range = computeRange(quick.value); if (!range) return; from.value = range.from; to.value = range.to; ['creditDateFrom','creditDateTo','incomeDateQuick'].forEach(id => { const field = document.getElementById(id); if (field) field.value = ''; }); });
+                  [from, to].forEach((field) => field.addEventListener('change', () => { quick.value = ''; ['creditDateFrom','creditDateTo','incomeDateQuick'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; }); }));
+                })();
+                document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });
+                document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui record selezionati?'; if (!confirm(message)) event.preventDefault(); } });
+                (() => {
+                  const syncBulkMenus = () => {
+                    document.querySelectorAll('[data-bulk-menu]').forEach(menu => {
+                      const formId = menu.getAttribute('data-bulk-form');
+                      const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
+                      menu.classList.toggle('bulk-action-menu-disabled', selected === 0);
+                      if (selected === 0) menu.removeAttribute('open');
+                    });
+                    document.querySelectorAll('[data-bulk-direct-actions]').forEach(group => {
+                      const formId = group.getAttribute('data-bulk-form');
+                      const selectedInputs = formId ? Array.from(document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked')) : [];
+                      const selected = selectedInputs.length;
+                      const firstId = selectedInputs[0] ? selectedInputs[0].value : '';
+                      const returnTo = group.getAttribute('data-return-to') || '';
+                      const edit = group.querySelector('[data-bulk-edit]');
+                      const copy = group.querySelector('[data-bulk-copy]');
+                      const del = group.querySelector('[data-bulk-delete]');
+                      const singleEnabled = selected === 1;
+                      const anyEnabled = selected > 0;
+                      if (edit) {
+                        edit.classList.toggle('is-disabled', !singleEnabled);
+                        edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
+                        edit.href = '#';
+                        if (singleEnabled) edit.setAttribute('data-income-edit-id', firstId);
+                        else edit.removeAttribute('data-income-edit-id');
+                      }
+                      if (copy) {
+                        copy.classList.toggle('is-disabled', !singleEnabled);
+                        copy.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
+                        copy.href = '#';
+                        if (singleEnabled) copy.setAttribute('data-income-copy-id', firstId);
+                        else copy.removeAttribute('data-income-copy-id');
+                      }
+                      if (del) del.disabled = !anyEnabled;
+                    });
+                  };
+                  document.addEventListener('change', function(event) {
+                    const target = event.target;
+                    if (target && target.classList && target.classList.contains('bulk-select-all')) {
+                      const formId = target.getAttribute('data-bulk-target');
+                      if (!formId) return;
+                      document.querySelectorAll('input[form="' + formId + '"][name="ids"]').forEach(input => { input.checked = target.checked; });
+                    }
+                    if (target && target.matches && (target.matches('input[name="ids"]') || target.classList.contains('bulk-select-all'))) syncBulkMenus();
+                  });
+                  document.addEventListener('click', function(event) {
+                    document.querySelectorAll('[data-bulk-menu][open]').forEach(menu => {
+                      if (!menu.contains(event.target)) menu.removeAttribute('open');
+                    });
+                  });
+                  document.addEventListener('click', function(event) {
+                    const link = event.target.closest && event.target.closest('.bulk-direct-link.is-disabled');
+                    if (link) event.preventDefault();
+                  });
+                  document.addEventListener('toggle', function(event) {
+                    const menu = event.target;
+                    if (menu && menu.matches && menu.matches('[data-bulk-menu][open]')) {
+                      const formId = menu.getAttribute('data-bulk-form');
+                      const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
+                      if (!selected) menu.removeAttribute('open');
+                    }
+                  }, true);
+                  syncBulkMenus();
+                })();
+                (() => {
+                  const quick = document.getElementById('incomeDateQuick');
+                  const from = document.getElementById('creditDateFrom');
+                  const to = document.getElementById('creditDateTo');
+                  if (!quick || !from || !to) return;
+                  const computeRange = (value) => {
+                    const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
+                    const fmt = (date) => date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+                    const fiscalQuarterRange = (yy, quarter) => ({ from: fmt(new Date(yy, quarter * 3, 1)), to: fmt(new Date(yy, quarter * 3 + 3, 0)) });
+                    const currentQuarter = Math.floor(m / 3);
+                    const monthMatch = String(value).match(/^month_(\d{2})$/);
+                    const quarterMatch = String(value).match(/^quarter_(\d)$/);
+                    if (monthMatch) { const selectedMonth = Number(monthMatch[1]) - 1; return { from: fmt(new Date(y, selectedMonth, 1)), to: fmt(new Date(y, selectedMonth + 1, 0)) }; }
+                    if (quarterMatch) return fiscalQuarterRange(y, Number(quarterMatch[1]) - 1);
+                    if (value === 'previous_month') return { from: fmt(new Date(y, m - 1, 1)), to: fmt(new Date(y, m, 0)) };
+                    if (value === 'two_months_ago') return { from: fmt(new Date(y, m - 2, 1)), to: fmt(new Date(y, m - 1, 0)) };
+                    if (value === 'current_quarter') return fiscalQuarterRange(y, currentQuarter);
+                    if (value === 'last_quarter') return currentQuarter > 0 ? fiscalQuarterRange(y, currentQuarter - 1) : fiscalQuarterRange(y - 1, 3);
+                    if (value === 'year_to_date') return { from: fmt(new Date(y, 0, 1)), to: fmt(new Date(y, 11, 31)) };
+                    if (value === 'this_month') return { from: fmt(new Date(y, m, 1)), to: fmt(new Date(y, m + 1, 0)) };
+                    return null;
+                  };
+                  quick.addEventListener('change', () => { const range = computeRange(quick.value); if (!range) return; from.value = range.from; to.value = range.to; ['incomeBillingPeriodFrom','incomeBillingPeriodTo','incomeBillingPeriodQuick'].forEach(id => { const field = document.getElementById(id); if (field) field.value = ''; }); });
+                  [from, to].forEach((field) => field.addEventListener('change', () => { quick.value = ''; ['incomeBillingPeriodFrom','incomeBillingPeriodTo','incomeBillingPeriodQuick'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; }); }));
+                  ['incomeBillingPeriodFrom','incomeBillingPeriodTo','incomeBillingPeriodQuick'].forEach((id) => { const field = document.getElementById(id); if (field) field.addEventListener('change', () => { ['creditDateFrom','creditDateTo','incomeDateQuick'].forEach(otherId => { const other = document.getElementById(otherId); if (other) other.value = ''; }); }); });
+                })();
+              `
             }}/>
 
+            <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
             <IncomesList
                 incomes={filteredIncomes}

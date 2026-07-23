@@ -1,8 +1,9 @@
 "use client";
 
-import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
+import {type FormEvent, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {createPortal} from "react-dom";
 import {categoryIcon} from "@/lib/expense-ui";
+import MobileEntityPicker, {isMobileEntityPickerViewport} from "@/components/MobileEntityPicker";
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; systemRole?: string | null; isVatSettlementDefault?: boolean };
 type SupplierOption = {
@@ -200,6 +201,9 @@ function SupplierAutocomplete({
         suppliers.slice(0, 10),
     );
     const [isOpen, setIsOpen] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [pendingSupplier, setPendingSupplier] = useState<SupplierOption | null>(initial);
+    const initialMobileValue = useRef<{query: string; selected: SupplierOption | null}>({query, selected});
     const [activeIndex, setActiveIndex] = useState(0);
     const [showCreate, setShowCreate] = useState(false);
     const [createData, setCreateData] = useState({
@@ -252,6 +256,24 @@ function SupplierAutocomplete({
         setQuery(supplier.businessName);
         setIsOpen(false);
     }
+
+    function openSupplierPicker() {
+        if (isMobileEntityPickerViewport()) {
+            initialMobileValue.current = {query, selected};
+            setPendingSupplier(selected);
+            setIsOpen(false);
+            setMobileOpen(true);
+            return;
+        }
+        setIsOpen(true);
+    }
+
+    const cancelMobilePicker = useCallback(() => {
+        setQuery(initialMobileValue.current.query);
+        setSelected(initialMobileValue.current.selected);
+        setPendingSupplier(initialMobileValue.current.selected);
+        setMobileOpen(false);
+    }, []);
 
     function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
         if (!isOpen && ["ArrowDown", "ArrowUp"].includes(event.key))
@@ -318,7 +340,7 @@ function SupplierAutocomplete({
                             setSelected(null);
                             setIsOpen(true);
                         }}
-                        onFocus={() => setIsOpen(true)}
+                        onFocus={openSupplierPicker}
                         onKeyDown={onKeyDown}
                         placeholder="Cerca per ragione sociale o alias"
                         autoComplete="off"
@@ -360,6 +382,41 @@ function SupplierAutocomplete({
                         </div>
                     )}
                 </div>
+            )}
+            {mobileOpen && (
+                <MobileEntityPicker
+                    title="Seleziona fornitore"
+                    query={query}
+                    placeholder="Cerca per ragione sociale o alias"
+                    canConfirm={Boolean(pendingSupplier)}
+                    onQueryChange={(value) => {
+                        setQuery(value);
+                        setPendingSupplier(null);
+                    }}
+                    onCancel={cancelMobilePicker}
+                    onConfirm={() => {
+                        if (!pendingSupplier) return;
+                        selectSupplier(pendingSupplier);
+                        setMobileOpen(false);
+                    }}
+                >
+                    {results.length ? results.map((supplier) => (
+                        <button
+                            type="button"
+                            role="option"
+                            aria-selected={pendingSupplier?.id === supplier.id}
+                            className={pendingSupplier?.id === supplier.id ? "is-selected" : undefined}
+                            key={supplier.id}
+                            onClick={() => {
+                                setPendingSupplier(supplier);
+                                setQuery(supplier.businessName);
+                            }}
+                        >
+                            <strong>{supplier.businessName}</strong>
+                            {supplier.alias && <span>Alias: {supplier.alias}</span>}
+                        </button>
+                    )) : <div className="mobile-entity-picker-empty">Nessun fornitore trovato.</div>}
+                </MobileEntityPicker>
             )}
             {showCreate && createPortal(
                 <div
