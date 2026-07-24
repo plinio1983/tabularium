@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const importTypes = {
   single_expenses: {
@@ -14,14 +14,44 @@ const importTypes = {
     fileName: "import-spese-ricorrenti-template.xlsx",
     href: "/templates/import-spese-ricorrenti-template.xlsx",
     note: "Importa solo le definizioni ricorrenti. Non genera nessuna spesa: le spese saranno create dal processo api/cron/recurring-expenses."
+  },
+  incomes: {
+    label: "Incassi",
+    fileName: "import-incassi-template.xlsx",
+    href: "/templates/import-incassi-template.xlsx",
+    note: "Importa gli incassi, crea i clienti mancanti e ignora le righe già presenti."
+  },
+  customers: {
+    label: "Clienti",
+    fileName: "import-clienti-template.xlsx",
+    href: "/templates/import-clienti-template.xlsx",
+    note: "Crea nuovi clienti e aggiorna in modo non distruttivo quelli già presenti."
+  },
+  suppliers: {
+    label: "Fornitori",
+    fileName: "import-fornitori-template.xlsx",
+    href: "/templates/import-fornitori-template.xlsx",
+    note: "Crea nuovi fornitori e aggiorna in modo non distruttivo quelli già presenti."
   }
 };
 
 type ImportType = keyof typeof importTypes;
 
-export default function ExpenseImportTypeSelector() {
-  const [importType, setImportType] = useState<ImportType>("single_expenses");
+function validImportType(value?: string): value is ImportType {
+  return Boolean(value && value in importTypes);
+}
+
+export default function ExpenseImportTypeSelector({initialType}: {initialType?: string}) {
+  const [importType, setImportType] = useState<ImportType>(validImportType(initialType) ? initialType : "single_expenses");
   const current = importTypes[importType];
+
+  useEffect(() => {
+    const clearInput = document.querySelector<HTMLInputElement>('#expenseImportForm input[name="clearBeforeImport"]');
+    if (!clearInput) return;
+    const disabled = importType === 'customers' || importType === 'suppliers';
+    clearInput.disabled = disabled;
+    if (disabled) clearInput.checked = false;
+  }, [importType]);
 
   return <div className="import-type-selector">
     <label>
@@ -29,6 +59,9 @@ export default function ExpenseImportTypeSelector() {
       <select form="expenseImportForm" name="importType" value={importType} onChange={(event) => setImportType(event.currentTarget.value as ImportType)}>
         <option value="single_expenses">Lista spese singole</option>
         <option value="recurring_definitions">Definizioni spese ricorrenti</option>
+        <option value="incomes">Incassi</option>
+        <option value="customers">Clienti</option>
+        <option value="suppliers">Fornitori</option>
       </select>
     </label>
     {/*<a className="btn btn-md btn-primary" href={current.href} download>*/}

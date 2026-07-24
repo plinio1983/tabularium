@@ -352,7 +352,17 @@ function DashboardPieChart({
         {data.map((item, index) => {
             const percentage = percentageDenominator ? (chartValue(item) / percentageDenominator) * 100 : 0;
             const barWidth = Math.min(percentage, 100);
-            const rowContent = <><div className="expense-impact-pie-legend-row"><span className="expense-impact-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/><div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div><div className="flex-grow justify-end"><strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small></div></div><div className="expense-impact-pie-bar" style={{width: `${barWidth.toFixed(1)}%`, background: dashboardChartColors[index % dashboardChartColors.length]}}/></>;
+            const rowContent = <><div className="expense-impact-pie-legend-row">
+                <span className="expense-impact-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/><div>
+                <strong className="hidden-mobile">{item.code}</strong>
+                <span>{item.name}</span>
+                </div>
+                <div className="flex-grow justify-end">
+                    <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong>
+                    <small>{percentage.toFixed(1)}%</small>
+                </div>
+                </div>
+                <div className="expense-impact-pie-bar" style={{width: `${barWidth.toFixed(1)}%`, background: dashboardChartColors[index % dashboardChartColors.length]}}/></>;
             return item.href ? <Link className="expense-impact-pie-row-wrap expense-impact-pie-row-link" href={item.href} key={`${item.code}-${item.name}`}>{rowContent}</Link> : <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>{rowContent}</div>;
         })}
         {denominator > chartTotal && remainderLabel && remainderName ? <div className="expense-impact-pie-legend-row"><span className="expense-impact-pie-dot expense-impact-pie-dot-muted"/><div><strong>{remainderLabel}</strong><span>{remainderName}</span></div><div><strong>{chartEuro(denominator - chartTotal)}</strong><small>{(((denominator - chartTotal) / percentageDenominator) * 100).toFixed(1)}%</small></div></div> : null}

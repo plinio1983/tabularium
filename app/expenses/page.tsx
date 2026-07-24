@@ -291,7 +291,7 @@ function ExpenseCategoryPieChart({data}: { data: ExpenseCategoryDatum[] }) {
                     return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
                         <div className="expense-impact-pie-legend-row">
                             <span className="expense-impact-pie-dot" style={{background: expensePieChartColors[index % expensePieChartColors.length]}}/>
-                            <div><strong className="hidden-mp">{item.code}</strong><span>{item.name}</span></div>
+                            <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
                             <div className="justify-end">
                                 <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
                             </div>
