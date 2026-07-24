@@ -9,9 +9,12 @@ REMOTE_DIR="/app/tabularium"
 # Se vuoto, lo script usa il git short SHA corrente.
 # IMAGE_TAG="manual-tag"
 
-# Se vuoto, lo script usa tabularium:<IMAGE_TAG>.
-# IMAGE_NAME="tabularium:${IMAGE_TAG}"
+# Repository privato Docker Hub.
+IMAGE_REPOSITORY="883377/tabularium"
 
-# Se vuoti, lo script usa:
-# ARCHIVE_NAME="tabularium-${IMAGE_TAG}.tar.gz"
-# ARCHIVE_PATH="/tmp/${ARCHIVE_NAME}"
+# Se vuoto, lo script usa IMAGE_REPOSITORY:IMAGE_TAG.
+# IMAGE_NAME="883377/tabularium:${IMAGE_TAG}"
+
+# Configurazione backup separata, trasferita sul server come backup.conf.
+BACKUP_CONFIG_FILE=".devops/backup.conf"
+INSTALL_BACKUP_AUTOMATION="1"

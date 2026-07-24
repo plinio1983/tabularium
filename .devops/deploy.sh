@@ -7,9 +7,8 @@ SERVER_USER=""
 SSH_KEY=""
 REMOTE_DIR=""
 IMAGE_TAG=""
+IMAGE_REPOSITORY="883377/tabularium"
 IMAGE_NAME=""
-ARCHIVE_NAME=""
-ARCHIVE_PATH=""
 DB_DUMP=""
 IMPORT_DB=0
 UPLOADS_ARCHIVE=""
@@ -17,6 +16,8 @@ REMOTE_DB_DUMP=""
 REMOTE_UPLOADS_ARCHIVE=""
 COMPOSE_FILE="docker-compose.prod.yml"
 ENV_FILE=".env.production"
+BACKUP_CONFIG_FILE=".devops/backup.conf"
+INSTALL_BACKUP_AUTOMATION=1
 
 usage() {
   cat <<'USAGE'
@@ -33,6 +34,7 @@ Opzioni:
   --ssh-key PATH                  Chiave SSH.
   --remote-dir PATH               Directory remota.
   --image-tag TAG                 Tag immagine.
+  --image-repository REPOSITORY   Repository Docker Hub. Default: 883377/tabularium.
   --image-name NAME               Nome immagine completo.
   -h, --help                      Mostra questo aiuto.
 
@@ -128,9 +130,13 @@ while [[ $# -gt 0 ]]; do
     --image-tag)
       require_value "$1" "${2:-}"
       IMAGE_TAG="${2:-}"
-      IMAGE_NAME="tabularium:${IMAGE_TAG}"
-      ARCHIVE_NAME="tabularium-${IMAGE_TAG}.tar.gz"
-      ARCHIVE_PATH="/tmp/${ARCHIVE_NAME}"
+      IMAGE_NAME=""
+      shift 2
+      ;;
+    --image-repository)
+      require_value "$1" "${2:-}"
+      IMAGE_REPOSITORY="${2:-}"
+      IMAGE_NAME=""
       shift 2
       ;;
     --image-name)
@@ -154,18 +160,12 @@ SERVER_HOST="${SERVER_HOST:-}"
 SERVER_USER="${SERVER_USER:-}"
 SSH_KEY="${SSH_KEY:-}"
 REMOTE_DIR="${REMOTE_DIR:-}"
-if [[ -f "${ENV_FILE}" ]]; then
-  ENV_APP_IMAGE="$(grep -E '^APP_IMAGE=' "${ENV_FILE}" | tail -n 1 | cut -d= -f2- | sed -E 's/^["'\'']?//; s/["'\'']?$//')"
-else
-  ENV_APP_IMAGE=""
-fi
-
 IMAGE_TAG="${IMAGE_TAG:-$(git rev-parse --short HEAD)}"
-IMAGE_NAME="${IMAGE_NAME:-${ENV_APP_IMAGE}}"
-ARCHIVE_NAME="${ARCHIVE_NAME:-tabularium-${IMAGE_TAG}.tar.gz}"
-ARCHIVE_PATH="${ARCHIVE_PATH:-/tmp/${ARCHIVE_NAME}}"
+IMAGE_REPOSITORY="${IMAGE_REPOSITORY:-883377/tabularium}"
+IMAGE_NAME="${IMAGE_NAME:-${IMAGE_REPOSITORY}:${IMAGE_TAG}}"
+LATEST_IMAGE="${IMAGE_REPOSITORY}:latest"
 
-if [[ -z "${SERVER_HOST}" || -z "${SERVER_USER}" || -z "${SSH_KEY}" || -z "${REMOTE_DIR}" || -z "${IMAGE_TAG}" || -z "${IMAGE_NAME}" ]]; then
+if [[ -z "${SERVER_HOST}" || -z "${SERVER_USER}" || -z "${SSH_KEY}" || -z "${REMOTE_DIR}" || -z "${IMAGE_TAG}" || -z "${IMAGE_REPOSITORY}" || -z "${IMAGE_NAME}" ]]; then
   echo "Parametri server o immagine incompleti." >&2
   usage >&2
   exit 1
@@ -181,13 +181,8 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 1
 fi
 
-if [[ -z "${ENV_APP_IMAGE}" ]]; then
-  echo "APP_IMAGE non configurata in ${ENV_FILE}." >&2
-  exit 1
-fi
-
-if [[ "${IMAGE_NAME}" != "${ENV_APP_IMAGE}" ]]; then
-  echo "IMAGE_NAME (${IMAGE_NAME}) deve coincidere con APP_IMAGE in ${ENV_FILE} (${ENV_APP_IMAGE})." >&2
+if [[ "${INSTALL_BACKUP_AUTOMATION}" == "1" && ! -f "${BACKUP_CONFIG_FILE}" ]]; then
+  echo "Configurazione backup non trovata: ${BACKUP_CONFIG_FILE}" >&2
   exit 1
 fi
 
@@ -206,17 +201,41 @@ if [[ -n "${DB_DUMP}" && "${IMPORT_DB}" != "1" ]]; then
   exit 1
 fi
 
-docker build --pull -t "${IMAGE_NAME}" .
-docker save "${IMAGE_NAME}" | gzip > "${ARCHIVE_PATH}"
+echo "Build immagine ${IMAGE_NAME}"
+docker build --pull -t "${IMAGE_NAME}" -t "${LATEST_IMAGE}" .
+echo "Push immagine privata su Docker Hub"
+docker push "${IMAGE_NAME}"
+if [[ "${IMAGE_NAME}" != "${LATEST_IMAGE}" ]]; then
+  docker push "${LATEST_IMAGE}"
+fi
 
 ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" "mkdir -p '${REMOTE_DIR}'"
 
 scp -i "${SSH_KEY}" \
-  "${ARCHIVE_PATH}" \
   "${COMPOSE_FILE}" \
   "${ENV_FILE}" \
   "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/"
+if [[ "${INSTALL_BACKUP_AUTOMATION}" == "1" ]]; then
+  scp -i "${SSH_KEY}" "${BACKUP_CONFIG_FILE}" \
+    "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/backup.conf"
+fi
 
+if [[ "${INSTALL_BACKUP_AUTOMATION}" == "1" ]]; then
+  ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
+    "mkdir -p '${REMOTE_DIR}/scripts' '${REMOTE_DIR}/.devops/systemd'"
+  scp -i "${SSH_KEY}" \
+    scripts/backup-prod.sh \
+    scripts/restore-prod.sh \
+    scripts/backup-manager.sh \
+    "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/scripts/"
+  scp -i "${SSH_KEY}" \
+    .devops/install-backup-automation.sh \
+    "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/.devops/"
+  scp -i "${SSH_KEY}" \
+    .devops/systemd/tabularium-backup.service \
+    .devops/systemd/tabularium-backup.timer \
+    "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/.devops/systemd/"
+fi
 if [[ "${IMPORT_DB}" == "1" && -n "${DB_DUMP}" ]]; then
   REMOTE_DB_DUMP="${REMOTE_DIR}/$(basename "${DB_DUMP}")"
   scp -i "${SSH_KEY}" "${DB_DUMP}" "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DB_DUMP}"
@@ -238,7 +257,12 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
      echo 'Docker Compose non trovato sul server. Installa il plugin docker compose o docker-compose.' >&2; \
      exit 1; \
    fi; \
-   docker load -i '${ARCHIVE_NAME}'; \
+   if grep -q '^APP_IMAGE=' '${ENV_FILE}'; then \
+     sed -i 's|^APP_IMAGE=.*|APP_IMAGE=${IMAGE_NAME}|' '${ENV_FILE}'; \
+   else \
+     printf '\\nAPP_IMAGE=${IMAGE_NAME}\\n' >> '${ENV_FILE}'; \
+   fi; \
+   docker pull '${IMAGE_NAME}'; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d tabularium-db; \
    if [ '${IMPORT_DB}' = '1' ] && [ -n '${REMOTE_DB_DUMP}' ]; then \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium-db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
@@ -250,5 +274,10 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
    if [ -n '${REMOTE_UPLOADS_ARCHIVE}' ]; then \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml cp '${REMOTE_UPLOADS_ARCHIVE}' tabularium:/tmp/tabularium-uploads.tar.gz; \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \
+   fi; \
+   if [ '${INSTALL_BACKUP_AUTOMATION}' = '1' ]; then \
+     chmod +x scripts/backup-prod.sh scripts/restore-prod.sh scripts/backup-manager.sh .devops/install-backup-automation.sh; \
+     chmod 600 backup.conf; \
+     ./.devops/install-backup-automation.sh --project-dir '${REMOTE_DIR}' --config-file '${REMOTE_DIR}/backup.conf'; \
    fi; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml ps"

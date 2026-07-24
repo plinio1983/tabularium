@@ -1,201 +1,155 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+CONFIG_FILE="${CONFIG_FILE:-./backup.conf}"
+args=("$@")
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --config) CONFIG_FILE="${2:?Missing value for --config}"; shift 2 ;;
+    *) shift ;;
+  esac
+done
+if [ -f "$CONFIG_FILE" ]; then
+  # shellcheck disable=SC1090
+  source "$CONFIG_FILE"
+elif [ "$CONFIG_FILE" != "./backup.conf" ]; then
+  echo "Configuration file not found: $CONFIG_FILE" >&2
+  exit 1
+fi
+set -- "${args[@]}"
+
 APP_CONTAINER="${APP_CONTAINER:-tabularium}"
 APP_SERVICE="${APP_SERVICE:-tabularium}"
 DB_CONTAINER="${DB_CONTAINER:-tabularium-db}"
 UPLOADS_VOLUME="${UPLOADS_VOLUME:-tabularium_uploads}"
+UPLOADS_CONTAINER_PATH="${UPLOADS_CONTAINER_PATH:-/app/public/uploads}"
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
 ENV_FILE="${ENV_FILE:-.env.production}"
-DB_DUMP=""
-UPLOADS_ARCHIVE=""
+BACKUP_DIR="${BACKUP_DIR:-backups}"
+BACKUP_SET=""
 YES=0
 SKIP_PRE_BACKUP=0
-SKIP_APP_STOP=0
 SKIP_DB_PUSH=0
+APP_STOPPED=0
 
 usage() {
   cat <<'EOF'
-Usage: scripts/restore-prod.sh --db-dump FILE [options]
+Usage: scripts/restore-prod.sh --backup SET_DIRECTORY [options]
 
 Options:
-  --db-dump FILE         PostgreSQL custom dump to restore. Required
-  --uploads FILE         Uploads .tar.gz archive to restore
-  --yes                  Do not prompt; required for non-interactive runs
-  --skip-pre-backup      Do not create a safety backup before restore
-  --skip-app-stop        Do not stop/start the app container around restore
-  --skip-db-push         Do not run prisma db push after restore
-  --compose-file FILE    Compose file. Default: docker-compose.prod.yml
-  --env-file FILE        Compose env file. Default: .env.production
-  -h, --help             Show this help
+  --config FILE         Configuration file. Default: ./backup.conf
+  --backup DIR          Complete backup set to restore
+  --yes                 Skip typed confirmation (automation only)
+  --skip-pre-backup     Do not create a safety backup
+  --skip-db-push        Do not apply the current Prisma schema
+  --compose-file FILE   Default: docker-compose.prod.yml
+  --env-file FILE       Default: .env.production
+  -h, --help            Show help
 
-Environment overrides:
-  APP_CONTAINER, APP_SERVICE, DB_CONTAINER, UPLOADS_VOLUME, COMPOSE_FILE, ENV_FILE
-
-This is destructive. It restores the database with pg_restore --clean --if-exists.
+The backup must contain manifest.json, SHA256SUMS, COMPLETE and database.dump.
+This operation is destructive.
 EOF
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --db-dump)
-      DB_DUMP="${2:?Missing value for --db-dump}"
-      shift 2
-      ;;
-    --uploads)
-      UPLOADS_ARCHIVE="${2:?Missing value for --uploads}"
-      shift 2
-      ;;
-    --yes)
-      YES=1
-      shift
-      ;;
-    --skip-pre-backup)
-      SKIP_PRE_BACKUP=1
-      shift
-      ;;
-    --skip-app-stop)
-      SKIP_APP_STOP=1
-      shift
-      ;;
-    --skip-db-push)
-      SKIP_DB_PUSH=1
-      shift
-      ;;
-    --compose-file)
-      COMPOSE_FILE="${2:?Missing value for --compose-file}"
-      shift 2
-      ;;
-    --env-file)
-      ENV_FILE="${2:?Missing value for --env-file}"
-      shift 2
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $1" >&2
-      usage >&2
-      exit 2
-      ;;
+    --config) shift 2 ;;
+    --backup) BACKUP_SET="${2:?Missing value}"; shift 2 ;;
+    --yes) YES=1; shift ;;
+    --skip-pre-backup) SKIP_PRE_BACKUP=1; shift ;;
+    --skip-db-push) SKIP_DB_PUSH=1; shift ;;
+    --compose-file) COMPOSE_FILE="${2:?Missing value}"; shift 2 ;;
+    --env-file) ENV_FILE="${2:?Missing value}"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
   esac
 done
-
-require_command() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "Required command not found: $1" >&2
-    exit 1
-  fi
-}
-
-abs_path() {
-  local path="$1"
-  local dir
-  local base
-  dir="$(dirname "$path")"
-  base="$(basename "$path")"
-  printf '%s/%s' "$(cd "$dir" && pwd -P)" "$base"
-}
 
 compose() {
   docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" "$@"
 }
 
-require_command docker
+start_app_on_failure() {
+  status=$?
+  if [ "$status" -ne 0 ] && [ "$APP_STOPPED" -eq 1 ]; then
+    echo "Restore failed; attempting to start the application" >&2
+    compose up -d "$APP_SERVICE" >/dev/null 2>&1 || docker start "$APP_CONTAINER" >/dev/null 2>&1 || true
+  fi
+  exit "$status"
+}
+trap start_app_on_failure EXIT
 
-if [ -z "$DB_DUMP" ]; then
-  echo "--db-dump is required" >&2
-  usage >&2
-  exit 2
-fi
-
-if [ ! -f "$DB_DUMP" ]; then
-  echo "DB dump not found: $DB_DUMP" >&2
+[ -n "$BACKUP_SET" ] || { echo "--backup is required" >&2; usage >&2; exit 2; }
+BACKUP_SET="$(cd "$BACKUP_SET" 2>/dev/null && pwd -P)" || {
+  echo "Backup directory not found: $BACKUP_SET" >&2
   exit 1
+}
+for file in manifest.json SHA256SUMS COMPLETE database.dump; do
+  [ -f "${BACKUP_SET}/${file}" ] || { echo "Incomplete backup: missing $file" >&2; exit 1; }
+done
+
+echo "Verifying backup checksums and archives"
+(cd "$BACKUP_SET" && sha256sum --check SHA256SUMS)
+docker exec -i "$DB_CONTAINER" pg_restore --list < "${BACKUP_SET}/database.dump" >/dev/null
+if [ -f "${BACKUP_SET}/uploads.tar.gz" ]; then
+  tar -tzf "${BACKUP_SET}/uploads.tar.gz" >/dev/null
+  if ! docker volume inspect "$UPLOADS_VOLUME" >/dev/null 2>&1; then
+    UPLOADS_VOLUME_DETECTED="$(
+      docker inspect "$APP_CONTAINER" \
+        --format "{{range .Mounts}}{{if eq .Destination \"${UPLOADS_CONTAINER_PATH}\"}}{{.Name}}{{end}}{{end}}" \
+        2>/dev/null || true
+    )"
+    if [ -z "$UPLOADS_VOLUME_DETECTED" ] || ! docker volume inspect "$UPLOADS_VOLUME_DETECTED" >/dev/null 2>&1; then
+      echo "Uploads volume not found: $UPLOADS_VOLUME" >&2
+      exit 1
+    fi
+    echo "Configured uploads volume '$UPLOADS_VOLUME' not found; detected '$UPLOADS_VOLUME_DETECTED'"
+    UPLOADS_VOLUME="$UPLOADS_VOLUME_DETECTED"
+  fi
 fi
 
-if [ -n "$UPLOADS_ARCHIVE" ] && [ ! -f "$UPLOADS_ARCHIVE" ]; then
-  echo "Uploads archive not found: $UPLOADS_ARCHIVE" >&2
-  exit 1
-fi
-
-if ! docker container inspect "$DB_CONTAINER" >/dev/null 2>&1; then
-  echo "Database container not found: ${DB_CONTAINER}" >&2
-  exit 1
-fi
-
-if [ -n "$UPLOADS_ARCHIVE" ] && ! docker volume inspect "$UPLOADS_VOLUME" >/dev/null 2>&1; then
-  echo "Uploads volume not found: ${UPLOADS_VOLUME}" >&2
-  exit 1
-fi
-
-echo "Restore target:"
-echo "  db container:     ${DB_CONTAINER}"
-echo "  app container:    ${APP_CONTAINER}"
-echo "  app service:      ${APP_SERVICE}"
-echo "  uploads volume:   ${UPLOADS_VOLUME}"
-echo "  db dump:          ${DB_DUMP}"
-if [ -n "$UPLOADS_ARCHIVE" ]; then
-  echo "  uploads archive:  ${UPLOADS_ARCHIVE}"
-fi
-
+echo "Restore source: $BACKUP_SET"
 if [ "$YES" -ne 1 ]; then
-  echo
-  echo "This operation is destructive."
+  echo "This operation replaces the production database and uploads."
   printf 'Type RESTORE to continue: '
   read -r confirmation
-  if [ "$confirmation" != "RESTORE" ]; then
-    echo "Restore aborted."
-    exit 1
-  fi
+  [ "$confirmation" = "RESTORE" ] || { echo "Restore aborted"; exit 1; }
 fi
 
 if [ "$SKIP_PRE_BACKUP" -eq 0 ]; then
-  echo "Creating safety backup before restore"
-  "$(dirname "$0")/backup-prod.sh" --label pre-restore
+  echo "Creating and verifying pre-restore safety backup"
+  "$(dirname "$0")/backup-prod.sh" --backup-dir "$BACKUP_DIR" --label pre-restore --skip-remote
 fi
 
-if [ "$SKIP_APP_STOP" -eq 0 ]; then
-  echo "Stopping app container"
-  if [ -f "$COMPOSE_FILE" ] && [ -f "$ENV_FILE" ]; then
-    compose stop "$APP_SERVICE" || docker stop "$APP_CONTAINER"
-  else
-    docker stop "$APP_CONTAINER"
-  fi
-fi
+mkdir -p "$BACKUP_DIR"
+exec 9>"${BACKUP_DIR}/.backup.lock"
+flock -n 9 || { echo "Another backup or restore is already running" >&2; exit 1; }
 
-echo "Restoring PostgreSQL dump"
-docker exec -i "$DB_CONTAINER" sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < "$DB_DUMP"
+echo "Stopping application"
+compose stop "$APP_SERVICE" || docker stop "$APP_CONTAINER"
+APP_STOPPED=1
 
-if [ -n "$UPLOADS_ARCHIVE" ]; then
-  UPLOADS_ABS="$(abs_path "$UPLOADS_ARCHIVE")"
-  UPLOADS_DIR="$(dirname "$UPLOADS_ABS")"
-  UPLOADS_FILE="$(basename "$UPLOADS_ABS")"
-  echo "Restoring uploads volume"
+echo "Restoring PostgreSQL"
+docker exec -i "$DB_CONTAINER" sh -c \
+  'pg_restore --clean --if-exists --no-owner --no-acl -U "$POSTGRES_USER" -d "$POSTGRES_DB"' \
+  < "${BACKUP_SET}/database.dump"
+
+if [ -f "${BACKUP_SET}/uploads.tar.gz" ]; then
+  echo "Restoring uploads"
   docker run --rm \
     -v "${UPLOADS_VOLUME}:/data" \
-    -v "${UPLOADS_DIR}:/backup:ro" \
+    -v "${BACKUP_SET}:/backup:ro" \
     alpine:3.20 \
-    sh -c "find /data -mindepth 1 -maxdepth 1 -exec rm -rf {} + && tar -xzf '/backup/${UPLOADS_FILE}' -C /data"
+    sh -c "find /data -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + && tar -xzf /backup/uploads.tar.gz -C /data"
 fi
 
 if [ "$SKIP_DB_PUSH" -eq 0 ]; then
-  echo "Applying Prisma schema"
-  if [ -f "$COMPOSE_FILE" ] && [ -f "$ENV_FILE" ]; then
-    compose run --rm "$APP_SERVICE" npx prisma db push
-  else
-    docker exec "$APP_CONTAINER" npx prisma db push
-  fi
+  echo "Applying current Prisma schema"
+  compose run --rm "$APP_SERVICE" npx prisma db push
 fi
 
-if [ "$SKIP_APP_STOP" -eq 0 ]; then
-  echo "Starting app"
-  if [ -f "$COMPOSE_FILE" ] && [ -f "$ENV_FILE" ]; then
-    compose up -d "$APP_SERVICE"
-  else
-    docker start "$APP_CONTAINER"
-  fi
-fi
-
-echo "Restore completed."
+echo "Starting application"
+compose up -d "$APP_SERVICE"
+APP_STOPPED=0
+compose ps "$APP_SERVICE"
+echo "Restore completed"

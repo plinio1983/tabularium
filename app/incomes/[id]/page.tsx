@@ -8,7 +8,7 @@ import DeleteActionButton from '@/components/DeleteActionButton';
 import {euro} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
-import {stripFlashParams} from '@/lib/flash';
+import {detailBackHref} from '@/lib/detail-navigation';
 import {
     badgeClass,
     fiscalStyles,
@@ -77,7 +77,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const {id} = await params;
     const query = (await searchParams) ?? {};
     const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
-    const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? stripFlashParams(rawReturnTo) : '/incomes';
+    const returnTo = detailBackHref(rawReturnTo, `/incomes/${id}`, '/incomes');
     const encodedReturnTo = encodeURIComponent(returnTo);
     const currentDetailReturnTo = `/incomes/${id}?returnTo=${encodedReturnTo}`;
     const [income, banks, paymentMethods, incomeCategories, salesChannels, customers] = await Promise.all([

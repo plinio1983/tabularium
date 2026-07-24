@@ -3,6 +3,8 @@ node_modules
 .env
 .env.production
 deploy.conf
+backup.conf
+.devops/backup.conf
 backups/
 .DS_Store
 prisma/migrations

@@ -1,0 +1,22 @@
+# Copia in .devops/backup.conf. Il file reale è escluso da Git.
+
+BACKUP_DIR="/var/backups/tabularium"
+RETENTION_DAYS="14"
+REMOTE_RETENTION_DAYS="30"
+
+BACKUP_SERVER_HOST=""
+BACKUP_SERVER_USER=""
+BACKUP_REMOTE_PATH=""
+# Percorso della chiave già installata sul server di produzione.
+BACKUP_SSH_KEY="/root/.ssh/tabularium_backup"
+
+BACKUP_ON_CALENDAR="*-*-* 02:30:00"
+BACKUP_RANDOMIZED_DELAY="10m"
+
+APP_CONTAINER="tabularium"
+APP_SERVICE="tabularium"
+DB_CONTAINER="tabularium-db"
+UPLOADS_VOLUME="tabularium_uploads"
+UPLOADS_CONTAINER_PATH="/app/public/uploads"
+COMPOSE_FILE="docker-compose.prod.yml"
+ENV_FILE=".env.production"

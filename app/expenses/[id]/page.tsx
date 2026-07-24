@@ -8,7 +8,7 @@ import DeleteActionButton from '@/components/DeleteActionButton';
 import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
-import { stripFlashParams } from '@/lib/flash';
+import { detailBackHref } from '@/lib/detail-navigation';
 import {
   badgeClass,
   categoryLabel,
@@ -60,7 +60,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
-  const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? stripFlashParams(rawReturnTo) : '/expenses';
+  const returnTo = detailBackHref(rawReturnTo, `/expenses/${id}`, '/expenses');
   const encodedReturnTo = encodeURIComponent(returnTo);
   const currentDetailReturnTo = `/expenses/${id}?returnTo=${encodedReturnTo}`;
   const encodedCurrentDetailReturnTo = encodeURIComponent(currentDetailReturnTo);

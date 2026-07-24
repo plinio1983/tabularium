@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { euro, moneyTone } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
-import { stripFlashParams } from '@/lib/flash';
+import { detailBackHref } from '@/lib/detail-navigation';
 import ExpensesList from '@/components/ExpensesList';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import DetailBackButton from '@/components/DetailBackButton';
@@ -30,7 +30,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const { id } = await params;
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
-  const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? stripFlashParams(rawReturnTo) : '/suppliers';
+  const returnTo = detailBackHref(rawReturnTo, `/suppliers/${id}`, '/suppliers');
   const [supplier, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.supplier.findUnique({
       where: { id: Number(id) },

@@ -31,7 +31,7 @@ APP_URL="https://tabularium.devmash.it"
 `APP_IMAGE` deve puntare all'immagine Docker da avviare:
 
 ```env
-APP_IMAGE="tabularium:v0.9-rc"
+APP_IMAGE="883377/tabularium:v0.9-rc"
 ```
 
 Nel Google Cloud Console aggiungi il redirect URI:
@@ -77,9 +77,19 @@ Il compose assegna all'app l'alias `tabularium` sulla rete Docker `cluster_front
 
 ## Procedura deploy
 
-Strategia iniziale: build dell'immagine fuori dal server di produzione, trasferimento dell'immagine gia' pronta e riavvio con Docker Compose. Il server di produzione non deve compilare l'applicazione.
+Strategia: build dell'immagine fuori dal server di produzione, pubblicazione nel repository privato Docker Hub `883377/tabularium`, pull sul server e riavvio con Docker Compose. Il server di produzione non compila l'applicazione.
 
-Non e' necessario pubblicare l'immagine su GitHub Container Registry per il primo deploy. GHCR conviene in una fase successiva, quando si vuole una pipeline CI/CD con immagini taggate, rollback e pull autenticato dal server.
+## Autenticazione Docker Hub
+
+Il repository e' privato. Esegui il login una tantum sia sulla macchina che effettua build e push sia sul server di produzione, usando un access token Docker Hub:
+
+```bash
+docker login --username 883377
+ssh -i .devops/contabo_rsa root@178.18.248.213
+docker login --username 883377
+```
+
+Il token viene richiesto interattivamente da Docker e salvato nella configurazione dell'utente. Non inserirlo in `deploy.conf`, `.env.production` o nel repository.
 
 Server:
 
@@ -115,17 +125,18 @@ Deploy da macchina locale o runner CI:
 ```bash
 cp deploy.conf.example deploy.conf
 # modifica deploy.conf
-./scripts/deploy-prod.sh
+.devops/deploy.sh
 ```
 
 Lo script:
 
-- builda localmente `tabularium:<git-sha>`
-- esporta l'immagine in `/tmp/tabularium-<git-sha>.tar.gz`
-- copia l'archivio su `178.18.248.213:/app/tabularium`
+- builda localmente `883377/tabularium:<git-sha>`
+- aggiorna anche il tag `883377/tabularium:latest`
+- pubblica entrambi i tag nel repository privato Docker Hub
 - se richiesto, copia un dump PostgreSQL e/o un archivio upload
-- esegue `docker load` sul server
-- riavvia Compose usando `APP_IMAGE` letto da `.env.production`
+- esegue `docker pull` del tag immutabile sul server
+- aggiorna `APP_IMAGE` remoto con il tag distribuito
+- riavvia Compose usando quell'immagine
 - se richiesto, ripristina il dump nel container `db`
 - applica lo schema Prisma con `npx prisma db push`
 - se richiesto, ripristina gli upload nel volume applicativo
@@ -143,19 +154,20 @@ SERVER_HOST="178.18.248.213"
 SERVER_USER="root"
 SSH_KEY=".devops/contabo_rsa"
 REMOTE_DIR="/app/tabularium"
+IMAGE_REPOSITORY="883377/tabularium"
 ```
 
 Puoi usare un file diverso:
 
 ```bash
-./scripts/deploy-prod.sh \
+.devops/deploy.sh \
   --config ./deploy-prod.contabo.conf
 ```
 
 Le opzioni CLI sovrascrivono la configurazione:
 
 ```bash
-./scripts/deploy-prod.sh \
+.devops/deploy.sh \
   --config ./deploy.conf \
   --server-user root \
   --server-host 178.18.248.213 \
@@ -166,7 +178,7 @@ Le opzioni CLI sovrascrivono la configurazione:
 Deploy con import database da dump PostgreSQL custom:
 
 ```bash
-./scripts/deploy-prod.sh --import-db --db-dump ./tabularium.dump
+.devops/deploy.sh --import-db --db-dump ./tabularium.dump
 ```
 
 Il dump deve essere creato con `pg_dump --format=custom`, ad esempio dal database locale avviato con `docker compose up -d db`:
@@ -181,23 +193,23 @@ Deploy con ripristino upload:
 
 ```bash
 tar -czf tabularium-uploads.tar.gz -C public uploads
-./scripts/deploy-prod.sh --uploads-archive ./tabularium-uploads.tar.gz
+.devops/deploy.sh --uploads-archive ./tabularium-uploads.tar.gz
 ```
 
 Deploy completo con database e upload:
 
 ```bash
-./scripts/deploy-prod.sh --import-db --db-dump ./tabularium.dump --uploads-archive ./tabularium-uploads.tar.gz
+.devops/deploy.sh --import-db --db-dump ./tabularium.dump --uploads-archive ./tabularium-uploads.tar.gz
 ```
 
 Comandi equivalenti manuali:
 
 ```bash
 IMAGE_TAG="$(git rev-parse --short HEAD)"
-IMAGE_NAME="tabularium:${IMAGE_TAG}"
-docker build --pull -t "${IMAGE_NAME}" .
-docker save "${IMAGE_NAME}" | gzip > "/tmp/tabularium-${IMAGE_TAG}.tar.gz"
-scp -i .devops/contabo_rsa "/tmp/tabularium-${IMAGE_TAG}.tar.gz" root@178.18.248.213:/app/tabularium/
+IMAGE_NAME="883377/tabularium:${IMAGE_TAG}"
+docker build --pull -t "${IMAGE_NAME}" -t "883377/tabularium:latest" .
+docker push "${IMAGE_NAME}"
+docker push "883377/tabularium:latest"
 ssh -i .devops/contabo_rsa root@178.18.248.213
 ```
 
@@ -205,7 +217,8 @@ Sul server:
 
 ```bash
 cd /app/tabularium
-docker load -i "tabularium-${IMAGE_TAG}.tar.gz"
+docker pull "883377/tabularium:${IMAGE_TAG}"
+# aggiorna APP_IMAGE in .env.production al tag appena pubblicato
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium npx prisma db push
 docker compose --env-file .env.production -f docker-compose.prod.yml ps
@@ -219,54 +232,88 @@ docker compose --env-file .env.production -f docker-compose.prod.yml exec tabula
 
 ## Backup e restore produzione
 
-Il backup viene eseguito dall'host, ma il dump PostgreSQL parte dentro al container `tabularium-db` con `docker exec`. Non serve esporre la porta del database fuori dalla rete Docker.
-
-Backup manuale:
-
-```bash
-cd /app/tabularium
-./scripts/backup-prod.sh --backup-dir /var/backups/tabularium
-```
-
-Lo script genera tre file:
+Il backup viene eseguito dall'host, ma il dump PostgreSQL parte dentro al container
+del database con `docker exec`. Non serve esporre PostgreSQL. Database, upload,
+manifest e checksum vengono salvati nello stesso set:
 
 ```text
-tabularium-YYYYMMDD-HHMMSS.dump
-tabularium-YYYYMMDD-HHMMSS-uploads.tar.gz
-tabularium-YYYYMMDD-HHMMSS.json
+tabularium-YYYYMMDD-HHMMSS/
+├── database.dump
+├── uploads.tar.gz
+├── manifest.json
+├── SHA256SUMS
+└── COMPLETE
 ```
 
-Per default mantiene i backup locali per 30 giorni. Per cambiare retention o disattivarla:
+`COMPLETE` viene creato soltanto dopo la verifica del dump, dell'archivio e dei
+checksum.
 
-```bash
-./scripts/backup-prod.sh --backup-dir /var/backups/tabularium --retention-days 14
-./scripts/backup-prod.sh --backup-dir /var/backups/tabularium --retention-days 0
+### Configurazione
+
+I valori del backup sono separati da quelli di deploy. Copia
+`.devops/backup.conf.example` in `.devops/backup.conf`; il file reale è escluso
+da Git e viene caricato dal deploy sul server come `/app/tabularium/backup.conf`.
+Esempio di destinazione off-site:
+
+```dotenv
+BACKUP_SERVER_HOST=213.136.90.13
+BACKUP_SERVER_USER=root
+BACKUP_REMOTE_PATH=/app/backups01/tabularium
+BACKUP_SSH_KEY=/root/.ssh/tabularium_backup
 ```
 
-Crontab sull'host:
+La chiave privata deve essere leggibile dall'utente che esegue il backup e avere
+permessi `600`. Il percorso può essere relativo alla directory del progetto oppure
+assoluto.
 
-```cron
-30 2 * * * cd /app/tabularium && ./scripts/backup-prod.sh --backup-dir /var/backups/tabularium >> /var/log/tabularium-backup.log 2>&1
-```
-
-Se configuri un remoto `rclone`, puoi copiare i backup fuori macchina:
-
-```bash
-./scripts/backup-prod.sh \
-  --backup-dir /var/backups/tabularium \
-  --rclone-dest remote:tabularium-backups
-```
-
-Restore da backup:
+Test manuale, usando la stessa configurazione dell'automazione:
 
 ```bash
 cd /app/tabularium
-./scripts/restore-prod.sh \
-  --db-dump /var/backups/tabularium/tabularium-YYYYMMDD-HHMMSS.dump \
-  --uploads /var/backups/tabularium/tabularium-YYYYMMDD-HHMMSS-uploads.tar.gz
+./scripts/backup-prod.sh --config ./backup.conf
 ```
 
-Il restore e' distruttivo: prima di procedere chiede conferma digitando `RESTORE` e, salvo opzione contraria, crea un backup di sicurezza `pre-restore`. Poi ferma l'app, ripristina database e upload, esegue `prisma db push` e riavvia il servizio.
+### Automazione systemd
+
+Installa e abilita il timer:
+
+```bash
+cd /app/tabularium
+sudo ./.devops/install-backup-automation.sh \
+  --project-dir /app/tabularium \
+  --config-file /app/tabularium/backup.conf
+```
+
+Il timer predefinito parte ogni giorno alle 02:30, recupera le esecuzioni perse e
+introduce un ritardo casuale massimo di 10 minuti. Stato, prossima esecuzione e log:
+
+```bash
+systemctl list-timers tabularium-backup.timer
+systemctl status tabularium-backup.service
+journalctl -u tabularium-backup.service
+```
+
+### Verifica e restore
+
+Elenca e verifica i set locali:
+
+```bash
+cd /app/tabularium
+BACKUP_DIR=/var/backups/tabularium ./scripts/backup-manager.sh list
+./scripts/backup-manager.sh verify /var/backups/tabularium/tabularium-YYYYMMDD-HHMMSS
+```
+
+Restore:
+
+```bash
+BACKUP_DIR=/var/backups/tabularium ./scripts/restore-prod.sh \
+  --backup /var/backups/tabularium/tabularium-YYYYMMDD-HHMMSS
+```
+
+Il restore verifica l'intero set prima di fermare l'applicazione. È distruttivo:
+chiede conferma digitando `RESTORE` e, salvo opzione contraria, crea un backup di
+sicurezza `pre-restore`. Se fallisce dopo lo stop, tenta sempre di riavviare
+l'applicazione.
 
 ## Migrazione dati locale -> server
 

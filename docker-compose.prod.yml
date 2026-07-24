@@ -1,6 +1,6 @@
 services:
   tabularium:
-    image: ${APP_IMAGE:-tabularium:latest}
+    image: ${APP_IMAGE:-883377/tabularium:latest}
     container_name: tabularium
     restart: unless-stopped
     env_file:

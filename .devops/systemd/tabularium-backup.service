@@ -1,0 +1,13 @@
+[Unit]
+Description=Tabularium verified production backup
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/app/tabularium
+ExecStart=/app/tabularium/scripts/backup-prod.sh --config /app/tabularium/backup.conf
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

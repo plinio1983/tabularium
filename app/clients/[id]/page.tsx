@@ -8,6 +8,7 @@ import ClientEditModalController from '@/components/ClientEditModalController';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import DetailBackButton from '@/components/DetailBackButton';
 import { badgeClass, incomeCreditStatusStyles } from '@/lib/income-ui';
+import { detailBackHref } from '@/lib/detail-navigation';
 
 function valueOrDash(value?: string | null) { return value?.trim() || '-'; }
 function CopyableField({ label, value, className = '' }: { label: string; value?: string | null; className?: string }) {
@@ -20,7 +21,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   const id = Number((await params).id);
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
-  const backHref = rawReturnTo?.startsWith('/') ? rawReturnTo : '/clients';
+  const backHref = detailBackHref(rawReturnTo, `/clients/${id}`, '/clients');
   const [customer, banks, paymentMethods, incomeCategories, salesChannels, customers] = await Promise.all([
     prisma.customer.findFirst({ where: { id, workspaceId: current.workspace.id }, include: { incomes: { include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true }, orderBy: { creditDate: 'desc' } } } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }), prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
