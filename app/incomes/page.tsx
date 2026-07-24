@@ -473,31 +473,25 @@ function IncomePieBreakdownChart({title, data}: {
     data: Array<{ name: string; code: string; total: number }>
 }) {
     const total = data.reduce((sum, item) => sum + item.total, 0);
-    let cursor = 0;
-    const segments = data.map((item, index) => {
-        const start = total ? (cursor / total) * 100 : 0;
-        cursor += item.total;
-        const end = total ? (cursor / total) * 100 : 0;
-        return `${incomePieChartColors[index % incomePieChartColors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
-    });
-    const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
+    const orderedData = [...data].sort((a, b) => b.total - a.total);
+    const groupedData = orderedData.length > 5
+        ? [...orderedData.slice(0, 4), orderedData.slice(4).reduce((other, item) => ({
+            name: 'Altre categorie',
+            code: 'ALTRO',
+            total: other.total + item.total
+        }), {name: 'Altre categorie', code: 'ALTRO', total: 0})]
+        : orderedData;
 
-    return <section className="expense-category-chart-card expense-impact-pie-card expense-page-category-pie-chart income-chart">
+    return <section className="expense-category-chart-card expense-page-category-pie-chart income-chart summary-composition-card">
         <div className="card-heading-row">
             <div>
                 <h2>{title}</h2>
+                <p className="muted">Peso di categorie e canali sul totale filtrato.</p>
             </div>
-            {/*<div className="text-right chart-total"><span className="badge">Totale {euro(total)}</span></div>*/}
         </div>
-        {data.length && total > 0 ? <div className="expense-impact-pie-layout">
-            <div className="expense-impact-pie" style={{background}} aria-label={title}>
-                <div>
-                    <span>Incassi</span>
-                    <strong className="main-label">{euro(total)}</strong>
-                </div>
-            </div>
-            <div className="expense-impact-pie-legend">
-                {data.map((item, index) => {
+        {groupedData.length && total > 0 ? <div className="expense-impact-pie-legend summary-composition-list"
+                                                   aria-label={title}>
+                {groupedData.map((item, index) => {
                     const percentage = total ? (item.total / total) * 100 : 0;
                     return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
                         <div className="expense-impact-pie-legend-row">
@@ -513,7 +507,6 @@ function IncomePieBreakdownChart({title, data}: {
                         }}/>
                     </div>;
                 })}
-            </div>
         </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
     </section>;
 }
@@ -932,7 +925,7 @@ export default async function IncomesPage({searchParams}: {
                         </Link>
                     </div> : null}
                 </div>
-                <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel}/>
+                <IncomePieBreakdownChart title="Composizione degli incassi" data={incomesBySaleCategoryAndChannel}/>
             </div>
         </div>
         <div className="card expenses-list-card">

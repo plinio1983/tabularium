@@ -250,42 +250,25 @@ function ExpenseCategoryColumnChart({data, total}: { data: ExpenseCategoryDatum[
 
 function ExpenseCategoryPieChart({data}: { data: ExpenseCategoryDatum[] }) {
     const total = data.reduce((sum, item) => sum + item.total, 0);
-    const groupedData = total > 0 ? data.reduce((items, item) => {
-        const percentage = (item.total / total) * 100;
-        if (percentage >= 3) return [...items, item];
-        const other = items.find(entry => entry.code === 'ALTRO');
-        if (other) {
-            other.total += item.total;
-            other.residual += item.residual;
-            return items;
-        }
-        return [...items, {name: 'Altro', code: 'ALTRO', total: item.total, residual: item.residual}];
-    }, [] as ExpenseCategoryDatum[]).sort((a, b) => b.total - a.total) : data;
-    let cursor = 0;
-    const segments = groupedData.map((item, index) => {
-        const start = total ? (cursor / total) * 100 : 0;
-        cursor += item.total;
-        const end = total ? (cursor / total) * 100 : 0;
-        return `${expensePieChartColors[index % expensePieChartColors.length]} ${start.toFixed(3)}% ${end.toFixed(3)}%`;
-    });
-    const background = segments.length ? `conic-gradient(${segments.join(', ')})` : undefined;
+    const orderedData = [...data].sort((a, b) => b.total - a.total);
+    const groupedData = orderedData.length > 5
+        ? [...orderedData.slice(0, 4), orderedData.slice(4).reduce((other, item) => ({
+            name: 'Altre categorie',
+            code: 'ALTRO',
+            total: other.total + item.total,
+            residual: other.residual + item.residual
+        }), {name: 'Altre categorie', code: 'ALTRO', total: 0, residual: 0})]
+        : orderedData;
 
-    return <section className="expense-category-chart-card expense-impact-pie-card expense-page-category-pie-chart">
+    return <section className="expense-category-chart-card expense-page-category-pie-chart summary-composition-card">
         <div className="card-heading-row">
             <div>
-                <h2>Spese per categoria</h2>
-                {/*<p className="muted">Distribuzione delle spese in base ai risultati filtrati.</p>*/}
+                <h2>Composizione delle spese</h2>
+                <p className="muted">Peso delle categorie sul totale filtrato.</p>
             </div>
-            {/*<div className="text-right chart-total"><span className="badge">Totale {chartEuro(total)}</span></div>*/}
         </div>
-        {groupedData.length && total > 0 ? <div className="expense-impact-pie-layout">
-            <div className="expense-impact-pie" style={{background}} aria-label="Grafico spese per categoria">
-                <div>
-                    <span>Spese</span>
-                    <strong className="main-label">{chartEuro(total)}</strong>
-                </div>
-            </div>
-            <div className="expense-impact-pie-legend">
+        {groupedData.length && total > 0 ? <div className="expense-impact-pie-legend summary-composition-list"
+                                                  aria-label="Composizione delle spese per categoria">
                 {groupedData.map((item, index) => {
                     const percentage = total ? (item.total / total) * 100 : 0;
                     return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
@@ -302,7 +285,6 @@ function ExpenseCategoryPieChart({data}: { data: ExpenseCategoryDatum[] }) {
                         }}/>
                     </div>;
                 })}
-            </div>
         </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
     </section>;
 }

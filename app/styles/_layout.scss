@@ -4936,6 +4936,27 @@ html, body {
   padding-top: 12px;
 }
 
+.summary-composition-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+}
+
+.summary-composition-list {
+  display: grid;
+  align-content: center;
+  flex: 1 1 auto;
+  margin-top: 8px;
+}
+
+.summary-composition-list .expense-impact-pie-row-wrap:last-child {
+  border-bottom: 0;
+}
+
 .expense-category-chart-card h2 {
   font-size: 18px;
 }
@@ -6229,6 +6250,12 @@ html, body {
 .expense-impact-pie-bar {
   height: 6px;
   border-radius: 999px;
+}
+
+.expenses-list-card {
+  .expense-impact-pie-bar {
+    height: 8px;
+  }
 }
 
 .expense-impact-pie-dot {
