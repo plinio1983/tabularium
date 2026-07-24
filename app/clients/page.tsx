@@ -111,6 +111,10 @@ export default async function ClientsPage({searchParams}: {
             </div> : null}
 
             <form id="clientBulkForm" action={`/api/clients/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
+                <label className="bulk-select-all-inline">
+                    <input type="checkbox" className="bulk-select-all" data-bulk-target="clientBulkForm"
+                           aria-label="Seleziona tutti i clienti visibili"/>
+                </label>
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="clientBulkForm">
                     <summary className="bulk-action-trigger">
                         <span className="btn-icon">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
@@ -121,7 +125,7 @@ export default async function ClientsPage({searchParams}: {
                 </details>
                 <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="clientBulkForm" data-edit-trigger-attr="data-client-edit-id">
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">✎ <span className="bulk-label">Modifica</span></a>
-                    <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete disabled>🗑 <span className="bulk-label">Elimina</span>
+                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete disabled>🗑 <span className="bulk-label">Elimina</span>
                     </button>
                 </div>
                 <div className="bulk-inner-container">

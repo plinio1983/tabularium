@@ -5297,7 +5297,7 @@ html, body {
   text-align: right;
 
   //@media (min-width: 1024px) {
-    max-width: fit-content;
+  max-width: fit-content;
   //}
   align-self: flex-end;
 }
@@ -5334,7 +5334,7 @@ html, body {
 
 .dashboard-composition-row {
   display: grid;
-  grid-template-columns: minmax(120px, 1.2fr) minmax(100px, 1fr) minmax(84px, auto);
+  grid-template-columns: minmax(120px, 229px) minmax(120px, 1.2fr) minmax(84px, auto);
   align-items: center;
   gap: 12px;
 }
@@ -7744,6 +7744,18 @@ html, body {
 
 .bulk-action-menu-panel .danger-menu-item:hover {
   background: rgba(180, 35, 24, 0.08);
+}
+
+.bulk-menu-mobile-delete {
+  display: none !important;
+}
+
+@media (max-width: 576px) {
+  .bulk-action-menu-panel .bulk-menu-mobile-delete,
+  .floating-bulk-menu-panel .bulk-menu-mobile-delete,
+  .bulk-action-modal-actions .bulk-menu-mobile-delete {
+    display: flex !important;
+  }
 }
 
 
@@ -10934,6 +10946,12 @@ table .cell-description {
     .category-settings-actions {
       flex-grow: 1;
     }
+  }
+}
+
+@media (min-width: 576px) {
+  .vat-settlement-category-title {
+    grid-template: 1 / -1;
   }
 }
 

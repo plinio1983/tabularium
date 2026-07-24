@@ -68,7 +68,7 @@ export default async function ExpenseCategoriesSettingsPage({ searchParams }: { 
       }) : <p className="muted">Nessuna categoria configurata.</p>}
     </div>
     <form action={setVatSettlementCategoryAction} className="card form vat-settlement-category-setting">
-      <div>
+      <div className="vat-settlement-category-title">
         <h3>Categoria Saldo IVA</h3>
         <p className="muted">Categoria assegnata automaticamente alle spese che registrano un versamento IVA.</p>
       </div>

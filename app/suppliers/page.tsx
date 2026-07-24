@@ -334,6 +334,10 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
       <BulkSelectionController />
 
       <form id="supplierBulkForm" action={`/api/suppliers/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
+        <label className="bulk-select-all-inline">
+          <input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm"
+                 aria-label="Seleziona tutti i fornitori visibili" />
+        </label>
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="supplierBulkForm">
           <summary className="bulk-action-trigger">
             <span className="btn-icon">⚙</span>
@@ -348,7 +352,7 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-copy-base="/suppliers/new?copyId=" data-return-to={returnTo}>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
-          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
+          <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
         </div>
         <div className="bulk-inner-container">
           <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">

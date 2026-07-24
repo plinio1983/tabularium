@@ -61,14 +61,21 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   return <div className="grid expense-detail-page supplier-detail-page">
     <SupplierEditModalController/>
     <NewExpensePanel
-      categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
+      categories={orderedCategories.map(c => ({
+        id: c.id,
+        code: c.code,
+        name: c.name,
+        icon: c.icon,
+        isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId
+      }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
       paymentMethods={expensePaymentMethods.map(method => ({
         id: method.id,
         name: method.name,
         icon: method.icon,
         kind: method.kind,
-        isFallback: method.isFallback
+        isFallback: method.isFallback,
+        systemRole: method.systemRole
       }))}
       suppliers={suppliers.map(s => ({
         id: s.id,
@@ -79,7 +86,8 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         iban: s.iban,
         pec: s.pec,
         taxCodeSdi: s.taxCodeSdi,
-        internalNotes: s.internalNotes
+        internalNotes: s.internalNotes,
+        systemRole: s.systemRole
       }))}
       initialExpense={{ supplierId: supplier.id, merchant: supplier.businessName }}
       showToolbar={false}

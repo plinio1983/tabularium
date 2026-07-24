@@ -12,6 +12,7 @@ import {
 import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
 import {requireWorkspace} from '@/lib/auth';
 import NewExpensePanel from '@/components/NewExpensePanel';
+import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
@@ -1820,9 +1821,9 @@ export default async function Dashboard({searchParams}: {
                 <p className="muted">Sintesi fiscale, incassi e spese.</p>
             </div>
             <div className="actions-row dashboard-top-actions">
-                <button className="btn btn-md btn-primary" type="button" data-expense-new><span
+                <ExpenseNewTriggerButton className="btn btn-md btn-primary"><span
                     className="btn-icon">＋</span> Spesa
-                </button>
+                </ExpenseNewTriggerButton>
                 <Link className="btn btn-md btn-primary" href="/incomes?new=1"><span
                     className="btn-icon">＋</span> Incasso</Link>
                 {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}

@@ -120,12 +120,16 @@ export default function IncomesList({
                         label: category.name,
                         icon: category.icon
                     }))} selectLabel="Categoria vendita"/>
+                    <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
+                            name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
+                        <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                    </button>
                 </div>
             </details>
             <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
-                <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
+                <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
                     <span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
             </div>
             <div className="bulk-inner-container">

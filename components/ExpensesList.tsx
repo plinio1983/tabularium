@@ -203,6 +203,10 @@ export default function ExpensesList({
               fieldName="categoryId"
               categories={categories.map(category => ({ value: String(category.id), label: category.name, icon: category.icon }))}
             />
+            <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
+                    name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
+              <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+            </button>
           </div>
         </details>
         <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId}
@@ -213,7 +217,7 @@ export default function ExpensesList({
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
             <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
           </a>
-          <button type="submit" className="bulk-direct-link bulk-direct-danger" name="bulkAction" value="delete"
+          <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete"
                   data-bulk-delete data-confirm-label="Elimina" disabled>
             <span className="btn-icon">🗑</span>
             <span className="bulk-label">Elimina</span>

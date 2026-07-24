@@ -653,8 +653,9 @@ export default function ExpenseForm({
     const [isRecurring, setIsRecurring] = useState(
         initialExpense?.isRecurring ?? false,
     );
-    const canEditRecurringFlag = !initialExpense || initialExpense.isRecurring;
-    const canEditExpenseType = !initialExpense;
+    const isExistingExpense = Boolean(initialExpense?.id);
+    const canEditRecurringFlag = !isExistingExpense || Boolean(initialExpense?.isRecurring);
+    const canEditExpenseType = !isExistingExpense;
 
     const amountValue = Number(amount || 0);
     const paidAmountValue = payments.reduce(
@@ -862,7 +863,7 @@ export default function ExpenseForm({
                                         const checked = event.currentTarget.checked;
                                         setIsRecurring(checked);
                                         if (checked) setIsVatSettlement(false);
-                                        if (checked && onSwitchToRecurring && !initialExpense) {
+                                        if (checked && onSwitchToRecurring && !isExistingExpense) {
                                             onSwitchToRecurring?.();
                                         }
                                     }}

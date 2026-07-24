@@ -298,8 +298,13 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 576px) {
+  .hidden-sp {
+    display: none !important;
+  }
+}
 
+@media (max-width: 760px) {
   .hidden-mobile {
     display: none !important;
   }
