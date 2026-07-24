@@ -305,6 +305,7 @@ function DashboardPieChart({
                                title,
                                description,
                                badge,
+                               secondaryBadge,
                                data,
                                total,
                                visualTotal = total,
@@ -318,7 +319,8 @@ function DashboardPieChart({
                            }: {
     title: string;
     description: string;
-    badge: ReactNode;
+    badge: ReactNode | null;
+    secondaryBadge?: ReactNode;
     data: DashboardPieItem[];
     total: number;
     visualTotal?: number;
@@ -361,7 +363,10 @@ function DashboardPieChart({
                 <h2>{title}</h2>
                 <p className="muted">{description}</p>
             </div>
-            {/*<div className="text-right chart-total"><span className="badge">{badge}</span></div>*/}
+            {badge || secondaryBadge ? <div className="dashboard-chart-main-totals">
+                {badge ? <div className="dashboard-chart-main-total">{badge}</div> : null}
+                {secondaryBadge ? <div className="dashboard-chart-main-total">{secondaryBadge}</div> : null}
+            </div> : null}
         </div>
         {data.length && denominator > 0 ? <div className="expense-impact-pie-layout">
             <div className="expense-impact-pie" style={{background}} aria-label={title}>
@@ -408,12 +413,13 @@ function ExpenseCategoryIncomeImpactChart({
     data: Array<{ name: string; code: string; total: number }>;
     incomeTotal: number;
 }) {
-    const groupedData = groupedExpenseIncomeImpactData(data, incomeTotal);
+    const groupedData = groupedChartData(groupedExpenseIncomeImpactData(data, incomeTotal));
     const expenseTotal = groupedData.reduce((sum, item) => sum + item.total, 0);
     return <DashboardPieChart
         title="Impatto spese su incasso totale"
         description="Percentuale di ogni categoria spese rispetto alle entrate totali dell’anno fiscale."
-        badge={<>Incasso {chartEuro(incomeTotal)}</>}
+        badge={<><span>Entrate totali</span><strong>{chartEuro(incomeTotal)}</strong></>}
+        secondaryBadge={<><span>Uscite totali</span><strong>{chartEuro(expenseTotal)}</strong></>}
         data={groupedData}
         total={expenseTotal}
         visualTotal={Math.max(incomeTotal, expenseTotal)}
@@ -432,15 +438,227 @@ function IncomeBreakdownChart({title, description, data}: {
     data: Array<{ name: string; code: string; total: number }>
 }) {
     const total = data.reduce((sum, item) => sum + item.total, 0);
+    const groupedData = groupedChartData(data);
     return <DashboardPieChart
         title={title}
         description={description}
-        badge={<>Totale {chartEuro(total)}</>}
-        data={data}
+        badge={null}
+        data={groupedData}
         total={total}
         centerLabel="Entrate"
         emptyMessage="Nessun incasso presente per l’anno selezionato."
     />;
+}
+
+function groupedChartData(data: Array<{ name: string; code: string; total: number }>, limit = 6) {
+    if (data.length <= limit) return data;
+    const visible = data.slice(0, limit - 1);
+    const remainder = data.slice(limit - 1).reduce((sum, item) => sum + item.total, 0);
+    return [...visible, {name: 'Altre voci', code: 'ALTRO', total: remainder}];
+}
+
+function ExpenseCompositionChart({data, total}: {
+    data: Array<{ name: string; code: string; total: number }>;
+    total: number;
+}) {
+    const groupedData = groupedChartData(data);
+    const maxValue = Math.max(...groupedData.map(item => item.total), 1);
+    return <section className="card dashboard-composition-card">
+        <div className="card-heading-row">
+            <div>
+                <h2>Composizione delle spese</h2>
+                <p className="muted">Categorie con maggiore incidenza sulle uscite annuali.</p>
+            </div>
+            <div className="dashboard-chart-main-total"><span>Spese totali</span><strong>{chartEuro(total)}</strong></div>
+        </div>
+        {groupedData.length ? <div className="dashboard-composition-list">
+            {groupedData.map((item, index) => {
+                const percentage = total ? item.total / total * 100 : 0;
+                return <div className="dashboard-composition-row" key={`${item.code}-${item.name}`}>
+                    <div className="dashboard-composition-label">
+                        <span className="expense-impact-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/>
+                        <strong>{item.name}</strong>
+                        <small>{percentage.toFixed(1)}%</small>
+                    </div>
+                    <div className="dashboard-composition-bar-wrap">
+                        <i style={{
+                            width: `${item.total / maxValue * 100}%`,
+                            background: dashboardChartColors[index % dashboardChartColors.length]
+                        }}/>
+                    </div>
+                    <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong>
+                </div>;
+            })}
+        </div> : <p className="muted">Nessuna spesa presente per l’anno selezionato.</p>}
+    </section>;
+}
+
+function ProfitabilitySummaryCard({totals, year}: { totals: any; year: number }) {
+    const income = totals.incassoTotale;
+    const items = [
+        {label: 'Margine lordo', value: totals.utileLordo, color: '#2563eb'},
+        {label: 'Utile netto', value: totals.utileNetto, color: '#0f766e'},
+        {label: 'Utile fiscale', value: totals.utileFiscale, color: '#7c3aed'}
+    ];
+    const ratio = (value: number) => income ? value / Math.abs(income) * 100 : 0;
+    const negativeExtent = Math.max(...items.map(item => Math.max(-ratio(item.value), 0)), 0);
+    const positiveExtent = Math.max(...items.map(item => Math.max(ratio(item.value), 0)), 0);
+    const totalExtent = Math.max(negativeExtent + positiveExtent, 1);
+    const zeroPosition = negativeExtent / totalExtent * 100;
+
+    return <section className="card profitability-summary-card">
+        <div className="card-heading-row">
+            <div>
+                <h2>Sintesi della redditività</h2>
+                <p className="muted">Risultati annuali e incidenza sulle entrate nel {year}.</p>
+            </div>
+            <div className="dashboard-chart-main-total"><span>Entrate totali</span><strong>{chartEuro(income)}</strong></div>
+        </div>
+        <div className="profitability-summary-list">
+            {items.map(item => {
+                const percentage = ratio(item.value);
+                const width = Math.abs(percentage) / totalExtent * 100;
+                return <div className="profitability-summary-row" key={item.label}>
+                    <div className="profitability-summary-values">
+                        <strong>{item.label}</strong>
+                        <strong className={moneyTone(item.value)}>{chartEuro(item.value)}</strong>
+                        <span className={moneyTone(item.value)}>{percentage.toFixed(1)}%</span>
+                    </div>
+                    <div className={`profitability-summary-axis ${negativeExtent ? 'has-negative-values' : ''}`}
+                         style={{background: negativeExtent
+                                 ? `linear-gradient(90deg, #fff1f2 0 ${zeroPosition}%, #eef2f7 ${zeroPosition}% 100%)`
+                                 : '#eef2f7'}}
+                         aria-label={`${item.label}: ${chartEuro(item.value)}, ${percentage.toFixed(1)}% delle entrate`}>
+                        <i style={{
+                            left: percentage < 0 ? `${zeroPosition - width}%` : `${zeroPosition}%`,
+                            width: `${width}%`,
+                            background: item.value < 0 ? '#dc2626' : item.color
+                        }}/>
+                        {negativeExtent ? <b className="profitability-summary-zero" style={{left: `${zeroPosition}%`}}/> : null}
+                    </div>
+                </div>;
+            })}
+        </div>
+        <div className="profitability-summary-footer">
+            <span>Spese totali <strong>{chartEuro(totals.speseTotali)}</strong></span>
+            <span>Saldo IVA stimato <strong className={moneyTone(totals.debitoIva)}>{chartEuro(totals.debitoIva)}</strong></span>
+        </div>
+    </section>;
+}
+
+function FiscalNonFiscalOverview({totals, year, periods}: {
+    totals: any;
+    year: number;
+    periods: Array<{ year: number; month: number }>;
+}) {
+    const incomeTotal = totals.incassoTotale;
+    const expenseTotal = totals.speseTotali;
+    const fiscalIncome = totals.incassoFiscale;
+    const nonFiscalIncome = totals.incassoNonFiscale;
+    const fiscalExpenses = totals.usciteFiscali;
+    const nonFiscalExpenses = totals.usciteNonFiscali;
+    const otherExpenses = Math.max(expenseTotal - fiscalExpenses - nonFiscalExpenses, 0);
+    const percentage = (value: number, total: number) => total ? value / total * 100 : 0;
+    const fiscalIncomePercentage = percentage(fiscalIncome, incomeTotal);
+    const nonFiscalIncomePercentage = percentage(nonFiscalIncome, incomeTotal);
+    const fiscalExpensePercentage = percentage(fiscalExpenses, expenseTotal);
+    const nonFiscalExpensePercentage = percentage(nonFiscalExpenses, expenseTotal);
+    const otherExpensePercentage = percentage(otherExpenses, expenseTotal);
+    const fiscalBalance = fiscalIncome - fiscalExpenses;
+    const nonFiscalBalance = nonFiscalIncome - nonFiscalExpenses;
+    const nonFiscalTone = (value: number) => value > 25 ? 'is-critical' : value > 10 ? 'is-warning' : '';
+    const cards = [
+        {
+            label: 'Entrate fiscali',
+            value: fiscalIncome,
+            percentage: fiscalIncomePercentage,
+            className: 'is-fiscal-income',
+            href: periodLink('/incomes', periods, {fiscal: 'yes'})
+        },
+        {
+            label: 'Entrate non fiscali',
+            value: nonFiscalIncome,
+            percentage: nonFiscalIncomePercentage,
+            className: `is-non-fiscal-income ${nonFiscalTone(nonFiscalIncomePercentage)}`,
+            href: periodLink('/incomes', periods, {fiscal: 'no'})
+        },
+        {
+            label: 'Spese fiscali',
+            value: fiscalExpenses,
+            percentage: fiscalExpensePercentage,
+            className: 'is-fiscal-expense',
+            href: periodLink('/expenses', periods, {declared: 'yes'})
+        },
+        {
+            label: 'Spese non fiscali',
+            value: nonFiscalExpenses,
+            percentage: nonFiscalExpensePercentage,
+            className: `is-non-fiscal-expense ${nonFiscalTone(nonFiscalExpensePercentage)}`,
+            href: periodLink('/expenses', periods, {declared: 'no'})
+        }
+    ];
+
+    return <section className="card fiscal-non-fiscal-overview">
+        <div className="card-heading-row">
+            <div>
+                <h2>Panoramica fiscale e non fiscale</h2>
+                <p className="muted">Composizione annuale di entrate e spese registrate nel {year}.</p>
+            </div>
+            <span className="badge">Anno {year}</span>
+        </div>
+        <div className="fiscal-overview-matrix">
+            {cards.map(item => <Link className={`fiscal-overview-metric ${item.className}`} href={item.href} key={item.label}>
+                <span>{item.label}</span>
+                <strong>{chartEuro(item.value)}</strong>
+                <small>{item.percentage.toFixed(1)}% del totale</small>
+            </Link>)}
+        </div>
+        <div className="fiscal-overview-comparison">
+            <div className="fiscal-overview-comparison-row">
+                <div className="fiscal-overview-comparison-heading">
+                    <strong>Entrate</strong>
+                    <span>Totale {chartEuro(incomeTotal)}</span>
+                </div>
+                <div className="fiscal-overview-stacked-bar" aria-label={`Entrate: ${fiscalIncomePercentage.toFixed(1)}% fiscali, ${nonFiscalIncomePercentage.toFixed(1)}% non fiscali`}>
+                    <i className="is-fiscal-income" style={{width: `${Math.min(Math.max(fiscalIncomePercentage, 0), 100)}%`}}/>
+                    <i className="is-non-fiscal-income" style={{width: `${Math.min(Math.max(nonFiscalIncomePercentage, 0), 100)}%`}}/>
+                </div>
+                <div className="fiscal-overview-bar-labels">
+                    <span>Fiscali <strong>{fiscalIncomePercentage.toFixed(1)}%</strong></span>
+                    <span>Non fiscali <strong>{nonFiscalIncomePercentage.toFixed(1)}%</strong></span>
+                </div>
+            </div>
+            <div className="fiscal-overview-comparison-row">
+                <div className="fiscal-overview-comparison-heading">
+                    <strong>Spese</strong>
+                    <span>Totale {chartEuro(expenseTotal)}</span>
+                </div>
+                <div className="fiscal-overview-stacked-bar" aria-label={`Spese: ${fiscalExpensePercentage.toFixed(1)}% fiscali, ${nonFiscalExpensePercentage.toFixed(1)}% non fiscali`}>
+                    <i className="is-fiscal-expense" style={{width: `${Math.min(Math.max(fiscalExpensePercentage, 0), 100)}%`}}/>
+                    <i className="is-non-fiscal-expense" style={{width: `${Math.min(Math.max(nonFiscalExpensePercentage, 0), 100)}%`}}/>
+                    {otherExpenses ? <i className="is-other-expense" style={{width: `${Math.min(Math.max(otherExpensePercentage, 0), 100)}%`}}/> : null}
+                </div>
+                <div className="fiscal-overview-bar-labels">
+                    <span>Fiscali <strong>{fiscalExpensePercentage.toFixed(1)}%</strong></span>
+                    <span>Non fiscali <strong>{nonFiscalExpensePercentage.toFixed(1)}%</strong></span>
+                    {otherExpenses ? <span>Liquidazioni IVA/altre <strong>{otherExpensePercentage.toFixed(1)}%</strong></span> : null}
+                </div>
+            </div>
+        </div>
+        <div className="fiscal-overview-balances">
+            <div>
+                <span>Saldo fiscale operativo</span>
+                <strong className={moneyTone(fiscalBalance)}>{chartEuro(fiscalBalance)}</strong>
+                <small>Entrate fiscali meno spese fiscali</small>
+            </div>
+            <div>
+                <span>Saldo non fiscale</span>
+                <strong className={moneyTone(nonFiscalBalance)}>{chartEuro(nonFiscalBalance)}</strong>
+                <small>Entrate non fiscali meno spese non fiscali</small>
+            </div>
+        </div>
+        <p className="fiscal-overview-note">Il saldo fiscale operativo è un confronto tra flussi registrati e non coincide con l’utile fiscale, che considera imponibile e IVA detraibile.</p>
+    </section>;
 }
 
 function NetProfitByIncomeChannelChart({
@@ -1112,6 +1330,99 @@ function EconomicTrendChart({months, year}: { months: DashboardMonth[]; year: nu
     </section>;
 }
 
+function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]; year: number }) {
+    const totalIncome = months.reduce((sum, month) => sum + month.totals.incassoTotale, 0);
+    const totalNetProfit = months.reduce((sum, month) => sum + month.totals.utileNetto, 0);
+    const totalFiscalProfit = months.reduce((sum, month) => sum + month.totals.utileFiscale, 0);
+    const monthlyRatio = (value: number, income: number) => income ? value / Math.abs(income) * 100 : 0;
+    const ratios = months.flatMap(month => [
+        monthlyRatio(month.totals.utileNetto, month.totals.incassoTotale),
+        monthlyRatio(month.totals.utileFiscale, month.totals.incassoTotale)
+    ]);
+    const negativeExtent = Math.max(...ratios.map(value => Math.max(-value, 0)), 0);
+    const totalExtent = Math.max(negativeExtent + 100, 1);
+    const zeroPosition = negativeExtent / totalExtent * 100;
+    const annualRatio = (value: number) => totalIncome ? value / Math.abs(totalIncome) * 100 : 0;
+    const rankedMonths = months.filter(month => month.totals.incassoTotale || month.totals.speseTotali);
+    const bestMonth = rankedMonths.reduce<DashboardMonth | null>(
+        (best, month) => !best || month.totals.utileNetto > best.totals.utileNetto ? month : best,
+        null
+    );
+    const worstMonth = rankedMonths.reduce<DashboardMonth | null>(
+        (worst, month) => !worst || month.totals.utileNetto < worst.totals.utileNetto ? month : worst,
+        null
+    );
+    const barStyle = (percentage: number) => {
+        const boundedPercentage = percentage < 0
+            ? Math.max(percentage, -negativeExtent)
+            : Math.min(percentage, 100);
+        const width = Math.abs(boundedPercentage) / totalExtent * 100;
+        return {
+            left: percentage < 0 ? `${zeroPosition - width}%` : `${zeroPosition}%`,
+            width: `${width}%`
+        };
+    };
+
+    return <section className="card dashboard-insight-card monthly-profit-comparison-card">
+        <div className="card-heading-row">
+            <div>
+                <h2>Utile netto e fiscale per mese</h2>
+                <p className="muted">Confronto degli importi mensili nell’anno {year}.</p>
+            </div>
+            <div className="dashboard-chart-main-totals">
+                <div className="dashboard-chart-main-total">
+                    <span>Utile netto anno · {annualRatio(totalNetProfit).toFixed(1)}%</span>
+                    <strong className={moneyTone(totalNetProfit)}>{chartEuro(totalNetProfit)}</strong>
+                </div>
+                <div className="dashboard-chart-main-total">
+                    <span>Utile fiscale anno · {annualRatio(totalFiscalProfit).toFixed(1)}%</span>
+                    <strong className={moneyTone(totalFiscalProfit)}>{chartEuro(totalFiscalProfit)}</strong>
+                </div>
+            </div>
+        </div>
+        {months.length ? <div className="monthly-profit-comparison-list">
+            {months.map(month => {
+                const netProfit = month.totals.utileNetto;
+                const fiscalProfit = month.totals.utileFiscale;
+                const netPercentage = monthlyRatio(netProfit, month.totals.incassoTotale);
+                const fiscalPercentage = monthlyRatio(fiscalProfit, month.totals.incassoTotale);
+                const isBest = bestMonth?.month === month.month && bestMonth?.year === month.year;
+                const isWorst = worstMonth?.month === month.month && worstMonth?.year === month.year && worstMonth !== bestMonth;
+                return <Link className={`monthly-profit-comparison-row ${isBest ? 'is-best' : ''} ${isWorst ? 'is-worst' : ''}`}
+                             href={monthReportLink(month.year, month.month)}
+                             key={`${month.year}-${month.month}`}>
+                    <div className="monthly-profit-comparison-month">
+                        <strong>{capitalizedMonthName(month.month)}</strong>
+                        {isBest ? <small>Migliore</small> : isWorst ? <small>Più debole</small> : null}
+                    </div>
+                    <div className="monthly-profit-comparison-series">
+                        <div>
+                            <span>Netto</span>
+                            <div className={`monthly-profit-comparison-axis ${negativeExtent ? 'has-negative-values' : ''}`}
+                                 aria-label={`Utile netto ${netPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
+                                <i className={netProfit < 0 ? 'is-negative' : 'is-net'} style={barStyle(netPercentage)}/>
+                                {negativeExtent ? <b style={{left: `${zeroPosition}%`}}/> : null}
+                            </div>
+                            <strong className={moneyTone(netProfit)}>{chartEuro(netProfit)}</strong>
+                            <em className={moneyTone(netProfit)}>{netPercentage.toFixed(1)}%</em>
+                        </div>
+                        <div>
+                            <span>Fiscale</span>
+                            <div className={`monthly-profit-comparison-axis ${negativeExtent ? 'has-negative-values' : ''}`}
+                                 aria-label={`Utile fiscale ${fiscalPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
+                                <i className={fiscalProfit < 0 ? 'is-negative' : 'is-fiscal'} style={barStyle(fiscalPercentage)}/>
+                                {negativeExtent ? <b style={{left: `${zeroPosition}%`}}/> : null}
+                            </div>
+                            <strong className={moneyTone(fiscalProfit)}>{chartEuro(fiscalProfit)}</strong>
+                            <em className={moneyTone(fiscalProfit)}>{fiscalPercentage.toFixed(1)}%</em>
+                        </div>
+                    </div>
+                </Link>;
+            })}
+        </div> : <p className="muted">Nessun utile mensile disponibile per l’anno selezionato.</p>}
+    </section>;
+}
+
 function ProfitabilityTrendChart({months, year}: { months: DashboardMonth[]; year: number }) {
     const ratio = (value: number, income: number) => income ? (value / Math.abs(income)) * 100 : 0;
     const series = [
@@ -1541,23 +1852,17 @@ export default async function Dashboard({searchParams}: {
         </div>
 
         <div className="dashboard-report-charts">
-            <div className="charts-grid">
+            <div className="charts-grid dashboard-overview-charts">
                 <IncomeBreakdownChart title="Entrate per canale e categoria"
                                       description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`}
                                       data={report.incomesBySalesChannel}/>
                 <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale}/>
-                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileNetto} year={report.annualYear} kind="netto"/>
-                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileFiscale} year={report.annualYear} kind="fiscale"/>
-                <NetProfitByIncomeChannelChart data={report.incomesBySalesChannel} profit={report.totals.utileNetto}
-                                               incomeTotal={report.totals.incassoTotale} year={report.annualYear}
-                                               label="netto"/>
-                <NetProfitByIncomeChannelChart data={report.incomesBySalesChannel} profit={report.totals.utileFiscale}
-                                               incomeTotal={report.totals.incassoTotale} year={report.annualYear}
-                                               label="fiscale"/>
-                <MonthlyProfitPieChart months={report.months} totalProfit={report.totals.utileLordo} year={report.annualYear} kind="lordo"/>
-                <QuarterlyVatBalancePieChart months={report.months} year={report.annualYear}/>
+                <ExpenseCompositionChart data={report.expensesByCategory} total={report.totals.speseTotali}/>
+                <ProfitabilitySummaryCard totals={report.totals} year={report.annualYear}/>
             </div>
         </div>
+
+        <FiscalNonFiscalOverview totals={report.totals} year={report.annualYear} periods={annualPeriods}/>
 
         <div className="grid grid-2 dashboard-period-cards">
             <DashboardFiscalAjax
@@ -1749,6 +2054,7 @@ export default async function Dashboard({searchParams}: {
 
         <div className="dashboard-report-charts">
             <div className="dashboard-insights-grid">
+                <MonthlyProfitComparisonChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <EconomicTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <ProfitabilityTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <CashScheduleChart items={cashSchedule} year={report.annualYear}/>
@@ -1756,18 +2062,18 @@ export default async function Dashboard({searchParams}: {
             </div>
         </div>
 
-        <div className="dashboard-actions toolbar-card dashboard-actions-bottom">
-            <div>
-                <h2>Azioni rapide</h2>
-                <p className="muted">Inserisci rapidamente una nuova operazione.</p>
-            </div>
-            <div className="actions-row">
-                <button className="btn btn-lg btn-primary" type="button" data-expense-new>
-                    <span className="btn-icon">＋</span> Spesa
-                </button>
-                <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>
-                <Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>
-            </div>
-        </div>
+        {/*<div className="dashboard-actions toolbar-card dashboard-actions-bottom">*/}
+        {/*    <div>*/}
+        {/*        <h2>Azioni rapide</h2>*/}
+        {/*        <p className="muted">Inserisci rapidamente una nuova operazione.</p>*/}
+        {/*    </div>*/}
+        {/*    <div className="actions-row">*/}
+        {/*        <button className="btn btn-lg btn-primary" type="button" data-expense-new>*/}
+        {/*            <span className="btn-icon">＋</span> Spesa*/}
+        {/*        </button>*/}
+        {/*        <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>*/}
+        {/*        <Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
+        {/*    </div>*/}
+        {/*</div>*/}
     </div>;
 }
