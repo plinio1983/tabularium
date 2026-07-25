@@ -11,7 +11,6 @@ import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
-import {badgeClass} from '@/lib/expense-ui';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 import SearchIcon from '@/components/SearchIcon';
 
@@ -279,10 +278,12 @@ function ExpenseCategoryPieChart({data}: { data: ExpenseCategoryDatum[] }) {
                                 <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
                             </div>
                         </div>
-                        <div className="expense-impact-pie-bar" style={{
-                            width: `${percentage.toFixed(1)}%`,
-                            background: expensePieChartColors[index % expensePieChartColors.length]
-                        }}/>
+                        <div className="expense-impact-pie-bar-track">
+                            <div className="expense-impact-pie-bar" style={{
+                                width: `${percentage.toFixed(1)}%`,
+                                background: expensePieChartColors[index % expensePieChartColors.length]
+                            }}/>
+                        </div>
                     </div>;
                 })}
         </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
@@ -1015,7 +1016,17 @@ export default async function ExpensesPage({searchParams}: {
                         <h2 id="expense-top-summary-title">{totalsPeriodLabel}</h2>
                         <p className="muted">Riepilogo immediato delle spese comprese nei filtri correnti.</p>
                     </div>
-                    {monthlyReportHref ? <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>Report mensile</Link> : null}
+                    {monthlyReportHref ? <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
+                        <span className="btn-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="5" width="18" height="16" rx="2"/>
+                                <path d="M16 3v4M8 3v4M3 10h18"/>
+                                <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
+                            </svg>
+                        </span>
+                        <span>Report mensile</span>
+                    </Link> : null}
             </div>
             <div className="expense-top-summary-grid">
                     <div className="expense-top-summary-item is-primary">
@@ -1048,61 +1059,7 @@ export default async function ExpensesPage({searchParams}: {
                 </div>
             </section>
 
-            <div className="expense-summary-row">
-                <div className="dashboard-statement-panel list-totals-statement">
-                    {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}
-                    <h2>{totalsPeriodLabel}</h2>
-                    <table className="dashboard-statement-table list-totals-table" aria-label="Totali spese filtrate">
-                        <tbody>
-                        {/*<tr><td>Spese totali IVA inclusa</td><td><strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong></td></tr>*/}
-                        <tr>
-                            <td>Spese totali IVA inclusa</td>
-                            <td><strong className={badgeClass()}>{euro(totals.total)}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Spese non dichiarate</td>
-                            <td>
-                                <Link href={nonDeclaredTotalsHref}><strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong></Link>
-                            </td>
-                        </tr>
-                        <tr className={totals.toPay > 0 ? 'list-totals-row-warning row-warning' : ''}>
-                            <td>Non saldato</td>
-                            <td>
-                                <Link href={unpaidTotalsHref}><strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong></Link>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>IVA versata</td>
-                            <td><strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong></td>
-                        </tr>
-                        <tr className={totals.invoicesNotReceived > 0 ? 'list-totals-row-warning row-warning' : ''}>
-                            <td>Fatture non ricevute</td>
-                            <td>
-                                <Link href={invoicesNotReceivedHref}><strong className="text-warning">{totals.invoicesNotReceived}</strong></Link>
-                            </td>
-                        </tr>
-                        <tr className={totals.overdueCount > 0 ? 'list-totals-row-critical row-critical' : ''}>
-                            <td>Pagamenti scaduti</td>
-                            <td>
-                                <Link href={overduePaymentsHref}><strong className="text-warning">{totals.overdueCount}</strong></Link>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    {monthlyReportHref ? <div className="dashboard-statement-actions">
-                        <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
-              <span className="btn-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="5" width="18" height="16" rx="2"/>
-                  <path d="M16 3v4M8 3v4M3 10h18"/>
-                  <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
-                </svg>
-              </span>
-                            <span>Report mensile</span>
-                        </Link>
-                    </div> : null}
-                </div>
-                {/*<ExpenseCategoryColumnChart data={expensesByCategory} total={totals.total} />*/}
+            <div className="expense-summary-chart">
                 <ExpenseCategoryPieChart data={expensesByCategory}/>
             </div>
         </div>

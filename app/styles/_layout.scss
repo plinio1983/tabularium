@@ -5049,11 +5049,82 @@ html, body {
   display: grid;
   align-content: center;
   flex: 1 1 auto;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .summary-composition-list .expense-impact-pie-row-wrap:last-child {
   border-bottom: 0;
+}
+
+.expense-summary-chart {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.expense-summary-chart .summary-composition-card {
+  width: 100%;
+  padding: 10px 12px;
+}
+
+.expense-summary-chart .card-heading-row {
+  margin-bottom: 0;
+}
+
+.expense-summary-chart .card-heading-row .muted {
+  margin-top: 2px;
+}
+
+.expense-summary-chart .expense-impact-pie-legend-row {
+  padding: 6px 0 3px;
+}
+
+.expense-summary-chart .expense-impact-pie-bar {
+  height: 100%;
+}
+
+.expense-summary-chart .expense-impact-pie-bar-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8edf4;
+}
+
+@media (min-width: 1025px) {
+  .expense-summary-chart .expense-impact-pie-row-wrap {
+    display: grid;
+    grid-template-columns: 11px minmax(180px, .7fr) minmax(220px, 1.5fr) minmax(125px, auto);
+    align-items: center;
+    gap: 12px;
+    min-height: 31px;
+    padding: 4px 0;
+  }
+
+  .expense-summary-chart .expense-impact-pie-legend-row {
+    display: contents;
+  }
+
+  .expense-summary-chart .expense-impact-pie-dot {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .expense-summary-chart .expense-impact-pie-legend-row > div:first-of-type {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .expense-summary-chart .expense-impact-pie-bar-track {
+    grid-column: 3;
+    grid-row: 1;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .expense-summary-chart .expense-impact-pie-legend-row > div:last-child {
+    grid-column: 4;
+    grid-row: 1;
+    justify-content: flex-end;
+  }
 }
 
 .expense-category-chart-card h2 {
