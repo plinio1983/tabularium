@@ -69,8 +69,8 @@ export default function NewExpensePanel({ categories, banks, paymentMethods, sup
       </div>
     </div> : null}
 
-    {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuova spesa" onMouseDown={() => setIsOpen(false)}>
-      <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
+    {isOpen ? <div className="modal-backdrop app-form-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuova spesa" onMouseDown={() => setIsOpen(false)}>
+      <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
             <h3>Nuova spesa</h3>

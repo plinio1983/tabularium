@@ -51,8 +51,8 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         <div className="toolbar-card">
             <div><h2>Scontrini registratore</h2><p className="muted">{receipts.length} movimenti · {total.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'})}</p></div>
             <div className="toolbar-actions">
-                <Link className="btn btn-md btn-default" href="/incomes"><span className="btn-icon">↩</span> Incassi</Link>
-                <Link className="btn btn-md btn-primary" href="/incomes/cash-register">🧮 Reg. di cassa</Link>
+                <Link className="btn btn-md btn-default" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
+                <Link className="btn btn-md btn-secondary" href="/incomes/cash-register">🧮 Reg. di cassa</Link>
             </div>
         </div>
         <form className="card cash-register-receipt-filters">

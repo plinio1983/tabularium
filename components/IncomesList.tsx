@@ -205,7 +205,8 @@ export default function IncomesList({
                                         <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span> : ''}
                                 </div>
                                 <div className="right-side">
-                                    <span className="text-pre">{mobileDateLabel(income.creditDate)}</span></div>
+                                    <span className="badge expense-mobile-date text-pre">{mobileDateLabel(income.creditDate)}</span>
+                                </div>
                             </div>
                             <div className="expense-mobile-title-row">
                                 <div className="left-side flex-grow pl-6">
@@ -219,7 +220,7 @@ export default function IncomesList({
                             {/*<div className="expense-mobile-title-row">*/}
                             {/*    <div className="expense-mobile-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>*/}
                             {/*</div>*/}
-                            <div className="expense-mobile-title-row">
+                            <div className="expense-mobile-title-row income-mobile-status-row">
                                 <span className="badge">{income.salesChannelRef.name}</span>
                                 <span className={badgeClass(vatStyle.className)}>{Number(income.vatRate)}%</span>
                                 <span title={status.label} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {status.label}</span>

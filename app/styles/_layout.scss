@@ -3374,6 +3374,16 @@ table th, table td {
   font-weight: 600;
 }
 
+.expense-wizard-header,
+.expense-wizard-actions,
+.expense-wizard-keypad,
+.expense-wizard-vat-buttons,
+.expense-due-date-shortcuts,
+.expense-type-choice,
+.expense-wizard-mobile-switch {
+  display: none;
+}
+
 .empty-supplier-result {
   padding: 12px;
   color: var(--muted);
@@ -3404,7 +3414,8 @@ table th, table td {
   border: 1px solid var(--line);
   padding: 18px;
   box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
 }
 
@@ -5687,7 +5698,7 @@ html, body {
 @media (min-width: 1025px) {
   .expense-summary-chart .expense-impact-pie-row-wrap {
     display: grid;
-    grid-template-columns: 11px minmax(180px, .7fr) minmax(220px, 1.5fr) minmax(125px, auto);
+    grid-template-columns: 11px minmax(180px, 246px) minmax(220px, 1.5fr) minmax(125px, auto);
     align-items: center;
     gap: 12px;
     min-height: 36px;
@@ -7182,6 +7193,36 @@ html, body {
   border-radius: 8px;
   font-size: 14px;
   font-weight: 850;
+}
+
+.btn-circle {
+  border-radius: 50%;
+  max-width: 100%;
+  
+  &.btn-xxs {
+    width: 22px;
+    height: 22px;
+  }
+
+  &.btn-xs {
+    width: 28px;
+    height: 28px;
+  }
+
+  &.btn-sm {
+    width: 36px;
+    height: 36px;
+  }
+
+  &.btn-md {
+    width: 40px;
+    height: 40px;
+  }
+
+  &.btn-lg {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 .btn-icon-only {
@@ -8989,7 +9030,8 @@ button.bulk-direct-link {
 }
 
 .modal-page-card {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
 }
 

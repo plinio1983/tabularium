@@ -301,7 +301,7 @@ function SupplierAutocomplete({
     }
 
     return (
-        <div className="supplier-picker supplier-picker-wide" ref={containerRef}>
+        <div className="supplier-picker supplier-picker-wide expense-wizard-step expense-wizard-step-3" ref={containerRef}>
             <input type="hidden" name="supplierId" value={selected?.id ?? ""}/>
             <input
                 type="hidden"
@@ -554,7 +554,7 @@ function ProductServiceAutocomplete({
 
     return (
         <label
-            className="span-2 product-suggestion-picker"
+            className="span-2 product-suggestion-picker expense-wizard-step expense-wizard-step-3"
             ref={containerRef}
         >
             Prodotto/servizio
@@ -620,9 +620,12 @@ export default function ExpenseForm({
     const methodName = (methodId: string) => paymentMethods.find(method => String(method.id) === methodId)?.name ?? "";
     const normalizePaymentRow = (row: PaymentRow): PaymentRow =>
         isCashChannel(methodName(row.paymentMethodId)) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
-    const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount));
+    const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
+    const [vatRate, setVatRate] = useState(normalizeMoney(initialExpense?.vatRate) || "22");
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [mobileStep, setMobileStep] = useState(1);
+    const formRef = useRef<HTMLFormElement>(null);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
     );
@@ -657,7 +660,8 @@ export default function ExpenseForm({
     const canEditRecurringFlag = !isExistingExpense || Boolean(initialExpense?.isRecurring);
     const canEditExpenseType = !isExistingExpense;
 
-    const amountValue = Number(amount || 0);
+    const normalizedAmount = amount.replace(",", ".");
+    const amountValue = Number(normalizedAmount || 0);
     const paidAmountValue = payments.reduce(
         (sum, row) => sum + Number(row.amount || 0),
         0,
@@ -706,7 +710,48 @@ export default function ExpenseForm({
     }, [hasElectronicInvoice, isDeclared, invoiceStatus]);
 
     function handleAmountChange(value: string) {
-        setAmount(value);
+        const normalized = value.replace(".", ",").replace(/[^\d,]/g, "");
+        const [integer = "", decimals] = normalized.split(",");
+        setAmount(decimals === undefined ? integer.slice(0, 9) : `${integer.slice(0, 9)},${decimals.slice(0, 2)}`);
+    }
+
+    function appendAmountKey(key: string) {
+        setAmount(current => {
+            if (key === "backspace") return current.slice(0, -1);
+            if (key === ",") return current.includes(",") ? current : `${current || "0"},`;
+            const decimals = current.split(",")[1];
+            if (decimals?.length >= 2) return current;
+            const next = current === "0" && key !== "0" ? key : `${current}${key}`;
+            return next.slice(0, 12);
+        });
+    }
+
+    function goToMobileStep(nextStep: number) {
+        setMobileStep(Math.max(1, Math.min(6, nextStep)));
+        window.requestAnimationFrame(() => formRef.current?.scrollIntoView({behavior: "smooth", block: "start"}));
+    }
+
+    function validateMobileStep() {
+        const stepElements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.expense-wizard-step-${mobileStep}`) ?? []);
+        if (!stepElements.length) return true;
+        const fields = stepElements.flatMap(step =>
+            Array.from(step.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea")),
+        );
+        const invalid = fields.find(field => !field.disabled && !field.checkValidity());
+        if (invalid) {
+            invalid.reportValidity();
+            invalid.focus();
+            return false;
+        }
+        if (mobileStep === 4 && !canAddPayment) {
+            openPaymentRef.current?.scrollIntoView({behavior: "smooth", block: "center"});
+            return false;
+        }
+        return true;
+    }
+
+    function nextMobileStep() {
+        if (validateMobileStep()) goToMobileStep(mobileStep + 1);
     }
 
     function updatePayment(index: number, patch: Partial<PaymentRow>) {
@@ -740,7 +785,7 @@ export default function ExpenseForm({
             (sum, row) => sum + Number(row.amount || 0),
             0,
         );
-        const nextResidual = Math.max(0, Number(amount || 0) - currentPaidAmount);
+        const nextResidual = Math.max(0, amountValue - currentPaidAmount);
         const suggestedAmount = nextResidual > 0 ? nextResidual.toFixed(2) : "";
         setPayments((rows) => [
             ...rows,
@@ -787,6 +832,11 @@ export default function ExpenseForm({
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        if (!isExistingExpense && window.matchMedia("(max-width: 900px)").matches && mobileStep < 6) {
+            event.preventDefault();
+            nextMobileStep();
+            return;
+        }
         if (!onSaved) return;
         event.preventDefault();
         setSubmitError("");
@@ -821,13 +871,23 @@ export default function ExpenseForm({
 
     return (
         <form
-            className="card form expense-form"
+            ref={formRef}
+            className={`card form expense-form ${!isExistingExpense ? `expense-mobile-wizard expense-mobile-step-${mobileStep}` : ""}`}
             action={action}
             method="post"
             encType="multipart/form-data"
             onSubmit={handleSubmit}
             data-in-place-submit={onSaved ? "true" : undefined}
         >
+            {!isExistingExpense ? <div className="expense-wizard-header full">
+                <div className="expense-wizard-heading">
+                    <span>Passaggio {mobileStep} di 6</span>
+                    <strong>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Allegati e note"][mobileStep - 1]}</strong>
+                </div>
+                <div className="expense-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
+                    <span style={{width: `${mobileStep / 6 * 100}%`}}/>
+                </div>
+            </div> : null}
             {/*<h2 className="full">{title}</h2>*/}
 
             {/*<div className="form-sticky-summary full">*/}
@@ -841,14 +901,36 @@ export default function ExpenseForm({
             {/*  </div>*/}
             {/*</div>*/}
 
-            <details className="form-section full" open>
+            <details className="form-section full expense-wizard-split-section expense-wizard-document-section" open>
                 <summary>
                     <span>Documento</span>
                     <small>Dati principali della spesa</small>
                 </summary>
                 <div className="form-section-grid">
 
-                    <div className="toggle-field switch-toggle-field expense-type-switch-in-form full">
+                    <div className="expense-type-choice full expense-wizard-step expense-wizard-step-1">
+                        <span className="expense-type-choice-title">Tipo di spesa</span>
+                        <input type="hidden" name="isRecurring" value="false"/>
+                        <input type="hidden" name="expenseType" value="STANDARD"/>
+                        <div className="expense-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
+                            <button type="button" className="is-selected" role="radio" aria-checked="true">
+                                <span aria-hidden="true">●</span>
+                                <strong>Singola</strong>
+                                <small>Spesa occasionale</small>
+                            </button>
+                            <button type="button" role="radio" aria-checked="false" disabled title="Disponibile prossimamente">
+                                <span aria-hidden="true">↻</span>
+                                <strong>Ricorrente</strong>
+                                <small>Prossimamente</small>
+                            </button>
+                            <button type="button" role="radio" aria-checked="false" disabled title="Disponibile prossimamente">
+                                <span aria-hidden="true">IVA</span>
+                                <strong>Saldo IVA</strong>
+                                <small>Prossimamente</small>
+                            </button>
+                        </div>
+                    </div>
+                    <div className="toggle-field switch-toggle-field expense-type-switch-in-form expense-type-desktop full">
                         <span>Tipo spesa: {isRecurring ? "Ricorrente" : "Singola"}</span>
                         <div className="switch-group">
                             <label className="switch">
@@ -863,9 +945,7 @@ export default function ExpenseForm({
                                         const checked = event.currentTarget.checked;
                                         setIsRecurring(checked);
                                         if (checked) setIsVatSettlement(false);
-                                        if (checked && onSwitchToRecurring && !isExistingExpense) {
-                                            onSwitchToRecurring?.();
-                                        }
+                                        if (checked && onSwitchToRecurring && !isExistingExpense) onSwitchToRecurring();
                                     }}
                                 />
                                 <span className="slider"/>
@@ -881,12 +961,6 @@ export default function ExpenseForm({
                                         const checked = event.currentTarget.checked;
                                         setIsVatSettlement(checked);
                                         if (checked) setIsRecurring(false);
-                                        if (checked) {
-                                            const replacement = paymentMethods.find(method => method.systemRole !== "CASH" && !isCashChannel(method.name));
-                                            setPayments(rows => rows.map(row => isCashChannel(methodName(row.paymentMethodId))
-                                                ? { ...row, paymentMethodId: replacement ? String(replacement.id) : "" }
-                                                : row));
-                                        }
                                     }}
                                 />
                                 <span className="slider"/>
@@ -895,11 +969,11 @@ export default function ExpenseForm({
                         </div>
                     </div>
 
-                    {isVatSettlement && (!vatSettlementCategory || !vatSettlementSupplier) ? <div className="inline-form-error full">
+                    {isVatSettlement && (!vatSettlementCategory || !vatSettlementSupplier) ? <div className="inline-form-error full expense-wizard-step expense-wizard-step-1">
                         Configura la categoria Saldo IVA nelle Impostazioni. Il fornitore di sistema deve essere inizializzato per il workspace.
                     </div> : null}
 
-                    <label>
+                    <label className="expense-wizard-step expense-wizard-step-1">
                         {isVatSettlement ? "Data registrazione" : "Data ordine"}
                         <input
                             type="date"
@@ -918,7 +992,7 @@ export default function ExpenseForm({
                         />
                         {isVatSettlement ? <small className="muted">Usata per l’andamento temporale complessivo.</small> : null}
                     </label>
-                    <label>
+                    <label className="expense-wizard-step expense-wizard-step-1">
                         Data scadenza
                         <input
                             type="date"
@@ -926,8 +1000,20 @@ export default function ExpenseForm({
                             value={dueDate}
                             onChange={(event) => setDueDate(event.currentTarget.value)}
                         />
+                        <span className="expense-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
+                            {[7, 15, 30].map(days => {
+                                const value = addDaysToDateInput(orderDate, days);
+                                return <button
+                                    type="button"
+                                    key={days}
+                                    className={dueDate === value ? "is-selected" : ""}
+                                    aria-pressed={dueDate === value}
+                                    onClick={() => setDueDate(value)}
+                                >+{days}gg</button>;
+                            })}
+                        </span>
                     </label>
-                    <label>
+                    <label className="expense-wizard-step expense-wizard-step-5">
                         Periodo Contabile
                         <input
                             type="month"
@@ -938,11 +1024,11 @@ export default function ExpenseForm({
                         />
                         {isVatSettlement ? <small className="muted">Determina il periodo fiscale nel quale conteggiare il saldo IVA.</small> : null}
                     </label>
-                    {isVatSettlement ? <label>
+                    {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
                         Categoria
                         <input value={vatSettlementCategory?.name ?? "Non configurata"} readOnly />
                         <input type="hidden" name="categoryId" value={vatSettlementCategory?.id ?? ""} />
-                    </label> : <label>
+                    </label> : <label className="expense-wizard-step expense-wizard-step-3">
                         {/*🏷️ Categoria*/}
                         Categoria
                         <select
@@ -957,7 +1043,7 @@ export default function ExpenseForm({
                             ))}
                         </select>
                     </label>}
-                    {isVatSettlement ? <label>
+                    {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
                         Esercente
                         <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly />
                         <input type="hidden" name="supplierId" value={vatSettlementSupplier?.id ?? ""} />
@@ -970,21 +1056,44 @@ export default function ExpenseForm({
                     <ProductServiceAutocomplete
                         initialValue={initialExpense?.description ?? ""}
                     />
-                    <div className="amount-vat-row full">
-                        <label>
-                            {!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}
-                            <MoneyInput
-                                name="amount"
-                                required
-                                value={amount}
-                                onChange={(e) => handleAmountChange(e.currentTarget.value)}
-                            />
-                        </label>
+                    <div className="amount-vat-row full expense-wizard-step expense-wizard-step-2">
+                        <div className="expense-wizard-amount-entry">
+                            {!isVatSettlement ? <label className="expense-wizard-mobile-switch">
+                                <span>Fiscale</span>
+                                <span className="switch">
+                                    <input
+                                        type="checkbox"
+                                        checked={isDeclared}
+                                        onChange={(event) => {
+                                            const checked = event.currentTarget.checked;
+                                            setIsDeclared(checked);
+                                            if (!checked) {
+                                                setHasElectronicInvoice(false);
+                                                setInvoiceStatus("NON_PREVISTA");
+                                            }
+                                        }}
+                                    />
+                                    <span className="slider"/>
+                                </span>
+                            </label> : null}
+                            <label className="expense-wizard-amount-field">
+                                {!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}
+                                <MoneyInput
+                                    type="text"
+                                    inputMode="decimal"
+                                    required
+                                    value={amount}
+                                    onChange={(e) => handleAmountChange(e.currentTarget.value)}
+                                />
+                                <input type="hidden" name="amount" value={normalizedAmount}/>
+                            </label>
+                        </div>
                         {!isVatSettlement ? <label>
                             IVA
                             <select
                                 name="vatRate"
-                                defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}
+                                value={vatRate}
+                                onChange={(event) => setVatRate(event.currentTarget.value)}
                             >
                                 <option value="0">0%</option>
                                 <option value="4">4%</option>
@@ -992,19 +1101,36 @@ export default function ExpenseForm({
                                 <option value="22">22%</option>
                             </select>
                         </label> : <div></div>}
+                        <div className="expense-wizard-vat-buttons full" aria-label="Aliquota IVA">
+                            {["0", "4", "10", "22"].map(rate => <button
+                                type="button"
+                                key={rate}
+                                className={vatRate === rate ? "is-selected" : ""}
+                                disabled={isVatSettlement}
+                                onClick={() => setVatRate(rate)}
+                            >{rate}%</button>)}
+                        </div>
+                        <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
+                            {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button
+                                type="button"
+                                key={key}
+                                aria-label={key === "backspace" ? "Cancella ultima cifra" : key}
+                                onClick={() => appendAmountKey(key)}
+                            >{key === "backspace" ? "⌫" : key}</button>)}
+                        </div>
                     </div>
                     <input type="hidden" name="paymentStatus" value={computedPaymentStatus}/>
                 </div>
             </details>
 
-            {!isVatSettlement ? <details className="form-section full" open>
+            {!isVatSettlement ? <details className="form-section full expense-wizard-split-section expense-wizard-fiscal-section" open>
                 <summary>
                     <span>Fiscale</span>
                     <small>IVA, detrazione e fattura elettronica</small>
                 </summary>
                 <div className="form-section-grid">
                     <div className="toggle-field-wrap">
-                        <div className="toggle-field switch-toggle-field">
+                        <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-2 expense-fiscal-desktop-control">
                             <span>Fiscale</span>
                             <label className="switch">
                                 <input
@@ -1026,7 +1152,7 @@ export default function ExpenseForm({
                             </label>
                         </div>
 
-                        <div className="toggle-field switch-toggle-field">
+                        <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
                             <span>Fatt. Elett.</span>
                             <label className="switch">
                                 <input
@@ -1046,31 +1172,52 @@ export default function ExpenseForm({
                             </label>
                         </div>
                     </div>
-                    <label>
-                        🧾 Stato Fattura
-                        <select
-                            name="invoiceStatus"
-                            value={invoiceStatus}
-                            disabled={invoiceNotExpected}
-                            onChange={(e) => setInvoiceStatus(e.currentTarget.value)}
-                        >
-                            {invoiceStatuses.map(([value, label]) => (
-                                <option key={value} value={value}>
-                                    {label}
-                                </option>
-                            ))}
-                        </select>
-                        {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>}
-                    </label>
+                    <div className="expense-invoice-step-row expense-wizard-step expense-wizard-step-5">
+                        <label className="expense-wizard-mobile-switch">
+                            <span>Fattura elettronica</span>
+                            <span className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={hasElectronicInvoice}
+                                    disabled={!isDeclared}
+                                    onChange={(event) => {
+                                        const checked = event.currentTarget.checked;
+                                        setHasElectronicInvoice(checked);
+                                        if (checked) setIsDeclared(true);
+                                    }}
+                                />
+                                <span className="slider"/>
+                            </span>
+                        </label>
+                        <label className="expense-invoice-status-field">
+                            🧾 Stato Fattura
+                            <select
+                                name="invoiceStatus"
+                                value={invoiceStatus}
+                                disabled={invoiceNotExpected}
+                                onChange={(e) => setInvoiceStatus(e.currentTarget.value)}
+                            >
+                                {invoiceStatuses.map(([value, label]) => (
+                                    <option key={value} value={value}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+                            {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>}
+                        </label>
+                    </div>
                 </div>
             </details> : <>
                 <input type="hidden" name="vatRate" value="0" />
                 <input type="hidden" name="isDeclared" value="false" />
                 <input type="hidden" name="hasElectronicInvoice" value="false" />
                 <input type="hidden" name="invoiceStatus" value="NON_PREVISTA" />
+                <div className="field-note full expense-wizard-step expense-wizard-step-5">
+                    Fattura elettronica non prevista per il Saldo IVA.
+                </div>
             </>}
 
-            <details className="form-section full" open>
+            <details className="form-section full expense-wizard-step expense-wizard-step-4" open>
                 <summary>
                     <span>Pagamenti</span>
                     <small>Stato, residuo e movimenti registrati</small>
@@ -1263,7 +1410,7 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full">
+            <details className="form-section full expense-wizard-step expense-wizard-step-6" open={!isExistingExpense && mobileStep === 6}>
                 <summary>
                     <span>Allegati e note</span>
                     <small>File, XML, P7M e note interne</small>
@@ -1313,6 +1460,26 @@ export default function ExpenseForm({
                     </label>
                 </div>
             </details>
+
+            {!isExistingExpense ? <div className="expense-wizard-actions full">
+                {submitError ? <p className="inline-warning full">{submitError}</p> : null}
+                <div className="expense-wizard-actions-row">
+                    {mobileStep > 1 ? <button className="btn btn-md btn-default" type="button" onClick={() => goToMobileStep(mobileStep - 1)}>
+                        ← Indietro
+                    </button> : onCancel ? <button className="btn btn-md btn-default" type="button" onClick={onCancel}>
+                        × Annulla
+                    </button> : <a className="btn btn-md btn-default" href={cancelHref ?? "/expenses"}>× Annulla</a>}
+                    {mobileStep < 6 ? <button className="btn btn-md btn-primary" type="button" onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        nextMobileStep();
+                    }}>
+                        Avanti →
+                    </button> : <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting || Boolean(attachmentError)}>
+                        <span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
+                    </button>}
+                </div>
+            </div> : null}
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}

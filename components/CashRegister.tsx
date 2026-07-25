@@ -191,7 +191,7 @@ export default function CashRegister({methods, channels, defaultChannelId, prima
         </header>
 
         {mode === 'edit' ? <div className="cash-register-edit-confirm">
-            <button className="btn btn-sm btn-primary" type="button" disabled={sending}
+            <button className="btn btn-sm btn-success" type="button" disabled={sending}
                     onClick={() => void submitReceipt()}>
                 ✓ {sending ? 'Salvataggio…' : 'Conferma modifica'}
             </button>
