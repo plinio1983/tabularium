@@ -231,6 +231,22 @@ function MoneyCell({value, highlight = false, tone = ''}: { value: number; highl
         className={moneyTone(value, [highlight ? 'money-highlight' : '', tone].filter(Boolean).join(' '))}>{euro(value)}</strong>;
 }
 
+function AnnualMoneyWithRatio({value, denominator, highlight = false, percentageOverride, denominatorLabel = 'entrate totali'}: {
+    value: number;
+    denominator: number;
+    highlight?: boolean;
+    percentageOverride?: number;
+    denominatorLabel?: string;
+}) {
+    const percentage = percentageOverride ?? (denominator ? value / denominator * 100 : null);
+    return <span className="dashboard-annual-value-with-ratio">
+        <strong className={moneyTone(value, highlight ? 'money-highlight' : '')}>{euro(value)}</strong>
+        <small aria-label={percentage === null ? 'Percentuale non disponibile' : `${percentage.toFixed(1)} percento delle ${denominatorLabel}`}>
+            {percentage === null ? '—' : `${percentage.toFixed(1)}%`}
+        </small>
+    </span>;
+}
+
 function MobileMoneyCell({value}: { value: number }) {
     const formatted = new Intl.NumberFormat('it-IT', {
         style: 'currency',
@@ -1907,44 +1923,64 @@ export default async function Dashboard({searchParams}: {
                         <tbody>
                         <tr className="dashboard-statement-result">
                             <td>Entrate totali anno</td>
-                            <td><span className="money-highlight"><strong
-                                className={moneyTone(report.totals.incassoTotale)}>{euro(report.totals.incassoTotale)}</strong></span>
+                            <td>
+                                <AnnualMoneyWithRatio value={report.totals.incassoTotale}
+                                                      denominator={report.totals.incassoTotale}
+                                                      percentageOverride={100}
+                                                      highlight/>
                             </td>
                         </tr>
                         <tr>
                             <td>Uscite anno</td>
-                            <td><strong
-                                className={moneyTone(report.totals.speseTotali)}>{euro(report.totals.speseTotali)}</strong>
+                            <td>
+                                <AnnualMoneyWithRatio value={report.totals.speseTotali}
+                                                      denominator={report.totals.incassoTotale}/>
+                            </td>
+                        </tr>
+                        <tr className="dashboard-statement-result">
+                            <td>Margine lordo anno</td>
+                            <td>
+                                <AnnualMoneyWithRatio value={report.totals.utileLordo}
+                                                      denominator={report.totals.incassoTotale}
+                                                      highlight/>
                             </td>
                         </tr>
                         <tr className="dashboard-statement-result">
                             <td>Utile netto anno</td>
-                            <td><strong
-                                className={moneyTone(report.totals.utileNetto, 'money-highlight')}>{euro(report.totals.utileNetto)}</strong>
+                            <td>
+                                <AnnualMoneyWithRatio value={report.totals.utileNetto}
+                                                      denominator={report.totals.incassoTotale}
+                                                      highlight/>
                             </td>
                         </tr>
                         <tr>
                             <td>Imponibile</td>
-                            <td><strong
-                                className={moneyTone(report.totals.imponibileIncassi)}>{euro(report.totals.imponibileIncassi)}</strong>
+                            <td>
+                                <AnnualMoneyWithRatio value={report.totals.imponibileIncassi}
+                                                      denominator={report.totals.incassoTotale}/>
                             </td>
                         </tr>
                         <tr>
                             <td>Entrate non fiscali</td>
-                            <td><strong
-                                className={moneyTone(report.totals.incassoNonFiscale)}>{euro(report.totals.incassoNonFiscale)}</strong>
+                            <td>
+                                <AnnualMoneyWithRatio value={report.totals.incassoNonFiscale}
+                                                      denominator={report.totals.incassoTotale}/>
                             </td>
                         </tr>
                         <tr>
                             <td>Uscite non fiscali</td>
-                            <td><strong
-                                className={moneyTone(report.totals.usciteNonFiscali)}>{euro(report.totals.usciteNonFiscali)}</strong>
+                            <td>
+                                <AnnualMoneyWithRatio value={report.totals.usciteNonFiscali}
+                                                      denominator={report.totals.speseTotali}
+                                                      denominatorLabel="uscite totali"/>
                             </td>
                         </tr>
                         <tr className="dashboard-statement-result">
                             <td>Utile fiscale anno</td>
-                            <td><strong
-                                className={moneyTone(report.totals.utileFiscale, 'money-highlight')}>{euro(report.totals.utileFiscale)}</strong>
+                            <td>
+                                <AnnualMoneyWithRatio value={report.totals.utileFiscale}
+                                                      denominator={report.totals.incassoTotale}
+                                                      highlight/>
                             </td>
                         </tr>
                         {/*<tr className="row-warning"><td>Previsione imposte anno</td><td><strong className={moneyTone(report.totals.previsioneImposte, 'money-warning')}>{euro(report.totals.previsioneImposte)}</strong></td></tr>*/}

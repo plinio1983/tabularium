@@ -3819,6 +3819,22 @@ table th, table td {
   margin: 0;
 }
 
+.dashboard-annual-value-with-ratio {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dashboard-annual-value-with-ratio small {
+  min-width: 48px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+}
+
 
 .expense-column-panel {
   min-width: 0;
@@ -11584,6 +11600,12 @@ table .cell-description {
     min-width: 84px;
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  .card-heading-row {
+    .dashboard-chart-main-totals {
+      width: 100%;
+    }
   }
 }
 
