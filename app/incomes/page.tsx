@@ -501,10 +501,12 @@ function IncomePieBreakdownChart({title, data}: {
                                 <strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
                             </div>
                         </div>
-                        <div className="expense-impact-pie-bar" style={{
-                            width: `${percentage.toFixed(1)}%`,
-                            background: incomePieChartColors[index % incomePieChartColors.length]
-                        }}/>
+                        <div className="expense-impact-pie-bar-track">
+                            <div className="expense-impact-pie-bar" style={{
+                                width: `${percentage.toFixed(1)}%`,
+                                background: incomePieChartColors[index % incomePieChartColors.length]
+                            }}/>
+                        </div>
                     </div>;
                 })}
         </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
@@ -875,56 +877,55 @@ export default async function IncomesPage({searchParams}: {
                 billingPeriodYear={billingPeriodYearFilter}
                 useFiscalPeriodFilter={useFiscalPeriodFilter}
             />
-            {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}
-            <div className="income-summary-row">
-                <div className="dashboard-statement-panel list-totals-statement">
-                    <h2>{totalsPeriodLabel}</h2>
-                    <table className="dashboard-statement-table list-totals-table" aria-label="Totali incassi filtrati">
-                        <tbody>
-                        <tr>
-                            <td>Entrate totali</td>
-                            <td><strong className={badgeClass()}>{euro(totals.total)}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Incasso fiscale</td>
-                            <td>
-                                <Link href={fiscalTotalsHref}><strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong></Link>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Imponibile</td>
-                            <td><strong className={moneyTone(totals.taxable)}>{euro(totals.taxable)}</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Incasso non fiscale</td>
-                            <td>
-                                <Link href={nonFiscalTotalsHref}><strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong></Link>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Debito IVA prodotto</td>
-                            <td><strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong></td>
-                        </tr>
-                        {/*<tr><td>Debito IVA residuo</td><td><strong>{residualVatDebt === null ? <span className="total-placeholder">Seleziona periodo fiscale</span> : <span className={moneyTone(residualVatDebt)}>{euro(residualVatDebt)}</span>}</strong></td></tr>*/}
-                        <tr>
-                            <td>Fatture non inviate</td>
-                            <td><Link href={invoicesNotSentHref}><strong>{totals.invoicesNotSent}</strong></Link></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    {monthlyReportHref ? <div className="dashboard-statement-actions">
-                        <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
-              <span className="btn-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="5" width="18" height="16" rx="2"/>
-                  <path d="M16 3v4M8 3v4M3 10h18"/>
-                  <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
-                </svg>
-              </span>
-                            <span>Report mensile</span>
-                        </Link>
-                    </div> : null}
+
+            <section className="expense-top-summary" aria-labelledby="income-top-summary-title">
+                <div className="card-heading-row">
+                    <div>
+                        <h2 id="income-top-summary-title">{totalsPeriodLabel}</h2>
+                        <p className="muted">Riepilogo immediato degli incassi compresi nei filtri correnti.</p>
+                    </div>
+                    {monthlyReportHref ? <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
+                        <span className="btn-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="5" width="18" height="16" rx="2"/>
+                                <path d="M16 3v4M8 3v4M3 10h18"/>
+                                <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
+                            </svg>
+                        </span>
+                        <span>Report mensile</span>
+                    </Link> : null}
                 </div>
+                <div className="expense-top-summary-grid">
+                    <div className="expense-top-summary-item is-primary">
+                        <span>Entrate totali</span>
+                        <strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong>
+                    </div>
+                    <Link className="expense-top-summary-item" href={fiscalTotalsHref}>
+                        <span>Incasso fiscale</span>
+                        <strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong>
+                    </Link>
+                    <div className="expense-top-summary-item">
+                        <span>Imponibile</span>
+                        <strong className={moneyTone(totals.taxable)}>{euro(totals.taxable)}</strong>
+                    </div>
+                    <Link className="expense-top-summary-item" href={nonFiscalTotalsHref}>
+                        <span>Incasso non fiscale</span>
+                        <strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong>
+                    </Link>
+                    <div className="expense-top-summary-item">
+                        <span>Debito IVA prodotto</span>
+                        <strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong>
+                    </div>
+                    <Link className={`expense-top-summary-item ${totals.invoicesNotSent > 0 ? 'is-warning' : ''}`}
+                          href={invoicesNotSentHref}>
+                        <span>Fatture non inviate</span>
+                        <strong>{totals.invoicesNotSent}</strong>
+                    </Link>
+                </div>
+            </section>
+
+            <div className="expense-summary-chart">
                 <IncomePieBreakdownChart title="Composizione degli incassi" data={incomesBySaleCategoryAndChannel}/>
             </div>
         </div>

@@ -191,7 +191,8 @@
 @media (min-width: 576px) {
   .income-form .income-form-section-grid {
     &.income-form-section-fiscal {
-      display: flex;
+      //display: flex;
+      grid-template-columns: minmax(120px, 180px) repeat(2, minmax(0, 1fr));
     }
   }
 }

@@ -2026,7 +2026,7 @@ body.drawer-open {
 }
 
 .switch {
-  display: flex;
+  display: flex !important;
   grid-template-columns: none !important;
   align-items: center;
   gap: 10px;
@@ -5095,7 +5095,7 @@ html, body {
     grid-template-columns: 11px minmax(180px, .7fr) minmax(220px, 1.5fr) minmax(125px, auto);
     align-items: center;
     gap: 12px;
-    min-height: 31px;
+    min-height: 36px;
     padding: 4px 0;
   }
 
