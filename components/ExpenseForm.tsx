@@ -104,7 +104,7 @@ function monthInputFromDateInput(value: string) {
 const currentBillingPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
 const defaultChannel = "Bonifico";
 const cashChannel = "Cash";
-const cashBankName = "Altra Banca";
+const cashBankName = "Cassa";
 
 function normalizeMoney(value: unknown) {
     if (value === null || value === undefined) return "";

@@ -25,7 +25,7 @@ const fixedCategories = [
   'Rateizzazione'
 ];
 
-const fixedBanks = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+const fixedBanks = ['MyTu', 'Unicredit', 'Wise', 'Cassa'];
 
 function normalizeCode(value: string) {
   return value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');

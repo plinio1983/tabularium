@@ -593,8 +593,7 @@ export default async function IncomesPage({searchParams}: {
                 salesChannelRef: true,
                 customer: true
             },
-            orderBy: [{creditDate: 'desc'}, {id: 'desc'}],
-            take: 500
+            orderBy: [{creditDate: 'desc'}, {id: 'desc'}]
         }),
         prisma.expense.findMany({where: {workspaceId: current.workspace.id}, include: {payments: true}, take: 5000}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
@@ -695,6 +694,49 @@ export default async function IncomesPage({searchParams}: {
     }, {total: 0, fiscal: 0, nonFiscal: 0, taxable: 0, vatDebt: 0, invoicesNotSent: 0});
 
     const totals = summarizeIncomes(filteredIncomes);
+    const standardFilteredIncomes = filteredIncomes.filter(income => income.incomeType !== 'CASH_REGISTER');
+    const cashRegisterGroups = Array.from(filteredIncomes
+        .filter(income => income.incomeType === 'CASH_REGISTER')
+        .reduce((groups, income) => {
+            const key = [
+                income.billingYear,
+                income.billingMonth,
+                income.paymentMethodId,
+                income.salesChannelId,
+                income.isFiscal ? '1' : '0'
+            ].join(':');
+            const current = groups.get(key) ?? {
+                key,
+                billingYear: income.billingYear,
+                billingMonth: income.billingMonth,
+                paymentMethodId: income.paymentMethodId,
+                paymentMethod: income.paymentMethodRef.name,
+                paymentMethodIcon: income.paymentMethodRef.icon,
+                salesChannelId: income.salesChannelId,
+                salesChannel: income.salesChannelRef.name,
+                salesChannelIcon: income.salesChannelRef.icon,
+                isFiscal: income.isFiscal,
+                amount: 0,
+                count: 0
+            };
+            current.amount += Number(income.amount);
+            current.count += 1;
+            groups.set(key, current);
+            return groups;
+        }, new Map<string, {
+            key: string;
+            billingYear: number;
+            billingMonth: number;
+            paymentMethodId: number;
+            paymentMethod: string;
+            paymentMethodIcon: string | null;
+            salesChannelId: number;
+            salesChannel: string;
+            salesChannelIcon: string | null;
+            isFiscal: boolean;
+            amount: number;
+            count: number;
+        }>()).values()).sort((a, b) => b.billingYear - a.billingYear || b.billingMonth - a.billingMonth || a.paymentMethod.localeCompare(b.paymentMethod, 'it'));
     const totalsPeriodLabel = periodTotalsLabel({
         useFiscalPeriodFilter,
         billingPeriodFromFilter,
@@ -773,7 +815,7 @@ export default async function IncomesPage({searchParams}: {
     ].filter(Boolean) as Array<{ label: string; value: string }>;
 
     const mobileSort = inputDefault(filters, 'mobileSort') || incomeMobileSortOptions[0].value;
-    const mobileSortedIncomes = [...filteredIncomes].sort((a, b) => {
+    const mobileSortedIncomes = [...standardFilteredIncomes].sort((a, b) => {
         const billingA = ((a.billingYear ?? 0) * 100) + (a.billingMonth ?? 0);
         const billingB = ((b.billingYear ?? 0) * 100) + (b.billingMonth ?? 0);
         const paymentA = a.paymentMethodRef.name;
@@ -837,9 +879,14 @@ export default async function IncomesPage({searchParams}: {
                 <h2>Incassi</h2>
                 <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
             </div>
-            <button className="btn btn-md btn-primary income-add-btn" type="button" data-income-new>
-                <span className="btn-icon">+</span>Inserisci incasso
-            </button>
+            <div className="toolbar-actions">
+                <Link className="btn btn-md btn-secondary" href="/incomes/cash-register">
+                    <span className="btn-icon" aria-hidden="true">🧾</span>Registratore di cassa
+                </Link>
+                <button className="btn btn-md btn-primary income-add-btn" type="button" data-income-new>
+                    <span className="btn-icon">+</span>Inserisci incasso
+                </button>
+            </div>
         </div>
 
         <ActionFeedbackBanner
@@ -933,7 +980,7 @@ export default async function IncomesPage({searchParams}: {
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista incassi</h2>
-                    <p className="muted">Risultati mostrati: {filteredIncomes.length}</p>
+                    <p className="muted">Risultati mostrati: {standardFilteredIncomes.length + cashRegisterGroups.length}</p>
                 </div>
                 <div>
                     <IncomeFiltersDrawer
@@ -1174,8 +1221,9 @@ export default async function IncomesPage({searchParams}: {
             <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
             <IncomesList
-                incomes={filteredIncomes}
+                incomes={standardFilteredIncomes}
                 mobileIncomes={mobileSortedIncomes}
+                cashRegisterGroups={cashRegisterGroups}
                 returnTo={returnTo}
                 banks={orderedBanks.map(bank => ({
                     id: bank.id,

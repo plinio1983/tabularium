@@ -1,10 +1,15 @@
 import { redirect } from 'next/navigation';
 import { getCurrentSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { incomeEntityIconOptions } from '@/lib/workspace-defaults';
+import { ensureWorkspaceDefaults, incomeEntityIconOptions } from '@/lib/workspace-defaults';
 import IncomeEntityCreatePanel from './IncomeEntityCreatePanel';
 import IncomeEntityDeleteForm from './IncomeEntityDeleteForm';
-import { createIncomeEntityAction, deleteIncomeEntityAction, updateIncomeEntityAction } from './actions';
+import {
+  createIncomeEntityAction,
+  deleteIncomeEntityAction,
+  updateCashRegisterIncomeDefaultsAction,
+  updateIncomeEntityAction
+} from './actions';
 
 const errors: Record<string, string> = {
   invalid: 'Compila correttamente tutti i campi.',
@@ -12,7 +17,8 @@ const errors: Record<string, string> = {
   icon_invalid: 'Seleziona un’icona valida.',
   code_exists: 'Esiste già un’entità con questo codice.',
   not_found: 'Entità non trovata.',
-  in_use: 'Entità usata da incassi esistenti: riassegnali prima di rimuoverla.'
+  in_use: 'Entità usata da incassi esistenti: riassegnali prima di rimuoverla.',
+  cash_register_in_use: 'Entità configurata nel registratore di cassa: seleziona prima un altro valore.'
 };
 
 function EntitySection({ title, kind, entities }: {
@@ -47,18 +53,42 @@ export const dynamic = 'force-dynamic';
 export default async function IncomeCategoriesSettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await getCurrentSession();
   if (!current?.workspace) redirect('/login?next=/settings/categories/incomes');
+  await ensureWorkspaceDefaults(current.workspace.id);
   const params = (await searchParams) ?? {};
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const saved = Array.isArray(params.saved) ? params.saved[0] : params.saved;
   const usage = Array.isArray(params.usage) ? params.usage[0] : params.usage;
-  const [categories, channels] = await Promise.all([
+  const [categories, channels, workspaceSettings] = await Promise.all([
     prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, include: { _count: { select: { incomes: true } } }, orderBy: { name: 'asc' } }),
-    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, include: { _count: { select: { incomes: true } } }, orderBy: { name: 'asc' } })
+    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, include: { _count: { select: { incomes: true } } }, orderBy: { name: 'asc' } }),
+    prisma.workspace.findUnique({
+      where: { id: current.workspace.id },
+      select: { cashRegisterIncomeCategoryId: true, cashRegisterSalesChannelId: true }
+    })
   ]);
   return <div className="grid admin-page categories-settings-page">
     <div className="toolbar-card"><div><h2>Categorie di incasso</h2><p className="muted">Gestisci categorie, canali di vendita e relative icone.</p></div></div>
     {saved ? <div className="form-summary full"><strong>Configurazione aggiornata.</strong></div> : null}
     {error ? <div className="inline-form-error full">{errors[error] ?? 'Impossibile aggiornare la configurazione.'}{error === 'in_use' && usage ? ` Incassi collegati: ${usage}.` : ''}</div> : null}
+    <form action={updateCashRegisterIncomeDefaultsAction} className="card form cash-register-settings-form">
+      <div>
+        <h3>Registratore di cassa</h3>
+        <p className="muted">Categoria e canale predefiniti applicati agli incassi da banco.</p>
+      </div>
+      <label>Categoria
+        <select name="cashRegisterIncomeCategoryId" defaultValue={workspaceSettings?.cashRegisterIncomeCategoryId ?? ''} required>
+          <option value="">Seleziona</option>
+          {categories.map(category => <option value={category.id} key={category.id}>{category.icon ?? ''} {category.name}</option>)}
+        </select>
+      </label>
+      <label>Canale predefinito
+        <select name="cashRegisterSalesChannelId" defaultValue={workspaceSettings?.cashRegisterSalesChannelId ?? ''} required>
+          <option value="">Seleziona</option>
+          {channels.map(channel => <option value={channel.id} key={channel.id}>{channel.icon ?? ''} {channel.name}</option>)}
+        </select>
+      </label>
+      <button className="btn btn-sm btn-primary" type="submit">✓ Salva configurazione</button>
+    </form>
     <EntitySection title="Categorie" kind="category" entities={categories} />
     <EntitySection title="Canali di vendita" kind="channel" entities={channels} />
   </div>;

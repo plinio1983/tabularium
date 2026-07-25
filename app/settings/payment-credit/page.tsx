@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getCurrentSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { orderBanks, orderPaymentMethods, paymentCreditIconOptions } from '@/lib/workspace-defaults';
+import { ensureWorkspaceDefaults, orderBanks, orderPaymentMethods, paymentCreditIconOptions } from '@/lib/workspace-defaults';
 import {
   createBankAction,
   createPaymentMethodAction,
@@ -22,6 +22,10 @@ const errorMessages: Record<string, string> = {
   bank_not_found: 'Banca/canale accredito non trovato.',
   method_exists: 'Esiste già un metodo con questa label.',
   method_not_found: 'Metodo non trovato.',
+  cash_register_invalid: 'Abilita almeno un metodo e seleziona il metodo principale.',
+  cash_register_bank: 'Imposta una banca valida per ogni metodo del registratore.',
+  cash_register_method_delete: 'Disabilita o sostituisci il metodo nel registratore prima di eliminarlo.',
+  cash_bank_delete: 'Il canale di sistema Cassa non può essere eliminato.',
   fallback_delete: 'Il valore generico non può essere eliminato, ma puoi modificarne la label.',
   system_delete: 'Il metodo di pagamento di sistema non può essere eliminato, ma puoi modificarne la label.',
   in_use: 'Valore usato da movimenti esistenti: riassegnali prima di rimuoverlo.'
@@ -33,7 +37,8 @@ const savedMessages: Record<string, string> = {
   bank_deleted: 'Banca/canale accredito rimosso.',
   method_created: 'Metodo aggiunto.',
   method_updated: 'Metodo aggiornato.',
-  method_deleted: 'Metodo rimosso.'
+  method_deleted: 'Metodo rimosso.',
+  cash_register_updated: 'Metodi del registratore di cassa aggiornati.'
 };
 
 const kindLabels: Record<string, string> = {
@@ -52,13 +57,14 @@ export const dynamic = 'force-dynamic';
 export default async function PaymentCreditSettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const current = await getCurrentSession();
   if (!current?.workspace) redirect('/login?next=/settings/payment-credit');
+  await ensureWorkspaceDefaults(current.workspace.id);
 
   const params = (await searchParams) ?? {};
   const error = paramValue(params, 'error');
   const saved = paramValue(params, 'saved');
   const usage = paramValue(params, 'usage');
 
-  const [banks, paymentMethods] = await Promise.all([
+  const [banks, paymentMethods, workspaceSettings] = await Promise.all([
     prisma.bank.findMany({
       where: { workspaceId: current.workspace.id },
       include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true } } },
@@ -68,6 +74,10 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       where: { workspaceId: current.workspace.id },
       include: { _count: { select: { incomePayments: true, expensePayments: true, recurringExpenses: true } } },
       orderBy: { id: 'asc' }
+    }),
+    prisma.workspace.findUnique({
+      where: { id: current.workspace.id },
+      select: { cashRegisterPrimaryPaymentMethodId: true }
     })
   ]);
 
@@ -101,7 +111,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       </div>
       {orderedBanks.length ? orderedBanks.map(bank => {
                 const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits;
-        return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Generico' : 'Banca'} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
+        return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Canale' : 'Banca'} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
       }) : <p className="muted">Nessuna banca configurata.</p>}
     </details>
 
@@ -121,7 +131,15 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       </div>
       {orderedMethods.length ? orderedMethods.map(method => {
         const usageCount = method._count.incomePayments + method._count.expensePayments + method._count.recurringExpenses;
-        return <PaymentCreditEditRow key={method.id} id={method.id} name={method.name} icon={method.icon} kind={method.kind} kindLabel={method.isFallback ? 'Generico' : kindLabels[method.kind] ?? method.kind} usageCount={usageCount} protectedFromDelete={method.isFallback || Boolean(method.systemRole)} iconOptions={paymentCreditIconOptions} updateAction={updatePaymentMethodAction} deleteAction={deletePaymentMethodAction} />;
+        const eligibleForCashRegister = method.kind === 'INCOME' || method.kind === 'BOTH';
+        return <PaymentCreditEditRow key={method.id} id={method.id} name={method.name} icon={method.icon} kind={method.kind} kindLabel={method.isFallback ? 'Generico' : kindLabels[method.kind] ?? method.kind} usageCount={usageCount} protectedFromDelete={method.isFallback || Boolean(method.systemRole)} iconOptions={paymentCreditIconOptions} updateAction={updatePaymentMethodAction} deleteAction={deletePaymentMethodAction}
+          cashRegister={eligibleForCashRegister ? {
+            enabled: method.cashRegisterEnabled,
+            defaultBankId: method.cashRegisterDefaultBankId,
+            primary: workspaceSettings?.cashRegisterPrimaryPaymentMethodId === method.id,
+            cash: method.systemRole === 'CASH',
+            banks: orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))
+          } : undefined}/>;
       }) : <p className="muted">Nessun metodo configurato.</p>}
     </details>
   </div>;

@@ -222,6 +222,7 @@ export type IncomeCategoryWhereInput = {
   workspaceId?: Prisma.IntFilter<"IncomeCategory"> | number
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   incomes?: Prisma.IncomeListRelationFilter
+  cashRegisterForWorkspaces?: Prisma.WorkspaceListRelationFilter
 }
 
 export type IncomeCategoryOrderByWithRelationInput = {
@@ -232,6 +233,7 @@ export type IncomeCategoryOrderByWithRelationInput = {
   workspaceId?: Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   incomes?: Prisma.IncomeOrderByRelationAggregateInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceOrderByRelationAggregateInput
 }
 
 export type IncomeCategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -246,6 +248,7 @@ export type IncomeCategoryWhereUniqueInput = Prisma.AtLeast<{
   workspaceId?: Prisma.IntFilter<"IncomeCategory"> | number
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   incomes?: Prisma.IncomeListRelationFilter
+  cashRegisterForWorkspaces?: Prisma.WorkspaceListRelationFilter
 }, "id" | "workspaceId_code">
 
 export type IncomeCategoryOrderByWithAggregationInput = {
@@ -278,6 +281,7 @@ export type IncomeCategoryCreateInput = {
   icon?: string | null
   workspace: Prisma.WorkspaceCreateNestedOneWithoutIncomeCategoriesInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutIncomeCategoryInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterIncomeCategoryInput
 }
 
 export type IncomeCategoryUncheckedCreateInput = {
@@ -287,6 +291,7 @@ export type IncomeCategoryUncheckedCreateInput = {
   icon?: string | null
   workspaceId: number
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutIncomeCategoryInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterIncomeCategoryInput
 }
 
 export type IncomeCategoryUpdateInput = {
@@ -295,6 +300,7 @@ export type IncomeCategoryUpdateInput = {
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutIncomeCategoriesNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutIncomeCategoryNestedInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterIncomeCategoryNestedInput
 }
 
 export type IncomeCategoryUncheckedUpdateInput = {
@@ -304,6 +310,7 @@ export type IncomeCategoryUncheckedUpdateInput = {
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutIncomeCategoryNestedInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterIncomeCategoryNestedInput
 }
 
 export type IncomeCategoryCreateManyInput = {
@@ -332,6 +339,11 @@ export type IncomeCategoryListRelationFilter = {
   every?: Prisma.IncomeCategoryWhereInput
   some?: Prisma.IncomeCategoryWhereInput
   none?: Prisma.IncomeCategoryWhereInput
+}
+
+export type IncomeCategoryNullableScalarRelationFilter = {
+  is?: Prisma.IncomeCategoryWhereInput | null
+  isNot?: Prisma.IncomeCategoryWhereInput | null
 }
 
 export type IncomeCategoryOrderByRelationAggregateInput = {
@@ -389,6 +401,12 @@ export type IncomeCategoryCreateNestedManyWithoutWorkspaceInput = {
   connect?: Prisma.IncomeCategoryWhereUniqueInput | Prisma.IncomeCategoryWhereUniqueInput[]
 }
 
+export type IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput = {
+  create?: Prisma.XOR<Prisma.IncomeCategoryCreateWithoutCashRegisterForWorkspacesInput, Prisma.IncomeCategoryUncheckedCreateWithoutCashRegisterForWorkspacesInput>
+  connectOrCreate?: Prisma.IncomeCategoryCreateOrConnectWithoutCashRegisterForWorkspacesInput
+  connect?: Prisma.IncomeCategoryWhereUniqueInput
+}
+
 export type IncomeCategoryUncheckedCreateNestedManyWithoutWorkspaceInput = {
   create?: Prisma.XOR<Prisma.IncomeCategoryCreateWithoutWorkspaceInput, Prisma.IncomeCategoryUncheckedCreateWithoutWorkspaceInput> | Prisma.IncomeCategoryCreateWithoutWorkspaceInput[] | Prisma.IncomeCategoryUncheckedCreateWithoutWorkspaceInput[]
   connectOrCreate?: Prisma.IncomeCategoryCreateOrConnectWithoutWorkspaceInput | Prisma.IncomeCategoryCreateOrConnectWithoutWorkspaceInput[]
@@ -408,6 +426,16 @@ export type IncomeCategoryUpdateManyWithoutWorkspaceNestedInput = {
   update?: Prisma.IncomeCategoryUpdateWithWhereUniqueWithoutWorkspaceInput | Prisma.IncomeCategoryUpdateWithWhereUniqueWithoutWorkspaceInput[]
   updateMany?: Prisma.IncomeCategoryUpdateManyWithWhereWithoutWorkspaceInput | Prisma.IncomeCategoryUpdateManyWithWhereWithoutWorkspaceInput[]
   deleteMany?: Prisma.IncomeCategoryScalarWhereInput | Prisma.IncomeCategoryScalarWhereInput[]
+}
+
+export type IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput = {
+  create?: Prisma.XOR<Prisma.IncomeCategoryCreateWithoutCashRegisterForWorkspacesInput, Prisma.IncomeCategoryUncheckedCreateWithoutCashRegisterForWorkspacesInput>
+  connectOrCreate?: Prisma.IncomeCategoryCreateOrConnectWithoutCashRegisterForWorkspacesInput
+  upsert?: Prisma.IncomeCategoryUpsertWithoutCashRegisterForWorkspacesInput
+  disconnect?: Prisma.IncomeCategoryWhereInput | boolean
+  delete?: Prisma.IncomeCategoryWhereInput | boolean
+  connect?: Prisma.IncomeCategoryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.IncomeCategoryUpdateToOneWithWhereWithoutCashRegisterForWorkspacesInput, Prisma.IncomeCategoryUpdateWithoutCashRegisterForWorkspacesInput>, Prisma.IncomeCategoryUncheckedUpdateWithoutCashRegisterForWorkspacesInput>
 }
 
 export type IncomeCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput = {
@@ -443,6 +471,7 @@ export type IncomeCategoryCreateWithoutWorkspaceInput = {
   name: string
   icon?: string | null
   incomes?: Prisma.IncomeCreateNestedManyWithoutIncomeCategoryInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterIncomeCategoryInput
 }
 
 export type IncomeCategoryUncheckedCreateWithoutWorkspaceInput = {
@@ -451,6 +480,7 @@ export type IncomeCategoryUncheckedCreateWithoutWorkspaceInput = {
   name: string
   icon?: string | null
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutIncomeCategoryInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterIncomeCategoryInput
 }
 
 export type IncomeCategoryCreateOrConnectWithoutWorkspaceInput = {
@@ -461,6 +491,28 @@ export type IncomeCategoryCreateOrConnectWithoutWorkspaceInput = {
 export type IncomeCategoryCreateManyWorkspaceInputEnvelope = {
   data: Prisma.IncomeCategoryCreateManyWorkspaceInput | Prisma.IncomeCategoryCreateManyWorkspaceInput[]
   skipDuplicates?: boolean
+}
+
+export type IncomeCategoryCreateWithoutCashRegisterForWorkspacesInput = {
+  code: string
+  name: string
+  icon?: string | null
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutIncomeCategoriesInput
+  incomes?: Prisma.IncomeCreateNestedManyWithoutIncomeCategoryInput
+}
+
+export type IncomeCategoryUncheckedCreateWithoutCashRegisterForWorkspacesInput = {
+  id?: number
+  code: string
+  name: string
+  icon?: string | null
+  workspaceId: number
+  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutIncomeCategoryInput
+}
+
+export type IncomeCategoryCreateOrConnectWithoutCashRegisterForWorkspacesInput = {
+  where: Prisma.IncomeCategoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.IncomeCategoryCreateWithoutCashRegisterForWorkspacesInput, Prisma.IncomeCategoryUncheckedCreateWithoutCashRegisterForWorkspacesInput>
 }
 
 export type IncomeCategoryUpsertWithWhereUniqueWithoutWorkspaceInput = {
@@ -490,11 +542,40 @@ export type IncomeCategoryScalarWhereInput = {
   workspaceId?: Prisma.IntFilter<"IncomeCategory"> | number
 }
 
+export type IncomeCategoryUpsertWithoutCashRegisterForWorkspacesInput = {
+  update: Prisma.XOR<Prisma.IncomeCategoryUpdateWithoutCashRegisterForWorkspacesInput, Prisma.IncomeCategoryUncheckedUpdateWithoutCashRegisterForWorkspacesInput>
+  create: Prisma.XOR<Prisma.IncomeCategoryCreateWithoutCashRegisterForWorkspacesInput, Prisma.IncomeCategoryUncheckedCreateWithoutCashRegisterForWorkspacesInput>
+  where?: Prisma.IncomeCategoryWhereInput
+}
+
+export type IncomeCategoryUpdateToOneWithWhereWithoutCashRegisterForWorkspacesInput = {
+  where?: Prisma.IncomeCategoryWhereInput
+  data: Prisma.XOR<Prisma.IncomeCategoryUpdateWithoutCashRegisterForWorkspacesInput, Prisma.IncomeCategoryUncheckedUpdateWithoutCashRegisterForWorkspacesInput>
+}
+
+export type IncomeCategoryUpdateWithoutCashRegisterForWorkspacesInput = {
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutIncomeCategoriesNestedInput
+  incomes?: Prisma.IncomeUpdateManyWithoutIncomeCategoryNestedInput
+}
+
+export type IncomeCategoryUncheckedUpdateWithoutCashRegisterForWorkspacesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutIncomeCategoryNestedInput
+}
+
 export type IncomeCategoryCreateWithoutIncomesInput = {
   code: string
   name: string
   icon?: string | null
   workspace: Prisma.WorkspaceCreateNestedOneWithoutIncomeCategoriesInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterIncomeCategoryInput
 }
 
 export type IncomeCategoryUncheckedCreateWithoutIncomesInput = {
@@ -503,6 +584,7 @@ export type IncomeCategoryUncheckedCreateWithoutIncomesInput = {
   name: string
   icon?: string | null
   workspaceId: number
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterIncomeCategoryInput
 }
 
 export type IncomeCategoryCreateOrConnectWithoutIncomesInput = {
@@ -526,6 +608,7 @@ export type IncomeCategoryUpdateWithoutIncomesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutIncomeCategoriesNestedInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterIncomeCategoryNestedInput
 }
 
 export type IncomeCategoryUncheckedUpdateWithoutIncomesInput = {
@@ -534,6 +617,7 @@ export type IncomeCategoryUncheckedUpdateWithoutIncomesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterIncomeCategoryNestedInput
 }
 
 export type IncomeCategoryCreateManyWorkspaceInput = {
@@ -548,6 +632,7 @@ export type IncomeCategoryUpdateWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   incomes?: Prisma.IncomeUpdateManyWithoutIncomeCategoryNestedInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterIncomeCategoryNestedInput
 }
 
 export type IncomeCategoryUncheckedUpdateWithoutWorkspaceInput = {
@@ -556,6 +641,7 @@ export type IncomeCategoryUncheckedUpdateWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutIncomeCategoryNestedInput
+  cashRegisterForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterIncomeCategoryNestedInput
 }
 
 export type IncomeCategoryUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -572,10 +658,12 @@ export type IncomeCategoryUncheckedUpdateManyWithoutWorkspaceInput = {
 
 export type IncomeCategoryCountOutputType = {
   incomes: number
+  cashRegisterForWorkspaces: number
 }
 
 export type IncomeCategoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   incomes?: boolean | IncomeCategoryCountOutputTypeCountIncomesArgs
+  cashRegisterForWorkspaces?: boolean | IncomeCategoryCountOutputTypeCountCashRegisterForWorkspacesArgs
 }
 
 /**
@@ -595,6 +683,13 @@ export type IncomeCategoryCountOutputTypeCountIncomesArgs<ExtArgs extends runtim
   where?: Prisma.IncomeWhereInput
 }
 
+/**
+ * IncomeCategoryCountOutputType without action
+ */
+export type IncomeCategoryCountOutputTypeCountCashRegisterForWorkspacesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkspaceWhereInput
+}
+
 
 export type IncomeCategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -604,6 +699,7 @@ export type IncomeCategorySelect<ExtArgs extends runtime.Types.Extensions.Intern
   workspaceId?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   incomes?: boolean | Prisma.IncomeCategory$incomesArgs<ExtArgs>
+  cashRegisterForWorkspaces?: boolean | Prisma.IncomeCategory$cashRegisterForWorkspacesArgs<ExtArgs>
   _count?: boolean | Prisma.IncomeCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["incomeCategory"]>
 
@@ -637,6 +733,7 @@ export type IncomeCategoryOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type IncomeCategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   incomes?: boolean | Prisma.IncomeCategory$incomesArgs<ExtArgs>
+  cashRegisterForWorkspaces?: boolean | Prisma.IncomeCategory$cashRegisterForWorkspacesArgs<ExtArgs>
   _count?: boolean | Prisma.IncomeCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type IncomeCategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -651,6 +748,7 @@ export type $IncomeCategoryPayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     workspace: Prisma.$WorkspacePayload<ExtArgs>
     incomes: Prisma.$IncomePayload<ExtArgs>[]
+    cashRegisterForWorkspaces: Prisma.$WorkspacePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1054,6 +1152,7 @@ export interface Prisma__IncomeCategoryClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   incomes<T extends Prisma.IncomeCategory$incomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.IncomeCategory$incomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cashRegisterForWorkspaces<T extends Prisma.IncomeCategory$cashRegisterForWorkspacesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.IncomeCategory$cashRegisterForWorkspacesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1510,6 +1609,30 @@ export type IncomeCategory$incomesArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.IncomeScalarFieldEnum | Prisma.IncomeScalarFieldEnum[]
+}
+
+/**
+ * IncomeCategory.cashRegisterForWorkspaces
+ */
+export type IncomeCategory$cashRegisterForWorkspacesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Workspace
+   */
+  select?: Prisma.WorkspaceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Workspace
+   */
+  omit?: Prisma.WorkspaceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceWhereInput
+  orderBy?: Prisma.WorkspaceOrderByWithRelationInput | Prisma.WorkspaceOrderByWithRelationInput[]
+  cursor?: Prisma.WorkspaceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkspaceScalarFieldEnum | Prisma.WorkspaceScalarFieldEnum[]
 }
 
 /**

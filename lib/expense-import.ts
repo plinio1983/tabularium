@@ -17,7 +17,7 @@ const fixedCategories = [
   'Rateizzazione'
 ];
 
-const fixedBanks = ['MyTu', 'Unicredit', 'Wise', 'Altra Banca'];
+const fixedBanks = ['MyTu', 'Unicredit', 'Wise', 'Cassa'];
 
 const categoryAcronyms: Record<string, string> = {
   'Servizi Bancari': 'SBANC',
@@ -144,7 +144,7 @@ function mapCategoryName(value: unknown) {
 
 function mapBankName(value: unknown) {
   const text = textValue(value);
-  return fixedBanks.includes(text) ? text : 'Altra Banca';
+  return fixedBanks.includes(text) ? text : 'Cassa';
 }
 
 function mapChannel(value: unknown) {
@@ -346,7 +346,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     const categoryName = mapCategoryName(rowValue(row, ['Categoria']));
     const category = refs.categories[categoryName] ?? refs.categories['Altri Servizi'];
     const bankName = mapBankName(rowValue(row, ['Banca']));
-    const bank = refs.banks[bankName] ?? refs.banks['Altra Banca'];
+    const bank = refs.banks[bankName] ?? refs.banks.Cassa;
     const channel = mapChannel(rowValue(row, ['Canale Pagamento', 'Canale']));
     const paymentMethod = channel
       ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId))
@@ -462,7 +462,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const categoryName = mapCategoryName(rowValue(row, ['Categoria']));
     const category = refs.categories[categoryName] ?? refs.categories['Altri Servizi'];
     const bankName = mapBankName(rowValue(row, ['Banca']));
-    const bank = refs.banks[bankName] ?? refs.banks['Altra Banca'];
+    const bank = refs.banks[bankName] ?? refs.banks.Cassa;
     const channel = mapChannel(rowValue(row, ['Canale Pagamento', 'Canale']));
     const paymentMethod = channel
       ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId))

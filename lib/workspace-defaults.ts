@@ -62,7 +62,8 @@ export const incomeEntityIconOptions = [
   '📱'
 ] as const;
 
-export const fallbackBankName = 'Altra Banca';
+export const fallbackBankName = 'Cassa';
+export const cashCreditChannelName = fallbackBankName;
 export const fallbackPaymentMethodName = 'Altro metodo';
 
 export const paymentCreditIconOptions = [
@@ -73,7 +74,7 @@ export const defaultBanks = [
   ['MyTu', '🏦'],
   ['Unicredit', '🏛️'],
   ['Wise', '🌍'],
-  [fallbackBankName, null]
+  [fallbackBankName, '💶']
 ] as const;
 
 export const defaultPaymentMethods = [
@@ -93,6 +94,7 @@ export const defaultPaymentMethods = [
 export const vatSettlementSupplierName = 'Erario – Saldo IVA';
 export const vatSettlementCategoryCode = 'TAX';
 export const defaultCustomerName = 'New customer';
+export const cashRegisterCustomerName = 'Banco';
 
 export function orderExpenseCategories<T extends { id: number; code: string; name: string }>(categories: T[]) {
   const defaultCodes = defaultCategories.map(([code]) => code);
@@ -143,6 +145,11 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     update: {},
     create: { workspaceId, businessName: defaultCustomerName, systemRole: 'DEFAULT' }
   });
+  await prisma.customer.upsert({
+    where: { workspaceId_systemRole: { workspaceId, systemRole: 'CASH_REGISTER' } },
+    update: { businessName: cashRegisterCustomerName },
+    create: { workspaceId, businessName: cashRegisterCustomerName, systemRole: 'CASH_REGISTER' }
+  });
 
   const existingCategories = await prisma.expenseCategory.count({ where: { workspaceId } });
   if (existingCategories === 0) {
@@ -167,13 +174,53 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     });
   }
 
+  const legacyCashChannels = await prisma.bank.findMany({
+    where: {workspaceId, name: {in: ['Altro', 'Altro canale', 'Altro Canale', 'Altra Banca']}},
+    orderBy: {id: 'asc'}
+  });
+  const existingCashChannel = await prisma.bank.findFirst({where: {workspaceId, name: cashCreditChannelName}});
+  const originalOtherChannel = legacyCashChannels.find(channel => channel.name !== 'Altra Banca');
+  let currentCashChannel = originalOtherChannel ?? existingCashChannel ?? legacyCashChannels[0] ?? null;
+  if (currentCashChannel) {
+    const canonicalCashChannel = currentCashChannel;
+    const duplicateChannels = [existingCashChannel, ...legacyCashChannels]
+      .filter((channel): channel is NonNullable<typeof channel> => Boolean(channel && channel.id !== canonicalCashChannel.id))
+      .filter((channel, index, channels) => channels.findIndex(item => item.id === channel.id) === index);
+    for (const legacyChannel of duplicateChannels) {
+      await prisma.$transaction([
+        prisma.expensePayment.updateMany({where: {bankId: legacyChannel.id}, data: {bankId: canonicalCashChannel.id}}),
+        prisma.recurringExpense.updateMany({where: {bankId: legacyChannel.id}, data: {bankId: canonicalCashChannel.id}}),
+        prisma.income.updateMany({where: {creditBankId: legacyChannel.id}, data: {creditBankId: canonicalCashChannel.id}}),
+        prisma.paymentMethod.updateMany({
+          where: {cashRegisterDefaultBankId: legacyChannel.id},
+          data: {cashRegisterDefaultBankId: canonicalCashChannel.id}
+        }),
+        prisma.bank.delete({where: {id: legacyChannel.id}})
+      ]);
+    }
+    if (currentCashChannel.name !== cashCreditChannelName || !currentCashChannel.isFallback || !currentCashChannel.icon) {
+      currentCashChannel = await prisma.bank.update({
+        where: {id: currentCashChannel.id},
+        data: {name: cashCreditChannelName, isFallback: true, icon: currentCashChannel.icon ?? '💶'}
+      });
+    }
+  }
+  await prisma.bank.updateMany({
+    where: {workspaceId, isFallback: true, name: {not: cashCreditChannelName}},
+    data: {isFallback: false}
+  });
+
   for (const [name, icon] of defaultBanks) {
     const existing = await prisma.bank.findFirst({ where: { workspaceId, name } });
     if (!existing) await prisma.bank.create({ data: { workspaceId, name, icon, isFallback: name === fallbackBankName } });
     else if ((name === fallbackBankName && !existing.isFallback) || (!existing.icon && icon)) await prisma.bank.update({ where: { id: existing.id }, data: { ...(name === fallbackBankName ? { isFallback: true } : {}), ...(!existing.icon && icon ? { icon } : {}) } });
   }
 
+  const existingPaymentMethodCount = await prisma.paymentMethod.count({where: {workspaceId}});
   for (const [name, kind, icon] of defaultPaymentMethods) {
+    // Nei workspace già configurati non aggiungiamo l'intero catalogo standard:
+    // evitiamo doppioni semantici come "Carta" / "Carta di Debito/Credit".
+    if (existingPaymentMethodCount > 0 && name !== 'Cash') continue;
     const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId, name } });
     const systemRole = name === 'Cash' ? 'CASH' as const : null;
     if (!existing) await prisma.paymentMethod.create({ data: { workspaceId, name, kind, icon, isFallback: name === fallbackPaymentMethodName, systemRole } });
@@ -195,4 +242,52 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     const category = await prisma.expenseCategory.findFirst({ where: { workspaceId, code: vatSettlementCategoryCode } });
     if (category) await prisma.workspace.update({ where: { id: workspaceId }, data: { vatSettlementCategoryId: category.id } });
   }
+
+  const registerWorkspace = await prisma.workspace.findUnique({
+    where: { id: workspaceId },
+    select: {
+      cashRegisterIncomeCategoryId: true,
+      cashRegisterSalesChannelId: true,
+      cashRegisterPrimaryPaymentMethodId: true
+    }
+  });
+  const [registerCategory, registerChannel, cashMethod, cardMethod, cashCreditChannel, firstBank] = await Promise.all([
+    prisma.incomeCategory.findFirst({ where: { workspaceId, code: 'B2C' } }),
+    prisma.incomeSalesChannel.findFirst({ where: { workspaceId, code: 'SHOP' } }),
+    prisma.paymentMethod.findFirst({ where: { workspaceId, systemRole: 'CASH' } }),
+    prisma.paymentMethod.findFirst({
+      where: { workspaceId, OR: [{name: 'Carta di Debito/Credit'}, {name: {startsWith: 'Carta', mode: 'insensitive'}}] },
+      orderBy: {id: 'asc'}
+    }),
+    prisma.bank.findFirst({ where: { workspaceId, name: cashCreditChannelName } }),
+    prisma.bank.findFirst({ where: { workspaceId, isFallback: false }, orderBy: { id: 'asc' } })
+  ]);
+  const enabledRegisterMethods = await prisma.paymentMethod.count({where: {workspaceId, cashRegisterEnabled: true}});
+  const initializeRegisterMethods = enabledRegisterMethods === 0 && !registerWorkspace?.cashRegisterPrimaryPaymentMethodId;
+  if (cashMethod && cashCreditChannel && cashMethod.cashRegisterDefaultBankId !== cashCreditChannel.id) {
+    await prisma.paymentMethod.update({
+      where: {id: cashMethod.id},
+      data: {cashRegisterDefaultBankId: cashCreditChannel.id}
+    });
+  }
+  if (initializeRegisterMethods && cashMethod) {
+    await prisma.paymentMethod.update({
+      where: { id: cashMethod.id },
+      data: { cashRegisterEnabled: true, cashRegisterDefaultBankId: cashCreditChannel?.id ?? firstBank?.id }
+    });
+  }
+  if (initializeRegisterMethods && cardMethod) {
+    await prisma.paymentMethod.update({
+      where: { id: cardMethod.id },
+      data: { cashRegisterEnabled: true, cashRegisterDefaultBankId: firstBank?.id ?? cashCreditChannel?.id }
+    });
+  }
+  await prisma.workspace.update({
+    where: { id: workspaceId },
+    data: {
+      ...(!registerWorkspace?.cashRegisterIncomeCategoryId && registerCategory ? { cashRegisterIncomeCategoryId: registerCategory.id } : {}),
+      ...(!registerWorkspace?.cashRegisterSalesChannelId && registerChannel ? { cashRegisterSalesChannelId: registerChannel.id } : {}),
+      ...(!registerWorkspace?.cashRegisterPrimaryPaymentMethodId && cardMethod ? { cashRegisterPrimaryPaymentMethodId: cardMethod.id } : {})
+    }
+  });
 }

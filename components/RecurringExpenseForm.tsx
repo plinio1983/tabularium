@@ -52,7 +52,7 @@ type Props = {
 
 const today = new Date().toISOString().slice(0, 10);
 const cashChannel = "Cash";
-const cashBankName = "Altra Banca";
+const cashBankName = "Cassa";
 const monthOptions = [
   [1, "Gennaio"],
   [2, "Febbraio"],

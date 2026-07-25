@@ -1071,7 +1071,7 @@ button {
 
 .income-form .income-form-section-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   padding: 16px;
 }
@@ -3858,6 +3858,601 @@ table th, table td {
 
 .expense-top-summary-item.is-invoice-waiting {
   background: linear-gradient(90deg, #eff6ff 0%, rgba(255, 255, 255, .2) 72%);
+}
+
+.cash-register-shell {
+  display: grid;
+  grid-template-rows: auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto;
+  gap: clamp(6px, 1.2vh, 12px);
+  width: min(100%, 900px);
+  height: calc(100dvh - 105px);
+  min-height: 540px;
+  margin: 0 auto;
+  padding: clamp(10px, 2vh, 18px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.cash-register-shell.is-editing {
+  grid-template-rows: auto auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto;
+}
+
+.cash-register-shell.has-notice {
+  grid-template-rows: auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto auto;
+}
+
+.cash-register-shell.is-editing.has-notice {
+  grid-template-rows: auto auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto auto;
+}
+
+.cash-register-header,
+.cash-register-header > div,
+.cash-register-controls,
+.cash-register-actions {
+  display: flex;
+  align-items: center;
+}
+
+.cash-register-header {
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cash-register-header h1 {
+  margin: 0;
+  font-size: clamp(19px, 3vw, 28px);
+}
+
+.cash-register-header > div {
+  align-items: baseline;
+  gap: 12px;
+}
+
+.cash-register-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cash-register-edit-confirm {
+  display: flex;
+  justify-content: flex-end;
+
+  .btn {
+    flex-grow: 1;
+    max-width: 100%;
+  }
+}
+
+.cash-register-header a:not(.btn) {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cash-register-controls {
+  display: grid;
+  grid-template-columns: auto minmax(170px, .8fr) minmax(150px, 1fr);
+  gap: 8px;
+}
+
+.cash-register-controls input[type="date"],
+.cash-register-controls select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.cash-register-fiscal-switch {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 42px;
+  padding: 0 11px;
+  border-radius: 10px;
+  background: #eef6ff;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.cash-register-fiscal-switch input {
+  width: 18px;
+  height: 18px;
+}
+
+.cash-register-fiscal-switch b {
+  color: var(--primary);
+}
+
+.cash-register-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.cash-register-display > span {
+  color: var(--muted);
+  font-size: clamp(27px, 6vh, 48px);
+  font-weight: 700;
+}
+
+.cash-register-display input {
+  width: min(80%, 620px);
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #0f172a;
+  font-size: clamp(45px, 10vh, 82px);
+  font-weight: 850;
+  line-height: 1;
+  text-align: center;
+}
+
+.cash-register-vat {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.cash-register-vat button,
+.cash-register-keypad button,
+.cash-register-actions button {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #f8fafc;
+  color: #1e293b;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.cash-register-vat button {
+  height: 38px;
+  min-height: 38px;
+}
+
+.cash-register-vat button.is-selected {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, .15);
+}
+
+.cash-register-vat button:disabled {
+  opacity: .35;
+}
+
+.cash-register-keypad {
+  display: grid;
+  min-height: 0;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, minmax(40px, 1fr));
+  gap: 7px;
+}
+
+.cash-register-keypad button {
+  min-height: 0;
+  font-size: clamp(20px, 4vh, 31px);
+}
+
+.cash-register-keypad button:active,
+.cash-register-actions button:active {
+  transform: translateY(1px);
+  background: #e9eff7;
+}
+
+.cash-register-notice {
+  min-height: 18px;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.cash-register-notice.is-error {
+  color: #b91c1c;
+}
+
+.cash-register-actions {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 58px;
+  gap: 8px;
+  min-height: 52px;
+}
+
+.cash-register-actions > button,
+.cash-register-more > button {
+  width: 100%;
+  height: 52px;
+  font-size: 15px;
+}
+
+.cash-register-actions button span {
+  margin-right: 7px;
+  font-size: 20px;
+}
+
+.cash-register-actions .cash-register-submit {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  overflow: hidden;
+  border-color: #047857;
+  background: #059669;
+  color: #fff;
+  font-size: 18px;
+  line-height: 52px;
+  text-align: center;
+}
+
+.cash-register-actions.has-confirmation {
+  grid-template-columns: 89px minmax(0, 1fr);
+}
+
+.cash-register-actions.has-confirmation .cash-register-submit {
+  grid-column: auto;
+}
+
+.cash-register-actions .cash-register-cancel {
+  min-width: 52px;
+  max-width: 100%;
+  height: 52px;
+  padding: 0;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+
+  &.btn-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+}
+
+.cash-register-actions .cash-register-submit span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: 0;
+  border-right: 1px solid rgba(255, 255, 255, .28);
+  background: rgba(0, 0, 0, .08);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.cash-register-actions button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.cash-register-actions > button.is-selected,
+.cash-register-more > button.is-selected,
+.cash-register-method-modal button.is-selected {
+  border-color: #2563eb;
+  background: #dbeafe;
+  color: #1d4ed8;
+  box-shadow: inset 0 0 0 1px #2563eb;
+}
+
+.cash-register-more {
+  position: relative;
+}
+
+.cash-register-actions:not(:has(.cash-register-more)):not(.has-confirmation) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cash-register-actions.without-primary:has(.cash-register-more) {
+  grid-template-columns: minmax(0, 1fr) 58px;
+}
+
+.cash-register-method-backdrop {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, .42);
+  backdrop-filter: blur(2px);
+}
+
+.cash-register-method-modal {
+  display: grid;
+  gap: 10px;
+  width: min(420px, 100%);
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .16);
+}
+
+.cash-register-method-modal header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cash-register-method-modal h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.cash-register-method-modal header button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 9px;
+  background: #eef2f7;
+  font-size: 24px;
+}
+
+.cash-register-method-modal > div {
+  display: grid;
+  gap: 7px;
+}
+
+.cash-register-method-modal > div button {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #172033;
+  font-weight: 800;
+  text-align: left;
+}
+
+.cash-register-settings-form {
+  display: grid;
+  gap: 14px;
+}
+
+.cash-register-settings-form {
+  grid-template-columns: minmax(220px, 1fr) repeat(2, minmax(180px, .7fr)) auto;
+  align-items: end;
+}
+
+.payment-credit-cash-register-fields {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 4px 0;
+  padding: 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.payment-credit-cash-register-fields legend {
+  padding: 0 8px;
+  color: #172033;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.cash-register-setting-intro {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 3px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cash-register-setting-intro strong,
+.cash-register-setting-row strong {
+  color: #172033;
+  font-size: 14px;
+}
+
+.cash-register-setting-intro span,
+.cash-register-setting-row > div > span,
+.cash-register-bank-setting small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.cash-register-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 70px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.cash-register-setting-row > div {
+  display: grid;
+  gap: 4px;
+}
+
+.cash-register-setting-row .switch {
+  flex: 0 0 auto;
+}
+
+.cash-register-setting-row .switch > span:last-child {
+  min-width: 64px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: none;
+}
+
+.cash-register-bank-setting {
+  align-content: start;
+  min-height: 70px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.cash-register-bank-setting > span {
+  color: #172033 !important;
+  font-size: 14px !important;
+  text-transform: none !important;
+}
+
+.cash-register-bank-setting select {
+  margin-top: 5px;
+}
+
+.cash-register-fixed-channel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 70px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.cash-register-fixed-channel span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cash-register-fixed-channel strong {
+  font-size: 14px;
+}
+
+.cash-register-receipt-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr)) auto;
+  gap: 8px;
+}
+
+.cash-register-receipt-list {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #fff;
+}
+
+.cash-register-receipt-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cash-register-receipt-row:last-child {
+  border-bottom: 0;
+}
+
+.cash-register-receipt-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cash-register-receipt-content {
+  display: grid;
+  grid-template-columns: minmax(140px, .8fr) minmax(190px, 1fr) minmax(150px, .8fr) minmax(100px, auto);
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cash-register-receipt-content > div {
+  display: grid;
+  gap: 3px;
+}
+
+.cash-register-receipt-content small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.cash-register-receipt-content span {
+  font-size: 14px;
+}
+
+.cash-register-receipt-date strong {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.cash-register-receipt-amount {
+  color: var(--accent);
+  font-size: 17px;
+  text-align: right;
+}
+
+.cash-register-aggregate-list {
+  display: grid;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #f8fbff;
+}
+
+.cash-register-aggregate-row {
+  display: grid;
+  grid-template-columns: 34px minmax(190px, 1fr) auto minmax(120px, auto) 16px;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-bottom: 1px solid #dbeafe;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cash-register-aggregate-row:last-child {
+  border-bottom: 0;
+}
+
+.cash-register-aggregate-row:hover {
+  background: #eff6ff;
+}
+
+.cash-register-aggregate-icon {
+  font-size: 22px;
+}
+
+.cash-register-aggregate-row > div {
+  display: grid;
+  gap: 3px;
+}
+
+.cash-register-aggregate-row > div:nth-last-of-type(1) {
+  justify-items: end;
+}
+
+.cash-register-aggregate-row span,
+.cash-register-aggregate-row small {
+  color: var(--muted);
+  font-size: 11px;
 }
 
 a.expense-top-summary-item:hover {
@@ -6658,6 +7253,25 @@ html, body {
 .btn-danger:hover {
   background: #fee2e2;
   border-color: #fca5a5;
+}
+
+.btn-success {
+  border-color: #047857;
+  background: #059669;
+  color: #fff;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: #047857;
+    border-color: #047857;
+  }
+}
+
+.btn-default:hover,
+.reset-button:hover {
+  background: #f8faff;
+  border-color: #b9c7ff;
 }
 
 .btn-ghost {
@@ -10614,6 +11228,10 @@ button.bulk-direct-danger {
   font-size: 13px;
   font-weight: 850;
   z-index: 1;
+
+  @media (max-width: 576px) {
+    //grid-column: 1 / -1;
+  }
 }
 
 .expense-form label > input,
@@ -11121,7 +11739,7 @@ table .cell-description {
 }
 
 .categories-settings-table-head {
-  padding: 0 96px 8px 0;
+  padding: 0 71px 8px 0;
   color: var(--muted);
   font-size: 12px;
   font-weight: 900;

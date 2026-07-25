@@ -213,12 +213,16 @@
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 112px;
     gap: 10px;
+
+    .income-amount-field {
+      grid-column: 1 / -1;
+    }
   }
 
   .income-form .amount-vat-row,
   .expense-form .amount-vat-row {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) 112px;
+    grid-template-columns: minmax(0, 1fr) 1fr;
     gap: 10px;
   }
 
@@ -1816,10 +1820,15 @@
   }
 
   .payment-credit-display-row {
-    grid-template-columns: auto minmax(0, 1fr);
+    //grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(50px, 85px) 1fr;
     gap: 8px 12px;
-    display: flex;
-    flex-wrap: wrap;
+    //display: flex;
+    //flex-wrap: wrap;
+
+    @media (max-width: 576px) {
+      grid-template-columns: minmax(50px, 85px) 1fr;
+    }
   }
 
   .payment-credit-display-name {
@@ -1834,16 +1843,18 @@
     grid-row: 1;
   }
 
-  .payment-credit-display-row > span:not(.payment-credit-display-icon) {
-    grid-column: 1 / -1;
-  }
-
   .payment-credit-display-actions {
-    grid-column: 1 / -1;
+    //grid-column: 1 / -1;
     flex-grow: 1;
     justify-content: flex-end;
     display: flex;
     text-align: right;
+    grid-column-start: 2;
+    grid-column-end: -1;
+
+    @media (max-width: 576px) {
+      grid-column: 1 / -1;
+    }
   }
 
   .payment-credit-display-actions form button {
@@ -2103,6 +2114,136 @@
 }
 
 @media (max-width: 760px) {
+  body:has(.cash-register-shell) {
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+
+  body:has(.cash-register-shell) .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .cash-register-shell {
+    width: calc(100% + 20px);
+    height: calc(100dvh - 20px);
+    min-height: 0;
+    margin: -10px;
+    padding: 9px;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .cash-register-header > div {
+    display: grid;
+    gap: 0;
+  }
+
+  .cash-register-header .btn {
+    min-height: 34px;
+    padding: 5px 8px;
+  }
+
+  .cash-register-controls {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .cash-register-controls select {
+    grid-column: 1 / -1;
+    height: 38px;
+  }
+
+  .cash-register-controls input[type="date"],
+  .cash-register-fiscal-switch {
+    height: 38px;
+  }
+
+  .cash-register-settings-form,
+  .payment-credit-cash-register-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .cash-register-setting-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .cash-register-setting-row .switch {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .cash-register-method-backdrop {
+    place-items: end center;
+    padding: 0;
+  }
+
+  .cash-register-method-modal {
+    width: 100%;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 18px 18px 0 0;
+  }
+
+  .cash-register-receipt-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cash-register-receipt-row {
+    grid-template-columns: 30px minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .cash-register-receipt-content {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 10px;
+  }
+
+  .cash-register-receipt-date {
+    grid-column: 1 / -1;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cash-register-receipt-channel {
+    grid-column: 1 / -1;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .cash-register-receipt-method {
+    min-width: 0;
+    font-weight: 800;
+  }
+
+  .cash-register-receipt-amount {
+    align-self: center;
+  }
+
+  .cash-register-receipt-filters button {
+    grid-column: 1 / -1;
+  }
+
+  .cash-register-aggregate-row {
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .cash-register-aggregate-row > .badge {
+    grid-column: 2;
+    width: max-content;
+  }
+
+  .cash-register-aggregate-row > div:nth-last-of-type(1) {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  .cash-register-aggregate-row > span:last-child {
+    display: none;
+  }
+
   .app-form-model .expense-form .form-sticky-actions {
     display: grid !important;
   }

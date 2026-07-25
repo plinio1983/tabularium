@@ -40,27 +40,28 @@ function syncDirectActionGroup(group: HTMLElement) {
       else edit.removeAttribute(triggerAttr);
     } else {
       const editSuffix = group.getAttribute("data-edit-suffix") ?? "/edit";
-      const editReturnSeparator = editSuffix.includes("?") ? "&" : "?";
-      edit.href = singleEnabled
-        ? `${group.getAttribute("data-edit-base") ?? ""}${firstId}${editSuffix}${editReturnSeparator}returnTo=${returnTo}`
-        : "#";
+      const editTarget = `${group.getAttribute("data-edit-base") ?? ""}${firstId}${editSuffix}`;
+      const editReturnSeparator = editTarget.includes("?") ? "&" : "?";
+      edit.href = singleEnabled ? `${editTarget}${editReturnSeparator}returnTo=${returnTo}` : "#";
     }
   }
 
   if (copy) {
-    copy.classList.toggle("is-disabled", !anyEnabled);
-    copy.setAttribute("aria-disabled", anyEnabled ? "false" : "true");
+    const singleOnly = group.getAttribute("data-copy-single-only") === "true";
+    const copyEnabled = singleOnly ? singleEnabled : anyEnabled;
+    copy.classList.toggle("is-disabled", !copyEnabled);
+    copy.setAttribute("aria-disabled", copyEnabled ? "false" : "true");
     const triggerAttr = group.getAttribute("data-copy-trigger-attr");
     if (triggerAttr && copy instanceof HTMLAnchorElement) {
       copy.href = "#";
       if (singleEnabled) copy.setAttribute(triggerAttr, firstId);
       else copy.removeAttribute(triggerAttr);
-      copy.dataset.bulkCopyMode = selected > 1 ? "bulk" : "single";
+      copy.dataset.bulkCopyMode = !singleOnly && selected > 1 ? "bulk" : "single";
     } else if (copy instanceof HTMLAnchorElement) {
       copy.href = singleEnabled
         ? `${group.getAttribute("data-copy-base") ?? ""}${firstId}&returnTo=${returnTo}`
         : "#";
-      copy.dataset.bulkCopyMode = selected > 1 ? "bulk" : "single";
+      copy.dataset.bulkCopyMode = !singleOnly && selected > 1 ? "bulk" : "single";
     }
   }
 

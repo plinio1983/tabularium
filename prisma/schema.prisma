@@ -55,10 +55,16 @@ enum SupplierSystemRole {
 
 enum CustomerSystemRole {
   DEFAULT
+  CASH_REGISTER
 }
 
 enum PaymentMethodSystemRole {
   CASH
+}
+
+enum IncomeType {
+  STANDARD
+  CASH_REGISTER
 }
 
 model User {
@@ -102,9 +108,18 @@ model Workspace {
   incomes            Income[]
   vatSettlementCategoryId Int?
   vatSettlementCategory ExpenseCategory? @relation("VatSettlementCategory", fields: [vatSettlementCategoryId], references: [id], onDelete: Restrict)
+  cashRegisterIncomeCategoryId Int?
+  cashRegisterIncomeCategory IncomeCategory? @relation("CashRegisterIncomeCategory", fields: [cashRegisterIncomeCategoryId], references: [id], onDelete: Restrict)
+  cashRegisterSalesChannelId Int?
+  cashRegisterSalesChannel IncomeSalesChannel? @relation("CashRegisterSalesChannel", fields: [cashRegisterSalesChannelId], references: [id], onDelete: Restrict)
+  cashRegisterPrimaryPaymentMethodId Int?
+  cashRegisterPrimaryPaymentMethod PaymentMethod? @relation("CashRegisterPrimaryPaymentMethod", fields: [cashRegisterPrimaryPaymentMethodId], references: [id], onDelete: Restrict)
 
   @@index([ownerId])
   @@index([vatSettlementCategoryId])
+  @@index([cashRegisterIncomeCategoryId])
+  @@index([cashRegisterSalesChannelId])
+  @@index([cashRegisterPrimaryPaymentMethodId])
 }
 
 model WorkspaceMember {
@@ -174,6 +189,7 @@ model IncomeCategory {
   workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   incomes     Income[]
+  cashRegisterForWorkspaces Workspace[] @relation("CashRegisterIncomeCategory")
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -187,6 +203,7 @@ model IncomeSalesChannel {
   workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   incomes     Income[]
+  cashRegisterForWorkspaces Workspace[] @relation("CashRegisterSalesChannel")
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -202,6 +219,7 @@ model Bank {
   payments  ExpensePayment[]
   recurringExpenses RecurringExpense[]
   incomeCredits Income[]
+  cashRegisterPaymentMethods PaymentMethod[] @relation("CashRegisterDefaultBank")
 
   @@unique([workspaceId, name])
   @@index([workspaceId])
@@ -219,11 +237,16 @@ model PaymentMethod {
   incomePayments Income[]
   expensePayments ExpensePayment[]
   recurringExpenses RecurringExpense[]
+  cashRegisterEnabled Boolean @default(false)
+  cashRegisterDefaultBankId Int?
+  cashRegisterDefaultBank Bank? @relation("CashRegisterDefaultBank", fields: [cashRegisterDefaultBankId], references: [id], onDelete: Restrict)
+  cashRegisterPrimaryForWorkspaces Workspace[] @relation("CashRegisterPrimaryPaymentMethod")
 
   @@unique([workspaceId, name])
   @@unique([workspaceId, systemRole])
   @@index([workspaceId])
   @@index([kind])
+  @@index([cashRegisterDefaultBankId])
 }
 
 model Supplier {
@@ -444,6 +467,8 @@ model Income {
   invoiceStatus   String?
   vatRate         Decimal   @db.Decimal(5, 2) @default(22)
   notes           String?
+  incomeType      IncomeType @default(STANDARD)
+  cashRegisterRequestId String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -456,4 +481,6 @@ model Income {
   @@index([isFiscal])
   @@index([paymentMethodId])
   @@index([creditBankId])
+  @@index([incomeType])
+  @@unique([workspaceId, cashRegisterRequestId])
 }

@@ -33,6 +33,21 @@ type IncomeItem = {
     creditBank: { name: string; icon?: string | null };
 };
 
+type CashRegisterGroup = {
+    key: string;
+    billingYear: number;
+    billingMonth: number;
+    paymentMethodId: number;
+    paymentMethod: string;
+    paymentMethodIcon?: string | null;
+    salesChannelId: number;
+    salesChannel: string;
+    salesChannelIcon?: string | null;
+    isFiscal: boolean;
+    amount: number;
+    count: number;
+};
+
 function dateLabel(value?: Date | null) {
     return value ? new Intl.DateTimeFormat('it-IT', {
         day: '2-digit',
@@ -75,6 +90,7 @@ type SimpleOption = { id: number; name: string; icon?: string | null; isFallback
 export default function IncomesList({
                                         incomes,
                                         mobileIncomes: suppliedMobileIncomes,
+                                        cashRegisterGroups = [],
                                         returnTo,
                                         banks,
                                         paymentMethods,
@@ -87,6 +103,7 @@ export default function IncomesList({
                                     }: {
     incomes: IncomeItem[];
     mobileIncomes?: IncomeItem[];
+    cashRegisterGroups?: CashRegisterGroup[];
     returnTo: string;
     banks: SimpleOption[];
     paymentMethods: SimpleOption[];
@@ -106,6 +123,33 @@ export default function IncomesList({
         <SortableTableController/>
         <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} incomeCategories={incomeCategories} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
         <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} incomeCategories={incomeCategories} salesChannels={salesChannels} customers={customers}/>
+        {cashRegisterGroups.length ? <section className="cash-register-aggregate-list" aria-label="Incassi cumulativi registratore di cassa">
+            {cashRegisterGroups.map(group => {
+                const month = `${group.billingYear}-${String(group.billingMonth).padStart(2, '0')}`;
+                const query = new URLSearchParams({
+                    month,
+                    paymentMethodId: String(group.paymentMethodId),
+                    salesChannelId: String(group.salesChannelId),
+                    fiscal: group.isFiscal ? 'yes' : 'no'
+                });
+                return <Link className="cash-register-aggregate-row"
+                             href={`/incomes/cash-register/receipts?${query}`} key={group.key}>
+                    <span className="cash-register-aggregate-icon">🧾</span>
+                    <div>
+                        <strong>{group.paymentMethodIcon ?? ''} {group.paymentMethod}</strong>
+                        <span>{group.salesChannelIcon ?? ''} {group.salesChannel} · {formatPeriod(group.billingMonth, group.billingYear)}</span>
+                    </div>
+                    <span className={badgeClass(group.isFiscal ? fiscalStyles.yes.className : fiscalStyles.no.className)}>
+                        {group.isFiscal ? 'Fiscale' : 'Non fiscale'}
+                    </span>
+                    <div>
+                        <strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong>
+                        <small>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</small>
+                    </div>
+                    <span aria-hidden="true">›</span>
+                </Link>;
+            })}
+        </section> : null}
         <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi visibili"/></label>
             <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
@@ -184,7 +228,7 @@ export default function IncomesList({
                     </Link>
                 </div>;
             })}
-            {!incomes.length ? <div className="expense-empty-panel">{emptyMessage}</div> : null}
+            {!incomes.length && !cashRegisterGroups.length ? <div className="expense-empty-panel">{emptyMessage}</div> : null}
         </div>
 
         <div className="table-scroll incomes-table-scroll">
@@ -243,7 +287,7 @@ export default function IncomesList({
                             <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : '-'}</td>
                     </tr>;
                 })}
-                {!incomes.length ? <tr>
+                {!incomes.length && !cashRegisterGroups.length ? <tr>
                     <td colSpan={14}>{emptyMessage}</td>
                 </tr> : null}</tbody>
             </table>

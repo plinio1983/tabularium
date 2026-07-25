@@ -124,7 +124,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
       <ul className="muted import-rules-list">
         <li>Se è valorizzata solo una tra <strong>Data ordine</strong> e <strong>Data scadenza</strong>, quella data viene usata per entrambi i campi.</li>
         <li><strong>Stato fattura = Ok</strong>, <strong>Emessa</strong> o <strong>Ricevuta</strong> viene importato come <strong>RICEVUTA</strong>.</li>
-        <li>Le banche non presenti nella configurazione vengono importate come <strong>Altra Banca</strong>.</li>
+        <li>Le banche non presenti nella configurazione vengono importate come <strong>Cassa</strong>.</li>
         <li>I fornitori non ancora presenti vengono creati automaticamente; eventuali <strong>Note fornitore</strong> presenti nel file vengono salvate come note interne.</li>
         <li>Con <strong>Definizioni spese ricorrenti</strong> vengono create solo le regole ricorrenti: nessun record spesa viene generato dall’importazione.</li>
         <li>Clienti e fornitori esistenti vengono riconosciuti tramite <strong>Partita IVA</strong> o <strong>ragione sociale</strong>; le celle vuote non cancellano i dati presenti.</li>
