@@ -1009,6 +1009,45 @@ export default async function ExpensesPage({searchParams}: {
                 useFiscalPeriodFilter={useFiscalPeriodFilter}
             />
 
+            <section className="expense-top-summary" aria-labelledby="expense-top-summary-title">
+                <div className="card-heading-row">
+                    <div>
+                        <h2 id="expense-top-summary-title">{totalsPeriodLabel}</h2>
+                        <p className="muted">Riepilogo immediato delle spese comprese nei filtri correnti.</p>
+                    </div>
+                    {monthlyReportHref ? <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>Report mensile</Link> : null}
+            </div>
+            <div className="expense-top-summary-grid">
+                    <div className="expense-top-summary-item is-primary">
+                        <span>Spese totali IVA inclusa</span>
+                        <strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong>
+                    </div>
+                    <Link className="expense-top-summary-item" href={nonDeclaredTotalsHref}>
+                        <span>Spese non dichiarate</span>
+                        <strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong>
+                    </Link>
+                    <Link className={`expense-top-summary-item ${totals.toPay > 0 ? 'is-warning' : ''}`}
+                          href={unpaidTotalsHref}>
+                        <span>Non saldato</span>
+                        <strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong>
+                    </Link>
+                    <div className="expense-top-summary-item">
+                        <span>IVA versata</span>
+                        <strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong>
+                    </div>
+                    <Link className={`expense-top-summary-item ${totals.invoicesNotReceived > 0 ? 'is-invoice-waiting' : ''}`}
+                          href={invoicesNotReceivedHref}>
+                        <span>Fatture non ricevute</span>
+                        <strong>{totals.invoicesNotReceived}</strong>
+                    </Link>
+                    <Link className={`expense-top-summary-item ${totals.overdueCount > 0 ? 'is-critical' : ''}`}
+                          href={overduePaymentsHref}>
+                        <span>Pagamenti scaduti</span>
+                        <strong>{totals.overdueCount}</strong>
+                    </Link>
+                </div>
+            </section>
+
             <div className="expense-summary-row">
                 <div className="dashboard-statement-panel list-totals-statement">
                     {/*<p className="totals-period-note">{totalsPeriodLabel}</p>*/}

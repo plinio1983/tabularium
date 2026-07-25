@@ -2106,6 +2106,11 @@
     display: grid !important;
   }
 
+  .expense-top-summary .card-heading-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .expense-impact-pie-row-wrap {
     margin: 4px 0;
   }

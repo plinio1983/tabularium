@@ -3793,6 +3793,89 @@ table th, table td {
   font-size: 17px;
 }
 
+.expense-top-summary {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px 0 4px;
+  border-top: 1px solid var(--line);
+}
+
+.expense-top-summary h2 {
+  font-size: 18px;
+}
+
+.expense-top-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.expense-top-summary-item {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  padding: 14px 16px;
+  border-right: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.expense-top-summary-item:nth-child(3n) {
+  border-right: 0;
+}
+
+.expense-top-summary-item:nth-child(-n + 3) {
+  border-bottom: 1px solid var(--line);
+}
+
+.expense-top-summary-item > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.expense-top-summary-item > strong {
+  overflow: hidden;
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expense-top-summary-item.is-primary > strong {
+  color: var(--primary);
+}
+
+.expense-top-summary-item.is-warning {
+  background: linear-gradient(90deg, rgba(255, 248, 223, .82), transparent 72%);
+}
+
+.expense-top-summary-item.is-critical {
+  background: linear-gradient(90deg, rgba(255, 241, 241, .9), transparent 72%);
+}
+
+.expense-top-summary-item.is-invoice-waiting {
+  background: linear-gradient(90deg, #eff6ff 0%, rgba(255, 255, 255, .2) 72%);
+}
+
+a.expense-top-summary-item:hover {
+  background: #f8fafc;
+}
+
+a.expense-top-summary-item.is-warning:hover {
+  background: #fff4dc;
+}
+
+a.expense-top-summary-item.is-critical:hover {
+  background: #ffe7e7;
+}
+
+a.expense-top-summary-item.is-invoice-waiting:hover {
+  background: #e6f1ff;
+}
+
 .list-totals-statement {
   margin: 12px 0 18px;
   border: 1px solid var(--line);
@@ -6268,10 +6351,10 @@ html, body {
   .income-summary-row,
   .expense-summary-row {
     .expense-impact-pie-legend-row {
-      flex-wrap: wrap;
+      //flex-wrap: wrap;
 
       > div:last-child {
-        width: calc(100%);
+        //width: calc(100%);
       }
     }
   }
@@ -11437,6 +11520,24 @@ table .cell-description {
 @media (max-width: 900px) {
   .summary-metrics-grid-priority {
     grid-template-columns:1fr;
+  }
+
+  .expense-top-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .expense-top-summary-item,
+  .expense-top-summary-item:nth-child(3n) {
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .expense-top-summary-item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .expense-top-summary-item:nth-last-child(-n + 2) {
+    border-bottom: 0;
   }
 
   .fiscal-overview-matrix {
