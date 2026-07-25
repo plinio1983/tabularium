@@ -5568,6 +5568,42 @@ html, body {
   background: #f59e0b;
 }
 
+//.annual-profit-overview {
+//  margin-top: 16px;
+//}
+
+.annual-profit-overview h2 {
+  font-size: 18px;
+}
+
+.annual-profit-overview-matrix {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.fiscal-overview-metric .annual-profit-percentage {
+  //color: #0f172a;
+  color: #5746b8;
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.fiscal-overview-metric.is-gross-margin::before {
+  background: #2563eb;
+}
+
+.fiscal-overview-metric.is-net-profit::before {
+  background: #0f766e;
+}
+
+.fiscal-overview-metric.is-fiscal-profit::before {
+  background: #7c3aed;
+}
+
+.fiscal-overview-metric.is-taxable-income::before {
+  background: #f59e0b;
+}
+
 .fiscal-overview-metric.is-warning {
   border-color: #fcd34d;
   background: #fffbeb;
@@ -9851,8 +9887,12 @@ button.bulk-direct-danger {
   gap: 4px;
 }
 
-.expenses-list-card .list-heading h2,
 .expenses-list-card .card-heading-row h2 {
+  line-height: 1.15;
+  white-space: normal;
+}
+
+.expenses-list-card .list-heading h2 {
   margin: 0;
   line-height: 1.15;
   white-space: normal;

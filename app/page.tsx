@@ -688,6 +688,37 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
     </section>;
 }
 
+function AnnualProfitOverview({totals, year}: { totals: any; year: number }) {
+    const incomeTotal = totals.incassoTotale;
+    const percentage = (value: number) => incomeTotal ? value / incomeTotal * 100 : 0;
+    const items = [
+        {label: 'Margine lordo', value: totals.utileLordo, className: 'is-gross-margin'},
+        {label: 'Utile netto', value: totals.utileNetto, className: 'is-net-profit'},
+        {label: 'Utile fiscale', value: totals.utileFiscale, className: 'is-fiscal-profit'},
+        {label: 'Imponibile', value: totals.imponibileIncassi, className: 'is-taxable-income'}
+    ];
+
+    return <section className="card annual-profit-overview">
+        <div className="card-heading-row">
+            <div>
+                <h2>Margini e redditività</h2>
+                <p className="muted">Valori annuali e incidenza sulle entrate totali nel {year}.</p>
+            </div>
+        </div>
+        <div className="fiscal-overview-matrix annual-profit-overview-matrix">
+            {items.map(item => {
+                const ratio = percentage(item.value);
+                return <div className={`fiscal-overview-metric ${item.className}`} key={item.label}>
+                    <span>{item.label}</span>
+                    <strong className={moneyTone(item.value)}>{chartEuro(item.value)}</strong>
+                    <span className={moneyTone(item.value, 'annual-profit-percentage')}>{ratio.toFixed(1)}%</span>
+                    <small>delle entrate totali</small>
+                </div>;
+            })}
+        </div>
+    </section>;
+}
+
 function NetProfitByIncomeChannelChart({
                                            data,
                                            profit,
@@ -1890,6 +1921,7 @@ export default async function Dashboard({searchParams}: {
         </div>
 
         <FiscalNonFiscalOverview totals={report.totals} year={report.annualYear} periods={annualPeriods}/>
+        <AnnualProfitOverview totals={report.totals} year={report.annualYear}/>
 
         <div className="grid grid-2 dashboard-period-cards">
             <DashboardFiscalAjax
@@ -1910,87 +1942,87 @@ export default async function Dashboard({searchParams}: {
             />
         </div>
 
-        <article className="dashboard-statement-cards">
-            <section className="card dashboard-statement-panel dashboard-annual-card">
-                <div className="dashboard-statement-heading">
-                    <div>
-                        <h2>Da inizio anno</h2>
-                        <p className="muted">Totali fiscali anno {report.annualYear}</p>
-                    </div>
-                </div>
-                <div className="dashboard-statement-body">
-                    <table className="dashboard-statement-table dashboard-annual-statement-table">
-                        <tbody>
-                        <tr className="dashboard-statement-result">
-                            <td>Entrate totali anno</td>
-                            <td>
-                                <AnnualMoneyWithRatio value={report.totals.incassoTotale}
-                                                      denominator={report.totals.incassoTotale}
-                                                      percentageOverride={100}
-                                                      highlight/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Uscite anno</td>
-                            <td>
-                                <AnnualMoneyWithRatio value={report.totals.speseTotali}
-                                                      denominator={report.totals.incassoTotale}/>
-                            </td>
-                        </tr>
-                        <tr className="dashboard-statement-result">
-                            <td>Margine lordo anno</td>
-                            <td>
-                                <AnnualMoneyWithRatio value={report.totals.utileLordo}
-                                                      denominator={report.totals.incassoTotale}
-                                                      highlight/>
-                            </td>
-                        </tr>
-                        <tr className="dashboard-statement-result">
-                            <td>Utile netto anno</td>
-                            <td>
-                                <AnnualMoneyWithRatio value={report.totals.utileNetto}
-                                                      denominator={report.totals.incassoTotale}
-                                                      highlight/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Imponibile</td>
-                            <td>
-                                <AnnualMoneyWithRatio value={report.totals.imponibileIncassi}
-                                                      denominator={report.totals.incassoTotale}/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Entrate non fiscali</td>
-                            <td>
-                                <AnnualMoneyWithRatio value={report.totals.incassoNonFiscale}
-                                                      denominator={report.totals.incassoTotale}/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Uscite non fiscali</td>
-                            <td>
-                                <AnnualMoneyWithRatio value={report.totals.usciteNonFiscali}
-                                                      denominator={report.totals.speseTotali}
-                                                      denominatorLabel="uscite totali"/>
-                            </td>
-                        </tr>
-                        <tr className="dashboard-statement-result">
-                            <td>Utile fiscale anno</td>
-                            <td>
-                                <AnnualMoneyWithRatio value={report.totals.utileFiscale}
-                                                      denominator={report.totals.incassoTotale}
-                                                      highlight/>
-                            </td>
-                        </tr>
-                        {/*<tr className="row-warning"><td>Previsione imposte anno</td><td><strong className={moneyTone(report.totals.previsioneImposte, 'money-warning')}>{euro(report.totals.previsioneImposte)}</strong></td></tr>*/}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+        {/*<article className="dashboard-statement-cards">*/}
+            {/*<section className="card dashboard-statement-panel dashboard-annual-card">*/}
+            {/*    <div className="dashboard-statement-heading">*/}
+            {/*        <div>*/}
+            {/*            <h2>Da inizio anno</h2>*/}
+            {/*            <p className="muted">Totali fiscali anno {report.annualYear}</p>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*    <div className="dashboard-statement-body">*/}
+            {/*        <table className="dashboard-statement-table dashboard-annual-statement-table">*/}
+            {/*            <tbody>*/}
+            {/*            <tr className="dashboard-statement-result">*/}
+            {/*                <td>Entrate totali anno</td>*/}
+            {/*                <td>*/}
+            {/*                    <AnnualMoneyWithRatio value={report.totals.incassoTotale}*/}
+            {/*                                          denominator={report.totals.incassoTotale}*/}
+            {/*                                          percentageOverride={100}*/}
+            {/*                                          highlight/>*/}
+            {/*                </td>*/}
+            {/*            </tr>*/}
+            {/*            <tr>*/}
+            {/*                <td>Uscite anno</td>*/}
+            {/*                <td>*/}
+            {/*                    <AnnualMoneyWithRatio value={report.totals.speseTotali}*/}
+            {/*                                          denominator={report.totals.incassoTotale}/>*/}
+            {/*                </td>*/}
+            {/*            </tr>*/}
+            {/*            <tr className="dashboard-statement-result">*/}
+            {/*                <td>Margine lordo anno</td>*/}
+            {/*                <td>*/}
+            {/*                    <AnnualMoneyWithRatio value={report.totals.utileLordo}*/}
+            {/*                                          denominator={report.totals.incassoTotale}*/}
+            {/*                                          highlight/>*/}
+            {/*                </td>*/}
+            {/*            </tr>*/}
+            {/*            <tr className="dashboard-statement-result">*/}
+            {/*                <td>Utile netto anno</td>*/}
+            {/*                <td>*/}
+            {/*                    <AnnualMoneyWithRatio value={report.totals.utileNetto}*/}
+            {/*                                          denominator={report.totals.incassoTotale}*/}
+            {/*                                          highlight/>*/}
+            {/*                </td>*/}
+            {/*            </tr>*/}
+            {/*            <tr>*/}
+            {/*                <td>Imponibile</td>*/}
+            {/*                <td>*/}
+            {/*                    <AnnualMoneyWithRatio value={report.totals.imponibileIncassi}*/}
+            {/*                                          denominator={report.totals.incassoTotale}/>*/}
+            {/*                </td>*/}
+            {/*            </tr>*/}
+            {/*            <tr>*/}
+            {/*                <td>Entrate non fiscali</td>*/}
+            {/*                <td>*/}
+            {/*                    <AnnualMoneyWithRatio value={report.totals.incassoNonFiscale}*/}
+            {/*                                          denominator={report.totals.incassoTotale}/>*/}
+            {/*                </td>*/}
+            {/*            </tr>*/}
+            {/*            <tr>*/}
+            {/*                <td>Uscite non fiscali</td>*/}
+            {/*                <td>*/}
+            {/*                    <AnnualMoneyWithRatio value={report.totals.usciteNonFiscali}*/}
+            {/*                                          denominator={report.totals.speseTotali}*/}
+            {/*                                          denominatorLabel="uscite totali"/>*/}
+            {/*                </td>*/}
+            {/*            </tr>*/}
+            {/*            <tr className="dashboard-statement-result">*/}
+            {/*                <td>Utile fiscale anno</td>*/}
+            {/*                <td>*/}
+            {/*                    <AnnualMoneyWithRatio value={report.totals.utileFiscale}*/}
+            {/*                                          denominator={report.totals.incassoTotale}*/}
+            {/*                                          highlight/>*/}
+            {/*                </td>*/}
+            {/*            </tr>*/}
+            {/*            /!*<tr className="row-warning"><td>Previsione imposte anno</td><td><strong className={moneyTone(report.totals.previsioneImposte, 'money-warning')}>{euro(report.totals.previsioneImposte)}</strong></td></tr>*!/*/}
+            {/*            </tbody>*/}
+            {/*        </table>*/}
+            {/*    </div>*/}
+            {/*</section>*/}
 
-            <IncomeExpenseBreakdownChart totals={report.totals} periods={annualPeriods}/>
-        </article>
+            {/*<IncomeExpenseBreakdownChart totals={report.totals} periods={annualPeriods}/>*/}
+        {/*</article>*/}
 
         <div className="card dashboard-report-card">
             <div className="card-heading-row">
