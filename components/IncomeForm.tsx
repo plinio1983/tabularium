@@ -156,10 +156,7 @@ export default function IncomeForm({
                         </select>
                     </label>
 
-                    <label className="full">
-                        Cliente
-                        <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId}/>
-                    </label>
+                    <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId}/>
 
                     <label className="full">
                         Descrizione
