@@ -72,6 +72,8 @@ type Props = {
     onSaved?: () => void;
     cancelHref?: string;
     onSwitchToRecurring?: () => void;
+    initialMobileStep?: number;
+    openNewPayment?: boolean;
 };
 
 function toDateInput(value?: string | Date | null) {
@@ -606,6 +608,8 @@ export default function ExpenseForm({
     onSaved,
     cancelHref,
     onSwitchToRecurring,
+    initialMobileStep = 1,
+    openNewPayment = false,
 }: Props) {
     const [isVatSettlement, setIsVatSettlement] = useState(initialExpense?.expenseType === "VAT_SETTLEMENT");
     const vatSettlementCategory = categories.find(category => category.isVatSettlementDefault);
@@ -624,8 +628,9 @@ export default function ExpenseForm({
     const [vatRate, setVatRate] = useState(normalizeMoney(initialExpense?.vatRate) || "22");
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [mobileStep, setMobileStep] = useState(1);
+    const [mobileStep, setMobileStep] = useState(() => Math.max(1, Math.min(6, initialMobileStep)));
     const formRef = useRef<HTMLFormElement>(null);
+    const didOpenNewPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
     );
@@ -799,6 +804,12 @@ export default function ExpenseForm({
         setOpenPaymentKey(key);
     }
 
+    useEffect(() => {
+        if (!openNewPayment || didOpenNewPayment.current) return;
+        didOpenNewPayment.current = true;
+        addPaymentRow();
+    }, [openNewPayment]);
+
     function removePaymentRow(index: number) {
         const payment = payments[index];
         if (payment?.id && !window.confirm("Eliminare questo pagamento?")) return;
@@ -832,7 +843,7 @@ export default function ExpenseForm({
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        if (!isExistingExpense && window.matchMedia("(max-width: 900px)").matches && mobileStep < 6) {
+        if (window.matchMedia("(max-width: 900px)").matches && mobileStep < 6) {
             event.preventDefault();
             nextMobileStep();
             return;
@@ -872,14 +883,14 @@ export default function ExpenseForm({
     return (
         <form
             ref={formRef}
-            className={`card form expense-form ${!isExistingExpense ? `expense-mobile-wizard expense-mobile-step-${mobileStep}` : ""}`}
+            className={`card form expense-form expense-mobile-wizard expense-mobile-step-${mobileStep}`}
             action={action}
             method="post"
             encType="multipart/form-data"
             onSubmit={handleSubmit}
             data-in-place-submit={onSaved ? "true" : undefined}
         >
-            {!isExistingExpense ? <div className="expense-wizard-header full">
+            <div className="expense-wizard-header full">
                 <div className="expense-wizard-heading">
                     <span>Passaggio {mobileStep} di 6</span>
                     <strong>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Allegati e note"][mobileStep - 1]}</strong>
@@ -887,7 +898,7 @@ export default function ExpenseForm({
                 <div className="expense-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
                     <span style={{width: `${mobileStep / 6 * 100}%`}}/>
                 </div>
-            </div> : null}
+            </div>
             {/*<h2 className="full">{title}</h2>*/}
 
             {/*<div className="form-sticky-summary full">*/}
@@ -910,20 +921,20 @@ export default function ExpenseForm({
 
                     <div className="expense-type-choice full expense-wizard-step expense-wizard-step-1">
                         <span className="expense-type-choice-title">Tipo di spesa</span>
-                        <input type="hidden" name="isRecurring" value="false"/>
-                        <input type="hidden" name="expenseType" value="STANDARD"/>
+                        <input type="hidden" name="isRecurring" value={isRecurring ? "true" : "false"}/>
+                        <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : "STANDARD"}/>
                         <div className="expense-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
-                            <button type="button" className="is-selected" role="radio" aria-checked="true">
+                            <button type="button" className={!isRecurring && !isVatSettlement ? "is-selected" : ""} role="radio" aria-checked={!isRecurring && !isVatSettlement}>
                                 <span aria-hidden="true">●</span>
                                 <strong>Singola</strong>
                                 <small>Spesa occasionale</small>
                             </button>
-                            <button type="button" role="radio" aria-checked="false" disabled title="Disponibile prossimamente">
+                            <button type="button" className={isRecurring ? "is-selected" : ""} role="radio" aria-checked={isRecurring} disabled title="Disponibile prossimamente">
                                 <span aria-hidden="true">↻</span>
                                 <strong>Ricorrente</strong>
                                 <small>Prossimamente</small>
                             </button>
-                            <button type="button" role="radio" aria-checked="false" disabled title="Disponibile prossimamente">
+                            <button type="button" className={isVatSettlement ? "is-selected" : ""} role="radio" aria-checked={isVatSettlement} disabled title="Disponibile prossimamente">
                                 <span aria-hidden="true">IVA</span>
                                 <strong>Saldo IVA</strong>
                                 <small>Prossimamente</small>
@@ -1001,7 +1012,7 @@ export default function ExpenseForm({
                             onChange={(event) => setDueDate(event.currentTarget.value)}
                         />
                         <span className="expense-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
-                            {[7, 15, 30].map(days => {
+                            {[0, 7, 15, 30].map(days => {
                                 const value = addDaysToDateInput(orderDate, days);
                                 return <button
                                     type="button"
@@ -1009,7 +1020,7 @@ export default function ExpenseForm({
                                     className={dueDate === value ? "is-selected" : ""}
                                     aria-pressed={dueDate === value}
                                     onClick={() => setDueDate(value)}
-                                >+{days}gg</button>;
+                                >{days === 0 ? "Stesso g" : `+${days}gg`}</button>;
                             })}
                         </span>
                     </label>
@@ -1410,7 +1421,7 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full expense-wizard-step expense-wizard-step-6" open={!isExistingExpense && mobileStep === 6}>
+            <details className="form-section full expense-wizard-step expense-wizard-step-6" open={mobileStep === 6}>
                 <summary>
                     <span>Allegati e note</span>
                     <small>File, XML, P7M e note interne</small>
@@ -1461,7 +1472,7 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            {!isExistingExpense ? <div className="expense-wizard-actions full">
+            <div className="expense-wizard-actions full">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}
                 <div className="expense-wizard-actions-row">
                     {mobileStep > 1 ? <button className="btn btn-md btn-default" type="button" onClick={() => goToMobileStep(mobileStep - 1)}>
@@ -1479,7 +1490,7 @@ export default function ExpenseForm({
                         <span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
                     </button>}
                 </div>
-            </div> : null}
+            </div>
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}

@@ -72,11 +72,11 @@ function selectedExpenseIdFromBulk(formId: string) {
 
 export default function ExpenseEditModalController({ categories, banks, paymentMethods, suppliers, listHref, formId = "expenseBulkForm" }: Props) {
   const [expense, setExpense] = useState<EditExpense | null>(null);
-  const [mode, setMode] = useState<"edit" | "copy">("edit");
+  const [mode, setMode] = useState<"edit" | "copy" | "payment">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
 
-  async function openExpense(id: number, nextMode: "edit" | "copy" = "edit") {
+  async function openExpense(id: number, nextMode: "edit" | "copy" | "payment" = "edit") {
     setError("");
     setMode(nextMode);
     setLoadingId(id);
@@ -113,11 +113,12 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
 
       const editTrigger = target.closest<HTMLElement>("[data-expense-edit-id]");
       const copyTrigger = target.closest<HTMLElement>("[data-expense-copy-id]");
-      const trigger = editTrigger ?? copyTrigger;
+      const paymentTrigger = target.closest<HTMLElement>("[data-expense-payment-id]");
+      const trigger = editTrigger ?? copyTrigger ?? paymentTrigger;
       if (!trigger) return;
 
-      const nextMode = copyTrigger ? "copy" : "edit";
-      let id = Number((copyTrigger ? copyTrigger.dataset.expenseCopyId : editTrigger?.dataset.expenseEditId) || 0);
+      const nextMode = copyTrigger ? "copy" : paymentTrigger ? "payment" : "edit";
+      let id = Number((copyTrigger ? copyTrigger.dataset.expenseCopyId : paymentTrigger ? paymentTrigger.dataset.expensePaymentId : editTrigger?.dataset.expenseEditId) || 0);
       if (!Number.isInteger(id) || id <= 0) {
         id = selectedExpenseIdFromBulk(formId) ?? 0;
       }
@@ -137,12 +138,12 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
     {loadingId ? <div className="inline-modal-loading">Caricamento spesa #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
-      <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
+    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : mode === "payment" ? `Inserisci pagamento per la spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
+      <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
-            <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
-            <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : "Aggiorna dati e pagamenti."}</p>
+            <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : mode === "payment" ? `Nuovo pagamento · spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
+            <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : mode === "payment" ? "Registra un nuovo pagamento per questa spesa." : "Aggiorna dati e pagamenti."}</p>
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
         </div>
@@ -158,6 +159,8 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
           paymentMethods={paymentMethods}
           suppliers={suppliers}
           initialExpense={expense}
+          initialMobileStep={mode === "payment" ? 4 : 1}
+          openNewPayment={mode === "payment"}
         />
       </div>
     </div> : null}

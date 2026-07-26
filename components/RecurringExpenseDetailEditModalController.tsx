@@ -90,8 +90,8 @@ export default function RecurringExpenseDetailEditModalController({ categories, 
     {loadingId ? <div className="inline-modal-loading">Caricamento spesa ricorrente #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal" role="dialog" aria-modal="true" aria-label={`Modifica spesa ricorrente ${expense.id}`} onMouseDown={() => setExpense(null)}>
-      <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
+    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label={`Modifica spesa ricorrente ${expense.id}`} onMouseDown={() => setExpense(null)}>
+      <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
             <h3>Modifica spesa ricorrente #{expense.id}</h3>

@@ -50,7 +50,7 @@ export default function NewIncomePanel({ initialOpen = false, showToolbar = true
           <h2>Incassi</h2>
           <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
         </div>
-        <button className="btn btn-md btn-primary income-add-btn" type="button" data-income-new>
+        <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
           <span className="btn-icon">+</span>Inserisci incasso
         </button>
       </div> : null}

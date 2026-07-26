@@ -35,7 +35,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
         {/*<span className="badge">Importazione dati</span>*/}
         <Link className="btn btn-xs btn-default" href="/"><span className="btn-icon">↩</span> Torna alla dashboard</Link>
         <h2>Importa dati da Excel / ODS</h2>
-        <p className="muted">Importa spese, definizioni ricorrenti, incassi, clienti o fornitori usando il relativo modello compilabile.</p>
+        <p className="muted">Importa dati, definizioni ricorrenti, incassi, clienti o fornitori usando il relativo modello compilabile.</p>
       </div>
       <div className="import-hero-actions">
         <ExpenseImportTypeSelector initialType={importType} />

@@ -196,7 +196,7 @@ function SupplierAutocomplete({
   }
 
   return (
-    <div className="supplier-picker supplier-picker-wide" ref={containerRef}>
+    <div className="supplier-picker supplier-picker-wide expense-wizard-step expense-wizard-step-3" ref={containerRef}>
       <input type="hidden" name="supplierId" value={selected?.id ?? ""} />
       <input type="hidden" name="merchant" value={selected?.businessName ?? query} />
       <label>
@@ -345,7 +345,7 @@ function ProductServiceAutocomplete({ initialValue = "" }: { initialValue?: stri
   }
 
   return (
-    <label className="span-2 product-suggestion-picker" ref={containerRef}>
+    <label className="span-2 product-suggestion-picker expense-wizard-step expense-wizard-step-3" ref={containerRef}>
       Prodotto/servizio
       <input
         name="description"
@@ -413,9 +413,13 @@ export default function RecurringExpenseForm({
   const [bankId, setBankId] = useState(initialBankId);
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mobileStep, setMobileStep] = useState(1);
+  const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
+  const formRef = useRef<HTMLFormElement>(null);
   const selectedPaymentMethodName = paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "";
   const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
   const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
+  const normalizedAmount = amount.replace(",", ".");
 
   useEffect(() => {
     if (!isDeclared) {
@@ -424,7 +428,50 @@ export default function RecurringExpenseForm({
     }
   }, [isDeclared]);
 
+  function handleAmountChange(value: string) {
+    const normalized = value.replace(".", ",").replace(/[^\d,]/g, "");
+    const [integer = "", decimals] = normalized.split(",");
+    setAmount(decimals === undefined ? integer.slice(0, 9) : `${integer.slice(0, 9)},${decimals.slice(0, 2)}`);
+  }
+
+  function appendAmountKey(key: string) {
+    setAmount(current => {
+      if (key === "backspace") return current.slice(0, -1);
+      if (key === ",") return current.includes(",") ? current : `${current || "0"},`;
+      const decimals = current.split(",")[1];
+      if (decimals?.length >= 2) return current;
+      const next = current === "0" && key !== "0" ? key : `${current}${key}`;
+      return next.slice(0, 12);
+    });
+  }
+
+  function validateMobileStep() {
+    const elements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.expense-wizard-step-${mobileStep}`) ?? []);
+    const fields = elements.flatMap(element =>
+      Array.from(element.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea")),
+    );
+    const invalid = fields.find(field => !field.disabled && !field.checkValidity());
+    if (!invalid) return true;
+    invalid.reportValidity();
+    invalid.focus();
+    return false;
+  }
+
+  function goToMobileStep(step: number) {
+    setMobileStep(Math.max(1, Math.min(6, step)));
+    window.requestAnimationFrame(() => formRef.current?.scrollIntoView({behavior: "smooth", block: "start"}));
+  }
+
+  function nextMobileStep() {
+    if (validateMobileStep()) goToMobileStep(mobileStep + 1);
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    if (window.matchMedia("(max-width: 900px)").matches && mobileStep < 6) {
+      event.preventDefault();
+      nextMobileStep();
+      return;
+    }
     if (!onSaved) return;
     event.preventDefault();
     setSubmitError("");
@@ -458,14 +505,24 @@ export default function RecurringExpenseForm({
   }
 
   return (
-    <form className="card form expense-form recurring-expense-form" action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
-      <details className="form-section full recurring-form-section" open>
+    <form ref={formRef} className={`card form expense-form recurring-expense-form expense-mobile-wizard recurring-mobile-wizard expense-mobile-step-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
+      <div className="expense-wizard-header full">
+        <div className="expense-wizard-heading">
+          <span>Passaggio {mobileStep} di 6</span>
+          <strong>{["Ricorrenza", "Importo", "Dettagli", "Fatturazione", "Pagamento", "Note"][mobileStep - 1]}</strong>
+        </div>
+        <div className="expense-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
+          <span style={{width: `${mobileStep / 6 * 100}%`}}/>
+        </div>
+      </div>
+
+      <details className="form-section full recurring-form-section recurring-document-section" open>
         <summary>
           <span>Documento</span>
           <small>Dati principali della spesa ricorrente</small>
         </summary>
         <div className="form-section-grid recurring-form-section-grid">
-      <div className="toggle-field switch-toggle-field expense-type-switch-in-form full">
+      <div className="toggle-field switch-toggle-field expense-type-switch-in-form full recurring-type-desktop">
         <span>Tipo spesa: Ricorrente</span>
         <label className="switch">
           <input
@@ -480,9 +537,9 @@ export default function RecurringExpenseForm({
         </label>
       </div>
 
-      <label>Data inizio<input type="date" name="startDate" defaultValue={toDateInput(initialExpense?.startDate) || today} required /></label>
+      <label className="expense-wizard-step expense-wizard-step-1">Data inizio<input type="date" name="startDate" defaultValue={toDateInput(initialExpense?.startDate) || today} required /></label>
 
-      <label>Cadenza<select name="cadence" value={cadence} onChange={(e) => setCadence(e.currentTarget.value)} required>
+      <label className="expense-wizard-step expense-wizard-step-1">Cadenza<select name="cadence" value={cadence} onChange={(e) => setCadence(e.currentTarget.value)} required>
         <option value="MONTHLY">Ogni mese</option>
         <option value="EVERY_2_MONTHS">Ogni 2 mesi</option>
         <option value="EVERY_3_MONTHS">Ogni 3 mesi</option>
@@ -493,27 +550,30 @@ export default function RecurringExpenseForm({
 
       {isYearly ? (
         <>
-          <label>Giorno scadenza<input type="number" name="dueDay" min="1" max="31" defaultValue={initialExpense?.dueDay ?? 1} required /></label>
-          <label>Mese scadenza<select name="dueMonth" defaultValue={initialExpense?.dueMonth ?? new Date().getMonth() + 1} required>{monthOptions.map(([v, l]) => <option value={v} key={v}>{l}</option>)}</select></label>
+          <label className="expense-wizard-step expense-wizard-step-1">Giorno scadenza<input type="number" name="dueDay" min="1" max="31" defaultValue={initialExpense?.dueDay ?? 1} required /></label>
+          <label className="expense-wizard-step expense-wizard-step-1">Mese scadenza<select name="dueMonth" defaultValue={initialExpense?.dueMonth ?? new Date().getMonth() + 1} required>{monthOptions.map(([v, l]) => <option value={v} key={v}>{l}</option>)}</select></label>
         </>
       ) : (
-        <label>Giorno del mese scadenza<input type="number" name="dueDay" min="1" max="31" defaultValue={initialExpense?.dueDay ?? 1} required /></label>
+        <label className="expense-wizard-step expense-wizard-step-1">Giorno del mese scadenza<input type="number" name="dueDay" min="1" max="31" defaultValue={initialExpense?.dueDay ?? 1} required /></label>
       )}
 
-      <label>Categoria<select name="categoryId" required defaultValue={initialExpense?.categoryId ?? ""}><option value="" disabled>Seleziona categoria</option>{categories.map(c => <option key={c.id} value={c.id}>{c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}</option>)}</select></label>
+      <label className="expense-wizard-step expense-wizard-step-3">Categoria<select name="categoryId" required defaultValue={initialExpense?.categoryId ?? ""}><option value="" disabled>Seleziona categoria</option>{categories.map(c => <option key={c.id} value={c.id}>{c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}</option>)}</select></label>
 
       <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} />
 
       <ProductServiceAutocomplete initialValue={initialExpense?.description ?? ""} />
 
-      <div className="amount-vat-row">
-        <label>Costo IVA inclusa<MoneyInput name="amount" defaultValue={normalizeMoney(initialExpense?.amount)} required /></label>
+      <div className="amount-vat-row expense-wizard-step expense-wizard-step-2 recurring-wizard-amount">
+        <label>Costo IVA inclusa<MoneyInput type="text" inputMode="decimal" value={amount} onChange={event => handleAmountChange(event.currentTarget.value)} required /><input type="hidden" name="amount" value={normalizedAmount}/></label>
         <label>IVA<select name="vatRate" defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}><option value="0">0%</option><option value="4">4%</option><option value="10">10%</option><option value="22">22%</option></select></label>
+        <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
+          {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
+        </div>
       </div>
         </div>
       </details>
 
-      <details className="form-section full recurring-form-section" open>
+      <details className="form-section full recurring-form-section recurring-fiscal-section expense-wizard-step expense-wizard-step-4" open>
         <summary>
           <span>Fiscale</span>
           <small>Detrazione, fattura elettronica e periodo fatturazione</small>
@@ -561,7 +621,7 @@ export default function RecurringExpenseForm({
         </div>
       </details>
 
-      <details className="form-section full recurring-form-section" open>
+      <details className="form-section full recurring-form-section recurring-payment-section expense-wizard-step expense-wizard-step-5" open>
         <summary>
           <span>Pagamento</span>
           <small>Automazione, canale e banca</small>
@@ -606,7 +666,7 @@ export default function RecurringExpenseForm({
         </div>
       </details>
 
-      <details className="form-section full recurring-form-section">
+      <details className="form-section full recurring-form-section recurring-notes-section expense-wizard-step expense-wizard-step-6" open={mobileStep === 6}>
         <summary>
           <span>Note</span>
           <small>Note interne opzionali</small>
@@ -615,6 +675,14 @@ export default function RecurringExpenseForm({
       <label className="full">Note<textarea name="notes" rows={3} defaultValue={initialExpense?.notes ?? ""} /></label>
         </div>
       </details>
+
+      <div className="expense-wizard-actions full">
+        {submitError ? <p className="inline-warning full">{submitError}</p> : null}
+        <div className="expense-wizard-actions-row">
+          {mobileStep > 1 ? <button className="btn btn-md btn-default" type="button" onClick={() => goToMobileStep(mobileStep - 1)}>← Indietro</button> : onCancel ? <button className="btn btn-md btn-default" type="button" onClick={onCancel}>× Annulla</button> : cancelHref ? <a className="btn btn-md btn-default" href={cancelHref}>× Annulla</a> : <span/>}
+          {mobileStep < 6 ? <button className="btn btn-md btn-primary" type="button" onClick={event => { event.preventDefault(); nextMobileStep(); }}>Avanti →</button> : <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting}><span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : "Salva spesa"}</button>}
+        </div>
+      </div>
 
       <div className="actions-row full form-actions-row form-sticky-actions">
         {submitError ? <p className="inline-warning full">{submitError}</p> : null}

@@ -26,7 +26,7 @@ const mainMenuLinks = [
   { href: () => '/suppliers', label: 'Fornitori', icon: '◇' },
   { href: () => '/clients', label: 'Clienti', icon: '♙' },
   { href: () => '/settings/company', label: 'Azienda', icon: '🏢' },
-  { href: () => '/expenses/import', label: 'Importa spese', icon: '⬆' },
+  { href: () => '/expenses/import', label: 'Importa dati', icon: '⬆' },
 ] as const;
 
 export default function SettingsMenu() {

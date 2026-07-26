@@ -1016,17 +1016,17 @@ export default async function ExpensesPage({searchParams}: {
                         <h2 id="expense-top-summary-title">{totalsPeriodLabel}</h2>
                         <p className="muted">Riepilogo immediato delle spese comprese nei filtri correnti.</p>
                     </div>
-                    {monthlyReportHref ? <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
-                        <span className="btn-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="3" y="5" width="18" height="16" rx="2"/>
-                                <path d="M16 3v4M8 3v4M3 10h18"/>
-                                <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
-                            </svg>
-                        </span>
-                        <span>Report mensile</span>
-                    </Link> : null}
+                    {/*{monthlyReportHref ? <Link className="btn btn-sm btn-secondary" href={monthlyReportHref}>*/}
+                    {/*    <span className="btn-icon" aria-hidden="true">*/}
+                    {/*        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"*/}
+                    {/*             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">*/}
+                    {/*            <rect x="3" y="5" width="18" height="16" rx="2"/>*/}
+                    {/*            <path d="M16 3v4M8 3v4M3 10h18"/>*/}
+                    {/*            <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>*/}
+                    {/*        </svg>*/}
+                    {/*    </span>*/}
+                    {/*    <span>Report mensile</span>*/}
+                    {/*</Link> : null}*/}
             </div>
             <div className="expense-top-summary-grid">
                     <div className="expense-top-summary-item is-primary">
@@ -1206,6 +1206,7 @@ export default async function ExpensesPage({searchParams}: {
               const edit = group.querySelector('[data-bulk-edit]');
               const copy = group.querySelector('[data-bulk-copy]');
               const del = group.querySelector('[data-bulk-delete]');
+              const payment = document.querySelector('[data-bulk-menu][data-bulk-form="' + formId + '"] [data-bulk-add-payment]');
               const singleEnabled = selected === 1;
               const anyEnabled = selected > 0;
               if (edit) {
@@ -1223,6 +1224,11 @@ export default async function ExpensesPage({searchParams}: {
                 copy.href = '#';
                 if (singleEnabled) copy.setAttribute('data-expense-copy-id', firstId);
                 else copy.removeAttribute('data-expense-copy-id');
+              }
+              if (payment) {
+                payment.disabled = !singleEnabled;
+                if (singleEnabled) payment.setAttribute('data-expense-payment-id', firstId);
+                else payment.removeAttribute('data-expense-payment-id');
               }
               if (del) del.disabled = !anyEnabled;
             });

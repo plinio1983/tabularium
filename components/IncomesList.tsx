@@ -46,7 +46,24 @@ type CashRegisterGroup = {
     isFiscal: boolean;
     amount: number;
     count: number;
+    latestCreditDate: Date | null;
+    vatRates: number[];
 };
+
+function cashRegisterGroupHref(group: CashRegisterGroup) {
+    const month = `${group.billingYear}-${String(group.billingMonth).padStart(2, '0')}`;
+    const query = new URLSearchParams({
+        month,
+        paymentMethodId: String(group.paymentMethodId),
+        salesChannelId: String(group.salesChannelId),
+        fiscal: group.isFiscal ? 'yes' : 'no'
+    });
+    return `/incomes/cash-register/receipts?${query}`;
+}
+
+function aggregateVatLabel(group: CashRegisterGroup) {
+    return group.vatRates.length === 1 ? `${group.vatRates[0]}%` : 'Mista';
+}
 
 function dateLabel(value?: Date | null) {
     return value ? new Intl.DateTimeFormat('it-IT', {
@@ -123,33 +140,6 @@ export default function IncomesList({
         <SortableTableController/>
         <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} incomeCategories={incomeCategories} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
         <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} incomeCategories={incomeCategories} salesChannels={salesChannels} customers={customers}/>
-        {cashRegisterGroups.length ? <section className="cash-register-aggregate-list" aria-label="Incassi cumulativi registratore di cassa">
-            {cashRegisterGroups.map(group => {
-                const month = `${group.billingYear}-${String(group.billingMonth).padStart(2, '0')}`;
-                const query = new URLSearchParams({
-                    month,
-                    paymentMethodId: String(group.paymentMethodId),
-                    salesChannelId: String(group.salesChannelId),
-                    fiscal: group.isFiscal ? 'yes' : 'no'
-                });
-                return <Link className="cash-register-aggregate-row"
-                             href={`/incomes/cash-register/receipts?${query}`} key={group.key}>
-                    <span className="cash-register-aggregate-icon">🧾</span>
-                    <div>
-                        <strong>{group.paymentMethodIcon ?? ''} {group.paymentMethod}</strong>
-                        <span>{group.salesChannelIcon ?? ''} {group.salesChannel} · {formatPeriod(group.billingMonth, group.billingYear)}</span>
-                    </div>
-                    <span className={badgeClass(group.isFiscal ? fiscalStyles.yes.className : fiscalStyles.no.className)}>
-                        {group.isFiscal ? 'Fiscale' : 'Non fiscale'}
-                    </span>
-                    <div>
-                        <strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong>
-                        <small>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</small>
-                    </div>
-                    <span aria-hidden="true">›</span>
-                </Link>;
-            })}
-        </section> : null}
         <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi visibili"/></label>
             <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
@@ -182,6 +172,45 @@ export default function IncomesList({
             </div>
         </form>
         <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
+            {cashRegisterGroups.map(group => {
+                const fiscalStyle = group.isFiscal ? fiscalStyles.yes : fiscalStyles.no;
+                return <div className="income-mobile-item expense-mobile-item cash-register-aggregate-mobile-item" key={`mobile-cash-${group.key}`}>
+                    <div className="expense-mobile-select">
+                        <input type="checkbox" disabled aria-label="I cumulativi degli scontrini non sono selezionabili"/>
+                    </div>
+                    <Link className="expense-mobile-link income-mobile-link" href={cashRegisterGroupHref(group)}>
+                        <div className="expense-mobile-main">
+                            <div className="expense-mobile-header">
+                                <div className="left-side flex-grow">
+                                    <span className="badge income-badge-compact">🧾 Scontrini</span>
+                                    <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ DF' : '✕ NF'}</span>
+                                    {/*<span className="text-pre text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
+                                </div>
+                                <div className="right-side">
+                                    <span className="badge expense-mobile-date text-pre">{mobileDateLabel(group.latestCreditDate)}</span>
+                                </div>
+                            </div>
+                            <div className="expense-mobile-title-row">
+                                <div className="left-side flex-grow pl-6">
+                                    <span>{group.salesChannelIcon ?? ''} {group.salesChannel}</span>
+                                    <div className="expense-mobile-subtitle">{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</div>
+                                </div>
+                                <div className="right-side">
+                                    <span>{group.paymentMethodIcon ?? '  •  '}</span>
+                                    <span className={moneyTone(group.amount)}>{euro(group.amount)}</span>
+                                </div>
+                            </div>
+                            <div className="expense-mobile-title-row income-mobile-status-row">
+                                <span className="badge">{aggregateVatLabel(group)}</span>
+                                <small className="text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</small>
+                                <span className={badgeClass(incomeCreditStatusStyles.ACCREDITATO.className)}>
+                                    {incomeCreditStatusStyles.ACCREDITATO.icon} {incomeCreditStatusStyles.ACCREDITATO.label}
+                                </span>
+                            </div>
+                        </div>
+                    </Link>
+                </div>;
+            })}
             {mobileIncomes.map(income => {
                 const categoryTone = saleCategoryTones[income.incomeCategory.code];
                 const paymentMethod = income.paymentMethodRef.name;
@@ -200,7 +229,9 @@ export default function IncomesList({
                                 <div className="left-side flex-grow">
                                     <span title={income.incomeCategory.name} className={`${badgeClass(categoryTone)} income-badge-compact`}>{income.incomeCategory.icon ?? '  •  '} {income.incomeCategory.name}</span>
                                     {fiscalBadge(income.isFiscal)}
-                                    <span className="text-pre">{formatPeriod(income.billingMonth, income.billingYear)}</span>
+                                    <span className="text-muted">
+                                        {/*{formatPeriod(income.billingMonth, income.billingYear)}*/}
+                                    </span>
                                     {income.isFiscal ?
                                         <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span> : ''}
                                 </div>
@@ -223,6 +254,7 @@ export default function IncomesList({
                             <div className="expense-mobile-title-row income-mobile-status-row">
                                 <span className="badge">{income.salesChannelRef.name}</span>
                                 <span className={badgeClass(vatStyle.className)}>{Number(income.vatRate)}%</span>
+                                <small className="text-pre text-muted">{formatPeriod(income.billingMonth, income.billingYear)}</small>
                                 <span title={status.label} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {status.label}</span>
                             </div>
                         </div>
@@ -248,24 +280,59 @@ export default function IncomesList({
                     <th data-sort-key="description">Descrizione</th>
                     <th data-sort-key="amount" data-sort-type="number">Importo</th>
                     <th data-sort-key="vat" data-sort-type="number">IVA</th>
-                    <th data-sort-key="payment-method">Metodo pag.</th>
-                    <th data-sort-key="credit-channel">Canale accr.</th>
                     <th data-sort-key="credit-status">Accr.</th>
                     <th data-sort-key="invoice-status">Stato fatt.</th>
+                    <th data-sort-key="payment-method">Metodo pag.</th>
                 </tr>
                 </thead>
-                <tbody>{incomes.map(income => {
+                <tbody>
+                {cashRegisterGroups.map(group => {
+                    const credited = incomeCreditStatusStyles.ACCREDITATO;
+                    return <tr className="clickable-desktop-row cash-register-aggregate-table-row"
+                               data-row-href={cashRegisterGroupHref(group)}
+                               data-sort-row
+                               data-sort-billing-period={String(group.billingYear * 12 + group.billingMonth)}
+                               data-sort-credit-date={dateSortValue(group.latestCreditDate)}
+                               data-sort-sales-channel={group.salesChannel}
+                               data-sort-customer="Registratore di cassa"
+                               data-sort-fiscal={group.isFiscal ? '1' : '0'}
+                               data-sort-category="Scontrini"
+                               data-sort-description={`${group.count} scontrini`}
+                               data-sort-amount={String(group.amount)}
+                               data-sort-vat={aggregateVatLabel(group)}
+                               data-sort-credit-status={credited.label}
+                               data-sort-invoice-status=""
+                               data-sort-payment-method={group.paymentMethod}
+                               tabIndex={0}
+                               key={`cash-${group.key}`}>
+                        <td className="cell-option">
+                            <input type="checkbox" disabled aria-label="I cumulativi degli scontrini non sono selezionabili"/>
+                        </td>
+                        <td>{formatPeriod(group.billingMonth, group.billingYear)}</td>
+                        <td>{dateLabel(group.latestCreditDate)}</td>
+                        <td>{group.salesChannelIcon ?? '  •  '} {group.salesChannel}</td>
+                        <td>🧾 Registratore di cassa</td>
+                        <td>{fiscalBadge(group.isFiscal)}</td>
+                        <td>Scontrini</td>
+                        <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
+                        <td><strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong></td>
+                        <td>{aggregateVatLabel(group)}</td>
+                        <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span></td>
+                        <td>-</td>
+                        <td>{group.paymentMethodIcon ?? '  •  '} {group.paymentMethod}</td>
+                    </tr>;
+                })}
+                {incomes.map(income => {
                     const status = creditStatus(income);
                     const invoice = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
                     const paymentMethod = income.paymentMethodRef.name;
-                    const creditChannel = income.creditBank.name;
                     const rowClass = ['clickable-desktop-row', status === incomeCreditStatusStyles.SCADUTO ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
                     return <tr className={rowClass} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} data-sort-row
                                data-sort-billing-period={String(income.billingYear * 12 + income.billingMonth)} data-sort-credit-date={dateSortValue(income.creditDate)}
                                data-sort-sales-channel={income.salesChannelRef.name} data-sort-customer={income.customer?.businessName ?? ''} data-sort-fiscal={income.isFiscal ? '1' : '0'}
                                data-sort-category={income.incomeCategory.name} data-sort-description={income.description ?? ''}
                                data-sort-amount={String(Number(income.amount))} data-sort-vat={String(Number(income.vatRate))}
-                               data-sort-payment-method={paymentMethod} data-sort-credit-channel={creditChannel}
+                               data-sort-payment-method={paymentMethod}
                                data-sort-credit-status={status.label} data-sort-invoice-status={invoice.label} tabIndex={0} key={income.id}>
                         <td className="cell-option">
                             <input form={formId} type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`}/>
@@ -281,15 +348,14 @@ export default function IncomesList({
                         <td><strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
                         </td>
                         <td>{Number(income.vatRate)}%</td>
-                        <td>{income.paymentMethodRef?.icon ?? '  •  '} {paymentMethod}</td>
-                        <td>{income.creditBank?.icon ?? '  •  '} {creditChannel}</td>
                         <td><span className={badgeClass(status.className)}>{status.icon} {status.label}</span></td>
                         <td>{income.isFiscal ?
                             <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : '-'}</td>
+                        <td>{income.paymentMethodRef?.icon ?? '  •  '} {paymentMethod}</td>
                     </tr>;
                 })}
                 {!incomes.length && !cashRegisterGroups.length ? <tr>
-                    <td colSpan={14}>{emptyMessage}</td>
+                    <td colSpan={13}>{emptyMessage}</td>
                 </tr> : null}</tbody>
             </table>
         </div>

@@ -717,10 +717,17 @@ export default async function IncomesPage({searchParams}: {
                 salesChannelIcon: income.salesChannelRef.icon,
                 isFiscal: income.isFiscal,
                 amount: 0,
-                count: 0
+                count: 0,
+                latestCreditDate: income.creditDate,
+                vatRates: [] as number[]
             };
             current.amount += Number(income.amount);
             current.count += 1;
+            if (income.creditDate && (!current.latestCreditDate || income.creditDate > current.latestCreditDate)) {
+                current.latestCreditDate = income.creditDate;
+            }
+            const vatRate = Number(income.vatRate);
+            if (!current.vatRates.includes(vatRate)) current.vatRates.push(vatRate);
             groups.set(key, current);
             return groups;
         }, new Map<string, {
@@ -736,6 +743,8 @@ export default async function IncomesPage({searchParams}: {
             isFiscal: boolean;
             amount: number;
             count: number;
+            latestCreditDate: Date | null;
+            vatRates: number[];
         }>()).values()).sort((a, b) => b.billingYear - a.billingYear || b.billingMonth - a.billingMonth || a.paymentMethod.localeCompare(b.paymentMethod, 'it'));
     const totalsPeriodLabel = periodTotalsLabel({
         useFiscalPeriodFilter,
@@ -880,10 +889,10 @@ export default async function IncomesPage({searchParams}: {
                 <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
             </div>
             <div className="toolbar-actions">
-                <Link className="btn btn-md btn-secondary" href="/incomes/cash-register">
-                    <span className="btn-icon" aria-hidden="true">🧾</span>Registratore di cassa
+                <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register">
+                    <span className="btn-icon" aria-hidden="true">🧾</span>Reg. di cassa
                 </Link>
-                <button className="btn btn-md btn-primary income-add-btn" type="button" data-income-new>
+                <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
                     <span className="btn-icon">+</span>Inserisci incasso
                 </button>
             </div>
@@ -931,17 +940,17 @@ export default async function IncomesPage({searchParams}: {
                         <h2 id="income-top-summary-title">{totalsPeriodLabel}</h2>
                         <p className="muted">Riepilogo immediato degli incassi compresi nei filtri correnti.</p>
                     </div>
-                    {monthlyReportHref ? <Link className="btn btn-sm btn-ghost" href={monthlyReportHref}>
-                        <span className="btn-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="3" y="5" width="18" height="16" rx="2"/>
-                                <path d="M16 3v4M8 3v4M3 10h18"/>
-                                <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
-                            </svg>
-                        </span>
-                        <span>Report mensile</span>
-                    </Link> : null}
+                    {/*{monthlyReportHref ? <Link className="btn btn-sm btn-secondary" href={monthlyReportHref}>*/}
+                    {/*    <span className="btn-icon" aria-hidden="true">*/}
+                    {/*        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"*/}
+                    {/*             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">*/}
+                    {/*            <rect x="3" y="5" width="18" height="16" rx="2"/>*/}
+                    {/*            <path d="M16 3v4M8 3v4M3 10h18"/>*/}
+                    {/*            <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>*/}
+                    {/*        </svg>*/}
+                    {/*    </span>*/}
+                    {/*    <span>Report mensile</span>*/}
+                    {/*</Link> : null}*/}
                 </div>
                 <div className="expense-top-summary-grid">
                     <div className="expense-top-summary-item is-primary">

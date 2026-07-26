@@ -268,7 +268,8 @@ export default function RecurringExpensesList({
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
           const supplier = item.supplier?.businessName || item.merchant || 'Fornitore non impostato';
           const paymentChannelName = item.paymentMethod?.name;
-          const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '  •  '} ${paymentChannelName}${item.bank ? ` · ${item.bank.icon ?? '  •  '} ${item.bank.name}` : ''}` : 'Pagamento manuale';
+          // const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '  •  '} ${paymentChannelName}${item.bank ? ` · ${item.bank.icon ?? '  •  '} ${item.bank.name}` : ''}` : 'Pagamento manuale';
+          const payment = paymentChannelName ? `${item.paymentMethod?.icon ?? '  •  '} ${paymentChannelName}` : 'Manuale';
           return <div className="recurring-mobile-item-shell" key={`mobile-recurring-${item.id}`}>
             <div className="recurring-mobile-select">
               <input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} />

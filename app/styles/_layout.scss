@@ -2882,6 +2882,10 @@ body.drawer-open {
   padding-right: 12px;
 }
 
+.text-pre {
+  font-size: 12px;
+}
+
 .expense-detail-hero-side-wrap .text-pre,
 .expense-mobile-header .text-pre {
   text-align: right;
@@ -4386,6 +4390,27 @@ table th, table td {
   justify-content: center;
 }
 
+.recurring-expenses-card {
+  .recurring-bulk-actions-bar {
+    .bulk-select-all-inline {
+      padding: 0 0 3px 9px;
+    }
+  }
+}
+
+.cash-register-receipt-list-card {
+  .cash-register-select-all {
+    padding: 0 0 3px 15px;
+    align-items: flex-end;
+  }
+}
+
+.cash-register-receipt-list-card .cash-register-select-all {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
 .cash-register-receipt-content {
   display: grid;
   grid-template-columns: minmax(140px, .8fr) minmax(190px, 1fr) minmax(150px, .8fr) minmax(100px, auto);
@@ -4419,51 +4444,12 @@ table th, table td {
   text-align: right;
 }
 
-.cash-register-aggregate-list {
-  display: grid;
-  margin-bottom: 12px;
-  overflow: hidden;
-  border: 1px solid #bfdbfe;
-  border-radius: 12px;
+.cash-register-aggregate-table-row td {
   background: #f8fbff;
 }
 
-.cash-register-aggregate-row {
-  display: grid;
-  grid-template-columns: 34px minmax(190px, 1fr) auto minmax(120px, auto) 16px;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 12px;
-  border-bottom: 1px solid #dbeafe;
-  color: inherit;
-  text-decoration: none;
-}
-
-.cash-register-aggregate-row:last-child {
-  border-bottom: 0;
-}
-
-.cash-register-aggregate-row:hover {
-  background: #eff6ff;
-}
-
-.cash-register-aggregate-icon {
-  font-size: 22px;
-}
-
-.cash-register-aggregate-row > div {
-  display: grid;
-  gap: 3px;
-}
-
-.cash-register-aggregate-row > div:nth-last-of-type(1) {
-  justify-items: end;
-}
-
-.cash-register-aggregate-row span,
-.cash-register-aggregate-row small {
-  color: var(--muted);
-  font-size: 11px;
+.cash-register-aggregate-table-row:hover td {
+  background: #eff6ff !important;
 }
 
 a.expense-top-summary-item:hover {

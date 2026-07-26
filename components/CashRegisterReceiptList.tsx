@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import {useState} from 'react';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import {euro} from '@/lib/money';
 
@@ -33,6 +36,16 @@ function receiptDate(value: string) {
 export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]}) {
     const formId = 'cashRegisterReceiptBulkForm';
     const returnTo = encodeURIComponent('/incomes/cash-register/receipts');
+    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const allSelected = receipts.length > 0 && selectedIds.length === receipts.length;
+    const singleId = selectedIds.length === 1 ? selectedIds[0] : null;
+    const anySelected = selectedIds.length > 0;
+
+    function toggleReceipt(id: number, checked: boolean) {
+        setSelectedIds(current => checked
+            ? current.includes(id) ? current : [...current, id]
+            : current.filter(item => item !== id));
+    }
 
     return <div className="card expenses-list-card cash-register-receipt-list-card">
         <BulkSelectionController/>
@@ -41,8 +54,10 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
               method="post"
               className="bulk-actions-bar confirm-bulk-form"
               data-bulk-subject="scontrini">
-            <label className="bulk-select-all-inline">
+            <label className="bulk-select-all-inline cash-register-select-all">
                 <input type="checkbox" className="bulk-select-all" data-bulk-target={formId}
+                       checked={allSelected}
+                       onChange={event => setSelectedIds(event.currentTarget.checked ? receipts.map(receipt => receipt.id) : [])}
                        aria-label="Seleziona tutti gli scontrini visibili"/>
             </label>
             <div className="bulk-direct-actions"
@@ -53,14 +68,18 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
                  data-copy-base="/incomes/cash-register?copyId="
                  data-copy-single-only="true"
                  data-return-to={returnTo}>
-                <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
+                <a href={singleId ? `/incomes/cash-register?editId=${singleId}&returnTo=${returnTo}` : "#"}
+                   className={`bulk-direct-link ${singleId ? "" : "is-disabled"}`} data-bulk-edit
+                   aria-disabled={singleId ? "false" : "true"}>
                     <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
                 </a>
-                <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
+                <a href={singleId ? `/incomes/cash-register?copyId=${singleId}&returnTo=${returnTo}` : "#"}
+                   className={`bulk-direct-link ${singleId ? "" : "is-disabled"}`} data-bulk-copy
+                   aria-disabled={singleId ? "false" : "true"}>
                     <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
                 </a>
                 <button type="submit" className="bulk-direct-link bulk-direct-danger"
-                        name="bulkAction" value="delete" data-bulk-delete disabled>
+                        name="bulkAction" value="delete" data-bulk-delete disabled={!anySelected}>
                     <span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span>
                 </button>
             </div>
@@ -79,6 +98,8 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
             {receipts.map(receipt => <article className="cash-register-receipt-row" key={receipt.id}>
                 <div className="expense-mobile-select cash-register-receipt-select">
                     <input form={formId} type="checkbox" name="ids" value={receipt.id}
+                           checked={selectedIds.includes(receipt.id)}
+                           onChange={event => toggleReceipt(receipt.id, event.currentTarget.checked)}
                            aria-label={`Seleziona scontrino ${receipt.id}`}/>
                 </div>
                 <div className="cash-register-receipt-content">

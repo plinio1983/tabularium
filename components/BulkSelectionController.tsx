@@ -308,7 +308,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
 
   if (edit) inner.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
   if (copy) inner.appendChild(buildFloatingButton(copy, "Copia", "⧉", "floating-bulk-copy"));
-  if (del) inner.appendChild(buildFloatingButton(del, "Elimina", "🗑", "floating-bulk-delete"));
+  if (del) inner.appendChild(buildFloatingButton(del, "Elimina", "🗑", "floating-bulk-delete hidden-mobile"));
   if (newItem) {
     const newItemWrap = document.createElement("div");
     const label = newItem.getAttribute("data-floating-label") ?? "Aggiungi spesa";
