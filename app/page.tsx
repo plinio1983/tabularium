@@ -1868,6 +1868,7 @@ export default async function Dashboard({searchParams}: {
                 pec: s.pec,
                 taxCodeSdi: s.taxCodeSdi,
                 internalNotes: s.internalNotes,
+                defaultExpenseCategoryId: s.defaultExpenseCategoryId,
                 systemRole: s.systemRole
             }))}
             showToolbar={false}

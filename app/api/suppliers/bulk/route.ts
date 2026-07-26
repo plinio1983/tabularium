@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { writeAuditLog } from '@/lib/audit';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
@@ -13,8 +14,9 @@ function safeReturnTo(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const formData = await request.formData();
   const action = String(formData.get('bulkAction') || '');
   const ids = selectedIds(formData);
@@ -32,7 +34,11 @@ export async function POST(request: Request) {
     if (linkedUsage > 0) {
       return redirectToPath(appendFlash(redirectTo, { error: 'in_use', usage: String(linkedUsage) }));
     }
-    await prisma.supplier.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    const deleted = await prisma.supplier.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_DELETE',
+      entityType: 'Supplier', metadata: { ids, deleted: deleted.count }, request
+    });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_deleted' }));
   }
 

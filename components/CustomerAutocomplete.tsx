@@ -98,7 +98,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId }: {
     setCreateData(data => ({ ...data, [field]: value }));
   }
 
-  return <div className="supplier-picker supplier-picker-wide full" ref={containerRef}>
+  return <div className="supplier-picker supplier-picker-wide full expense-wizard-step expense-wizard-step-3" ref={containerRef}>
     <input type="hidden" name="customerId" value={selected?.id ?? ''} />
     <label>
       Cliente
@@ -120,7 +120,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId }: {
           type="button"
           className="btn btn-sm btn-link inline-link-button"
           onClick={() => {
-            setCreateData(data => ({ ...data, businessName: query }));
+            setCreateData({ ...emptyCustomer });
             setCreateError('');
             setShowCreate(true);
             setOpen(false);

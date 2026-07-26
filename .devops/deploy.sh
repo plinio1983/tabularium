@@ -249,10 +249,10 @@ fi
 ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
   "set -euo pipefail; \
    cd '${REMOTE_DIR}'; \
-   if docker compose version >/dev/null 2>&1; then \
-     COMPOSE='docker compose'; \
-   elif command -v docker-compose >/dev/null 2>&1; then \
+   if command -v docker-compose >/dev/null 2>&1; then \
      COMPOSE='docker-compose'; \
+   elif docker compose version 2>/dev/null | grep -qi 'docker compose'; then \
+     COMPOSE='docker compose'; \
    else \
      echo 'Docker Compose non trovato sul server. Installa il plugin docker compose o docker-compose.' >&2; \
      exit 1; \
@@ -267,7 +267,7 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
    if [ '${IMPORT_DB}' = '1' ] && [ -n '${REMOTE_DB_DUMP}' ]; then \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium-db sh -c 'pg_restore --clean --if-exists --no-owner --no-acl -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"' < '${REMOTE_DB_DUMP}'; \
    fi; \
-   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npx prisma db push --accept-data-loss; \
+   \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npm run db:deploy; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npm run db:backfill-vat-settlement; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml run --rm tabularium npm run db:backfill-customers; \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d; \

@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { writeAuditLog } from '@/lib/audit';
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
   return pathFromUrl(value, fallback);
 }
 
 export async function POST(request: Request) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const formData = await request.formData();
   const rawIds = formData.getAll('ids');
   const bulkAction = String(formData.get('bulkAction') || '');
@@ -34,13 +36,21 @@ export async function POST(request: Request) {
           where: { id: { in: ids }, workspaceId: current.workspace.id },
           data: { categoryId }
         });
+        await writeAuditLog({
+          workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
+          entityType: 'RecurringExpense', metadata: { ids, operation: bulkAction, categoryId }, request
+        });
       }
     }
     return redirectToPath(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), { saved: 'bulk_updated' }));
   }
 
   if (bulkAction === 'delete') {
-    await prisma.recurringExpense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    const deleted = await prisma.recurringExpense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_DELETE',
+      entityType: 'RecurringExpense', metadata: { ids, deleted: deleted.count }, request
+    });
   }
 
   return redirectToPath(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), { saved: 'bulk_deleted' }));

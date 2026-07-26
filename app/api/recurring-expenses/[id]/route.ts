@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
+import { writeAuditLog } from '@/lib/audit';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -54,8 +55,9 @@ async function resolvePaymentMethod(paymentMethodId: number | null | undefined, 
 }
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const { id } = await params;
   const recurringExpenseId = Number(id);
   const formData = await request.formData();
@@ -67,7 +69,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   if (action === 'delete') {
-    await prisma.recurringExpense.deleteMany({ where: { id: recurringExpenseId, workspaceId: current.workspace.id } });
+    const deleted = await prisma.recurringExpense.deleteMany({ where: { id: recurringExpenseId, workspaceId: current.workspace.id } });
+    if (deleted.count) await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
+      entityType: 'RecurringExpense', entityId: recurringExpenseId, request
+    });
     return redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { saved: 'deleted' }));
   }
 
@@ -110,6 +116,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       bankId: data.isAutomaticPayment ? (data.bankId || null) : null,
       notes: data.notes || null
     }
+  });
+  await writeAuditLog({
+    workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE',
+    entityType: 'RecurringExpense', entityId: recurringExpenseId,
+    metadata: { amount: data.amount, cadence: data.cadence }, request
   });
 
   return redirectToPath(appendFlash(redirectTarget(request, `/recurring-expenses/${recurringExpenseId}`), { saved: 'updated' }));

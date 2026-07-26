@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, getWorkspaceContext, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { writeAuditLog } from '@/lib/audit';
 
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -13,7 +14,8 @@ const SupplierSchema = z.object({
   pec: z.string().trim().optional().transform(value => value || null),
   taxCodeSdi: z.string().trim().optional().transform(value => value || null),
   alias: z.string().trim().optional().transform(value => value || null),
-  internalNotes: z.string().trim().optional().transform(value => value || null)
+  internalNotes: z.string().trim().optional().transform(value => value || null),
+  defaultExpenseCategoryId: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().int().positive().nullable())
 });
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
@@ -54,12 +56,28 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const isForm = request.headers.get('content-type')?.includes('application/x-www-form-urlencoded') || request.headers.get('content-type')?.includes('multipart/form-data');
   const raw = isForm ? Object.fromEntries((await request.formData()).entries()) : await request.json();
   const data = SupplierSchema.parse(raw);
+  if (data.defaultExpenseCategoryId) {
+    const category = await prisma.expenseCategory.findFirst({
+      where: { id: data.defaultExpenseCategoryId, workspaceId: current.workspace.id },
+      select: { id: true }
+    });
+    if (!category) {
+      return isForm
+        ? redirectToPath(appendFlash(redirectAfterFormSave(request, '/suppliers'), { error: 'invalid' }))
+        : NextResponse.json({ error: 'Categoria predefinita non valida' }, { status: 400 });
+    }
+  }
   const supplier = await prisma.supplier.create({ data: { ...data, workspaceId: current.workspace.id } });
+  await writeAuditLog({
+    workspaceId: current.workspace.id, userId: current.user.id, action: 'CREATE',
+    entityType: 'Supplier', entityId: supplier.id, request
+  });
   return isForm
     ? redirectToPath(appendFlash(redirectAfterFormSave(request, '/suppliers'), { saved: 'created' }))
     : NextResponse.json(supplier);

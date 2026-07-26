@@ -128,7 +128,9 @@ export async function signInWithGoogleProfile(profile: { googleId: string; email
       where: { id: user.id },
       data: {
         googleId: user.googleId ?? profile.googleId,
+        email: profile.email,
         googleEmailVerified: true,
+        emailVerifiedAt: user.emailVerifiedAt ?? new Date(),
         name: user.name ?? profile.name
       }
     });
@@ -138,7 +140,8 @@ export async function signInWithGoogleProfile(profile: { googleId: string; email
         email: profile.email,
         name: profile.name,
         googleId: profile.googleId,
-        googleEmailVerified: true
+        googleEmailVerified: true,
+        emailVerifiedAt: new Date()
       }
     });
   }

@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { requireWorkspace } from '@/lib/auth';
+import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { cashCreditChannelName, paymentCreditIconOptions } from '@/lib/workspace-defaults';
 
@@ -41,7 +41,7 @@ function validateIcon(formData: FormData) {
 }
 
 export async function createBankAction(formData: FormData) {
-  const current = await requireWorkspace(settingsPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, settingsPath);
   const name = validateName(formData);
   const icon = validateIcon(formData);
   const existing = await prisma.bank.findFirst({ where: { workspaceId: current.workspace.id, name } });
@@ -53,7 +53,7 @@ export async function createBankAction(formData: FormData) {
 }
 
 export async function updateBankAction(formData: FormData) {
-  const current = await requireWorkspace(settingsPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, settingsPath);
   const id = Number(formValue(formData, 'id'));
   const name = validateName(formData);
   const icon = validateIcon(formData);
@@ -70,18 +70,22 @@ export async function updateBankAction(formData: FormData) {
 }
 
 export async function deleteBankAction(formData: FormData) {
-  const current = await requireWorkspace(settingsPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, settingsPath);
   const id = Number(formValue(formData, 'id'));
   if (!Number.isInteger(id) || id <= 0) settingsError('invalid');
 
   const bank = await prisma.bank.findFirst({
     where: { id, workspaceId: current.workspace.id },
-    include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true, cashRegisterPaymentMethods: true } } }
+    include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true, cashRegisterPaymentMethods: true, cashRegisterBankRules: true } } }
   });
   if (!bank) settingsError('bank_not_found');
   if (bank.isFallback) settingsError('cash_bank_delete');
 
-  const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits + bank._count.cashRegisterPaymentMethods;
+  const usageCount = bank._count.payments
+    + bank._count.recurringExpenses
+    + bank._count.incomeCredits
+    + bank._count.cashRegisterPaymentMethods
+    + bank._count.cashRegisterBankRules;
   if (usageCount > 0) redirect(`${settingsPath}?error=in_use&usage=${usageCount}`);
 
   await prisma.bank.delete({ where: { id } });
@@ -90,7 +94,7 @@ export async function deleteBankAction(formData: FormData) {
 }
 
 export async function createPaymentMethodAction(formData: FormData) {
-  const current = await requireWorkspace(settingsPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, settingsPath);
   const name = validateName(formData);
   const kind = validateKind(formData);
   const icon = validateIcon(formData);
@@ -103,7 +107,7 @@ export async function createPaymentMethodAction(formData: FormData) {
 }
 
 export async function updatePaymentMethodAction(formData: FormData) {
-  const current = await requireWorkspace(settingsPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, settingsPath);
   const id = Number(formValue(formData, 'id'));
   const name = validateName(formData);
   const kind = validateKind(formData);
@@ -172,7 +176,7 @@ export async function updatePaymentMethodAction(formData: FormData) {
 }
 
 export async function deletePaymentMethodAction(formData: FormData) {
-  const current = await requireWorkspace(settingsPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, settingsPath);
   const id = Number(formValue(formData, 'id'));
   if (!Number.isInteger(id) || id <= 0) settingsError('invalid');
 
@@ -191,4 +195,53 @@ export async function deletePaymentMethodAction(formData: FormData) {
   await prisma.paymentMethod.delete({ where: { id } });
   refreshPaymentCreditPages();
   redirect(`${settingsPath}?saved=method_deleted`);
+}
+
+export async function updateCashRegisterBankRulesAction(formData: FormData) {
+  const current = await requireWorkspaceRole(workspaceManagementRoles, settingsPath);
+  const [methods, channels, banks] = await Promise.all([
+    prisma.paymentMethod.findMany({
+      where: {
+        workspaceId: current.workspace.id,
+        cashRegisterEnabled: true,
+        kind: { in: ['INCOME', 'BOTH'] },
+        OR: [{ systemRole: null }, { systemRole: { not: 'CASH' } }]
+      },
+      select: { id: true }
+    }),
+    prisma.incomeSalesChannel.findMany({
+      where: { workspaceId: current.workspace.id },
+      select: { id: true }
+    }),
+    prisma.bank.findMany({
+      where: { workspaceId: current.workspace.id },
+      select: { id: true }
+    })
+  ]);
+  const bankIds = new Set(banks.map(bank => bank.id));
+  const rules = methods.flatMap(method => channels.map(channel => {
+    const bankId = Number(formValue(formData, `rule_${method.id}_${channel.id}`));
+    if (!bankIds.has(bankId)) settingsError('cash_register_rule_bank');
+    return { methodId: method.id, channelId: channel.id, bankId };
+  }));
+
+  await prisma.$transaction(rules.map(rule => prisma.cashRegisterBankRule.upsert({
+    where: {
+      workspaceId_paymentMethodId_salesChannelId: {
+        workspaceId: current.workspace.id,
+        paymentMethodId: rule.methodId,
+        salesChannelId: rule.channelId
+      }
+    },
+    update: { bankId: rule.bankId },
+    create: {
+      workspaceId: current.workspace.id,
+      paymentMethodId: rule.methodId,
+      salesChannelId: rule.channelId,
+      bankId: rule.bankId
+    }
+  })));
+
+  refreshPaymentCreditPages();
+  redirect(`${settingsPath}?saved=cash_register_rules_updated`);
 }

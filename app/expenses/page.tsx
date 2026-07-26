@@ -65,8 +65,6 @@ const expenseMobileSortOptions = [
     {value: 'electronicInvoice_desc', label: '↓ Fattura elettronica prima'},
     {value: 'complete_desc', label: '↓ Complete prima'},
     {value: 'automaticPayment_desc', label: '↓ Pagamento automatico prima'},
-    {value: 'paidByCurrentAccount_desc', label: '↓ C/C pagato prima'},
-    {value: 'paidBy_asc', label: '↓ Pagato da (A-Z)'},
     {value: 'vatRate_desc', label: '↓ IVA alta'},
     {value: 'recurring_desc', label: '↓ Ricorrenti prima'},
     {value: 'createdAt_desc', label: '↓ Creazione recente'},
@@ -720,6 +718,7 @@ export default async function ExpensesPage({searchParams}: {
         },
         errorMessages: {
             invalid: 'Controlla i campi della spesa.',
+            invalid_attachment: 'Allegato non valido. Usa PDF, JPG, PNG, WebP, XML o P7M fino a 10 MB.',
             supplier_not_found: 'Fornitore non trovato. Aggiungilo prima con il pulsante Nuovo nel campo Esercente, poi salva la spesa.',
             not_found: 'Spesa non trovata.',
             in_use: 'La spesa è collegata ad altri movimenti.'
@@ -874,10 +873,6 @@ export default async function ExpensesPage({searchParams}: {
                 return compareNumber(Number(a.isComplete), Number(b.isComplete), 'desc');
             case 'automaticPayment_desc':
                 return compareNumber(Number(a.isAutomaticPayment), Number(b.isAutomaticPayment), 'desc');
-            case 'paidByCurrentAccount_desc':
-                return compareNumber(Number(a.paidByCurrentAccount), Number(b.paidByCurrentAccount), 'desc');
-            case 'paidBy_asc':
-                return compareText(a.paidBy, b.paidBy, 'asc');
             case 'vatRate_desc':
                 return compareNumber(a.vatRate, b.vatRate, 'desc');
             case 'recurring_desc':
@@ -972,6 +967,7 @@ export default async function ExpensesPage({searchParams}: {
                 pec: s.pec,
                 taxCodeSdi: s.taxCodeSdi,
                 internalNotes: s.internalNotes,
+                defaultExpenseCategoryId: s.defaultExpenseCategoryId,
                 systemRole: s.systemRole
             }))}
             initialOpen={inputDefault(filters, 'new') === '1'}
@@ -1381,6 +1377,7 @@ export default async function ExpensesPage({searchParams}: {
                     pec: s.pec,
                     taxCodeSdi: s.taxCodeSdi,
                     internalNotes: s.internalNotes,
+                    defaultExpenseCategoryId: s.defaultExpenseCategoryId,
                     systemRole: s.systemRole
                 }))}
                 emptyMessage="Nessuna spesa trovata con i filtri selezionati."

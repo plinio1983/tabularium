@@ -34,7 +34,10 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const [supplier, categories, banks, paymentMethods, suppliers] = await Promise.all([
     prisma.supplier.findUnique({
       where: { id: Number(id) },
-      include: { expenses: { include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true, supplier: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] } }
+      include: {
+        defaultExpenseCategory: true,
+        expenses: { include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true, supplier: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] }
+      }
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
@@ -59,7 +62,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
   return <div className="grid expense-detail-page supplier-detail-page">
-    <SupplierEditModalController/>
+    <SupplierEditModalController categories={orderedCategories.map(category => ({ id: category.id, name: category.name, icon: category.icon }))}/>
     <NewExpensePanel
       categories={orderedCategories.map(c => ({
         id: c.id,
@@ -87,6 +90,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         pec: s.pec,
         taxCodeSdi: s.taxCodeSdi,
         internalNotes: s.internalNotes,
+        defaultExpenseCategoryId: s.defaultExpenseCategoryId,
         systemRole: s.systemRole
       }))}
       initialExpense={{ supplierId: supplier.id, merchant: supplier.businessName }}
@@ -148,6 +152,11 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
               <span className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>
                 {openExpenses.length} ordini aperti
               </span>
+              <span className="badge supplier-default-category-badge">
+                Categoria predefinita: {supplier.defaultExpenseCategory
+                  ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
+                  : 'Non impostata'}
+              </span>
             </div>
           </aside>
         </section>
@@ -187,6 +196,12 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <CopyableField label="IBAN" value={supplier.iban} />
             <CopyableField label="PEC" value={supplier.pec} />
             <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi} />
+            <CopyableField
+              label="Categoria predefinita"
+              value={supplier.defaultExpenseCategory
+                ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
+                : null}
+            />
             <CopyableField label="Note interne" value={supplier.internalNotes} className="span-2"/>
           </div>
         </details>
@@ -210,7 +225,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
         paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
-        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
+        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, systemRole: s.systemRole }))}
         mobileLabel="Spese collegate mobile"
         emptyMessage="Nessuna spesa collegata a questo fornitore."
       />

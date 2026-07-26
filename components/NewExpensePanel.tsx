@@ -8,7 +8,7 @@ import { expenseNewEventName } from '@/components/ExpenseNewTriggerButton';
 import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; systemRole?: string | null; isVatSettlementDefault?: boolean };
-type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null; systemRole?: string | null };
+type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null; systemRole?: string | null; defaultExpenseCategoryId?: number | null };
 type InitialExpense = Parameters<typeof ExpenseCreationSwitcher>[0]['initialExpense'];
 
 type Props = {

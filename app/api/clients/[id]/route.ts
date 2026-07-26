@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { prisma } from '@/lib/prisma';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { writeAuditLog } from '@/lib/audit';
 
 const CustomerSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -18,8 +19,9 @@ const CustomerSchema = z.object({
 });
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const customerId = Number((await params).id);
   const returnTo = pathFromUrl(new URL(request.url).searchParams.get('returnTo'), '/clients');
   const formData = await request.formData();
@@ -32,10 +34,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return redirectToPath(appendFlash(returnTo, { error: customer.systemRole ? 'system_protected' : 'in_use', usage: String(linked) }));
     }
     await prisma.customer.delete({ where: { id: customerId } });
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
+      entityType: 'Customer', entityId: customerId, request
+    });
     return redirectToPath(appendFlash('/clients', { saved: 'deleted' }));
   }
 
   const data = CustomerSchema.parse(Object.fromEntries(formData.entries()));
   await prisma.customer.update({ where: { id: customerId }, data });
+  await writeAuditLog({
+    workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE',
+    entityType: 'Customer', entityId: customerId, request
+  });
   return redirectToPath(appendFlash(returnTo, { saved: 'updated' }));
 }

@@ -5,13 +5,11 @@ export const dynamic = 'force-dynamic';
 
 function isAuthorized(request: Request) {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return true;
+  if (!secret) return process.env.NODE_ENV !== 'production';
 
   const auth = request.headers.get('authorization') ?? '';
   const bearer = auth.startsWith('Bearer ') ? auth.slice('Bearer '.length) : '';
-  const urlSecret = new URL(request.url).searchParams.get('secret') ?? '';
-
-  return bearer === secret || urlSecret === secret;
+  return bearer === secret;
 }
 
 export async function GET(request: Request) {
@@ -20,7 +18,8 @@ export async function GET(request: Request) {
   }
 
   const result = await generateRecurringExpenses();
-  return NextResponse.json(result);
+  if (result.errors.length) console.error(JSON.stringify({ event: 'recurring_expenses_job_failed', task: 'generate', result }));
+  return NextResponse.json(result, { status: result.errors.length ? 500 : 200 });
 }
 
 export async function POST(request: Request) {

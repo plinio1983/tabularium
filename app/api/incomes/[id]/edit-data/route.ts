@@ -23,7 +23,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       id: income.id,
       customerId: income.customerId,
       salesChannelId: income.salesChannelId,
-      incomeCategoryId: income.incomeCategoryId,
+      orderDate: income.orderDate ?? income.creditDate,
       description: income.description,
       amount: income.amount.toString(),
       paymentMethodId: income.paymentMethodId,

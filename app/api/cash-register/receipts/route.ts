@@ -1,8 +1,10 @@
 import {NextResponse} from 'next/server';
 import {z} from 'zod';
-import {getWorkspaceContext} from '@/lib/auth';
+import {getWorkspaceApiAccess, workspaceOperationalRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {ensureWorkspaceDefaults} from '@/lib/workspace-defaults';
+import {writeAuditLog} from '@/lib/audit';
+import {resolveCashRegisterBankId} from '@/lib/cash-register-bank';
 
 const allowedVatRates = [0, 4, 10, 22];
 const ReceiptSchema = z.object({
@@ -28,8 +30,9 @@ function romePeriod(date: Date) {
 }
 
 export async function POST(request: Request) {
-    const current = await getWorkspaceContext();
-    if (!current) return NextResponse.json({error: 'Autenticazione richiesta'}, {status: 401});
+    const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+    if (!access.ok) return NextResponse.json({error: access.error}, {status: access.status});
+    const current = access.current;
     await ensureWorkspaceDefaults(current.workspace.id);
     const parsed = ReceiptSchema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({error: 'Dati scontrino non validi'}, {status: 400});
@@ -59,13 +62,20 @@ export async function POST(request: Request) {
             where: {id: input.salesChannelId, workspaceId: current.workspace.id}
         })
     ]);
-    if (!workspace?.cashRegisterIncomeCategoryId || !customer || !method || !channel || !method.cashRegisterDefaultBankId) {
+    if (!workspace?.cashRegisterIncomeCategoryId || !customer || !method || !channel) {
         return NextResponse.json({error: 'Completa la configurazione del registratore di cassa'}, {status: 409});
+    }
+    if (!input.isFiscal && method.systemRole !== 'CASH') {
+        return NextResponse.json({error: 'Gli incassi non fiscali possono essere registrati solo in contanti'}, {status: 400});
     }
     const category = await prisma.incomeCategory.findFirst({
         where: {id: workspace.cashRegisterIncomeCategoryId, workspaceId: current.workspace.id}
     });
     if (!category) return NextResponse.json({error: 'Categoria registratore non valida'}, {status: 409});
+    const creditBankId = await resolveCashRegisterBankId(current.workspace.id, method, channel.id);
+    if (!creditBankId) {
+        return NextResponse.json({error: 'Configura la banca per questo metodo e canale di vendita'}, {status: 409});
+    }
     const period = romePeriod(date);
 
     try {
@@ -78,7 +88,8 @@ export async function POST(request: Request) {
                 description: 'Incasso da banco',
                 amount: input.amount,
                 paymentMethodId: method.id,
-                creditBankId: method.cashRegisterDefaultBankId,
+                creditBankId,
+                orderDate: date,
                 creditDate: date,
                 isCredited: true,
                 billingYear: period.year,
@@ -90,6 +101,15 @@ export async function POST(request: Request) {
                 cashRegisterRequestId: input.requestId
             },
             include: {paymentMethodRef: true}
+        });
+        await writeAuditLog({
+            workspaceId: current.workspace.id,
+            userId: current.user.id,
+            action: 'CREATE',
+            entityType: 'CashRegisterReceipt',
+            entityId: receipt.id,
+            metadata: {amount: input.amount, isFiscal: input.isFiscal, requestId: input.requestId},
+            request
         });
         return NextResponse.json({receipt}, {status: 201});
     } catch (error: unknown) {

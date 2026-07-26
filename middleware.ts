@@ -6,6 +6,9 @@ const sessionCookieName = 'tabularium_session';
 const publicPrefixes = [
   '/login',
   '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/resend-verification',
   '/api/auth',
   '/api/cron',
   '/api/jobs',
@@ -13,14 +16,14 @@ const publicPrefixes = [
   '/admin/setup',
   '/_next',
   '/icons',
-  '/templates',
-  '/uploads'
+  '/templates'
 ];
 
 const publicPaths = new Set([
   '/manifest.webmanifest',
   '/sw.js',
-  '/favicon.ico'
+  '/favicon.ico',
+  '/api/health'
 ]);
 
 function noStore(response: NextResponse) {
@@ -39,8 +42,26 @@ function cleanNextPath(request: NextRequest) {
   return `${url.pathname}${search ? `?${search}` : ''}`;
 }
 
+function requestHost(request: NextRequest) {
+  const forwardedHost = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim();
+  return forwardedHost || request.headers.get('host') || request.nextUrl.host;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const isMutation = !['GET', 'HEAD', 'OPTIONS'].includes(request.method);
+  const origin = request.headers.get('origin');
+  if (isMutation && origin) {
+    let originHost = '';
+    try {
+      originHost = new URL(origin).host;
+    } catch {
+      return noStore(NextResponse.json({ error: 'Origine richiesta non valida' }, { status: 403 }));
+    }
+    if (originHost !== requestHost(request)) {
+      return noStore(NextResponse.json({ error: 'Origine richiesta non consentita' }, { status: 403 }));
+    }
+  }
   if (publicPaths.has(pathname) || publicPrefixes.some(prefix => pathname.startsWith(prefix))) {
     return noStore(NextResponse.next());
   }

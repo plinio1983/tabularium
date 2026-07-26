@@ -17,7 +17,8 @@ export async function GET(_request: Request, {params}: { params: Promise<{ id: s
       iban: true,
       pec: true,
       taxCodeSdi: true,
-      internalNotes: true
+      internalNotes: true,
+      defaultExpenseCategoryId: true
     }
   });
   if (!supplier) return NextResponse.json({error: 'Fornitore non trovato'}, {status: 404});

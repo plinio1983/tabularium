@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
-
-import { mkdir, writeFile } from 'node:fs/promises';
-import path from 'node:path';
+import { AttachmentValidationError, saveExpenseAttachmentFiles } from '@/lib/attachments';
+import { writeAuditLog } from '@/lib/audit';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -72,7 +71,6 @@ type PaymentInput = {
   paymentMethodId?: number | null;
   bankId?: number | null;
   amount: number;
-  paidBy: 'HERBAL_MARKET' | 'ALTRO_OPERATORE';
 };
 
 function resolveBillingPeriod(billingPeriod?: string) {
@@ -93,8 +91,7 @@ function parsePayments(formData: FormData): PaymentInput[] {
   const methodIds = getAll(formData, 'paymentMethodId[]');
   const banks = getAll(formData, 'paymentBankId[]');
   const amounts = getAll(formData, 'paymentAmount[]');
-  const paidByRows = getAll(formData, 'paymentPaidBy[]');
-  const length = Math.max(dates.length, methodIds.length, banks.length, amounts.length, paidByRows.length);
+  const length = Math.max(dates.length, methodIds.length, banks.length, amounts.length);
   const payments: PaymentInput[] = [];
 
   for (let index = 0; index < length; index++) {
@@ -102,41 +99,18 @@ function parsePayments(formData: FormData): PaymentInput[] {
     const bankId = banks[index] ? Number(banks[index]) : null;
     const paymentDate = dates[index] || undefined;
     const paymentMethodId = methodIds[index] ? Number(methodIds[index]) : null;
-    const paidBy = paidByRows[index] === 'ALTRO_OPERATORE' ? 'ALTRO_OPERATORE' : 'HERBAL_MARKET';
     if (amount > 0 || paymentDate || bankId || paymentMethodId) {
-      payments.push({ amount, bankId, paymentDate, paymentMethodId, paidBy });
+      payments.push({ amount, bankId, paymentDate, paymentMethodId });
     }
   }
 
   return payments.filter(row => row.amount > 0);
 }
 
-async function saveAttachments(files: FormDataEntryValue[], existingCount: number) {
-  const validFiles = files.filter((file): file is File => file instanceof File && file.size > 0).slice(0, Math.max(0, 5 - existingCount));
-  if (!validFiles.length) return [];
-
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'invoices');
-  await mkdir(uploadDir, { recursive: true });
-
-  const saved = [];
-  for (const file of validFiles) {
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, filename), buffer);
-    saved.push({
-      originalName: file.name,
-      path: `/uploads/invoices/${filename}`,
-      mimeType: file.type || null,
-      sizeBytes: file.size
-    });
-  }
-  return saved;
-}
-
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const { id } = await params;
   const expenseId = Number(id);
   const formData = await request.formData();
@@ -144,7 +118,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const action = String(raw._action || 'update');
   const returnTo = new URL(request.url).searchParams.get('returnTo');
   if (action === 'delete') {
-    await prisma.expense.deleteMany({ where: { id: expenseId, workspaceId: current.workspace.id } });
+    const deleted = await prisma.expense.deleteMany({ where: { id: expenseId, workspaceId: current.workspace.id } });
+    if (deleted.count) await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
+      entityType: 'Expense', entityId: expenseId, request
+    });
     const target = safePath(returnTo, '/expenses', request.url);
     return redirectToPath(appendFlash(target, { saved: 'deleted' }));
   }
@@ -182,11 +160,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const categoryId = isVatSettlement ? configuredCategoryId : await resolveCategoryId(data.categoryId, current.workspace.id);
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const firstPayment = payments[0];
-  const firstPaidBy = firstPayment?.paidBy ?? 'HERBAL_MARKET';
 
   const nextIsRecurring = isVatSettlement ? false : (existing.isRecurring ? data.isRecurring : false);
 
-  const attachments = await saveAttachments(formData.getAll('attachments'), existing.attachments.length);
+  let attachments;
+  try {
+    attachments = await saveExpenseAttachmentFiles(formData.getAll('attachments'), existing.attachments.length);
+  } catch (error) {
+    if (error instanceof AttachmentValidationError) {
+      return redirectToPath(appendFlash(returnTo || `/expenses/${expenseId}`, { error: 'invalid_attachment' }));
+    }
+    throw error;
+  }
 
   await prisma.expense.update({
     where: { id: expenseId },
@@ -199,16 +184,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       description: data.description || null,
       amount: data.amount,
       paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
-      vatRate: isVatSettlement ? 0 : data.vatRate,
+      vatRate: isVatSettlement || !invoiceFields.isDeclared ? 0 : data.vatRate,
       isDeclared: invoiceFields.isDeclared,
       isRecurring: nextIsRecurring,
       hasElectronicInvoice: invoiceFields.hasElectronicInvoice,
       invoiceStatus: invoiceFields.invoiceStatus,
       isComplete: data.paymentStatus === 'COMPLETATO',
-      paidByCurrentAccount: firstPaidBy === 'HERBAL_MARKET',
       paymentStatus: data.paymentStatus,
       paidAmount,
-      paidBy: firstPaidBy,
       invoiceDocumentPath: existing.invoiceDocumentPath ?? attachments[0]?.path ?? null,
       notes: data.notes || null,
       month,
@@ -219,12 +202,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           paymentDate: payment.paymentDate ? new Date(payment.paymentDate) : null,
           paymentMethodId: payment.paymentMethodId!,
           bankId: payment.bankId || null,
-          amount: payment.amount,
-          paidBy: payment.paidBy
+          amount: payment.amount
         }))
       },
       attachments: attachments.length ? { create: attachments } : undefined
     }
+  });
+  await writeAuditLog({
+    workspaceId: current.workspace.id,
+    userId: current.user.id,
+    action: 'UPDATE',
+    entityType: 'Expense',
+    entityId: expenseId,
+    metadata: { amount: data.amount, expenseType: data.expenseType, paymentStatus: data.paymentStatus },
+    request
   });
 
   const target = safePath(returnTo, `/expenses/${expenseId}`, request.url);

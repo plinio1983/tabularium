@@ -1,5 +1,4 @@
-import { redirect } from 'next/navigation';
-import { getCurrentSession } from '@/lib/auth';
+import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { ensureWorkspaceDefaults, orderBanks, orderPaymentMethods, paymentCreditIconOptions } from '@/lib/workspace-defaults';
 import {
@@ -7,6 +6,7 @@ import {
   createPaymentMethodAction,
   deleteBankAction,
   deletePaymentMethodAction,
+  updateCashRegisterBankRulesAction,
   updateBankAction,
   updatePaymentMethodAction
 } from './actions';
@@ -24,6 +24,7 @@ const errorMessages: Record<string, string> = {
   method_not_found: 'Metodo non trovato.',
   cash_register_invalid: 'Abilita almeno un metodo e seleziona il metodo principale.',
   cash_register_bank: 'Imposta una banca valida per ogni metodo del registratore.',
+  cash_register_rule_bank: 'Seleziona una banca valida per ogni combinazione di metodo e canale.',
   cash_register_method_delete: 'Disabilita o sostituisci il metodo nel registratore prima di eliminarlo.',
   cash_bank_delete: 'Il canale di sistema Cassa non può essere eliminato.',
   fallback_delete: 'Il valore generico non può essere eliminato, ma puoi modificarne la label.',
@@ -38,7 +39,8 @@ const savedMessages: Record<string, string> = {
   method_created: 'Metodo aggiunto.',
   method_updated: 'Metodo aggiornato.',
   method_deleted: 'Metodo rimosso.',
-  cash_register_updated: 'Metodi del registratore di cassa aggiornati.'
+  cash_register_updated: 'Metodi del registratore di cassa aggiornati.',
+  cash_register_rules_updated: 'Instradamento degli accrediti aggiornato.'
 };
 
 const kindLabels: Record<string, string> = {
@@ -55,8 +57,7 @@ function paramValue(params: Record<string, string | string[] | undefined>, key: 
 export const dynamic = 'force-dynamic';
 
 export default async function PaymentCreditSettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
-  const current = await getCurrentSession();
-  if (!current?.workspace) redirect('/login?next=/settings/payment-credit');
+  const current = await requireWorkspaceRole(workspaceManagementRoles, '/settings/payment-credit');
   await ensureWorkspaceDefaults(current.workspace.id);
 
   const params = (await searchParams) ?? {};
@@ -64,10 +65,10 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
   const saved = paramValue(params, 'saved');
   const usage = paramValue(params, 'usage');
 
-  const [banks, paymentMethods, workspaceSettings] = await Promise.all([
+  const [banks, paymentMethods, workspaceSettings, salesChannels, bankRules] = await Promise.all([
     prisma.bank.findMany({
       where: { workspaceId: current.workspace.id },
-      include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true } } },
+      include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true, cashRegisterBankRules: true } } },
       orderBy: { id: 'asc' }
     }),
     prisma.paymentMethod.findMany({
@@ -78,11 +79,24 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
     prisma.workspace.findUnique({
       where: { id: current.workspace.id },
       select: { cashRegisterPrimaryPaymentMethodId: true }
+    }),
+    prisma.incomeSalesChannel.findMany({
+      where: { workspaceId: current.workspace.id },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }]
+    }),
+    prisma.cashRegisterBankRule.findMany({
+      where: { workspaceId: current.workspace.id }
     })
   ]);
 
   const orderedBanks = orderBanks(banks);
   const orderedMethods = orderPaymentMethods(paymentMethods);
+  const routedMethods = orderedMethods.filter(method =>
+    method.cashRegisterEnabled
+    && method.systemRole !== 'CASH'
+    && (method.kind === 'INCOME' || method.kind === 'BOTH')
+  );
+  const ruleBank = new Map(bankRules.map(rule => [`${rule.paymentMethodId}_${rule.salesChannelId}`, rule.bankId]));
 
   return <div className="grid admin-page categories-settings-page">
     <div className="toolbar-card">
@@ -110,7 +124,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
         <span>Azioni</span>
       </div>
       {orderedBanks.length ? orderedBanks.map(bank => {
-                const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits;
+        const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits + bank._count.cashRegisterBankRules;
         return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Canale' : 'Banca'} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
       }) : <p className="muted">Nessuna banca configurata.</p>}
     </details>
@@ -141,6 +155,48 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
             banks: orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))
           } : undefined}/>;
       }) : <p className="muted">Nessun metodo configurato.</p>}
+    </details>
+
+    <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible cash-register-routing-card" open>
+      <summary className="category-create-toggle">
+        <span>Instradamento accrediti registratore</span>
+        <span aria-hidden="true">+</span>
+      </summary>
+      <div className="cash-register-routing-content">
+        <p className="muted">Scegli la banca di accredito per ogni combinazione tra metodo di pagamento e canale di vendita. Cash resta sempre associato a Cassa.</p>
+        {routedMethods.length && salesChannels.length ? <form action={updateCashRegisterBankRulesAction}>
+          <div className="table-scroll">
+            <table className="cash-register-routing-table">
+              <thead>
+                <tr>
+                  <th>Metodo</th>
+                  {salesChannels.map(channel => <th key={channel.id}>{channel.icon ?? ''} {channel.name}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {routedMethods.map(method => <tr key={method.id}>
+                  <th>{method.icon ?? ''} {method.name}</th>
+                  {salesChannels.map(channel => {
+                    const selectedBankId = ruleBank.get(`${method.id}_${channel.id}`) ?? method.cashRegisterDefaultBankId ?? '';
+                    return <td key={channel.id}>
+                      <label>
+                        <span className="sr-only">{method.name} · {channel.name}</span>
+                        <select name={`rule_${method.id}_${channel.id}`} defaultValue={selectedBankId} required>
+                          <option value="">Seleziona banca</option>
+                          {orderedBanks.map(bank => <option key={bank.id} value={bank.id}>{bank.icon ?? ''} {bank.name}</option>)}
+                        </select>
+                      </label>
+                    </td>;
+                  })}
+                </tr>)}
+              </tbody>
+            </table>
+          </div>
+          <div className="cash-register-routing-actions">
+            <button className="btn btn-sm btn-primary" type="submit">✓ Salva instradamento</button>
+          </div>
+        </form> : <p className="muted">Abilita almeno un metodo non Cash nel registratore e configura un canale di vendita.</p>}
+      </div>
     </details>
   </div>;
 }

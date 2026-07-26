@@ -1,9 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { requireWorkspace } from '@/lib/auth';
+import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { categoryIconOptions } from '@/lib/workspace-defaults';
+import { writeAuditLog } from '@/lib/audit';
 
 const categoriesPath = '/settings/categories/expenses';
 
@@ -33,7 +34,7 @@ function validateCategoryInput(formData: FormData) {
 }
 
 export async function createCategoryAction(formData: FormData) {
-  const current = await requireWorkspace(categoriesPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, categoriesPath);
   const { name, code, icon } = validateCategoryInput(formData);
 
   const existing = await prisma.expenseCategory.findFirst({
@@ -41,7 +42,7 @@ export async function createCategoryAction(formData: FormData) {
   });
   if (existing) categoriesError('code_exists');
 
-  await prisma.expenseCategory.create({
+  const category = await prisma.expenseCategory.create({
     data: {
       workspaceId: current.workspace.id,
       name,
@@ -49,12 +50,13 @@ export async function createCategoryAction(formData: FormData) {
       icon
     }
   });
+  await writeAuditLog({ workspaceId: current.workspace.id, userId: current.user.id, action: 'CREATE', entityType: 'ExpenseCategory', entityId: category.id });
 
   redirect(`${categoriesPath}?saved=created`);
 }
 
 export async function updateCategoryAction(formData: FormData) {
-  const current = await requireWorkspace(categoriesPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, categoriesPath);
   const id = Number(formValue(formData, 'id'));
   const { name, code, icon } = validateCategoryInput(formData);
 
@@ -78,12 +80,13 @@ export async function updateCategoryAction(formData: FormData) {
     where: { id },
     data: { name, code, icon }
   });
+  await writeAuditLog({ workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE', entityType: 'ExpenseCategory', entityId: id });
 
   redirect(`${categoriesPath}?saved=updated`);
 }
 
 export async function deleteCategoryAction(formData: FormData) {
-  const current = await requireWorkspace(categoriesPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, categoriesPath);
   const id = Number(formValue(formData, 'id'));
 
   if (!Number.isInteger(id) || id <= 0) categoriesError('invalid');
@@ -104,16 +107,22 @@ export async function deleteCategoryAction(formData: FormData) {
   if (usageCount > 0) redirect(`${categoriesPath}?error=in_use&usage=${usageCount}`);
 
   await prisma.expenseCategory.delete({ where: { id } });
+  await writeAuditLog({ workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE', entityType: 'ExpenseCategory', entityId: id });
 
   redirect(`${categoriesPath}?saved=deleted`);
 }
 
 export async function setVatSettlementCategoryAction(formData: FormData) {
-  const current = await requireWorkspace(categoriesPath);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, categoriesPath);
   const categoryId = Number(formValue(formData, 'categoryId'));
   if (!Number.isInteger(categoryId) || categoryId <= 0) categoriesError('invalid');
   const category = await prisma.expenseCategory.findFirst({ where: { id: categoryId, workspaceId: current.workspace.id } });
   if (!category) categoriesError('not_found');
   await prisma.workspace.update({ where: { id: current.workspace.id }, data: { vatSettlementCategoryId: category.id } });
+  await writeAuditLog({
+    workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE',
+    entityType: 'WorkspaceSettings', entityId: current.workspace.id,
+    metadata: { vatSettlementCategoryId: category.id }
+  });
   redirect(`${categoriesPath}?saved=vat_settlement_category`);
 }

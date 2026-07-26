@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { createHash, pbkdf2Sync, randomBytes } from 'node:crypto';
+import { createHash, pbkdf2Sync, randomBytes, timingSafeEqual } from 'node:crypto';
 import { prisma } from '@/lib/prisma';
 
 export const sessionCookieName = 'tabularium_session';
@@ -11,6 +11,12 @@ const passwordKeyLength = 64;
 const passwordDigest = 'sha512';
 
 export type WorkspaceRoleName = 'OWNER' | 'ADMIN' | 'ACCOUNTANT' | 'VIEWER';
+export const workspaceOperationalRoles: WorkspaceRoleName[] = ['OWNER', 'ADMIN', 'ACCOUNTANT'];
+export const workspaceManagementRoles: WorkspaceRoleName[] = ['OWNER', 'ADMIN'];
+
+export function hasWorkspaceRole(role: string | null | undefined, roles: WorkspaceRoleName[]) {
+  return roles.includes(role as WorkspaceRoleName);
+}
 
 export function hashPassword(password: string) {
   const salt = randomBytes(16).toString('hex');
@@ -24,8 +30,9 @@ export function verifyPassword(password: string, storedHash?: string | null) {
   if (scheme !== 'pbkdf2' || !iterationsRaw || !salt || !hash) return false;
   const iterations = Number(iterationsRaw);
   if (!Number.isInteger(iterations) || iterations <= 0) return false;
-  const candidate = pbkdf2Sync(password, salt, iterations, passwordKeyLength, passwordDigest).toString('hex');
-  return candidate === hash;
+  const candidate = pbkdf2Sync(password, salt, iterations, passwordKeyLength, passwordDigest);
+  const expected = Buffer.from(hash, 'hex');
+  return expected.length === candidate.length && timingSafeEqual(candidate, expected);
 }
 
 function tokenHash(token: string) {
@@ -86,7 +93,16 @@ export async function getCurrentSession() {
       workspace: true
     }
   });
-  const session = sessions.find(item => item.expiresAt > new Date() && item.user.isActive);
+  const now = new Date();
+  const expiredSessionIds = sessions.filter(item => item.expiresAt <= now).map(item => item.id);
+  if (expiredSessionIds.length) {
+    await prisma.authSession.deleteMany({ where: { id: { in: expiredSessionIds } } });
+  }
+  const session = sessions.find(item =>
+    item.expiresAt > now
+    && item.user.isActive
+    && Boolean(item.user.emailVerifiedAt || item.user.googleEmailVerified)
+  );
 
   if (!session) return null;
 
@@ -132,9 +148,31 @@ export async function getWorkspaceContext() {
   };
 }
 
+export async function getWorkspaceApiAccess(roles: WorkspaceRoleName[]) {
+  const current = await getWorkspaceContext();
+  if (!current) {
+    return {
+      ok: false as const,
+      status: 401 as const,
+      error: 'Autenticazione richiesta'
+    };
+  }
+  if (!hasWorkspaceRole(current.membership.role, roles)) {
+    return {
+      ok: false as const,
+      status: 403 as const,
+      error: 'Permessi insufficienti'
+    };
+  }
+  return {
+    ok: true as const,
+    current
+  };
+}
+
 export async function requireWorkspaceRole(roles: WorkspaceRoleName[], nextPath = '/admin') {
   const current = await requireWorkspace(nextPath);
-  if (!roles.includes(current.membership.role as WorkspaceRoleName)) redirect('/account/workspace');
+  if (!hasWorkspaceRole(current.membership.role, roles)) redirect('/account/workspace');
   return current;
 }
 

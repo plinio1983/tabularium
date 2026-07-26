@@ -46,8 +46,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         paymentDate: payment.paymentDate,
         paymentMethodId: payment.paymentMethodId,
         bankId: payment.bankId,
-        amount: payment.amount.toString(),
-        paidBy: payment.paidBy
+        amount: payment.amount.toString()
       }))
     }
   });

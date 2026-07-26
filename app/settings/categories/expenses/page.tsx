@@ -1,5 +1,4 @@
-import { redirect } from 'next/navigation';
-import { getCurrentSession } from '@/lib/auth';
+import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { categoryIconOptions, orderExpenseCategories } from '@/lib/workspace-defaults';
 import { createCategoryAction, deleteCategoryAction, setVatSettlementCategoryAction, updateCategoryAction } from '../actions';
@@ -27,8 +26,7 @@ const savedMessages: Record<string, string> = {
 export const dynamic = 'force-dynamic';
 
 export default async function ExpenseCategoriesSettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
-  const current = await getCurrentSession();
-  if (!current?.workspace) redirect('/login?next=/settings/categories/expenses');
+  const current = await requireWorkspaceRole(workspaceManagementRoles, '/settings/categories/expenses');
   const params = (await searchParams) ?? {};
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const saved = Array.isArray(params.saved) ? params.saved[0] : params.saved;

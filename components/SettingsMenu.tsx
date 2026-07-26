@@ -7,6 +7,7 @@ import MonthlyReportIcon from '@/components/MonthlyReportIcon';
 const settingsLinks = [
   { href: '/settings/account', label: 'Account', icon: '👤' },
   { href: '/account/workspace', label: 'Workspace', icon: '▦' },
+  { href: '/account/workspace/audit', label: 'Registro attività', icon: '☷' },
   // { href: '/settings/company', label: 'Azienda', icon: '🏢' },
   { href: '/settings/company-settings', label: 'Società', icon: '⚙' },
   { href: '/settings/categories', label: 'Categorie', icon: '🏷' },

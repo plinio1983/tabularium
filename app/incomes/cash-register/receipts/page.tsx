@@ -42,7 +42,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         prisma.paymentMethod.findMany({
             where: {workspaceId: current.workspace.id, cashRegisterEnabled: true, kind: {in: ['INCOME', 'BOTH']}}
         }),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}})
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]})
     ]);
     const orderedMethods = orderPaymentMethods(methods, 'INCOME');
     const total = receipts.reduce((sum, receipt) => sum + Number(receipt.amount), 0);

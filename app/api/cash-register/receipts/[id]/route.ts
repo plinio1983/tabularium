@@ -1,7 +1,9 @@
 import {NextResponse} from 'next/server';
 import {z} from 'zod';
-import {getWorkspaceContext} from '@/lib/auth';
+import {getWorkspaceApiAccess, workspaceOperationalRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
+import {writeAuditLog} from '@/lib/audit';
+import {resolveCashRegisterBankId} from '@/lib/cash-register-bank';
 
 const UpdateSchema = z.object({
     amount: z.coerce.number().positive(),
@@ -23,8 +25,9 @@ function romePeriod(date: Date) {
 }
 
 export async function PATCH(request: Request, {params}: { params: Promise<{ id: string }> }) {
-    const current = await getWorkspaceContext();
-    if (!current) return NextResponse.json({error: 'Autenticazione richiesta'}, {status: 401});
+    const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+    if (!access.ok) return NextResponse.json({error: access.error}, {status: access.status});
+    const current = access.current;
     const id = Number((await params).id);
     const parsed = UpdateSchema.safeParse(await request.json());
     if (!Number.isInteger(id) || !parsed.success) return NextResponse.json({error: 'Dati non validi'}, {status: 400});
@@ -40,7 +43,14 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
         })
     ]);
     if (!receipt) return NextResponse.json({error: 'Scontrino non trovato'}, {status: 404});
-    if (!channel || !method?.cashRegisterDefaultBankId) return NextResponse.json({error: 'Configurazione non valida'}, {status: 409});
+    if (!channel || !method) return NextResponse.json({error: 'Configurazione non valida'}, {status: 409});
+    if (!input.isFiscal && method.systemRole !== 'CASH') {
+        return NextResponse.json({error: 'Gli incassi non fiscali possono essere registrati solo in contanti'}, {status: 400});
+    }
+    const creditBankId = await resolveCashRegisterBankId(current.workspace.id, method, channel.id);
+    if (!creditBankId) {
+        return NextResponse.json({error: 'Configura la banca per questo metodo e canale di vendita'}, {status: 409});
+    }
     const period = romePeriod(date);
     const updated = await prisma.income.update({
         where: {id},
@@ -49,25 +59,36 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
             isFiscal: input.isFiscal,
             vatRate,
             invoiceStatus: input.isFiscal ? 'EMESSA' : null,
+            orderDate: date,
             creditDate: date,
             billingYear: period.year,
             billingMonth: period.month,
             salesChannelId: channel.id,
             paymentMethodId: method.id,
-            creditBankId: method.cashRegisterDefaultBankId
+            creditBankId
         }
+    });
+    await writeAuditLog({
+        workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE',
+        entityType: 'CashRegisterReceipt', entityId: id,
+        metadata: {amount: input.amount, isFiscal: input.isFiscal}, request
     });
     return NextResponse.json({receipt: updated});
 }
 
-export async function DELETE(_: Request, {params}: { params: Promise<{ id: string }> }) {
-    const current = await getWorkspaceContext();
-    if (!current) return NextResponse.json({error: 'Autenticazione richiesta'}, {status: 401});
+export async function DELETE(request: Request, {params}: { params: Promise<{ id: string }> }) {
+    const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+    if (!access.ok) return NextResponse.json({error: access.error}, {status: access.status});
+    const current = access.current;
     const id = Number((await params).id);
     if (!Number.isInteger(id)) return NextResponse.json({error: 'ID non valido'}, {status: 400});
     const result = await prisma.income.deleteMany({
         where: {id, workspaceId: current.workspace.id, incomeType: 'CASH_REGISTER'}
     });
     if (!result.count) return NextResponse.json({error: 'Scontrino non trovato'}, {status: 404});
+    await writeAuditLog({
+        workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
+        entityType: 'CashRegisterReceipt', entityId: id, request
+    });
     return NextResponse.json({ok: true});
 }

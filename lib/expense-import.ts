@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
-import type { CompanyCode, InvoiceStatus, PaidBy, PaymentStatus } from '../generated/prisma/client';
+import type { CompanyCode, InvoiceStatus, PaymentStatus } from '../generated/prisma/client';
 import { defaultPaymentMethods, fallbackPaymentMethodName } from '@/lib/workspace-defaults';
 
 const fixedCategories = [
@@ -164,11 +164,6 @@ function mapChannel(value: unknown) {
 function mapPaymentMethodKind(name: string) {
   const found = defaultPaymentMethods.find(([methodName]) => methodName === name);
   return found ? found[1] : 'BOTH';
-}
-
-function mapPaidBy(value: unknown): PaidBy {
-  const text = textValue(value).toLowerCase();
-  return text.includes('altro') ? 'ALTRO_OPERATORE' : 'HERBAL_MARKET';
 }
 
 function mapCompanyCode(value: unknown): CompanyCode {
@@ -467,7 +462,6 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const paymentMethod = channel
       ? (refs.paymentMethods[channel] ?? await getOrCreatePaymentMethod(channel, options.workspaceId))
       : refs.paymentMethods[fallbackPaymentMethodName];
-    const paidBy = mapPaidBy(rowValue(row, ['Pagamento effettuato da', 'Pagato da']));
     const paidCompleted = parseBool(rowValue(row, ['Pagamento completato', 'Compl.', 'Completato']));
     const explicitPaidAmount = parseMoney(rowValue(row, ['Importo pagamento', 'Importo pagato']));
     const paidAmount = paidCompleted ? amount : explicitPaidAmount;
@@ -504,13 +498,11 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         invoiceStatus,
         companyId: company?.id ?? null,
         notes: notes || null,
-        paidByCurrentAccount: paidBy === 'HERBAL_MARKET',
         paymentStatus,
         paidAmount,
-        paidBy,
         month: billingDate.getMonth() + 1,
         year: billingDate.getFullYear(),
-        payments: paidAmount > 0 && paymentMethod ? { create: [{ paymentDate: effectivePaymentDate, paymentMethodId: paymentMethod.id, bankId: bank?.id ?? null, amount: paidAmount, paidBy }] } : undefined
+        payments: paidAmount > 0 && paymentMethod ? { create: [{ paymentDate: effectivePaymentDate, paymentMethodId: paymentMethod.id, bankId: bank?.id ?? null, amount: paidAmount }] } : undefined
       }
     });
     imported++;

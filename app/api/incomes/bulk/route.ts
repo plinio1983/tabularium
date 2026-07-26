@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { writeAuditLog } from '@/lib/audit';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
@@ -13,8 +14,9 @@ function safeReturnTo(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const formData = await request.formData();
   const action = String(formData.get('bulkAction') || '');
   const ids = selectedIds(formData);
@@ -34,17 +36,29 @@ export async function POST(request: Request) {
         where: { id: { in: ids }, workspaceId: current.workspace.id },
         data: { incomeCategoryId: category.id }
       });
+      await writeAuditLog({
+        workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
+        entityType: 'Income', metadata: { ids, operation: action, incomeCategoryId }, request
+      });
     }
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 
   if (action === 'delete') {
-    await prisma.income.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    const deleted = await prisma.income.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_DELETE',
+      entityType: 'Income', metadata: { ids, deleted: deleted.count }, request
+    });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_deleted' }));
   }
 
   if (action === 'invoice_emitted') {
     await prisma.income.updateMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, isFiscal: true }, data: { invoiceStatus: 'EMESSA' } });
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
+      entityType: 'Income', metadata: { ids, operation: action }, request
+    });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 

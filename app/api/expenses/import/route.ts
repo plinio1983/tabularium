@@ -1,7 +1,8 @@
 import { importExpensesWorkbook, importRecurringExpenseDefinitionsWorkbook } from '@/lib/expense-import';
 import { importCustomersWorkbook, importIncomesWorkbook, importSuppliersWorkbook } from '@/lib/data-import';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { redirectToPath } from '@/lib/redirect';
+import { writeAuditLog } from '@/lib/audit';
 
 function redirectWithParams(_request: Request, params: Record<string, string | number | boolean>) {
   const url = new URL('/expenses/import', 'http://tabularium.local');
@@ -11,8 +12,9 @@ function redirectWithParams(_request: Request, params: Record<string, string | n
 
 export async function POST(request: Request) {
   try {
-    const current = await getWorkspaceContext();
-    if (!current) return redirectWithParams(request, { error: 'auth_required' });
+    const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+    if (!access.ok) return redirectWithParams(request, { error: access.status === 401 ? 'auth_required' : 'forbidden' });
+    const current = access.current;
     const formData = await request.formData();
     const file = formData.get('file');
     const clearBeforeImport = formData.get('clearBeforeImport') === 'on';
@@ -23,6 +25,9 @@ export async function POST(request: Request) {
     if (!(file instanceof File) || file.size === 0) {
       return redirectWithParams(request, { error: 'missing_file' });
     }
+    const extension = file.name.toLowerCase().match(/\.(xlsx|xls|ods)$/)?.[1];
+    if (!extension) return redirectWithParams(request, { error: 'invalid_file_type' });
+    if (file.size > 20 * 1024 * 1024) return redirectWithParams(request, { error: 'file_too_large' });
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const options = { clearBeforeImport, workspaceId: current.workspace.id };
@@ -47,6 +52,19 @@ export async function POST(request: Request) {
       sheets: result.sheets.join(', '),
       detail: 'errors' in result ? result.errors.join(' | ').slice(0, 800) : ''
     };
+    await writeAuditLog({
+      workspaceId: current.workspace.id,
+      userId: current.user.id,
+      action: 'IMPORT',
+      entityType: importType,
+      metadata: {
+        imported: result.imported,
+        skipped: result.skipped,
+        deleted: result.deleted,
+        clearBeforeImport
+      },
+      request
+    });
 
     const accepted = result.imported
       + ('updated' in result ? result.updated : 0)

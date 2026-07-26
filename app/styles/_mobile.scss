@@ -198,7 +198,8 @@
 }
 
 @media (max-width: 576px) {
-  .income-form-section-credit {
+  .income-form-section-credit,
+  .income-form-section-invoice-issued {
     justify-content: flex-start;
   }
 }
@@ -574,7 +575,7 @@
   .actions-row .btn-primary,
   .actions-row .btn {
     max-width: none;
-    flex-grow: 1;
+    /*flex-grow: 1;*/
     /*width: 100%;*/
   }
 }
@@ -1762,7 +1763,8 @@
   .expense-mobile-step-3 .expense-wizard-step-3,
   .expense-mobile-step-4 .expense-wizard-step-4,
   .expense-mobile-step-5 .expense-wizard-step-5,
-  .expense-mobile-step-6 .expense-wizard-step-6 {
+  .expense-mobile-step-6 .expense-wizard-step-6,
+  .expense-mobile-step-7 .expense-wizard-step-7 {
     display: flex !important;
     flex-direction: column;
     align-items: stretch;
@@ -1779,6 +1781,7 @@
 
   .expense-mobile-step-4 .expense-wizard-split-section,
   .expense-mobile-step-6 .expense-wizard-split-section,
+  .expense-mobile-step-7 .expense-wizard-split-section,
   .expense-mobile-step-1 .expense-wizard-fiscal-section,
   .expense-mobile-step-3 .expense-wizard-fiscal-section {
     display: none;
@@ -1798,7 +1801,8 @@
   }
 
   .expense-mobile-wizard .expense-wizard-step-4,
-  .expense-mobile-wizard .expense-wizard-step-6 {
+  .expense-mobile-wizard .expense-wizard-step-6,
+  .expense-mobile-wizard .expense-wizard-step-7 {
     width: 100%;
     margin: 0;
     overflow: visible;
@@ -1862,6 +1866,193 @@
     margin-top: 2px;
   }
 
+  .expense-mobile-wizard .app-form-field {
+    gap: 9px;
+  }
+
+  .expense-mobile-wizard .app-form-field-label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .01em;
+  }
+
+  .expense-mobile-wizard .app-form-field-icon {
+    width: 25px;
+    height: 25px;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+    box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
+  }
+
+  .expense-mobile-wizard .app-select-control select,
+  .expense-mobile-wizard .app-autocomplete-control input,
+  .expense-mobile-wizard .product-suggestion-picker > input,
+  .expense-mobile-wizard .expense-invoice-status-field > select,
+  .expense-mobile-wizard .amount-vat-row > label > select,
+  .expense-mobile-wizard label > input[type="month"],
+  .expense-mobile-wizard .payment-row label > input,
+  .expense-mobile-wizard .payment-row label > select {
+    min-height: 54px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 750;
+    transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+  }
+
+  .expense-mobile-wizard .app-select-control:focus-within select,
+  .expense-mobile-wizard .app-autocomplete-control:focus-within input,
+  .expense-mobile-wizard .product-suggestion-picker:focus-within > input,
+  .expense-mobile-wizard .expense-invoice-status-field:focus-within > select,
+  .expense-mobile-wizard .amount-vat-row > label:focus-within > select,
+  .expense-mobile-wizard .app-date-control:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+  }
+
+  .expense-mobile-wizard .app-select-caret {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    right: 11px;
+    place-items: center;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: var(--accent);
+  }
+
+  .expense-mobile-wizard .app-date-control {
+    min-height: 66px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 17px;
+    background: linear-gradient(145deg, #fff, #f8fafc);
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
+  }
+
+  .expense-mobile-wizard .app-date-control input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .expense-mobile-wizard .app-date-presentation {
+    display: flex;
+    min-height: 66px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 56px 10px 15px;
+    pointer-events: none;
+  }
+
+  .expense-mobile-wizard .app-date-presentation strong {
+    color: #172033;
+    font-size: 17px;
+    text-transform: capitalize;
+  }
+
+  .expense-mobile-wizard .app-date-presentation span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+    text-transform: capitalize;
+  }
+
+  .expense-mobile-wizard .app-date-picker-button {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    z-index: 3;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 19px;
+    transform: translateY(-50%);
+  }
+
+  .expense-mobile-wizard .expense-due-date-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .expense-mobile-wizard .expense-due-date-shortcuts button {
+    min-width: 0;
+    min-height: 38px;
+    padding-inline: 5px;
+    border-radius: 12px;
+  }
+
+  .expense-mobile-wizard .supplier-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .expense-mobile-wizard .supplier-input-row .inline-link-button {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .expense-mobile-wizard .app-autocomplete-control.has-selection input {
+    border-color: #86efac;
+    background: #f7fff9;
+  }
+
+  .expense-mobile-wizard .app-autocomplete-selection {
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: #f0fdf4;
+  }
+
+  .expense-mobile-wizard .supplier-results {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 7px);
+    bottom: auto;
+    z-index: 520;
+    width: 100%;
+    max-height: min(38dvh, 320px);
+    padding: 7px;
+    border: 1px solid #dbe2ee;
+    border-radius: 20px;
+    box-shadow: 0 -18px 48px rgba(15, 23, 42, .22);
+  }
+
+  .expense-mobile-wizard .supplier-results button {
+    min-height: 54px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 13px;
+  }
+
+  .expense-mobile-wizard .supplier-results button + button {
+    margin-top: 3px;
+  }
+
+  .expense-mobile-wizard .supplier-results button.active {
+    background: #eef2ff;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
   .expense-due-date-shortcuts button,
   .expense-wizard-vat-buttons button {
     min-height: 34px;
@@ -1919,11 +2110,11 @@
 
   .expense-mobile-wizard .expense-wizard-mobile-switch {
     display: flex;
-    flex: 0 0 auto;
     flex-direction: column;
-    align-items: flex-start;
+    //flex: 0 0 auto;
+    align-items: center;
     justify-content: flex-end;
-    gap: 7px;
+    gap: 8px;
     min-width: 0;
     color: var(--muted);
     font-size: 12px;
@@ -1941,6 +2132,16 @@
     width: 100%;
     align-items: flex-end;
     gap: 12px;
+  }
+
+  .expense-invoice-switches {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .expense-invoice-switches .expense-wizard-mobile-switch {
+    min-width: 116px;
   }
 
   .expense-wizard-amount-field,
@@ -1983,6 +2184,156 @@
     border: 0;
     background: transparent;
     box-shadow: none;
+  }
+
+  .expense-mobile-wizard .expense-review-step {
+    gap: 16px;
+    padding: 0;
+  }
+
+  .expense-review-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 4px 2px;
+  }
+
+  .expense-review-heading h3 {
+    margin: 3px 0 0;
+    color: var(--text);
+    font-size: 20px;
+  }
+
+  .expense-review-heading > strong {
+    color: var(--accent);
+    font-size: 22px;
+    white-space: nowrap;
+  }
+
+  .expense-review-kicker {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .expense-review-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .expense-review-grid > div {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #fff, #f8fafc);
+  }
+
+  .expense-review-grid > div.wide {
+    grid-column: 1 / -1;
+  }
+
+  .expense-review-item > i {
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 11px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 900;
+  }
+
+  .expense-review-grid span {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .expense-review-grid strong {
+    overflow-wrap: anywhere;
+    color: #172033;
+    font-size: 13px;
+  }
+
+  .recurring-wizard-amount-entry {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .recurring-wizard-amount-entry .expense-wizard-mobile-switch {
+    flex: 0 0 auto;
+    margin-bottom: 1px;
+  }
+
+  .recurring-wizard-amount-field {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .recurring-review-summary {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .recurring-review-summary .expense-review-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .expense-review-attachments-button {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    min-height: 62px;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 13px;
+    border-color: #c7d2fe;
+    border-radius: 16px;
+    background: #f5f7ff;
+    color: var(--accent);
+    text-align: left;
+  }
+
+  .expense-review-attachments-button > span:nth-child(2) {
+    display: grid;
+    gap: 2px;
+  }
+
+  .expense-review-attachments-button small {
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .expense-mobile-wizard .expense-wizard-step-7 {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .expense-mobile-wizard .expense-wizard-step-7 textarea {
+    min-height: 118px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #fff;
+    font-size: 16px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
   }
 
   .expense-mobile-wizard .expense-wizard-step-4,
@@ -2093,7 +2444,7 @@
   }
 
   .expense-form .payments-box .section-title {
-    display: grid;
+    display: flex;
     gap: 10px;
   }
 
@@ -2245,9 +2596,13 @@
     text-align: right;
     grid-column-start: 2;
     grid-column-end: -1;
+    grid-row-start: 1;
+    grid-row-end: -1;
 
     @media (max-width: 576px) {
       grid-column: 1 / -1;
+      grid-row-start: auto;
+      grid-row-end: auto;
     }
   }
 
@@ -2312,7 +2667,7 @@
   .modal-card.modal-card-wide .expense-form {
     background: none;
     border: none;
-    padding: 0 !important;
+    //padding: 0 !important;
   }
 
   .expense-mobile-title-left {
@@ -2798,6 +3153,85 @@
 }
 
 @media (max-width: 900px) {
+  .income-mobile-wizard .income-form-section {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .income-mobile-wizard .income-form-section > summary {
+    display: none;
+  }
+
+  .income-mobile-wizard .income-form-section > .income-form-section-grid,
+  .income-mobile-wizard .income-form-section > .income-form-section-stack {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 22px;
+    background: transparent;
+  }
+
+  .expense-mobile-step-4.income-mobile-wizard .income-document-section,
+  .expense-mobile-step-5.income-mobile-wizard .income-document-section,
+  .expense-mobile-step-6.income-mobile-wizard .income-document-section {
+    display: none;
+  }
+
+  .expense-wizard-modal-card > .income-mobile-wizard {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .income-wizard-page-card {
+    min-height: calc(100dvh - 72px);
+  }
+
+  .income-wizard-page-card > .income-mobile-wizard {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .income-mobile-wizard .income-wizard-amount {
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .income-mobile-wizard .income-wizard-amount > label {
+    width: 100%;
+  }
+
+  .income-mobile-wizard .income-wizard-amount .money-input {
+    width: 100%;
+    min-height: 70px;
+    overflow: hidden;
+    border: 1px solid #dbe3ef;
+    border-radius: 16px;
+    //background: #f8fafc;
+  }
+
+  .income-mobile-wizard .income-wizard-amount .money-input > span {
+    left: 16px;
+    font-size: 26px;
+  }
+
+  .income-mobile-wizard .income-wizard-amount .money-input input {
+    width: 100%;
+    height: 68px;
+    padding: 6px 14px 6px 48px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 38px;
+    font-weight: 850;
+    line-height: 1;
+    text-align: right;
+  }
+
   .recurring-mobile-wizard .recurring-form-section {
     width: 100%;
     margin: 0;

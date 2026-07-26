@@ -22,7 +22,7 @@ APP_CONTAINER="${APP_CONTAINER:-tabularium}"
 APP_SERVICE="${APP_SERVICE:-tabularium}"
 DB_CONTAINER="${DB_CONTAINER:-tabularium-db}"
 UPLOADS_VOLUME="${UPLOADS_VOLUME:-tabularium_uploads}"
-UPLOADS_CONTAINER_PATH="${UPLOADS_CONTAINER_PATH:-/app/public/uploads}"
+UPLOADS_CONTAINER_PATH="${UPLOADS_CONTAINER_PATH:-/app/storage/uploads}"
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
 ENV_FILE="${ENV_FILE:-.env.production}"
 BACKUP_DIR="${BACKUP_DIR:-backups}"
@@ -145,7 +145,7 @@ fi
 
 if [ "$SKIP_DB_PUSH" -eq 0 ]; then
   echo "Applying current Prisma schema"
-  compose run --rm "$APP_SERVICE" npx prisma db push
+  compose run --rm "$APP_SERVICE" npm run db:deploy
 fi
 
 echo "Starting application"

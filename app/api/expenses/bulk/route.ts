@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { writeAuditLog } from '@/lib/audit';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
@@ -49,8 +50,9 @@ function addDays(date: Date, days: number) {
 }
 
 export async function POST(request: Request) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const formData = await request.formData();
   const action = String(formData.get('bulkAction') || '');
   const ids = selectedIds(formData);
@@ -74,11 +76,19 @@ export async function POST(request: Request) {
       where: { id: { in: ids }, workspaceId: current.workspace.id, expenseType: 'STANDARD' },
       data: { categoryId }
     });
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
+      entityType: 'Expense', metadata: { ids, operation: action, categoryId }, request
+    });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 
   if (action === 'delete') {
-    await prisma.expense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    const deleted = await prisma.expense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_DELETE',
+      entityType: 'Expense', metadata: { ids, deleted: deleted.count }, request
+    });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_deleted' }));
   }
 
@@ -114,19 +124,21 @@ export async function POST(request: Request) {
           isAutomaticPayment: false,
           invoiceStatus: expense.invoiceStatus,
           companyId: expense.companyId,
-          paidByCurrentAccount: false,
           month: currentMonth,
           year: currentYear,
           notes: expense.notes,
           paymentStatus: 'DA_PAGARE',
           paidAmount: 0,
-          paidBy: expense.paidBy,
           invoiceDocumentPath: null,
           recurringExpenseId: null,
           recurringExpensePeriodKey: null
         }
       });
     }));
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_CREATE',
+      entityType: 'Expense', metadata: { sourceIds: ids, operation: action, created: expenses.length }, request
+    });
 
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_copied' }));
   }
@@ -137,6 +149,10 @@ export async function POST(request: Request) {
       where: { id: expense.id },
       data: { invoiceStatus: 'RICEVUTA' }
     })));
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
+      entityType: 'Expense', metadata: { ids, operation: action }, request
+    });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 
@@ -169,8 +185,7 @@ export async function POST(request: Request) {
           paymentDate: today,
           paymentMethodId,
           bankId: expense.payments[0]?.bankId ?? null,
-          amount: residual,
-          paidBy: expense.paidBy
+          amount: residual
         } }));
       }
       operations.push(prisma.expense.update({
@@ -184,6 +199,10 @@ export async function POST(request: Request) {
       }));
       return operations;
     }));
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
+      entityType: 'Expense', metadata: { ids, operation: action }, request
+    });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_updated' }));
   }
 

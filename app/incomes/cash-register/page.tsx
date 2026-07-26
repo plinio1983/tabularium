@@ -45,7 +45,7 @@ export default async function CashRegisterPage({searchParams}: {
         }),
         prisma.incomeSalesChannel.findMany({
             where: {workspaceId: current.workspace.id},
-            orderBy: {name: 'asc'}
+            orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]
         }),
         sourceId ? prisma.income.findFirst({
             where: {id: sourceId, workspaceId: current.workspace.id, incomeType: 'CASH_REGISTER'}

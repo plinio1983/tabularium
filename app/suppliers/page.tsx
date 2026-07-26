@@ -70,11 +70,18 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
   const supplierListHref = `/suppliers${currentQueryString ? `?${currentQueryString}` : ''}`;
   const returnTo = encodeURIComponent(supplierListHref);
 
-  const suppliers = await prisma.supplier.findMany({
-    where: { workspaceId: current.workspace.id },
-    orderBy: { businessName: 'asc' },
-    include: { expenses: { include: { payments: true } } }
-  });
+  const [suppliers, categories] = await Promise.all([
+    prisma.supplier.findMany({
+      where: { workspaceId: current.workspace.id },
+      orderBy: { businessName: 'asc' },
+      include: { expenses: { include: { payments: true } } }
+    }),
+    prisma.expenseCategory.findMany({
+      where: { workspaceId: current.workspace.id },
+      orderBy: { name: 'asc' }
+    })
+  ]);
+  const categoryOptions = categories.map(category => ({ id: category.id, name: category.name, icon: category.icon }));
 
   const supplierRows = suppliers.map(supplier => {
     const openExpenses = supplier.expenses.map(expense => {
@@ -161,13 +168,13 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
   };
 
   return <div className="grid">
-    <SupplierEditModalController/>
+    <SupplierEditModalController categories={categoryOptions}/>
     <div className="toolbar-card toolbar-card-wrap">
       <div>
         <h2>Fornitori</h2>
         <p className="muted">Anagrafica degli esercenti usati nell’inserimento delle spese.</p>
       </div>
-      <NewSupplierPanel initialOpen={inputDefault(filters, 'new') === '1'} />
+      <NewSupplierPanel initialOpen={inputDefault(filters, 'new') === '1'} categories={categoryOptions} />
     </div>
 
     <ActionFeedbackBanner
@@ -346,6 +353,10 @@ export default async function SuppliersPage({ searchParams }: { searchParams?: P
             </span>
           </summary>
           <div className="bulk-action-menu-panel">
+            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                    formAction="/api/exports/suppliers" formMethod="post" data-confirm-label="Esporta CSV">
+              <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+            </button>
             <button className="btn btn-sm btn-danger" type="submit" name="bulkAction" value="delete"><span className="btn-icon">🗑</span><span className="bulk-label">Elimina selezionati</span></button>
           </div>
         </details>

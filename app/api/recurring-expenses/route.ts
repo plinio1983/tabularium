@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
+import { writeAuditLog } from '@/lib/audit';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -54,8 +55,9 @@ async function resolvePaymentMethod(paymentMethodId: number | null | undefined, 
 }
 
 export async function POST(request: Request) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const wantsJson = request.headers.get('accept')?.includes('application/json') || request.headers.get('x-requested-with') === 'fetch';
   const formData = await request.formData();
   const raw = Object.fromEntries(formData.entries());
@@ -74,7 +76,7 @@ export async function POST(request: Request) {
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const paymentMethod = await resolvePaymentMethod(data.paymentMethodId, current.workspace.id);
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
-  await prisma.recurringExpense.create({
+  const recurringExpense = await prisma.recurringExpense.create({
     data: {
       workspaceId: current.workspace.id,
       startDate: new Date(data.startDate),
@@ -96,6 +98,11 @@ export async function POST(request: Request) {
       bankId: data.isAutomaticPayment ? (data.bankId || null) : null,
       notes: data.notes || null
     }
+  });
+  await writeAuditLog({
+    workspaceId: current.workspace.id, userId: current.user.id, action: 'CREATE',
+    entityType: 'RecurringExpense', entityId: recurringExpense.id,
+    metadata: { amount: data.amount, cadence: data.cadence }, request
   });
 
   return wantsJson

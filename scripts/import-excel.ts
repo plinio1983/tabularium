@@ -177,17 +177,15 @@ async function main() {
         isComplete: Boolean(row[9]),
         isDeclared: row[10]?.toString().toLowerCase() === 'si', hasElectronicInvoice: row[11]?.toString().toLowerCase() === 'si',
         invoiceStatus: (row[11]?.toString().toLowerCase() === 'si' ? 'IN_ATTESA' : 'RICEVUTA') as InvoiceStatus,
-        companyId: company?.id, paidByCurrentAccount: Boolean(row[14]),
+        companyId: company?.id,
         paymentStatus: Boolean(row[9]) || row[5] ? 'COMPLETATO' : 'DA_PAGARE',
         paidAmount,
-        paidBy: 'HERBAL_MARKET',
         year, month,
         payments: paidAmount > 0 ? { create: [{
           paymentDate: excelDate(row[5]),
           paymentMethodId: paymentMethod.id,
           bankId: bank?.id,
-          amount: paidAmount,
-          paidBy: 'HERBAL_MARKET'
+          amount: paidAmount
         }] } : undefined
       }});
       imported++;

@@ -53,6 +53,7 @@ type SupplierOption = {
   taxCodeSdi?: string | null;
   internalNotes?: string | null;
   systemRole?: string | null;
+  defaultExpenseCategoryId?: number | null;
 };
 
 type Props = {
@@ -195,8 +196,12 @@ export default function ExpensesList({
             <span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
           </summary>
           <div className="bulk-action-menu-panel">
+            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                    formAction="/api/exports/expenses" formMethod="post" data-confirm-label="Esporta CSV">
+              <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+            </button>
             <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
-            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>
+            {/*<button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>*/}
             <button className="btn btn-sm btn-default" type="button" data-bulk-add-payment disabled>
               <span className="btn-icon">＋</span><span className="bulk-label">Inserisci pagamento</span>
             </button>

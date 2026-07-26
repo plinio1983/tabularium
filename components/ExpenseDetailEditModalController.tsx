@@ -16,6 +16,7 @@ type SupplierOption = {
   taxCodeSdi?: string | null;
   internalNotes?: string | null;
   systemRole?: string | null;
+  defaultExpenseCategoryId?: number | null;
 };
 
 type EditExpense = {
@@ -44,7 +45,6 @@ type EditExpense = {
     paymentMethodId?: number | null;
     bankId?: number | null;
     amount?: string | number | null;
-    paidBy?: "HERBAL_MARKET" | "ALTRO_OPERATORE";
   }>;
 };
 

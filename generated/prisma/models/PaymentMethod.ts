@@ -262,6 +262,7 @@ export type PaymentMethodWhereInput = {
   recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
   cashRegisterDefaultBank?: Prisma.XOR<Prisma.BankNullableScalarRelationFilter, Prisma.BankWhereInput> | null
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceListRelationFilter
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleListRelationFilter
 }
 
 export type PaymentMethodOrderByWithRelationInput = {
@@ -280,6 +281,7 @@ export type PaymentMethodOrderByWithRelationInput = {
   recurringExpenses?: Prisma.RecurringExpenseOrderByRelationAggregateInput
   cashRegisterDefaultBank?: Prisma.BankOrderByWithRelationInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceOrderByRelationAggregateInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleOrderByRelationAggregateInput
 }
 
 export type PaymentMethodWhereUniqueInput = Prisma.AtLeast<{
@@ -303,6 +305,7 @@ export type PaymentMethodWhereUniqueInput = Prisma.AtLeast<{
   recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
   cashRegisterDefaultBank?: Prisma.XOR<Prisma.BankNullableScalarRelationFilter, Prisma.BankWhereInput> | null
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceListRelationFilter
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleListRelationFilter
 }, "id" | "workspaceId_name" | "workspaceId_systemRole">
 
 export type PaymentMethodOrderByWithAggregationInput = {
@@ -350,6 +353,7 @@ export type PaymentMethodCreateInput = {
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
   cashRegisterDefaultBank?: Prisma.BankCreateNestedOneWithoutCashRegisterPaymentMethodsInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateInput = {
@@ -366,6 +370,7 @@ export type PaymentMethodUncheckedCreateInput = {
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUpdateInput = {
@@ -381,6 +386,7 @@ export type PaymentMethodUpdateInput = {
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterDefaultBank?: Prisma.BankUpdateOneWithoutCashRegisterPaymentMethodsNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateInput = {
@@ -397,6 +403,7 @@ export type PaymentMethodUncheckedUpdateInput = {
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodCreateManyInput = {
@@ -614,6 +621,20 @@ export type NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput = {
   set?: $Enums.PaymentMethodSystemRole | null
 }
 
+export type PaymentMethodCreateNestedOneWithoutCashRegisterBankRulesInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutCashRegisterBankRulesInput, Prisma.PaymentMethodUncheckedCreateWithoutCashRegisterBankRulesInput>
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutCashRegisterBankRulesInput
+  connect?: Prisma.PaymentMethodWhereUniqueInput
+}
+
+export type PaymentMethodUpdateOneRequiredWithoutCashRegisterBankRulesNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutCashRegisterBankRulesInput, Prisma.PaymentMethodUncheckedCreateWithoutCashRegisterBankRulesInput>
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutCashRegisterBankRulesInput
+  upsert?: Prisma.PaymentMethodUpsertWithoutCashRegisterBankRulesInput
+  connect?: Prisma.PaymentMethodWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentMethodUpdateToOneWithWhereWithoutCashRegisterBankRulesInput, Prisma.PaymentMethodUpdateWithoutCashRegisterBankRulesInput>, Prisma.PaymentMethodUncheckedUpdateWithoutCashRegisterBankRulesInput>
+}
+
 export type PaymentMethodCreateNestedOneWithoutRecurringExpensesInput = {
   create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutRecurringExpensesInput, Prisma.PaymentMethodUncheckedCreateWithoutRecurringExpensesInput>
   connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutRecurringExpensesInput
@@ -670,6 +691,7 @@ export type PaymentMethodCreateWithoutWorkspaceInput = {
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
   cashRegisterDefaultBank?: Prisma.BankCreateNestedOneWithoutCashRegisterPaymentMethodsInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutWorkspaceInput = {
@@ -685,6 +707,7 @@ export type PaymentMethodUncheckedCreateWithoutWorkspaceInput = {
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodCreateOrConnectWithoutWorkspaceInput = {
@@ -709,6 +732,7 @@ export type PaymentMethodCreateWithoutCashRegisterPrimaryForWorkspacesInput = {
   expensePayments?: Prisma.ExpensePaymentCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
   cashRegisterDefaultBank?: Prisma.BankCreateNestedOneWithoutCashRegisterPaymentMethodsInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutCashRegisterPrimaryForWorkspacesInput = {
@@ -724,6 +748,7 @@ export type PaymentMethodUncheckedCreateWithoutCashRegisterPrimaryForWorkspacesI
   incomePayments?: Prisma.IncomeUncheckedCreateNestedManyWithoutPaymentMethodRefInput
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodCreateOrConnectWithoutCashRegisterPrimaryForWorkspacesInput = {
@@ -785,6 +810,7 @@ export type PaymentMethodUpdateWithoutCashRegisterPrimaryForWorkspacesInput = {
   expensePayments?: Prisma.ExpensePaymentUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterDefaultBank?: Prisma.BankUpdateOneWithoutCashRegisterPaymentMethodsNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutCashRegisterPrimaryForWorkspacesInput = {
@@ -800,6 +826,7 @@ export type PaymentMethodUncheckedUpdateWithoutCashRegisterPrimaryForWorkspacesI
   incomePayments?: Prisma.IncomeUncheckedUpdateManyWithoutPaymentMethodRefNestedInput
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodCreateWithoutCashRegisterDefaultBankInput = {
@@ -814,6 +841,7 @@ export type PaymentMethodCreateWithoutCashRegisterDefaultBankInput = {
   expensePayments?: Prisma.ExpensePaymentCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutCashRegisterDefaultBankInput = {
@@ -829,6 +857,7 @@ export type PaymentMethodUncheckedCreateWithoutCashRegisterDefaultBankInput = {
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodCreateOrConnectWithoutCashRegisterDefaultBankInput = {
@@ -857,6 +886,84 @@ export type PaymentMethodUpdateManyWithWhereWithoutCashRegisterDefaultBankInput 
   data: Prisma.XOR<Prisma.PaymentMethodUpdateManyMutationInput, Prisma.PaymentMethodUncheckedUpdateManyWithoutCashRegisterDefaultBankInput>
 }
 
+export type PaymentMethodCreateWithoutCashRegisterBankRulesInput = {
+  name: string
+  icon?: string | null
+  kind?: string
+  isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
+  cashRegisterEnabled?: boolean
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutPaymentMethodsInput
+  incomePayments?: Prisma.IncomeCreateNestedManyWithoutPaymentMethodRefInput
+  expensePayments?: Prisma.ExpensePaymentCreateNestedManyWithoutPaymentMethodInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
+  cashRegisterDefaultBank?: Prisma.BankCreateNestedOneWithoutCashRegisterPaymentMethodsInput
+  cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+}
+
+export type PaymentMethodUncheckedCreateWithoutCashRegisterBankRulesInput = {
+  id?: number
+  name: string
+  icon?: string | null
+  kind?: string
+  isFallback?: boolean
+  systemRole?: $Enums.PaymentMethodSystemRole | null
+  workspaceId?: number | null
+  cashRegisterEnabled?: boolean
+  cashRegisterDefaultBankId?: number | null
+  incomePayments?: Prisma.IncomeUncheckedCreateNestedManyWithoutPaymentMethodRefInput
+  expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
+  cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+}
+
+export type PaymentMethodCreateOrConnectWithoutCashRegisterBankRulesInput = {
+  where: Prisma.PaymentMethodWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutCashRegisterBankRulesInput, Prisma.PaymentMethodUncheckedCreateWithoutCashRegisterBankRulesInput>
+}
+
+export type PaymentMethodUpsertWithoutCashRegisterBankRulesInput = {
+  update: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutCashRegisterBankRulesInput, Prisma.PaymentMethodUncheckedUpdateWithoutCashRegisterBankRulesInput>
+  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutCashRegisterBankRulesInput, Prisma.PaymentMethodUncheckedCreateWithoutCashRegisterBankRulesInput>
+  where?: Prisma.PaymentMethodWhereInput
+}
+
+export type PaymentMethodUpdateToOneWithWhereWithoutCashRegisterBankRulesInput = {
+  where?: Prisma.PaymentMethodWhereInput
+  data: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutCashRegisterBankRulesInput, Prisma.PaymentMethodUncheckedUpdateWithoutCashRegisterBankRulesInput>
+}
+
+export type PaymentMethodUpdateWithoutCashRegisterBankRulesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
+  cashRegisterEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  workspace?: Prisma.WorkspaceUpdateOneWithoutPaymentMethodsNestedInput
+  incomePayments?: Prisma.IncomeUpdateManyWithoutPaymentMethodRefNestedInput
+  expensePayments?: Prisma.ExpensePaymentUpdateManyWithoutPaymentMethodNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
+  cashRegisterDefaultBank?: Prisma.BankUpdateOneWithoutCashRegisterPaymentMethodsNestedInput
+  cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+}
+
+export type PaymentMethodUncheckedUpdateWithoutCashRegisterBankRulesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  isFallback?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  systemRole?: Prisma.NullableEnumPaymentMethodSystemRoleFieldUpdateOperationsInput | $Enums.PaymentMethodSystemRole | null
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cashRegisterDefaultBankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  incomePayments?: Prisma.IncomeUncheckedUpdateManyWithoutPaymentMethodRefNestedInput
+  expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
+  cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+}
+
 export type PaymentMethodCreateWithoutRecurringExpensesInput = {
   name: string
   icon?: string | null
@@ -869,6 +976,7 @@ export type PaymentMethodCreateWithoutRecurringExpensesInput = {
   expensePayments?: Prisma.ExpensePaymentCreateNestedManyWithoutPaymentMethodInput
   cashRegisterDefaultBank?: Prisma.BankCreateNestedOneWithoutCashRegisterPaymentMethodsInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutRecurringExpensesInput = {
@@ -884,6 +992,7 @@ export type PaymentMethodUncheckedCreateWithoutRecurringExpensesInput = {
   incomePayments?: Prisma.IncomeUncheckedCreateNestedManyWithoutPaymentMethodRefInput
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodCreateOrConnectWithoutRecurringExpensesInput = {
@@ -914,6 +1023,7 @@ export type PaymentMethodUpdateWithoutRecurringExpensesInput = {
   expensePayments?: Prisma.ExpensePaymentUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterDefaultBank?: Prisma.BankUpdateOneWithoutCashRegisterPaymentMethodsNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutRecurringExpensesInput = {
@@ -929,6 +1039,7 @@ export type PaymentMethodUncheckedUpdateWithoutRecurringExpensesInput = {
   incomePayments?: Prisma.IncomeUncheckedUpdateManyWithoutPaymentMethodRefNestedInput
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodCreateWithoutExpensePaymentsInput = {
@@ -943,6 +1054,7 @@ export type PaymentMethodCreateWithoutExpensePaymentsInput = {
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
   cashRegisterDefaultBank?: Prisma.BankCreateNestedOneWithoutCashRegisterPaymentMethodsInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutExpensePaymentsInput = {
@@ -958,6 +1070,7 @@ export type PaymentMethodUncheckedCreateWithoutExpensePaymentsInput = {
   incomePayments?: Prisma.IncomeUncheckedCreateNestedManyWithoutPaymentMethodRefInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodCreateOrConnectWithoutExpensePaymentsInput = {
@@ -988,6 +1101,7 @@ export type PaymentMethodUpdateWithoutExpensePaymentsInput = {
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterDefaultBank?: Prisma.BankUpdateOneWithoutCashRegisterPaymentMethodsNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutExpensePaymentsInput = {
@@ -1003,6 +1117,7 @@ export type PaymentMethodUncheckedUpdateWithoutExpensePaymentsInput = {
   incomePayments?: Prisma.IncomeUncheckedUpdateManyWithoutPaymentMethodRefNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodCreateWithoutIncomePaymentsInput = {
@@ -1017,6 +1132,7 @@ export type PaymentMethodCreateWithoutIncomePaymentsInput = {
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutPaymentMethodInput
   cashRegisterDefaultBank?: Prisma.BankCreateNestedOneWithoutCashRegisterPaymentMethodsInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutIncomePaymentsInput = {
@@ -1032,6 +1148,7 @@ export type PaymentMethodUncheckedCreateWithoutIncomePaymentsInput = {
   expensePayments?: Prisma.ExpensePaymentUncheckedCreateNestedManyWithoutPaymentMethodInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutPaymentMethodInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCashRegisterPrimaryPaymentMethodInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 export type PaymentMethodCreateOrConnectWithoutIncomePaymentsInput = {
@@ -1062,6 +1179,7 @@ export type PaymentMethodUpdateWithoutIncomePaymentsInput = {
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterDefaultBank?: Prisma.BankUpdateOneWithoutCashRegisterPaymentMethodsNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutIncomePaymentsInput = {
@@ -1077,6 +1195,7 @@ export type PaymentMethodUncheckedUpdateWithoutIncomePaymentsInput = {
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodCreateManyWorkspaceInput = {
@@ -1102,6 +1221,7 @@ export type PaymentMethodUpdateWithoutWorkspaceInput = {
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterDefaultBank?: Prisma.BankUpdateOneWithoutCashRegisterPaymentMethodsNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutWorkspaceInput = {
@@ -1117,6 +1237,7 @@ export type PaymentMethodUncheckedUpdateWithoutWorkspaceInput = {
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -1153,6 +1274,7 @@ export type PaymentMethodUpdateWithoutCashRegisterDefaultBankInput = {
   expensePayments?: Prisma.ExpensePaymentUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutCashRegisterDefaultBankInput = {
@@ -1168,6 +1290,7 @@ export type PaymentMethodUncheckedUpdateWithoutCashRegisterDefaultBankInput = {
   expensePayments?: Prisma.ExpensePaymentUncheckedUpdateManyWithoutPaymentMethodNestedInput
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodNestedInput
   cashRegisterPrimaryForWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateManyWithoutCashRegisterDefaultBankInput = {
@@ -1191,6 +1314,7 @@ export type PaymentMethodCountOutputType = {
   expensePayments: number
   recurringExpenses: number
   cashRegisterPrimaryForWorkspaces: number
+  cashRegisterBankRules: number
 }
 
 export type PaymentMethodCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1198,6 +1322,7 @@ export type PaymentMethodCountOutputTypeSelect<ExtArgs extends runtime.Types.Ext
   expensePayments?: boolean | PaymentMethodCountOutputTypeCountExpensePaymentsArgs
   recurringExpenses?: boolean | PaymentMethodCountOutputTypeCountRecurringExpensesArgs
   cashRegisterPrimaryForWorkspaces?: boolean | PaymentMethodCountOutputTypeCountCashRegisterPrimaryForWorkspacesArgs
+  cashRegisterBankRules?: boolean | PaymentMethodCountOutputTypeCountCashRegisterBankRulesArgs
 }
 
 /**
@@ -1238,6 +1363,13 @@ export type PaymentMethodCountOutputTypeCountCashRegisterPrimaryForWorkspacesArg
   where?: Prisma.WorkspaceWhereInput
 }
 
+/**
+ * PaymentMethodCountOutputType without action
+ */
+export type PaymentMethodCountOutputTypeCountCashRegisterBankRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CashRegisterBankRuleWhereInput
+}
+
 
 export type PaymentMethodSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1255,6 +1387,7 @@ export type PaymentMethodSelect<ExtArgs extends runtime.Types.Extensions.Interna
   recurringExpenses?: boolean | Prisma.PaymentMethod$recurringExpensesArgs<ExtArgs>
   cashRegisterDefaultBank?: boolean | Prisma.PaymentMethod$cashRegisterDefaultBankArgs<ExtArgs>
   cashRegisterPrimaryForWorkspaces?: boolean | Prisma.PaymentMethod$cashRegisterPrimaryForWorkspacesArgs<ExtArgs>
+  cashRegisterBankRules?: boolean | Prisma.PaymentMethod$cashRegisterBankRulesArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
 
@@ -1306,6 +1439,7 @@ export type PaymentMethodInclude<ExtArgs extends runtime.Types.Extensions.Intern
   recurringExpenses?: boolean | Prisma.PaymentMethod$recurringExpensesArgs<ExtArgs>
   cashRegisterDefaultBank?: boolean | Prisma.PaymentMethod$cashRegisterDefaultBankArgs<ExtArgs>
   cashRegisterPrimaryForWorkspaces?: boolean | Prisma.PaymentMethod$cashRegisterPrimaryForWorkspacesArgs<ExtArgs>
+  cashRegisterBankRules?: boolean | Prisma.PaymentMethod$cashRegisterBankRulesArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PaymentMethodIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1326,6 +1460,7 @@ export type $PaymentMethodPayload<ExtArgs extends runtime.Types.Extensions.Inter
     recurringExpenses: Prisma.$RecurringExpensePayload<ExtArgs>[]
     cashRegisterDefaultBank: Prisma.$BankPayload<ExtArgs> | null
     cashRegisterPrimaryForWorkspaces: Prisma.$WorkspacePayload<ExtArgs>[]
+    cashRegisterBankRules: Prisma.$CashRegisterBankRulePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1737,6 +1872,7 @@ export interface Prisma__PaymentMethodClient<T, Null = never, ExtArgs extends ru
   recurringExpenses<T extends Prisma.PaymentMethod$recurringExpensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$recurringExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cashRegisterDefaultBank<T extends Prisma.PaymentMethod$cashRegisterDefaultBankArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$cashRegisterDefaultBankArgs<ExtArgs>>): Prisma.Prisma__BankClient<runtime.Types.Result.GetResult<Prisma.$BankPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   cashRegisterPrimaryForWorkspaces<T extends Prisma.PaymentMethod$cashRegisterPrimaryForWorkspacesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$cashRegisterPrimaryForWorkspacesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cashRegisterBankRules<T extends Prisma.PaymentMethod$cashRegisterBankRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$cashRegisterBankRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashRegisterBankRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2307,6 +2443,30 @@ export type PaymentMethod$cashRegisterPrimaryForWorkspacesArgs<ExtArgs extends r
   take?: number
   skip?: number
   distinct?: Prisma.WorkspaceScalarFieldEnum | Prisma.WorkspaceScalarFieldEnum[]
+}
+
+/**
+ * PaymentMethod.cashRegisterBankRules
+ */
+export type PaymentMethod$cashRegisterBankRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CashRegisterBankRule
+   */
+  select?: Prisma.CashRegisterBankRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CashRegisterBankRule
+   */
+  omit?: Prisma.CashRegisterBankRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashRegisterBankRuleInclude<ExtArgs> | null
+  where?: Prisma.CashRegisterBankRuleWhereInput
+  orderBy?: Prisma.CashRegisterBankRuleOrderByWithRelationInput | Prisma.CashRegisterBankRuleOrderByWithRelationInput[]
+  cursor?: Prisma.CashRegisterBankRuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CashRegisterBankRuleScalarFieldEnum | Prisma.CashRegisterBankRuleScalarFieldEnum[]
 }
 
 /**

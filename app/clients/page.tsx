@@ -120,6 +120,10 @@ export default async function ClientsPage({searchParams}: {
                         <span className="btn-icon">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
+                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                                formAction="/api/exports/clients" formMethod="post" data-confirm-label="Esporta CSV">
+                            <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+                        </button>
                         <button className="btn btn-sm btn-danger" type="submit" name="bulkAction" value="delete">🗑 Elimina selezionati</button>
                     </div>
                 </details>

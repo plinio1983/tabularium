@@ -14,7 +14,6 @@ import {
     fiscalStyles,
     incomeCreditStatusStyles,
     incomeInvoiceStatusStyles,
-    saleCategoryTones,
     salesChannelTones
 } from '@/lib/income-ui';
 import {vatRateLabel, yesNoStyles} from "@/lib/expense-ui";
@@ -80,21 +79,19 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const returnTo = detailBackHref(rawReturnTo, `/incomes/${id}`, '/incomes');
     const encodedReturnTo = encodeURIComponent(returnTo);
     const currentDetailReturnTo = `/incomes/${id}?returnTo=${encodedReturnTo}`;
-    const [income, banks, paymentMethods, incomeCategories, salesChannels, customers] = await Promise.all([
+    const [income, banks, paymentMethods, salesChannels, customers] = await Promise.all([
         prisma.income.findFirst({
             where: {id: Number(id), workspaceId: current.workspace.id},
             include: {
                 paymentMethodRef: true,
                 creditBank: true,
-                incomeCategory: true,
                 salesChannelRef: true,
                 customer: true
             }
         }),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
-        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
         prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}})
     ]);
     if (!income) notFound();
@@ -111,7 +108,6 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const incomePaymentMethodName = income.paymentMethodRef.name;
     const incomeCreditChannelName = income.creditBank.name;
     const salesTone = salesChannelTones[income.salesChannelRef.code];
-    const categoryTone = saleCategoryTones[income.incomeCategory.code];
     const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
     const creditStatus = incomeCreditStatus(income);
     const detailToneClass = isIncomeCreditOverdue(income)
@@ -143,7 +139,6 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 kind: method.kind,
                 isFallback: method.isFallback
             }))}
-            incomeCategories={incomeCategories}
             salesChannels={salesChannels}
             customers={customers}
         />
@@ -227,7 +222,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     <div className="expense-detail-section-heading">
                         <div>
                             <h2>Dati incasso</h2>
-                            <p>Canale, categoria, accredito e metodo di pagamento.</p>
+                            <p>Canale, accredito e metodo di pagamento.</p>
                         </div>
                     </div>
                     <div className="expense-detail-item expense-detail-item-wide">
@@ -245,9 +240,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         <div>
                             <span>Canale</span><strong className={salesTone}>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</strong>
                         </div>
-                        <div>
-                            <span>Categoria</span><strong className={categoryTone}>{income.incomeCategory.icon ?? '  •  '} {income.incomeCategory.name}</strong>
-                        </div>
+                        <div><span>Data ordine</span><strong>{dateLabel(income.orderDate ?? income.creditDate)}</strong></div>
                         <div><span>Data accr.</span><strong>{dateLabel(income.creditDate)}</strong></div>
                         <div>
                             <span>Pagamento</span><strong>{income.paymentMethodRef?.icon ?? '  •  '} {incomePaymentMethodName}</strong>

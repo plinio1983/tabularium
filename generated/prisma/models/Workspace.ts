@@ -283,6 +283,8 @@ export type WorkspaceWhereInput = {
   expenses?: Prisma.ExpenseListRelationFilter
   monthlyRevenues?: Prisma.MonthlyRevenueListRelationFilter
   incomes?: Prisma.IncomeListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleListRelationFilter
   vatSettlementCategory?: Prisma.XOR<Prisma.ExpenseCategoryNullableScalarRelationFilter, Prisma.ExpenseCategoryWhereInput> | null
   cashRegisterIncomeCategory?: Prisma.XOR<Prisma.IncomeCategoryNullableScalarRelationFilter, Prisma.IncomeCategoryWhereInput> | null
   cashRegisterSalesChannel?: Prisma.XOR<Prisma.IncomeSalesChannelNullableScalarRelationFilter, Prisma.IncomeSalesChannelWhereInput> | null
@@ -314,6 +316,8 @@ export type WorkspaceOrderByWithRelationInput = {
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
   monthlyRevenues?: Prisma.MonthlyRevenueOrderByRelationAggregateInput
   incomes?: Prisma.IncomeOrderByRelationAggregateInput
+  auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleOrderByRelationAggregateInput
   vatSettlementCategory?: Prisma.ExpenseCategoryOrderByWithRelationInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryOrderByWithRelationInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelOrderByWithRelationInput
@@ -348,6 +352,8 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   expenses?: Prisma.ExpenseListRelationFilter
   monthlyRevenues?: Prisma.MonthlyRevenueListRelationFilter
   incomes?: Prisma.IncomeListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleListRelationFilter
   vatSettlementCategory?: Prisma.XOR<Prisma.ExpenseCategoryNullableScalarRelationFilter, Prisma.ExpenseCategoryWhereInput> | null
   cashRegisterIncomeCategory?: Prisma.XOR<Prisma.IncomeCategoryNullableScalarRelationFilter, Prisma.IncomeCategoryWhereInput> | null
   cashRegisterSalesChannel?: Prisma.XOR<Prisma.IncomeSalesChannelNullableScalarRelationFilter, Prisma.IncomeSalesChannelWhereInput> | null
@@ -405,6 +411,8 @@ export type WorkspaceCreateInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -435,6 +443,8 @@ export type WorkspaceUncheckedCreateInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUpdateInput = {
@@ -456,6 +466,8 @@ export type WorkspaceUpdateInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -486,6 +498,8 @@ export type WorkspaceUncheckedUpdateInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateManyInput = {
@@ -670,6 +684,20 @@ export type WorkspaceUpdateOneWithoutSessionsNestedInput = {
   delete?: Prisma.WorkspaceWhereInput | boolean
   connect?: Prisma.WorkspaceWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutSessionsInput, Prisma.WorkspaceUpdateWithoutSessionsInput>, Prisma.WorkspaceUncheckedUpdateWithoutSessionsInput>
+}
+
+export type WorkspaceCreateNestedOneWithoutAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutAuditLogsInput, Prisma.WorkspaceUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutAuditLogsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutAuditLogsInput, Prisma.WorkspaceUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutAuditLogsInput
+  upsert?: Prisma.WorkspaceUpsertWithoutAuditLogsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.WorkspaceUpdateWithoutAuditLogsInput>, Prisma.WorkspaceUncheckedUpdateWithoutAuditLogsInput>
 }
 
 export type WorkspaceCreateNestedOneWithoutCompaniesInput = {
@@ -932,6 +960,20 @@ export type WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodN
   deleteMany?: Prisma.WorkspaceScalarWhereInput | Prisma.WorkspaceScalarWhereInput[]
 }
 
+export type WorkspaceCreateNestedOneWithoutCashRegisterBankRulesInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutCashRegisterBankRulesInput, Prisma.WorkspaceUncheckedCreateWithoutCashRegisterBankRulesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutCashRegisterBankRulesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutCashRegisterBankRulesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutCashRegisterBankRulesInput, Prisma.WorkspaceUncheckedCreateWithoutCashRegisterBankRulesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutCashRegisterBankRulesInput
+  upsert?: Prisma.WorkspaceUpsertWithoutCashRegisterBankRulesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutCashRegisterBankRulesInput, Prisma.WorkspaceUpdateWithoutCashRegisterBankRulesInput>, Prisma.WorkspaceUncheckedUpdateWithoutCashRegisterBankRulesInput>
+}
+
 export type WorkspaceCreateNestedOneWithoutSuppliersInput = {
   create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutSuppliersInput, Prisma.WorkspaceUncheckedCreateWithoutSuppliersInput>
   connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutSuppliersInput
@@ -1044,6 +1086,8 @@ export type WorkspaceCreateWithoutOwnerInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -1073,6 +1117,8 @@ export type WorkspaceUncheckedCreateWithoutOwnerInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutOwnerInput = {
@@ -1134,6 +1180,8 @@ export type WorkspaceCreateWithoutMembersInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -1163,6 +1211,8 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -1199,6 +1249,8 @@ export type WorkspaceUpdateWithoutMembersInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -1228,6 +1280,8 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutSessionsInput = {
@@ -1248,6 +1302,8 @@ export type WorkspaceCreateWithoutSessionsInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -1277,6 +1333,8 @@ export type WorkspaceUncheckedCreateWithoutSessionsInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutSessionsInput = {
@@ -1313,6 +1371,8 @@ export type WorkspaceUpdateWithoutSessionsInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -1342,6 +1402,130 @@ export type WorkspaceUncheckedUpdateWithoutSessionsInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutAuditLogsInput = {
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
+  companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
+  expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
+  incomeCategories?: Prisma.IncomeCategoryCreateNestedManyWithoutWorkspaceInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelCreateNestedManyWithoutWorkspaceInput
+  banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
+  suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutWorkspaceInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
+  monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
+  incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
+  vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
+  cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
+  cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
+  cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutCashRegisterPrimaryForWorkspacesInput
+}
+
+export type WorkspaceUncheckedCreateWithoutAuditLogsInput = {
+  id?: number
+  name: string
+  ownerId: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  vatSettlementCategoryId?: number | null
+  cashRegisterIncomeCategoryId?: number | null
+  cashRegisterSalesChannelId?: number | null
+  cashRegisterPrimaryPaymentMethodId?: number | null
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
+  companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
+  expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomeCategories?: Prisma.IncomeCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUncheckedCreateNestedManyWithoutWorkspaceInput
+  banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
+  suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutWorkspaceInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutAuditLogsInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutAuditLogsInput, Prisma.WorkspaceUncheckedCreateWithoutAuditLogsInput>
+}
+
+export type WorkspaceUpsertWithoutAuditLogsInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutAuditLogsInput, Prisma.WorkspaceUncheckedUpdateWithoutAuditLogsInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutAuditLogsInput, Prisma.WorkspaceUncheckedCreateWithoutAuditLogsInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutAuditLogsInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutAuditLogsInput, Prisma.WorkspaceUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type WorkspaceUpdateWithoutAuditLogsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
+  companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
+  incomeCategories?: Prisma.IncomeCategoryUpdateManyWithoutWorkspaceNestedInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUpdateManyWithoutWorkspaceNestedInput
+  banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
+  suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutWorkspaceNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
+  incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
+  vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
+  cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
+  cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
+  cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutCashRegisterPrimaryForWorkspacesNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  vatSettlementCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomeCategories?: Prisma.IncomeCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUncheckedUpdateManyWithoutWorkspaceNestedInput
+  banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
+  suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutWorkspaceNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutCompaniesInput = {
@@ -1362,6 +1546,8 @@ export type WorkspaceCreateWithoutCompaniesInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -1391,6 +1577,8 @@ export type WorkspaceUncheckedCreateWithoutCompaniesInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutCompaniesInput = {
@@ -1427,6 +1615,8 @@ export type WorkspaceUpdateWithoutCompaniesInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -1456,6 +1646,8 @@ export type WorkspaceUncheckedUpdateWithoutCompaniesInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutExpenseCategoriesInput = {
@@ -1476,6 +1668,8 @@ export type WorkspaceCreateWithoutExpenseCategoriesInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -1505,6 +1699,8 @@ export type WorkspaceUncheckedCreateWithoutExpenseCategoriesInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutExpenseCategoriesInput = {
@@ -1531,6 +1727,8 @@ export type WorkspaceCreateWithoutVatSettlementCategoryInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutCashRegisterPrimaryForWorkspacesInput
@@ -1559,6 +1757,8 @@ export type WorkspaceUncheckedCreateWithoutVatSettlementCategoryInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutVatSettlementCategoryInput = {
@@ -1600,6 +1800,8 @@ export type WorkspaceUpdateWithoutExpenseCategoriesInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -1629,6 +1831,8 @@ export type WorkspaceUncheckedUpdateWithoutExpenseCategoriesInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUpsertWithWhereUniqueWithoutVatSettlementCategoryInput = {
@@ -1665,6 +1869,8 @@ export type WorkspaceCreateWithoutIncomeCategoriesInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -1694,6 +1900,8 @@ export type WorkspaceUncheckedCreateWithoutIncomeCategoriesInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutIncomeCategoriesInput = {
@@ -1720,6 +1928,8 @@ export type WorkspaceCreateWithoutCashRegisterIncomeCategoryInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutCashRegisterPrimaryForWorkspacesInput
@@ -1748,6 +1958,8 @@ export type WorkspaceUncheckedCreateWithoutCashRegisterIncomeCategoryInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutCashRegisterIncomeCategoryInput = {
@@ -1789,6 +2001,8 @@ export type WorkspaceUpdateWithoutIncomeCategoriesInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -1818,6 +2032,8 @@ export type WorkspaceUncheckedUpdateWithoutIncomeCategoriesInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUpsertWithWhereUniqueWithoutCashRegisterIncomeCategoryInput = {
@@ -1854,6 +2070,8 @@ export type WorkspaceCreateWithoutIncomeSalesChannelsInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -1883,6 +2101,8 @@ export type WorkspaceUncheckedCreateWithoutIncomeSalesChannelsInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutIncomeSalesChannelsInput = {
@@ -1909,6 +2129,8 @@ export type WorkspaceCreateWithoutCashRegisterSalesChannelInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutCashRegisterPrimaryForWorkspacesInput
@@ -1937,6 +2159,8 @@ export type WorkspaceUncheckedCreateWithoutCashRegisterSalesChannelInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutCashRegisterSalesChannelInput = {
@@ -1978,6 +2202,8 @@ export type WorkspaceUpdateWithoutIncomeSalesChannelsInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -2007,6 +2233,8 @@ export type WorkspaceUncheckedUpdateWithoutIncomeSalesChannelsInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUpsertWithWhereUniqueWithoutCashRegisterSalesChannelInput = {
@@ -2043,6 +2271,8 @@ export type WorkspaceCreateWithoutBanksInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2072,6 +2302,8 @@ export type WorkspaceUncheckedCreateWithoutBanksInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutBanksInput = {
@@ -2108,6 +2340,8 @@ export type WorkspaceUpdateWithoutBanksInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -2137,6 +2371,8 @@ export type WorkspaceUncheckedUpdateWithoutBanksInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutPaymentMethodsInput = {
@@ -2157,6 +2393,8 @@ export type WorkspaceCreateWithoutPaymentMethodsInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2186,6 +2424,8 @@ export type WorkspaceUncheckedCreateWithoutPaymentMethodsInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutPaymentMethodsInput = {
@@ -2212,6 +2452,8 @@ export type WorkspaceCreateWithoutCashRegisterPrimaryPaymentMethodInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2240,6 +2482,8 @@ export type WorkspaceUncheckedCreateWithoutCashRegisterPrimaryPaymentMethodInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutCashRegisterPrimaryPaymentMethodInput = {
@@ -2281,6 +2525,8 @@ export type WorkspaceUpdateWithoutPaymentMethodsInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -2310,6 +2556,8 @@ export type WorkspaceUncheckedUpdateWithoutPaymentMethodsInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUpsertWithWhereUniqueWithoutCashRegisterPrimaryPaymentMethodInput = {
@@ -2326,6 +2574,128 @@ export type WorkspaceUpdateWithWhereUniqueWithoutCashRegisterPrimaryPaymentMetho
 export type WorkspaceUpdateManyWithWhereWithoutCashRegisterPrimaryPaymentMethodInput = {
   where: Prisma.WorkspaceScalarWhereInput
   data: Prisma.XOR<Prisma.WorkspaceUpdateManyMutationInput, Prisma.WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodInput>
+}
+
+export type WorkspaceCreateWithoutCashRegisterBankRulesInput = {
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
+  companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
+  expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
+  incomeCategories?: Prisma.IncomeCategoryCreateNestedManyWithoutWorkspaceInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelCreateNestedManyWithoutWorkspaceInput
+  banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
+  suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutWorkspaceInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
+  monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
+  incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
+  cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
+  cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
+  cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutCashRegisterPrimaryForWorkspacesInput
+}
+
+export type WorkspaceUncheckedCreateWithoutCashRegisterBankRulesInput = {
+  id?: number
+  name: string
+  ownerId: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  vatSettlementCategoryId?: number | null
+  cashRegisterIncomeCategoryId?: number | null
+  cashRegisterSalesChannelId?: number | null
+  cashRegisterPrimaryPaymentMethodId?: number | null
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
+  companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
+  expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomeCategories?: Prisma.IncomeCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUncheckedCreateNestedManyWithoutWorkspaceInput
+  banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
+  suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutWorkspaceInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutCashRegisterBankRulesInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutCashRegisterBankRulesInput, Prisma.WorkspaceUncheckedCreateWithoutCashRegisterBankRulesInput>
+}
+
+export type WorkspaceUpsertWithoutCashRegisterBankRulesInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutCashRegisterBankRulesInput, Prisma.WorkspaceUncheckedUpdateWithoutCashRegisterBankRulesInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutCashRegisterBankRulesInput, Prisma.WorkspaceUncheckedCreateWithoutCashRegisterBankRulesInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutCashRegisterBankRulesInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutCashRegisterBankRulesInput, Prisma.WorkspaceUncheckedUpdateWithoutCashRegisterBankRulesInput>
+}
+
+export type WorkspaceUpdateWithoutCashRegisterBankRulesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
+  companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
+  incomeCategories?: Prisma.IncomeCategoryUpdateManyWithoutWorkspaceNestedInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUpdateManyWithoutWorkspaceNestedInput
+  banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
+  suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutWorkspaceNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
+  incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
+  cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
+  cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
+  cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutCashRegisterPrimaryForWorkspacesNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutCashRegisterBankRulesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  vatSettlementCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomeCategories?: Prisma.IncomeCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUncheckedUpdateManyWithoutWorkspaceNestedInput
+  banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
+  suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutWorkspaceNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutSuppliersInput = {
@@ -2346,6 +2716,8 @@ export type WorkspaceCreateWithoutSuppliersInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2375,6 +2747,8 @@ export type WorkspaceUncheckedCreateWithoutSuppliersInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutSuppliersInput = {
@@ -2411,6 +2785,8 @@ export type WorkspaceUpdateWithoutSuppliersInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -2440,6 +2816,8 @@ export type WorkspaceUncheckedUpdateWithoutSuppliersInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutCustomersInput = {
@@ -2460,6 +2838,8 @@ export type WorkspaceCreateWithoutCustomersInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2489,6 +2869,8 @@ export type WorkspaceUncheckedCreateWithoutCustomersInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutCustomersInput = {
@@ -2525,6 +2907,8 @@ export type WorkspaceUpdateWithoutCustomersInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -2554,6 +2938,8 @@ export type WorkspaceUncheckedUpdateWithoutCustomersInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutRecurringExpensesInput = {
@@ -2574,6 +2960,8 @@ export type WorkspaceCreateWithoutRecurringExpensesInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2603,6 +2991,8 @@ export type WorkspaceUncheckedCreateWithoutRecurringExpensesInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutRecurringExpensesInput = {
@@ -2639,6 +3029,8 @@ export type WorkspaceUpdateWithoutRecurringExpensesInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -2668,6 +3060,8 @@ export type WorkspaceUncheckedUpdateWithoutRecurringExpensesInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutExpensesInput = {
@@ -2688,6 +3082,8 @@ export type WorkspaceCreateWithoutExpensesInput = {
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2717,6 +3113,8 @@ export type WorkspaceUncheckedCreateWithoutExpensesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutExpensesInput = {
@@ -2753,6 +3151,8 @@ export type WorkspaceUpdateWithoutExpensesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -2782,6 +3182,8 @@ export type WorkspaceUncheckedUpdateWithoutExpensesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutMonthlyRevenuesInput = {
@@ -2802,6 +3204,8 @@ export type WorkspaceCreateWithoutMonthlyRevenuesInput = {
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2831,6 +3235,8 @@ export type WorkspaceUncheckedCreateWithoutMonthlyRevenuesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutMonthlyRevenuesInput = {
@@ -2867,6 +3273,8 @@ export type WorkspaceUpdateWithoutMonthlyRevenuesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -2896,6 +3304,8 @@ export type WorkspaceUncheckedUpdateWithoutMonthlyRevenuesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutIncomesInput = {
@@ -2916,6 +3326,8 @@ export type WorkspaceCreateWithoutIncomesInput = {
   recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
   vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
@@ -2945,6 +3357,8 @@ export type WorkspaceUncheckedCreateWithoutIncomesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutIncomesInput = {
@@ -2981,6 +3395,8 @@ export type WorkspaceUpdateWithoutIncomesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -3010,6 +3426,8 @@ export type WorkspaceUncheckedUpdateWithoutIncomesInput = {
   recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateManyOwnerInput = {
@@ -3041,6 +3459,8 @@ export type WorkspaceUpdateWithoutOwnerInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -3070,6 +3490,8 @@ export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateManyWithoutOwnerInput = {
@@ -3113,6 +3535,8 @@ export type WorkspaceUpdateWithoutVatSettlementCategoryInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutCashRegisterPrimaryForWorkspacesNestedInput
@@ -3141,6 +3565,8 @@ export type WorkspaceUncheckedUpdateWithoutVatSettlementCategoryInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateManyWithoutVatSettlementCategoryInput = {
@@ -3184,6 +3610,8 @@ export type WorkspaceUpdateWithoutCashRegisterIncomeCategoryInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutCashRegisterPrimaryForWorkspacesNestedInput
@@ -3212,6 +3640,8 @@ export type WorkspaceUncheckedUpdateWithoutCashRegisterIncomeCategoryInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateManyWithoutCashRegisterIncomeCategoryInput = {
@@ -3255,6 +3685,8 @@ export type WorkspaceUpdateWithoutCashRegisterSalesChannelInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutCashRegisterPrimaryForWorkspacesNestedInput
@@ -3283,6 +3715,8 @@ export type WorkspaceUncheckedUpdateWithoutCashRegisterSalesChannelInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateManyWithoutCashRegisterSalesChannelInput = {
@@ -3326,6 +3760,8 @@ export type WorkspaceUpdateWithoutCashRegisterPrimaryPaymentMethodInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
   vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
   cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
   cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
@@ -3354,6 +3790,8 @@ export type WorkspaceUncheckedUpdateWithoutCashRegisterPrimaryPaymentMethodInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
   monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodInput = {
@@ -3387,6 +3825,8 @@ export type WorkspaceCountOutputType = {
   expenses: number
   monthlyRevenues: number
   incomes: number
+  auditLogs: number
+  cashRegisterBankRules: number
 }
 
 export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3404,6 +3844,8 @@ export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   expenses?: boolean | WorkspaceCountOutputTypeCountExpensesArgs
   monthlyRevenues?: boolean | WorkspaceCountOutputTypeCountMonthlyRevenuesArgs
   incomes?: boolean | WorkspaceCountOutputTypeCountIncomesArgs
+  auditLogs?: boolean | WorkspaceCountOutputTypeCountAuditLogsArgs
+  cashRegisterBankRules?: boolean | WorkspaceCountOutputTypeCountCashRegisterBankRulesArgs
 }
 
 /**
@@ -3514,6 +3956,20 @@ export type WorkspaceCountOutputTypeCountIncomesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.IncomeWhereInput
 }
 
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditLogWhereInput
+}
+
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountCashRegisterBankRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CashRegisterBankRuleWhereInput
+}
+
 
 export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3540,6 +3996,8 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   expenses?: boolean | Prisma.Workspace$expensesArgs<ExtArgs>
   monthlyRevenues?: boolean | Prisma.Workspace$monthlyRevenuesArgs<ExtArgs>
   incomes?: boolean | Prisma.Workspace$incomesArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.Workspace$auditLogsArgs<ExtArgs>
+  cashRegisterBankRules?: boolean | Prisma.Workspace$cashRegisterBankRulesArgs<ExtArgs>
   vatSettlementCategory?: boolean | Prisma.Workspace$vatSettlementCategoryArgs<ExtArgs>
   cashRegisterIncomeCategory?: boolean | Prisma.Workspace$cashRegisterIncomeCategoryArgs<ExtArgs>
   cashRegisterSalesChannel?: boolean | Prisma.Workspace$cashRegisterSalesChannelArgs<ExtArgs>
@@ -3610,6 +4068,8 @@ export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   expenses?: boolean | Prisma.Workspace$expensesArgs<ExtArgs>
   monthlyRevenues?: boolean | Prisma.Workspace$monthlyRevenuesArgs<ExtArgs>
   incomes?: boolean | Prisma.Workspace$incomesArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.Workspace$auditLogsArgs<ExtArgs>
+  cashRegisterBankRules?: boolean | Prisma.Workspace$cashRegisterBankRulesArgs<ExtArgs>
   vatSettlementCategory?: boolean | Prisma.Workspace$vatSettlementCategoryArgs<ExtArgs>
   cashRegisterIncomeCategory?: boolean | Prisma.Workspace$cashRegisterIncomeCategoryArgs<ExtArgs>
   cashRegisterSalesChannel?: boolean | Prisma.Workspace$cashRegisterSalesChannelArgs<ExtArgs>
@@ -3649,6 +4109,8 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
     monthlyRevenues: Prisma.$MonthlyRevenuePayload<ExtArgs>[]
     incomes: Prisma.$IncomePayload<ExtArgs>[]
+    auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+    cashRegisterBankRules: Prisma.$CashRegisterBankRulePayload<ExtArgs>[]
     vatSettlementCategory: Prisma.$ExpenseCategoryPayload<ExtArgs> | null
     cashRegisterIncomeCategory: Prisma.$IncomeCategoryPayload<ExtArgs> | null
     cashRegisterSalesChannel: Prisma.$IncomeSalesChannelPayload<ExtArgs> | null
@@ -4073,6 +4535,8 @@ export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends runtim
   expenses<T extends Prisma.Workspace$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   monthlyRevenues<T extends Prisma.Workspace$monthlyRevenuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$monthlyRevenuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MonthlyRevenuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   incomes<T extends Prisma.Workspace$incomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$incomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditLogs<T extends Prisma.Workspace$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cashRegisterBankRules<T extends Prisma.Workspace$cashRegisterBankRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$cashRegisterBankRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashRegisterBankRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   vatSettlementCategory<T extends Prisma.Workspace$vatSettlementCategoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$vatSettlementCategoryArgs<ExtArgs>>): Prisma.Prisma__ExpenseCategoryClient<runtime.Types.Result.GetResult<Prisma.$ExpenseCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   cashRegisterIncomeCategory<T extends Prisma.Workspace$cashRegisterIncomeCategoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$cashRegisterIncomeCategoryArgs<ExtArgs>>): Prisma.Prisma__IncomeCategoryClient<runtime.Types.Result.GetResult<Prisma.$IncomeCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   cashRegisterSalesChannel<T extends Prisma.Workspace$cashRegisterSalesChannelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$cashRegisterSalesChannelArgs<ExtArgs>>): Prisma.Prisma__IncomeSalesChannelClient<runtime.Types.Result.GetResult<Prisma.$IncomeSalesChannelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -4849,6 +5313,54 @@ export type Workspace$incomesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.IncomeScalarFieldEnum | Prisma.IncomeScalarFieldEnum[]
+}
+
+/**
+ * Workspace.auditLogs
+ */
+export type Workspace$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AuditLog
+   */
+  select?: Prisma.AuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AuditLog
+   */
+  omit?: Prisma.AuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditLogInclude<ExtArgs> | null
+  where?: Prisma.AuditLogWhereInput
+  orderBy?: Prisma.AuditLogOrderByWithRelationInput | Prisma.AuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.AuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+}
+
+/**
+ * Workspace.cashRegisterBankRules
+ */
+export type Workspace$cashRegisterBankRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CashRegisterBankRule
+   */
+  select?: Prisma.CashRegisterBankRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CashRegisterBankRule
+   */
+  omit?: Prisma.CashRegisterBankRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashRegisterBankRuleInclude<ExtArgs> | null
+  where?: Prisma.CashRegisterBankRuleWhereInput
+  orderBy?: Prisma.CashRegisterBankRuleOrderByWithRelationInput | Prisma.CashRegisterBankRuleOrderByWithRelationInput[]
+  cursor?: Prisma.CashRegisterBankRuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CashRegisterBankRuleScalarFieldEnum | Prisma.CashRegisterBankRuleScalarFieldEnum[]
 }
 
 /**

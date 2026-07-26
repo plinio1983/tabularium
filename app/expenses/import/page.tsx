@@ -45,7 +45,11 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
     {error ? <div className="card import-status-card error-card">
       <strong>Importazione non completata.</strong>
       <p className="muted">
-        {error === 'empty_file'
+        {error === 'invalid_file_type'
+          ? <div className="inline-modal-error">Formato non valido. Usa un file XLSX, XLS o ODS.</div>
+          : error === 'file_too_large'
+            ? <div className="inline-modal-error">Il file supera il limite di 20 MB.</div>
+        : error === 'empty_file'
           ? 'Il file è stato letto, ma non sono state trovate righe compatibili con il modello di importazione selezionato.'
           : error === 'no_rows_imported'
             ? 'Il file è stato letto, ma nessuna riga è stata importata. Controlla dati obbligatori, importi, date e tipo importazione.'
@@ -128,8 +132,8 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
         <li>I fornitori non ancora presenti vengono creati automaticamente; eventuali <strong>Note fornitore</strong> presenti nel file vengono salvate come note interne.</li>
         <li>Con <strong>Definizioni spese ricorrenti</strong> vengono create solo le regole ricorrenti: nessun record spesa viene generato dall’importazione.</li>
         <li>Clienti e fornitori esistenti vengono riconosciuti tramite <strong>Partita IVA</strong> o <strong>ragione sociale</strong>; le celle vuote non cancellano i dati presenti.</li>
-        <li>Gli incassi duplicati vengono riconosciuti confrontando cliente, importo, data, periodo, categoria, canale e descrizione.</li>
-        <li>Durante l’importazione degli incassi, clienti, categorie e canali mancanti vengono creati automaticamente.</li>
+        <li>Gli incassi duplicati vengono riconosciuti confrontando cliente, importo, data, periodo, canale e descrizione.</li>
+        <li>Durante l’importazione degli incassi, clienti e canali mancanti vengono creati automaticamente.</li>
       </ul>
     </div>
   </div>;

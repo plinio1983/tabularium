@@ -1081,7 +1081,8 @@ button {
 }
 
 .income-form .fiscal-toggle,
-.income-form-section-credit {
+.income-form-section-credit,
+.income-form-section-invoice-issued {
   display: grid;
   gap: 8px;
 
@@ -1342,6 +1343,83 @@ button {
   display: grid;
   gap: 12px;
   padding: 16px;
+}
+
+.recurring-review-summary {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  padding: 18px;
+  border: 1px solid #dfe5ef;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fff, #f8fafc);
+}
+
+.recurring-review-summary .expense-review-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.recurring-review-summary .expense-review-heading h3 {
+  margin: 3px 0 0;
+}
+
+.recurring-review-summary .expense-review-heading > strong {
+  color: var(--accent);
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+.recurring-review-summary .expense-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.recurring-review-summary .expense-review-item {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.recurring-review-summary .expense-review-item.wide {
+  grid-column: 1 / -1;
+}
+
+.recurring-review-summary .expense-review-item > i {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 11px;
+  background: #eef2ff;
+  color: var(--accent);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.recurring-review-summary .expense-review-item > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.recurring-review-summary .expense-review-item strong {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 13px;
 }
 
 .recurring-expense-form .form-actions-row {
@@ -1963,6 +2041,8 @@ body.drawer-open {
 
 .payments-box .form-summary {
   min-width: 283px;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .payments-box {
@@ -3293,6 +3373,123 @@ table th, table td {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.app-form-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.app-form-field-label {
+  display: flex !important;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.app-form-field-icon {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 7px;
+  background: #eef2ff;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.app-form-field-hint {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.app-select-control,
+.app-date-control,
+.app-autocomplete-control {
+  position: relative;
+  min-width: 0;
+}
+
+.app-select-control select {
+  appearance: none;
+  padding-right: 42px;
+}
+
+.app-select-caret {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  pointer-events: none;
+  color: var(--muted);
+  font-size: 18px;
+  transform: translateY(-54%);
+}
+
+.app-date-presentation,
+.app-date-picker-button {
+  display: none;
+}
+
+.app-autocomplete-control input {
+  padding-left: 38px;
+  padding-right: 38px;
+}
+
+.app-autocomplete-search-icon,
+.app-autocomplete-clear {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+}
+
+.app-autocomplete-search-icon {
+  left: 13px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.app-autocomplete-clear {
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: var(--muted);
+}
+
+.app-autocomplete-selection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #166534;
+  font-size: 12px;
+}
+
+.app-autocomplete-selection > span {
+  display: grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+  border-radius: 999px;
+  background: #dcfce7;
+  font-weight: 900;
+}
+
+.app-autocomplete-selection div {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.app-autocomplete-selection small {
+  color: var(--muted);
+}
+
 .suppliers-table {
   min-width: 900px;
 }
@@ -3382,9 +3579,40 @@ table th, table td {
 .expense-wizard-actions,
 .expense-wizard-keypad,
 .expense-wizard-vat-buttons,
-.expense-due-date-shortcuts,
 .expense-type-choice,
-.expense-wizard-mobile-switch {
+.expense-review-step {
+  display: none;
+}
+
+.expense-form .expense-due-date-shortcuts,
+.expense-form .payment-amount-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.expense-form .expense-due-date-shortcuts button,
+.expense-form .payment-amount-shortcuts button {
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.expense-form .expense-due-date-shortcuts button.is-selected,
+.expense-form .payment-amount-shortcuts button.is-selected {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.expense-form .expense-wizard-mobile-switch {
   display: none;
 }
 
@@ -4233,6 +4461,19 @@ table th, table td {
   color: #172033;
   font-weight: 800;
   text-align: left;
+}
+
+.cash-register-keyboard-method-modal > div button:focus-visible,
+.cash-register-keyboard-confirmation button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 55%, white);
+  outline-offset: 2px;
+}
+
+.cash-register-keyboard-hint {
+  margin: 14px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
 }
 
 .cash-register-settings-form {
@@ -11795,6 +12036,21 @@ table .cell-description {
   display: none;
 }
 
+.category-settings-edit-form .channel-sort-order-label {
+  min-width: 92px;
+}
+
+.category-settings-edit-form .channel-sort-order-label span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.category-settings-edit-form .channel-sort-order-label input {
+  width: 92px;
+}
+
 .category-settings-usage {
   display: grid;
   gap: 2px;
@@ -12709,6 +12965,37 @@ table .cell-description {
 
 .income-form .fiscal-toggle {
   flex-grow: 0;
+}
+
+.cash-register-routing-content {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.cash-register-routing-table {
+  width: 100%;
+  min-width: 680px;
+}
+
+.cash-register-routing-table th {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cash-register-routing-table td {
+  min-width: 180px;
+}
+
+.cash-register-routing-table label,
+.cash-register-routing-table select {
+  width: 100%;
+}
+
+.cash-register-routing-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
 }
 
 .dashboard-pie-legend-collapsible {

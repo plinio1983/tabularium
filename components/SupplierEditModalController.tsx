@@ -12,9 +12,12 @@ type SupplierData = {
   pec: string | null;
   taxCodeSdi: string | null;
   internalNotes: string | null;
+  defaultExpenseCategoryId: number | null;
 };
 
-export default function SupplierEditModalController() {
+type CategoryOption = { id: number; name: string; icon?: string | null };
+
+export default function SupplierEditModalController({categories = []}: { categories?: CategoryOption[] }) {
   const [supplier, setSupplier] = useState<SupplierData | null>(null);
   const [loading, setLoading] = useState(false);
   const [returnTo, setReturnTo] = useState('/suppliers');
@@ -84,6 +87,14 @@ export default function SupplierEditModalController() {
             <label>PEC<input name="pec" type="email" defaultValue={supplier.pec ?? ''}/></label>
             <label>Codice SDI/Fiscale<input name="taxCodeSdi"
                                                    defaultValue={supplier.taxCodeSdi ?? ''}/></label>
+            <label>Categoria predefinita
+              <select name="defaultExpenseCategoryId" defaultValue={supplier.defaultExpenseCategoryId ?? ''}>
+                <option value="">Nessuna categoria</option>
+                {categories.map(category => <option key={category.id} value={category.id}>
+                  {category.icon ? `${category.icon} ${category.name}` : category.name}
+                </option>)}
+              </select>
+            </label>
           </div>
         </details>
 

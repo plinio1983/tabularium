@@ -265,22 +265,27 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
       const customerName = normalizeText(rowValue(item.row, ['Cliente', 'Ragione sociale', 'Nome cliente']));
       const amount = parseMoney(rowValue(item.row, ['Importo', 'Incasso', 'Totale']));
       const creditDate = parseDate(rowValue(item.row, ['Data accredito', 'Data incasso', 'Data']));
+      const orderDate = parseDate(rowValue(item.row, ['Data ordine'])) ?? creditDate;
       if (!customerName || amount <= 0 || !creditDate) {
         addRowError(result, item, 'cliente, importo positivo e data accredito sono obbligatori');
         continue;
       }
       const customerResult = await getOrCreateCustomer(options.workspaceId, customerName);
       if (customerResult.created) result.relatedCreated++;
-      const categoryResult = await getOrCreateIncomeEntity('category', options.workspaceId, rowValue(item.row, ['Categoria vendita', 'Categoria']));
       const channelResult = await getOrCreateIncomeEntity('channel', options.workspaceId, rowValue(item.row, ['Canale vendita', 'Canale']));
-      if (categoryResult.created) result.relatedCreated++;
       if (channelResult.created) result.relatedCreated++;
+      const incomeCategory = await prisma.incomeCategory.findFirst({
+        where: { workspaceId: options.workspaceId, code: 'B2C' }
+      }) ?? await prisma.incomeCategory.findFirst({
+        where: { workspaceId: options.workspaceId },
+        orderBy: { id: 'asc' }
+      });
       const refs = await configuredIncomeReferences(
         options.workspaceId,
         rowValue(item.row, ['Metodo accredito', 'Metodo pagamento', 'Metodo']),
         rowValue(item.row, ['Banca', 'Banca accredito'])
       );
-      if (!categoryResult.record || !channelResult.record || !refs.paymentMethod || !refs.bank) {
+      if (!incomeCategory || !channelResult.record || !refs.paymentMethod || !refs.bank) {
         addRowError(result, item, 'configurazione di categoria, canale, metodo o banca non disponibile');
         continue;
       }
@@ -299,7 +304,7 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
           billingYear: billing.year,
           billingMonth: billing.month,
           salesChannelId: channelResult.record.id,
-          incomeCategoryId: categoryResult.record.id
+          incomeCategoryId: incomeCategory.id
         },
         select: { description: true }
       });
@@ -319,11 +324,12 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
           workspaceId: options.workspaceId,
           customerId: customerResult.record.id,
           salesChannelId: channelResult.record.id,
-          incomeCategoryId: categoryResult.record.id,
+          incomeCategoryId: incomeCategory.id,
           description: description || null,
           amount,
           paymentMethodId: refs.paymentMethod.id,
           creditBankId: refs.bank.id,
+          orderDate,
           creditDate,
           isCredited,
           billingYear: billing.year,

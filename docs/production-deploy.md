@@ -138,7 +138,7 @@ Lo script:
 - aggiorna `APP_IMAGE` remoto con il tag distribuito
 - riavvia Compose usando quell'immagine
 - se richiesto, ripristina il dump nel container `db`
-- applica lo schema Prisma con `npx prisma db push`
+- applica esclusivamente le migrazioni Prisma versionate con `npm run db:deploy`
 - se richiesto, ripristina gli upload nel volume applicativo
 
 Configurazione locale dello script:

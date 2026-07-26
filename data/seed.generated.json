@@ -96,7 +96,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -115,7 +114,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -134,7 +132,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -153,7 +150,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -172,7 +168,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -191,7 +186,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -210,7 +204,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -229,7 +222,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -248,7 +240,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -267,7 +258,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -286,7 +276,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -305,7 +294,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "TS",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -324,7 +312,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -343,7 +330,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -362,7 +348,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -381,7 +366,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -400,7 +384,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -419,7 +402,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -438,7 +420,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -457,7 +438,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -476,7 +456,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -495,7 +474,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -514,7 +492,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -533,7 +510,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -552,7 +528,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -571,7 +546,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -590,7 +564,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -609,7 +582,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -628,7 +600,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -647,7 +618,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -666,7 +636,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -685,7 +654,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -704,7 +672,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -723,7 +690,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -742,7 +708,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -761,7 +726,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -780,7 +744,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -799,7 +762,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -818,7 +780,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -837,7 +798,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -856,7 +816,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -875,7 +834,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -894,7 +852,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -913,7 +870,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 4
     },
@@ -932,7 +888,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -951,7 +906,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -970,7 +924,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -989,7 +942,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1008,7 +960,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1027,7 +978,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1046,7 +996,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1065,7 +1014,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1084,7 +1032,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1103,7 +1050,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1122,7 +1068,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1141,7 +1086,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1160,7 +1104,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1179,7 +1122,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1198,7 +1140,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1217,7 +1158,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1236,7 +1176,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1255,7 +1194,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1274,7 +1212,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1293,7 +1230,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1312,7 +1248,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1331,7 +1266,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1350,7 +1284,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1369,7 +1302,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1388,7 +1320,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1407,7 +1338,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1426,7 +1356,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1445,7 +1374,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1464,7 +1392,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1483,7 +1410,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1502,7 +1428,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1521,7 +1446,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1540,7 +1464,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1559,7 +1482,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1578,7 +1500,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1597,7 +1518,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 4
     },
@@ -1616,7 +1536,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1635,7 +1554,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1654,7 +1572,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1673,7 +1590,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1692,7 +1608,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1711,7 +1626,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1730,7 +1644,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1749,7 +1662,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1768,7 +1680,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1787,7 +1698,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1806,7 +1716,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1825,7 +1734,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1844,7 +1752,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1863,7 +1770,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1882,7 +1788,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "TS",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1901,7 +1806,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "TS",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1920,7 +1824,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1939,7 +1842,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1958,7 +1860,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1977,7 +1878,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -1996,7 +1896,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2015,7 +1914,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2034,7 +1932,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2053,7 +1950,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2072,7 +1968,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2091,7 +1986,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2110,7 +2004,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2129,7 +2022,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2148,7 +2040,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2167,7 +2058,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2186,7 +2076,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2205,7 +2094,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2224,7 +2112,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2243,7 +2130,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2262,7 +2148,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2281,7 +2166,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2300,7 +2184,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2319,7 +2202,6 @@
       "hasElectronicInvoice": true,
       "invoiceStatus": "NONE",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2338,7 +2220,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2357,7 +2238,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2376,7 +2256,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2395,7 +2274,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2414,7 +2292,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2433,7 +2310,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2452,7 +2328,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2471,7 +2346,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NO",
       "companyCode": "HM",
-      "paidByCurrentAccount": true,
       "year": 2026,
       "month": 5
     },
@@ -2490,7 +2364,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2509,7 +2382,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2528,7 +2400,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2547,7 +2418,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2566,7 +2436,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2585,7 +2454,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2604,7 +2472,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2623,7 +2490,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2642,7 +2508,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2661,7 +2526,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2680,7 +2544,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2699,7 +2562,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2718,7 +2580,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2737,7 +2598,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2756,7 +2616,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2775,7 +2634,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2794,7 +2652,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2813,7 +2670,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2832,7 +2688,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2851,7 +2706,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2870,7 +2724,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2889,7 +2742,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2908,7 +2760,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2927,7 +2778,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2946,7 +2796,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2965,7 +2814,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -2984,7 +2832,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3003,7 +2850,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3022,7 +2868,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3041,7 +2886,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3060,7 +2904,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3079,7 +2922,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3098,7 +2940,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3117,7 +2958,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3136,7 +2976,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     },
@@ -3155,7 +2994,6 @@
       "hasElectronicInvoice": false,
       "invoiceStatus": "NONE",
       "companyCode": null,
-      "paidByCurrentAccount": false,
       "year": 2026,
       "month": 5
     }

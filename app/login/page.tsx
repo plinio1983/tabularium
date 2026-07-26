@@ -11,6 +11,8 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
   const params = (await searchParams) ?? {};
   const next = Array.isArray(params.next) ? params.next[0] : params.next;
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
+  const email = Array.isArray(params.email) ? params.email[0] : params.email;
+  const passwordReset = Array.isArray(params.passwordReset) ? params.passwordReset[0] : params.passwordReset;
   if (current) redirect(next && next.startsWith('/') ? next : '/');
 
   return <div className="admin-auth-page login-page">
@@ -31,11 +33,16 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
         </div>
         {error === 'google_config' ? <div className="inline-modal-error">Accesso Google non configurato.</div> : null}
         {error === 'google' || error === 'google_state' ? <div className="inline-modal-error">Accesso Google non riuscito.</div> : null}
-        {error && !String(error).startsWith('google') ? <div className="inline-modal-error">Credenziali non valide.</div> : null}
+        {error === 'rate_limited' ? <div className="inline-modal-error">Troppi tentativi. Attendi 15 minuti e riprova.</div> : null}
+        {error === 'email_unverified' ? <div className="inline-modal-error">Verifica il tuo indirizzo email prima di accedere. <Link href={`/resend-verification?email=${encodeURIComponent(email || '')}`}>Invia un nuovo link</Link>.</div> : null}
+        {error === 'verification_invalid' ? <div className="inline-modal-error">Il link di verifica non è valido, è scaduto o è già stato usato.</div> : null}
+        {passwordReset ? <div className="form-summary">Password aggiornata. Ora puoi accedere.</div> : null}
+        {error && !['rate_limited', 'email_unverified', 'verification_invalid'].includes(String(error)) && !String(error).startsWith('google') ? <div className="inline-modal-error">Credenziali non valide.</div> : null}
         <input type="hidden" name="next" value={next && next.startsWith('/') ? next : '/'} />
         <input type="hidden" name="failurePath" value="/login" />
         <label>Email<input name="email" type="email" autoComplete="email" required /></label>
         <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
+        <Link href="/forgot-password" className="muted">Password dimenticata?</Link>
         <a className="btn btn-md btn-default full login-google-button" href={`/api/auth/google?next=${encodeURIComponent(next && next.startsWith('/') ? next : '/')}`}>Accedi con Google</a>
         <div className="actions-row right-actions login-actions">
           <Link className="btn btn-xs btn-default" href="/register">Registrati</Link>

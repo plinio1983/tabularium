@@ -35,10 +35,6 @@ function dateLabel(value?: Date | null) {
   );
 }
 
-function paidByLabel(value: string) {
-  return value === 'ALTRO_OPERATORE' ? 'Altro Operatore' : 'Herbal Market';
-}
-
 function booleanBadge(value: boolean) {
   const item = value ? yesNoStyles.yes : yesNoStyles.no;
   return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
@@ -110,6 +106,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     },
     errorMessages: {
       invalid: 'Controlla i campi della spesa.',
+      invalid_attachment: 'Allegato non valido. Usa PDF, JPG, PNG, WebP, XML o P7M fino a 10 MB.',
       supplier_not_found: 'Fornitore non trovato. Aggiungilo prima con il pulsante Nuovo nel campo Esercente, poi salva la spesa.',
       not_found: 'Spesa non trovata.',
       in_use: 'La spesa è collegata ad altri movimenti.'
@@ -121,7 +118,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
-      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, systemRole: s.systemRole }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, systemRole: s.systemRole }))}
       returnTo={currentDetailReturnTo}
     />
     <ActionFeedbackBanner
@@ -257,7 +254,6 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
                 <div><span>Importo</span><strong>{euro(payment.amount.toString())}</strong></div>
                 <div><span>Canale</span><strong>{payment.paymentMethod.icon ?? '  •  '} {payment.paymentMethod.name}</strong></div>
                 <div><span>Banca</span><strong>{payment.bank ? `${payment.bank.icon ?? '  •  '} ${payment.bank.name}` : '-'}</strong></div>
-                <div><span>Operatore</span><strong>{paidByLabel(payment.paidBy)}</strong></div>
               </div>
             </article>)}
           </div> : <div className="expense-empty-panel">Nessun pagamento registrato.</div>}
@@ -278,7 +274,6 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               <div className="expense-payment-data">
                 <div><span>Canale</span><strong>{payment.paymentMethod.icon ?? '  •  '} {payment.paymentMethod.name}</strong></div>
                 <div><span>Banca</span><strong>{payment.bank ? `${payment.bank.icon ?? '  •  '} ${payment.bank.name}` : '-'}</strong></div>
-                <div className=""><span>Operatore</span><strong>{paidByLabel(payment.paidBy)}</strong></div>
               </div>
             </article>)}
           </div> : <div className="mobile-expense-empty-panel">Nessun pagamento registrato.</div>}
@@ -309,7 +304,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <span className="badge">{expense.attachments.length}</span>
           </div>
           {expense.attachments.length ? <div className="expense-attachment-panel">
-            {expense.attachments.map(attachment => <a className="expense-attachment-item" key={attachment.id} href={attachment.path} target="_blank" rel="noreferrer">
+            {expense.attachments.map(attachment => <a className="expense-attachment-item" key={attachment.id} href={`/api/attachments/${attachment.id}`} target="_blank" rel="noreferrer">
               <span>📎</span>
               <strong>{attachment.originalName}</strong>
               <small>{attachment.sizeBytes ? `${Math.round(attachment.sizeBytes / 1024)} KB` : ''}</small>

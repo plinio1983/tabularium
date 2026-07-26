@@ -16,7 +16,6 @@ type Props = {
   banks: { id: number; name: string; icon?: string | null }[];
   paymentMethods: { id: number; name: string; icon?: string | null }[];
   salesChannels: { id: number; name: string; icon?: string | null }[];
-  incomeCategories: { id: number; name: string; icon?: string | null }[];
 };
 
 const invoiceStatusOptions = [
@@ -129,7 +128,7 @@ export default function IncomeFiltersDrawer({
   billingPeriodFromFilter,
   billingPeriodToFilter,
   banks,
-  paymentMethods, salesChannels, incomeCategories,
+  paymentMethods, salesChannels,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -274,11 +273,6 @@ export default function IncomeFiltersDrawer({
           <label>Canale vendita<select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>
             <option value="">Tutti</option>
             {salesChannels.map(value => <option key={value.id} value={value.name}>{value.icon ? `${value.icon} ` : ''}{value.name}</option>)}
-          </select></label>
-
-          <label>Categoria vendita<select name="saleCategory" defaultValue={inputDefault(filters, "saleCategory")}>
-            <option value="">Tutte</option>
-            {incomeCategories.map(value => <option key={value.id} value={value.name}>{value.icon ? `${value.icon} ` : ''}{value.name}</option>)}
           </select></label>
 
           <label>Importo<input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></label>

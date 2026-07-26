@@ -3,11 +3,16 @@
 import { useEffect } from "react";
 
 function selectedInputsForForm(formId: string) {
-  return Array.from(
+  const inputs = Array.from(
     document.querySelectorAll<HTMLInputElement>(
       `input[name="ids"][form="${formId}"]:checked, form#${formId} input[name="ids"]:checked`,
     ),
   );
+  const uniqueById = new Map<string, HTMLInputElement>();
+  inputs.forEach((input) => {
+    if (!uniqueById.has(input.value)) uniqueById.set(input.value, input);
+  });
+  return Array.from(uniqueById.values());
 }
 
 function allInputsForForm(formId: string) {
@@ -496,6 +501,7 @@ export default function BulkSelectionController() {
       }
 
       const label = submitterLabel(submitter);
+      if (action === "export_csv") return;
       const subject = formSubject(form);
       const message = `Confermi di eseguire "${label}" su ${selected} ${subject} selezionati?`;
       if (!window.confirm(message)) event.preventDefault();

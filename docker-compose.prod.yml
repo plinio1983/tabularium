@@ -5,10 +5,12 @@ services:
     restart: unless-stopped
     env_file:
       - .env.production
+    environment:
+      APP_VERSION: ${APP_IMAGE:-883377/tabularium:latest}
     expose:
       - "3000"
     volumes:
-      - tabularium_uploads:/app/public/uploads
+      - tabularium_uploads:/app/storage/uploads
     networks:
       cluster_frontend:
         aliases:
@@ -41,7 +43,10 @@ services:
     command: >
       sh -c '
         apk add --no-cache curl &&
-        echo "0 6 * * * curl -fsS -H \"Authorization: Bearer $$CRON_SECRET\" \"http://tabularium:3000/api/cron/recurring-expenses?task=all\"" > /etc/crontabs/root &&
+        printf "%s\n" \
+          "0 6 * * * curl -fsS -H \"Authorization: Bearer $$CRON_SECRET\" \"http://tabularium:3000/api/cron/recurring-expenses?task=all\"" \
+          "* * * * * curl -fsS -H \"Authorization: Bearer $$CRON_SECRET\" \"http://tabularium:3000/api/cron/email-outbox\"" \
+          > /etc/crontabs/root &&
         crond -f -l 8
       '
     networks:

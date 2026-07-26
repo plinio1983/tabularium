@@ -11,6 +11,8 @@ import {
   verifyPassword,
   type WorkspaceRoleName
 } from '@/lib/auth';
+import { checkAuthRateLimit, clearAuthFailures, recordAuthFailure } from '@/lib/auth-rate-limit';
+import { issueEmailVerification } from '@/lib/account-email';
 
 function value(formData: FormData, key: string) {
   return String(formData.get(key) ?? '').trim();
@@ -57,7 +59,7 @@ export async function setupFirstAdminAction(formData: FormData) {
   const name = value(formData, 'name') || null;
   const workspaceName = value(formData, 'workspaceName') || 'Area principale';
 
-  if (!email || password.length < 8) {
+  if (!email || !email.includes('@') || password.length < 10) {
     redirect('/admin/setup?error=invalid');
   }
 
@@ -66,6 +68,7 @@ export async function setupFirstAdminAction(formData: FormData) {
       email,
       name,
       isSystemAdmin: true,
+      emailVerifiedAt: new Date(),
       passwordHash: hashPassword(password)
     }
   });
@@ -94,12 +97,21 @@ export async function loginAction(formData: FormData) {
   const password = value(formData, 'password');
   const next = safeNextPath(value(formData, 'next') || '/');
   const failurePath = safeNextPath(value(formData, 'failurePath') || '/login');
+  const throttle = await checkAuthRateLimit(email);
+  if (!throttle.allowed) {
+    redirect(`${failurePath}?error=rate_limited&next=${encodeURIComponent(next)}`);
+  }
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !user.isActive || !verifyPassword(password, user.passwordHash)) {
+    await recordAuthFailure(throttle.key);
     redirect(`${failurePath}?error=invalid&next=${encodeURIComponent(next)}`);
   }
+  if (!user.emailVerifiedAt && !user.googleEmailVerified) {
+    redirect(`${failurePath}?error=email_unverified&email=${encodeURIComponent(email)}&next=${encodeURIComponent(next)}`);
+  }
 
+  await clearAuthFailures(throttle.key);
   const membership = await prisma.workspaceMember.findFirst({
     where: { userId: user.id },
     orderBy: { id: 'asc' }
@@ -113,13 +125,19 @@ export async function registerAction(formData: FormData) {
   const password = value(formData, 'password');
   const name = value(formData, 'name') || null;
   const workspaceName = value(formData, 'workspaceName') || (name ? `Workspace di ${name}` : 'Il mio workspace');
+  const throttle = await checkAuthRateLimit(email);
+  if (!throttle.allowed) redirect('/register?error=rate_limited');
 
-  if (!email || password.length < 8) {
+  if (!email || !email.includes('@') || password.length < 10) {
+    await recordAuthFailure(throttle.key);
     redirect('/register?error=invalid');
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) redirect('/register?error=exists');
+  if (existing) {
+    await recordAuthFailure(throttle.key);
+    redirect('/register?error=exists');
+  }
 
   const user = await prisma.user.create({
     data: {
@@ -143,8 +161,9 @@ export async function registerAction(formData: FormData) {
   });
 
   await ensureWorkspaceDefaults(workspace.id);
-  await createSession(user.id, workspace.id);
-  redirect('/register/success');
+  await clearAuthFailures(throttle.key);
+  await issueEmailVerification(user);
+  redirect(`/register/success?verification=required&email=${encodeURIComponent(user.email)}`);
 }
 
 export async function logoutAction() {
@@ -177,7 +196,7 @@ export async function systemCreateUserAction(formData: FormData) {
   const workspaceName = value(formData, 'workspaceName') || (name ? `Workspace di ${name}` : 'Workspace utente');
   const isSystemAdmin = value(formData, 'isSystemAdmin') === 'on';
 
-  if (!email || password.length < 8) {
+  if (!email || !email.includes('@') || password.length < 10) {
     redirect('/admin/users?error=invalid');
   }
 
@@ -207,6 +226,7 @@ export async function systemCreateUserAction(formData: FormData) {
   });
 
   await ensureWorkspaceDefaults(workspace.id);
+  await issueEmailVerification(user);
   redirect('/admin/users');
 }
 

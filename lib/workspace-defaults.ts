@@ -166,11 +166,11 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     });
   }
 
-  for (const [code, name, icon] of defaultIncomeSalesChannels) {
+  for (const [index, [code, name, icon]] of defaultIncomeSalesChannels.entries()) {
     await prisma.incomeSalesChannel.upsert({
       where: { workspaceId_code: { workspaceId, code } },
       update: {},
-      create: { workspaceId, code, name, icon }
+      create: { workspaceId, code, name, icon, sortOrder: (index + 1) * 10 }
     });
   }
 

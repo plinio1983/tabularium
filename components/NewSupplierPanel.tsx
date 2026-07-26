@@ -3,7 +3,9 @@
 import {useEffect, useState} from 'react';
 import {flashParamNames} from '@/lib/flash';
 
-export default function NewSupplierPanel({initialOpen = false}: { initialOpen?: boolean }) {
+type CategoryOption = { id: number; name: string; icon?: string | null };
+
+export default function NewSupplierPanel({initialOpen = false, categories = []}: { initialOpen?: boolean; categories?: CategoryOption[] }) {
     const [isOpen, setIsOpen] = useState(initialOpen);
     const [action, setAction] = useState('/api/suppliers');
 
@@ -56,6 +58,14 @@ export default function NewSupplierPanel({initialOpen = false}: { initialOpen?: 
                                 <label>PEC<input name="pec" type="email"/></label>
                                 <label>Codice SDI/Fiscale<input name="taxCodeSdi"/></label>
                                 <label>IBAN<input name="iban"/></label>
+                                <label>Categoria predefinita
+                                    <select name="defaultExpenseCategoryId" defaultValue="">
+                                        <option value="">Nessuna categoria</option>
+                                        {categories.map(category => <option key={category.id} value={category.id}>
+                                            {category.icon ? `${category.icon} ${category.name}` : category.name}
+                                        </option>)}
+                                    </select>
+                                </label>
                             </div>
                         </details>
 

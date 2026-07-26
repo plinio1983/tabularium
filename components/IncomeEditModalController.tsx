@@ -8,11 +8,11 @@ type EditIncome = {
   id: number;
   customerId?: number | null;
   salesChannelId: number;
-  incomeCategoryId: number;
   description?: string | null;
   amount?: string | number | null;
   paymentMethodId?: number | null;
   creditBankId?: number | null;
+  orderDate?: string | Date | null;
   creditDate?: string | Date | null;
   isCredited?: boolean;
   billingMonth?: number | null;
@@ -32,12 +32,11 @@ type Props = {
   returnTo: string;
   banks: Option[];
   paymentMethods: PaymentMethodOption[];
-  incomeCategories: IncomeEntityOption[];
   salesChannels: IncomeEntityOption[];
   customers: CustomerOption[];
 };
 
-export default function IncomeEditModalController({ returnTo, banks, paymentMethods, incomeCategories, salesChannels, customers }: Props) {
+export default function IncomeEditModalController({ returnTo, banks, paymentMethods, salesChannels, customers }: Props) {
   const [income, setIncome] = useState<EditIncome | null>(null);
   const [mode, setMode] = useState<"edit" | "copy">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -57,6 +56,7 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
         const billingPeriod = clampPeriodToCurrentMonth(loadedIncome.billingMonth, loadedIncome.billingYear);
         setIncome({
           ...loadedIncome,
+          orderDate: clampDateToToday(loadedIncome.orderDate ?? loadedIncome.creditDate),
           creditDate: clampDateToToday(loadedIncome.creditDate),
           billingMonth: billingPeriod.month,
           billingYear: billingPeriod.year,
@@ -97,8 +97,8 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
     {loadingId ? <div className="inline-modal-loading">Caricamento incasso #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
-      <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
+    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
+      <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
             <h3>{mode === "copy" ? `Copia incasso #${income.id}` : `Modifica incasso #${income.id}`}</h3>
@@ -115,7 +115,6 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
           onCancel={() => setIncome(null)}
           banks={banks}
           paymentMethods={paymentMethods}
-          incomeCategories={incomeCategories}
           salesChannels={salesChannels}
           customers={customers}
         />

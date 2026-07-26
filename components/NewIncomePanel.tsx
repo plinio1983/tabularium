@@ -9,12 +9,11 @@ type PaymentMethodOption = Option & { kind?: string };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
 
-export default function NewIncomePanel({ initialOpen = false, showToolbar = true, banks, paymentMethods, incomeCategories, salesChannels, customers, initialCustomerId }: {
+export default function NewIncomePanel({ initialOpen = false, showToolbar = true, banks, paymentMethods, salesChannels, customers, initialCustomerId }: {
   initialOpen?: boolean;
   showToolbar?: boolean;
   banks: Option[];
   paymentMethods: PaymentMethodOption[];
-  incomeCategories: IncomeEntityOption[];
   salesChannels: IncomeEntityOption[];
   customers: CustomerOption[];
   initialCustomerId?: number;
@@ -55,8 +54,8 @@ export default function NewIncomePanel({ initialOpen = false, showToolbar = true
         </button>
       </div> : null}
 
-      {isOpen ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Inserisci incasso" onMouseDown={() => setIsOpen(false)}>
-        <div className="modal-card modal-card-wide" onMouseDown={(event) => event.stopPropagation()}>
+      {isOpen ? <div className="modal-backdrop app-form-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label="Inserisci incasso" onMouseDown={() => setIsOpen(false)}>
+        <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
           <div className="modal-title">
             <div>
               <h3>Nuovo incasso</h3>
@@ -64,7 +63,7 @@ export default function NewIncomePanel({ initialOpen = false, showToolbar = true
             </div>
             <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
           </div>
-          <IncomeForm initialIncome={initialCustomerId ? { customerId: initialCustomerId } : undefined} action={returnAction} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} incomeCategories={incomeCategories} salesChannels={salesChannels} customers={customers} />
+          <IncomeForm initialIncome={initialCustomerId ? { customerId: initialCustomerId } : undefined} action={returnAction} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} />
         </div>
       </div> : null}
     </div>

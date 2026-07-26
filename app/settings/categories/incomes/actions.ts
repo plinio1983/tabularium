@@ -1,9 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { requireWorkspace } from '@/lib/auth';
+import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { incomeEntityIconOptions } from '@/lib/workspace-defaults';
+import { writeAuditLog } from '@/lib/audit';
 
 const path = '/settings/categories/incomes';
 type Kind = 'category' | 'channel';
@@ -31,22 +32,39 @@ function parse(formData: FormData) {
 }
 
 export async function createIncomeEntityAction(formData: FormData) {
-  const current = await requireWorkspace(path);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, path);
   const input = parse(formData);
+  let entityId: number;
   if (input.kind === 'category') {
     const duplicate = await prisma.incomeCategory.findFirst({ where: { workspaceId: current.workspace.id, code: input.code } });
     if (duplicate) fail('code_exists', input.kind);
-    await prisma.incomeCategory.create({ data: { workspaceId: current.workspace.id, name: input.name, code: input.code, icon: input.icon } });
+    const entity = await prisma.incomeCategory.create({ data: { workspaceId: current.workspace.id, name: input.name, code: input.code, icon: input.icon } });
+    entityId = entity.id;
   } else {
     const duplicate = await prisma.incomeSalesChannel.findFirst({ where: { workspaceId: current.workspace.id, code: input.code } });
     if (duplicate) fail('code_exists', input.kind);
-    await prisma.incomeSalesChannel.create({ data: { workspaceId: current.workspace.id, name: input.name, code: input.code, icon: input.icon } });
+    const lastChannel = await prisma.incomeSalesChannel.findFirst({
+      where: { workspaceId: current.workspace.id },
+      orderBy: [{ sortOrder: 'desc' }, { id: 'desc' }],
+      select: { sortOrder: true }
+    });
+    const entity = await prisma.incomeSalesChannel.create({
+      data: {
+        workspaceId: current.workspace.id,
+        name: input.name,
+        code: input.code,
+        icon: input.icon,
+        sortOrder: (lastChannel?.sortOrder ?? 0) + 10
+      }
+    });
+    entityId = entity.id;
   }
+  await writeAuditLog({ workspaceId: current.workspace.id, userId: current.user.id, action: 'CREATE', entityType: input.kind === 'category' ? 'IncomeCategory' : 'IncomeSalesChannel', entityId });
   redirect(`${path}?saved=created&kind=${input.kind}`);
 }
 
 export async function updateIncomeEntityAction(formData: FormData) {
-  const current = await requireWorkspace(path);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, path);
   const id = Number(value(formData, 'id'));
   const input = parse(formData);
   if (!Number.isInteger(id) || id <= 0) fail('invalid', input.kind);
@@ -57,13 +75,16 @@ export async function updateIncomeEntityAction(formData: FormData) {
   } else {
     const entity = await prisma.incomeSalesChannel.findFirst({ where: { id, workspaceId: current.workspace.id } });
     if (!entity) fail('not_found', input.kind);
-    await prisma.incomeSalesChannel.update({ where: { id }, data: { name: input.name, icon: input.icon } });
+    const sortOrder = Number(value(formData, 'sortOrder'));
+    if (!Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 9999) fail('invalid', input.kind);
+    await prisma.incomeSalesChannel.update({ where: { id }, data: { name: input.name, icon: input.icon, sortOrder } });
   }
+  await writeAuditLog({ workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE', entityType: input.kind === 'category' ? 'IncomeCategory' : 'IncomeSalesChannel', entityId: id });
   redirect(`${path}?saved=updated&kind=${input.kind}`);
 }
 
 export async function deleteIncomeEntityAction(formData: FormData) {
-  const current = await requireWorkspace(path);
+  const current = await requireWorkspaceRole(workspaceManagementRoles, path);
   const id = Number(value(formData, 'id'));
   const kind = value(formData, 'kind') as Kind;
   if (!Number.isInteger(id) || id <= 0 || !['category', 'channel'].includes(kind)) fail('invalid', kind);
@@ -82,22 +103,28 @@ export async function deleteIncomeEntityAction(formData: FormData) {
     if (entity._count.incomes) fail('in_use', kind, entity._count.incomes);
     await prisma.incomeSalesChannel.delete({ where: { id } });
   }
+  await writeAuditLog({ workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE', entityType: kind === 'category' ? 'IncomeCategory' : 'IncomeSalesChannel', entityId: id });
   redirect(`${path}?saved=deleted&kind=${kind}`);
 }
 
 export async function updateCashRegisterIncomeDefaultsAction(formData: FormData) {
-  const current = await requireWorkspace(path);
-  const categoryId = Number(value(formData, 'cashRegisterIncomeCategoryId'));
+  const current = await requireWorkspaceRole(workspaceManagementRoles, path);
   const salesChannelId = Number(value(formData, 'cashRegisterSalesChannelId'));
-  if (!Number.isInteger(categoryId) || !Number.isInteger(salesChannelId)) fail('invalid');
+  if (!Number.isInteger(salesChannelId)) fail('invalid');
   const [category, channel] = await Promise.all([
-    prisma.incomeCategory.findFirst({ where: { id: categoryId, workspaceId: current.workspace.id } }),
+    prisma.incomeCategory.findFirst({ where: { workspaceId: current.workspace.id, code: 'B2C' } })
+      .then(item => item ?? prisma.incomeCategory.findFirst({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } })),
     prisma.incomeSalesChannel.findFirst({ where: { id: salesChannelId, workspaceId: current.workspace.id } })
   ]);
   if (!category || !channel) fail('not_found');
   await prisma.workspace.update({
     where: { id: current.workspace.id },
     data: { cashRegisterIncomeCategoryId: category.id, cashRegisterSalesChannelId: channel.id }
+  });
+  await writeAuditLog({
+    workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE',
+    entityType: 'WorkspaceSettings', entityId: current.workspace.id,
+    metadata: { cashRegisterIncomeCategoryId: category.id, cashRegisterSalesChannelId: channel.id }
   });
   redirect(`${path}?saved=cash_register`);
 }

@@ -40,7 +40,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
-    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, incomeCategories, salesChannels, customers] = await Promise.all([
+    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers] = await Promise.all([
         getMonthlyReport(year, month, current.workspace.id, mode),
         mode === 'fiscal'
             ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id})
@@ -53,8 +53,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             orderBy: {businessName: 'asc'},
             take: 100
         }),
-        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
         prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}})
     ]);
     const orderedCategories = orderExpenseCategories(categories);
@@ -116,7 +115,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 pec: supplier.pec,
                 taxCodeSdi: supplier.taxCodeSdi,
                 systemRole: supplier.systemRole,
-                internalNotes: supplier.internalNotes
+                internalNotes: supplier.internalNotes,
+                defaultExpenseCategoryId: supplier.defaultExpenseCategoryId
             }))}
             initialExpense={{ month, year }}
             showToolbar={false}
@@ -270,7 +270,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     pec: supplier.pec,
                     taxCodeSdi: supplier.taxCodeSdi,
                     systemRole: supplier.systemRole,
-                    internalNotes: supplier.internalNotes
+                    internalNotes: supplier.internalNotes,
+                    defaultExpenseCategoryId: supplier.defaultExpenseCategoryId
                 }))}
                 mobileLabel={mode === 'fiscal' ? 'Lista spese del periodo contabile mobile' : 'Lista spese registrate nel mese mobile'}
                 emptyMessage={mode === 'fiscal' ? 'Nessuna spesa trovata per questo periodo contabile.' : 'Nessuna spesa registrata in questo mese.'}
@@ -287,7 +288,6 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 returnTo={returnTo}
                 banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
                 paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback}))}
-                incomeCategories={incomeCategories}
                 salesChannels={salesChannels}
                 customers={customers}
             /></div>

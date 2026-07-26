@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { ensureWorkspaceDefaults } from '@/lib/workspace-defaults';
+import { writeAuditLog } from '@/lib/audit';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
 const IncomeSchema = z.object({
   customerId: z.coerce.number().int().positive(),
   salesChannelId: z.coerce.number().int().positive(),
-  incomeCategoryId: z.coerce.number().int().positive(),
+  orderDate: z.string().min(1),
   description: z.string().optional().nullable(),
   amount: z.coerce.number().nonnegative(),
   paymentMethodId: z.coerce.number().int().positive(),
@@ -25,8 +27,10 @@ const IncomeSchema = z.object({
 });
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
+  await ensureWorkspaceDefaults(current.workspace.id);
   const { id } = await params;
   const incomeId = Number(id);
   const formData = await request.formData();
@@ -36,7 +40,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const returnTo = pathFromUrl(rawReturnTo, `/incomes/${incomeId}`);
 
   if (action === 'delete') {
-    await prisma.income.deleteMany({ where: { id: incomeId, workspaceId: current.workspace.id } });
+    const deleted = await prisma.income.deleteMany({ where: { id: incomeId, workspaceId: current.workspace.id } });
+    if (deleted.count) await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
+      entityType: 'Income', entityId: incomeId, request
+    });
     return redirectToPath(appendFlash(pathFromUrl(rawReturnTo, '/incomes'), { saved: 'deleted' }));
   }
 
@@ -45,7 +53,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     prisma.paymentMethod.findFirst({ where: { id: parsed.paymentMethodId, workspaceId: current.workspace.id } }),
     prisma.bank.findFirst({ where: { id: parsed.creditBankId, workspaceId: current.workspace.id } }),
     prisma.incomeSalesChannel.findFirst({ where: { id: parsed.salesChannelId, workspaceId: current.workspace.id } }),
-    prisma.incomeCategory.findFirst({ where: { id: parsed.incomeCategoryId, workspaceId: current.workspace.id } }),
+    prisma.incomeCategory.findFirst({ where: { workspaceId: current.workspace.id, code: 'B2C' } })
+      .then(category => category ?? prisma.incomeCategory.findFirst({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } })),
     prisma.customer.findFirst({ where: { id: parsed.customerId, workspaceId: current.workspace.id } })
   ]);
   if (!paymentMethod || !creditBank || !salesChannel || !incomeCategory || !customer) return NextResponse.json({ error: 'Configurazione incasso non valida' }, { status: 400 });
@@ -64,6 +73,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       amount: parsed.amount,
       paymentMethodId: paymentMethod.id,
       creditBankId: creditBank.id,
+      orderDate: new Date(parsed.orderDate),
       creditDate: new Date(parsed.creditDate),
       isCredited: parsed.isCredited,
       billingYear,
@@ -73,6 +83,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       vatRate: parsed.isFiscal ? parsed.vatRate : 0,
       notes: parsed.notes || null
     }
+  });
+  await writeAuditLog({
+    workspaceId: current.workspace.id,
+    userId: current.user.id,
+    action: 'UPDATE',
+    entityType: 'Income',
+    entityId: incomeId,
+    metadata: { amount: parsed.amount, isFiscal: parsed.isFiscal },
+    request
   });
 
   return redirectToPath(appendFlash(returnTo || `/incomes/${incomeId}`, { saved: 'updated' }));

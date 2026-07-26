@@ -3,6 +3,7 @@
 import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
 import {createPortal} from "react-dom";
 import {categoryIcon} from "@/lib/expense-ui";
+import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; systemRole?: string | null; isVatSettlementDefault?: boolean };
 type SupplierOption = {
@@ -16,6 +17,7 @@ type SupplierOption = {
     taxCodeSdi?: string | null;
     internalNotes?: string | null;
     systemRole?: string | null;
+    defaultExpenseCategoryId?: number | null;
 };
 type PaymentRow = {
     key: number;
@@ -24,7 +26,6 @@ type PaymentRow = {
     paymentMethodId: string;
     bankId: string;
     amount: string;
-    paidBy: "HERBAL_MARKET" | "ALTRO_OPERATORE";
     amountTouched: boolean;
 };
 
@@ -34,7 +35,6 @@ type InitialPayment = {
     paymentMethodId?: number | null;
     bankId?: number | null;
     amount?: string | number | { toString(): string } | null;
-    paidBy?: "HERBAL_MARKET" | "ALTRO_OPERATORE";
 };
 
 type InitialExpense = {
@@ -133,7 +133,6 @@ function emptyPaymentRow(key: number): PaymentRow {
         paymentMethodId: "",
         bankId: "",
         amount: "",
-        paidBy: "HERBAL_MARKET",
         amountTouched: false,
     };
 }
@@ -155,7 +154,6 @@ function paymentRowFromInitial(
         paymentMethodId: findOptionId(paymentMethods, payment.paymentMethodId),
         bankId: payment.bankId ? String(payment.bankId) : "",
         amount: normalizeMoney(payment.amount),
-        paidBy: payment.paidBy ?? "HERBAL_MARKET",
         amountTouched: true,
     };
 }
@@ -165,8 +163,7 @@ function isPaymentComplete(row: PaymentRow) {
         row.paymentDate &&
         row.paymentMethodId &&
         row.bankId &&
-        Number(row.amount || 0) > 0 &&
-        row.paidBy,
+        Number(row.amount || 0) > 0
     );
 }
 
@@ -187,10 +184,16 @@ function SupplierAutocomplete({
                                   suppliers = [],
                                   initialSupplierId,
                                   initialMerchant,
+                                  onSupplierSelected,
+                                  onSupplierValueChange,
+                                  categories = [],
                               }: {
     suppliers?: SupplierOption[];
     initialSupplierId?: number | null;
     initialMerchant?: string | null;
+    onSupplierSelected?: (supplier: SupplierOption) => void;
+    onSupplierValueChange?: (value: string) => void;
+    categories?: Option[];
 }) {
     const initial =
         suppliers.find((supplier) => supplier.id === initialSupplierId) ?? null;
@@ -213,6 +216,7 @@ function SupplierAutocomplete({
         taxCodeSdi: "",
         alias: "",
         internalNotes: "",
+        defaultExpenseCategoryId: "",
     });
     const [isSaving, setIsSaving] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -253,6 +257,8 @@ function SupplierAutocomplete({
         setSelected(supplier);
         setQuery(supplier.businessName);
         setIsOpen(false);
+        onSupplierValueChange?.(supplier.businessName);
+        onSupplierSelected?.(supplier);
     }
 
     function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -298,6 +304,7 @@ function SupplierAutocomplete({
             taxCodeSdi: "",
             alias: "",
             internalNotes: "",
+            defaultExpenseCategoryId: "",
         });
         setShowCreate(false);
     }
@@ -310,22 +317,68 @@ function SupplierAutocomplete({
                 name="merchant"
                 value={selected?.businessName ?? query}
             />
-            <label>
-                Esercente
+            <FormField label="Esercente" icon="◎" className="supplier-autocomplete-field" htmlFor="expense-supplier-search">
                 <div className="supplier-input-row">
-                    <input
-                        value={query}
-                        onChange={(event) => {
-                            setQuery(event.target.value);
-                            setSelected(null);
-                            setIsOpen(true);
-                        }}
-                        onFocus={() => setIsOpen(true)}
-                        onKeyDown={onKeyDown}
-                        placeholder="Cerca per ragione sociale o alias"
-                        autoComplete="off"
-                        required
-                    />
+                    <div className={`app-autocomplete-control ${selected ? "has-selection" : ""}`}>
+                        <span className="app-autocomplete-search-icon" aria-hidden="true">⌕</span>
+                        <input
+                            id="expense-supplier-search"
+                            value={query}
+                            onChange={(event) => {
+                                setQuery(event.target.value);
+                                onSupplierValueChange?.(event.target.value);
+                                setSelected(null);
+                                setIsOpen(true);
+                            }}
+                            onFocus={() => setIsOpen(true)}
+                            onKeyDown={onKeyDown}
+                            placeholder="Cerca per ragione sociale o alias"
+                            autoComplete="off"
+                            role="combobox"
+                            aria-expanded={isOpen}
+                            aria-autocomplete="list"
+                            required
+                        />
+                        {query ? <button
+                            type="button"
+                            className="app-autocomplete-clear"
+                            aria-label="Cancella fornitore"
+                            onClick={() => {
+                                setQuery("");
+                                onSupplierValueChange?.("");
+                                setSelected(null);
+                                setResults(suppliers.slice(0, 10));
+                                setIsOpen(true);
+                            }}
+                        >×</button> : null}
+                        {isOpen && (
+                            <div className="supplier-results" role="listbox">
+                                {results.length ? (
+                                    results.map((supplier, index) => (
+                                        <button
+                                            type="button"
+                                            key={supplier.id}
+                                            role="option"
+                                            aria-selected={index === activeIndex}
+                                            className={index === activeIndex ? "active" : ""}
+                                            onMouseEnter={() => setActiveIndex(index)}
+                                            onMouseDown={(event) => {
+                                                event.preventDefault();
+                                                selectSupplier(supplier);
+                                            }}
+                                        >
+                                            <strong>{supplier.businessName}</strong>
+                                            {supplier.alias && <small>Alias: {supplier.alias}</small>}
+                                        </button>
+                                    ))
+                                ) : (
+                                    <div className="empty-supplier-result">
+                                        Nessun fornitore trovato.
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                     <button
                         type="button"
                         className="btn btn-sm btn-link inline-link-button"
@@ -337,32 +390,11 @@ function SupplierAutocomplete({
                         ＋ Nuovo
                     </button>
                 </div>
-            </label>
-            {isOpen && (
-                <div className="supplier-results" role="listbox">
-                    {results.length ? (
-                        results.map((supplier, index) => (
-                            <button
-                                type="button"
-                                key={supplier.id}
-                                className={index === activeIndex ? "active" : ""}
-                                onMouseEnter={() => setActiveIndex(index)}
-                                onMouseDown={(event) => {
-                                    event.preventDefault();
-                                    selectSupplier(supplier);
-                                }}
-                            >
-                                <strong>{supplier.businessName}</strong>
-                                {supplier.alias && <small>Alias: {supplier.alias}</small>}
-                            </button>
-                        ))
-                    ) : (
-                        <div className="empty-supplier-result">
-                            Nessun fornitore trovato.
-                        </div>
-                    )}
-                </div>
-            )}
+                {selected ? <div className="app-autocomplete-selection">
+                    <span aria-hidden="true">✓</span>
+                    <div><strong>{selected.businessName}</strong>{selected.alias ? <small>{selected.alias}</small> : null}</div>
+                </div> : null}
+            </FormField>
             {showCreate && createPortal(
                 <div
                     className="modal-backdrop nested-form-modal"
@@ -449,6 +481,18 @@ function SupplierAutocomplete({
                                     }
                                 />
                             </label>
+                            <label>
+                                Categoria predefinita
+                                <select
+                                    value={createData.defaultExpenseCategoryId}
+                                    onChange={(e) => setCreateData((d) => ({...d, defaultExpenseCategoryId: e.target.value}))}
+                                >
+                                    <option value="">Nessuna categoria</option>
+                                    {categories.map(category => <option key={category.id} value={category.id}>
+                                        {category.icon ? `${categoryIcon(category)} ${category.name}` : category.name}
+                                    </option>)}
+                                </select>
+                            </label>
                             <label className="full">
                                 Note interne
                                 <textarea
@@ -490,8 +534,10 @@ function SupplierAutocomplete({
 
 function ProductServiceAutocomplete({
                                         initialValue = "",
+                                        onValueChange,
                                     }: {
     initialValue?: string | null;
+    onValueChange?: (value: string) => void;
 }) {
     const [query, setQuery] = useState(initialValue ?? "");
     const [results, setResults] = useState<string[]>([]);
@@ -533,6 +579,7 @@ function ProductServiceAutocomplete({
 
     function selectSuggestion(value: string) {
         setQuery(value);
+        onValueChange?.(value);
         setIsOpen(false);
     }
 
@@ -567,6 +614,7 @@ function ProductServiceAutocomplete({
                 value={query}
                 onChange={(event) => {
                     setQuery(event.target.value);
+                    onValueChange?.(event.target.value);
                     setIsOpen(true);
                 }}
                 onFocus={() => setIsOpen(true)}
@@ -625,10 +673,25 @@ export default function ExpenseForm({
     const normalizePaymentRow = (row: PaymentRow): PaymentRow =>
         isCashChannel(methodName(row.paymentMethodId)) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
+    const initialSupplierDefaultCategoryId = suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.defaultExpenseCategoryId;
+    const [categoryId, setCategoryId] = useState(() => String(
+        initialExpense?.categoryId
+        ?? (initialExpense?.id ? null : initialSupplierDefaultCategoryId)
+        ?? categories[0]?.id
+        ?? "",
+    ));
     const [vatRate, setVatRate] = useState(normalizeMoney(initialExpense?.vatRate) || "22");
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [mobileStep, setMobileStep] = useState(() => Math.max(1, Math.min(6, initialMobileStep)));
+    const [supplierDisplayName, setSupplierDisplayName] = useState(
+        suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.businessName
+        ?? initialExpense?.merchant
+        ?? "",
+    );
+    const [description, setDescription] = useState(initialExpense?.description ?? "");
+    const [notes, setNotes] = useState(initialExpense?.notes ?? "");
+    const [attachmentCount, setAttachmentCount] = useState(0);
     const formRef = useRef<HTMLFormElement>(null);
     const didOpenNewPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
@@ -653,8 +716,16 @@ export default function ExpenseForm({
     const [orderDate, setOrderDate] = useState(initialOrderDate);
     const [billingPeriod, setBillingPeriod] = useState(initialBillingPeriod);
     const [dueDate, setDueDate] = useState(
-        initialExpense ? toDateInput(initialExpense.dueDate) : addDaysToDateInput(initialOrderDate, 7),
+        initialExpense?.dueDate
+            ? toDateInput(initialExpense.dueDate)
+            : initialExpense?.id
+                ? ""
+                : addDaysToDateInput(initialOrderDate, 7),
     );
+    useEffect(() => {
+        if (!isVatSettlement || !dueDate || orderDate === dueDate) return;
+        setOrderDate(dueDate);
+    }, [isVatSettlement, dueDate, orderDate]);
     const [invoiceStatus, setInvoiceStatus] = useState(
         initialExpense?.invoiceStatus ?? "IN_ATTESA",
     );
@@ -684,6 +755,12 @@ export default function ExpenseForm({
             : computedPaymentStatus === "PAGATO_PARZIALMENTE"
                 ? {icon: "🟡", label: "Pagato parzialmente", className: "text-warning"}
                 : {icon: "⚪", label: "Non pagato", className: "text-critical"};
+    const selectedCategory = isVatSettlement
+        ? vatSettlementCategory
+        : categories.find(category => String(category.id) === categoryId);
+    const currentSupplierName = isVatSettlement
+        ? vatSettlementSupplier?.businessName ?? "Non configurato"
+        : supplierDisplayName || "Non indicato";
     const canAddPayment =
         payments.length === 0 || isPaymentComplete(payments[payments.length - 1]);
 
@@ -698,6 +775,7 @@ export default function ExpenseForm({
         },
         [],
     );
+    const currentInvoiceStatusLabel = invoiceStatuses.find(([value]) => value === invoiceStatus)?.[1] ?? invoiceStatus;
 
     const invoiceNotExpected = !hasElectronicInvoice && !isDeclared;
 
@@ -713,6 +791,12 @@ export default function ExpenseForm({
             setInvoiceStatus("NON_PREVISTA");
         }
     }, [hasElectronicInvoice, isDeclared, invoiceStatus]);
+
+    useEffect(() => {
+        if (hasElectronicInvoice && invoiceStatus === "NON_PREVISTA") {
+            setInvoiceStatus("IN_ATTESA");
+        }
+    }, [hasElectronicInvoice, invoiceStatus]);
 
     function handleAmountChange(value: string) {
         const normalized = value.replace(".", ",").replace(/[^\d,]/g, "");
@@ -731,8 +815,19 @@ export default function ExpenseForm({
         });
     }
 
+    function updateDeclared(checked: boolean) {
+        setIsDeclared(checked);
+        if (!checked) {
+            setVatRate("0");
+            setHasElectronicInvoice(false);
+            setInvoiceStatus("NON_PREVISTA");
+        } else if (vatRate === "0") {
+            setVatRate("22");
+        }
+    }
+
     function goToMobileStep(nextStep: number) {
-        setMobileStep(Math.max(1, Math.min(6, nextStep)));
+        setMobileStep(Math.max(1, Math.min(7, nextStep)));
         window.requestAnimationFrame(() => formRef.current?.scrollIntoView({behavior: "smooth", block: "start"}));
     }
 
@@ -771,6 +866,22 @@ export default function ExpenseForm({
                 return next;
             }),
         );
+    }
+
+    function paymentAvailableAmount(index: number) {
+        const otherPayments = payments.reduce(
+            (sum, row, rowIndex) => rowIndex === index ? sum : sum + Number(row.amount || 0),
+            0,
+        );
+        return Math.max(0, amountValue - otherPayments);
+    }
+
+    function setPaymentPercentage(index: number, percentage: number) {
+        const nextAmount = paymentAvailableAmount(index) * percentage / 100;
+        updatePayment(index, {
+            amount: nextAmount > 0 ? nextAmount.toFixed(2) : "",
+            amountTouched: true,
+        });
     }
 
     useEffect(() => {
@@ -826,7 +937,6 @@ export default function ExpenseForm({
                 <input type="hidden" name="paymentMethodId[]" value={payment.paymentMethodId}/>
                 <input type="hidden" name="paymentBankId[]" value={cashBankLocked ? cashBankIdValue : payment.bankId}/>
                 <input type="hidden" name="paymentAmount[]" value={payment.amount}/>
-                <input type="hidden" name="paymentPaidBy[]" value={payment.paidBy}/>
             </>
         );
     }
@@ -838,7 +948,6 @@ export default function ExpenseForm({
             `${paymentMethods.find(method => String(method.id) === payment.paymentMethodId)?.icon ?? "  •  "} ${methodName(payment.paymentMethodId) || "Canale non impostato"}`,
             bankName,
             formatEuro(Number(payment.amount || 0)),
-            payment.paidBy === "ALTRO_OPERATORE" ? "Altro Operatore" : "Herbal Market",
         ].join(" · ");
     }
 
@@ -892,11 +1001,11 @@ export default function ExpenseForm({
         >
             <div className="expense-wizard-header full">
                 <div className="expense-wizard-heading">
-                    <span>Passaggio {mobileStep} di 6</span>
-                    <strong>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Allegati e note"][mobileStep - 1]}</strong>
+                    <span>{mobileStep === 7 ? "Passaggio 6bis" : `Passaggio ${mobileStep} di 6`}</span>
+                    <strong>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati e note"][mobileStep - 1]}</strong>
                 </div>
-                <div className="expense-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
-                    <span style={{width: `${mobileStep / 6 * 100}%`}}/>
+                <div className="expense-wizard-progress" aria-label={mobileStep === 7 ? "Passaggio 6bis" : `Passaggio ${mobileStep} di 6`}>
+                    <span style={{width: `${Math.min(mobileStep, 6) / 6 * 100}%`}}/>
                 </div>
             </div>
             {/*<h2 className="full">{title}</h2>*/}
@@ -924,25 +1033,56 @@ export default function ExpenseForm({
                         <input type="hidden" name="isRecurring" value={isRecurring ? "true" : "false"}/>
                         <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : "STANDARD"}/>
                         <div className="expense-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
-                            <button type="button" className={!isRecurring && !isVatSettlement ? "is-selected" : ""} role="radio" aria-checked={!isRecurring && !isVatSettlement}>
+                            <button
+                                type="button"
+                                className={!isRecurring && !isVatSettlement ? "is-selected" : ""}
+                                role="radio"
+                                aria-checked={!isRecurring && !isVatSettlement}
+                                disabled={!canEditExpenseType}
+                                onClick={() => {
+                                    setIsRecurring(false);
+                                    setIsVatSettlement(false);
+                                }}
+                            >
                                 <span aria-hidden="true">●</span>
                                 <strong>Singola</strong>
                                 <small>Spesa occasionale</small>
                             </button>
-                            <button type="button" className={isRecurring ? "is-selected" : ""} role="radio" aria-checked={isRecurring} disabled title="Disponibile prossimamente">
+                            <button
+                                type="button"
+                                className={isRecurring ? "is-selected" : ""}
+                                role="radio"
+                                aria-checked={isRecurring}
+                                disabled={isExistingExpense || !onSwitchToRecurring}
+                                onClick={() => {
+                                    setIsVatSettlement(false);
+                                    setIsRecurring(true);
+                                    onSwitchToRecurring?.();
+                                }}
+                            >
                                 <span aria-hidden="true">↻</span>
                                 <strong>Ricorrente</strong>
-                                <small>Prossimamente</small>
+                                <small>Spesa periodica</small>
                             </button>
-                            <button type="button" className={isVatSettlement ? "is-selected" : ""} role="radio" aria-checked={isVatSettlement} disabled title="Disponibile prossimamente">
+                            <button
+                                type="button"
+                                className={isVatSettlement ? "is-selected" : ""}
+                                role="radio"
+                                aria-checked={isVatSettlement}
+                                disabled={!canEditExpenseType}
+                                onClick={() => {
+                                    setIsRecurring(false);
+                                    setIsVatSettlement(true);
+                                }}
+                            >
                                 <span aria-hidden="true">IVA</span>
                                 <strong>Saldo IVA</strong>
-                                <small>Prossimamente</small>
+                                <small>Versamento IVA</small>
                             </button>
                         </div>
                     </div>
                     <div className="toggle-field switch-toggle-field expense-type-switch-in-form expense-type-desktop full">
-                        <span>Tipo spesa: {isRecurring ? "Ricorrente" : "Singola"}</span>
+                        <span>Tipo spesa: {isRecurring ? "Ricorrente" : isVatSettlement ? "Saldo IVA" : "Singola"}</span>
                         <div className="switch-group">
                             <label className="switch">
                                 <input type="hidden" name="isRecurring" value="false"/>
@@ -984,76 +1124,57 @@ export default function ExpenseForm({
                         Configura la categoria Saldo IVA nelle Impostazioni. Il fornitore di sistema deve essere inizializzato per il workspace.
                     </div> : null}
 
-                    <label className="expense-wizard-step expense-wizard-step-1">
-                        {isVatSettlement ? "Data registrazione" : "Data ordine"}
-                        <input
-                            type="date"
-                            name="receivedDate"
-                            value={orderDate}
-                            onChange={(event) => {
-                                const nextOrderDate = event.currentTarget.value;
+                    {isVatSettlement ? <input type="hidden" name="receivedDate" value={dueDate}/> : <DateField
+                        className="expense-wizard-step expense-wizard-step-1"
+                        label="Data ordine"
+                        name="receivedDate"
+                        value={orderDate}
+                        onChange={(nextOrderDate) => {
                                 const nextOrderMonth = monthInputFromDateInput(nextOrderDate);
                                 setOrderDate(nextOrderDate);
                                 if (nextOrderMonth && (!billingPeriod || billingPeriod < nextOrderMonth)) {
                                     setBillingPeriod(nextOrderMonth);
                                 }
                                 setDueDate(addDaysToDateInput(nextOrderDate, 7));
-                            }}
-                            required
-                        />
-                        {isVatSettlement ? <small className="muted">Usata per l’andamento temporale complessivo.</small> : null}
-                    </label>
-                    <label className="expense-wizard-step expense-wizard-step-1">
-                        Data scadenza
-                        <input
-                            type="date"
-                            name="dueDate"
-                            value={dueDate}
-                            onChange={(event) => setDueDate(event.currentTarget.value)}
-                        />
+                        }}
+                        required
+                    />}
+                    <DateField
+                        className="expense-wizard-step expense-wizard-step-1 expense-due-date-field"
+                        label="Data scadenza"
+                        name="dueDate"
+                        value={dueDate}
+                        required={isVatSettlement}
+                        onChange={(value) => {
+                            setDueDate(value);
+                            if (isVatSettlement) setOrderDate(value);
+                        }}
+                    >
                         <span className="expense-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
                             {[0, 7, 15, 30].map(days => {
-                                const value = addDaysToDateInput(orderDate, days);
+                                const value = addDaysToDateInput(isVatSettlement ? today : orderDate, days);
                                 return <button
                                     type="button"
                                     key={days}
                                     className={dueDate === value ? "is-selected" : ""}
                                     aria-pressed={dueDate === value}
-                                    onClick={() => setDueDate(value)}
+                                    onClick={() => {
+                                        setDueDate(value);
+                                        if (isVatSettlement) setOrderDate(value);
+                                    }}
                                 >{days === 0 ? "Stesso g" : `+${days}gg`}</button>;
                             })}
                         </span>
-                    </label>
-                    <label className="expense-wizard-step expense-wizard-step-5">
-                        Periodo Contabile
-                        <input
-                            type="month"
-                            name="billingPeriod"
-                            value={billingPeriod}
-                            onChange={(event) => setBillingPeriod(event.currentTarget.value)}
-                            required
-                        />
-                        {isVatSettlement ? <small className="muted">Determina il periodo fiscale nel quale conteggiare il saldo IVA.</small> : null}
-                    </label>
-                    {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
-                        Categoria
-                        <input value={vatSettlementCategory?.name ?? "Non configurata"} readOnly />
-                        <input type="hidden" name="categoryId" value={vatSettlementCategory?.id ?? ""} />
-                    </label> : <label className="expense-wizard-step expense-wizard-step-3">
-                        {/*🏷️ Categoria*/}
-                        Categoria
-                        <select
-                            name="categoryId"
-                            required
-                            defaultValue={initialExpense?.categoryId ?? ""}
-                        >
-                            {categories.map((c) => (
-                                <option key={c.id} value={c.id}>
-                                    {c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}
-                                </option>
-                            ))}
-                        </select>
-                    </label>}
+                    </DateField>
+                    <MonthField
+                        className="expense-wizard-step expense-wizard-step-5"
+                        label="Periodo contabile"
+                        name="billingPeriod"
+                        value={billingPeriod}
+                        onChange={setBillingPeriod}
+                        required
+                        hint={isVatSettlement ? "Determina il periodo fiscale nel quale conteggiare il saldo IVA." : undefined}
+                    />
                     {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
                         Esercente
                         <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly />
@@ -1061,12 +1182,37 @@ export default function ExpenseForm({
                         <input type="hidden" name="merchant" value={vatSettlementSupplier?.businessName ?? ""} />
                     </label> : <SupplierAutocomplete
                         suppliers={suppliers.filter(supplier => !supplier.systemRole)}
+                        categories={categories}
                         initialSupplierId={initialExpense?.supplierId ?? null}
                         initialMerchant={initialExpense?.merchant ?? ""}
+                        onSupplierValueChange={setSupplierDisplayName}
+                        onSupplierSelected={(supplier) => {
+                            if (supplier.defaultExpenseCategoryId && categories.some(category => category.id === supplier.defaultExpenseCategoryId)) {
+                                setCategoryId(String(supplier.defaultExpenseCategoryId));
+                            }
+                        }}
                     />}
                     <ProductServiceAutocomplete
                         initialValue={initialExpense?.description ?? ""}
+                        onValueChange={setDescription}
                     />
+                    {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
+                        Categoria
+                        <input value={vatSettlementCategory?.name ?? "Non configurata"} readOnly />
+                        <input type="hidden" name="categoryId" value={vatSettlementCategory?.id ?? ""} />
+                    </label> : <SelectField
+                        className="expense-wizard-step expense-wizard-step-3 expense-category-field"
+                        label="Categoria"
+                        icon="◇"
+                        name="categoryId"
+                        required
+                        value={categoryId}
+                        onChange={setCategoryId}
+                        options={categories.map(c => ({
+                            value: c.id,
+                            label: c.icon ? `${categoryIcon(c)} ${c.name}` : c.name
+                        }))}
+                    />}
                     <div className="amount-vat-row full expense-wizard-step expense-wizard-step-2">
                         <div className="expense-wizard-amount-entry">
                             {!isVatSettlement ? <label className="expense-wizard-mobile-switch">
@@ -1075,14 +1221,7 @@ export default function ExpenseForm({
                                     <input
                                         type="checkbox"
                                         checked={isDeclared}
-                                        onChange={(event) => {
-                                            const checked = event.currentTarget.checked;
-                                            setIsDeclared(checked);
-                                            if (!checked) {
-                                                setHasElectronicInvoice(false);
-                                                setInvoiceStatus("NON_PREVISTA");
-                                            }
-                                        }}
+                                        onChange={(event) => updateDeclared(event.currentTarget.checked)}
                                     />
                                     <span className="slider"/>
                                 </span>
@@ -1105,19 +1244,21 @@ export default function ExpenseForm({
                                 name="vatRate"
                                 value={vatRate}
                                 onChange={(event) => setVatRate(event.currentTarget.value)}
+                                disabled={!isDeclared}
                             >
                                 <option value="0">0%</option>
                                 <option value="4">4%</option>
                                 <option value="10">10%</option>
                                 <option value="22">22%</option>
                             </select>
+                            {!isDeclared ? <input type="hidden" name="vatRate" value="0"/> : null}
                         </label> : <div></div>}
                         <div className="expense-wizard-vat-buttons full" aria-label="Aliquota IVA">
                             {["0", "4", "10", "22"].map(rate => <button
                                 type="button"
                                 key={rate}
                                 className={vatRate === rate ? "is-selected" : ""}
-                                disabled={isVatSettlement}
+                                disabled={isVatSettlement || !isDeclared}
                                 onClick={() => setVatRate(rate)}
                             >{rate}%</button>)}
                         </div>
@@ -1142,29 +1283,22 @@ export default function ExpenseForm({
                 <div className="form-section-grid">
                     <div className="toggle-field-wrap">
                         <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-2 expense-fiscal-desktop-control">
-                            <span>Fiscale</span>
+                            <label>Fiscale</label>
                             <label className="switch">
                                 <input
                                     type="checkbox"
                                     name="isDeclared"
                                     value="true"
                                     checked={isDeclared}
-                                    onChange={(e) => {
-                                        const checked = e.target.checked;
-                                        setIsDeclared(checked);
-                                        if (!checked) {
-                                            setHasElectronicInvoice(false);
-                                            setInvoiceStatus("NON_PREVISTA");
-                                        }
-                                    }}
+                                    onChange={(e) => updateDeclared(e.target.checked)}
                                 />
                                 <span className="slider"/>
-                                <span>{isDeclared ? "Si" : "No"}</span>
+                                {/*<span>{isDeclared ? "Si" : "No"}</span>*/}
                             </label>
                         </div>
 
                         <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
-                            <span>Fatt. Elett.</span>
+                            <label>Fatt. Elett.</label>
                             <label className="switch">
                                 <input
                                     type="checkbox"
@@ -1175,47 +1309,86 @@ export default function ExpenseForm({
                                     onChange={(e) => {
                                         const checked = e.target.checked;
                                         setHasElectronicInvoice(checked);
-                                        if (checked) setIsDeclared(true);
+                                        if (checked) updateDeclared(true);
                                     }}
                                 />
                                 <span className="slider"/>
-                                <span>{hasElectronicInvoice ? "Si" : "No"}</span>
+                                {/*<span>{hasElectronicInvoice ? "Si" : "No"}</span>*/}
+                            </label>
+                        </div>
+                        <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
+                            <label>Fattura emessa</label>
+                            <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={isDeclared && invoiceStatus === "RICEVUTA"}
+                                    disabled={!isDeclared}
+                                    onChange={(event) => {
+                                        if (event.currentTarget.checked) {
+                                            setInvoiceStatus("RICEVUTA");
+                                        } else if (invoiceStatus === "RICEVUTA") {
+                                            setInvoiceStatus("IN_ATTESA");
+                                        }
+                                    }}
+                                />
+                                <span className="slider"/>
+                                {/*<span>{isDeclared && invoiceStatus === "RICEVUTA" ? "Si" : "No"}</span>*/}
                             </label>
                         </div>
                     </div>
                     <div className="expense-invoice-step-row expense-wizard-step expense-wizard-step-5">
-                        <label className="expense-wizard-mobile-switch">
-                            <span>Fattura elettronica</span>
-                            <span className="switch">
-                                <input
-                                    type="checkbox"
-                                    checked={hasElectronicInvoice}
-                                    disabled={!isDeclared}
-                                    onChange={(event) => {
-                                        const checked = event.currentTarget.checked;
-                                        setHasElectronicInvoice(checked);
-                                        if (checked) setIsDeclared(true);
-                                    }}
-                                />
-                                <span className="slider"/>
-                            </span>
-                        </label>
-                        <label className="expense-invoice-status-field">
-                            🧾 Stato Fattura
-                            <select
+                        <div className="expense-invoice-switches">
+                            <label className="expense-wizard-mobile-switch">
+                                <span>Fattura elettronica</span>
+                                <span className="switch">
+                                    <input
+                                        type="checkbox"
+                                        checked={hasElectronicInvoice}
+                                        disabled={!isDeclared}
+                                        onChange={(event) => {
+                                            const checked = event.currentTarget.checked;
+                                            setHasElectronicInvoice(checked);
+                                            if (checked) updateDeclared(true);
+                                        }}
+                                    />
+                                    <span className="slider"/>
+                                </span>
+                            </label>
+                            <label className="expense-wizard-mobile-switch expense-invoice-emitted-switch">
+                                <span>Fattura emessa</span>
+                                <span className="switch">
+                                    <input
+                                        type="checkbox"
+                                        checked={isDeclared && invoiceStatus === "RICEVUTA"}
+                                        disabled={!isDeclared}
+                                        onChange={(event) => {
+                                            if (event.currentTarget.checked) {
+                                                setInvoiceStatus("RICEVUTA");
+                                            } else if (invoiceStatus === "RICEVUTA") {
+                                                setInvoiceStatus("IN_ATTESA");
+                                            }
+                                        }}
+                                    />
+                                    <span className="slider"/>
+                                </span>
+                            </label>
+                        </div>
+                        <div className="expense-invoice-status-field">
+                            <SelectField
+                                label="Stato fattura"
+                                icon="▤"
                                 name="invoiceStatus"
                                 value={invoiceStatus}
                                 disabled={invoiceNotExpected}
-                                onChange={(e) => setInvoiceStatus(e.currentTarget.value)}
-                            >
-                                {invoiceStatuses.map(([value, label]) => (
-                                    <option key={value} value={value}>
-                                        {label}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={setInvoiceStatus}
+                                options={invoiceStatuses.map(([value, label]) => ({
+                                    value,
+                                    label,
+                                    disabled: value === "NON_PREVISTA" && hasElectronicInvoice
+                                }))}
+                            />
                             {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>}
-                        </label>
+                        </div>
                     </div>
                 </div>
             </details> : <>
@@ -1269,15 +1442,15 @@ export default function ExpenseForm({
                                     <strong
                                         className={computedPaymentStatusInfo.className}>{computedPaymentStatusInfo.label}</strong>
                                 </div>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-default"
+                                    onClick={addPaymentRow}
+                                    disabled={!canAddPayment}
+                                >
+                                    ➕ Aggiungi pagamento
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-default"
-                                onClick={addPaymentRow}
-                                disabled={!canAddPayment}
-                            >
-                                ➕ Aggiungi pagamento
-                            </button>
                         </div>
                         {payments.map((payment, index) => {
                             const isOpen = openPaymentKey === payment.key || !payment.id;
@@ -1374,21 +1547,22 @@ export default function ExpenseForm({
                                                 })
                                             }
                                         />
-                                    </label>
-                                    <label>
-                                        Pagamento effettuato da
-                                        <select
-                                            name="paymentPaidBy[]"
-                                            value={payment.paidBy}
-                                            onChange={(e) =>
-                                                updatePayment(index, {
-                                                    paidBy: e.target.value as PaymentRow["paidBy"],
-                                                })
-                                            }
-                                        >
-                                            <option value="HERBAL_MARKET">Herbal Market</option>
-                                            <option value="ALTRO_OPERATORE">Altro Operatore</option>
-                                        </select>
+                                        <span className="payment-amount-shortcuts" aria-label="Impostazione rapida importo pagamento">
+                                            {[25, 50, 75, 100].map(percentage => {
+                                                const suggestedAmount = paymentAvailableAmount(index) * percentage / 100;
+                                                const selected = suggestedAmount > 0
+                                                    && Math.abs(Number(payment.amount || 0) - suggestedAmount) < 0.005;
+                                                return <button
+                                                    type="button"
+                                                    key={percentage}
+                                                    className={selected ? "is-selected" : ""}
+                                                    aria-pressed={selected}
+                                                    onClick={() => setPaymentPercentage(index, percentage)}
+                                                >
+                                                    {percentage}%
+                                                </button>;
+                                            })}
+                                        </span>
                                     </label>
                                     <div className="payment-edit-actions">
                                         <button
@@ -1421,14 +1595,41 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full expense-wizard-step expense-wizard-step-6" open={mobileStep === 6}>
+            <section className="expense-review-step full expense-wizard-step expense-wizard-step-6" aria-label="Riepilogo spesa">
+                <div className="expense-review-heading">
+                    <div>
+                        <span className="expense-review-kicker">Controlla prima di salvare</span>
+                        <h3>Riepilogo della spesa</h3>
+                    </div>
+                    <strong>{formatEuro(amountValue)}</strong>
+                </div>
+                <div className="expense-review-grid">
+                    {!isVatSettlement ? <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Data ordine<strong>{formatDateInputLabel(orderDate)}</strong></span></div> : null}
+                    <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span></div>
+                    <div className="expense-review-item wide"><i aria-hidden="true">◎</i><span>Fornitore<strong>{currentSupplierName}</strong></span></div>
+                    <div className="expense-review-item wide"><i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span></div>
+                    <div className="expense-review-item wide"><i aria-hidden="true">◇</i><span>Categoria<strong>{selectedCategory ? `${selectedCategory.icon ? `${categoryIcon(selectedCategory)} ` : ""}${selectedCategory.name}` : "Non indicata"}</strong></span></div>
+                    <div className="expense-review-item"><i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span></div>
+                    <div className="expense-review-item"><i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span></div>
+                    <div className="expense-review-item wide"><i aria-hidden="true">▤</i><span>Fattura elettronica<strong>{hasElectronicInvoice ? `Sì · ${currentInvoiceStatusLabel}` : `No · ${currentInvoiceStatusLabel}`}</strong></span></div>
+                    <div className="expense-review-item"><i aria-hidden="true">€</i><span>Pagamenti<strong>{payments.length ? `${payments.length} · ${formatEuro(paidAmountValue)}` : "Nessun pagamento"}</strong></span></div>
+                    <div className="expense-review-item"><i aria-hidden="true">=</i><span>Residuo<strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong></span></div>
+                </div>
+                <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
+                    <span className="btn-icon">＋</span>
+                    <span><strong>Allegati e note</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : notes ? "Note inserite" : "Aggiungi informazioni opzionali"}</small></span>
+                    <span aria-hidden="true">→</span>
+                </button>
+            </section>
+
+            <details className="form-section full expense-wizard-step expense-wizard-step-7" open={mobileStep === 7}>
                 <summary>
                     <span>Allegati e note</span>
                     <small>File, XML, P7M e note interne</small>
                 </summary>
                 <div className="form-section-stack">
 
-                    <label className="attachment-row-wrap">
+                    <label className="card attachment-row-wrap">
                         <div className="attachment-row-title">
                             Allegati &nbsp;
                             <small className="text-warning">PDF, immagini, XML, P7M</small>
@@ -1442,13 +1643,11 @@ export default function ExpenseForm({
                                 name="attachments"
                                 accept=".pdf,.jpg,.jpeg,.png,.webp,.xml,.p7m"
                                 multiple
-                                onChange={(e) =>
-                                    setAttachmentError(
-                                        (e.target.files?.length ?? 0) > 5
-                                            ? "Puoi caricare massimo 5 allegati."
-                                            : "",
-                                    )
-                                }
+                                onChange={(e) => {
+                                    const count = e.target.files?.length ?? 0;
+                                    setAttachmentCount(count);
+                                    setAttachmentError(count > 5 ? "Puoi caricare massimo 5 allegati." : "");
+                                }}
                             />
                             <div className="field-note attachments-note">
                                 Limite allegati &nbsp;<br/>
@@ -1460,13 +1659,14 @@ export default function ExpenseForm({
                     {attachmentError && (
                         <p className="inline-warning full">{attachmentError}</p>
                     )}
-                    <label className="full">
+                    <label className="card full">
                         Note
                         <textarea
                             name="notes"
                             rows={3}
                             placeholder="Note interne opzionali"
-                            defaultValue={initialExpense?.notes ?? ""}
+                            value={notes}
+                            onChange={event => setNotes(event.currentTarget.value)}
                         />
                     </label>
                 </div>
@@ -1476,7 +1676,7 @@ export default function ExpenseForm({
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}
                 <div className="expense-wizard-actions-row">
                     {mobileStep > 1 ? <button className="btn btn-md btn-default" type="button" onClick={() => goToMobileStep(mobileStep - 1)}>
-                        ← Indietro
+                        ← {mobileStep === 7 ? "Riepilogo" : "Indietro"}
                     </button> : onCancel ? <button className="btn btn-md btn-default" type="button" onClick={onCancel}>
                         × Annulla
                     </button> : <a className="btn btn-md btn-default" href={cancelHref ?? "/expenses"}>× Annulla</a>}

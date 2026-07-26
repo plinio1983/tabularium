@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { requireWorkspace } from '@/lib/auth';
+import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 
 export default async function CategoriesSettingsPage() {
-  await requireWorkspace('/settings/categories');
+  await requireWorkspaceRole(workspaceManagementRoles, '/settings/categories');
 
   return <div className="grid admin-page categories-settings-page">
     <div className="toolbar-card">
@@ -15,7 +15,7 @@ export default async function CategoriesSettingsPage() {
       </Link>
       <Link className="card settings-category-link" href="/settings/categories/incomes">
         <span className="settings-category-link-icon" aria-hidden="true">💶</span>
-        <span><strong>Categorie di incasso</strong><small>Gestisci categorie e canali di vendita degli incassi.</small></span>
+        <span><strong>Canali di vendita</strong><small>Gestisci i canali di vendita utilizzati dagli incassi.</small></span>
       </Link>
     </div>
   </div>;

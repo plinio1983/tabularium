@@ -27,8 +27,6 @@ const incomeMobileSortOptions = [
     {value: 'billingPeriod_asc', label: 'Periodo fatt. meno recente'},
     {value: 'salesChannel_asc', label: 'Canale vendita (A-Z)'},
     {value: 'salesChannel_desc', label: 'Canale vendita (Z-A)'},
-    {value: 'saleCategory_asc', label: 'Categoria vendita (A-Z)'},
-    {value: 'saleCategory_desc', label: 'Categoria vendita (Z-A)'},
     {value: 'description_asc', label: 'Descrizione (A-Z)'},
     {value: 'description_desc', label: 'Descrizione (Z-A)'},
     {value: 'notes_asc', label: 'Note (A-Z)'},
@@ -476,17 +474,17 @@ function IncomePieBreakdownChart({title, data}: {
     const orderedData = [...data].sort((a, b) => b.total - a.total);
     const groupedData = orderedData.length > 5
         ? [...orderedData.slice(0, 4), orderedData.slice(4).reduce((other, item) => ({
-            name: 'Altre categorie',
+            name: 'Altri canali',
             code: 'ALTRO',
             total: other.total + item.total
-        }), {name: 'Altre categorie', code: 'ALTRO', total: 0})]
+        }), {name: 'Altri canali', code: 'ALTRO', total: 0})]
         : orderedData;
 
     return <section className="expense-category-chart-card expense-page-category-pie-chart income-chart summary-composition-card">
         <div className="card-heading-row">
             <div>
                 <h2>{title}</h2>
-                <p className="muted">Peso di categorie e canali sul totale filtrato.</p>
+                <p className="muted">Peso dei canali di vendita sul totale filtrato.</p>
             </div>
         </div>
         {groupedData.length && total > 0 ? <div className="expense-impact-pie-legend summary-composition-list"
@@ -583,13 +581,12 @@ export default async function IncomesPage({searchParams}: {
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
 
-    const [incomes, expensesForVat, banks, paymentMethods, incomeCategories, salesChannels, customers] = await Promise.all([
+    const [incomes, expensesForVat, banks, paymentMethods, salesChannels, customers] = await Promise.all([
         prisma.income.findMany({
             where: {workspaceId: current.workspace.id},
             include: {
                 paymentMethodRef: true,
                 creditBank: true,
-                incomeCategory: true,
                 salesChannelRef: true,
                 customer: true
             },
@@ -598,8 +595,7 @@ export default async function IncomesPage({searchParams}: {
         prisma.expense.findMany({where: {workspaceId: current.workspace.id}, include: {payments: true}, take: 5000}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
-        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}}),
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
         prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}})
     ]);
     const orderedBanks = orderBanks(banks);
@@ -617,7 +613,6 @@ export default async function IncomesPage({searchParams}: {
     } = normalizePeriodRange(rawBillingPeriodFromKey, rawBillingPeriodToKey);
     const hasBillingPeriodRange = billingPeriodFromKey !== null || billingPeriodToKey !== null;
     const salesChannelFilter = inputDefault(filters, 'salesChannel');
-    const saleCategoryFilter = inputDefault(filters, 'saleCategory');
     const amountFilterRaw = inputDefault(filters, 'amount');
     const amountFilterValue = parseAmountFilter(amountFilterRaw);
     const paymentMethodFilter = inputDefault(filters, 'paymentMethod');
@@ -665,7 +660,6 @@ export default async function IncomesPage({searchParams}: {
         if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
         if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
-        if (saleCategoryFilter && income.incomeCategory.name !== saleCategoryFilter) return false;
         if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
         if (paymentMethodFilter && income.paymentMethodRef.name !== paymentMethodFilter) return false;
         if (creditChannelFilter && income.creditBank.name !== creditChannelFilter) return false;
@@ -768,15 +762,12 @@ export default async function IncomesPage({searchParams}: {
         }
     };
 
-    const incomesBySaleCategoryAndChannel = Array.from(filteredIncomes.reduce((map, income) => {
-        const saleCategory = income.incomeCategory.name;
+    const incomesBySalesChannel = Array.from(filteredIncomes.reduce((map, income) => {
         const salesChannel = income.salesChannelRef.name;
-        const name = `${saleCategory} / ${salesChannel}`;
-        const code = `${String(saleCategory).split(/\s+/).map(part => part[0]).join('')}${String(salesChannel).split(/\s+/).map(part => part[0]).join('')}`.slice(0, 6).toUpperCase() || 'CATCAN';
-        const key = `${saleCategory}-${salesChannel}`;
-        const current = map.get(key) ?? {name, code, total: 0};
+        const code = String(salesChannel).split(/\s+/).map(part => part[0]).join('').slice(0, 6).toUpperCase() || 'CAN';
+        const current = map.get(salesChannel) ?? {name: salesChannel, code, total: 0};
         current.total += Number(income.amount.toString());
-        map.set(key, current);
+        map.set(salesChannel, current);
         return map;
     }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
 
@@ -810,7 +801,6 @@ export default async function IncomesPage({searchParams}: {
         billingPeriodFromFilter && {label: 'Periodo fatt. da', value: billingPeriodFromFilter},
         billingPeriodToFilter && {label: 'Periodo fatt. a', value: billingPeriodToFilter},
         salesChannelFilter && {label: 'Canale vendita', value: salesChannelFilter},
-        saleCategoryFilter && {label: 'Categoria vendita', value: saleCategoryFilter},
         amountFilterRaw && {label: 'Importo', value: amountFilterRaw},
         paymentMethodFilter && {label: 'Metodo pagamento', value: paymentMethodFilter},
         creditChannelFilter && {label: 'Canale accredito', value: creditChannelFilter},
@@ -843,10 +833,6 @@ export default async function IncomesPage({searchParams}: {
                 return compareText(a.salesChannelRef.name, b.salesChannelRef.name, 'asc');
             case 'salesChannel_desc':
                 return compareText(a.salesChannelRef.name, b.salesChannelRef.name, 'desc');
-            case 'saleCategory_asc':
-                return compareText(a.incomeCategory.name, b.incomeCategory.name, 'asc');
-            case 'saleCategory_desc':
-                return compareText(a.incomeCategory.name, b.incomeCategory.name, 'desc');
             case 'description_asc':
                 return compareText(a.description, b.description, 'asc');
             case 'description_desc':
@@ -890,7 +876,7 @@ export default async function IncomesPage({searchParams}: {
             </div>
             <div className="toolbar-actions">
                 <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register">
-                    <span className="btn-icon" aria-hidden="true">🧾</span>Reg. di cassa
+                    <span className="btn-icon" aria-hidden="true">🧮</span>Reg. di cassa
                 </Link>
                 <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
                     <span className="btn-icon">+</span>Inserisci incasso
@@ -922,7 +908,6 @@ export default async function IncomesPage({searchParams}: {
                         name: method.name,
                         icon: method.icon
                     }))}
-                    incomeCategories={incomeCategories}
                     salesChannels={salesChannels}
                 />
             </div>
@@ -982,7 +967,7 @@ export default async function IncomesPage({searchParams}: {
             </section>
 
             <div className="expense-summary-chart">
-                <IncomePieBreakdownChart title="Composizione degli incassi" data={incomesBySaleCategoryAndChannel}/>
+                <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>
             </div>
         </div>
         <div className="card expenses-list-card">
@@ -1006,7 +991,6 @@ export default async function IncomesPage({searchParams}: {
                             name: method.name,
                             icon: method.icon
                         }))}
-                        incomeCategories={incomeCategories}
                         salesChannels={salesChannels}/>
                 </div>
             </div>
@@ -1247,7 +1231,6 @@ export default async function IncomesPage({searchParams}: {
                     kind: method.kind,
                     isFallback: method.isFallback
                 }))}
-                incomeCategories={incomeCategories}
                 salesChannels={salesChannels}
                 customers={customers}
                 initialOpen={inputDefault(filters, 'new') === '1'}
@@ -1256,7 +1239,7 @@ export default async function IncomesPage({searchParams}: {
         </div>
         {/*<div className="card expenses-list-card">*/}
         {/*  <div className="charts-grid">*/}
-        {/*    <IncomePieBreakdownChart title="Entrate per categoria / canale di vendita" data={incomesBySaleCategoryAndChannel} />*/}
+        {/*    <IncomePieBreakdownChart title="Entrate per canale di vendita" data={incomesBySalesChannel} />*/}
         {/*    <IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} />*/}
         {/*  </div>*/}
         {/*</div>*/}

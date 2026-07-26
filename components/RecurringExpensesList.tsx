@@ -199,6 +199,10 @@ export default function RecurringExpensesList({
       <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
         <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span></summary>
         <div className="bulk-action-menu-panel">
+          <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                  formAction="/api/exports/recurring-expenses" formMethod="post" data-confirm-label="Esporta CSV">
+            <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+          </button>
           <BulkChangeCategoryModal
             formId="recurringExpenseBulkForm"
             action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses"

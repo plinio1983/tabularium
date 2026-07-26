@@ -11,12 +11,11 @@ export default async function EditIncomePage({ params, searchParams }: { params:
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/incomes/${id}`;
   const encodedReturnTo = encodeURIComponent(returnTo);
-  const [income, banks, paymentMethods, incomeCategories, salesChannels, customers] = await Promise.all([
+  const [income, banks, paymentMethods, salesChannels, customers] = await Promise.all([
     prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }),
-    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } }),
+    prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] }),
     prisma.customer.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' } })
   ]);
   if (!income) notFound();
@@ -24,7 +23,7 @@ export default async function EditIncomePage({ params, searchParams }: { params:
   const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
 
   return <div className="modal-page-wrap">
-    <div className="modal-card modal-card-wide modal-page-card">
+    <div className="modal-card modal-card-wide modal-page-card income-wizard-page-card">
     <IncomeForm
       initialIncome={income}
       action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
@@ -33,7 +32,6 @@ export default async function EditIncomePage({ params, searchParams }: { params:
       submitLabel="Salva modifiche"
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback }))}
       paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
-      incomeCategories={incomeCategories}
       salesChannels={salesChannels}
       customers={customers}
     />

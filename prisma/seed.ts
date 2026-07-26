@@ -127,18 +127,15 @@ async function main() {
       hasElectronicInvoice: expense.hasElectronicInvoice ?? true,
       invoiceStatus: (expense.hasElectronicInvoice ? 'IN_ATTESA' : 'RICEVUTA') as InvoiceStatus,
       companyId: expense.companyCode ? companies[expense.companyCode] : null,
-      paidByCurrentAccount: expense.paidByCurrentAccount,
       paymentStatus: expense.isComplete ? 'COMPLETATO' : (paidAmount > 0 ? 'PAGATO_PARZIALMENTE' : 'DA_PAGARE'),
       paidAmount,
-      paidBy: 'HERBAL_MARKET',
       year: expense.year,
       month: expense.month,
       payments: paidAmount > 0 ? { create: [{
         paymentDate: expense.paymentDate ? new Date(expense.paymentDate) : null,
         paymentMethodId: paymentMethod.id,
         bankId: expense.bankName ? banks[expense.bankName] : null,
-        amount: paidAmount,
-        paidBy: 'HERBAL_MARKET'
+        amount: paidAmount
       }] } : undefined
     }});
   }

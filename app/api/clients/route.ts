@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getWorkspaceContext } from '@/lib/auth';
+import { getWorkspaceApiAccess, getWorkspaceContext, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { prisma } from '@/lib/prisma';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
+import { writeAuditLog } from '@/lib/audit';
 
 const CustomerSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -46,12 +47,17 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const current = await getWorkspaceContext();
-  if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
+  const current = access.current;
   const isForm = request.headers.get('content-type')?.includes('form');
   const raw = isForm ? Object.fromEntries((await request.formData()).entries()) : await request.json();
   const data = CustomerSchema.parse(raw);
   const customer = await prisma.customer.create({ data: { ...data, workspaceId: current.workspace.id } });
+  await writeAuditLog({
+    workspaceId: current.workspace.id, userId: current.user.id, action: 'CREATE',
+    entityType: 'Customer', entityId: customer.id, request
+  });
   return isForm
     ? redirectToPath(appendFlash(returnPath(request), { saved: 'created' }))
     : NextResponse.json(customer);

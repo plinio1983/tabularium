@@ -96,10 +96,12 @@ function SupplierAutocomplete({
   suppliers = [],
   initialSupplierId,
   initialMerchant,
+  onValueChange,
 }: {
   suppliers?: SupplierOption[];
   initialSupplierId?: number | null;
   initialMerchant?: string | null;
+  onValueChange?: (value: string) => void;
 }) {
   const initial = suppliers.find((supplier) => supplier.id === initialSupplierId) ?? null;
   const [query, setQuery] = useState(initial?.businessName ?? initialMerchant ?? "");
@@ -149,6 +151,7 @@ function SupplierAutocomplete({
   function selectSupplier(supplier: SupplierOption) {
     setSelected(supplier);
     setQuery(supplier.businessName);
+    onValueChange?.(supplier.businessName);
     setIsOpen(false);
   }
 
@@ -204,9 +207,10 @@ function SupplierAutocomplete({
         <div className="supplier-input-row">
           <input
             value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setSelected(null);
+        onChange={(event) => {
+          setQuery(event.target.value);
+          onValueChange?.(event.target.value);
+          setSelected(null);
               setIsOpen(true);
             }}
             onFocus={() => setIsOpen(true)}
@@ -290,7 +294,7 @@ function SupplierAutocomplete({
   );
 }
 
-function ProductServiceAutocomplete({ initialValue = "" }: { initialValue?: string | null }) {
+function ProductServiceAutocomplete({ initialValue = "", onValueChange }: { initialValue?: string | null; onValueChange?: (value: string) => void }) {
   const [query, setQuery] = useState(initialValue ?? "");
   const [results, setResults] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -324,6 +328,7 @@ function ProductServiceAutocomplete({ initialValue = "" }: { initialValue?: stri
 
   function selectSuggestion(value: string) {
     setQuery(value);
+    onValueChange?.(value);
     setIsOpen(false);
   }
 
@@ -354,6 +359,7 @@ function ProductServiceAutocomplete({ initialValue = "" }: { initialValue?: stri
         value={query}
         onChange={(event) => {
           setQuery(event.target.value);
+          onValueChange?.(event.target.value);
           setIsOpen(true);
         }}
         onFocus={() => setIsOpen(true)}
@@ -415,6 +421,16 @@ export default function RecurringExpenseForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mobileStep, setMobileStep] = useState(1);
   const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
+  const [vatRate, setVatRate] = useState(normalizeMoney(initialExpense?.vatRate) || "22");
+  const [startDate, setStartDate] = useState(toDateInput(initialExpense?.startDate) || today);
+  const [dueDay, setDueDay] = useState(String(initialExpense?.dueDay ?? 1));
+  const [dueMonth, setDueMonth] = useState(String(initialExpense?.dueMonth ?? new Date().getMonth() + 1));
+  const [categoryId, setCategoryId] = useState(String(initialExpense?.categoryId ?? ""));
+  const [supplierName, setSupplierName] = useState(
+    suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.businessName ?? initialExpense?.merchant ?? "",
+  );
+  const [description, setDescription] = useState(initialExpense?.description ?? "");
+  const [notes, setNotes] = useState(initialExpense?.notes ?? "");
   const formRef = useRef<HTMLFormElement>(null);
   const selectedPaymentMethodName = paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "";
   const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
@@ -425,8 +441,19 @@ export default function RecurringExpenseForm({
     if (!isDeclared) {
       setBillingPeriodMode("SAME_MONTH");
       setHasElectronicInvoice(false);
+      setVatRate("0");
     }
   }, [isDeclared]);
+
+  function updateDeclared(checked: boolean) {
+    setIsDeclared(checked);
+    if (!checked) {
+      setHasElectronicInvoice(false);
+      setVatRate("0");
+    } else if (vatRate === "0") {
+      setVatRate("22");
+    }
+  }
 
   function handleAmountChange(value: string) {
     const normalized = value.replace(".", ",").replace(/[^\d,]/g, "");
@@ -537,7 +564,7 @@ export default function RecurringExpenseForm({
         </label>
       </div>
 
-      <label className="expense-wizard-step expense-wizard-step-1">Data inizio<input type="date" name="startDate" defaultValue={toDateInput(initialExpense?.startDate) || today} required /></label>
+      <label className="expense-wizard-step expense-wizard-step-1">Data inizio<input type="date" name="startDate" value={startDate} onChange={event => setStartDate(event.currentTarget.value)} required /></label>
 
       <label className="expense-wizard-step expense-wizard-step-1">Cadenza<select name="cadence" value={cadence} onChange={(e) => setCadence(e.currentTarget.value)} required>
         <option value="MONTHLY">Ogni mese</option>
@@ -550,22 +577,35 @@ export default function RecurringExpenseForm({
 
       {isYearly ? (
         <>
-          <label className="expense-wizard-step expense-wizard-step-1">Giorno scadenza<input type="number" name="dueDay" min="1" max="31" defaultValue={initialExpense?.dueDay ?? 1} required /></label>
-          <label className="expense-wizard-step expense-wizard-step-1">Mese scadenza<select name="dueMonth" defaultValue={initialExpense?.dueMonth ?? new Date().getMonth() + 1} required>{monthOptions.map(([v, l]) => <option value={v} key={v}>{l}</option>)}</select></label>
+          <label className="expense-wizard-step expense-wizard-step-1">Giorno scadenza<input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required /></label>
+          <label className="expense-wizard-step expense-wizard-step-1">Mese scadenza<select name="dueMonth" value={dueMonth} onChange={event => setDueMonth(event.currentTarget.value)} required>{monthOptions.map(([v, l]) => <option value={v} key={v}>{l}</option>)}</select></label>
         </>
       ) : (
-        <label className="expense-wizard-step expense-wizard-step-1">Giorno del mese scadenza<input type="number" name="dueDay" min="1" max="31" defaultValue={initialExpense?.dueDay ?? 1} required /></label>
+        <label className="expense-wizard-step expense-wizard-step-1">Giorno del mese scadenza<input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required /></label>
       )}
 
-      <label className="expense-wizard-step expense-wizard-step-3">Categoria<select name="categoryId" required defaultValue={initialExpense?.categoryId ?? ""}><option value="" disabled>Seleziona categoria</option>{categories.map(c => <option key={c.id} value={c.id}>{c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}</option>)}</select></label>
+      <label className="expense-wizard-step expense-wizard-step-3">Categoria<select name="categoryId" required value={categoryId} onChange={event => setCategoryId(event.currentTarget.value)}><option value="" disabled>Seleziona categoria</option>{categories.map(c => <option key={c.id} value={c.id}>{c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}</option>)}</select></label>
 
-      <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} />
+      <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} />
 
-      <ProductServiceAutocomplete initialValue={initialExpense?.description ?? ""} />
+      <ProductServiceAutocomplete initialValue={initialExpense?.description ?? ""} onValueChange={setDescription} />
 
       <div className="amount-vat-row expense-wizard-step expense-wizard-step-2 recurring-wizard-amount">
-        <label>Costo IVA inclusa<MoneyInput type="text" inputMode="decimal" value={amount} onChange={event => handleAmountChange(event.currentTarget.value)} required /><input type="hidden" name="amount" value={normalizedAmount}/></label>
-        <label>IVA<select name="vatRate" defaultValue={normalizeMoney(initialExpense?.vatRate) || "22"}><option value="0">0%</option><option value="4">4%</option><option value="10">10%</option><option value="22">22%</option></select></label>
+        <div className="recurring-wizard-amount-entry full">
+          <div className="toggle-field switch-toggle-field expense-wizard-mobile-switch">
+            <span>Fiscale</span>
+            <label className="switch">
+              <input type="checkbox" checked={isDeclared} onChange={event => updateDeclared(event.currentTarget.checked)} />
+              <span className="slider" />
+            </label>
+          </div>
+          <label className="recurring-wizard-amount-field">Costo IVA inclusa<MoneyInput type="text" inputMode="decimal" value={amount} onChange={event => handleAmountChange(event.currentTarget.value)} required /><input type="hidden" name="amount" value={normalizedAmount}/></label>
+        </div>
+        <label>IVA<select name="vatRate" value={vatRate} disabled={!isDeclared} onChange={event => setVatRate(event.currentTarget.value)}><option value="0">0%</option><option value="4">4%</option><option value="10">10%</option><option value="22">22%</option></select></label>
+        {!isDeclared ? <input type="hidden" name="vatRate" value="0" /> : null}
+        <div className="expense-wizard-vat-buttons full" aria-label="Selezione rapida IVA">
+          {["0", "4", "10", "22"].map(rate => <button type="button" key={rate} className={vatRate === rate ? "active" : ""} disabled={!isDeclared} onClick={() => setVatRate(rate)}>{rate}%</button>)}
+        </div>
         <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
         </div>
@@ -588,11 +628,7 @@ export default function RecurringExpenseForm({
               name="isDeclared"
               value="true"
               checked={isDeclared}
-              onChange={(e) => {
-                const checked = e.currentTarget.checked;
-                setIsDeclared(checked);
-                if (!checked) setHasElectronicInvoice(false);
-              }}
+              onChange={(e) => updateDeclared(e.currentTarget.checked)}
             />
             <span className="slider" />
             <span>{isDeclared ? "Si" : "No"}</span>
@@ -672,7 +708,23 @@ export default function RecurringExpenseForm({
           <small>Note interne opzionali</small>
         </summary>
         <div className="form-section-stack">
-      <label className="full">Note<textarea name="notes" rows={3} defaultValue={initialExpense?.notes ?? ""} /></label>
+          <section className="recurring-review-summary" aria-label="Riepilogo spesa ricorrente">
+            <div className="expense-review-heading">
+              <div><span className="expense-review-kicker">Controlla prima di salvare</span><h3>Riepilogo della ricorrenza</h3></div>
+              <strong>€ {Number(normalizedAmount || 0).toLocaleString("it-IT", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong>
+            </div>
+            <div className="expense-review-grid">
+              <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Data inizio<strong>{startDate ? new Date(`${startDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span></div>
+              <div className="expense-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({MONTHLY: "Ogni mese", EVERY_2_MONTHS: "Ogni 2 mesi", EVERY_3_MONTHS: "Ogni 3 mesi", EVERY_6_MONTHS: "Ogni 6 mesi", YEARLY: "Annuale", EVERY_2_YEARS: "Ogni 2 anni"} as Record<string, string>)[cadence]} · giorno {dueDay}{isYearly ? ` ${monthOptions.find(([value]) => String(value) === dueMonth)?.[1] ?? ""}` : ""}</strong></span></div>
+              <div className="expense-review-item wide"><i aria-hidden="true">◎</i><span>Fornitore<strong>{supplierName || "Non indicato"}</strong></span></div>
+              <div className="expense-review-item wide"><i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span></div>
+              <div className="expense-review-item wide"><i aria-hidden="true">◇</i><span>Categoria<strong>{categories.find(category => String(category.id) === categoryId)?.name ?? "Non indicata"}</strong></span></div>
+              <div className="expense-review-item"><i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span></div>
+              <div className="expense-review-item"><i aria-hidden="true">▤</i><span>Fatturazione<strong>{hasElectronicInvoice ? "Fattura elettronica" : "Senza fattura elettronica"}</strong></span></div>
+              <div className="expense-review-item wide"><i aria-hidden="true">€</i><span>Pagamento<strong>{isAutomaticAccrual ? `${selectedPaymentMethodName || "Canale non indicato"} · ${banks.find(bank => String(bank.id) === bankId)?.name ?? "Banca non indicata"}` : "Manuale"}</strong></span></div>
+            </div>
+          </section>
+      <label className="full">Note<textarea name="notes" rows={3} value={notes} onChange={event => setNotes(event.currentTarget.value)} /></label>
         </div>
       </details>
 

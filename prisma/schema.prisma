@@ -19,11 +19,6 @@ enum PaymentStatus {
   PAGATO_PARZIALMENTE
 }
 
-enum PaidBy {
-  HERBAL_MARKET
-  ALTRO_OPERATORE
-}
-
 enum InvoiceStatus {
   NONE
   YES
@@ -73,6 +68,7 @@ model User {
   passwordHash String?
   googleId     String?   @unique
   googleEmailVerified Boolean @default(false)
+  emailVerifiedAt DateTime?
   name         String?
   isActive     Boolean   @default(true)
   isSystemAdmin Boolean  @default(false)
@@ -82,6 +78,9 @@ model User {
   ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
   memberships     WorkspaceMember[]
   sessions        AuthSession[]
+  auditLogs       AuditLog[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Workspace {
@@ -106,6 +105,8 @@ model Workspace {
   expenses           Expense[]
   monthlyRevenues    MonthlyRevenue[]
   incomes            Income[]
+  auditLogs          AuditLog[]
+  cashRegisterBankRules CashRegisterBankRule[]
   vatSettlementCategoryId Int?
   vatSettlementCategory ExpenseCategory? @relation("VatSettlementCategory", fields: [vatSettlementCategoryId], references: [id], onDelete: Restrict)
   cashRegisterIncomeCategoryId Int?
@@ -153,6 +154,83 @@ model AuthSession {
   @@index([expiresAt])
 }
 
+model AuthThrottle {
+  key          String    @id
+  attempts     Int       @default(0)
+  windowStart  DateTime
+  blockedUntil DateTime?
+  updatedAt    DateTime  @updatedAt
+
+  @@index([blockedUntil])
+  @@index([updatedAt])
+}
+
+model EmailVerificationToken {
+  id        BigInt    @id @default(autoincrement())
+  tokenHash String    @unique
+  userId    Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        BigInt    @id @default(autoincrement())
+  tokenHash String    @unique
+  userId    Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
+}
+
+model EmailOutbox {
+  id          BigInt    @id @default(autoincrement())
+  recipient   String
+  subject     String
+  textBody    String
+  htmlBody    String
+  status      String    @default("PENDING")
+  attempts    Int       @default(0)
+  nextAttempt DateTime  @default(now())
+  lastError   String?
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, nextAttempt])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id          BigInt    @id @default(autoincrement())
+  workspaceId Int
+  userId      Int
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, entityType, entityId])
+  @@index([userId, createdAt])
+}
+
 model Company {
   id        Int       @id @default(autoincrement())
   code      CompanyCode @unique
@@ -176,6 +254,7 @@ model ExpenseCategory {
   expenses  Expense[]
   recurringExpenses RecurringExpense[]
   vatSettlementForWorkspaces Workspace[] @relation("VatSettlementCategory")
+  defaultForSuppliers Supplier[] @relation("SupplierDefaultExpenseCategory")
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -200,13 +279,16 @@ model IncomeSalesChannel {
   code        String
   name        String
   icon        String?
+  sortOrder   Int       @default(0)
   workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   incomes     Income[]
   cashRegisterForWorkspaces Workspace[] @relation("CashRegisterSalesChannel")
+  cashRegisterBankRules CashRegisterBankRule[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
+  @@index([workspaceId, sortOrder])
 }
 
 model Bank {
@@ -220,6 +302,7 @@ model Bank {
   recurringExpenses RecurringExpense[]
   incomeCredits Income[]
   cashRegisterPaymentMethods PaymentMethod[] @relation("CashRegisterDefaultBank")
+  cashRegisterBankRules CashRegisterBankRule[]
 
   @@unique([workspaceId, name])
   @@index([workspaceId])
@@ -241,12 +324,33 @@ model PaymentMethod {
   cashRegisterDefaultBankId Int?
   cashRegisterDefaultBank Bank? @relation("CashRegisterDefaultBank", fields: [cashRegisterDefaultBankId], references: [id], onDelete: Restrict)
   cashRegisterPrimaryForWorkspaces Workspace[] @relation("CashRegisterPrimaryPaymentMethod")
+  cashRegisterBankRules CashRegisterBankRule[]
 
   @@unique([workspaceId, name])
   @@unique([workspaceId, systemRole])
   @@index([workspaceId])
   @@index([kind])
   @@index([cashRegisterDefaultBankId])
+}
+
+model CashRegisterBankRule {
+  id              Int      @id @default(autoincrement())
+  workspaceId     Int
+  paymentMethodId Int
+  salesChannelId  Int
+  bankId          Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  workspace     Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  paymentMethod PaymentMethod      @relation(fields: [paymentMethodId], references: [id], onDelete: Cascade)
+  salesChannel  IncomeSalesChannel @relation(fields: [salesChannelId], references: [id], onDelete: Cascade)
+  bank          Bank               @relation(fields: [bankId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, paymentMethodId, salesChannelId])
+  @@index([paymentMethodId])
+  @@index([salesChannelId])
+  @@index([bankId])
 }
 
 model Supplier {
@@ -262,6 +366,8 @@ model Supplier {
   systemRole     SupplierSystemRole?
   workspaceId    Int?
   workspace      Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  defaultExpenseCategoryId Int?
+  defaultExpenseCategory ExpenseCategory? @relation("SupplierDefaultExpenseCategory", fields: [defaultExpenseCategoryId], references: [id], onDelete: SetNull)
   expenses       Expense[]
   recurringExpenses RecurringExpense[]
   createdAt      DateTime  @default(now())
@@ -270,6 +376,7 @@ model Supplier {
   @@index([businessName])
   @@index([alias])
   @@index([workspaceId])
+  @@index([defaultExpenseCategoryId])
   @@unique([workspaceId, systemRole])
 }
 
@@ -360,14 +467,12 @@ model Expense {
   invoiceStatus         InvoiceStatus @default(IN_ATTESA)
   companyId             Int?
   company               Company?  @relation(fields: [companyId], references: [id])
-  paidByCurrentAccount  Boolean   @default(false)
   month                 Int
   year                  Int
   notes                 String?
 
   paymentStatus         PaymentStatus @default(DA_PAGARE)
   paidAmount            Decimal   @db.Decimal(12, 2) @default(0)
-  paidBy                PaidBy    @default(HERBAL_MARKET)
   invoiceDocumentPath   String?
 
   payments              ExpensePayment[]
@@ -396,7 +501,6 @@ model ExpensePayment {
   bankId      Int?
   bank        Bank?     @relation(fields: [bankId], references: [id])
   amount      Decimal   @db.Decimal(12, 2)
-  paidBy      PaidBy    @default(HERBAL_MARKET)
   createdAt   DateTime  @default(now())
 
   @@index([expenseId])
@@ -459,6 +563,7 @@ model Income {
   paymentMethodRef PaymentMethod @relation(fields: [paymentMethodId], references: [id])
   creditBankId    Int
   creditBank      Bank     @relation(fields: [creditBankId], references: [id])
+  orderDate       DateTime?
   creditDate      DateTime
   isCredited      Boolean   @default(true)
   billingMonth    Int       @default(1)
@@ -474,6 +579,7 @@ model Income {
 
   @@index([workspaceId])
   @@index([customerId])
+  @@index([orderDate])
   @@index([creditDate])
   @@index([billingYear, billingMonth])
   @@index([salesChannelId])

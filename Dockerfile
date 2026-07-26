@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim AS deps
+FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends openssl \
@@ -6,7 +6,7 @@ RUN apt-get update -y \
 COPY package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-FROM node:20-bookworm-slim AS builder
+FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV TABULARIUM_ALLOW_BUILD_DATABASE_URL=1
@@ -19,7 +19,7 @@ RUN npx prisma generate
 RUN npm run build
 RUN npm prune --omit=dev
 
-FROM node:20-bookworm-slim AS runner
+FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -44,8 +44,10 @@ COPY --from=builder --chown=nextjs:nextjs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nextjs /app/scripts ./scripts
 COPY --from=builder --chown=nextjs:nextjs /app/public ./public
 
-RUN mkdir -p /app/public/uploads/invoices && chown -R nextjs:nextjs /app/public/uploads
+RUN mkdir -p /app/storage/uploads/invoices && chown -R nextjs:nextjs /app/storage
 USER nextjs
 
 EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
 CMD ["npm", "run", "start"]

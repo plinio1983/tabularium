@@ -267,8 +267,7 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
             paymentDate: expense.dueDate,
             paymentMethodId: expense.recurringExpense.paymentMethodId,
             bankId: expense.recurringExpense.bankId || null,
-            amount: residual,
-            paidBy: 'HERBAL_MARKET'
+            amount: residual
           }
         }),
         prisma.expense.update({
@@ -278,9 +277,7 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
             paidAmount: amount,
             paymentStatus: 'COMPLETATO',
             isComplete: true,
-            isAutomaticPayment: true,
-            paidByCurrentAccount: true,
-            paidBy: 'HERBAL_MARKET'
+            isAutomaticPayment: true
           }
         })
       ]);
