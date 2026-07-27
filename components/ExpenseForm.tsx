@@ -1301,7 +1301,7 @@ export default function ExpenseForm({
                         required
                         hint={isVatSettlement ? "Determina il periodo fiscale nel quale conteggiare il saldo IVA." : undefined}
                     />
-                    <div className="toggle-field-wrap">
+                    {/*<div className="toggle-field-wrap">*/}
                         <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
                             <span>Fattura elettronica</span>
                             <label className="switch">
@@ -1321,6 +1321,8 @@ export default function ExpenseForm({
                                 {/*<span>{hasElectronicInvoice ? "Si" : "No"}</span>*/}
                             </label>
                         </div>
+                {/*</div>*/}
+                {/*<div className="form-section-grid">*/}
                         <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
                             <span>Fattura emessa</span>
                             <label className="switch">
@@ -1340,7 +1342,7 @@ export default function ExpenseForm({
                                 {/*<span>{isDeclared && invoiceStatus === "RICEVUTA" ? "Si" : "No"}</span>*/}
                             </label>
                         </div>
-                    </div>
+                    {/*</div>*/}
                     <div className="expense-invoice-step-row expense-wizard-step expense-wizard-step-5">
                         <div className="expense-invoice-switches">
                             <label className="expense-wizard-mobile-switch app-form-field-label">

@@ -2262,6 +2262,10 @@
     gap: 7px;
   }
 
+  .expense-mobile-wizard .expense-wizard-vat-buttons > label {
+    display: none;
+  }
+
   .expense-mobile-wizard .expense-amount-control {
     display: grid;
     flex: 1 1 auto;
@@ -2297,6 +2301,15 @@
 
   .expense-mobile-wizard .expense-wizard-fiscal-section .toggle-field-wrap {
     display: none;
+  }
+
+  .expense-wizard-fiscal-section .expense-mobile-wizard .form-section-grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .expense-wizard-fiscal-section .expense-mobile-wizard .form-section-grid > div {
+    min-width: 45%;
   }
 
   .expense-mobile-wizard .expense-wizard-mobile-switch {
