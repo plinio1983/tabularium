@@ -180,11 +180,11 @@ function isCashChannel(channel: string) {
     return channel.trim().toLowerCase() === cashChannel.toLowerCase();
 }
 
-function MoneyInput(props: React.ComponentProps<typeof CurrencyInput>) {
+function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyInput> & {inputRef?: React.RefObject<HTMLInputElement | null>}) {
     return (
         <div className="money-input">
             <span>€</span>
-            <CurrencyInput {...props}/>
+            <CurrencyInput ref={inputRef} {...props}/>
         </div>
     );
 }
@@ -704,6 +704,7 @@ export default function ExpenseForm({
     const [notes, setNotes] = useState(initialExpense?.notes ?? "");
     const [attachmentCount, setAttachmentCount] = useState(0);
     const formRef = useRef<HTMLFormElement>(null);
+    const amountRef = useRef<HTMLInputElement>(null);
     const didOpenNewPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
@@ -821,7 +822,16 @@ export default function ExpenseForm({
 
     function appendAmountKey(key: string) {
         setAmount(current => applyCurrencyInputKey(current, key));
+        focusAmount();
     }
+
+    function focusAmount() {
+        window.requestAnimationFrame(() => amountRef.current?.focus({preventScroll: true}));
+    }
+
+    useEffect(() => {
+        if (mobileStep === 2 && window.matchMedia("(max-width: 900px)").matches) focusAmount();
+    }, [mobileStep]);
 
     function updateDeclared(checked: boolean) {
         setIsDeclared(checked);
@@ -1115,7 +1125,7 @@ export default function ExpenseForm({
                             }
                         }}
                         required
-                        hint="La scadenza viene impostata all’ultimo giorno del mese."
+                        // hint="La scadenza viene impostata all’ultimo giorno del mese."
                     /> : null}
 
                     {isVatSettlement ? <input type="hidden" name="receivedDate" value={dueDate}/> : <DateField
@@ -1248,6 +1258,7 @@ export default function ExpenseForm({
                                 <label className="expense-wizard-amount-field">
                                     {!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}
                                     <MoneyInput
+                                        inputRef={amountRef}
                                         required
                                         value={amount}
                                         onValueChange={handleAmountChange}
@@ -1261,7 +1272,11 @@ export default function ExpenseForm({
                                         key={rate}
                                         className={vatRate === rate ? "is-selected" : ""}
                                         disabled={!isDeclared}
-                                        onClick={() => setVatRate(rate)}
+                                        onMouseDown={event => event.preventDefault()}
+                                        onClick={() => {
+                                            setVatRate(rate);
+                                            focusAmount();
+                                        }}
                                     >{rate}%</button>)}
                                 </div> : null}
                             </div>
@@ -1272,6 +1287,7 @@ export default function ExpenseForm({
                                 type="button"
                                 key={key}
                                 aria-label={key === "backspace" ? "Cancella ultima cifra" : key}
+                                onMouseDown={event => event.preventDefault()}
                                 onClick={() => appendAmountKey(key)}
                             >{key === "backspace" ? "⌫" : key}</button>)}
                         </div>

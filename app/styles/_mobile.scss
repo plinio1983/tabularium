@@ -1679,6 +1679,7 @@
     max-height: 100dvh;
     margin: 0;
     padding: 14px;
+    gap: 0;
     border-radius: 0;
     overflow-y: auto;
   }
@@ -1699,17 +1700,17 @@
   .expense-mobile-wizard .expense-wizard-header {
     display: flex;
     flex-direction: column;
-    flex: 0 0 76px;
+    flex: 0 0 60px;
     width: 100%;
-    height: 76px;
-    min-height: 76px;
+    height: 60px;
+    min-height: 60px;
     justify-content: center;
-    gap: 10px;
+    gap: 6px;
     position: sticky;
     top: 0;
     z-index: 110;
     margin: 0;
-    padding: 10px 0 12px;
+    padding: 2px 0 8px;
     border-bottom: 1px solid var(--line);
     background: rgba(255, 255, 255, .97);
     backdrop-filter: blur(10px);
@@ -3571,6 +3572,8 @@
   .expense-wizard-modal-card > .recurring-mobile-wizard {
     flex: 1 1 auto;
     min-height: 0;
+    padding-bottom: calc(180px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
   }
 
   .recurring-wizard-page-card {
@@ -3580,6 +3583,8 @@
   .recurring-wizard-page-card > .recurring-mobile-wizard {
     flex: 1 1 auto;
     min-height: 0;
+    padding-bottom: calc(180px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
   }
 
   .recurring-mobile-wizard .recurring-form-section > summary {
