@@ -12,6 +12,8 @@ import {
 } from './actions';
 import PaymentCreditCreatePanel from './PaymentCreditCreatePanel';
 import PaymentCreditEditRow from './PaymentCreditEditRow';
+import Link from 'next/link';
+import DetailBackButton from '@/components/DetailBackButton';
 
 const errorMessages: Record<string, string> = {
   invalid: 'Compila correttamente i campi richiesti.',
@@ -64,6 +66,15 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
   const error = paramValue(params, 'error');
   const saved = paramValue(params, 'saved');
   const usage = paramValue(params, 'usage');
+  const requestedSection = paramValue(params, 'section');
+  const section = requestedSection === 'banks' || requestedSection === 'methods' || requestedSection === 'routing'
+    ? requestedSection
+    : null;
+  const sectionTitles = {
+    banks: 'Banche e canali di accredito',
+    methods: 'Metodi di pagamento e accredito',
+    routing: 'Instradamento registratore di cassa'
+  } as const;
 
   const [banks, paymentMethods, workspaceSettings, salesChannels, bankRules] = await Promise.all([
     prisma.bank.findMany({
@@ -101,16 +112,34 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
   return <div className="grid admin-page categories-settings-page">
     <div className="toolbar-card">
       <div>
-        <h2>Pagamento e Accredito</h2>
-        <p className="muted">Gestisci banche, canali accredito e metodi usati da spese e incassi.</p>
+        <h2>{section ? sectionTitles[section] : 'Pagamento e Accredito'}</h2>
+        <p className="muted">{section
+          ? 'Configura i valori utilizzati nei movimenti e nel registratore di cassa.'
+          : 'Seleziona la categoria di impostazioni da visualizzare.'}</p>
       </div>
+      {section ? <DetailBackButton href="/settings/payment-credit" /> : null}
     </div>
 
     {saved ? <div className="form-summary full"><strong>{savedMessages[saved] ?? 'Configurazione aggiornata.'}</strong></div> : null}
     {error ? <div className="inline-form-error full">{errorMessages[error] ?? 'Impossibile aggiornare la configurazione.'}{error === 'in_use' && usage ? <span> Movimenti collegati: {usage}.</span> : null}</div> : null}
 
-    <PaymentCreditCreatePanel action={createBankAction} type="bank" iconOptions={paymentCreditIconOptions} />
+    {!section ? <nav className="settings-category-hub" aria-label="Sezioni Pagamento e Accredito">
+      <Link className="card settings-category-link" href="/settings/payment-credit?section=banks">
+        <span className="settings-category-link-icon" aria-hidden="true">▥</span>
+        <span><strong>Banche e canali di accredito</strong><small>Gestisci banche e conti usati per accrediti e pagamenti.</small></span>
+      </Link>
+      <Link className="card settings-category-link" href="/settings/payment-credit?section=methods">
+        <span className="settings-category-link-icon" aria-hidden="true">▣</span>
+        <span><strong>Metodi di pagamento e accredito</strong><small>Configura i metodi disponibili nei movimenti e nel registratore.</small></span>
+      </Link>
+      <Link className="card settings-category-link" href="/settings/payment-credit?section=routing">
+        <span className="settings-category-link-icon" aria-hidden="true">⇄</span>
+        <span><strong>Instradamento registratore di cassa</strong><small>Associa una banca a ogni coppia metodo e canale di vendita.</small></span>
+      </Link>
+    </nav> : null}
 
+    {section === 'banks' ? <>
+    <PaymentCreditCreatePanel action={createBankAction} type="bank" iconOptions={paymentCreditIconOptions} />
     <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible" open>
       <summary className="category-create-toggle">
         <span>Banche / canali accredito</span>
@@ -128,9 +157,10 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
         return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Canale' : 'Banca'} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
       }) : <p className="muted">Nessuna banca configurata.</p>}
     </details>
+    </> : null}
 
+    {section === 'methods' ? <>
     <PaymentCreditCreatePanel action={createPaymentMethodAction} type="method" iconOptions={paymentCreditIconOptions} />
-
     <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible" open>
       <summary className="category-create-toggle">
         <span>Metodi pagamento/accredito</span>
@@ -156,7 +186,9 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
           } : undefined}/>;
       }) : <p className="muted">Nessun metodo configurato.</p>}
     </details>
+    </> : null}
 
+    {section === 'routing' ?
     <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible cash-register-routing-card" open>
       <summary className="category-create-toggle">
         <span>Instradamento accrediti registratore</span>
@@ -178,7 +210,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
                   <th>{method.icon ?? ''} {method.name}</th>
                   {salesChannels.map(channel => {
                     const selectedBankId = ruleBank.get(`${method.id}_${channel.id}`) ?? method.cashRegisterDefaultBankId ?? '';
-                    return <td key={channel.id}>
+                    return <td key={channel.id} data-channel={`${channel.icon ?? ''} ${channel.name}`.trim()}>
                       <label>
                         <span className="sr-only">{method.name} · {channel.name}</span>
                         <select name={`rule_${method.id}_${channel.id}`} defaultValue={selectedBankId} required>
@@ -198,5 +230,6 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
         </form> : <p className="muted">Abilita almeno un metodo non Cash nel registratore e configura un canale di vendita.</p>}
       </div>
     </details>
+    : null}
   </div>;
 }

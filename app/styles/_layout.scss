@@ -1339,6 +1339,70 @@ button {
   padding: 16px;
 }
 
+.recurring-expense-form .recurring-form-section-grid > label,
+.recurring-expense-form .recurring-form-section-grid > .supplier-picker,
+.recurring-expense-form .recurring-form-section-grid > .product-suggestion-picker {
+  align-self: flex-start;
+  width: 100%;
+  min-width: 0;
+}
+
+.recurring-expense-form .supplier-picker > label,
+.recurring-expense-form .product-suggestion-picker {
+  color: #334155;
+  font-weight: 850;
+}
+
+.recurring-expense-form .supplier-input-row {
+  align-items: stretch;
+}
+
+.recurring-expense-form .supplier-input-row .inline-link-button {
+  min-height: 54px;
+  padding-inline: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background: #f8fafc;
+  font-weight: 850;
+}
+
+.recurring-expense-form .toggle-field-wrap {
+  align-items: stretch;
+  gap: 12px;
+}
+
+.recurring-expense-form .toggle-field-wrap .switch-toggle-field,
+.recurring-expense-form .recurring-accrual-toggle {
+  min-height: 78px;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #fff, #f8fafc);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+}
+
+.recurring-expense-form .toggle-field-wrap .switch-toggle-field {
+  min-width: 150px;
+}
+
+.recurring-expense-form .switch-toggle-field > span:first-child {
+  color: #334155;
+  font-weight: 850;
+}
+
+.recurring-expense-form .switch-toggle-field .switch {
+  justify-self: end;
+  align-self: end;
+  min-height: 30px;
+}
+
+.recurring-expense-form .recurring-accrual-toggle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .recurring-expense-form .form-section-stack {
   display: grid;
   gap: 12px;
@@ -2077,6 +2141,48 @@ body.drawer-open {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 14px;
+}
+
+.payment-date-field {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.payment-select-field {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.payment-select-control {
+  position: relative;
+  min-width: 0;
+}
+
+.payment-select-caret {
+  display: none;
+}
+
+.payment-date-label > i,
+.payment-select-label > i {
+  display: none;
+}
+
+.payment-date-control {
+  position: relative;
+  min-width: 0;
+}
+
+.payment-date-presentation,
+.payment-date-picker-button {
+  display: none;
 }
 
 
@@ -3410,6 +3516,7 @@ table th, table td {
 .app-autocomplete-control {
   position: relative;
   min-width: 0;
+  flex-grow: 1;
 }
 
 .app-select-control select {
@@ -3593,7 +3700,8 @@ table th, table td {
 }
 
 .expense-form .expense-due-date-shortcuts button,
-.expense-form .payment-amount-shortcuts button {
+.expense-form .payment-amount-shortcuts button,
+.expense-form .expense-wizard-vat-buttons button {
   min-height: 32px;
   padding: 5px 10px;
   border: 1px solid var(--line);
@@ -3603,10 +3711,15 @@ table th, table td {
   font-size: 12px;
   font-weight: 850;
   cursor: pointer;
+
+  &:disabled {
+    color: var(--muted);
+  }
 }
 
 .expense-form .expense-due-date-shortcuts button.is-selected,
-.expense-form .payment-amount-shortcuts button.is-selected {
+.expense-form .payment-amount-shortcuts button.is-selected,
+.expense-form .expense-wizard-vat-buttons button.is-selected {
   border-color: var(--accent);
   background: var(--accent);
   color: #fff;
@@ -4186,20 +4299,50 @@ table th, table td {
 .cash-register-controls input[type="date"],
 .cash-register-controls select {
   width: 100%;
-  height: 42px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #fff;
+  height: 54px;
+  padding: 11px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background-color: #fff;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 750;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.cash-register-controls select {
+  appearance: none;
+  padding-right: 44px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%),
+    linear-gradient(145deg, #f1f5f9, #eef2ff);
+  background-position:
+    calc(100% - 20px) calc(50% - 2px),
+    calc(100% - 15px) calc(50% - 2px),
+    calc(100% - 8px) 50%;
+  background-size: 5px 5px, 5px 5px, 34px 34px;
+  background-repeat: no-repeat;
+}
+
+.cash-register-controls input[type="date"]:focus,
+.cash-register-controls select:focus {
+  border-color: var(--accent);
+  outline: 0;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
 }
 
 .cash-register-fiscal-switch {
   display: flex;
   align-items: center;
   gap: 7px;
-  height: 42px;
+  height: 54px;
   padding: 0 11px;
-  border-radius: 10px;
-  background: #eef6ff;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #fff, #eef6ff);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
   font-size: 12px;
   font-weight: 850;
 }
@@ -11518,6 +11661,111 @@ button.bulk-direct-danger {
   background: #fff;
 }
 
+/* Shared control language for create/edit forms. These forms intentionally share
+   .expense-form even when the entity is an income, supplier or customer. */
+.expense-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.expense-form select,
+.nested-form-modal .modal-form-grid input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.nested-form-modal .modal-form-grid select {
+  min-height: 54px;
+  padding: 11px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background-color: #fff;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 750;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+
+.expense-form select,
+.nested-form-modal .modal-form-grid select {
+  appearance: none;
+  padding-right: 44px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%),
+    linear-gradient(145deg, #f1f5f9, #eef2ff);
+  background-position:
+    calc(100% - 20px) calc(50% - 2px),
+    calc(100% - 15px) calc(50% - 2px),
+    calc(100% - 8px) 50%;
+  background-size: 5px 5px, 5px 5px, 34px 34px;
+  background-repeat: no-repeat;
+}
+
+.expense-form .app-select-control select {
+  background-image: none;
+}
+
+.expense-form input[type="date"],
+.expense-form input[type="month"],
+.nested-form-modal .modal-form-grid input[type="date"],
+.nested-form-modal .modal-form-grid input[type="month"] {
+  background: linear-gradient(145deg, #fff, #f8fafc);
+  color-scheme: light;
+}
+
+.expense-form input[type="date"]::-webkit-calendar-picker-indicator,
+.expense-form input[type="month"]::-webkit-calendar-picker-indicator,
+.nested-form-modal .modal-form-grid input[type="date"]::-webkit-calendar-picker-indicator,
+.nested-form-modal .modal-form-grid input[type="month"]::-webkit-calendar-picker-indicator {
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  border-radius: 9px;
+  background-color: #eef2ff;
+  cursor: pointer;
+}
+
+.expense-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+.expense-form select:focus,
+.expense-form textarea:focus,
+.nested-form-modal .modal-form-grid input:focus,
+.nested-form-modal .modal-form-grid select:focus,
+.nested-form-modal .modal-form-grid textarea:focus {
+  border-color: var(--accent);
+  outline: 0;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+}
+
+.expense-form input:disabled,
+.expense-form select:disabled,
+.expense-form textarea:disabled,
+.expense-form input[readonly],
+.nested-form-modal .modal-form-grid input:disabled,
+.nested-form-modal .modal-form-grid select:disabled,
+.nested-form-modal .modal-form-grid input[readonly] {
+  border-color: #e2e8f0;
+  background-color: #f1f5f9;
+  color: #64748b;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.expense-form textarea,
+.nested-form-modal .modal-form-grid textarea {
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.expense-form .money-input > input {
+  min-height: 54px;
+}
+
+.expense-form .money-input > span {
+  z-index: 2;
+  left: 14px;
+  width: 18px;
+  text-align: center;
+}
+
 .expense-form textarea {
   resize: vertical;
   min-height: 96px;
@@ -11567,6 +11815,7 @@ button.bulk-direct-danger {
 .expense-form .form-section-grid {
   padding: 18px;
   gap: 16px;
+  align-items: start;
 }
 
 .expense-form .form-section-stack {
@@ -11629,6 +11878,8 @@ button.bulk-direct-danger {
   background: #ffffff;
   padding: 14px;
   box-shadow: 0 8px 20px rgba(15, 23, 42, .04);
+  //align-items: flex-start;
+  align-items: start;
 }
 
 .expense-form .payment-row + .payment-row {
@@ -12087,6 +12338,7 @@ table .cell-description {
     }
   }
 }
+
 
 @media (min-width: 576px) {
   .vat-settlement-category-title {

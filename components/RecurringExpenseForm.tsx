@@ -560,7 +560,6 @@ export default function RecurringExpenseForm({
             }}
           />
           <span className="slider" />
-          <span>Ricorrente</span>
         </label>
       </div>
 
@@ -584,9 +583,9 @@ export default function RecurringExpenseForm({
         <label className="expense-wizard-step expense-wizard-step-1">Giorno del mese scadenza<input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required /></label>
       )}
 
-      <label className="expense-wizard-step expense-wizard-step-3">Categoria<select name="categoryId" required value={categoryId} onChange={event => setCategoryId(event.currentTarget.value)}><option value="" disabled>Seleziona categoria</option>{categories.map(c => <option key={c.id} value={c.id}>{c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}</option>)}</select></label>
-
       <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} />
+
+      <label className="expense-wizard-step expense-wizard-step-3">Categoria<select name="categoryId" required value={categoryId} onChange={event => setCategoryId(event.currentTarget.value)}><option value="" disabled>Seleziona categoria</option>{categories.map(c => <option key={c.id} value={c.id}>{c.icon ? `${categoryIcon(c)} ${c.name}` : c.name}</option>)}</select></label>
 
       <ProductServiceAutocomplete initialValue={initialExpense?.description ?? ""} onValueChange={setDescription} />
 
@@ -604,7 +603,7 @@ export default function RecurringExpenseForm({
         <label>IVA<select name="vatRate" value={vatRate} disabled={!isDeclared} onChange={event => setVatRate(event.currentTarget.value)}><option value="0">0%</option><option value="4">4%</option><option value="10">10%</option><option value="22">22%</option></select></label>
         {!isDeclared ? <input type="hidden" name="vatRate" value="0" /> : null}
         <div className="expense-wizard-vat-buttons full" aria-label="Selezione rapida IVA">
-          {["0", "4", "10", "22"].map(rate => <button type="button" key={rate} className={vatRate === rate ? "active" : ""} disabled={!isDeclared} onClick={() => setVatRate(rate)}>{rate}%</button>)}
+            {["0", "4", "10", "22"].map(rate => <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onClick={() => setVatRate(rate)}>{rate}%</button>)}
         </div>
         <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
@@ -631,7 +630,6 @@ export default function RecurringExpenseForm({
               onChange={(e) => updateDeclared(e.currentTarget.checked)}
             />
             <span className="slider" />
-            <span>{isDeclared ? "Si" : "No"}</span>
           </label>
         </div>
         <div className="toggle-field switch-toggle-field">
@@ -646,7 +644,6 @@ export default function RecurringExpenseForm({
               onChange={(e) => setHasElectronicInvoice(e.currentTarget.checked)}
             />
             <span className="slider" />
-            <span>{hasElectronicInvoice ? "Si" : "No"}</span>
           </label>
         </div>
       </div>
@@ -673,7 +670,6 @@ export default function RecurringExpenseForm({
             onChange={(event) => setIsAutomaticAccrual(event.currentTarget.checked)}
           />
           <span className="slider" />
-          <span>{isAutomaticAccrual ? "Automatico" : "Manuale"}</span>
         </label>
       </div>
 
@@ -717,8 +713,8 @@ export default function RecurringExpenseForm({
               <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Data inizio<strong>{startDate ? new Date(`${startDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span></div>
               <div className="expense-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({MONTHLY: "Ogni mese", EVERY_2_MONTHS: "Ogni 2 mesi", EVERY_3_MONTHS: "Ogni 3 mesi", EVERY_6_MONTHS: "Ogni 6 mesi", YEARLY: "Annuale", EVERY_2_YEARS: "Ogni 2 anni"} as Record<string, string>)[cadence]} · giorno {dueDay}{isYearly ? ` ${monthOptions.find(([value]) => String(value) === dueMonth)?.[1] ?? ""}` : ""}</strong></span></div>
               <div className="expense-review-item wide"><i aria-hidden="true">◎</i><span>Fornitore<strong>{supplierName || "Non indicato"}</strong></span></div>
-              <div className="expense-review-item wide"><i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span></div>
               <div className="expense-review-item wide"><i aria-hidden="true">◇</i><span>Categoria<strong>{categories.find(category => String(category.id) === categoryId)?.name ?? "Non indicata"}</strong></span></div>
+              <div className="expense-review-item wide"><i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span></div>
               <div className="expense-review-item"><i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span></div>
               <div className="expense-review-item"><i aria-hidden="true">▤</i><span>Fatturazione<strong>{hasElectronicInvoice ? "Fattura elettronica" : "Senza fattura elettronica"}</strong></span></div>
               <div className="expense-review-item wide"><i aria-hidden="true">€</i><span>Pagamento<strong>{isAutomaticAccrual ? `${selectedPaymentMethodName || "Canale non indicato"} · ${banks.find(bank => String(bank.id) === bankId)?.name ?? "Banca non indicata"}` : "Manuale"}</strong></span></div>

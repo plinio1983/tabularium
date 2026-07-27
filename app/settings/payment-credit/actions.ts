@@ -14,7 +14,16 @@ function formValue(formData: FormData, key: string) {
 }
 
 function settingsError(code: string): never {
-  redirect(`${settingsPath}?error=${encodeURIComponent(code)}`);
+  const section = code === 'cash_register_rule_bank'
+    ? 'routing'
+    : code.startsWith('method_')
+      || code.startsWith('cash_register_')
+      || code === 'kind_invalid'
+      || code === 'fallback_delete'
+      || code === 'system_delete'
+        ? 'methods'
+        : 'banks';
+  redirect(`${settingsPath}?section=${section}&error=${encodeURIComponent(code)}`);
 }
 
 function refreshPaymentCreditPages() {
@@ -49,7 +58,7 @@ export async function createBankAction(formData: FormData) {
 
   await prisma.bank.create({ data: { workspaceId: current.workspace.id, name, icon } });
   refreshPaymentCreditPages();
-  redirect(`${settingsPath}?saved=bank_created`);
+  redirect(`${settingsPath}?section=banks&saved=bank_created`);
 }
 
 export async function updateBankAction(formData: FormData) {
@@ -66,7 +75,7 @@ export async function updateBankAction(formData: FormData) {
 
   await prisma.bank.update({ where: { id }, data: { name, icon } });
   refreshPaymentCreditPages();
-  redirect(`${settingsPath}?saved=bank_updated`);
+  redirect(`${settingsPath}?section=banks&saved=bank_updated`);
 }
 
 export async function deleteBankAction(formData: FormData) {
@@ -86,11 +95,11 @@ export async function deleteBankAction(formData: FormData) {
     + bank._count.incomeCredits
     + bank._count.cashRegisterPaymentMethods
     + bank._count.cashRegisterBankRules;
-  if (usageCount > 0) redirect(`${settingsPath}?error=in_use&usage=${usageCount}`);
+  if (usageCount > 0) redirect(`${settingsPath}?section=banks&error=in_use&usage=${usageCount}`);
 
   await prisma.bank.delete({ where: { id } });
   refreshPaymentCreditPages();
-  redirect(`${settingsPath}?saved=bank_deleted`);
+  redirect(`${settingsPath}?section=banks&saved=bank_deleted`);
 }
 
 export async function createPaymentMethodAction(formData: FormData) {
@@ -103,7 +112,7 @@ export async function createPaymentMethodAction(formData: FormData) {
 
   await prisma.paymentMethod.create({ data: { workspaceId: current.workspace.id, name, kind, icon } });
   refreshPaymentCreditPages();
-  redirect(`${settingsPath}?saved=method_created`);
+  redirect(`${settingsPath}?section=methods&saved=method_created`);
 }
 
 export async function updatePaymentMethodAction(formData: FormData) {
@@ -172,7 +181,7 @@ export async function updatePaymentMethodAction(formData: FormData) {
     })] : [])
   ]);
   refreshPaymentCreditPages();
-  redirect(`${settingsPath}?saved=method_updated`);
+  redirect(`${settingsPath}?section=methods&saved=method_updated`);
 }
 
 export async function deletePaymentMethodAction(formData: FormData) {
@@ -190,11 +199,11 @@ export async function deletePaymentMethodAction(formData: FormData) {
   if (method.cashRegisterEnabled || method._count.cashRegisterPrimaryForWorkspaces) settingsError('cash_register_method_delete');
 
   const usageCount = method._count.incomePayments + method._count.expensePayments + method._count.recurringExpenses;
-  if (usageCount > 0) redirect(`${settingsPath}?error=in_use&usage=${usageCount}`);
+  if (usageCount > 0) redirect(`${settingsPath}?section=methods&error=in_use&usage=${usageCount}`);
 
   await prisma.paymentMethod.delete({ where: { id } });
   refreshPaymentCreditPages();
-  redirect(`${settingsPath}?saved=method_deleted`);
+  redirect(`${settingsPath}?section=methods&saved=method_deleted`);
 }
 
 export async function updateCashRegisterBankRulesAction(formData: FormData) {
@@ -243,5 +252,5 @@ export async function updateCashRegisterBankRulesAction(formData: FormData) {
   })));
 
   refreshPaymentCreditPages();
-  redirect(`${settingsPath}?saved=cash_register_rules_updated`);
+  redirect(`${settingsPath}?section=routing&saved=cash_register_rules_updated`);
 }

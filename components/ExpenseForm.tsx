@@ -992,7 +992,7 @@ export default function ExpenseForm({
     return (
         <form
             ref={formRef}
-            className={`card form expense-form expense-mobile-wizard expense-mobile-step-${mobileStep}`}
+            className={`card form expense-form single-expense-form expense-mobile-wizard expense-mobile-step-${mobileStep}`}
             action={action}
             method="post"
             encType="multipart/form-data"
@@ -1021,10 +1021,10 @@ export default function ExpenseForm({
             {/*  </div>*/}
             {/*</div>*/}
 
-            <details className="form-section full expense-wizard-split-section expense-wizard-document-section" open>
+            <details className="form-section full expense-wizard-split-section expense-wizard-document-section expense-wizard-dates-section" open>
                 <summary>
-                    <span>Documento</span>
-                    <small>Dati principali della spesa</small>
+                    <span>Tipo e date</span>
+                    <small>Tipologia della spesa e date principali</small>
                 </summary>
                 <div className="form-section-grid">
 
@@ -1166,15 +1166,15 @@ export default function ExpenseForm({
                             })}
                         </span>
                     </DateField>
-                    <MonthField
-                        className="expense-wizard-step expense-wizard-step-5"
-                        label="Periodo contabile"
-                        name="billingPeriod"
-                        value={billingPeriod}
-                        onChange={setBillingPeriod}
-                        required
-                        hint={isVatSettlement ? "Determina il periodo fiscale nel quale conteggiare il saldo IVA." : undefined}
-                    />
+                </div>
+            </details>
+
+            <details className="form-section full expense-wizard-split-section expense-wizard-details-section" open>
+                <summary>
+                    <span>Fornitore e dettagli</span>
+                    <small>Fornitore, descrizione e categoria della spesa</small>
+                </summary>
+                <div className="form-section-grid">
                     {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
                         Esercente
                         <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly />
@@ -1192,10 +1192,6 @@ export default function ExpenseForm({
                             }
                         }}
                     />}
-                    <ProductServiceAutocomplete
-                        initialValue={initialExpense?.description ?? ""}
-                        onValueChange={setDescription}
-                    />
                     {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
                         Categoria
                         <input value={vatSettlementCategory?.name ?? "Non configurata"} readOnly />
@@ -1213,8 +1209,34 @@ export default function ExpenseForm({
                             label: c.icon ? `${categoryIcon(c)} ${c.name}` : c.name
                         }))}
                     />}
+                    <ProductServiceAutocomplete
+                        initialValue={initialExpense?.description ?? ""}
+                        onValueChange={setDescription}
+                    />
+                </div>
+            </details>
+
+            <details className="form-section full expense-wizard-split-section expense-wizard-amount-section" open>
+                <summary>
+                    <span>Importo e IVA</span>
+                    <small>Imponibile fiscale, importo e aliquota IVA</small>
+                </summary>
+                <div className="form-section-grid">
                     <div className="amount-vat-row full expense-wizard-step expense-wizard-step-2">
                         <div className="expense-wizard-amount-entry">
+                            {!isVatSettlement ? <div className="toggle-field switch-toggle-field expense-fiscal-desktop-control">
+                                <span>Fiscale</span>
+                                <label className="switch">
+                                    <input
+                                        type="checkbox"
+                                        name="isDeclared"
+                                        value="true"
+                                        checked={isDeclared}
+                                        onChange={(event) => updateDeclared(event.currentTarget.checked)}
+                                    />
+                                    <span className="slider"/>
+                                </label>
+                            </div> : null}
                             {!isVatSettlement ? <label className="expense-wizard-mobile-switch">
                                 <span>Fiscale</span>
                                 <span className="switch">
@@ -1226,42 +1248,31 @@ export default function ExpenseForm({
                                     <span className="slider"/>
                                 </span>
                             </label> : null}
-                            <label className="expense-wizard-amount-field">
-                                {!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}
-                                <MoneyInput
-                                    type="text"
-                                    inputMode="decimal"
-                                    required
-                                    value={amount}
-                                    onChange={(e) => handleAmountChange(e.currentTarget.value)}
-                                />
-                                <input type="hidden" name="amount" value={normalizedAmount}/>
-                            </label>
+                            <div className="expense-amount-control">
+                                <label className="expense-wizard-amount-field">
+                                    {!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}
+                                    <MoneyInput
+                                        type="text"
+                                        inputMode="decimal"
+                                        required
+                                        value={amount}
+                                        onChange={(e) => handleAmountChange(e.currentTarget.value)}
+                                    />
+                                    <input type="hidden" name="amount" value={normalizedAmount}/>
+                                </label>
+                                {!isVatSettlement ? <div className="expense-wizard-vat-buttons" aria-label="Aliquota IVA">
+                                    <label>Aliquota IVA </label>
+                                    {["0", "4", "10", "22"].map(rate => <button
+                                        type="button"
+                                        key={rate}
+                                        className={vatRate === rate ? "is-selected" : ""}
+                                        disabled={!isDeclared}
+                                        onClick={() => setVatRate(rate)}
+                                    >{rate}%</button>)}
+                                </div> : null}
+                            </div>
                         </div>
-                        {!isVatSettlement ? <label>
-                            IVA
-                            <select
-                                name="vatRate"
-                                value={vatRate}
-                                onChange={(event) => setVatRate(event.currentTarget.value)}
-                                disabled={!isDeclared}
-                            >
-                                <option value="0">0%</option>
-                                <option value="4">4%</option>
-                                <option value="10">10%</option>
-                                <option value="22">22%</option>
-                            </select>
-                            {!isDeclared ? <input type="hidden" name="vatRate" value="0"/> : null}
-                        </label> : <div></div>}
-                        <div className="expense-wizard-vat-buttons full" aria-label="Aliquota IVA">
-                            {["0", "4", "10", "22"].map(rate => <button
-                                type="button"
-                                key={rate}
-                                className={vatRate === rate ? "is-selected" : ""}
-                                disabled={isVatSettlement || !isDeclared}
-                                onClick={() => setVatRate(rate)}
-                            >{rate}%</button>)}
-                        </div>
+                        {!isVatSettlement ? <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/> : null}
                         <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button
                                 type="button"
@@ -1281,24 +1292,18 @@ export default function ExpenseForm({
                     <small>IVA, detrazione e fattura elettronica</small>
                 </summary>
                 <div className="form-section-grid">
+                    <MonthField
+                        className="expense-wizard-step expense-wizard-step-5"
+                        label="Periodo contabile"
+                        name="billingPeriod"
+                        value={billingPeriod}
+                        onChange={setBillingPeriod}
+                        required
+                        hint={isVatSettlement ? "Determina il periodo fiscale nel quale conteggiare il saldo IVA." : undefined}
+                    />
                     <div className="toggle-field-wrap">
-                        <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-2 expense-fiscal-desktop-control">
-                            <label>Fiscale</label>
-                            <label className="switch">
-                                <input
-                                    type="checkbox"
-                                    name="isDeclared"
-                                    value="true"
-                                    checked={isDeclared}
-                                    onChange={(e) => updateDeclared(e.target.checked)}
-                                />
-                                <span className="slider"/>
-                                {/*<span>{isDeclared ? "Si" : "No"}</span>*/}
-                            </label>
-                        </div>
-
                         <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
-                            <label>Fatt. Elett.</label>
+                            <span>Fattura elettronica</span>
                             <label className="switch">
                                 <input
                                     type="checkbox"
@@ -1317,7 +1322,7 @@ export default function ExpenseForm({
                             </label>
                         </div>
                         <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
-                            <label>Fattura emessa</label>
+                            <span>Fattura emessa</span>
                             <label className="switch">
                                 <input
                                     type="checkbox"
@@ -1338,7 +1343,7 @@ export default function ExpenseForm({
                     </div>
                     <div className="expense-invoice-step-row expense-wizard-step expense-wizard-step-5">
                         <div className="expense-invoice-switches">
-                            <label className="expense-wizard-mobile-switch">
+                            <label className="expense-wizard-mobile-switch app-form-field-label">
                                 <span>Fattura elettronica</span>
                                 <span className="switch">
                                     <input
@@ -1354,7 +1359,7 @@ export default function ExpenseForm({
                                     <span className="slider"/>
                                 </span>
                             </label>
-                            <label className="expense-wizard-mobile-switch expense-invoice-emitted-switch">
+                            <label className="expense-wizard-mobile-switch expense-invoice-emitted-switch app-form-field-label">
                                 <span>Fattura emessa</span>
                                 <span className="switch">
                                     <input
@@ -1391,15 +1396,30 @@ export default function ExpenseForm({
                         </div>
                     </div>
                 </div>
-            </details> : <>
-                <input type="hidden" name="vatRate" value="0" />
-                <input type="hidden" name="isDeclared" value="false" />
-                <input type="hidden" name="hasElectronicInvoice" value="false" />
-                <input type="hidden" name="invoiceStatus" value="NON_PREVISTA" />
-                <div className="field-note full expense-wizard-step expense-wizard-step-5">
-                    Fattura elettronica non prevista per il Saldo IVA.
+            </details> : <details className="form-section full expense-wizard-split-section expense-wizard-fiscal-section" open>
+                <summary>
+                    <span>Fiscale</span>
+                    <small>Periodo contabile del saldo IVA</small>
+                </summary>
+                <div className="form-section-grid">
+                    <MonthField
+                        className="expense-wizard-step expense-wizard-step-5"
+                        label="Periodo contabile"
+                        name="billingPeriod"
+                        value={billingPeriod}
+                        onChange={setBillingPeriod}
+                        required
+                        hint="Determina il periodo fiscale nel quale conteggiare il saldo IVA."
+                    />
+                    <input type="hidden" name="vatRate" value="0" />
+                    <input type="hidden" name="isDeclared" value="false" />
+                    <input type="hidden" name="hasElectronicInvoice" value="false" />
+                    <input type="hidden" name="invoiceStatus" value="NON_PREVISTA" />
+                    <div className="field-note full expense-wizard-step expense-wizard-step-5">
+                        Fattura elettronica non prevista per il Saldo IVA.
+                    </div>
                 </div>
-            </>}
+            </details>}
 
             <details className="form-section full expense-wizard-step expense-wizard-step-4" open>
                 <summary>
@@ -1491,51 +1511,66 @@ export default function ExpenseForm({
                                     ref={openPaymentKey === payment.key ? openPaymentRef : null}
                                 >
                                     <input type="hidden" name="paymentId[]" value={payment.id ?? ""}/>
-                                    <label>
-                                        Data pagamento
-                                        <input
-                                            type="date"
-                                            name="paymentDate[]"
-                                            value={payment.paymentDate}
-                                            onChange={(e) =>
-                                                updatePayment(index, {paymentDate: e.target.value})
-                                            }
-                                        />
-                                    </label>
-                                    <label>
-                                        Canale pagamento
-                                        <select
-                                            name="paymentMethodId[]"
-                                            value={payment.paymentMethodId}
-                                            onChange={(e) => {
-                                                updatePayment(index, {paymentMethodId: e.target.value});
-                                            }}
-                                        >
-                                            <option value="">Seleziona metodo</option>
-                                            {availablePaymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? "  •  "} {method.name}</option>)}
-                                        </select>
-                                    </label>
-                                    <label>
-                                        {/*🏦 Banca*/}
-                                        Banca pagamento
+                                    <div className="payment-date-field">
+                                        <span className="payment-date-label"><i aria-hidden="true">▦</i> Data pagamento</span>
+                                        <div className="payment-date-control">
+                                            <input
+                                                type="date"
+                                                name="paymentDate[]"
+                                                value={payment.paymentDate}
+                                                onChange={(event) => updatePayment(index, {paymentDate: event.currentTarget.value})}
+                                            />
+                                            <div className="payment-date-presentation" aria-hidden="true">
+                                                <strong>{payment.paymentDate ? formatDateInputLabel(payment.paymentDate) : "Seleziona la data"}</strong>
+                                                <span>Data del movimento</span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="payment-date-picker-button"
+                                                aria-label="Apri calendario per data pagamento"
+                                                onClick={(event) => {
+                                                    const input = event.currentTarget.parentElement?.querySelector<HTMLInputElement>('input[type="date"]');
+                                                    input?.focus();
+                                                    input?.showPicker?.();
+                                                }}
+                                            >▦</button>
+                                        </div>
+                                    </div>
+                                    <div className="payment-select-field">
+                                        <span className="payment-select-label"><i aria-hidden="true">▣</i> Canale pagamento</span>
+                                        <div className="payment-select-control">
+                                            <select
+                                                name="paymentMethodId[]"
+                                                value={payment.paymentMethodId}
+                                                onChange={(event) => updatePayment(index, {paymentMethodId: event.currentTarget.value})}
+                                            >
+                                                <option value="">Seleziona metodo</option>
+                                                {availablePaymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? "  •  "} {method.name}</option>)}
+                                            </select>
+                                            <span className="payment-select-caret" aria-hidden="true">⌄</span>
+                                        </div>
+                                    </div>
+                                    <div className="payment-select-field">
+                                        <span className="payment-select-label"><i aria-hidden="true">▥</i> Banca pagamento</span>
                                         {cashBankLocked ? <input type="hidden" name="paymentBankId[]" value={cashBankIdValue}/> : null}
-                                        <select
-                                            name={cashBankLocked ? undefined : "paymentBankId[]"}
-                                            value={cashBankLocked ? cashBankIdValue : payment.bankId}
-                                            disabled={Boolean(cashBankLocked)}
-                                            onChange={(e) =>
-                                                updatePayment(index, {bankId: e.target.value})
-                                            }
-                                        >
-                                            <option value="">-</option>
-                                            {banks.map((b) => (
-                                                <option key={b.id} value={b.id}>
-                                                    {b.icon ?? "  •  "} {b.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </label>
-                                    <label>
+                                        <div className="payment-select-control">
+                                            <select
+                                                name={cashBankLocked ? undefined : "paymentBankId[]"}
+                                                value={cashBankLocked ? cashBankIdValue : payment.bankId}
+                                                disabled={Boolean(cashBankLocked)}
+                                                onChange={(event) => updatePayment(index, {bankId: event.currentTarget.value})}
+                                            >
+                                                <option value="">-</option>
+                                                {banks.map((bank) => (
+                                                    <option key={bank.id} value={bank.id}>
+                                                        {bank.icon ?? "  •  "} {bank.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <span className="payment-select-caret" aria-hidden="true">⌄</span>
+                                        </div>
+                                    </div>
+                                    <label className="payment-amount-field">
                                         Importo pagamento
                                         <MoneyInput
                                             name="paymentAmount[]"
