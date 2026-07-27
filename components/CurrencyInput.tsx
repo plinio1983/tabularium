@@ -1,7 +1,7 @@
 'use client';
 
-import { forwardRef, type InputHTMLAttributes, type KeyboardEvent } from "react";
-import { applyCurrencyInputKey, formatCurrencyInput } from "@/lib/currency-input";
+import { forwardRef, type InputHTMLAttributes, type KeyboardEvent, useRef } from "react";
+import { applyCurrencyInputKeyWithState, formatCurrencyInput } from "@/lib/currency-input";
 
 type CurrencyInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "value" | "defaultValue" | "onChange"> & {
   value: string | number;
@@ -19,6 +19,8 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
   { value, onValueChange, onKeyDown, onFocus, onClick, onPaste, ...props },
   ref,
 ) {
+  const keyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
+
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     onKeyDown?.(event);
     if (event.defaultPrevented) return;
@@ -30,7 +32,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
     const key = event.key === "Backspace" || event.key === "Delete" ? "backspace" : event.key;
     if (!/^\d$/.test(key) && key !== "backspace" && key !== "," && key !== ".") return;
     event.preventDefault();
-    onValueChange(applyCurrencyInputKey(value, key));
+    onValueChange(applyCurrencyInputKeyWithState(value, key, keyStateRef.current));
     moveCaretToEnd(event.currentTarget);
   }
 
@@ -41,6 +43,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
     inputMode="decimal"
     value={formatCurrencyInput(value)}
     onChange={event => {
+      keyStateRef.current.separatorDigits = null;
       onValueChange(formatCurrencyInput(event.currentTarget.value));
       moveCaretToEnd(event.currentTarget);
     }}
@@ -57,6 +60,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
       onPaste?.(event);
       if (event.defaultPrevented) return;
       event.preventDefault();
+      keyStateRef.current.separatorDigits = null;
       onValueChange(formatCurrencyInput(event.clipboardData.getData("text")));
       moveCaretToEnd(event.currentTarget);
     }}

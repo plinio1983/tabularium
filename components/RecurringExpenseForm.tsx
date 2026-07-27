@@ -5,7 +5,7 @@ import {createPortal} from "react-dom";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
-import {applyCurrencyInputKey, formatCurrencyInput} from "@/lib/currency-input";
+import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 
 type Option = {
     id: number;
@@ -481,6 +481,7 @@ export default function RecurringExpenseForm({
     const [notes, setNotes] = useState(initialExpense?.notes ?? "");
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
+    const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
     const selectedPaymentMethodName = paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "";
     const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
     const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
@@ -509,7 +510,7 @@ export default function RecurringExpenseForm({
     }
 
     function appendAmountKey(key: string) {
-        setAmount(current => applyCurrencyInputKey(current, key));
+        setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
         focusAmount();
     }
 

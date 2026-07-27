@@ -22,8 +22,8 @@ const emptyCustomer = {
   internalNotes: ''
 };
 
-export default function CustomerAutocomplete({ customers, initialCustomerId }: { customers: Customer[]; initialCustomerId?: number | null }) {
-  const fallback = customers.find(customer => customer.id === initialCustomerId) ?? customers.find(customer => customer.systemRole === 'DEFAULT') ?? customers[0];
+export default function CustomerAutocomplete({ customers, initialCustomerId, onValueChange }: { customers: Customer[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void }) {
+  const fallback = customers.find(customer => customer.id === initialCustomerId);
   const [selected, setSelected] = useState<Customer | undefined>(fallback);
   const [query, setQuery] = useState(fallback?.businessName ?? '');
   const [open, setOpen] = useState(false);
@@ -54,6 +54,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId }: {
   function selectCustomer(customer: Customer) {
     setSelected(customer);
     setQuery(customer.businessName);
+    onValueChange?.(customer.businessName);
     setOpen(false);
   }
 
@@ -100,8 +101,11 @@ export default function CustomerAutocomplete({ customers, initialCustomerId }: {
 
   return <div className="supplier-picker supplier-picker-wide full expense-wizard-step expense-wizard-step-3" ref={containerRef}>
     <input type="hidden" name="customerId" value={selected?.id ?? ''} />
-    <label>
-      Cliente
+    <label className="income-customer-field">
+      <span className="app-form-field-label">
+        <span className="app-form-field-icon" aria-hidden="true">◎</span>
+        <span>Cliente</span>
+      </span>
       <div className="supplier-input-row">
         <input
           value={query}
@@ -113,6 +117,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId }: {
           onChange={event => {
             setQuery(event.currentTarget.value);
             setSelected(undefined);
+            onValueChange?.(event.currentTarget.value);
             setOpen(true);
           }}
         />

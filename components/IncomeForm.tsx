@@ -3,7 +3,8 @@
 import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
 import CustomerAutocomplete from '@/components/CustomerAutocomplete';
 import {CurrencyInput} from "@/components/CurrencyInput";
-import {applyCurrencyInputKey, formatCurrencyInput} from "@/lib/currency-input";
+import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
+import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
 
 type InitialIncome = {
     id?: number;
@@ -69,11 +70,11 @@ function formatEuro(value: number) {
     return new Intl.NumberFormat("it-IT", {style: "currency", currency: "EUR"}).format(value || 0);
 }
 
-function MoneyInput(props: React.ComponentProps<typeof CurrencyInput>) {
+function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyInput> & {inputRef?: React.RefObject<HTMLInputElement | null>}) {
     return (
         <div className="money-input">
             <span>€</span>
-            <CurrencyInput {...props}/>
+            <CurrencyInput ref={inputRef} {...props}/>
         </div>
     );
 }
@@ -105,6 +106,15 @@ export default function IncomeForm({
     const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId) || (fallbackBank ? String(fallbackBank.id) : "");
     const initialSalesChannelId = initialIncome?.salesChannelId ? String(initialIncome.salesChannelId) : String(salesChannels[0]?.id ?? "");
     const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount).replace(".", ","));
+    const [salesChannelId, setSalesChannelId] = useState(initialSalesChannelId);
+    const [orderDate, setOrderDate] = useState(toDateInput(initialIncome?.orderDate) || today);
+    const [creditDate, setCreditDate] = useState(toDateInput(initialIncome?.creditDate) || today);
+    const [billingPeriod, setBillingPeriod] = useState(toMonthInput(initialIncome));
+    const [description, setDescription] = useState(initialIncome?.description ?? "");
+    const [notes, setNotes] = useState(initialIncome?.notes ?? "");
+    const [customerName, setCustomerName] = useState(
+        customers.find(customer => customer.id === initialIncome?.customerId)?.businessName ?? "",
+    );
     const [paymentMethodId, setPaymentMethodId] = useState(initialPaymentMethodId);
     const [creditBankId, setCreditBankId] = useState(initialCreditBankId);
     const [isCredited, setIsCredited] = useState(initialIncome?.isCredited ?? true);
@@ -113,6 +123,8 @@ export default function IncomeForm({
     const [vatRate, setVatRate] = useState(normalizeMoney(initialIncome?.vatRate) || "22");
     const [mobileStep, setMobileStep] = useState(1);
     const formRef = useRef<HTMLFormElement>(null);
+    const amountRef = useRef<HTMLInputElement>(null);
+    const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
     const normalizedAmount = amount.replace(",", ".");
     const amountValue = Number(normalizedAmount || 0);
     const activeVatRate = isFiscal ? Number(vatRate || 0) : 0;
@@ -150,8 +162,17 @@ export default function IncomeForm({
     }
 
     function appendAmountKey(key: string) {
-        setAmount(current => applyCurrencyInputKey(current, key));
+        setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
+        focusAmount();
     }
+
+    function focusAmount() {
+        window.requestAnimationFrame(() => amountRef.current?.focus({preventScroll: true}));
+    }
+
+    useEffect(() => {
+        if (mobileStep === 2 && window.matchMedia("(max-width: 900px)").matches) focusAmount();
+    }, [mobileStep]);
 
     function validateMobileStep() {
         const elements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.expense-wizard-step-${mobileStep}`) ?? []);
@@ -186,7 +207,7 @@ export default function IncomeForm({
             <div className="expense-wizard-header full">
                 <div className="expense-wizard-heading">
                     <span>Passaggio {mobileStep} di 6</span>
-                    <strong>{["Vendita", "Importo", "Cliente", "Pagamento", "Fiscale", "Note"][mobileStep - 1]}</strong>
+                    <strong>{["Vendita", "Importo", "Cliente", "Pagamento", "Fattura", "Riepilogo"][mobileStep - 1]}</strong>
                 </div>
                 <div className="expense-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
                     <span style={{width: `${mobileStep / 6 * 100}%`}}/>
@@ -200,42 +221,74 @@ export default function IncomeForm({
                     <small>Dati principali dell'incasso</small>
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
-                    <label className="expense-wizard-step expense-wizard-step-1">
-                        Canale di vendita
-                        <select name="salesChannelId" defaultValue={initialSalesChannelId} required>
-                            {salesChannels.map(option =>
-                                <option key={option.id} value={option.id}>{option.icon ? `${option.icon} ` : ''}{option.name}</option>)}
-                        </select>
-                    </label>
+                    <SelectField className="expense-wizard-step expense-wizard-step-1" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({value: option.id, label: `${option.icon ?? "•"} ${option.name}`}))}/>
 
-                    <label className="expense-wizard-step expense-wizard-step-1">
-                        Data ordine
-                        <input type="date" name="orderDate" required defaultValue={toDateInput(initialIncome?.orderDate) || today}/>
-                    </label>
+                    <DateField className="expense-wizard-step expense-wizard-step-1" label="Data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/>
 
-                    <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId}/>
+                    <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId} onValueChange={setCustomerName}/>
 
-                    <label className="full expense-wizard-step expense-wizard-step-3">
-                        Descrizione
-                        <input name="description" defaultValue={initialIncome?.description ?? ""} placeholder="Descrizione dell'incasso"/>
-                    </label>
+                    <FormField className="full expense-wizard-step expense-wizard-step-3" label="Descrizione" icon="≡">
+                        <input name="description" value={description} onChange={event => setDescription(event.currentTarget.value)} placeholder="Descrizione dell'incasso"/>
+                    </FormField>
 
+                </div>
+            </details>
+
+            <details className="form-section full income-form-section income-amount-section" open>
+                <summary>
+                    <span>Importo e IVA</span>
+                    <small>Fiscalità, importo e aliquota IVA</small>
+                </summary>
+                <div className="form-section-grid income-form-section-grid">
                     <div className="amount-vat-row full income-amount-vat-row expense-wizard-step expense-wizard-step-2 income-wizard-amount">
-                        <label className="income-amount-field">
-                            Importo IVA inclusa
-                            <div className="income-amount-row">
-                                <MoneyInput required value={amount} onValueChange={handleAmountChange}/>
-                                <input type="hidden" name="amount" value={normalizedAmount}/>
+                        <div className="income-wizard-amount-entry">
+                            <div className="toggle-field switch-toggle-field income-switch-control income-fiscal-switch">
+                                <span>Fiscale</span>
+                                <input type="hidden" name="isFiscal" value="false"/>
+                                <label className="switch">
+                                    <input
+                                        type="checkbox"
+                                        name="isFiscal"
+                                        value="true"
+                                        checked={isFiscal}
+                                        onChange={(event) => {
+                                            toggleFiscal(event.currentTarget.checked);
+                                            focusAmount();
+                                        }}
+                                    />
+                                    <span className="slider"/>
+                                    {/*<span className="text-muted">{isFiscal ? "Fiscale" : "Non fiscale"}</span>*/}
+                                </label>
                             </div>
-                        </label>
+                            <div className="income-amount-control">
+                                <div className="income-amount-vat-excluded" aria-live="polite">
+                                    {/*<small className="text-muted">I.E.</small>*/}
+                                    <strong>{formatEuro(netAmount)}</strong>
+                                </div>
+                                <label className="income-amount-field">
+                                    <div>Importo <span className="hidden-sp">IVA inclusa</span></div>
+                                    <div className="income-amount-row">
+                                        <MoneyInput inputRef={amountRef} required value={amount} onValueChange={handleAmountChange}/>
+                                        <input type="hidden" name="amount" value={normalizedAmount}/>
+                                    </div>
+                                </label>
+                                <div className="expense-wizard-vat-buttons income-vat-buttons align-center" aria-label="Aliquota IVA">
+                                    <div className="hidden-sp">
+                                        <label className="ml-12">IVA</label>
+                                    </div>
+                                    {vatRates.map(value =>
+                                        <button type="button" key={value} className={vatRate === value ? "is-selected" : ""} disabled={!isFiscal} onMouseDown={event => event.preventDefault()} onClick={() => {
+                                            setVatRate(value);
+                                            focusAmount();
+                                        }}>{value}%</button>)}
+                                </div>
+                            </div>
+                        </div>
 
-                        <label>
-                            <span>IVA esclusa</span>
-                            <span className="net-amount-inline"><strong>{formatEuro(netAmount)}</strong></span>
-                        </label>
+                        <input type="hidden" name="vatRate" value={isFiscal ? vatRate : "0"}/>
 
                         <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
-                            {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
+                            {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
                         </div>
 
                     </div>
@@ -249,8 +302,8 @@ export default function IncomeForm({
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
 
-                    <div className="income-form-section-credit">
-                        <label>Accreditato</label>
+                    <div className="toggle-field switch-toggle-field income-switch-control income-form-section-credit">
+                        <label className="app-form-label">Accreditato</label>
                         <input type="hidden" name="isCredited" value="false"/>
                         <label className="switch">
                             <input
@@ -261,12 +314,30 @@ export default function IncomeForm({
                                 onChange={(event) => setIsCredited(event.currentTarget.checked)}
                             />
                             <span className="slider"/>
-                            <span>{isCredited ? "Si" : "No"}</span>
+                            <span className="ml-12 text-muted">{isCredited ? "Accreditato" : "Non accreditato"}</span>
                         </label>
                     </div>
 
-                    <div className="income-form-section-invoice-issued">
-                        <label>Fattura emessa</label>
+                    <DateField className="income-payment-field-wide" label="Data accredito" name="creditDate" value={creditDate} onChange={setCreditDate} required/>
+
+                    <SelectField className="income-payment-field-wide" label="Metodo di accredito" icon="▣" name="paymentMethodId" value={paymentMethodId} onChange={setPaymentMethodId} required options={paymentMethods.map(method => ({value: method.id, label: `${method.icon ?? "•"} ${method.name}`}))}/>
+
+                    <SelectField className="income-payment-field-wide" label="Canale accredito" icon="▥" name="creditBankId" value={cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId} onChange={setCreditBankId} disabled={cashPaymentSelected} required options={banks.map(bank => ({value: bank.id, label: `${bank.icon ?? "•"} ${bank.name}`}))}/>
+                    {cashPaymentSelected && fallbackBank ?
+                        <input type="hidden" name="creditBankId" value={fallbackBank.id}/> : null}
+
+                </div>
+            </details>
+
+            <details className="form-section full income-form-section income-fiscal-section expense-wizard-step expense-wizard-step-5" open>
+                <summary>
+                    <span>Fattura</span>
+                    <small>Stato fattura e periodo contabile</small>
+                </summary>
+                <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
+                    <MonthField label="Periodo contabile" name="billingPeriod" value={billingPeriod} onChange={setBillingPeriod} required/>
+                    <div className="toggle-field switch-toggle-field income-switch-control income-form-section-invoice-issued">
+                        <label className="app-form-label">Fattura emessa</label>
                         <label className="switch">
                             <input
                                 type="checkbox"
@@ -274,99 +345,45 @@ export default function IncomeForm({
                                 onChange={(event) => toggleInvoiceIssued(event.currentTarget.checked)}
                             />
                             <span className="slider"/>
-                            <span>{isFiscal && invoiceStatus === "EMESSA" ? "Si" : "No"}</span>
+                            <span className="ml-12 text-muted">{isFiscal && invoiceStatus === "EMESSA" ? "Emessa" : "Non inviata"}</span>
                         </label>
                     </div>
-
-                    <label>
-                        Data accredito
-                        <input type="date" name="creditDate" required defaultValue={toDateInput(initialIncome?.creditDate) || today}/>
-                    </label>
-
-                    <label>
-                        Metodo di accredito
-                        <select name="paymentMethodId" value={paymentMethodId} onChange={(event) => setPaymentMethodId(event.currentTarget.value)} required>
-                            {paymentMethods.map(method =>
-                                <option key={method.id} value={method.id}>{method.icon ?? '  •  '} {method.name}</option>)}
-                        </select>
-                    </label>
-
-                    <label>
-                        Canale accr.
-                        <select name="creditBankId" value={cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId} onChange={(event) => setCreditBankId(event.currentTarget.value)} disabled={cashPaymentSelected} required>
-                            {banks.map(bank => (
-                                <option key={bank.id} value={bank.id}>{bank.icon ?? '  •  '} {bank.name}</option>
-                            ))}
-                        </select>
-                        {cashPaymentSelected && fallbackBank ?
-                            <input type="hidden" name="creditBankId" value={fallbackBank.id}/> : null}
-                    </label>
-                </div>
-            </details>
-
-            <details className="form-section full income-form-section income-fiscal-section expense-wizard-step expense-wizard-step-5" open>
-                <summary>
-                    <span>Fiscale</span>
-                    <small>Fiscalità, fattura e aliquota IVA</small>
-                </summary>
-                <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
                     {/*<div className="toggle-field-wrap">*/}
-                    <div className="toggle-field switch-toggle-field fiscal-toggle">
-                        <label>Fiscale</label>
-                        <input type="hidden" name="isFiscal" value="false"/>
-                        <label className="switch">
-                            <input
-                                type="checkbox"
-                                name="isFiscal"
-                                value="true"
-                                checked={isFiscal}
-                                onChange={(event) => toggleFiscal(event.currentTarget.checked)}
-                            />
-                            <span className="slider"/>
-                            <span>{isFiscal ? "Si" : "No"}</span>
-                        </label>
-                    </div>
-                    {/*</div>*/}
-
-                    <label>
-                        Stato fattura
-                        <select
-                            name="invoiceStatus"
-                            value={invoiceStatus}
-                            disabled={!isFiscal}
-                            onChange={(event) => setInvoiceStatus(event.currentTarget.value)}
-                        >
-                            <option value="NON_INVIATA">Non inviata</option>
-                            <option value="EMESSA">Emessa</option>
-                        </select>
+                    <div>
+                        <SelectField label="Stato fattura" icon="▤" name="invoiceStatus" value={invoiceStatus} disabled={!isFiscal} onChange={setInvoiceStatus} options={[
+                            {value: "NON_INVIATA", label: "Non inviata"},
+                            {value: "EMESSA", label: "Emessa"},
+                        ]}/>
                         {!isFiscal && <input type="hidden" name="invoiceStatus" value=""/>}
-                    </label>
-
-                    <label>
-                        IVA
-                        <select name="vatRate" value={isFiscal ? vatRate : "0"} onChange={(event) => setVatRate(event.target.value)} disabled={!isFiscal}>
-                            {vatRates.map(value => <option key={value} value={value}>{value}%</option>)}
-                        </select>
-                        {!isFiscal && <input type="hidden" name="vatRate" value="0"/>}
-                    </label>
-
-                    <label>
-                        Periodo Contabile
-                        <input type="month" name="billingPeriod" required defaultValue={toMonthInput(initialIncome)}/>
-                    </label>
+                    </div>
 
                 </div>
             </details>
 
             <details className="form-section full income-form-section income-notes-section expense-wizard-step expense-wizard-step-6" open={mobileStep === 6}>
                 <summary>
-                    <span>Note</span>
-                    <small>Note interne opzionali</small>
+                    <span>Riepilogo e note</span>
+                    <small>Controllo finale e note interne</small>
                 </summary>
                 <div className="form-section-stack income-form-section-stack">
+                    <section className="recurring-review-summary income-review-summary" aria-label="Riepilogo incasso">
+                        <div className="expense-review-heading">
+                            <div><span className="expense-review-kicker">Controlla prima di salvare</span><h3>Riepilogo dell’incasso</h3></div>
+                            <strong>{formatEuro(amountValue)}</strong>
+                        </div>
+                        <div className="expense-review-grid">
+                            <div className="expense-review-item"><i aria-hidden="true">▣</i><span>Canale di vendita<strong>{salesChannels.find(channel => String(channel.id) === salesChannelId)?.name ?? "Non indicato"}</strong></span></div>
+                            <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Data ordine<strong>{orderDate ? new Date(`${orderDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span></div>
+                            <div className="expense-review-item wide"><i aria-hidden="true">◎</i><span>Cliente<strong>{customerName || "Non indicato"}</strong></span></div>
+                            <div className="expense-review-item wide"><i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span></div>
+                            <div className="expense-review-item"><i aria-hidden="true">▤</i><span>Fiscale / IVA<strong>{isFiscal ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span></div>
+                            <div className="expense-review-item"><i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span></div>
+                            <div className="expense-review-item wide"><i aria-hidden="true">€</i><span>Accredito<strong>{paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "Metodo non indicato"} · {banks.find(bank => String(bank.id) === (cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId))?.name ?? "Canale non indicato"} · {isCredited ? "Accreditato" : "Da accreditare"}</strong></span></div>
+                        </div>
+                    </section>
                     <label className="full">
                         Note
-                        <textarea name="notes" rows={3} defaultValue={initialIncome?.notes ?? ""} placeholder="Note interne opzionali"/>
+                        <textarea name="notes" rows={3} value={notes} onChange={event => setNotes(event.currentTarget.value)} placeholder="Note interne opzionali"/>
                     </label>
                 </div>
             </details>

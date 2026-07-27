@@ -92,6 +92,14 @@ a {
   text-align: right;
 }
 
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
 .shell {
   max-width: 1280px;
   margin: 0 auto;
@@ -155,6 +163,11 @@ a {
 .pl-6 {
   padding-left: 6px;
 }
+
+.ml-6 {
+  margin-left: 6px;
+}
+
 .ml-12 {
   margin-left: 12px;
 }
@@ -1102,8 +1115,78 @@ button {
 
 .income-form .income-amount-vat-row {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(140px, .55fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
+}
+
+.income-form .income-wizard-amount-entry {
+  display: grid;
+  grid-template-columns: minmax(156px, .42fr) minmax(260px, 1fr);
+  align-items: stretch;
+  gap: 14px;
+  min-width: 0;
+}
+
+.income-form .income-amount-control {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  position: relative;
+}
+
+@media (min-width: 900px) {
+  .income-form .income-amount-control {
+    min-width: 70%;
+  }
+
+  .income-form .income-fiscal-section .income-form-section-grid {
+    display: flex;
+    flex-wrap: wrap;
+
+    >div {
+      flex: 1 1 auto;
+    }
+
+    .app-form-field {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+  }
+}
+
+.income-form .income-payment-section .income-form-section-grid {
+  display: flex;
+  flex-wrap: wrap;
+
+  .app-form-field {
+    flex: 1 1 49%;
+    min-width: 0;
+  }
+}
+
+.income-form .income-amount-vat-excluded {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.income-form .income-amount-vat-excluded strong {
+  color: #217a36;
+  font-size: 15px;
+}
+
+.income-form .income-net-amount-summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
 }
 
 .income-form .income-amount-row {
@@ -1145,6 +1228,16 @@ button {
 
 .income-form .form-actions-row {
   justify-content: flex-end;
+}
+
+.income-form .income-customer-field {
+  gap: 9px;
+}
+
+.income-form .income-vat-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
 }
 
 .supplier-styled-form {
@@ -4343,14 +4436,12 @@ table th, table td {
 .cash-register-controls select {
   appearance: none;
   padding-right: 44px;
-  background-image:
-    linear-gradient(45deg, transparent 50%, #64748b 50%),
-    linear-gradient(135deg, #64748b 50%, transparent 50%),
-    linear-gradient(145deg, #f1f5f9, #eef2ff);
-  background-position:
-    calc(100% - 20px) calc(50% - 2px),
-    calc(100% - 15px) calc(50% - 2px),
-    calc(100% - 8px) 50%;
+  background-image: linear-gradient(45deg, transparent 50%, #64748b 50%),
+  linear-gradient(135deg, #64748b 50%, transparent 50%),
+  linear-gradient(145deg, #f1f5f9, #eef2ff);
+  background-position: calc(100% - 20px) calc(50% - 2px),
+  calc(100% - 15px) calc(50% - 2px),
+  calc(100% - 8px) 50%;
   background-size: 5px 5px, 5px 5px, 34px 34px;
   background-repeat: no-repeat;
 }
@@ -7597,7 +7688,7 @@ html, body {
 .btn-circle {
   border-radius: 50%;
   max-width: 100%;
-  
+
   &.btn-xxs {
     width: 22px;
     height: 22px;
@@ -11708,14 +11799,12 @@ button.bulk-direct-danger {
 .nested-form-modal .modal-form-grid select {
   appearance: none;
   padding-right: 44px;
-  background-image:
-    linear-gradient(45deg, transparent 50%, #64748b 50%),
-    linear-gradient(135deg, #64748b 50%, transparent 50%),
-    linear-gradient(145deg, #f1f5f9, #eef2ff);
-  background-position:
-    calc(100% - 20px) calc(50% - 2px),
-    calc(100% - 15px) calc(50% - 2px),
-    calc(100% - 8px) 50%;
+  background-image: linear-gradient(45deg, transparent 50%, #64748b 50%),
+  linear-gradient(135deg, #64748b 50%, transparent 50%),
+  linear-gradient(145deg, #f1f5f9, #eef2ff);
+  background-position: calc(100% - 20px) calc(50% - 2px),
+  calc(100% - 15px) calc(50% - 2px),
+  calc(100% - 8px) 50%;
   background-size: 5px 5px, 5px 5px, 34px 34px;
   background-repeat: no-repeat;
 }
@@ -11789,6 +11878,7 @@ button.bulk-direct-danger {
   left: 14px;
   width: 18px;
   text-align: center;
+  font-size: 18px;
 }
 
 .single-expense-form.expense-mobile-wizard .payment-amount-field .money-input > input {

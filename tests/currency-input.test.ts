@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { applyCurrencyInputKey, formatCurrencyInput } from "../lib/currency-input";
+import { applyCurrencyInputKey, applyCurrencyInputKeyWithState, formatCurrencyInput } from "../lib/currency-input";
 
 test("currency input shifts digits from cents to euros", () => {
   let value = "";
@@ -16,6 +16,18 @@ test("currency input shifts digits from cents to euros", () => {
 
 test("currency input comma converts the displayed digits to an integer", () => {
   assert.equal(applyCurrencyInputKey("41,20", ","), "4120,00");
+});
+
+test("digits after comma fill decimals without changing the integer", () => {
+  const state = {separatorDigits: null as 0 | 1 | null};
+  let value = applyCurrencyInputKeyWithState("0,12", ",", state);
+  assert.equal(value, "12,00");
+  value = applyCurrencyInputKeyWithState(value, "3", state);
+  assert.equal(value, "12,03");
+  value = applyCurrencyInputKeyWithState(value, "4", state);
+  assert.equal(value, "12,34");
+  value = applyCurrencyInputKeyWithState(value, "5", state);
+  assert.equal(value, "123,45");
 });
 
 test("currency input backspace shifts digits toward cents", () => {

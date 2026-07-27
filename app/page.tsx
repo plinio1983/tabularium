@@ -1335,7 +1335,7 @@ function EconomicTrendChart({months, year}: { months: DashboardMonth[]; year: nu
         return `${x},${y(month.totals.utileNetto)}`;
     }).join(' ');
 
-    return <section className="card dashboard-insight-card">
+    return <section className="card dashboard-insight-card full">
         <div className="card-heading-row">
             <div>
                 <h2>Entrate, uscite e utile per mese</h2>
@@ -1503,7 +1503,7 @@ function ProfitabilityTrendChart({months, year}: { months: DashboardMonth[]; yea
     const x = (index: number) => left + (chartWidth * index / Math.max(months.length - 1, 1));
     const y = (value: number) => top + ((maxValue - value) / range) * chartHeight;
 
-    return <section className="card dashboard-insight-card">
+    return <section className="card dashboard-insight-card full">
         <div className="card-heading-row">
             <div>
                 <h2>Marginalità per mese</h2>
@@ -2134,8 +2134,8 @@ export default async function Dashboard({searchParams}: {
 
         <div className="dashboard-report-charts">
             <div className="dashboard-insights-grid">
-                <MonthlyProfitComparisonChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <EconomicTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                <MonthlyProfitComparisonChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <ProfitabilityTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <CashScheduleChart items={cashSchedule} year={report.annualYear}/>
                 <VatSituationCard months={nonFiscalExpenseChartMonths} year={report.annualYear}/>

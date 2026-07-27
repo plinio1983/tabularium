@@ -2,7 +2,7 @@
 
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
-import {applyCurrencyInputKey, formatCurrencyInput} from '@/lib/currency-input';
+import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
 
 type Method = {
     id: number;
@@ -43,6 +43,7 @@ export default function CashRegister({
 }) {
     const router = useRouter();
     const amountRef = useRef<HTMLInputElement>(null);
+    const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
     const keyboardMethodRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const keyboardCancelRef = useRef<HTMLButtonElement>(null);
     const keyboardSubmitRef = useRef<HTMLButtonElement>(null);
@@ -189,7 +190,7 @@ export default function CashRegister({
     function appendKey(key: string) {
         if (confirmationLocked) return;
         setNotice(null);
-        setAmount(current => applyCurrencyInputKey(current, key));
+        setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
         focusAmount();
     }
 
@@ -298,7 +299,7 @@ export default function CashRegister({
             <div className="cash-register-header-actions">
                 <a className="btn btn-sm btn-secondary" href="/incomes/cash-register/receipts">
                     <span className="btn-icon" aria-hidden="true">📊</span>
-                    <span>Report</span>
+                    <span>Report<span className="hidden-sp"> scontrini</span> </span>
                 </a>
             </div>
             <div className="cash-register-header-actions">

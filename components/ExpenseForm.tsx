@@ -5,7 +5,7 @@ import {createPortal} from "react-dom";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
-import {applyCurrencyInputKey, formatCurrencyInput} from "@/lib/currency-input";
+import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; systemRole?: string | null; isVatSettlementDefault?: boolean };
 type SupplierOption = {
@@ -705,6 +705,7 @@ export default function ExpenseForm({
     const [attachmentCount, setAttachmentCount] = useState(0);
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
+    const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
     const didOpenNewPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
@@ -821,7 +822,7 @@ export default function ExpenseForm({
     }
 
     function appendAmountKey(key: string) {
-        setAmount(current => applyCurrencyInputKey(current, key));
+        setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
         focusAmount();
     }
 

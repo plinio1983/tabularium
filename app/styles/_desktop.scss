@@ -4,6 +4,14 @@
   }
 }
 
+.income-mobile-wizard .income-amount-vat-excluded {
+  position: absolute;
+  right: 14px;
+  color: #217a36;
+  font-weight: 800;
+  font-size: 15px;
+}
+
 @media (min-width: 901px) {
   .expense-mobile-wizard .expense-wizard-header,
   .expense-mobile-wizard .expense-wizard-actions,
@@ -95,7 +103,8 @@
 
   .expense-mobile-wizard .expense-fiscal-desktop-control,
   .expense-mobile-wizard .expense-invoice-desktop-control,
-  .recurring-expense-form .recurring-switch-control {
+  .recurring-expense-form .recurring-switch-control,
+  .income-form .income-switch-control {
     display: flex !important;
     min-width: 156px;
     min-height: 84px;
@@ -111,13 +120,18 @@
     max-width: fit-content;
   }
 
+  .income-form .income-switch-control {
+    min-height: 91px;
+  }
+
   .recurring-expense-form .recurring-switch-control {
     max-height: 88px;
   }
 
   .expense-mobile-wizard .expense-fiscal-desktop-control > span,
   .expense-mobile-wizard .expense-invoice-desktop-control > span,
-  .recurring-expense-form .recurring-switch-control > span {
+  .recurring-expense-form .recurring-switch-control > span,
+  .income-form .income-switch-control > span {
     color: #334155;
     font-size: 13px;
     font-weight: 850;
@@ -125,7 +139,8 @@
 
   .expense-mobile-wizard .expense-fiscal-desktop-control .switch,
   .expense-mobile-wizard .expense-invoice-desktop-control .switch,
-  .recurring-expense-form .recurring-switch-control .switch {
+  .recurring-expense-form .recurring-switch-control .switch,
+  .income-form .income-switch-control .switch {
     //align-self: flex-end;
     min-height: 46px;
   }
@@ -157,13 +172,28 @@
     min-width: 64px;
   }
 
-    .recurring-expense-form .recurring-vat-buttons-desktop {
-        display: flex !important;
-    }
+  .recurring-expense-form .recurring-vat-buttons-desktop {
+    display: flex !important;
+  }
 
-    .recurring-expense-form .recurring-vat-buttons-mobile {
-        display: none !important;
-    }
+  .recurring-expense-form .recurring-vat-buttons-mobile {
+    display: none !important;
+  }
+
+  .income-form .income-vat-buttons {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .income-form .income-fiscal-switch {
+    min-width: max-content;
+    max-height: max-content;
+  }
+
+  .income-form .income-wizard-amount-entry {
+    display: flex;
+    flex-grow: 1;
+  }
 
   .expense-mobile-wizard .expense-wizard-fiscal-section .toggle-field-wrap {
     display: grid;
@@ -327,11 +357,12 @@
 }
 
 .recurring-wizard-amount-field .money-input > input,
-.expense-wizard-amount-field .money-input > input {
+.expense-wizard-amount-field .money-input > input,
+.income-amount-field .money-input > input {
   font-size: 24px !important;
 
   @media (min-width: 768px) {
-    font-size: 20px !important;
+    //font-size: 20px !important;
   }
 }
 

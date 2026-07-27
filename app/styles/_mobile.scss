@@ -191,8 +191,7 @@
 @media (min-width: 576px) {
   .income-form .income-form-section-grid {
     &.income-form-section-fiscal {
-      //display: flex;
-      grid-template-columns: minmax(120px, 180px) repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 }
@@ -2314,7 +2313,8 @@
   }
 
   .expense-mobile-wizard .expense-wizard-mobile-switch,
-  .recurring-mobile-wizard .recurring-switch-control {
+  .recurring-mobile-wizard .recurring-switch-control,
+  .income-mobile-wizard .income-switch-control {
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -2326,6 +2326,12 @@
     border: 1px solid #cbd5e1;
     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.045);
     min-width: max-content;
+    background: linear-gradient(145deg, #fff, #f8fafc);
+  }
+
+  .income-mobile-wizard .income-switch-control {
+    max-height: fit-content;
+    max-width: max-content;
   }
 
   .recurring-mobile-wizard .recurring-switch-control {
@@ -2334,9 +2340,24 @@
   }
 
   .expense-mobile-wizard .expense-wizard-mobile-switch .switch,
-  .recurring-mobile-wizard .recurring-switch-control .switch {
+  .recurring-mobile-wizard .recurring-switch-control .switch,
+  .income-mobile-wizard .income-switch-control .switch {
     //min-height: 46px;
     align-items: center;
+  }
+
+  .income-mobile-wizard .income-fiscal-section .income-form-section-grid.income-form-section-fiscal {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    >div {
+      flex: 1 1 auto;
+    }
+
+    .app-form-field {
+      flex: 1 1 100%;
+    }
   }
 
   .expense-wizard-amount-entry,
@@ -3505,9 +3526,15 @@
     background: transparent;
   }
 
+  .expense-mobile-step-1.income-mobile-wizard .income-amount-section,
+  .expense-mobile-step-2.income-mobile-wizard .income-document-section,
+  .expense-mobile-step-3.income-mobile-wizard .income-amount-section,
   .expense-mobile-step-4.income-mobile-wizard .income-document-section,
+  .expense-mobile-step-4.income-mobile-wizard .income-amount-section,
   .expense-mobile-step-5.income-mobile-wizard .income-document-section,
-  .expense-mobile-step-6.income-mobile-wizard .income-document-section {
+  .expense-mobile-step-5.income-mobile-wizard .income-amount-section,
+  .expense-mobile-step-6.income-mobile-wizard .income-document-section,
+  .expense-mobile-step-6.income-mobile-wizard .income-amount-section {
     display: none;
   }
 
@@ -3530,6 +3557,31 @@
     gap: 14px;
   }
 
+  .income-mobile-wizard .income-amount-vat-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .income-mobile-wizard .income-amount-vat-excluded > span {
+    display: none;
+  }
+
+  .income-mobile-wizard .income-wizard-amount-entry {
+    display: flex;
+
+    .income-amount-control {
+      flex-grow: 1;
+    }
+  }
+
+  .income-wizard-amount .income-net-amount-summary {
+    display: none;
+  }
+
+  .income-mobile-wizard .income-wizard-amount-entry {
+    grid-template-columns: minmax(112px, .42fr) minmax(0, 1fr);
+    width: 100%;
+  }
+
   .income-mobile-wizard .income-wizard-amount > label {
     width: 100%;
   }
@@ -3545,7 +3597,7 @@
 
   .income-mobile-wizard .income-wizard-amount .money-input > span {
     left: 16px;
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .income-mobile-wizard .income-wizard-amount .money-input input {
@@ -3559,6 +3611,31 @@
     font-weight: 850;
     line-height: 1;
     text-align: right;
+  }
+
+  .income-mobile-wizard .income-payment-section .income-form-section-grid,
+  .income-mobile-wizard .income-fiscal-section .income-form-section-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .income-mobile-wizard .income-payment-field-wide {
+    grid-column: 1 / -1;
+  }
+
+  .income-mobile-wizard .income-vat-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 7px;
+
+    @media (max-width: 576px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .expense-mobile-step-6.income-mobile-wizard .income-notes-section > .income-form-section-stack {
+    padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
   }
 
   .recurring-mobile-wizard .recurring-form-section {

@@ -34,7 +34,37 @@ export function applyCurrencyInputKey(
   return formatCurrencyInput(value);
 }
 
+export type CurrencyInputKeyState = {
+  separatorDigits: 0 | 1 | null;
+};
+
+export function applyCurrencyInputKeyWithState(
+  value: string | number | null | undefined,
+  key: string,
+  state: CurrencyInputKeyState,
+) {
+  const cents = currencyValueToCents(value);
+
+  if (key === "," || key === ".") {
+    state.separatorDigits = 0;
+    return formatCurrencyInput(Math.min(MAX_CENTS, cents * 100) / 100);
+  }
+
+  if (/^\d$/.test(key) && state.separatorDigits !== null) {
+    const integerCents = Math.floor(cents / 100) * 100;
+    if (state.separatorDigits === 0) {
+      state.separatorDigits = 1;
+      return formatCurrencyInput((integerCents + Number(key)) / 100);
+    }
+
+    state.separatorDigits = null;
+    return formatCurrencyInput((integerCents + (cents % 10) * 10 + Number(key)) / 100);
+  }
+
+  state.separatorDigits = null;
+  return applyCurrencyInputKey(value, key);
+}
+
 export function currencyInputToNumber(value: string | number | null | undefined) {
   return currencyValueToCents(value) / 100;
 }
-
