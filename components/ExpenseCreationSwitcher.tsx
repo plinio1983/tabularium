@@ -11,11 +11,15 @@ type InitialExpense = Parameters<typeof ExpenseForm>[0]["initialExpense"];
 type Props = { categories: Option[]; banks: Option[]; paymentMethods: Option[]; suppliers: SupplierOption[]; expenseAction: string; recurringAction: string; initialExpense?: InitialExpense; title?: string; submitLabel?: string; onCancel?: () => void; onSaved?: () => void; cancelHref?: string };
 
 export default function ExpenseCreationSwitcher(props: Props) {
-  const [type, setType] = useState<"single" | "recurring">("single");
+  const [type, setType] = useState<"single" | "recurring" | "vat">("single");
 
   if (type === "recurring") {
-    return <RecurringExpenseForm categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} action={props.recurringAction} initialExpense={props.initialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} onSwitchToSingle={() => setType("single")} />;
+    return <RecurringExpenseForm categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} action={props.recurringAction} initialExpense={props.initialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} onSwitchToSingle={() => setType("single")} onSwitchToVatSettlement={() => setType("vat")} />;
   }
 
-  return <ExpenseForm categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} action={props.expenseAction} title={props.title} submitLabel={props.submitLabel} initialExpense={props.initialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} onSwitchToRecurring={() => setType("recurring")} />;
+  const initialExpense = type === "vat"
+    ? {...props.initialExpense, expenseType: "VAT_SETTLEMENT" as const}
+    : props.initialExpense;
+
+  return <ExpenseForm categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} action={props.expenseAction} title={props.title} submitLabel={props.submitLabel} initialExpense={initialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} onSwitchToRecurring={() => setType("recurring")} />;
 }

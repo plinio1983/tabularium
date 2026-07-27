@@ -1,411 +1,499 @@
 @media (min-width: 761px) {
-    .expense-detail-mobile-nav-only {
-        display: none;
-    }
+  .expense-detail-mobile-nav-only {
+    display: none;
+  }
 }
 
 @media (min-width: 901px) {
-    .expense-mobile-wizard .expense-wizard-header,
-    .expense-mobile-wizard .expense-wizard-actions,
-    .expense-mobile-wizard .expense-wizard-keypad,
-    .expense-mobile-wizard .expense-wizard-vat-buttons,
-    .expense-mobile-wizard .expense-type-choice,
-    .expense-mobile-wizard .expense-review-step,
-    .expense-mobile-wizard .expense-wizard-mobile-switch,
-    .expense-mobile-wizard .expense-invoice-switches {
+  .expense-mobile-wizard .expense-wizard-header,
+  .expense-mobile-wizard .expense-wizard-actions,
+  .expense-mobile-wizard .expense-wizard-keypad,
+  .expense-mobile-wizard .expense-wizard-vat-buttons,
+  .expense-mobile-wizard .expense-review-step,
+  .expense-mobile-wizard .expense-wizard-mobile-switch,
+  .expense-mobile-wizard .expense-invoice-switches {
+    display: none !important;
+  }
+
+  .expense-mobile-wizard .expense-type-choice {
+    display: grid;
+    gap: 9px;
+    margin-bottom: 4px;
+  }
+
+  .expense-mobile-wizard .expense-type-choice-title {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .expense-mobile-wizard .expense-type-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .expense-mobile-wizard .expense-type-choice-grid button {
+    display: grid;
+    min-width: 0;
+    min-height: 92px;
+    align-content: center;
+    justify-items: center;
+    gap: 4px;
+    padding: 9px 5px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: #f8fafc;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .expense-mobile-wizard .expense-type-choice-grid button > span {
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .expense-mobile-wizard .expense-type-choice-grid button strong {
+    font-size: 13px;
+  }
+
+  .expense-mobile-wizard .expense-type-choice-grid button small {
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .expense-mobile-wizard .expense-type-choice-grid button.is-selected {
+    border-color: var(--accent);
+    background: #eef4ff;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, .1);
+  }
+
+  .expense-mobile-wizard .expense-type-choice-grid button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  .single-expense-form .expense-wizard-amount-entry {
+    display: grid;
+    grid-template-columns: minmax(156px, .42fr) minmax(260px, 1fr);
+    gap: 14px;
+    width: 100%;
+    align-items: start;
+  }
+
+  .single-expense-form .expense-wizard-amount-entry > .expense-amount-control:only-child {
+    grid-column: 1 / -1;
+  }
+
+  .single-expense-form .amount-vat-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: end;
+    gap: 16px;
+  }
+
+  .expense-mobile-wizard .expense-fiscal-desktop-control,
+  .expense-mobile-wizard .expense-invoice-desktop-control,
+  .recurring-expense-form .recurring-switch-control {
+    display: flex !important;
+    min-width: 156px;
+    min-height: 84px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px 4px;
+    border: 1px solid #cbd5e1;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #fff, #f8fafc);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+    max-width: fit-content;
+  }
+
+  .recurring-expense-form .recurring-switch-control {
+    max-height: 88px;
+  }
+
+  .expense-mobile-wizard .expense-fiscal-desktop-control > span,
+  .expense-mobile-wizard .expense-invoice-desktop-control > span,
+  .recurring-expense-form .recurring-switch-control > span {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 850;
+  }
+
+  .expense-mobile-wizard .expense-fiscal-desktop-control .switch,
+  .expense-mobile-wizard .expense-invoice-desktop-control .switch,
+  .recurring-expense-form .recurring-switch-control .switch {
+    //align-self: flex-end;
+    min-height: 46px;
+  }
+
+  .single-expense-form .expense-wizard-amount-field {
+    min-width: 0;
+  }
+
+  .single-expense-form .expense-wizard-amount-field .money-input,
+  .single-expense-form .expense-wizard-amount-field .money-input > input {
+    width: 100%;
+  }
+
+  .single-expense-form .expense-amount-control {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .single-expense-form .expense-wizard-vat-buttons {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 2px;
+    align-items: center;
+  }
+
+  .single-expense-form .expense-wizard-vat-buttons button {
+    min-width: 64px;
+  }
+
+    .recurring-expense-form .recurring-vat-buttons-desktop {
+        display: flex !important;
+    }
+
+    .recurring-expense-form .recurring-vat-buttons-mobile {
         display: none !important;
     }
 
-    .single-expense-form .expense-wizard-amount-entry {
-        display: grid;
-        grid-template-columns: minmax(156px, .42fr) minmax(260px, 1fr);
-        gap: 14px;
-        width: 100%;
-        align-items: start;
-    }
+  .expense-mobile-wizard .expense-wizard-fiscal-section .toggle-field-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(156px, 1fr));
+    gap: 12px;
+  }
 
-    .single-expense-form .expense-wizard-amount-entry > .expense-amount-control:only-child {
-        grid-column: 1 / -1;
-    }
+  .expense-mobile-wizard .expense-invoice-step-row {
+    display: block;
+  }
 
-    .single-expense-form .amount-vat-row {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        align-items: end;
-        gap: 16px;
-    }
+  .expense-mobile-wizard .app-form-field {
+    gap: 9px;
+  }
 
-    .expense-mobile-wizard .expense-fiscal-desktop-control,
-    .expense-mobile-wizard .expense-invoice-desktop-control {
-        display: flex !important;
-        min-width: 156px;
-        min-height: 84px;
-        flex-direction: column;
-        align-items: stretch;
-        justify-content: space-between;
-        gap: 8px;
-        padding: 10px 12px;
-        border: 1px solid #cbd5e1;
-        border-radius: 15px;
-        background: linear-gradient(145deg, #fff, #f8fafc);
-        box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
-    }
+  .expense-mobile-wizard .app-form-field-label {
+    color: #334155;
+    font-weight: 900;
+  }
 
-    .expense-mobile-wizard .expense-fiscal-desktop-control > span,
-    .expense-mobile-wizard .expense-invoice-desktop-control > span {
-        color: #334155;
-        font-size: 13px;
-        font-weight: 850;
-    }
+  .expense-mobile-wizard .app-form-field-icon,
+  .expense-mobile-wizard .payment-date-label > i,
+  .expense-mobile-wizard .payment-select-label > i {
+    display: inline-grid;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+    color: var(--accent);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 900;
+    box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
+  }
 
-    .expense-mobile-wizard .expense-fiscal-desktop-control .switch,
-    .expense-mobile-wizard .expense-invoice-desktop-control .switch {
-        //align-self: flex-end;
-        min-height: 46px;
-    }
+  .expense-mobile-wizard .app-select-control select,
+  .expense-mobile-wizard .payment-select-control select {
+    min-height: 54px;
+    appearance: none;
+    padding-right: 52px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #fff;
+    background-image: none;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 750;
+  }
 
-    .single-expense-form .expense-wizard-amount-field {
-        min-width: 0;
-    }
+  .expense-mobile-wizard .app-select-caret,
+  .expense-mobile-wizard .payment-select-caret {
+    position: absolute;
+    top: 50%;
+    right: 11px;
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: var(--accent);
+    font-size: 18px;
+    pointer-events: none;
+    transform: translateY(-54%);
+  }
 
-    .single-expense-form .expense-wizard-amount-field .money-input,
-    .single-expense-form .expense-wizard-amount-field .money-input > input {
-        width: 100%;
-    }
+  .expense-mobile-wizard .app-date-control,
+  .expense-mobile-wizard .payment-date-control {
+    position: relative;
+    min-height: 54px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 17px;
+    background: linear-gradient(145deg, #fff, #f8fafc);
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
+  }
 
-    .single-expense-form .expense-amount-control {
-        display: grid;
-        gap: 8px;
-        min-width: 0;
-    }
+  .expense-mobile-wizard .app-date-control:focus-within,
+  .expense-mobile-wizard .payment-date-control:focus-within,
+  .expense-mobile-wizard .app-select-control:focus-within select,
+  .expense-mobile-wizard .payment-select-control:focus-within select {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+  }
 
-    .single-expense-form .expense-wizard-vat-buttons {
-        display: flex !important;
-        flex-wrap: wrap;
-        gap: 7px;
-        margin-top: 2px;
-        align-items: center;
-    }
+  .expense-mobile-wizard .app-date-control > input,
+  .expense-mobile-wizard .payment-date-control > input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 54px;
+    opacity: 0;
+    cursor: pointer;
+  }
 
-    .single-expense-form .expense-wizard-vat-buttons button {
-        min-width: 64px;
-    }
+  .expense-mobile-wizard .app-date-presentation,
+  .expense-mobile-wizard .payment-date-presentation {
+    display: flex;
+    min-height: 54px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 56px 10px 15px;
+    pointer-events: none;
+  }
 
-    .expense-mobile-wizard .expense-wizard-fiscal-section .toggle-field-wrap {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(156px, 1fr));
-        gap: 12px;
-    }
+  .expense-mobile-wizard .app-date-presentation strong,
+  .expense-mobile-wizard .payment-date-presentation strong {
+    color: #172033;
+    font-size: 17px;
+    text-transform: capitalize;
+  }
 
-    .expense-mobile-wizard .expense-invoice-step-row {
-        display: block;
-    }
+  .expense-mobile-wizard .app-date-presentation span,
+  .expense-mobile-wizard .payment-date-presentation span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+  }
 
-    .expense-mobile-wizard .app-form-field {
-        gap: 9px;
-    }
+  .expense-mobile-wizard .app-date-picker-button,
+  .expense-mobile-wizard .payment-date-picker-button {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    z-index: 2;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 18px;
+    transform: translateY(-50%);
+  }
 
-    .expense-mobile-wizard .app-form-field-label {
-        color: #334155;
-        font-weight: 900;
-    }
+  .expense-mobile-wizard .payment-date-field,
+  .expense-mobile-wizard .payment-select-field {
+    gap: 9px;
+    color: #334155;
+    font-weight: 900;
+  }
 
-    .expense-mobile-wizard .app-form-field-icon,
-    .expense-mobile-wizard .payment-date-label > i,
-    .expense-mobile-wizard .payment-select-label > i {
-        display: inline-grid;
-        width: 25px;
-        height: 25px;
-        place-items: center;
-        border-radius: 9px;
-        background: linear-gradient(145deg, #eef2ff, #e0e7ff);
-        color: var(--accent);
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 900;
-        box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
-    }
+  .expense-mobile-wizard .payment-date-label,
+  .expense-mobile-wizard .payment-select-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
 
-    .expense-mobile-wizard .app-select-control select,
-    .expense-mobile-wizard .payment-select-control select {
-        min-height: 54px;
-        appearance: none;
-        padding-right: 52px;
-        border: 1px solid #cbd5e1;
-        border-radius: 16px;
-        background: #fff;
-        background-image: none;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
-        color: var(--text);
-        font-size: 16px;
-        font-weight: 750;
-    }
+  .expense-mobile-wizard .money-input > input {
+    padding-left: 42px !important;
+  }
+}
 
-    .expense-mobile-wizard .app-select-caret,
-    .expense-mobile-wizard .payment-select-caret {
-        position: absolute;
-        top: 50%;
-        right: 11px;
-        display: grid;
-        width: 30px;
-        height: 30px;
-        place-items: center;
-        border-radius: 10px;
-        background: #f1f5f9;
-        color: var(--accent);
-        font-size: 18px;
-        pointer-events: none;
-        transform: translateY(-54%);
-    }
+.recurring-wizard-amount-field .money-input > input,
+.expense-wizard-amount-field .money-input > input {
+  font-size: 24px !important;
 
-    .expense-mobile-wizard .app-date-control,
-    .expense-mobile-wizard .payment-date-control {
-        position: relative;
-        min-height: 66px;
-        overflow: hidden;
-        border: 1px solid #cbd5e1;
-        border-radius: 17px;
-        background: linear-gradient(145deg, #fff, #f8fafc);
-        box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
-    }
-
-    .expense-mobile-wizard .app-date-control:focus-within,
-    .expense-mobile-wizard .payment-date-control:focus-within,
-    .expense-mobile-wizard .app-select-control:focus-within select,
-    .expense-mobile-wizard .payment-select-control:focus-within select {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
-    }
-
-    .expense-mobile-wizard .app-date-control > input,
-    .expense-mobile-wizard .payment-date-control > input {
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        width: 100%;
-        height: 100%;
-        min-height: 66px;
-        opacity: 0;
-        cursor: pointer;
-    }
-
-    .expense-mobile-wizard .app-date-presentation,
-    .expense-mobile-wizard .payment-date-presentation {
-        display: flex;
-        min-height: 66px;
-        flex-direction: column;
-        justify-content: center;
-        gap: 3px;
-        padding: 10px 56px 10px 15px;
-        pointer-events: none;
-    }
-
-    .expense-mobile-wizard .app-date-presentation strong,
-    .expense-mobile-wizard .payment-date-presentation strong {
-        color: #172033;
-        font-size: 17px;
-        text-transform: capitalize;
-    }
-
-    .expense-mobile-wizard .app-date-presentation span,
-    .expense-mobile-wizard .payment-date-presentation span {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 750;
-    }
-
-    .expense-mobile-wizard .app-date-picker-button,
-    .expense-mobile-wizard .payment-date-picker-button {
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        z-index: 2;
-        display: grid;
-        width: 38px;
-        height: 38px;
-        padding: 0;
-        place-items: center;
-        border: 0;
-        border-radius: 12px;
-        background: #eef2ff;
-        color: var(--accent);
-        font-size: 18px;
-        transform: translateY(-50%);
-    }
-
-    .expense-mobile-wizard .payment-date-field,
-    .expense-mobile-wizard .payment-select-field {
-        gap: 9px;
-        color: #334155;
-        font-weight: 900;
-    }
-
-    .expense-mobile-wizard .payment-date-label,
-    .expense-mobile-wizard .payment-select-label {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-    }
-
-    .expense-mobile-wizard .money-input > input {
-        padding-left: 42px !important;
-    }
+  @media (min-width: 768px) {
+    font-size: 20px !important;
+  }
 }
 
 @media (min-width: 900px) {
-    .recurring-active-filters-reset {
-        right: 48px;
-    }
+  .recurring-active-filters-reset {
+    right: 48px;
+  }
 }
 
 @media (min-width: 761px) {
-    .clickable-desktop-row {
-        cursor: pointer;
-    }
+  .clickable-desktop-row {
+    cursor: pointer;
+  }
 
-    tr.clickable-desktop-row:hover td,
-    .recurring-expense-row.clickable-desktop-row:hover {
-        background: #f8faff;
-    }
+  tr.clickable-desktop-row:hover td,
+  .recurring-expense-row.clickable-desktop-row:hover {
+    background: #f8faff;
+  }
 
-    .clickable-desktop-row:focus-visible {
-        outline: 2px solid var(--accent);
-        outline-offset: 2px;
-    }
+  .clickable-desktop-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 @media (min-width: 1180px) {
-    .dashboard-annual-card {
-        min-width: 33%;
-    }
+  .dashboard-annual-card {
+    min-width: 33%;
+  }
 }
 
 @media (min-width: 1280px) {
-    .compact-incomes-table {
-        min-width: 980px;
-    }
+  .compact-incomes-table {
+    min-width: 980px;
+  }
 
-    .compact-incomes-table th,
-    .compact-incomes-table td {
-        padding: 6px 5px;
-    }
+  .compact-incomes-table th,
+  .compact-incomes-table td {
+    padding: 6px 5px;
+  }
 }
 
 @media (min-width: 901px) {
-    .shell {
-        padding-left: 18px;
-        padding-right: 18px;
-    }
+  .shell {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
 }
 
 @media (min-width: 1180px) {
-    .dashboard-period-cards {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
+  .dashboard-period-cards {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 761px) {
-    .app-form-modal .expense-form .form-actions-row,
-    .app-form-modal .expense-form .form-sticky-actions {
-        position: initial;
-        transform: initial;
-        width: auto;
-        box-shadow: none;
-        background: none;
-        border: none;
-        backdrop-filter: none;
-    }
+  .app-form-modal .expense-form .form-actions-row,
+  .app-form-modal .expense-form .form-sticky-actions {
+    position: initial;
+    transform: initial;
+    width: auto;
+    box-shadow: none;
+    background: none;
+    border: none;
+    backdrop-filter: none;
+  }
 
-    .filter-drawer-panel {
-        width: min(576px, calc(100vw - 28px));
-        height: 100%;
-        display: grid;
-        grid-template-rows: auto minmax(0, 1fr);
-        background: var(--card);
-        box-shadow: -18px 0 44px rgba(15, 23, 42, .18);
-        transform: translateX(100%);
-        transition: transform .22s ease;
-    }
+  .filter-drawer-panel {
+    width: min(576px, calc(100vw - 28px));
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    background: var(--card);
+    box-shadow: -18px 0 44px rgba(15, 23, 42, .18);
+    transform: translateX(100%);
+    transition: transform .22s ease;
+  }
 
-    form.expense-filters {
-        grid-template-columns: repeat(1, minmax(130px, 1fr));
-    }
+  form.expense-filters {
+    grid-template-columns: repeat(1, minmax(130px, 1fr));
+  }
 
-    .dashboard-statement-panel.list-totals-statement {
-        max-width: 760px;
-        /*margin: 0 auto;*/
-        //padding-top: 0;
-    }
+  .dashboard-statement-panel.list-totals-statement {
+    max-width: 760px;
+    /*margin: 0 auto;*/
+    //padding-top: 0;
+  }
 
-    .dashboard-statement-panel.list-totals-statement table {
-        margin: 0 auto;
-    }
+  .dashboard-statement-panel.list-totals-statement table {
+    margin: 0 auto;
+  }
 
-    .expense-mobile-list {
-        display: none;
-    }
+  .expense-mobile-list {
+    display: none;
+  }
 
-    .supplier-toolbar-card {
-        display: flex;
-        flex-direction: row-reverse;
-    }
+  .supplier-toolbar-card {
+    display: flex;
+    flex-direction: row-reverse;
+  }
 
-    .modal-backdrop,
-    .app-form-modal {
-        z-index: 9999999;
-    }
+  .modal-backdrop,
+  .app-form-modal {
+    z-index: 9999999;
+  }
 
-    .app-form-modal .expense-form {
-        padding-bottom: 12px;
-    }
+  .app-form-modal .expense-form {
+    padding-bottom: 12px;
+  }
 }
 
-.recurring-expense-form {
-    .amount-vat-row {
-        grid-column: span 2;
+@media (min-width: 901px) {
+  .recurring-expense-form {
+    .amount-vat-row.recurring-wizard-amount {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-column: 1 / -1;
+      align-items: stretch;
     }
+  }
 }
 
 @media (min-width: 761px) {
-    .expense-form.form-sticky-actions,
-    .expense-form .form-sticky-actions,
-    .recurring-expense-form .form-sticky-actions,
-    .income-form .form-sticky-actions {
-        position: static !important;
-        bottom: auto !important;
-        z-index: auto !important;
-        margin: 0;
-        padding: 0;
-        border: 0;
-        background: transparent;
-        box-shadow: none;
-        backdrop-filter: none;
-    }
+  .expense-form.form-sticky-actions,
+  .expense-form .form-sticky-actions,
+  .recurring-expense-form .form-sticky-actions,
+  .income-form .form-sticky-actions {
+    position: static !important;
+    bottom: auto !important;
+    z-index: auto !important;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
 
-    .app-form-modal .expense-form {
-        //padding-bottom: 0;
-    }
+  .app-form-modal .expense-form {
+    //padding-bottom: 0;
+  }
 
-    .app-form-modal .expense-form .form-actions-row,
-    .app-form-modal .expense-form .form-sticky-actions,
-    .app-form-modal .recurring-expense-form .form-actions-row,
-    .app-form-modal .recurring-expense-form .form-sticky-actions,
-    .app-form-modal .income-form .form-actions-row,
-    .app-form-modal .income-form .form-sticky-actions {
-        position: static !important;
-        left: auto !important;
-        right: auto !important;
-        bottom: auto !important;
-        transform: none !important;
-        width: auto !important;
-        margin: 0;
-        padding: 12px 0;
-        display: flex;
-        justify-content: flex-end;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
-        box-shadow: none;
-        backdrop-filter: none;
-    }
+  .app-form-modal .expense-form .form-actions-row,
+  .app-form-modal .expense-form .form-sticky-actions,
+  .app-form-modal .recurring-expense-form .form-actions-row,
+  .app-form-modal .recurring-expense-form .form-sticky-actions,
+  .app-form-modal .income-form .form-actions-row,
+  .app-form-modal .income-form .form-sticky-actions {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: auto !important;
+    margin: 0;
+    padding: 12px 0;
+    display: flex;
+    justify-content: flex-end;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
 }

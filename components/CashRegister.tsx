@@ -2,6 +2,7 @@
 
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
+import {applyCurrencyInputKey, formatCurrencyInput} from '@/lib/currency-input';
 
 type Method = {
     id: number;
@@ -77,7 +78,7 @@ export default function CashRegister({
     const confirmationLocked = Boolean(selectedMethod && mode === 'create');
     const numericAmount = Number(amount.replace(',', '.'));
     const hasValidAmount = Number.isFinite(numericAmount) && numericAmount > 0;
-    const formattedAmount = useMemo(() => amount ? amount.replace('.', ',') : '0,00', [amount]);
+    const formattedAmount = useMemo(() => formatCurrencyInput(amount), [amount]);
     const methodIsAvailable = (method: Method) => isFiscal || method.id === cashMethod?.id;
 
     function moveKeyboardMethod(direction: 1 | -1) {
@@ -188,15 +189,7 @@ export default function CashRegister({
     function appendKey(key: string) {
         if (confirmationLocked) return;
         setNotice(null);
-        setAmount(current => {
-            if (key === 'backspace') return current.slice(0, -1);
-            if (key === ',') return current.includes(',') || current.includes('.') ? current : `${current || '0'},`;
-            const separator = current.includes(',') ? ',' : '.';
-            const decimals = current.split(separator)[1];
-            if (decimals?.length >= 2) return current;
-            const next = current === '0' && key !== '0' ? key : `${current}${key}`;
-            return next.slice(0, 12);
-        });
+        setAmount(current => applyCurrencyInputKey(current, key));
         focusAmount();
     }
 

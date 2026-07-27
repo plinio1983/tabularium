@@ -2,6 +2,8 @@
 
 import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
 import CustomerAutocomplete from '@/components/CustomerAutocomplete';
+import {CurrencyInput} from "@/components/CurrencyInput";
+import {applyCurrencyInputKey, formatCurrencyInput} from "@/lib/currency-input";
 
 type InitialIncome = {
     id?: number;
@@ -67,11 +69,11 @@ function formatEuro(value: number) {
     return new Intl.NumberFormat("it-IT", {style: "currency", currency: "EUR"}).format(value || 0);
 }
 
-function MoneyInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+function MoneyInput(props: React.ComponentProps<typeof CurrencyInput>) {
     return (
         <div className="money-input">
             <span>€</span>
-            <input type="number" step="0.01" min="0" {...props} />
+            <CurrencyInput {...props}/>
         </div>
     );
 }
@@ -144,20 +146,11 @@ export default function IncomeForm({
     }
 
     function handleAmountChange(value: string) {
-        const normalized = value.replace(".", ",").replace(/[^\d,]/g, "");
-        const [integer = "", decimals] = normalized.split(",");
-        setAmount(decimals === undefined ? integer.slice(0, 9) : `${integer.slice(0, 9)},${decimals.slice(0, 2)}`);
+        setAmount(formatCurrencyInput(value));
     }
 
     function appendAmountKey(key: string) {
-        setAmount(current => {
-            if (key === "backspace") return current.slice(0, -1);
-            if (key === ",") return current.includes(",") ? current : `${current || "0"},`;
-            const decimals = current.split(",")[1];
-            if (decimals?.length >= 2) return current;
-            const next = current === "0" && key !== "0" ? key : `${current}${key}`;
-            return next.slice(0, 12);
-        });
+        setAmount(current => applyCurrencyInputKey(current, key));
     }
 
     function validateMobileStep() {
@@ -231,7 +224,7 @@ export default function IncomeForm({
                         <label className="income-amount-field">
                             Importo IVA inclusa
                             <div className="income-amount-row">
-                                <MoneyInput type="text" inputMode="decimal" required value={amount} onChange={(event) => handleAmountChange(event.currentTarget.value)}/>
+                                <MoneyInput required value={amount} onValueChange={handleAmountChange}/>
                                 <input type="hidden" name="amount" value={normalizedAmount}/>
                             </div>
                         </label>

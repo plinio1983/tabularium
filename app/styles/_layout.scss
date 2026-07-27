@@ -155,6 +155,9 @@ a {
 .pl-6 {
   padding-left: 6px;
 }
+.ml-12 {
+  margin-left: 12px;
+}
 
 .site-header-actions {
   display: flex;
@@ -1334,7 +1337,7 @@ button {
 
 .recurring-expense-form .recurring-form-section-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   padding: 16px;
 }
@@ -1345,6 +1348,15 @@ button {
   align-self: flex-start;
   width: 100%;
   min-width: 0;
+}
+
+.recurring-form-section.recurring-fiscal-section .recurring-form-section-grid,
+.recurring-form-section.recurring-payment-section .recurring-form-section-grid {
+  display: flex;
+
+  .app-form-field {
+    flex-grow: 1;
+  }
 }
 
 .recurring-expense-form .supplier-picker > label,
@@ -1366,41 +1378,58 @@ button {
   font-weight: 850;
 }
 
-.recurring-expense-form .toggle-field-wrap {
+.recurring-expense-form .recurring-wizard-amount {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 10px;
+  min-width: 0;
+}
+
+.recurring-expense-form .recurring-wizard-amount-entry {
+  display: flex;
+  //grid-template-columns: minmax(156px, .42fr) minmax(260px, 1fr);
   align-items: stretch;
-  gap: 12px;
+  gap: 14px;
+  min-width: 0;
 }
 
-.recurring-expense-form .toggle-field-wrap .switch-toggle-field,
-.recurring-expense-form .recurring-accrual-toggle {
-  min-height: 78px;
-  justify-content: space-between;
-  padding: 10px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 15px;
-  background: linear-gradient(145deg, #fff, #f8fafc);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
-}
-
-.recurring-expense-form .toggle-field-wrap .switch-toggle-field {
-  min-width: 150px;
-}
-
-.recurring-expense-form .switch-toggle-field > span:first-child {
+.recurring-expense-form .recurring-wizard-amount-field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
   color: #334155;
   font-weight: 850;
 }
 
-.recurring-expense-form .switch-toggle-field .switch {
-  justify-self: end;
-  align-self: end;
-  min-height: 30px;
+.recurring-expense-form .recurring-amount-control {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
 }
 
-.recurring-expense-form .recurring-accrual-toggle {
+.recurring-expense-form .recurring-wizard-amount-field .money-input,
+.recurring-expense-form .recurring-wizard-amount-field .money-input > input {
+  width: 100%;
+}
+
+.recurring-expense-form .expense-wizard-vat-buttons {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.recurring-expense-form .expense-wizard-vat-buttons button {
+  min-width: 64px;
+}
+
+.recurring-expense-form .recurring-vat-buttons-mobile {
+  display: none;
+}
+
+.recurring-expense-form .recurring-supplier-field {
+  gap: 9px;
 }
 
 .recurring-expense-form .form-section-stack {
@@ -7775,10 +7804,9 @@ html, body {
 
 .switch-toggle-field .switch {
   display: flex;
-  min-height: 42px;
+  //min-height: 42px;
   align-items: center;
   justify-content: flex-start;
-  font-style: italic;
 }
 
 .income-form .fiscal-toggle-field {
@@ -11043,10 +11071,6 @@ button.bulk-direct-danger {
   cursor: not-allowed;
 }
 
-.recurring-accrual-toggle {
-  grid-column: 1 / -1;
-}
-
 .expense-form .expense-type-switch-in-form {
   display: flex;
   align-items: center;
@@ -11767,6 +11791,17 @@ button.bulk-direct-danger {
   text-align: center;
 }
 
+.single-expense-form.expense-mobile-wizard .payment-amount-field .money-input > input {
+  padding-left: 46px !important;
+  padding-right: 14px;
+  text-align: right;
+}
+
+.single-expense-form.expense-mobile-wizard .payment-amount-field .money-input > span {
+  left: 14px;
+  width: 20px;
+}
+
 .expense-form textarea {
   resize: vertical;
   min-height: 96px;
@@ -11836,7 +11871,7 @@ button.bulk-direct-danger {
 }
 
 .expense-form .toggle-field {
-  align-items: center;
+  //align-items: center;
   flex-grow: 1;
 }
 
