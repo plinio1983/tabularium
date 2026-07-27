@@ -3169,14 +3169,14 @@
   }
 
   .dashboard-header-card .dashboard-top-actions {
-    justify-content: space-between;
+    //justify-content: space-between;
   }
 
   .dashboard-top-actions .btn {
     font-size: 14px;
     max-width: initial;
     padding: 10px 14px;
-    flex-grow: 1;
+    //flex-grow: 1;
   }
 
   .supplier-form {
@@ -3620,7 +3620,6 @@
     overflow: hidden;
     border: 1px solid #dbe3ef;
     border-radius: 16px;
-    //background: #f8fafc;
   }
 
   .income-mobile-wizard .income-wizard-amount .money-input > span {
@@ -3725,10 +3724,6 @@
   .expense-mobile-step-3.recurring-mobile-wizard .recurring-amount-section {
     display: none;
   }
-
-  //.recurring-mobile-wizard .recurring-wizard-amount-entry {
-  //  grid-template-columns: minmax(112px, .42fr) minmax(0, 1fr);
-  //}
 
   .recurring-mobile-wizard .recurring-wizard-amount {
     align-items: stretch;
