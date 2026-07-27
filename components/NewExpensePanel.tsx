@@ -1,87 +1,123 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import {useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
-import { expenseNewEventName } from '@/components/ExpenseNewTriggerButton';
-import { flashParamNames } from '@/lib/flash';
+import {expenseNewEventName} from '@/components/ExpenseNewTriggerButton';
+import {flashParamNames} from '@/lib/flash';
 
-type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; systemRole?: string | null; isVatSettlementDefault?: boolean };
-type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null; systemRole?: string | null; defaultExpenseCategoryId?: number | null };
+type Option = {
+    id: number;
+    code?: string;
+    name: string;
+    icon?: string | null;
+    isFallback?: boolean | null;
+    kind?: string;
+    systemRole?: string | null;
+    isVatSettlementDefault?: boolean
+};
+type SupplierOption = {
+    id: number;
+    businessName: string;
+    alias?: string | null;
+    email?: string | null;
+    vatNumber?: string | null;
+    iban?: string | null;
+    pec?: string | null;
+    taxCodeSdi?: string | null;
+    internalNotes?: string | null;
+    systemRole?: string | null;
+    defaultExpenseCategoryId?: number | null
+};
 type InitialExpense = Parameters<typeof ExpenseCreationSwitcher>[0]['initialExpense'];
 
 type Props = {
-  categories: Option[];
-  banks: Option[];
-  paymentMethods: Option[];
-  suppliers: SupplierOption[];
-  initialExpense?: InitialExpense;
-  initialOpen?: boolean;
-  showToolbar?: boolean;
+    categories: Option[];
+    banks: Option[];
+    paymentMethods: Option[];
+    suppliers: SupplierOption[];
+    initialExpense?: InitialExpense;
+    initialOpen?: boolean;
+    showToolbar?: boolean;
 };
 
-export default function NewExpensePanel({ categories, banks, paymentMethods, suppliers, initialExpense, initialOpen = false, showToolbar = true }: Props) {
-  const router = useRouter();
-  const [isOpen, setIsOpen] = useState(initialOpen);
-  const [returnAction, setReturnAction] = useState('/api/expenses');
-  const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
+export default function NewExpensePanel({
+                                            categories,
+                                            banks,
+                                            paymentMethods,
+                                            suppliers,
+                                            initialExpense,
+                                            initialOpen = false,
+                                            showToolbar = true
+                                        }: Props) {
+    const router = useRouter();
+    const [isOpen, setIsOpen] = useState(initialOpen);
+    const [returnAction, setReturnAction] = useState('/api/expenses');
+    const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
 
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('new');
-    flashParamNames.forEach(key => url.searchParams.delete(key));
-    const returnTo = `${url.pathname}${url.search}`;
-    setReturnAction(`/api/expenses?returnTo=${encodeURIComponent(returnTo)}`);
-    setRecurringAction(`/api/recurring-expenses?returnTo=${encodeURIComponent(returnTo)}`);
-  }, []);
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('new');
+        flashParamNames.forEach(key => url.searchParams.delete(key));
+        const returnTo = `${url.pathname}${url.search}`;
+        setReturnAction(`/api/expenses?returnTo=${encodeURIComponent(returnTo)}`);
+        setRecurringAction(`/api/recurring-expenses?returnTo=${encodeURIComponent(returnTo)}`);
+    }, []);
 
-  useEffect(() => {
-    const handler = () => setIsOpen(true);
-    window.addEventListener(expenseNewEventName, handler);
-    return () => window.removeEventListener(expenseNewEventName, handler);
-  }, []);
+    useEffect(() => {
+        const handler = () => setIsOpen(true);
+        window.addEventListener(expenseNewEventName, handler);
+        return () => window.removeEventListener(expenseNewEventName, handler);
+    }, []);
 
-  function handleSaved() {
-    setIsOpen(false);
-    router.refresh();
-  }
+    function handleSaved() {
+        setIsOpen(false);
+        router.refresh();
+    }
 
-  return <div className="grid">
-    {showToolbar ? <div className="toolbar-card expense-toolbar-card">
-      <div className="expense-toolbar-card-content">
-        <div className="expense-toolbar-card-title">
-          <h2>Spese</h2>
-          {/*<Link className="btn btn-md btn-default expense-import-btn" href="/expenses/import">*/}
-          {/*  <span className="btn-icon">⬆</span>*/}
-          {/*  <span className="expense-import-btn-text"> Importa Excel</span>*/}
-          {/*  <span className="expense-import-btn-text-compact"> XLS</span>*/}
-          {/*</Link>*/}
-        </div>
-        <div className="expense-toolbar-card-text">
-          <p className="muted">Gestisci le spese registrate le spese ricorrenti.</p>
-        </div>
-      </div>
-      <div className="toolbar-actions expense-toolbar-actions">
-        {/*<Link className="btn btn-md btn-default expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>*/}
-        <Link className="btn btn-sm btn-secondary" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>
-        <button className="btn btn-sm btn-primary" type="button" onClick={() => setIsOpen(true)}><span className="btn-icon">+</span><span className="hidden-mobile">Aggiungi </span>Spesa</button>
-      </div>
-    </div> : null}
+    return <div className="grid">
+        {showToolbar ? <div className="toolbar-card expense-toolbar-card">
+            <div className="expense-toolbar-card-content">
+                <div className="expense-toolbar-card-title">
+                    <h2>Spese</h2>
+                    {/*<Link className="btn btn-md btn-default expense-import-btn" href="/expenses/import">*/}
+                    {/*  <span className="btn-icon">⬆</span>*/}
+                    {/*  <span className="expense-import-btn-text"> Importa Excel</span>*/}
+                    {/*  <span className="expense-import-btn-text-compact"> XLS</span>*/}
+                    {/*</Link>*/}
+                </div>
+                <div className="expense-toolbar-card-text">
+                    <p className="muted">Gestisci le spese registrate le spese ricorrenti.</p>
+                </div>
+            </div>
+            <div className="toolbar-actions expense-toolbar-actions">
+                {/*<Link className="btn btn-md btn-default expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>*/}
+                <Link className="btn btn-sm btn-secondary" href="/recurring-expenses">
+                    <span className="btn-icon">↻</span>Spese ricorrenti
+                </Link>
+                <button className="btn btn-sm btn-primary" type="button" onClick={() => setIsOpen(true)}>
+                    <span className="btn-icon">+</span>
+                    <span className="--hidden-mobile">Aggiungi spesa</span>
+                    {/*<span className="hidden-desktop">Spesa</span>*/}
+                </button>
+            </div>
+        </div> : null}
 
-    {isOpen ? <div className="modal-backdrop app-form-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuova spesa" onMouseDown={() => setIsOpen(false)}>
-      <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
-        <div className="modal-title">
-          <div>
-            <h3>Nuova spesa</h3>
-            <p className="muted">Inserisci una nuova spesa singola o ricorrente.</p>
-          </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
-        </div>
-        <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods}
-          suppliers={suppliers} initialExpense={initialExpense} expenseAction={returnAction}
-          recurringAction={recurringAction} onCancel={() => setIsOpen(false)} onSaved={handleSaved} />
-      </div>
-    </div> : null}
-  </div>;
+        {isOpen ?
+            <div className="modal-backdrop app-form-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuova spesa" onMouseDown={() => setIsOpen(false)}>
+                <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
+                    <div className="modal-title">
+                        <div>
+                            <h3>Nuova spesa</h3>
+                            <p className="muted">Inserisci una nuova spesa singola o ricorrente.</p>
+                        </div>
+                        <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
+                    </div>
+                    <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods}
+                                             suppliers={suppliers} initialExpense={initialExpense} expenseAction={returnAction}
+                                             recurringAction={recurringAction} onCancel={() => setIsOpen(false)} onSaved={handleSaved}/>
+                </div>
+            </div> : null}
+    </div>;
 }

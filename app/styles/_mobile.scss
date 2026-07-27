@@ -93,10 +93,10 @@
 
   .dashboard-monthly-mobile-row {
     padding: 0 0 8px 0;
-    border: 1px solid var(--line);
     margin-bottom: 12px;
     border-radius: 13px;
-    box-shadow: 0 0 7px 1px #d2d2d2;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.045);
+    border: 1px solid #cbd5e1;
 
     .money-positive {
       color: #16a34a;
@@ -155,6 +155,7 @@
     font-weight: 800;
     line-height: 1.15;
     white-space: normal;
+    text-align: left;
   }
 
   .dashboard-monthly-mobile-secondary strong {
@@ -168,6 +169,28 @@
     align-items: center;
     justify-content: flex-end;
     height: 22px;
+  }
+
+  .dashboard-monthly-mobile .dashboard-monthly-mobile-badge {
+    .tone-warning {
+      background: transparent;
+      color: #a15c00;
+    }
+    .tone-critical {
+      color: #b42318;
+      background: transparent;
+    }
+    .tone-neutral {
+      background: transparent;
+    }
+    .tone-muted {
+      color: var(--muted);
+      background: transparent;
+    }
+    .tone-accent {
+      color: var(--accent);
+      background: transparent;
+    }
   }
 
   .dashboard-monthly-mobile-badge .badge {
@@ -305,6 +328,12 @@
 
 @media (max-width: 576px) {
   .hidden-sp {
+    display: none !important;
+  }
+}
+
+@media (min-width: 761px) {
+  .hidden-desktop {
     display: none !important;
   }
 }
@@ -568,9 +597,9 @@
 }
 
 @media (max-width: 576px) {
-  .toolbar-card .btn,
-  .toolbar-card .btn,
-  .toolbar-card > button,
+  //.toolbar-card .btn,
+  //.toolbar-card .btn,
+  //.toolbar-card > button,
   .actions-row .btn-primary,
   .actions-row .btn {
     max-width: none;
@@ -1525,7 +1554,6 @@
   .expense-toolbar-card .expense-toolbar-actions a,
   .expense-toolbar-card .expense-toolbar-actions button {
     max-width: initial;
-    flex-grow: 1;
   }
 
   .supplier-toolbar-card .actions-row {

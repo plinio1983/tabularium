@@ -136,6 +136,7 @@ function isExpensePastDue(expense: any) {
 
 function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const incassoTotale = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
+  const nonAccreditato = incomes.reduce((sum, income) => income.isCredited ? sum : sum + Number(income.amount), 0);
   const incassoFiscale = incomes.reduce((sum, income) => income.isFiscal ? sum + Number(income.amount) : sum, 0);
   const incassoNonFiscale = incassoTotale - incassoFiscale;
 
@@ -175,6 +176,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
   return {
     speseTotali,
     incassoTotale,
+    nonAccreditato,
     utileLordo,
     debitoIva,
     utileNetto,

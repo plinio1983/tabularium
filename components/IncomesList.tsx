@@ -181,6 +181,7 @@ export default function IncomesList({
         <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
             {cashRegisterGroups.map(group => {
                 const fiscalStyle = group.isFiscal ? fiscalStyles.yes : fiscalStyles.no;
+                const vatStyle = vatStyles[String(Number(group.vatRates))] ?? vatStyles['0'];
                 return <div className="income-mobile-item expense-mobile-item cash-register-aggregate-mobile-item" key={`mobile-cash-${group.key}`}>
                     <div className="expense-mobile-select">
                         <input type="checkbox" disabled aria-label="I cumulativi degli scontrini non sono selezionabili"/>
@@ -208,7 +209,8 @@ export default function IncomesList({
                                 </div>
                             </div>
                             <div className="expense-mobile-title-row income-mobile-status-row">
-                                <span className="badge">{aggregateVatLabel(group)}</span>
+                                <span className={badgeClass(vatStyle.className)}>IVA &nbsp;{Number(group.vatRates)}%</span>
+                                {/*<span className="badge">IVA &nbsp;{aggregateVatLabel(group)}</span>*/}
                                 <small className="text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</small>
                                 <span className={badgeClass(incomeCreditStatusStyles.ACCREDITATO.className)}>
                                     {incomeCreditStatusStyles.ACCREDITATO.icon} {incomeCreditStatusStyles.ACCREDITATO.label}
@@ -233,6 +235,7 @@ export default function IncomesList({
                         <div className="expense-mobile-main">
                             <div className="expense-mobile-header">
                                 <div className="left-side flex-grow">
+                                    <span className="badge">{income.salesChannelRef.name}</span>
                                     {fiscalBadge(income.isFiscal)}
                                     <span className="text-muted">
                                         {/*{formatPeriod(income.billingMonth, income.billingYear)}*/}
@@ -257,8 +260,7 @@ export default function IncomesList({
                             {/*    <div className="expense-mobile-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>*/}
                             {/*</div>*/}
                             <div className="expense-mobile-title-row income-mobile-status-row">
-                                <span className="badge">{income.salesChannelRef.name}</span>
-                                <span className={badgeClass(vatStyle.className)}>{Number(income.vatRate)}%</span>
+                                <span className={badgeClass(vatStyle.className)}>IVA &nbsp; {Number(income.vatRate)}%</span>
                                 <small className="text-pre text-muted">{formatPeriod(income.billingMonth, income.billingYear)}</small>
                                 <span title={status.label} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {status.label}</span>
                             </div>

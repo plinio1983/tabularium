@@ -75,9 +75,13 @@ export default async function ClientsPage({searchParams}: {
     return <div className="grid">
         <ClientEditModalController/><ClickableDesktopRows/><BulkSelectionController/>
         <div className="toolbar-card toolbar-card-wrap">
-            <div><h2>Clienti</h2><p className="muted">Anagrafica dei clienti usati nell’inserimento degli incassi.</p>
+            <div>
+                <h2>Clienti</h2>
+                <p className="muted">Anagrafica dei clienti usati nell’inserimento degli incassi.</p>
             </div>
-            <button className="btn btn-md btn-primary" type="button" data-client-new>＋ Nuovo cliente</button>
+            <div className="toolbar-actions">
+                <button className="btn btn-sm btn-primary" type="button" data-client-new>＋ Nuovo cliente</button>
+            </div>
         </div>
         <NewClientPanel initialOpen={input(filters, 'new') === '1'}/>
         <ActionFeedbackBanner searchParams={rawFilters} savedMessages={{
@@ -98,7 +102,8 @@ export default async function ClientsPage({searchParams}: {
                 <label htmlFor="clientQuickSearch">Ricerca rapida</label>
                 <div className="supplier-quick-search-field">
                     <input id="clientQuickSearch" name="businessName" defaultValue={input(filters, 'businessName')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-secondary" type="submit" aria-label="Cerca cliente"><SearchIcon /></button>
+                    <button className="btn btn-sm btn-secondary" type="submit" aria-label="Cerca cliente"><SearchIcon/>
+                    </button>
                 </div>
             </form>
             <MobileSortControl action="/clients" currentValue={mobileSort} options={mobileSortOptions} searchParams={filters}/>

@@ -678,6 +678,7 @@ export default async function IncomesPage({searchParams}: {
         const vatRate = Number(income.vatRate.toString());
         const vatDebt = income.isFiscal ? vatAmountFromGross(amount, vatRate) : 0;
         acc.total += amount;
+        if (!income.isCredited) acc.uncredited += amount;
         acc.vatDebt += vatDebt;
         if (income.isFiscal) {
             acc.fiscal += amount;
@@ -685,7 +686,7 @@ export default async function IncomesPage({searchParams}: {
             if (income.invoiceStatus !== 'EMESSA') acc.invoicesNotSent += 1;
         } else acc.nonFiscal += amount;
         return acc;
-    }, {total: 0, fiscal: 0, nonFiscal: 0, taxable: 0, vatDebt: 0, invoicesNotSent: 0});
+    }, {total: 0, uncredited: 0, fiscal: 0, nonFiscal: 0, taxable: 0, vatDebt: 0, invoicesNotSent: 0});
 
     const totals = summarizeIncomes(filteredIncomes);
     const standardFilteredIncomes = filteredIncomes.filter(income => income.incomeType !== 'CASH_REGISTER');
@@ -955,8 +956,8 @@ export default async function IncomesPage({searchParams}: {
                         <strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong>
                     </Link>
                     <div className="expense-top-summary-item">
-                        <span>Debito IVA prodotto</span>
-                        <strong className={moneyTone(totals.vatDebt)}>{euro(totals.vatDebt)}</strong>
+                        <span>Non ancora accreditato</span>
+                        <strong className={moneyTone(totals.uncredited)}>{euro(totals.uncredited)}</strong>
                     </div>
                     <Link className={`expense-top-summary-item ${totals.invoicesNotSent > 0 ? 'is-warning' : ''}`}
                           href={invoicesNotSentHref}>

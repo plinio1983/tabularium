@@ -209,7 +209,9 @@ export default async function SuppliersPage({searchParams}: {
                 <h2>Fornitori</h2>
                 <p className="muted">Anagrafica degli esercenti usati nell’inserimento delle spese.</p>
             </div>
-            <NewSupplierPanel initialOpen={inputDefault(filters, 'new') === '1'} categories={categoryOptions}/>
+            <div className="toolbar-actions">
+                <NewSupplierPanel initialOpen={inputDefault(filters, 'new') === '1'} categories={categoryOptions}/>
+            </div>
         </div>
 
         <ActionFeedbackBanner

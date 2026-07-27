@@ -31,7 +31,7 @@ export default function NewSupplierPanel({initialOpen = false, categories = []}:
     }, []);
 
     return <>
-        <button className="btn btn-md btn-primary" type="button" data-supplier-new>
+        <button className="btn btn-sm btn-primary btn-stretch" type="button" data-supplier-new>
             <span className="btn-icon">＋</span>Nuovo fornitore
         </button>
         {isOpen &&
