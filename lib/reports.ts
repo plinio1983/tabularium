@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 import { isExpenseInvoiceNotReceived } from './expense-invoice';
+import {expenseResidualAmount, isExpensePastDue} from './expense-calculations';
 
 export function vatAmountFromGross(amount: number, vatRate: number) {
   if (!vatRate) return 0;
@@ -114,24 +115,8 @@ function computeVatBalance(incomes: any[], expenses: any[], periods?: Array<{ ye
 }
 
 
-function expenseResidualAmount(expense: any) {
-  const expenseAmount = Number(expense.amount);
-  const paidAmount = (expense.payments ?? []).reduce((partial: number, payment: any) => partial + Number(payment.amount), 0);
-  return Math.max(expenseAmount - paidAmount, 0);
-}
-
 function isExpenseOverdue(expense: any) {
   return expenseResidualAmount(expense) > 0;
-}
-
-function isExpensePastDue(expense: any) {
-  if (!expense.dueDate) return false;
-  if (expenseResidualAmount(expense) <= 0) return false;
-  const due = new Date(expense.dueDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  due.setHours(0, 0, 0, 0);
-  return due < today;
 }
 
 function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {

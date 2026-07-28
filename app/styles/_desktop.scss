@@ -84,7 +84,7 @@
 
   .single-expense-form .expense-wizard-amount-entry {
     display: grid;
-    grid-template-columns: minmax(156px, .42fr) minmax(260px, 1fr);
+    grid-template-columns: minmax(125px, auto) minmax(0, 1fr);
     gap: 14px;
     width: 100%;
     align-items: start;
@@ -101,18 +101,22 @@
     gap: 16px;
   }
 
+  .expense-invoice-desktop-control {
+    min-width: 205px;
+  }
+
   .expense-mobile-wizard .expense-fiscal-desktop-control,
   .expense-mobile-wizard .expense-invoice-desktop-control,
   .recurring-expense-form .recurring-switch-control,
   .income-form .income-switch-control {
     display: flex !important;
-    min-width: 156px;
-    min-height: 84px;
+    //min-width: 156px;
+    min-height: 91px;
     flex-direction: column;
     align-items: stretch;
     justify-content: space-between;
     gap: 8px;
-    padding: 10px 14px 4px;
+    padding: 10px 14px;
     border: 1px solid #cbd5e1;
     border-radius: 15px;
     background: linear-gradient(145deg, #fff, #f8fafc);
@@ -125,7 +129,7 @@
   }
 
   .recurring-expense-form .recurring-switch-control {
-    max-height: 88px;
+    max-height: 91px;
   }
 
   .expense-mobile-wizard .expense-fiscal-desktop-control > span,
@@ -142,7 +146,7 @@
   .recurring-expense-form .recurring-switch-control .switch,
   .income-form .income-switch-control .switch {
     //align-self: flex-end;
-    min-height: 46px;
+    //min-height: 46px;
   }
 
   .single-expense-form .expense-wizard-amount-field {
@@ -199,6 +203,17 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(156px, 1fr));
     gap: 12px;
+  }
+
+  .single-expense-form .expense-wizard-fiscal-section .form-section-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .single-expense-form .expense-wizard-fiscal-section .form-section-grid .expense-wizard-step {
+    flex: 1 1 50%;
   }
 
   .expense-mobile-wizard .expense-invoice-step-row {

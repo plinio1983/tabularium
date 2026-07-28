@@ -12,6 +12,7 @@ import {
     incomeCreditStatusStyles,
     incomeInvoiceStatusStyles
 } from '@/lib/income-ui';
+import type {IncomeCashRegisterGroup} from '@/lib/income-list';
 
 type IncomeItem = {
     id: number;
@@ -31,24 +32,7 @@ type IncomeItem = {
     creditBank: { name: string; icon?: string | null };
 };
 
-type CashRegisterGroup = {
-    key: string;
-    billingYear: number;
-    billingMonth: number;
-    paymentMethodId: number;
-    paymentMethod: string;
-    paymentMethodIcon?: string | null;
-    salesChannelId: number;
-    salesChannel: string;
-    salesChannelIcon?: string | null;
-    isFiscal: boolean;
-    amount: number;
-    count: number;
-    latestCreditDate: Date | null;
-    vatRates: number[];
-};
-
-function cashRegisterGroupHref(group: CashRegisterGroup) {
+function cashRegisterGroupHref(group: IncomeCashRegisterGroup) {
     const month = `${group.billingYear}-${String(group.billingMonth).padStart(2, '0')}`;
     const query = new URLSearchParams({
         month,
@@ -59,7 +43,7 @@ function cashRegisterGroupHref(group: CashRegisterGroup) {
     return `/incomes/cash-register/receipts?${query}`;
 }
 
-function aggregateVatLabel(group: CashRegisterGroup) {
+function aggregateVatLabel(group: IncomeCashRegisterGroup) {
     return group.vatRates.length === 1 ? `${group.vatRates[0]}%` : 'Mista';
 }
 
@@ -69,7 +53,7 @@ function vatBadge(value: unknown) {
     return <span className={badgeClass(style.className)}>{rate}%</span>;
 }
 
-function aggregateVatBadge(group: CashRegisterGroup) {
+function aggregateVatBadge(group: IncomeCashRegisterGroup) {
     return group.vatRates.length === 1
         ? vatBadge(group.vatRates[0])
         : <span className={badgeClass('tone-neutral')}>Mista</span>;
@@ -129,7 +113,7 @@ export default function IncomesList({
                                     }: {
     incomes: IncomeItem[];
     mobileIncomes?: IncomeItem[];
-    cashRegisterGroups?: CashRegisterGroup[];
+    cashRegisterGroups?: IncomeCashRegisterGroup[];
     returnTo: string;
     banks: SimpleOption[];
     paymentMethods: SimpleOption[];

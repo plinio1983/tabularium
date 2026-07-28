@@ -393,42 +393,43 @@ function ProductServiceAutocomplete({initialValue = "", onValueChange}: {
     }
 
     return (
-        <div className="app-form-field">
+        <div className="app-form-field full">
             <label className="span-2 product-suggestion-picker app-form-field-label" ref={containerRef}>
                 Prodotto/servizio
             </label>
-                <input
-                    name="description"
-                    required
-                    placeholder="Descrizione libera della spesa ricorrente"
-                    value={query}
-                    onChange={(event) => {
-                        setQuery(event.target.value);
-                        onValueChange?.(event.target.value);
-                        setIsOpen(true);
-                    }}
-                    onFocus={() => setIsOpen(true)}
-                    onKeyDown={onKeyDown}
-                    autoComplete="off"
-                />
-                {isOpen && results.length > 0 && (
-                    <div className="suggestion-results" role="listbox">
-                        {results.map((value, index) => (
-                            <button
-                                type="button"
-                                key={`${value}-${index}`}
-                                className={index === activeIndex ? "active" : ""}
-                                onMouseEnter={() => setActiveIndex(index)}
-                                onMouseDown={(event) => {
-                                    event.preventDefault();
-                                    selectSuggestion(value);
-                                }}
-                            >
-                                {value}
-                            </button>
-                        ))}
-                    </div>
-                )}
+            <input
+                name="description"
+                className="span-2"
+                required
+                placeholder="Descrizione libera della spesa ricorrente"
+                value={query}
+                onChange={(event) => {
+                    setQuery(event.target.value);
+                    onValueChange?.(event.target.value);
+                    setIsOpen(true);
+                }}
+                onFocus={() => setIsOpen(true)}
+                onKeyDown={onKeyDown}
+                autoComplete="off"
+            />
+            {isOpen && results.length > 0 && (
+                <div className="suggestion-results" role="listbox">
+                    {results.map((value, index) => (
+                        <button
+                            type="button"
+                            key={`${value}-${index}`}
+                            className={index === activeIndex ? "active" : ""}
+                            onMouseEnter={() => setActiveIndex(index)}
+                            onMouseDown={(event) => {
+                                event.preventDefault();
+                                selectSuggestion(value);
+                            }}
+                        >
+                            {value}
+                        </button>
+                    ))}
+                </div>
+            )}
 
         </div>
     );
@@ -481,7 +482,7 @@ export default function RecurringExpenseForm({
     const [notes, setNotes] = useState(initialExpense?.notes ?? "");
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
-    const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
+    const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
     const selectedPaymentMethodName = paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "";
     const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
     const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
@@ -687,14 +688,17 @@ export default function RecurringExpenseForm({
                     <div className="amount-vat-row expense-wizard-step expense-wizard-step-2 recurring-wizard-amount">
                         <div className="recurring-wizard-amount-entry full">
                             <div className="toggle-field switch-toggle-field recurring-switch-control recurring-fiscal-switch">
-                                <span>Fiscale</span>
-                                <label className="switch">
+                                <div className="switch-toggle-field-label">
+                                    <span className="app-form-field-icon">⇆</span>
+                                <label>Fiscale</label>
+                                </div>
+                                    <label className="switch">
                                     <input type="checkbox" name="isDeclared" value="true" checked={isDeclared} onChange={event => {
                                         updateDeclared(event.currentTarget.checked);
                                         focusAmount();
                                     }}/>
                                     <span className="slider"/>
-                                    <span className="text-muted ml-12 hidden-mobile">{isDeclared ? "Fiscale" : "Non Dichiarato"}</span>
+                                    {/*<span className="text-muted ml-12 hidden-mobile">{isDeclared ? "Fiscale" : "Non Dichiarato"}</span>*/}
                                 </label>
                             </div>
                             <div className="recurring-amount-control flex-grow">
@@ -731,7 +735,10 @@ export default function RecurringExpenseForm({
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
                     <div className="toggle-field switch-toggle-field recurring-switch-control recurring-invoice-switch">
-                        <span>Fattura elettronica</span>
+                        <div className="switch-toggle-field-label">
+                            <span className="app-form-field-icon">⇆</span>
+                            <label>Fattura elettronica</label>
+                        </div>
                         <label className="switch">
                             <input
                                 type="checkbox"
@@ -767,8 +774,11 @@ export default function RecurringExpenseForm({
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
                     <div className="toggle-field switch-toggle-field recurring-switch-control recurring-accrual-toggle">
-                        <span className="text-default">Pagamento automatico</span>
-                        <input type="hidden" name="isAutomaticPayment" value={isAutomaticAccrual ? "true" : "false"}/>
+                        <div className="switch-toggle-field-label">
+                            <span className="app-form-field-icon">⇆</span>
+                            <label> Pagamento automatico</label>
+                            <input type="hidden" name="isAutomaticPayment" value={isAutomaticAccrual ? "true" : "false"}/>
+                        </div>
                         <label className="switch">
                             <input
                                 type="checkbox"

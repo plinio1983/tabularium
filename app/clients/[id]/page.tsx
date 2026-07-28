@@ -9,6 +9,7 @@ import DeleteActionButton from '@/components/DeleteActionButton';
 import DetailBackButton from '@/components/DetailBackButton';
 import { badgeClass, incomeCreditStatusStyles } from '@/lib/income-ui';
 import { detailBackHref } from '@/lib/detail-navigation';
+import { prepareIncomeList } from '@/lib/income-list';
 
 function valueOrDash(value?: string | null) { return value?.trim() || '-'; }
 function CopyableField({ label, value, className = '' }: { label: string; value?: string | null; className?: string }) {
@@ -35,6 +36,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   const annualIncomes = customer.incomes.filter(income => income.billingYear === currentYear);
   const annualTotal = annualIncomes.reduce((sum, income) => sum + Number(income.amount), 0);
   const returnTo = encodeURIComponent(`/clients/${customer.id}`);
+  const {standardIncomes: listedIncomes, cashRegisterGroups} = prepareIncomeList(customer.incomes);
 
   return <div className="grid expense-detail-page supplier-detail-page">
     <ClientEditModalController />
@@ -49,6 +51,6 @@ export default async function ClientDetailPage({ params, searchParams }: { param
         <CopyableField label="R. Sociale" value={customer.businessName} /><CopyableField label="Alias" value={customer.alias} /><CopyableField label="Email" value={customer.email} /><CopyableField label="P.IVA" value={customer.vatNumber} /><CopyableField label="SDI / C.F." value={customer.taxCodeSdi} /><CopyableField label="PEC" value={customer.pec} /><CopyableField label="IBAN" value={customer.iban} /><CopyableField label="Swift" value={customer.swift} /><CopyableField label="Note interne" value={customer.internalNotes} className="span-2" />
       </div></details>
     </article></div>
-    <div className="card expenses-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {customer.incomes.length}</p></div></div><IncomesList incomes={customer.incomes} returnTo={returnTo} banks={orderBanks(banks)} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} emptyMessage="Nessun incasso collegato a questo cliente." /></div>
+    <div className="card expenses-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p></div></div><IncomesList incomes={listedIncomes} cashRegisterGroups={cashRegisterGroups} returnTo={returnTo} banks={orderBanks(banks)} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} emptyMessage="Nessun incasso collegato a questo cliente." /></div>
   </div>;
 }

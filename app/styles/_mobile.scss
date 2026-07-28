@@ -2569,6 +2569,8 @@
   .recurring-expense-form .recurring-invoice-switch,
   .recurring-expense-form .recurring-accrual-toggle {
     min-height: 78px;
+    max-width: max-content;
+    min-width: 0;
   }
 
   .recurring-expense-form .recurring-invoice-switch {

@@ -10,6 +10,8 @@ import {monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import SearchIcon from '@/components/SearchIcon';
+import {prepareIncomeList} from '@/lib/income-list';
+import {sortExpensesByReceivedDateDesc} from '@/lib/expense-calculations';
 
 function capitalize(value: string) {
     return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : value;
@@ -60,16 +62,13 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
     const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
+    const {standardIncomes: listedIncomes, cashRegisterGroups} = prepareIncomeList(report.incomes);
     const currentMonthHref = `/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
     const returnTo = encodeURIComponent(currentMonthHref);
     const supplierQuickValue = Array.isArray(query.supplierQuick) ? query.supplierQuick[0] ?? '' : query.supplierQuick ?? '';
     const supplierQuick = supplierQuickValue.trim().toLocaleLowerCase('it');
     const filteredExpenses = report.expenses.filter(expense => !supplierQuick || (expense.supplier?.businessName ?? '').toLocaleLowerCase('it').includes(supplierQuick));
-    const mobileExpenses = [...filteredExpenses].sort((a, b) => {
-        const dateA = a.receivedDate ? new Date(a.receivedDate).getTime() : 0;
-        const dateB = b.receivedDate ? new Date(b.receivedDate).getTime() : 0;
-        return dateB - dateA || b.id - a.id;
-    });
+    const mobileExpenses = sortExpensesByReceivedDateDesc(filteredExpenses);
     const monthNavOptions = monthNavLabels.map((label, index) => {
         const navMonth = index + 1;
         const href = `/months/${year}/${navMonth}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
@@ -284,7 +283,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
             </summary>
             <div className="--card expenses-list-card"><IncomesList
-                incomes={report.incomes}
+                incomes={listedIncomes}
+                cashRegisterGroups={cashRegisterGroups}
                 returnTo={returnTo}
                 banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
                 paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback}))}

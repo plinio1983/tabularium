@@ -17,6 +17,12 @@ import {
   vatStyles,
   yesNoStyles
 } from '@/lib/expense-ui';
+import {
+  expenseResidualAmount,
+  isExpenseOpen,
+  isExpensePastDue,
+  sortExpensesByReceivedDateDesc
+} from '@/lib/expense-calculations';
 
 type ExpenseListItem = {
   id: number;
@@ -128,29 +134,9 @@ function expenseSupplierName(expense: ExpenseListItem) {
   return expense.supplier?.businessName ?? expense.merchant ?? '-';
 }
 
-function expenseResidualAmount(expense: ExpenseListItem) {
-  const expenseAmount = Number(expense.amount);
-  const paidAmount = (expense.payments ?? []).reduce((partial, payment) => partial + Number(payment.amount), 0);
-  return Math.max(expenseAmount - paidAmount, 0);
-}
-
 function expensePaymentIcon(expense: ExpenseListItem) {
   // return expense.payments?.find(payment => payment.paymentMethod)?.paymentMethod?.icon ?? '  •  ';
   return expense.payments?.find(payment => payment.paymentMethod)?.paymentMethod?.icon ?? '';
-}
-
-function isExpenseOverdue(expense: ExpenseListItem) {
-  return expenseResidualAmount(expense) > 0;
-}
-
-function isExpensePastDueForBadge(expense: ExpenseListItem) {
-  if (!expense.dueDate) return false;
-  if (expenseResidualAmount(expense) <= 0) return false;
-  const due = new Date(expense.dueDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  due.setHours(0, 0, 0, 0);
-  return due < today;
 }
 
 function expenseDetailHref(expense: ExpenseListItem, returnTo: string, linkRecurringExpensesToDefinition: boolean) {
@@ -178,7 +164,7 @@ export default function ExpensesList({
   suppliers = [],
   linkRecurringExpensesToDefinition = false
 }: Props) {
-  const mobileItems = mobileExpenses ?? expenses;
+  const mobileItems = mobileExpenses ?? sortExpensesByReceivedDateDesc(expenses);
   const hasBulkControls = selectable && categories.length > 0;
 
   return <>
@@ -259,8 +245,8 @@ export default function ExpensesList({
         const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
         const categoryClassName = categoryTone(expense.category);
         const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
-        const overdue = isExpensePastDueForBadge(expense);
-        const unpaid = isExpenseOverdue(expense);
+        const overdue = isExpensePastDue(expense);
+        const unpaid = isExpenseOpen(expense);
         const invoiceWaiting = expense.invoiceStatus === 'IN_ATTESA';
         const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
         let recordAddClass = '';
@@ -342,7 +328,7 @@ export default function ExpensesList({
             const categoryClassName = categoryTone(expense.category);
             const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
             const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
-            const overdue = isExpensePastDueForBadge(expense);
+            const overdue = isExpensePastDue(expense);
             const paymentWaiting = expense.paymentStatus !== 'COMPLETATO' || residual > 0;
             const invoiceWaiting = expense.invoiceStatus === 'IN_ATTESA';
             const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];

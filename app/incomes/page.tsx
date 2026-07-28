@@ -7,6 +7,7 @@ import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
 import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
 import MobileSortControl from '@/components/MobileSortControl';
 import IncomesList from '@/components/IncomesList';
+import {prepareIncomeList} from '@/lib/income-list';
 import {badgeClass, fiscalStyles, incomeCreditStatusStyles} from '@/lib/income-ui';
 import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
@@ -689,58 +690,7 @@ export default async function IncomesPage({searchParams}: {
     }, {total: 0, uncredited: 0, fiscal: 0, nonFiscal: 0, taxable: 0, vatDebt: 0, invoicesNotSent: 0});
 
     const totals = summarizeIncomes(filteredIncomes);
-    const standardFilteredIncomes = filteredIncomes.filter(income => income.incomeType !== 'CASH_REGISTER');
-    const cashRegisterGroups = Array.from(filteredIncomes
-        .filter(income => income.incomeType === 'CASH_REGISTER')
-        .reduce((groups, income) => {
-            const key = [
-                income.billingYear,
-                income.billingMonth,
-                income.paymentMethodId,
-                income.salesChannelId,
-                income.isFiscal ? '1' : '0'
-            ].join(':');
-            const current = groups.get(key) ?? {
-                key,
-                billingYear: income.billingYear,
-                billingMonth: income.billingMonth,
-                paymentMethodId: income.paymentMethodId,
-                paymentMethod: income.paymentMethodRef.name,
-                paymentMethodIcon: income.paymentMethodRef.icon,
-                salesChannelId: income.salesChannelId,
-                salesChannel: income.salesChannelRef.name,
-                salesChannelIcon: income.salesChannelRef.icon,
-                isFiscal: income.isFiscal,
-                amount: 0,
-                count: 0,
-                latestCreditDate: income.creditDate,
-                vatRates: [] as number[]
-            };
-            current.amount += Number(income.amount);
-            current.count += 1;
-            if (income.creditDate && (!current.latestCreditDate || income.creditDate > current.latestCreditDate)) {
-                current.latestCreditDate = income.creditDate;
-            }
-            const vatRate = Number(income.vatRate);
-            if (!current.vatRates.includes(vatRate)) current.vatRates.push(vatRate);
-            groups.set(key, current);
-            return groups;
-        }, new Map<string, {
-            key: string;
-            billingYear: number;
-            billingMonth: number;
-            paymentMethodId: number;
-            paymentMethod: string;
-            paymentMethodIcon: string | null;
-            salesChannelId: number;
-            salesChannel: string;
-            salesChannelIcon: string | null;
-            isFiscal: boolean;
-            amount: number;
-            count: number;
-            latestCreditDate: Date | null;
-            vatRates: number[];
-        }>()).values()).sort((a, b) => b.billingYear - a.billingYear || b.billingMonth - a.billingMonth || a.paymentMethod.localeCompare(b.paymentMethod, 'it'));
+    const {standardIncomes: standardFilteredIncomes, cashRegisterGroups} = prepareIncomeList(filteredIncomes);
     const totalsPeriodLabel = periodTotalsLabel({
         useFiscalPeriodFilter,
         billingPeriodFromFilter,

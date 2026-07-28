@@ -7,7 +7,15 @@ import {DateField, FormField, MonthField, SelectField} from "@/components/FormCo
 import {CurrencyInput} from "@/components/CurrencyInput";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 
-type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; systemRole?: string | null; isVatSettlementDefault?: boolean };
+type Option = {
+    id: number;
+    code?: string;
+    name: string;
+    icon?: string | null;
+    isFallback?: boolean | null;
+    systemRole?: string | null;
+    isVatSettlementDefault?: boolean
+};
 type SupplierOption = {
     id: number;
     businessName: string;
@@ -180,7 +188,9 @@ function isCashChannel(channel: string) {
     return channel.trim().toLowerCase() === cashChannel.toLowerCase();
 }
 
-function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyInput> & {inputRef?: React.RefObject<HTMLInputElement | null>}) {
+function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyInput> & {
+    inputRef?: React.RefObject<HTMLInputElement | null>
+}) {
     return (
         <div className="money-input">
             <span>€</span>
@@ -401,7 +411,8 @@ function SupplierAutocomplete({
                 </div>
                 {selected ? <div className="app-autocomplete-selection">
                     <span aria-hidden="true">✓</span>
-                    <div><strong>{selected.businessName}</strong>{selected.alias ? <small>{selected.alias}</small> : null}</div>
+                    <div><strong>{selected.businessName}</strong>{selected.alias ?
+                        <small>{selected.alias}</small> : null}</div>
                 </div> : null}
             </FormField>
             {showCreate && createPortal(
@@ -494,7 +505,10 @@ function SupplierAutocomplete({
                                 Categoria predefinita
                                 <select
                                     value={createData.defaultExpenseCategoryId}
-                                    onChange={(e) => setCreateData((d) => ({...d, defaultExpenseCategoryId: e.target.value}))}
+                                    onChange={(e) => setCreateData((d) => ({
+                                        ...d,
+                                        defaultExpenseCategoryId: e.target.value
+                                    }))}
                                 >
                                     <option value="">Nessuna categoria</option>
                                     {categories.map(category => <option key={category.id} value={category.id}>
@@ -611,9 +625,9 @@ function ProductServiceAutocomplete({
     }
 
     return (
-        <div className="app-form-field">
+        // <div className="app-form-field">
         <label
-            className="span-2 app-form-field-label product-suggestion-picker expense-wizard-step expense-wizard-step-3"
+            className="span-2 product-suggestion-picker expense-wizard-step expense-wizard-step-3"
             ref={containerRef}
         >
             Prodotto/servizio
@@ -650,26 +664,26 @@ function ProductServiceAutocomplete({
                 </div>
             )}
         </label>
-        </div>
+        //</div>
     );
 }
 
 export default function ExpenseForm({
-    categories,
-    banks,
-    paymentMethods,
-    suppliers = [],
-    initialExpense,
-    action = "/api/expenses",
-    title = "Nuova spesa",
-    submitLabel = "Salva spesa",
-    onCancel,
-    onSaved,
-    cancelHref,
-    onSwitchToRecurring,
-    initialMobileStep = 1,
-    openNewPayment = false,
-}: Props) {
+                                        categories,
+                                        banks,
+                                        paymentMethods,
+                                        suppliers = [],
+                                        initialExpense,
+                                        action = "/api/expenses",
+                                        title = "Nuova spesa",
+                                        submitLabel = "Salva spesa",
+                                        onCancel,
+                                        onSaved,
+                                        cancelHref,
+                                        onSwitchToRecurring,
+                                        initialMobileStep = 1,
+                                        openNewPayment = false,
+                                    }: Props) {
     const [isVatSettlement, setIsVatSettlement] = useState(initialExpense?.expenseType === "VAT_SETTLEMENT");
     const vatSettlementCategory = categories.find(category => category.isVatSettlementDefault);
     const vatSettlementSupplier = suppliers.find(supplier => supplier.systemRole === "VAT_SETTLEMENT");
@@ -705,7 +719,7 @@ export default function ExpenseForm({
     const [attachmentCount, setAttachmentCount] = useState(0);
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
-    const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
+    const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
     const didOpenNewPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
@@ -1108,9 +1122,10 @@ export default function ExpenseForm({
                 </summary>
                 <div className="form-section-grid">
 
-                    {isVatSettlement && (!vatSettlementCategory || !vatSettlementSupplier) ? <div className="inline-form-error full expense-wizard-step expense-wizard-step-1">
-                        Configura la categoria Saldo IVA nelle Impostazioni. Il fornitore di sistema deve essere inizializzato per il workspace.
-                    </div> : null}
+                    {isVatSettlement && (!vatSettlementCategory || !vatSettlementSupplier) ?
+                        <div className="inline-form-error full expense-wizard-step expense-wizard-step-1">
+                            Configura la categoria Saldo IVA nelle Impostazioni. Il fornitore di sistema deve essere inizializzato per il workspace.
+                        </div> : null}
 
                     {isVatSettlement ? <MonthField
                         className="expense-wizard-step expense-wizard-step-1"
@@ -1135,12 +1150,12 @@ export default function ExpenseForm({
                         name="receivedDate"
                         value={orderDate}
                         onChange={(nextOrderDate) => {
-                                const nextOrderMonth = monthInputFromDateInput(nextOrderDate);
-                                setOrderDate(nextOrderDate);
-                                if (nextOrderMonth && (!billingPeriod || billingPeriod < nextOrderMonth)) {
-                                    setBillingPeriod(nextOrderMonth);
-                                }
-                                setDueDate(addDaysToDateInput(nextOrderDate, 7));
+                            const nextOrderMonth = monthInputFromDateInput(nextOrderDate);
+                            setOrderDate(nextOrderDate);
+                            if (nextOrderMonth && (!billingPeriod || billingPeriod < nextOrderMonth)) {
+                                setBillingPeriod(nextOrderMonth);
+                            }
+                            setDueDate(addDaysToDateInput(nextOrderDate, 7));
                         }}
                         required
                     />}
@@ -1167,7 +1182,7 @@ export default function ExpenseForm({
                                         setDueDate(value);
                                         if (isVatSettlement) setOrderDate(value);
                                     }}
-                                >{days === 0 ? "Stesso g" : `+${days}gg`}</button>;
+                                >{days === 0 ? "Stesso g" : `+${days} gg`}</button>;
                             })}
                         </span>
                     </DateField>
@@ -1182,9 +1197,9 @@ export default function ExpenseForm({
                 <div className="form-section-grid">
                     {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
                         Esercente
-                        <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly />
-                        <input type="hidden" name="supplierId" value={vatSettlementSupplier?.id ?? ""} />
-                        <input type="hidden" name="merchant" value={vatSettlementSupplier?.businessName ?? ""} />
+                        <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly/>
+                        <input type="hidden" name="supplierId" value={vatSettlementSupplier?.id ?? ""}/>
+                        <input type="hidden" name="merchant" value={vatSettlementSupplier?.businessName ?? ""}/>
                     </label> : <SupplierAutocomplete
                         suppliers={suppliers.filter(supplier => !supplier.systemRole)}
                         categories={categories}
@@ -1199,8 +1214,8 @@ export default function ExpenseForm({
                     />}
                     {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
                         Categoria
-                        <input value={vatSettlementCategory?.name ?? "Non configurata"} readOnly />
-                        <input type="hidden" name="categoryId" value={vatSettlementCategory?.id ?? ""} />
+                        <input value={vatSettlementCategory?.name ?? "Non configurata"} readOnly/>
+                        <input type="hidden" name="categoryId" value={vatSettlementCategory?.id ?? ""}/>
                     </label> : <SelectField
                         className="expense-wizard-step expense-wizard-step-3 expense-category-field"
                         label="Categoria"
@@ -1229,20 +1244,24 @@ export default function ExpenseForm({
                 <div className="form-section-grid">
                     <div className="amount-vat-row full expense-wizard-step expense-wizard-step-2">
                         <div className="expense-wizard-amount-entry">
-                            {!isVatSettlement ? <div className="toggle-field switch-toggle-field expense-fiscal-desktop-control">
-                                <span>Fiscale</span>
-                                <label className="switch">
-                                    <input
-                                        type="checkbox"
-                                        name="isDeclared"
-                                        value="true"
-                                        checked={isDeclared}
-                                        onChange={(event) => updateDeclared(event.currentTarget.checked)}
-                                    />
-                                    <span className="slider"/>
-                                    <span className="text-muted">{isDeclared ? 'Detrazione' : 'Non fiscale'}</span>
-                                </label>
-                            </div> : null}
+                            {!isVatSettlement ?
+                                <div className="toggle-field switch-toggle-field expense-fiscal-desktop-control">
+                                    <div className="switch-toggle-field-label">
+                                        <span className="app-form-field-icon">⇆</span>
+                                        <label>Fiscale</label>
+                                    </div>
+                                    <label className="switch">
+                                        <input
+                                            type="checkbox"
+                                            name="isDeclared"
+                                            value="true"
+                                            checked={isDeclared}
+                                            onChange={(event) => updateDeclared(event.currentTarget.checked)}
+                                        />
+                                        <span className="slider"/>
+                                        <span className="text-muted">{isDeclared ? 'Fiscale' : 'Non fiscale'}</span>
+                                    </label>
+                                </div> : null}
                             {!isVatSettlement ? <label className="expense-wizard-mobile-switch">
                                 <span>Fiscale</span>
                                 <span className="switch">
@@ -1256,33 +1275,41 @@ export default function ExpenseForm({
                                 {/*<span className="text-muted">{isDeclared ? 'Detrazione' : 'Non fiscale'}</span>*/}
                             </label> : null}
                             <div className="expense-amount-control">
-                                <label className="expense-wizard-amount-field">
-                                    {!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}
-                                    <MoneyInput
-                                        inputRef={amountRef}
-                                        required
-                                        value={amount}
-                                        onValueChange={handleAmountChange}
-                                    />
-                                    <input type="hidden" name="amount" value={normalizedAmount}/>
-                                </label>
-                                {!isVatSettlement ? <div className="expense-wizard-vat-buttons" aria-label="Aliquota IVA">
-                                    <label>Aliquota IVA </label>
-                                    {["0", "4", "10", "22"].map(rate => <button
-                                        type="button"
-                                        key={rate}
-                                        className={vatRate === rate ? "is-selected" : ""}
-                                        disabled={!isDeclared}
-                                        onMouseDown={event => event.preventDefault()}
-                                        onClick={() => {
-                                            setVatRate(rate);
-                                            focusAmount();
-                                        }}
-                                    >{rate}%</button>)}
-                                </div> : null}
+
+                                    <label className="expense-wizard-amount-field switch-toggle-field">
+                                        <div className="switch-toggle-field-label">
+                                            <span className="app-form-field-icon">€</span>
+                                            <span>{!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}</span>
+                                        </div>
+                                            <MoneyInput
+                                            inputRef={amountRef}
+                                            required
+                                            value={amount}
+                                            onValueChange={handleAmountChange}
+                                        />
+                                        <input type="hidden" name="amount" value={normalizedAmount}/>
+
+                                    </label>
+
+                                {!isVatSettlement ?
+                                    <div className="expense-wizard-vat-buttons" aria-label="Aliquota IVA">
+                                        <label>Aliquota IVA </label>
+                                        {["0", "4", "10", "22"].map(rate => <button
+                                            type="button"
+                                            key={rate}
+                                            className={vatRate === rate ? "is-selected" : ""}
+                                            disabled={!isDeclared}
+                                            onMouseDown={event => event.preventDefault()}
+                                            onClick={() => {
+                                                setVatRate(rate);
+                                                focusAmount();
+                                            }}
+                                        >{rate}%</button>)}
+                                    </div> : null}
                             </div>
                         </div>
-                        {!isVatSettlement ? <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/> : null}
+                        {!isVatSettlement ?
+                            <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/> : null}
                         <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button
                                 type="button"
@@ -1297,24 +1324,18 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            {!isVatSettlement ? <details className="form-section full expense-wizard-split-section expense-wizard-fiscal-section" open>
-                <summary>
-                    <span>Fiscale</span>
-                    <small>IVA, detrazione e fattura elettronica</small>
-                </summary>
-                <div className="form-section-grid">
-                    <MonthField
-                        className="expense-wizard-step expense-wizard-step-5"
-                        label="Periodo contabile"
-                        name="billingPeriod"
-                        value={billingPeriod}
-                        onChange={setBillingPeriod}
-                        required
-                        hint={isVatSettlement ? "Determina il periodo fiscale nel quale conteggiare il saldo IVA." : undefined}
-                    />
-                    {/*<div className="toggle-field-wrap">*/}
+            {!isVatSettlement ?
+                <details className="form-section full expense-wizard-split-section expense-wizard-fiscal-section" open>
+                    <summary>
+                        <span>Fiscale</span>
+                        <small>IVA, detrazione e fattura elettronica</small>
+                    </summary>
+                    <div className="form-section-grid">
                         <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
-                            <span>Fattura elettronica</span>
+                            <div className="switch-toggle-field-label">
+                                <span className="app-form-field-icon">⇆</span>
+                                <label>Fattura elettronica</label>
+                            </div>
                             <label className="switch">
                                 <input
                                     type="checkbox"
@@ -1332,10 +1353,23 @@ export default function ExpenseForm({
                                 <span className="text-muted">{hasElectronicInvoice ? "Elettronica" : "PDF"}</span>
                             </label>
                         </div>
-                {/*</div>*/}
-                {/*<div className="form-section-grid">*/}
+
+                        <MonthField
+                            className="expense-wizard-step expense-wizard-step-5"
+                            label="Periodo contabile"
+                            name="billingPeriod"
+                            value={billingPeriod}
+                            onChange={setBillingPeriod}
+                            required
+                            hint={isVatSettlement ? "Determina il periodo fiscale nel quale conteggiare il saldo IVA." : undefined}
+                        />
+                    </div>
+                    <div className="form-section-grid pt-0">
                         <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
-                            <span>Fattura emessa</span>
+                            <div className="switch-toggle-field-label">
+                                <span className="app-form-field-icon">⇆</span>
+                                <label>Fattura emessa</label>
+                            </div>
                             <label className="switch">
                                 <input
                                     type="checkbox"
@@ -1353,12 +1387,12 @@ export default function ExpenseForm({
                                 <span className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? "Emessa" : "Non inviata"}</span>
                             </label>
                         </div>
-                    {/*</div>*/}
-                    <div className="expense-invoice-step-row expense-wizard-step expense-wizard-step-5">
-                        <div className="expense-invoice-switches">
-                            <label className="expense-wizard-mobile-switch app-form-field-label">
-                                <span>Fattura elettronica</span>
-                                <span className="switch">
+
+                        <div className="expense-invoice-step-row expense-wizard-step expense-wizard-step-5">
+                            <div className="expense-invoice-switches">
+                                <label className="expense-wizard-mobile-switch app-form-field-label">
+                                    <span>Fattura elettronica</span>
+                                    <span className="switch">
                                     <input
                                         type="checkbox"
                                         checked={hasElectronicInvoice}
@@ -1372,10 +1406,10 @@ export default function ExpenseForm({
                                     <span className="slider"/>
                                     <span className="text-muted">{hasElectronicInvoice ? 'Elettronica' : 'PDF'}</span>
                                 </span>
-                            </label>
-                            <label className="expense-wizard-mobile-switch expense-invoice-emitted-switch app-form-field-label">
-                                <span>Fattura emessa</span>
-                                <span className="switch">
+                                </label>
+                                <label className="expense-wizard-mobile-switch expense-invoice-emitted-switch app-form-field-label">
+                                    <span>Fattura emessa</span>
+                                    <span className="switch">
                                     <input
                                         type="checkbox"
                                         checked={isDeclared && invoiceStatus === "RICEVUTA"}
@@ -1391,32 +1425,32 @@ export default function ExpenseForm({
                                     <span className="slider"/>
                                     <span className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? 'Ricevuta' : 'Non ricevuta'}</span>
                                 </span>
-                            </label>
-                        </div>
-                        <div className="expense-invoice-status-field">
-                            <SelectField
-                                label="Stato fattura"
-                                icon="▤"
-                                name="invoiceStatus"
-                                value={invoiceStatus}
-                                disabled={invoiceNotExpected}
-                                onChange={setInvoiceStatus}
-                                options={invoiceStatuses.map(([value, label]) => ({
-                                    value,
-                                    label,
-                                    disabled: value === "NON_PREVISTA" && hasElectronicInvoice
-                                }))}
-                            />
-                            {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>}
+                                </label>
+                            </div>
+                            <div className="expense-invoice-status-field">
+                                <SelectField
+                                    label="Stato fattura"
+                                    icon="▤"
+                                    name="invoiceStatus"
+                                    value={invoiceStatus}
+                                    disabled={invoiceNotExpected}
+                                    onChange={setInvoiceStatus}
+                                    options={invoiceStatuses.map(([value, label]) => ({
+                                        value,
+                                        label,
+                                        disabled: value === "NON_PREVISTA" && hasElectronicInvoice
+                                    }))}
+                                />
+                                {invoiceNotExpected && <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </details> : <>
-                <input type="hidden" name="vatRate" value="0"/>
-                <input type="hidden" name="isDeclared" value="false"/>
-                <input type="hidden" name="hasElectronicInvoice" value="false"/>
-                <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>
-            </>}
+                </details> : <>
+                    <input type="hidden" name="vatRate" value="0"/>
+                    <input type="hidden" name="isDeclared" value="false"/>
+                    <input type="hidden" name="hasElectronicInvoice" value="false"/>
+                    <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>
+                </>}
 
             <details className="form-section full expense-wizard-step expense-wizard-step-4" open>
                 <summary>
@@ -1530,7 +1564,8 @@ export default function ExpenseForm({
                                                     input?.focus();
                                                     input?.showPicker?.();
                                                 }}
-                                            >▦</button>
+                                            >▦
+                                            </button>
                                         </div>
                                     </div>
                                     <div className="payment-select-field">
@@ -1542,14 +1577,16 @@ export default function ExpenseForm({
                                                 onChange={(event) => updatePayment(index, {paymentMethodId: event.currentTarget.value})}
                                             >
                                                 <option value="">Seleziona metodo</option>
-                                                {availablePaymentMethods.map(method => <option key={method.id} value={method.id}>{method.icon ?? "  •  "} {method.name}</option>)}
+                                                {availablePaymentMethods.map(method =>
+                                                    <option key={method.id} value={method.id}>{method.icon ?? "  •  "} {method.name}</option>)}
                                             </select>
                                             <span className="payment-select-caret" aria-hidden="true">⌄</span>
                                         </div>
                                     </div>
                                     <div className="payment-select-field">
                                         <span className="payment-select-label"><i aria-hidden="true">▥</i> Banca pagamento</span>
-                                        {cashBankLocked ? <input type="hidden" name="paymentBankId[]" value={cashBankIdValue}/> : null}
+                                        {cashBankLocked ?
+                                            <input type="hidden" name="paymentBankId[]" value={cashBankIdValue}/> : null}
                                         <div className="payment-select-control">
                                             <select
                                                 name={cashBankLocked ? undefined : "paymentBankId[]"}
@@ -1636,16 +1673,34 @@ export default function ExpenseForm({
                     <strong>{formatEuro(amountValue)}</strong>
                 </div>
                 <div className="expense-review-grid">
-                    {!isVatSettlement ? <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Data ordine<strong>{formatDateInputLabel(orderDate)}</strong></span></div> : null}
-                    <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span></div>
-                    <div className="expense-review-item wide"><i aria-hidden="true">◎</i><span>Fornitore<strong>{currentSupplierName}</strong></span></div>
-                    <div className="expense-review-item wide"><i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span></div>
-                    <div className="expense-review-item wide"><i aria-hidden="true">◇</i><span>Categoria<strong>{selectedCategory ? `${selectedCategory.icon ? `${categoryIcon(selectedCategory)} ` : ""}${selectedCategory.name}` : "Non indicata"}</strong></span></div>
-                    <div className="expense-review-item"><i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span></div>
-                    <div className="expense-review-item"><i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span></div>
-                    <div className="expense-review-item wide"><i aria-hidden="true">▤</i><span>Fattura elettronica<strong>{hasElectronicInvoice ? `Sì · ${currentInvoiceStatusLabel}` : `No · ${currentInvoiceStatusLabel}`}</strong></span></div>
-                    <div className="expense-review-item"><i aria-hidden="true">€</i><span>Pagamenti<strong>{payments.length ? `${payments.length} · ${formatEuro(paidAmountValue)}` : "Nessun pagamento"}</strong></span></div>
-                    <div className="expense-review-item"><i aria-hidden="true">=</i><span>Residuo<strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong></span></div>
+                    {!isVatSettlement ? <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Data ordine<strong>{formatDateInputLabel(orderDate)}</strong></span>
+                    </div> : null}
+                    <div className="expense-review-item">
+                        <i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span>
+                    </div>
+                    <div className="expense-review-item wide">
+                        <i aria-hidden="true">◎</i><span>Fornitore<strong>{currentSupplierName}</strong></span></div>
+                    <div className="expense-review-item wide">
+                        <i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span>
+                    </div>
+                    <div className="expense-review-item wide">
+                        <i aria-hidden="true">◇</i><span>Categoria<strong>{selectedCategory ? `${selectedCategory.icon ? `${categoryIcon(selectedCategory)} ` : ""}${selectedCategory.name}` : "Non indicata"}</strong></span>
+                    </div>
+                    <div className="expense-review-item">
+                        <i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span>
+                    </div>
+                    <div className="expense-review-item">
+                        <i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span>
+                    </div>
+                    <div className="expense-review-item wide">
+                        <i aria-hidden="true">▤</i><span>Fattura elettronica<strong>{hasElectronicInvoice ? `Sì · ${currentInvoiceStatusLabel}` : `No · ${currentInvoiceStatusLabel}`}</strong></span>
+                    </div>
+                    <div className="expense-review-item">
+                        <i aria-hidden="true">€</i><span>Pagamenti<strong>{payments.length ? `${payments.length} · ${formatEuro(paidAmountValue)}` : "Nessun pagamento"}</strong></span>
+                    </div>
+                    <div className="expense-review-item">
+                        <i aria-hidden="true">=</i><span>Residuo<strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong></span>
+                    </div>
                 </div>
                 <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
                     <span className="btn-icon">＋</span>
@@ -1707,26 +1762,31 @@ export default function ExpenseForm({
             <div className="expense-wizard-actions full">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}
                 <div className="expense-wizard-actions-row">
-                    {mobileStep > 1 ? <button className="btn btn-md btn-default" type="button" onClick={previousMobileStep}>
-                        ← {mobileStep === 7 ? "Riepilogo" : "Indietro"}
-                    </button> : onCancel ? <button className="btn btn-md btn-default" type="button" onClick={onCancel}>
-                        × Annulla
-                    </button> : <a className="btn btn-md btn-default" href={cancelHref ?? "/expenses"}>× Annulla</a>}
+                    {mobileStep > 1 ?
+                        <button className="btn btn-md btn-default" type="button" onClick={previousMobileStep}>
+                            ← {mobileStep === 7 ? "Riepilogo" : "Indietro"}
+                        </button> : onCancel ?
+                            <button className="btn btn-md btn-default" type="button" onClick={onCancel}>
+                                × Annulla
+                            </button> :
+                            <a className="btn btn-md btn-default" href={cancelHref ?? "/expenses"}>× Annulla</a>}
                     {mobileStep < 6 ? <button className="btn btn-md btn-primary" type="button" onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        nextMobileStep();
-                    }}>
-                        Avanti →
-                    </button> : <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting || Boolean(attachmentError)}>
-                        <span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
-                    </button>}
+                            event.preventDefault();
+                            event.stopPropagation();
+                            nextMobileStep();
+                        }}>
+                            Avanti →
+                        </button> :
+                        <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting || Boolean(attachmentError)}>
+                            <span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
+                        </button>}
                 </div>
             </div>
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}
-                <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting}><span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
+                <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting}>
+                    <span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
                 </button>
                 {onCancel ? (
                     <button className="btn btn-md btn-default" type="button" onClick={onCancel}><span

@@ -3,6 +3,7 @@ import {prisma} from '@/lib/prisma';
 import {euro, moneyTone} from '@/lib/money';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpensesList from '@/components/ExpensesList';
+import {expenseResidualAmount, isExpensePastDue} from '@/lib/expense-calculations';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
@@ -362,23 +363,6 @@ function amountMatchesFilter(amount: number, filterValue: AmountFilter | null) {
 function expenseSupplierName(expense: { supplier?: { businessName: string } | null; merchant?: string | null }) {
     return expense.supplier?.businessName ?? expense.merchant ?? '';
 }
-
-function expenseResidualAmount(expense: { amount: unknown; payments?: Array<{ amount: unknown }> }) {
-    const expenseAmount = Number(expense.amount);
-    const paidAmount = (expense.payments ?? []).reduce((partial, payment) => partial + Number(payment.amount), 0);
-    return Math.max(expenseAmount - paidAmount, 0);
-}
-
-function isExpensePastDueForBadge(expense: any) {
-    if (!expense.dueDate) return false;
-    if (expenseResidualAmount(expense) <= 0) return false;
-    const due = new Date(expense.dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    due.setHours(0, 0, 0, 0);
-    return due < today;
-}
-
 
 function vatAmountFromGross(amount: number, vatRate: number) {
     if (!vatRate) return 0;
@@ -747,7 +731,7 @@ export default async function ExpensesPage({searchParams}: {
         if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
         if (!amountMatchesFilter(amount, amountFilterValue)) return false;
         if (paymentStatusFilter === 'not_complete' && expense.paymentStatus === 'COMPLETATO') return false;
-        if (paymentStatusFilter === 'overdue' && !isExpensePastDueForBadge(expense)) return false;
+        if (paymentStatusFilter === 'overdue' && !isExpensePastDue(expense)) return false;
         if (paymentStatusFilter && !['not_complete', 'overdue'].includes(paymentStatusFilter) && expense.paymentStatus !== paymentStatusFilter) return false;
         if (residualFilter === 'open' && residual <= 0) return false;
         if (residualFilter === 'closed' && residual > 0) return false;
@@ -769,13 +753,13 @@ export default async function ExpensesPage({searchParams}: {
         const vatRate = Number(expense.vatRate.toString());
         const paid = Math.min(amount, expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0));
         const residualAmount = Math.max(0, amount - paid);
-        const overdueResidualAmount = isExpensePastDueForBadge(expense) ? residualAmount : 0;
+        const overdueResidualAmount = isExpensePastDue(expense) ? residualAmount : 0;
 
         acc.total += amount;
         acc.paidVat += expense.expenseType === 'VAT_SETTLEMENT' ? paid : (expense.isDeclared ? vatAmountFromGross(paid, vatRate) : 0);
         acc.toPay += residualAmount;
         acc.overdue += overdueResidualAmount;
-        if (isExpensePastDueForBadge(expense)) acc.overdueCount += 1;
+        if (isExpensePastDue(expense)) acc.overdueCount += 1;
         if (expense.isDeclared) {
             acc.declared += amount;
             if (isExpenseInvoiceNotReceived(expense)) acc.invoicesNotReceived += 1;
