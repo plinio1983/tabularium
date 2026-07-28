@@ -111,7 +111,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
           value={query}
           required
           autoComplete="off"
-          placeholder="Cerca per ragione sociale o alias"
+          placeholder="Cerca per ragione sociale o referente"
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           onChange={event => {
@@ -150,7 +150,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
         }}
       >
         <strong>{customer.businessName}</strong>
-        {customer.alias ? <small>Alias: {customer.alias}</small> : null}
+        {customer.alias ? <small>Referente: {customer.alias}</small> : null}
       </button>)}
       {!matches.length ? <div className="empty-supplier-result">Nessun cliente trovato.</div> : null}
     </div> : null}
@@ -172,11 +172,11 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
             <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}>✕</button>
           </div>
           <div className="modal-form-grid">
-            <label>Nome / Ragione sociale<input value={createData.businessName} onChange={event => updateCreateData('businessName', event.target.value)} required autoFocus /></label>
-            <label>Alias<input value={createData.alias} onChange={event => updateCreateData('alias', event.target.value)} /></label>
+            <label>Ragione sociale<input value={createData.businessName} onChange={event => updateCreateData('businessName', event.target.value)} required autoFocus /></label>
+            <label>Referente<input value={createData.alias} onChange={event => updateCreateData('alias', event.target.value)} /></label>
             <label>Email<input type="email" value={createData.email} onChange={event => updateCreateData('email', event.target.value)} /></label>
-            <label>P.IVA<input value={createData.vatNumber} onChange={event => updateCreateData('vatNumber', event.target.value)} /></label>
-            <label>SDI / Codice fiscale<input value={createData.taxCodeSdi} onChange={event => updateCreateData('taxCodeSdi', event.target.value)} /></label>
+            <label>P.IVA / C.F.<input value={createData.vatNumber} onChange={event => updateCreateData('vatNumber', event.target.value)} /></label>
+            <label>Cod. SDI<input value={createData.taxCodeSdi} onChange={event => updateCreateData('taxCodeSdi', event.target.value)} /></label>
             <label>PEC<input type="email" value={createData.pec} onChange={event => updateCreateData('pec', event.target.value)} /></label>
             <label>IBAN<input value={createData.iban} onChange={event => updateCreateData('iban', event.target.value)} /></label>
             <label>Swift<input value={createData.swift} onChange={event => updateCreateData('swift', event.target.value)} /></label>

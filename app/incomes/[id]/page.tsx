@@ -14,7 +14,7 @@ import {
     fiscalStyles,
     incomeCreditStatusStyles,
     incomeInvoiceStatusStyles,
-    salesChannelTones
+    salesChannelTone
 } from '@/lib/income-ui';
 import {vatRateLabel, yesNoStyles} from "@/lib/expense-ui";
 
@@ -107,7 +107,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const title = customerName !== 'Non indicato' ? customerName : `Incasso ${income.salesChannelRef.name}`;
     const incomePaymentMethodName = income.paymentMethodRef.name;
     const incomeCreditChannelName = income.creditBank.name;
-    const salesTone = salesChannelTones[income.salesChannelRef.code];
+    const salesTone = salesChannelTone(income.salesChannelRef.code);
     const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
     const creditStatus = incomeCreditStatus(income);
     const detailToneClass = isIncomeCreditOverdue(income)
@@ -278,7 +278,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     </div>
                     <div className="expense-detail-item expense-detail-item-wide">
                         <span>Note</span>
-                        <strong>{income.notes ?? 'Nessuna nota inserita.'}</strong>
+                        <strong className="displayed-notes">{income.notes ?? 'Nessuna nota inserita.'}</strong>
                     </div>
                 </section>
             </article>

@@ -24,6 +24,7 @@ type SupplierOption = {
     iban?: string | null;
     pec?: string | null;
     taxCodeSdi?: string | null;
+    swift?: string | null;
     internalNotes?: string | null;
 };
 type InitialRecurringExpense = {
@@ -131,6 +132,7 @@ function SupplierAutocomplete({
         pec: "",
         taxCodeSdi: "",
         alias: "",
+        swift: "",
         internalNotes: "",
     });
     const [isSaving, setIsSaving] = useState(false);
@@ -206,6 +208,7 @@ function SupplierAutocomplete({
             pec: "",
             taxCodeSdi: "",
             alias: "",
+            swift: "",
             internalNotes: "",
         });
         setShowCreate(false);
@@ -263,7 +266,7 @@ function SupplierAutocomplete({
                                 }}
                             >
                                 <strong>{supplier.businessName}</strong>
-                                {supplier.alias && <small>Alias: {supplier.alias}</small>}
+                                {supplier.alias && <small>Referente: {supplier.alias}</small>}
                             </button>
                         ))
                     ) : (
@@ -289,33 +292,37 @@ function SupplierAutocomplete({
                             <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}>✕</button>
                         </div>
                         <div className="modal-form-grid">
-                            <label>Ragione Sociale<input value={createData.businessName} onChange={(e) => setCreateData((d) => ({
+                            <label>Ragione sociale<input value={createData.businessName} onChange={(e) => setCreateData((d) => ({
                                 ...d,
                                 businessName: e.target.value
                             }))} required/></label>
+                            <label>Referente<input value={createData.alias} onChange={(e) => setCreateData((d) => ({
+                                ...d,
+                                alias: e.target.value
+                            }))}/></label>
                             <label>Email<input value={createData.email} onChange={(e) => setCreateData((d) => ({
                                 ...d,
                                 email: e.target.value
                             }))}/></label>
-                            <label>P.IVA<input value={createData.vatNumber} onChange={(e) => setCreateData((d) => ({
+                            <label>P.IVA / C.F.<input value={createData.vatNumber} onChange={(e) => setCreateData((d) => ({
                                 ...d,
                                 vatNumber: e.target.value
                             }))}/></label>
-                            <label>IBAN<input value={createData.iban} onChange={(e) => setCreateData((d) => ({
+                            <label>Cod. SDI<input value={createData.taxCodeSdi} onChange={(e) => setCreateData((d) => ({
                                 ...d,
-                                iban: e.target.value
+                                taxCodeSdi: e.target.value
                             }))}/></label>
                             <label>PEC<input value={createData.pec} onChange={(e) => setCreateData((d) => ({
                                 ...d,
                                 pec: e.target.value
                             }))}/></label>
-                            <label>Codice SDI/Fiscale<input value={createData.taxCodeSdi} onChange={(e) => setCreateData((d) => ({
+                            <label>IBAN<input value={createData.iban} onChange={(e) => setCreateData((d) => ({
                                 ...d,
-                                taxCodeSdi: e.target.value
+                                iban: e.target.value
                             }))}/></label>
-                            <label>Alias<input value={createData.alias} onChange={(e) => setCreateData((d) => ({
+                            <label>Swift<input value={createData.swift} onChange={(e) => setCreateData((d) => ({
                                 ...d,
-                                alias: e.target.value
+                                swift: e.target.value
                             }))}/></label>
                             <label className="full">Note interne<textarea rows={3} value={createData.internalNotes} onChange={(e) => setCreateData((d) => ({
                                 ...d,

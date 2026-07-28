@@ -14,6 +14,7 @@ const SupplierSchema = z.object({
   pec: z.string().trim().optional().transform(value => value || null),
   taxCodeSdi: z.string().trim().optional().transform(value => value || null),
   alias: z.string().trim().optional().transform(value => value || null),
+  swift: z.string().trim().optional().transform(value => value || null),
   internalNotes: z.string().trim().optional().transform(value => value || null),
   defaultExpenseCategoryId: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().int().positive().nullable()),
   _action: z.string().optional()
@@ -67,6 +68,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       pec: data.pec,
       taxCodeSdi: data.taxCodeSdi,
       alias: data.alias,
+      swift: data.swift,
       internalNotes: data.internalNotes,
       defaultExpenseCategoryId: data.defaultExpenseCategoryId
     }

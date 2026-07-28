@@ -23,26 +23,39 @@ function fail(error: string, kind?: string, usage?: number): never {
 function parse(formData: FormData) {
   const kind = value(formData, 'kind') as Kind;
   const name = value(formData, 'name');
-  const code = value(formData, 'code').toUpperCase();
   const icon = value(formData, 'icon') || null;
-  if (!['category', 'channel'].includes(kind) || !name || !code) fail('invalid', kind);
-  if (code.length > 40 || !/^[A-Z0-9_]+$/.test(code)) fail('code_format', kind);
+  if (!['category', 'channel'].includes(kind) || !name) fail('invalid', kind);
   if (icon && !incomeEntityIconOptions.includes(icon as typeof incomeEntityIconOptions[number])) fail('icon_invalid', kind);
-  return { kind, name, code, icon };
+  return { kind, name, icon };
+}
+
+function codeFromName(name: string) {
+  return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40) || 'CANALE';
+}
+
+async function availableCode(kind: Kind, workspaceId: number, name: string) {
+  const base = codeFromName(name);
+  for (let suffix = 1; suffix < 10_000; suffix += 1) {
+    const tail = suffix === 1 ? '' : `_${suffix}`;
+    const code = `${base.slice(0, 40 - tail.length)}${tail}`;
+    const existing = kind === 'category'
+      ? await prisma.incomeCategory.findFirst({where: {workspaceId, code}, select: {id: true}})
+      : await prisma.incomeSalesChannel.findFirst({where: {workspaceId, code}, select: {id: true}});
+    if (!existing) return code;
+  }
+  fail('invalid', kind);
 }
 
 export async function createIncomeEntityAction(formData: FormData) {
   const current = await requireWorkspaceRole(workspaceManagementRoles, path);
   const input = parse(formData);
+  const code = await availableCode(input.kind, current.workspace.id, input.name);
   let entityId: number;
   if (input.kind === 'category') {
-    const duplicate = await prisma.incomeCategory.findFirst({ where: { workspaceId: current.workspace.id, code: input.code } });
-    if (duplicate) fail('code_exists', input.kind);
-    const entity = await prisma.incomeCategory.create({ data: { workspaceId: current.workspace.id, name: input.name, code: input.code, icon: input.icon } });
+    const entity = await prisma.incomeCategory.create({ data: { workspaceId: current.workspace.id, name: input.name, code, icon: input.icon } });
     entityId = entity.id;
   } else {
-    const duplicate = await prisma.incomeSalesChannel.findFirst({ where: { workspaceId: current.workspace.id, code: input.code } });
-    if (duplicate) fail('code_exists', input.kind);
     const lastChannel = await prisma.incomeSalesChannel.findFirst({
       where: { workspaceId: current.workspace.id },
       orderBy: [{ sortOrder: 'desc' }, { id: 'desc' }],
@@ -52,7 +65,7 @@ export async function createIncomeEntityAction(formData: FormData) {
       data: {
         workspaceId: current.workspace.id,
         name: input.name,
-        code: input.code,
+        code,
         icon: input.icon,
         sortOrder: (lastChannel?.sortOrder ?? 0) + 10
       }

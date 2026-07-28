@@ -26,6 +26,7 @@ type SupplierOption = {
     iban?: string | null;
     pec?: string | null;
     taxCodeSdi?: string | null;
+    swift?: string | null;
     internalNotes?: string | null;
     systemRole?: string | null;
     defaultExpenseCategoryId?: number | null;
@@ -235,6 +236,7 @@ function SupplierAutocomplete({
         pec: "",
         taxCodeSdi: "",
         alias: "",
+        swift: "",
         internalNotes: "",
         defaultExpenseCategoryId: "",
     });
@@ -323,6 +325,7 @@ function SupplierAutocomplete({
             pec: "",
             taxCodeSdi: "",
             alias: "",
+            swift: "",
             internalNotes: "",
             defaultExpenseCategoryId: "",
         });
@@ -388,7 +391,7 @@ function SupplierAutocomplete({
                                             }}
                                         >
                                             <strong>{supplier.businessName}</strong>
-                                            {supplier.alias && <small>Alias: {supplier.alias}</small>}
+                                            {supplier.alias && <small>Referente: {supplier.alias}</small>}
                                         </button>
                                     ))
                                 ) : (
@@ -436,7 +439,7 @@ function SupplierAutocomplete({
                         </div>
                         <div className="modal-form-grid">
                             <label>
-                                Ragione Sociale
+                                Ragione sociale
                                 <input
                                     value={createData.businessName}
                                     onChange={(e) =>
@@ -449,6 +452,15 @@ function SupplierAutocomplete({
                                 />
                             </label>
                             <label>
+                                Referente
+                                <input
+                                    value={createData.alias}
+                                    onChange={(e) =>
+                                        setCreateData((d) => ({...d, alias: e.target.value}))
+                                    }
+                                />
+                            </label>
+                            <label>
                                 Email
                                 <input
                                     value={createData.email}
@@ -458,7 +470,7 @@ function SupplierAutocomplete({
                                 />
                             </label>
                             <label>
-                                P.IVA
+                                P.IVA / C.F.
                                 <input
                                     value={createData.vatNumber}
                                     onChange={(e) =>
@@ -467,11 +479,11 @@ function SupplierAutocomplete({
                                 />
                             </label>
                             <label>
-                                IBAN
+                                Cod. SDI
                                 <input
-                                    value={createData.iban}
+                                    value={createData.taxCodeSdi}
                                     onChange={(e) =>
-                                        setCreateData((d) => ({...d, iban: e.target.value}))
+                                        setCreateData((d) => ({...d, taxCodeSdi: e.target.value}))
                                     }
                                 />
                             </label>
@@ -485,20 +497,20 @@ function SupplierAutocomplete({
                                 />
                             </label>
                             <label>
-                                Codice SDI/Fiscale
+                                IBAN
                                 <input
-                                    value={createData.taxCodeSdi}
+                                    value={createData.iban}
                                     onChange={(e) =>
-                                        setCreateData((d) => ({...d, taxCodeSdi: e.target.value}))
+                                        setCreateData((d) => ({...d, iban: e.target.value}))
                                     }
                                 />
                             </label>
                             <label>
-                                Alias
+                                Swift
                                 <input
-                                    value={createData.alias}
+                                    value={createData.swift}
                                     onChange={(e) =>
-                                        setCreateData((d) => ({...d, alias: e.target.value}))
+                                        setCreateData((d) => ({...d, swift: e.target.value}))
                                     }
                                 />
                             </label>

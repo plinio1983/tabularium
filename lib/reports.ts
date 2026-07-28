@@ -324,9 +324,6 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
   ]);
 
   const summary = summarizeRecords(incomes, expenses, mode === 'fiscal' ? [{ year, month }] : undefined);
-  const web = incomes.reduce((sum, income) => income.isFiscal && income.salesChannelRef.code === 'ONLINE_SHOP' ? sum + Number(income.amount) : sum, 0);
-  const shop = incomes.reduce((sum, income) => income.isFiscal && income.salesChannelRef.code === 'SHOP' ? sum + Number(income.amount) : sum, 0);
-  const noInvoice = incomes.reduce((sum, income) => !income.isFiscal ? sum + Number(income.amount) : sum, 0);
   const taxRate = 30;
   const estimatedTax = Math.max(summary.utileFiscale, 0) * taxRate / 100;
 
@@ -340,9 +337,6 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
     totals: {
       totalExpenses: summary.speseTotali,
       totalVatOnExpenses: summary.ivaVersataSpese,
-      web,
-      shop,
-      noInvoice,
       totalRevenue: summary.incassoTotale,
       vatToPay: summary.ivaGenerataIncassi,
       paidVat: summary.ivaVersataSpese,

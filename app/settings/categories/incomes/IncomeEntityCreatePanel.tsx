@@ -20,7 +20,6 @@ export default function IncomeEntityCreatePanel({
     {open ? <form action={action} className="form category-create-form">
       <input type="hidden" name="kind" value={kind} />
       <label>Nome<input name="name" maxLength={80} required /></label>
-      <label>Codice<input name="code" maxLength={40} pattern="[A-Za-z0-9_]{1,40}" required /></label>
       <label>Icona<select name="icon" defaultValue=""><option value="">Nessuna</option>{iconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></label>
       <div className="actions-row"><button type="submit" className="btn btn-md btn-primary">Aggiungi {label}</button></div>
     </form> : null}

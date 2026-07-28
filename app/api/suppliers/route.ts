@@ -14,6 +14,7 @@ const SupplierSchema = z.object({
   pec: z.string().trim().optional().transform(value => value || null),
   taxCodeSdi: z.string().trim().optional().transform(value => value || null),
   alias: z.string().trim().optional().transform(value => value || null),
+  swift: z.string().trim().optional().transform(value => value || null),
   internalNotes: z.string().trim().optional().transform(value => value || null),
   defaultExpenseCategoryId: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().int().positive().nullable())
 });

@@ -19,9 +19,9 @@ const input = (filters: Record<string, string | string[] | undefined>, key: stri
 };
 const normalize = (value: unknown) => String(value ?? '').trim().toLocaleLowerCase('it');
 const mobileSortOptions = [
-    {value: 'businessName_asc', label: 'Nome / Ragione sociale (A-Z)'}, {
+    {value: 'businessName_asc', label: 'Ragione sociale (A-Z)'}, {
         value: 'businessName_desc',
-        label: 'Nome / Ragione sociale (Z-A)'
+        label: 'Ragione sociale (Z-A)'
     },
     {value: 'openCount_desc', label: 'Incassi da accreditare alti'}, {
         value: 'openAmount_desc',
@@ -166,7 +166,7 @@ export default async function ClientsPage({searchParams}: {
                                 </div>
                             </div>
                             <div className="expense-mobile-subtitle">
-                                <span className="supplier-mobile-row-grow">{customer.alias || 'Nessun alias'}</span><span className="supplier-mobile-row-grow text-right"><strong>{openCount}</strong> incassi da accreditare</span>
+                                <span className="supplier-mobile-row-grow">{customer.alias || 'Nessun referente'}</span><span className="supplier-mobile-row-grow text-right"><strong>{openCount}</strong> incassi da accreditare</span>
                             </div>
                             <div className="expense-mobile-meta">
                                 <span className="supplier-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualAmount)}</strong> incassati {currentYear}</span><span className="badge badge-color">{annualCount} incassi {currentYear}</span>
@@ -180,8 +180,8 @@ export default async function ClientsPage({searchParams}: {
                     <tr>
                         <th className="cell-center">
                             <input type="checkbox" className="bulk-select-all" data-bulk-target="clientBulkForm"/></th>
-                        <th data-sort-key="business-name">Nome / Ragione<br/>sociale</th>
-                        <th data-sort-key="alias">Alias</th>
+                        <th data-sort-key="business-name">Ragione<br/>sociale</th>
+                        <th data-sort-key="alias">Referente</th>
                         <th className="text-center" data-sort-key="open-count" data-sort-type="number">Incassi<br/>non accr.
                         </th>
                         <th className="" data-sort-key="open-amount" data-sort-type="number">Importo<br/>non accr.

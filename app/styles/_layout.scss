@@ -933,6 +933,11 @@ input, select, textarea {
   font: inherit;
 }
 
+.displayed-notes {
+  white-space: pre-wrap;
+  font-size: 15px !important;
+}
+
 button {
   font: inherit;
   cursor: pointer;
@@ -10430,7 +10435,7 @@ button.bulk-direct-danger {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 .expense-detail-meta-line span {
@@ -12338,6 +12343,40 @@ table .cell-description {
   align-content: start;
 }
 
+.company-settings-list {
+  gap: 16px;
+}
+
+.company-settings-card {
+  display: grid;
+  gap: 16px;
+}
+
+.company-settings-card > summary {
+  list-style: none;
+}
+
+.company-settings-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.company-settings-summary,
+.company-settings-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.company-settings-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+
+.company-settings-actions {
+  justify-content: flex-end;
+}
+
 .category-create-panel {
   display: grid;
   gap: 14px;
@@ -12385,6 +12424,85 @@ table .cell-description {
 .category-create-form {
   grid-template-columns: minmax(220px, 1fr) 160px 120px auto;
   align-items: flex-end;
+}
+
+.income-entity-settings-section .category-create-form {
+  grid-template-columns: minmax(220px, 1fr) 160px auto;
+}
+
+.sales-channel-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.sales-channel-settings-card {
+  display: grid;
+  align-content: space-between;
+  gap: 18px;
+  min-height: 220px;
+}
+
+.sales-channel-settings-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sales-channel-settings-card-heading h4,
+.sales-channel-settings-card-heading p {
+  margin: 0;
+}
+
+.sales-channel-settings-card-heading h4 {
+  font-size: 18px;
+}
+
+.sales-channel-settings-icon {
+  display: grid;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 16px;
+  background: #eef2ff;
+  color: var(--accent);
+  font-size: 25px;
+}
+
+.sales-channel-settings-usage {
+  display: grid;
+  gap: 3px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.sales-channel-settings-usage strong {
+  font-size: 22px;
+}
+
+.sales-channel-settings-usage span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sales-channel-settings-card-actions,
+.sales-channel-edit-actions {
+  justify-content: flex-end;
+}
+
+.sales-channel-edit-backdrop {
+  z-index: 10100;
+}
+
+.sales-channel-edit-modal {
+  width: min(620px, calc(100vw - 36px));
+}
+
+.sales-channel-edit-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .categories-settings-card {

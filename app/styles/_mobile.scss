@@ -1005,6 +1005,50 @@
 }
 
 @media (max-width: 760px) {
+  .sales-channel-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sales-channel-edit-backdrop {
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    padding: 0 !important;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .sales-channel-edit-modal {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+    overflow-y: auto;
+  }
+
+  .sales-channel-edit-form {
+    grid-template-columns: 1fr;
+  }
+
+  .sales-channel-edit-form .span-2 {
+    grid-column: auto;
+  }
+
+  .sales-channel-edit-actions {
+    margin-top: auto;
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .sales-channel-edit-actions .btn {
+    width: 100%;
+    max-width: none;
+  }
+
   .app-form-modal,
   .modal-backdrop {
     align-items: flex-start;
@@ -2815,6 +2859,24 @@
 @media (max-width: 760px) {
   .account-settings-form {
     grid-template-columns: 1fr;
+  }
+
+  .company-settings-form {
+    grid-template-columns: 1fr;
+  }
+
+  .company-settings-form .span-2 {
+    grid-column: auto;
+  }
+
+  .company-settings-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .company-settings-actions .btn {
+    width: 100%;
+    max-width: none;
   }
 
   .category-create-form,

@@ -149,7 +149,7 @@ async function importContactsWorkbook(buffer: Buffer, options: ImportOptions, ki
       const existing = await findContact(kind, options.workspaceId, businessName, vatNumber);
       const common = {
         businessName,
-        alias: normalizeText(rowValue(item.row, ['Alias'])),
+        alias: normalizeText(rowValue(item.row, ['Referente', 'Alias'])),
         email: normalizeText(rowValue(item.row, ['Email'])),
         vatNumber,
         taxCodeSdi: normalizeText(rowValue(item.row, ['Codice fiscale/SDI', 'Codice SDI', 'SDI', 'Codice destinatario'])),
@@ -158,10 +158,8 @@ async function importContactsWorkbook(buffer: Buffer, options: ImportOptions, ki
         internalNotes: normalizeText(rowValue(item.row, ['Note interne', 'Note']))
       };
       const populated = Object.fromEntries(Object.entries(common).filter(([, value]) => value !== ''));
-      if (kind === 'customer') {
-        const swift = normalizeText(rowValue(item.row, ['SWIFT', 'BIC']));
-        if (swift) Object.assign(populated, { swift });
-      }
+      const swift = normalizeText(rowValue(item.row, ['SWIFT', 'BIC']));
+      if (swift) Object.assign(populated, { swift });
       if (existing) {
         if (existing.systemRole) {
           result.duplicates++;

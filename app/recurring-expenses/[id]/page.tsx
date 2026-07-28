@@ -273,7 +273,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
         <section className="expense-detail-section">
           <div className="expense-detail-item expense-detail-item-wide">
             <span>Note</span>
-            <strong>{item.notes ?? '-'}</strong>
+            <strong className="displayed-notes">{item.notes ?? '-'}</strong>
           </div>
         </section>
 

@@ -152,12 +152,12 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
                 <span className={isVatSettlement ? 'badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : expense.isRecurring ? 'R' : 'S'}</span>
               </p>
               <div className="flex align-center">
-                <h1>{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</h1>
+                  <strong>{expense.description}</strong>
               </div>
               <div className="expense-detail-meta-line">
-                <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
-                <span>{expense.description}</span>
-                {/*<strong>{fiscalBadge(expense.isDeclared)}</strong>*/}
+                  <strong className="text-accent">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</strong>
+                  <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
+                  {/*<strong>{fiscalBadge(expense.isDeclared)}</strong>*/}
               </div>
             </div>
           </div>
@@ -290,7 +290,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           <div className="">
             <div className="expense-detail-item expense-detail-item-wide">
               <span>Note</span>
-              <strong>{expense.notes ?? '-'}</strong>
+              <strong className="displayed-notes">{expense.notes ?? '-'}</strong>
             </div>
           </div>
         </section>

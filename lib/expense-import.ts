@@ -231,13 +231,14 @@ async function getOrCreatePaymentMethod(nameRaw: unknown, workspaceId?: number) 
   });
 }
 
-async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?: string; email?: string; vatNumber?: string; iban?: string; pec?: string; taxCodeSdi?: string; internalNotes?: string; workspaceId?: number } = {}) {
+async function getOrCreateSupplier(businessNameRaw: unknown, metadata: { alias?: string; email?: string; vatNumber?: string; iban?: string; swift?: string; pec?: string; taxCodeSdi?: string; internalNotes?: string; workspaceId?: number } = {}) {
   const businessName = textValue(businessNameRaw) || 'Senza esercente';
   const data = {
     alias: metadata.alias || null,
     email: metadata.email || null,
     vatNumber: metadata.vatNumber || null,
     iban: metadata.iban || null,
+    swift: metadata.swift || null,
     pec: metadata.pec || null,
     taxCodeSdi: metadata.taxCodeSdi || null,
     internalNotes: metadata.internalNotes || null
@@ -356,12 +357,13 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     const notes = textValue(rowValue(row, ['Note', 'Annotazioni', 'Memo']));
     const isActive = rowValue(row, ['Attiva', 'Attivo', 'Active']) === null ? true : parseBool(rowValue(row, ['Attiva', 'Attivo', 'Active']));
     const { supplier, created } = await getOrCreateSupplier(supplierName, {
-      alias: textValue(rowValue(row, ['Alias fornitore', 'Alias'])),
+      alias: textValue(rowValue(row, ['Referente', 'Referente fornitore', 'Alias fornitore', 'Alias'])),
       email: textValue(rowValue(row, ['Email fornitore', 'Email'])),
       vatNumber: textValue(rowValue(row, ['P.IVA', 'Partita IVA', 'PIVA', 'VAT'])),
       iban: textValue(rowValue(row, ['IBAN', 'Iban'])),
       pec: textValue(rowValue(row, ['PEC fornitore', 'PEC'])),
       taxCodeSdi: textValue(rowValue(row, ['Codice SDI', 'SDI', 'Codice destinatario', 'Codice fiscale/SDI'])),
+      swift: textValue(rowValue(row, ['SWIFT', 'BIC'])),
       internalNotes: textValue(rowValue(row, ['Note fornitore', 'Note interne fornitore'])),
       workspaceId: options.workspaceId
     });

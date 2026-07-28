@@ -20,7 +20,7 @@ function CopyableField({ label, value, className }: { label: string; value?: str
   const displayValue = valueOrDash(value);
   return <div className={`${className} copyable-detail-field`}>
     <span>{label}</span>
-    <strong>{displayValue}</strong>
+    <strong className={label === 'Note interne' ? 'displayed-notes' : undefined}>{displayValue}</strong>
     <button type="button" className="copy-value-button" data-copy={displayValue === '-' ? '' : displayValue} title="Copia valore">⧉</button>
   </div>;
 }
@@ -189,13 +189,14 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <span className="supplier-detail-collapsible-toggle" aria-hidden="true">⌄</span>
           </summary>
           <div className="expense-detail-status-strip supplier-detail-info-strip">
-            <CopyableField label="R. Sociale" value={supplier.businessName} />
-            <CopyableField label="Alias" value={supplier.alias} />
+            <CopyableField label="Ragione sociale" value={supplier.businessName} />
+            <CopyableField label="Referente" value={supplier.alias} />
             <CopyableField label="Email" value={supplier.email} />
-            <CopyableField label="P.IVA" value={supplier.vatNumber} />
-            <CopyableField label="IBAN" value={supplier.iban} />
-            <CopyableField label="PEC" value={supplier.pec} />
+            <CopyableField label="P.IVA / C.F." value={supplier.vatNumber} />
             <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi} />
+            <CopyableField label="PEC" value={supplier.pec} />
+            <CopyableField label="IBAN" value={supplier.iban} />
+            <CopyableField label="Swift" value={supplier.swift} />
             <CopyableField
               label="Categoria predefinita"
               value={supplier.defaultExpenseCategory

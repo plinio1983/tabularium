@@ -17,6 +17,7 @@ export async function GET(_request: Request, {params}: { params: Promise<{ id: s
       iban: true,
       pec: true,
       taxCodeSdi: true,
+      swift: true,
       internalNotes: true,
       defaultExpenseCategoryId: true
     }

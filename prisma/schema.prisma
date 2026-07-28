@@ -372,6 +372,7 @@ model Supplier {
   pec            String?
   taxCodeSdi     String?
   alias          String?
+  swift          String?
   internalNotes  String?
   systemRole     SupplierSystemRole?
   workspaceId    Int?

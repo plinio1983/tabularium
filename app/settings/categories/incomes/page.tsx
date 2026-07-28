@@ -2,7 +2,7 @@ import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { ensureWorkspaceDefaults, incomeEntityIconOptions } from '@/lib/workspace-defaults';
 import IncomeEntityCreatePanel from './IncomeEntityCreatePanel';
-import IncomeEntityDeleteForm from './IncomeEntityDeleteForm';
+import IncomeSalesChannelGrid from './IncomeSalesChannelGrid';
 import {
   createIncomeEntityAction,
   deleteIncomeEntityAction,
@@ -12,9 +12,7 @@ import {
 
 const errors: Record<string, string> = {
   invalid: 'Compila correttamente tutti i campi.',
-  code_format: 'Il codice può contenere fino a 40 lettere, numeri e underscore.',
   icon_invalid: 'Seleziona un’icona valida.',
-  code_exists: 'Esiste già un’entità con questo codice.',
   not_found: 'Entità non trovata.',
   in_use: 'Entità usata da incassi esistenti: riassegnali prima di rimuoverla.',
   cash_register_in_use: 'Entità configurata nel registratore di cassa: seleziona prima un altro valore.'
@@ -28,23 +26,12 @@ function EntitySection({ title, kind, entities }: {
   return <div className="income-entity-settings-section">
     <h3>{title}</h3>
     <IncomeEntityCreatePanel action={createIncomeEntityAction} kind={kind} iconOptions={incomeEntityIconOptions} />
-    <div className="card categories-settings-card">
-      <div className="categories-settings-table-head"><span>Nome</span><span>Codice</span><span>Icona</span><span>Uso</span><span>Azioni</span></div>
-      {entities.map(entity => <div className="category-settings-row" key={entity.id}>
-        <form action={updateIncomeEntityAction} className="category-settings-edit-form">
-          <input type="hidden" name="id" value={entity.id} /><input type="hidden" name="kind" value={kind} />
-          <label><span>Nome</span><input name="name" defaultValue={entity.name} maxLength={80} required /></label>
-          <label><span>Codice stabile</span><input name="code" defaultValue={entity.code} maxLength={40} readOnly required /></label>
-          <div className="span-2 category-settings-usage-wrap">
-            <label><span>Icona</span><select name="icon" defaultValue={entity.icon ?? ''}><option value="">Nessuna</option>{incomeEntityIconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></label>
-            {kind === 'channel' ? <label className="channel-sort-order-label"><span>Ordine select</span><input name="sortOrder" type="number" min="0" max="9999" step="1" defaultValue={entity.sortOrder ?? 0} title="Ordine nelle select" aria-label={`Posizione di ${entity.name} nelle select`} /></label> : null}
-            <div className="category-settings-usage"><strong>{entity._count.incomes}</strong><small>{entity._count.incomes === 1 ? 'incasso' : 'incassi'}</small></div>
-          </div>
-          <div className="category-settings-actions"><button className="btn btn-xs btn-primary" type="submit">✓ Salva</button></div>
-        </form>
-        <IncomeEntityDeleteForm id={entity.id} kind={kind} name={entity.name} action={deleteIncomeEntityAction} />
-      </div>)}
-    </div>
+    <IncomeSalesChannelGrid
+      channels={entities.map(entity => ({...entity, sortOrder: entity.sortOrder ?? 0}))}
+      iconOptions={incomeEntityIconOptions}
+      updateAction={updateIncomeEntityAction}
+      deleteAction={deleteIncomeEntityAction}
+    />
   </div>;
 }
 

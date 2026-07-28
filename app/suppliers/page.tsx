@@ -16,13 +16,13 @@ import SearchIcon from '@/components/SearchIcon';
 const supplierMobileSortOptions = [
     {value: 'businessName_asc', label: 'Ragione sociale (A-Z)'},
     {value: 'businessName_desc', label: 'Ragione sociale (Z-A)'},
-    {value: 'alias_asc', label: 'Alias (A-Z)'},
-    {value: 'alias_desc', label: 'Alias (Z-A)'},
+    {value: 'alias_asc', label: 'Referente (A-Z)'},
+    {value: 'alias_desc', label: 'Referente (Z-A)'},
     {value: 'email_asc', label: 'Email (A-Z)'},
-    {value: 'vatNumber_asc', label: 'P.IVA (A-Z)'},
+    {value: 'vatNumber_asc', label: 'P.IVA / C.F. (A-Z)'},
     {value: 'iban_asc', label: 'IBAN (A-Z)'},
     {value: 'pec_asc', label: 'PEC (A-Z)'},
-    {value: 'taxCodeSdi_asc', label: 'Codice SDI/C.F. (A-Z)'},
+    {value: 'taxCodeSdi_asc', label: 'Cod. SDI (A-Z)'},
     {value: 'internalNotes_asc', label: 'Note interne (A-Z)'},
     {value: 'openExpensesCount_desc', label: 'Ordini da saldare alti'},
     {value: 'openExpensesCount_asc', label: 'Ordini da saldare bassi'},
@@ -179,12 +179,12 @@ export default async function SuppliersPage({searchParams}: {
             label: 'Ragione sociale',
             value: inputDefault(filters, 'businessName')
         },
-        inputDefault(filters, 'alias') && {label: 'Alias', value: inputDefault(filters, 'alias')},
+        inputDefault(filters, 'alias') && {label: 'Referente', value: inputDefault(filters, 'alias')},
         inputDefault(filters, 'email') && {label: 'Email', value: inputDefault(filters, 'email')},
-        inputDefault(filters, 'vatNumber') && {label: 'P.IVA', value: inputDefault(filters, 'vatNumber')},
+        inputDefault(filters, 'vatNumber') && {label: 'P.IVA / C.F.', value: inputDefault(filters, 'vatNumber')},
         inputDefault(filters, 'iban') && {label: 'IBAN', value: inputDefault(filters, 'iban')},
         inputDefault(filters, 'pec') && {label: 'PEC', value: inputDefault(filters, 'pec')},
-        inputDefault(filters, 'taxCodeSdi') && {label: 'Codice SDI/C.F.', value: inputDefault(filters, 'taxCodeSdi')}
+        inputDefault(filters, 'taxCodeSdi') && {label: 'Cod. SDI', value: inputDefault(filters, 'taxCodeSdi')}
     ].filter(Boolean) as Array<{ label: string; value: string }>;
     const flashMessages = {
         savedMessages: {
@@ -443,7 +443,7 @@ export default async function SuppliersPage({searchParams}: {
                                 </div>
                                 <div className="expense-mobile-subtitle">
                                     {supplier.systemRole ? <span className="badge">System</span> : null}&nbsp;
-                                    <span className="supplier-mobile-row-grow">{supplier.alias || 'Nessun alias'}</span>
+                                    <span className="supplier-mobile-row-grow">{supplier.alias || 'Nessun referente'}</span>
                                     <span className="supplier-mobile-row-grow text-right"><strong>{openExpensesCount}</strong> ordini da saldare</span>
                                 </div>
                                 <div className="expense-mobile-meta">
@@ -470,7 +470,7 @@ export default async function SuppliersPage({searchParams}: {
                             <input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori"/>
                         </th>
                         <th data-sort-key="business-name">Ragione <br/>Sociale</th>
-                        <th data-sort-key="alias">Alias</th>
+                        <th data-sort-key="alias">Referente</th>
                         <th className="text-center" data-sort-key="open-count" data-sort-type="number">Ordini <br/>da saldare
                         </th>
                         <th className="text-right supplier-amount-header" data-sort-key="open-amount" data-sort-type="number">Importo <br/>da saldare

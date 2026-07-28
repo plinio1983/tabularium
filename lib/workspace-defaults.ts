@@ -182,12 +182,13 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     });
   }
 
-  for (const [index, [code, name, icon]] of defaultIncomeSalesChannels.entries()) {
-    await prisma.incomeSalesChannel.upsert({
-      where: { workspaceId_code: { workspaceId, code } },
-      update: {},
-      create: { workspaceId, code, name, icon, sortOrder: (index + 1) * 10 }
-    });
+  const existingIncomeSalesChannels = await prisma.incomeSalesChannel.count({where: {workspaceId}});
+  if (existingIncomeSalesChannels === 0) {
+    for (const [index, [code, name, icon]] of defaultIncomeSalesChannels.entries()) {
+      await prisma.incomeSalesChannel.create({
+        data: {workspaceId, code, name, icon, sortOrder: (index + 1) * 10}
+      });
+    }
   }
 
   const legacyCashChannels = await prisma.bank.findMany({
@@ -269,7 +270,7 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
   });
   const [registerCategory, registerChannel, cashMethod, cardMethod, cashCreditChannel, firstBank] = await Promise.all([
     prisma.incomeCategory.findFirst({ where: { workspaceId, code: 'B2C' } }),
-    prisma.incomeSalesChannel.findFirst({ where: { workspaceId, code: 'SHOP' } }),
+    prisma.incomeSalesChannel.findFirst({ where: { workspaceId }, orderBy: [{sortOrder: 'asc'}, {id: 'asc'}] }),
     prisma.paymentMethod.findFirst({ where: { workspaceId, systemRole: 'CASH' } }),
     prisma.paymentMethod.findFirst({
       where: { workspaceId, OR: [{name: 'Carta di Debito/Credit'}, {name: {startsWith: 'Carta', mode: 'insensitive'}}] },

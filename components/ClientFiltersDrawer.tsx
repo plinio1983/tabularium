@@ -16,11 +16,11 @@ export default function ClientFiltersDrawer({ filters }: Props) {
     <aside className="filter-drawer-panel expense-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri clienti" onMouseDown={event => event.stopPropagation()}>
       <div className="filter-drawer-header"><h3>Filtri clienti</h3><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button></div>
       <form className="expense-filters recurring-drawer-filters supplier-filters" action="/clients" method="get">
-        <label>Nome / Ragione sociale<input name="businessName" defaultValue={value(filters, 'businessName')} /></label>
-        <label>Alias<input name="alias" defaultValue={value(filters, 'alias')} /></label>
+        <label>Ragione sociale<input name="businessName" defaultValue={value(filters, 'businessName')} /></label>
+        <label>Referente<input name="alias" defaultValue={value(filters, 'alias')} /></label>
         <label>Email<input type="email" name="email" defaultValue={value(filters, 'email')} /></label>
-        <label>P.IVA<input name="vatNumber" defaultValue={value(filters, 'vatNumber')} /></label>
-        <label>SDI / C.F.<input name="taxCodeSdi" defaultValue={value(filters, 'taxCodeSdi')} /></label>
+        <label>P.IVA / C.F.<input name="vatNumber" defaultValue={value(filters, 'vatNumber')} /></label>
+        <label>Cod. SDI<input name="taxCodeSdi" defaultValue={value(filters, 'taxCodeSdi')} /></label>
         <label>PEC<input type="email" name="pec" defaultValue={value(filters, 'pec')} /></label>
         <label>IBAN<input name="iban" defaultValue={value(filters, 'iban')} /></label>
         <label>Swift<input name="swift" defaultValue={value(filters, 'swift')} /></label>

@@ -11,6 +11,7 @@ type SupplierData = {
   iban: string | null;
   pec: string | null;
   taxCodeSdi: string | null;
+  swift: string | null;
   internalNotes: string | null;
   defaultExpenseCategoryId: number | null;
 };
@@ -78,15 +79,16 @@ export default function SupplierEditModalController({categories = []}: { categor
             <small>Dati principali del fornitore</small>
           </summary>
           <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
-            <label className="span-2">Ragione Sociale<input name="businessName" required
+            <label className="span-2">Ragione sociale<input name="businessName" required
                                                             defaultValue={supplier.businessName}/></label>
-            <label>Alias<input name="alias" defaultValue={supplier.alias ?? ''}/></label>
+            <label>Referente<input name="alias" defaultValue={supplier.alias ?? ''}/></label>
             <label>Email<input name="email" type="email" defaultValue={supplier.email ?? ''}/></label>
-            <label>P.IVA<input name="vatNumber" defaultValue={supplier.vatNumber ?? ''}/></label>
-            <label>IBAN<input name="iban" defaultValue={supplier.iban ?? ''}/></label>
-            <label>PEC<input name="pec" type="email" defaultValue={supplier.pec ?? ''}/></label>
-            <label>Codice SDI/Fiscale<input name="taxCodeSdi"
+            <label>P.IVA / C.F.<input name="vatNumber" defaultValue={supplier.vatNumber ?? ''}/></label>
+            <label>Cod. SDI<input name="taxCodeSdi"
                                                    defaultValue={supplier.taxCodeSdi ?? ''}/></label>
+            <label>PEC<input name="pec" type="email" defaultValue={supplier.pec ?? ''}/></label>
+            <label>IBAN<input name="iban" defaultValue={supplier.iban ?? ''}/></label>
+            <label>Swift<input name="swift" defaultValue={supplier.swift ?? ''}/></label>
             <label>Categoria predefinita
               <select name="defaultExpenseCategoryId" defaultValue={supplier.defaultExpenseCategoryId ?? ''}>
                 <option value="">Nessuna categoria</option>

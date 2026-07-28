@@ -90,7 +90,7 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
           }}
         >
           <strong>{supplier.businessName}</strong>
-          {supplier.alias && <small>Alias: {supplier.alias}</small>}
+          {supplier.alias && <small>Referente: {supplier.alias}</small>}
         </button>) : <div className="empty-supplier-result">Nessun fornitore trovato.</div>}
       </div>}
     </div>

@@ -1,8 +1,9 @@
-export const salesChannelTones: Record<string, string> = {
-  SHOP: 'tone-goods',
-  ONLINE_SHOP: 'tone-web',
-  OTHER: 'tone-services'
-};
+const salesChannelToneOptions = ['tone-goods', 'tone-web', 'tone-services', 'tone-bank-services', 'tone-neutral'];
+
+export function salesChannelTone(value: string) {
+  const hash = Array.from(value).reduce((total, character) => ((total * 31) + character.charCodeAt(0)) >>> 0, 0);
+  return salesChannelToneOptions[hash % salesChannelToneOptions.length];
+}
 
 export const saleCategoryTones: Record<string, string> = {
   B2C: 'tone-yes',

@@ -51,13 +51,14 @@ export default function NewSupplierPanel({initialOpen = false, categories = []}:
                                 <small>Dati principali del fornitore</small>
                             </summary>
                             <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
-                                <label className="span-2">Ragione Sociale<input name="businessName" required/></label>
-                                <label>Alias<input name="alias" placeholder="Nome breve o commerciale"/></label>
+                                <label className="span-2">Ragione sociale<input name="businessName" required/></label>
+                                <label>Referente<input name="alias"/></label>
                                 <label>Email<input name="email" type="email"/></label>
-                                <label>P.IVA<input name="vatNumber"/></label>
+                                <label>P.IVA / C.F.<input name="vatNumber"/></label>
+                                <label>Cod. SDI<input name="taxCodeSdi"/></label>
                                 <label>PEC<input name="pec" type="email"/></label>
-                                <label>Codice SDI/Fiscale<input name="taxCodeSdi"/></label>
                                 <label>IBAN<input name="iban"/></label>
+                                <label>Swift<input name="swift"/></label>
                                 <label>Categoria predefinita
                                     <select name="defaultExpenseCategoryId" defaultValue="">
                                         <option value="">Nessuna categoria</option>

@@ -179,7 +179,7 @@ export default function IncomesList({
                                     {/*<span className="text-pre text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
                                 </div>
                                 <div className="right-side">
-                                    <span className="badge expense-mobile-date text-pre">{mobileDateLabel(group.latestCreditDate)}</span>
+                                    <strong className="expense-mobile-date text-pre">{mobileDateLabel(group.latestCreditDate)}</strong>
                                 </div>
                             </div>
                             <div className="expense-mobile-title-row">

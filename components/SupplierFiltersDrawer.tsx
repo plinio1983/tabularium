@@ -50,12 +50,12 @@ export default function SupplierFiltersDrawer({ filters }: Props) {
 
         <form className="expense-filters recurring-drawer-filters supplier-filters" action="/suppliers" method="get">
           <label>Ragione sociale<input name="businessName" defaultValue={inputDefault(filters, "businessName")} /></label>
-          <label>Alias<input name="alias" defaultValue={inputDefault(filters, "alias")} /></label>
+          <label>Referente<input name="alias" defaultValue={inputDefault(filters, "alias")} /></label>
           <label>Email<input name="email" type="email" defaultValue={inputDefault(filters, "email")} /></label>
-          <label>P.IVA<input name="vatNumber" defaultValue={inputDefault(filters, "vatNumber")} /></label>
+          <label>P.IVA / C.F.<input name="vatNumber" defaultValue={inputDefault(filters, "vatNumber")} /></label>
           <label>IBAN<input name="iban" defaultValue={inputDefault(filters, "iban")} /></label>
           <label>PEC<input name="pec" defaultValue={inputDefault(filters, "pec")} /></label>
-          <label>Codice SDI/C.F.<input name="taxCodeSdi" defaultValue={inputDefault(filters, "taxCodeSdi")} /></label>
+          <label>Cod. SDI<input name="taxCodeSdi" defaultValue={inputDefault(filters, "taxCodeSdi")} /></label>
 
           <div className="filter-drawer-actions">
             <Link className="btn btn-md btn-default reset-button" href="/suppliers" onClick={() => setOpen(false)}><span className="btn-icon">↺</span> Reset</Link>
