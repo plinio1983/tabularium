@@ -3386,6 +3386,7 @@
     max-width: 100%;
     min-width: 0;
     margin-right: 0;
+    align-items: start;
   }
 
   .month-report-collapsible > .month-report-section-heading h3 {
@@ -3431,6 +3432,8 @@
     grid-template-rows: none;
     padding-right: 0;
     border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 17px;
   }
 
   .month-report-metrics .month-report-value span {

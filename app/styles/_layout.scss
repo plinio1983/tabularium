@@ -5732,13 +5732,13 @@ a.expense-top-summary-item.is-invoice-waiting:hover {
 
 .month-report-expenses {
   overflow-x: visible;
+  border-bottom: 1px solid var(--line);
 }
 
-/*
- * Le tabelle condivise hanno una min-width elevata. Dentro un <details> questa
- * larghezza può contribuire alla dimensione intrinseca del pannello e spingerlo
- * oltre il report, prima che .table-scroll possa intervenire.
- */
+.month-report-expenses .month-report-inline-total {
+  //padding-bottom: 0;
+}
+
 .month-report-accordion,
 .month-report-collapsible,
 .month-report-collapsible > .expenses-list-card,

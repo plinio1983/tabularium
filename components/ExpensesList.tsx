@@ -193,7 +193,9 @@ export default function ExpensesList({
         <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
           <summary className="bulk-action-trigger">
             <span className="btn-icon hidden-mobile">⚙</span>
-            <span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
+            <span className="bulk-label">
+                <span className="floating-bulk-label">Bulk </span>Actions
+            </span>
           </summary>
           <div className="bulk-action-menu-panel">
             <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"

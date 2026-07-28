@@ -283,7 +283,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <div className="month-report-value month-report-inline-total flex-grow"><span>Totale incassi</span><strong
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
             </summary>
-            <div className="card expenses-list-card"><IncomesList
+            <div className="--card expenses-list-card"><IncomesList
                 incomes={report.incomes}
                 returnTo={returnTo}
                 banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
