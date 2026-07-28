@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import SupplierFormFields from '@/components/SupplierFormFields';
 
 type SupplierData = {
   id: number;
@@ -73,45 +74,9 @@ export default function SupplierEditModalController({categories = []}: { categor
 
       <form className="card form income-form expense-form supplier-form supplier-styled-form"
             action={`/api/suppliers/${supplier.id}?returnTo=${encodeURIComponent(returnTo)}`} method="post">
-        <details className="form-section full income-form-section supplier-form-section" open>
-          <summary>
-            <span><span className="supplier-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span>
-            <small>Dati principali del fornitore</small>
-          </summary>
-          <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
-            <label className="span-2">Ragione sociale<input name="businessName" required
-                                                            defaultValue={supplier.businessName}/></label>
-            <label>Referente<input name="alias" defaultValue={supplier.alias ?? ''}/></label>
-            <label>Email<input name="email" type="email" defaultValue={supplier.email ?? ''}/></label>
-            <label>P.IVA / C.F.<input name="vatNumber" defaultValue={supplier.vatNumber ?? ''}/></label>
-            <label>Cod. SDI<input name="taxCodeSdi"
-                                                   defaultValue={supplier.taxCodeSdi ?? ''}/></label>
-            <label>PEC<input name="pec" type="email" defaultValue={supplier.pec ?? ''}/></label>
-            <label>IBAN<input name="iban" defaultValue={supplier.iban ?? ''}/></label>
-            <label>Swift<input name="swift" defaultValue={supplier.swift ?? ''}/></label>
-            <label>Categoria predefinita
-              <select name="defaultExpenseCategoryId" defaultValue={supplier.defaultExpenseCategoryId ?? ''}>
-                <option value="">Nessuna categoria</option>
-                {categories.map(category => <option key={category.id} value={category.id}>
-                  {category.icon ? `${category.icon} ${category.name}` : category.name}
-                </option>)}
-              </select>
-            </label>
-          </div>
-        </details>
+        <SupplierFormFields supplier={supplier} categories={categories}/>
 
-        <details className="form-section full income-form-section supplier-form-section" open>
-          <summary>
-            <span><span className="supplier-form-section-icon" aria-hidden="true">≡</span>Note</span>
-            <small>Annotazioni interne e informazioni operative</small>
-          </summary>
-          <div className="form-section-stack income-form-section-stack">
-            <label>Note interne<textarea name="internalNotes" rows={4}
-                                         defaultValue={supplier.internalNotes ?? ''}/></label>
-          </div>
-        </details>
-
-        <div className="full actions-row right-actions form-actions-row supplier-form-actions">
+        <div className="full actions-row form-actions-row form-sticky-actions supplier-form-actions">
           <button className="btn btn-md btn-default" type="button" onClick={() => setSupplier(null)}>
             <span className="btn-icon">✕</span> Annulla
           </button>

@@ -1279,8 +1279,19 @@ button {
 
 .supplier-form-actions {
   align-items: center;
-  padding: 14px 2px 2px;
-  border-top: 1px solid var(--line);
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #dbe3ee;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .96);
+  box-sizing: border-box;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .08);
+}
+
+.supplier-form-actions .btn {
+  min-width: 150px;
 }
 
 .supplier-form-section-icon {
@@ -2277,8 +2288,8 @@ body.drawer-open {
 
 .payment-row {
   display: grid;
-  grid-template-columns: 1.1fr 1.1fr 1fr 1fr auto;
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
   align-items: flex-end;
   padding: 12px;
   background: #fff;
@@ -2404,11 +2415,6 @@ body.drawer-open {
   font-size: 13px;
   font-weight: 700;
 }
-
-.payment-row {
-  grid-template-columns: 1fr 1.05fr 1fr 1fr 1.1fr auto;
-}
-
 
 .toolbar-card {
   background: var(--card);
@@ -3858,6 +3864,10 @@ table th, table td {
   &:disabled {
     color: var(--muted);
   }
+}
+
+.expense-form .payment-amount-shortcuts button {
+  flex-grow: 1;
 }
 
 .expense-form .expense-due-date-shortcuts button.is-selected,
@@ -12047,6 +12057,92 @@ button.bulk-direct-danger {
 .expense-form .payment-summary-cell h4 {
   margin: 0 0 4px;
   font-size: 14px;
+}
+
+.expense-form .payment-summary-row {
+  display: grid;
+  grid-template-columns: minmax(150px, .75fr) minmax(180px, .9fr) minmax(260px, 1.35fr) auto;
+  gap: 14px;
+  align-items: stretch;
+  padding: 16px;
+  border-color: #cbd5e1;
+  background: linear-gradient(135deg, #fff, #f8fafc);
+}
+
+.payment-summary-primary,
+.payment-summary-date,
+.payment-summary-meta {
+  min-width: 0;
+}
+
+.payment-summary-primary,
+.payment-summary-date {
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.payment-summary-primary {
+  background: linear-gradient(135deg, #eef2ff, #f5f7ff);
+}
+
+.payment-summary-kicker,
+.payment-summary-date span,
+.payment-summary-meta span {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.payment-summary-amount {
+  color: #2649b8;
+  font-size: clamp(23px, 2.2vw, 30px);
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+
+.payment-summary-date {
+  border: 1px solid #dbeafe;
+  background: #fff;
+}
+
+.payment-summary-date strong {
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.payment-summary-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  align-items: stretch;
+}
+
+.payment-summary-meta > div {
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-left: 1px solid #e2e8f0;
+}
+
+.payment-summary-meta strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expense-form .payment-summary-row .payment-row-actions {
+  grid-column: auto;
+  align-self: center;
 }
 
 .expense-form .payment-row-actions {

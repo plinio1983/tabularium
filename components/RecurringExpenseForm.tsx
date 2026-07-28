@@ -1,10 +1,10 @@
 "use client";
 
 import {type FormEvent, useEffect, useRef, useState} from "react";
-import {createPortal} from "react-dom";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
+import SupplierCreateModal from "@/components/SupplierCreateModal";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 
 type Option = {
@@ -111,11 +111,13 @@ function SupplierAutocomplete({
                                   initialSupplierId,
                                   initialMerchant,
                                   onValueChange,
+                                  categories = [],
                               }: {
     suppliers?: SupplierOption[];
     initialSupplierId?: number | null;
     initialMerchant?: string | null;
     onValueChange?: (value: string) => void;
+    categories?: Option[];
 }) {
     const initial = suppliers.find((supplier) => supplier.id === initialSupplierId) ?? null;
     const [query, setQuery] = useState(initial?.businessName ?? initialMerchant ?? "");
@@ -124,18 +126,6 @@ function SupplierAutocomplete({
     const [isOpen, setIsOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
     const [showCreate, setShowCreate] = useState(false);
-    const [createData, setCreateData] = useState({
-        businessName: "",
-        email: "",
-        vatNumber: "",
-        iban: "",
-        pec: "",
-        taxCodeSdi: "",
-        alias: "",
-        swift: "",
-        internalNotes: "",
-    });
-    const [isSaving, setIsSaving] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -187,33 +177,6 @@ function SupplierAutocomplete({
         if (event.key === "Escape") setIsOpen(false);
     }
 
-    async function createSupplier() {
-        if (!createData.businessName.trim()) return;
-        setIsSaving(true);
-        const response = await fetch("/api/suppliers", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(createData),
-        });
-        setIsSaving(false);
-        if (!response.ok) return;
-        const supplier = await response.json();
-        setResults((current) => [supplier, ...current.filter((item) => item.id !== supplier.id)]);
-        selectSupplier(supplier);
-        setCreateData({
-            businessName: "",
-            email: "",
-            vatNumber: "",
-            iban: "",
-            pec: "",
-            taxCodeSdi: "",
-            alias: "",
-            swift: "",
-            internalNotes: "",
-        });
-        setShowCreate(false);
-    }
-
     return (
         <div className="supplier-picker supplier-picker-wide expense-wizard-step expense-wizard-step-3" ref={containerRef}>
             <input type="hidden" name="supplierId" value={selected?.id ?? ""}/>
@@ -241,10 +204,7 @@ function SupplierAutocomplete({
                     <button
                         type="button"
                         className="btn btn-sm btn-link inline-link-button"
-                        onClick={() => {
-                            setCreateData((data) => ({...data, businessName: query}));
-                            setShowCreate(true);
-                        }}
+                        onClick={() => setShowCreate(true)}
                     >
                         ＋ Nuovo
                     </button>
@@ -275,68 +235,20 @@ function SupplierAutocomplete({
                 </div>
             )}
 
-            {showCreate && createPortal(
-                <div
-                    className="modal-backdrop nested-form-modal"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Nuovo esercente o fornitore"
-                    onMouseDown={(event) => {
-                        event.stopPropagation();
-                        if (event.target === event.currentTarget) setShowCreate(false);
-                    }}
-                >
-                    <div className="modal-card" onMouseDown={(event) => event.stopPropagation()}>
-                        <div className="modal-title">
-                            <h3>➕ Nuovo esercente/fornitore</h3>
-                            <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}>✕</button>
-                        </div>
-                        <div className="modal-form-grid">
-                            <label>Ragione sociale<input value={createData.businessName} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                businessName: e.target.value
-                            }))} required/></label>
-                            <label>Referente<input value={createData.alias} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                alias: e.target.value
-                            }))}/></label>
-                            <label>Email<input value={createData.email} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                email: e.target.value
-                            }))}/></label>
-                            <label>P.IVA / C.F.<input value={createData.vatNumber} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                vatNumber: e.target.value
-                            }))}/></label>
-                            <label>Cod. SDI<input value={createData.taxCodeSdi} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                taxCodeSdi: e.target.value
-                            }))}/></label>
-                            <label>PEC<input value={createData.pec} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                pec: e.target.value
-                            }))}/></label>
-                            <label>IBAN<input value={createData.iban} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                iban: e.target.value
-                            }))}/></label>
-                            <label>Swift<input value={createData.swift} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                swift: e.target.value
-                            }))}/></label>
-                            <label className="full">Note interne<textarea rows={3} value={createData.internalNotes} onChange={(e) => setCreateData((d) => ({
-                                ...d,
-                                internalNotes: e.target.value
-                            }))}/></label>
-                        </div>
-                        <div className="actions-row right-actions">
-                            <button type="button" className="btn btn-sm btn-default" onClick={() => setShowCreate(false)}>× Annulla</button>
-                            <button className="btn btn-md btn-primary" type="button" disabled={isSaving} onClick={createSupplier}>✓ Salva e seleziona</button>
-                        </div>
-                    </div>
-                </div>,
-                document.body,
-            )}
+            <SupplierCreateModal
+                open={showCreate}
+                onClose={() => setShowCreate(false)}
+                categories={categories}
+                initialBusinessName={query}
+                context="nested"
+                onCreated={(supplier) => {
+                    setResults((current) => [
+                        supplier,
+                        ...current.filter((item) => item.id !== supplier.id),
+                    ]);
+                    selectSupplier(supplier);
+                }}
+            />
         </div>
     );
 }
@@ -672,7 +584,7 @@ export default function RecurringExpenseForm({
                     <small>Fornitore, categoria e descrizione della spesa</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
-                    <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName}/>
+                    <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} categories={categories}/>
 
                     <SelectField className="expense-wizard-step expense-wizard-step-3" label="Categoria" icon="◇" name="categoryId" required value={categoryId} onChange={setCategoryId} options={[
                         {value: "", label: "Seleziona categoria", disabled: true},

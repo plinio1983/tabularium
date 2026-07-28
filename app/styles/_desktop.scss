@@ -371,6 +371,10 @@
   }
 }
 
+.payment-row .payment-amount-field .money-input > input {
+  font-size: 24px !important;
+}
+
 .recurring-wizard-amount-field .money-input > input,
 .expense-wizard-amount-field .money-input > input,
 .income-amount-field .money-input > input {

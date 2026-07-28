@@ -1,12 +1,12 @@
 "use client";
 
 import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
-import {createPortal} from "react-dom";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
+import SupplierCreateModal from "@/components/SupplierCreateModal";
 
 type Option = {
     id: number;
@@ -228,19 +228,6 @@ function SupplierAutocomplete({
     const [isOpen, setIsOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
     const [showCreate, setShowCreate] = useState(false);
-    const [createData, setCreateData] = useState({
-        businessName: "",
-        email: "",
-        vatNumber: "",
-        iban: "",
-        pec: "",
-        taxCodeSdi: "",
-        alias: "",
-        swift: "",
-        internalNotes: "",
-        defaultExpenseCategoryId: "",
-    });
-    const [isSaving, setIsSaving] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -299,37 +286,6 @@ function SupplierAutocomplete({
             selectSupplier(results[activeIndex]);
         }
         if (event.key === "Escape") setIsOpen(false);
-    }
-
-    async function createSupplier() {
-        if (!createData.businessName.trim()) return;
-        setIsSaving(true);
-        const response = await fetch("/api/suppliers", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(createData),
-        });
-        setIsSaving(false);
-        if (!response.ok) return;
-        const supplier = await response.json();
-        setResults((current) => [
-            supplier,
-            ...current.filter((item) => item.id !== supplier.id),
-        ]);
-        selectSupplier(supplier);
-        setCreateData({
-            businessName: "",
-            email: "",
-            vatNumber: "",
-            iban: "",
-            pec: "",
-            taxCodeSdi: "",
-            alias: "",
-            swift: "",
-            internalNotes: "",
-            defaultExpenseCategoryId: "",
-        });
-        setShowCreate(false);
     }
 
     return (
@@ -405,10 +361,7 @@ function SupplierAutocomplete({
                     <button
                         type="button"
                         className="btn btn-sm btn-link inline-link-button"
-                        onClick={() => {
-                            setCreateData((data) => ({...data, businessName: query}));
-                            setShowCreate(true);
-                        }}
+                        onClick={() => setShowCreate(true)}
                     >
                         ＋ Nuovo
                     </button>
@@ -419,151 +372,20 @@ function SupplierAutocomplete({
                         <small>{selected.alias}</small> : null}</div>
                 </div> : null}
             </FormField>
-            {showCreate && createPortal(
-                <div
-                    className="modal-backdrop nested-form-modal"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Nuovo esercente o fornitore"
-                    onMouseDown={(event) => {
-                        event.stopPropagation();
-                        if (event.target === event.currentTarget) setShowCreate(false);
-                    }}
-                >
-                    <div className="modal-card" onMouseDown={(event) => event.stopPropagation()}>
-                        <div className="modal-title">
-                            <h3>➕ Nuovo esercente/fornitore</h3>
-                            <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}>
-                                ✕
-                            </button>
-                        </div>
-                        <div className="modal-form-grid">
-                            <label>
-                                Ragione sociale
-                                <input
-                                    value={createData.businessName}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({
-                                            ...d,
-                                            businessName: e.target.value,
-                                        }))
-                                    }
-                                    required
-                                />
-                            </label>
-                            <label>
-                                Referente
-                                <input
-                                    value={createData.alias}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({...d, alias: e.target.value}))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                Email
-                                <input
-                                    value={createData.email}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({...d, email: e.target.value}))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                P.IVA / C.F.
-                                <input
-                                    value={createData.vatNumber}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({...d, vatNumber: e.target.value}))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                Cod. SDI
-                                <input
-                                    value={createData.taxCodeSdi}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({...d, taxCodeSdi: e.target.value}))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                PEC
-                                <input
-                                    value={createData.pec}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({...d, pec: e.target.value}))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                IBAN
-                                <input
-                                    value={createData.iban}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({...d, iban: e.target.value}))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                Swift
-                                <input
-                                    value={createData.swift}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({...d, swift: e.target.value}))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                Categoria predefinita
-                                <select
-                                    value={createData.defaultExpenseCategoryId}
-                                    onChange={(e) => setCreateData((d) => ({
-                                        ...d,
-                                        defaultExpenseCategoryId: e.target.value
-                                    }))}
-                                >
-                                    <option value="">Nessuna categoria</option>
-                                    {categories.map(category => <option key={category.id} value={category.id}>
-                                        {category.icon ? `${categoryIcon(category)} ${category.name}` : category.name}
-                                    </option>)}
-                                </select>
-                            </label>
-                            <label className="full">
-                                Note interne
-                                <textarea
-                                    rows={3}
-                                    value={createData.internalNotes}
-                                    onChange={(e) =>
-                                        setCreateData((d) => ({
-                                            ...d,
-                                            internalNotes: e.target.value,
-                                        }))
-                                    }
-                                />
-                            </label>
-                        </div>
-                        <div className="actions-row right-actions">
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-default"
-                                onClick={() => setShowCreate(false)}
-                            >
-                                ✕ Annulla
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-md btn-primary"
-                                disabled={isSaving}
-                                onClick={createSupplier}
-                            >
-                                ✓ Salva e seleziona
-                            </button>
-                        </div>
-                    </div>
-                </div>,
-                document.body,
-            )}
+            <SupplierCreateModal
+                open={showCreate}
+                onClose={() => setShowCreate(false)}
+                categories={categories}
+                initialBusinessName={query}
+                context="nested"
+                onCreated={(supplier) => {
+                    setResults((current) => [
+                        supplier,
+                        ...current.filter((item) => item.id !== supplier.id),
+                    ]);
+                    selectSupplier(supplier);
+                }}
+            />
         </div>
     );
 }
@@ -621,6 +443,7 @@ export default function ExpenseForm({
     const amountRef = useRef<HTMLInputElement>(null);
     const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
     const didOpenNewPayment = useRef(false);
+    const didAutoOpenEmptyPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
     );
@@ -733,6 +556,7 @@ export default function ExpenseForm({
 
     function handleAmountChange(value: string) {
         setAmount(formatCurrencyInput(value));
+        amountRef.current?.setCustomValidity("");
     }
 
     function appendAmountKey(key: string) {
@@ -765,6 +589,12 @@ export default function ExpenseForm({
     }
 
     function validateMobileStep() {
+        if (mobileStep === 2 && amountValue <= 0) {
+            amountRef.current?.setCustomValidity("Inserisci un importo maggiore di zero.");
+            amountRef.current?.reportValidity();
+            amountRef.current?.focus();
+            return false;
+        }
         const stepElements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.expense-wizard-step-${mobileStep}`) ?? []);
         if (!stepElements.length) return true;
         const fields = stepElements.flatMap(step =>
@@ -854,6 +684,21 @@ export default function ExpenseForm({
     }
 
     useEffect(() => {
+        if (mobileStep !== 4) {
+            didAutoOpenEmptyPayment.current = false;
+            return;
+        }
+        if (
+            didAutoOpenEmptyPayment.current
+            || payments.length > 0
+            || !window.matchMedia("(max-width: 900px)").matches
+        ) return;
+
+        didAutoOpenEmptyPayment.current = true;
+        addPaymentRow();
+    }, [mobileStep, payments.length]);
+
+    useEffect(() => {
         if (!openNewPayment || didOpenNewPayment.current) return;
         didOpenNewPayment.current = true;
         addPaymentRow();
@@ -877,16 +722,6 @@ export default function ExpenseForm({
                 <input type="hidden" name="paymentAmount[]" value={payment.amount}/>
             </>
         );
-    }
-
-    function paymentSummary(payment: PaymentRow) {
-        const bankName = banks.find((bank) => String(bank.id) === payment.bankId)?.name ?? "-";
-        return [
-            payment.paymentDate ? formatDateInputLabel(payment.paymentDate) : "Data non impostata",
-            `${paymentMethods.find(method => String(method.id) === payment.paymentMethodId)?.icon ?? "  •  "} ${methodName(payment.paymentMethodId) || "Canale non impostato"}`,
-            bankName,
-            formatEuro(Number(payment.amount || 0)),
-        ].join(" · ");
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -1411,14 +1246,30 @@ export default function ExpenseForm({
                         {payments.map((payment, index) => {
                             const isOpen = openPaymentKey === payment.key || !payment.id;
                             const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
+                            const paymentMethod = paymentMethods.find(method => String(method.id) === payment.paymentMethodId);
+                            const paymentBank = banks.find(bank => String(bank.id) === payment.bankId);
 
                             if (!isOpen) {
                                 return (
-                                    <div className="payment-row" key={payment.key}>
+                                    <div className="payment-row payment-summary-row" key={payment.key}>
                                         {renderPaymentHiddenInputs(payment)}
-                                        <div className="span-3 payment-summary-cell">
-                                            <h4>Pagamento registrato</h4>
-                                            <div className="muted">{paymentSummary(payment)}</div>
+                                        <div className="payment-summary-primary">
+                                            <span className="payment-summary-kicker">Pagamento effettuato</span>
+                                            <strong className="payment-summary-amount">{formatEuro(Number(payment.amount || 0))}</strong>
+                                        </div>
+                                        <div className="payment-summary-date">
+                                            <span>Data pagamento</span>
+                                            <strong>{payment.paymentDate ? formatDateInputLabel(payment.paymentDate) : "Data non impostata"}</strong>
+                                        </div>
+                                        <div className="payment-summary-meta">
+                                            <div>
+                                                <span>Metodo</span>
+                                                <strong>{paymentMethod?.icon ?? "•"} {paymentMethod?.name ?? "Non impostato"}</strong>
+                                            </div>
+                                            <div>
+                                                <span>Banca</span>
+                                                <strong>{paymentBank?.icon ?? "•"} {paymentBank?.name ?? "Non impostata"}</strong>
+                                            </div>
                                         </div>
                                         <div className="payment-row-actions">
                                             <button
@@ -1473,6 +1324,40 @@ export default function ExpenseForm({
                                             </button>
                                         </div>
                                     </div>
+                                    <label className="payment-amount-field">
+                                        <div className="switch-toggle-field-label">
+                                            <span className="app-form-field-icon">€</span>
+                                            &nbsp;&nbsp;&nbsp;
+                                            <span>Importo pagamento</span>
+                                        </div>
+
+                                        <MoneyInput
+                                            value={payment.amount}
+                                            onValueChange={(value) =>
+                                                updatePayment(index, {
+                                                    amount: value.replace(",", "."),
+                                                    amountTouched: true,
+                                                })
+                                            }
+                                        />
+                                        <input type="hidden" name="paymentAmount[]" value={payment.amount}/>
+                                        <span className="payment-amount-shortcuts" aria-label="Impostazione rapida importo pagamento">
+                                            {[25, 50, 75, 100].map(percentage => {
+                                                const suggestedAmount = paymentAvailableAmount(index) * percentage / 100;
+                                                const selected = suggestedAmount > 0
+                                                    && Math.abs(Number(payment.amount || 0) - suggestedAmount) < 0.005;
+                                                return <button
+                                                    type="button"
+                                                    key={percentage}
+                                                    className={selected ? "is-selected" : ""}
+                                                    aria-pressed={selected}
+                                                    onClick={() => setPaymentPercentage(index, percentage)}
+                                                >
+                                                    {percentage}%
+                                                </button>;
+                                            })}
+                                        </span>
+                                    </label>
                                     <div className="payment-select-field">
                                         <span className="payment-select-label"><i aria-hidden="true">▣</i> Canale pagamento</span>
                                         <div className="payment-select-control">
@@ -1509,35 +1394,6 @@ export default function ExpenseForm({
                                             <span className="payment-select-caret" aria-hidden="true">⌄</span>
                                         </div>
                                     </div>
-                                    <label className="payment-amount-field">
-                                        Importo pagamento
-                                        <MoneyInput
-                                            value={payment.amount}
-                                            onValueChange={(value) =>
-                                                updatePayment(index, {
-                                                    amount: value.replace(",", "."),
-                                                    amountTouched: true,
-                                                })
-                                            }
-                                        />
-                                        <input type="hidden" name="paymentAmount[]" value={payment.amount}/>
-                                        <span className="payment-amount-shortcuts" aria-label="Impostazione rapida importo pagamento">
-                                            {[25, 50, 75, 100].map(percentage => {
-                                                const suggestedAmount = paymentAvailableAmount(index) * percentage / 100;
-                                                const selected = suggestedAmount > 0
-                                                    && Math.abs(Number(payment.amount || 0) - suggestedAmount) < 0.005;
-                                                return <button
-                                                    type="button"
-                                                    key={percentage}
-                                                    className={selected ? "is-selected" : ""}
-                                                    aria-pressed={selected}
-                                                    onClick={() => setPaymentPercentage(index, percentage)}
-                                                >
-                                                    {percentage}%
-                                                </button>;
-                                            })}
-                                        </span>
-                                    </label>
                                     <div className="payment-edit-actions">
                                         <button
                                             type="button"
