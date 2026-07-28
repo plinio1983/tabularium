@@ -6,6 +6,7 @@ import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
+import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 
 type Option = {
     id: number;
@@ -552,119 +553,6 @@ function SupplierAutocomplete({
                 document.body,
             )}
         </div>
-    );
-}
-
-function ProductServiceAutocomplete({
-                                        initialValue = "",
-                                        onValueChange,
-                                    }: {
-    initialValue?: string | null;
-    onValueChange?: (value: string) => void;
-}) {
-    const [query, setQuery] = useState(initialValue ?? "");
-    const [results, setResults] = useState<string[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(0);
-    const containerRef = useRef<HTMLLabelElement>(null);
-
-    useEffect(() => {
-        const handler = (event: MouseEvent) => {
-            if (
-                containerRef.current &&
-                !containerRef.current.contains(event.target as Node)
-            )
-                setIsOpen(false);
-        };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-    }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        const timer = window.setTimeout(async () => {
-            const params = query.trim()
-                ? `?search=${encodeURIComponent(query.trim())}`
-                : "";
-            const response = await fetch(`/api/expense-descriptions${params}`, {
-                signal: controller.signal,
-            }).catch(() => null);
-            if (!response?.ok) return;
-            const data = await response.json();
-            setResults(Array.isArray(data) ? data : []);
-            setActiveIndex(0);
-        }, 180);
-        return () => {
-            controller.abort();
-            window.clearTimeout(timer);
-        };
-    }, [query]);
-
-    function selectSuggestion(value: string) {
-        setQuery(value);
-        onValueChange?.(value);
-        setIsOpen(false);
-    }
-
-    function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-        if (!isOpen && ["ArrowDown", "ArrowUp"].includes(event.key))
-            setIsOpen(true);
-        if (event.key === "ArrowDown") {
-            event.preventDefault();
-            setActiveIndex((index) => Math.min(index + 1, results.length - 1));
-        }
-        if (event.key === "ArrowUp") {
-            event.preventDefault();
-            setActiveIndex((index) => Math.max(index - 1, 0));
-        }
-        if (event.key === "Enter" && isOpen && results[activeIndex]) {
-            event.preventDefault();
-            selectSuggestion(results[activeIndex]);
-        }
-        if (event.key === "Escape") setIsOpen(false);
-    }
-
-    return (
-        // <div className="app-form-field">
-        <label
-            className="span-2 product-suggestion-picker expense-wizard-step expense-wizard-step-3"
-            ref={containerRef}
-        >
-            Prodotto/servizio
-            <input
-                name="description"
-                required
-                placeholder="Descrizione libera della spesa"
-                value={query}
-                onChange={(event) => {
-                    setQuery(event.target.value);
-                    onValueChange?.(event.target.value);
-                    setIsOpen(true);
-                }}
-                onFocus={() => setIsOpen(true)}
-                onKeyDown={onKeyDown}
-                autoComplete="off"
-            />
-            {isOpen && results.length > 0 && (
-                <div className="suggestion-results" role="listbox">
-                    {results.map((value, index) => (
-                        <button
-                            type="button"
-                            key={`${value}-${index}`}
-                            className={index === activeIndex ? "active" : ""}
-                            onMouseEnter={() => setActiveIndex(index)}
-                            onMouseDown={(event) => {
-                                event.preventDefault();
-                                selectSuggestion(value);
-                            }}
-                        >
-                            {value}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </label>
-        //</div>
     );
 }
 
@@ -1229,9 +1117,14 @@ export default function ExpenseForm({
                             label: c.icon ? `${categoryIcon(c)} ${c.name}` : c.name
                         }))}
                     />}
-                    <ProductServiceAutocomplete
+                    <DescriptionAutocomplete
+                        endpoint="/api/expense-descriptions"
+                        label="Prodotto/servizio"
+                        placeholder="Descrizione libera della spesa"
                         initialValue={initialExpense?.description ?? ""}
                         onValueChange={setDescription}
+                        required
+                        className="span-2 expense-wizard-step expense-wizard-step-3"
                     />
                 </div>
             </details>

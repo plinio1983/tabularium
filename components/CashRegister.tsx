@@ -102,6 +102,13 @@ export default function CashRegister({
         requestAnimationFrame(() => amountRef.current?.focus({preventScroll: true}));
     }
 
+    function cancelKeyboardMethodModal() {
+        setSelectedMethodId(null);
+        setKeyboardMethodOpen(false);
+        setNotice(null);
+        focusAmount();
+    }
+
     useEffect(() => {
         requestAnimationFrame(() => amountRef.current?.focus({preventScroll: true}));
     }, []);
@@ -131,13 +138,13 @@ export default function CashRegister({
                     } else if (event.key === 'Enter') {
                         event.preventDefault();
                         if (keyboardConfirmationIndex === 0) {
-                            setSelectedMethodId(null);
+                            cancelKeyboardMethodModal();
                         } else {
                             void submitReceipt();
                         }
                     } else if (event.key === 'Escape') {
                         event.preventDefault();
-                        setSelectedMethodId(null);
+                        cancelKeyboardMethodModal();
                     }
                     return;
                 }
@@ -368,7 +375,7 @@ export default function CashRegister({
             {selectedMethod && mode === 'create' ?
                 <button className="cash-register-submit" type="button" disabled={sending || !hasValidAmount || !methodIsAvailable(selectedMethod)}
                         onClick={() => void submitReceipt()}>
-                    <span>{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INVIA'}
+                    <span>{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INCASSA'}
                 </button> : <>
                     {cashMethod ? <button type="button" disabled={!hasValidAmount}
                                           className={selectedMethodId === cashMethod.id ? 'is-selected' : ''}
@@ -453,14 +460,14 @@ export default function CashRegister({
                             type="button" tabIndex={0} disabled={sending}
                             aria-label="Annulla metodo selezionato" title="Annulla"
                             onFocus={() => setKeyboardConfirmationIndex(0)}
-                            onClick={() => setSelectedMethodId(null)}>↩</button>
+                            onClick={cancelKeyboardMethodModal}>↩</button>
                     <button ref={keyboardSubmitRef}
                             className={`cash-register-submit ${keyboardConfirmationIndex === 1 ? 'is-selected' : ''}`}
                             type="button" tabIndex={0}
                             disabled={sending || !hasValidAmount || !methodIsAvailable(selectedMethod)}
                             onFocus={() => setKeyboardConfirmationIndex(1)}
                             onClick={() => void submitReceipt()}>
-                        <span>{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INVIA'}
+                        <span>{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INCASSA'}
                     </button>
                 </section>}
                 {!selectedMethod ? <p className="cash-register-keyboard-hint">Usa le frecce per scegliere e premi Invio per selezionare.</p> : null}
