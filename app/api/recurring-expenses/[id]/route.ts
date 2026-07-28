@@ -69,7 +69,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   if (action === 'delete') {
-    const deleted = await prisma.recurringExpense.deleteMany({ where: { id: recurringExpenseId, workspaceId: current.workspace.id } });
+    const deleted = await prisma.recurringExpense.deleteMany({ where: { id: recurringExpenseId, workspaceId: current.workspace.id, companyId: current.company.id } });
     if (deleted.count) await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
       entityType: 'RecurringExpense', entityId: recurringExpenseId, request
@@ -77,7 +77,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { saved: 'deleted' }));
   }
 
-  const existing = await prisma.recurringExpense.findFirst({ where: { id: recurringExpenseId, workspaceId: current.workspace.id } });
+  const existing = await prisma.recurringExpense.findFirst({ where: { id: recurringExpenseId, workspaceId: current.workspace.id, companyId: current.company.id } });
   if (!existing) return redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), { error: 'not_found' }));
 
   const data = RecurringExpenseSchema.parse(raw);

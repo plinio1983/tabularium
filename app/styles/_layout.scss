@@ -3537,7 +3537,7 @@ body.drawer-open {
 
 .compact-expenses-table th,
 .compact-expenses-table td {
-  padding: 5px 4px;
+  padding: 8px 4px;
   vertical-align: middle;
   text-align: left;
 }
@@ -13404,5 +13404,36 @@ table .cell-description {
 }
 
 .dashboard-pie-legend-collapsible {
+  display: none;
+}
+.active-company-switcher {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  min-width: 0;
+}
+
+.active-company-switcher label {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.active-company-label,
+.active-company-current {
+  font-size: .72rem;
+  color: var(--muted);
+}
+
+.active-company-current {
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.active-company-name {
   display: none;
 }

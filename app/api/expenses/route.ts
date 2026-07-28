@@ -137,7 +137,7 @@ export async function GET() {
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const expenses = await prisma.expense.findMany({
-    where: { workspaceId: current.workspace.id },
+    where: { workspaceId: current.workspace.id, companyId: current.company.id },
     include: { category: true, company: true, supplier: true, payments: { include: { bank: true, paymentMethod: true } }, attachments: true },
     orderBy: { id: 'desc' },
     take: 500
@@ -197,6 +197,7 @@ export async function POST(request: Request) {
 
   const expense = await prisma.expense.create({ data: {
     workspaceId: current.workspace.id,
+    companyId: current.company.id,
     receivedDate: data.receivedDate ? new Date(data.receivedDate) : null,
     dueDate: data.dueDate ? new Date(data.dueDate) : null,
     merchant: supplierRef.businessName,
@@ -207,7 +208,6 @@ export async function POST(request: Request) {
     expenseType: data.expenseType,
     paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
     vatRate: isVatSettlement || !invoiceFields.isDeclared ? 0 : data.vatRate,
-    companyId: null,
     isDeclared: invoiceFields.isDeclared,
     isRecurring: false,
     hasElectronicInvoice: invoiceFields.hasElectronicInvoice,

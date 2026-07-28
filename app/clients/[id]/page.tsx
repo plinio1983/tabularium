@@ -24,7 +24,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const backHref = detailBackHref(rawReturnTo, `/clients/${id}`, '/clients');
   const [customer, banks, paymentMethods, salesChannels, customers] = await Promise.all([
-    prisma.customer.findFirst({ where: { id, workspaceId: current.workspace.id }, include: { incomes: { include: { salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true }, orderBy: { creditDate: 'desc' } } } }),
+    prisma.customer.findFirst({ where: { id, workspaceId: current.workspace.id }, include: { incomes: { where: {companyId: current.company.id}, include: { salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true }, orderBy: { creditDate: 'desc' } } } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }), prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] }),
     prisma.customer.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' } })

@@ -43,10 +43,10 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
     const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers] = await Promise.all([
-        getMonthlyReport(year, month, current.workspace.id, mode),
+        getMonthlyReport(year, month, current.workspace.id, mode, current.company.id),
         mode === 'fiscal'
-            ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id})
-            : getOrderDateMonthSummary(year, month, current.workspace.id),
+            ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id, companyId: current.company.id})
+            : getOrderDateMonthSummary(year, month, current.workspace.id, current.company.id),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),

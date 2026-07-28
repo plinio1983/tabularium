@@ -40,7 +40,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const returnTo = pathFromUrl(rawReturnTo, `/incomes/${incomeId}`);
 
   if (action === 'delete') {
-    const deleted = await prisma.income.deleteMany({ where: { id: incomeId, workspaceId: current.workspace.id } });
+    const deleted = await prisma.income.deleteMany({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id } });
     if (deleted.count) await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
       entityType: 'Income', entityId: incomeId, request
@@ -58,7 +58,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     prisma.customer.findFirst({ where: { id: parsed.customerId, workspaceId: current.workspace.id } })
   ]);
   if (!paymentMethod || !creditBank || !salesChannel || !incomeCategory || !customer) return NextResponse.json({ error: 'Configurazione incasso non valida' }, { status: 400 });
-  const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id }, select: { id: true } });
+  const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id }, select: { id: true } });
   if (!existing) {
     return redirectToPath(appendFlash(returnTo || '/incomes', { error: 'not_found' }));
   }

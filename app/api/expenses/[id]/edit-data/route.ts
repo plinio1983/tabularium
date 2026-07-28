@@ -12,12 +12,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'ID spesa non valido' }, { status: 400 });
   }
 
-  const expense = await prisma.expense.findUnique({
-    where: { id: expenseId },
+  const expense = await prisma.expense.findFirst({
+    where: { id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id },
     include: { payments: { orderBy: { id: 'asc' } }, supplier: true }
   });
 
-  if (!expense || expense.workspaceId !== current.workspace.id) {
+  if (!expense) {
     return NextResponse.json({ error: 'Spesa non trovata' }, { status: 404 });
   }
 

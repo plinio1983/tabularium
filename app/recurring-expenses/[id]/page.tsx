@@ -72,14 +72,15 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const encodedCurrentDetailReturnTo = encodeURIComponent(currentDetailReturnTo);
 
   const [item, categories, banks, paymentMethods, suppliers] = await Promise.all([
-    prisma.recurringExpense.findUnique({
-    where: { id: Number(id) },
+    prisma.recurringExpense.findFirst({
+    where: { id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id },
     include: {
       supplier: true,
       category: true,
       bank: true,
       paymentMethod: true,
       generatedExpenses: {
+        where: {companyId: current.company.id},
         include: { category: true, supplier: true, payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } },
         orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }],
         take: 24

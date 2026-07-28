@@ -7,12 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum CompanyCode {
-  HM
-  TS
-  OTHER
-}
-
 enum PaymentStatus {
   DA_PAGARE
   COMPLETATO
@@ -143,14 +137,17 @@ model AuthSession {
   tokenHash   String    @unique
   userId      Int
   workspaceId Int?
+  activeCompanyId Int?
   expiresAt   DateTime
   createdAt   DateTime  @default(now())
 
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  activeCompany Company? @relation("ActiveCompanySession", fields: [activeCompanyId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([workspaceId])
+  @@index([activeCompanyId])
   @@index([expiresAt])
 }
 
@@ -233,14 +230,27 @@ model AuditLog {
 
 model Company {
   id        Int       @id @default(autoincrement())
-  code      CompanyCode @unique
+  code      String
   name      String
-  workspaceId Int?
-  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  legalName String?
+  vatNumber String?
+  taxCode String?
+  pec String?
+  sdiCode String?
+  address String?
+  isActive Boolean @default(true)
+  isDefault Boolean @default(false)
+  workspaceId Int
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   expenses  Expense[]
+  incomes Income[]
+  recurringExpenses RecurringExpense[]
   revenues  MonthlyRevenue[]
+  activeSessions AuthSession[] @relation("ActiveCompanySession")
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([workspaceId, code])
   @@index([workspaceId])
 }
 
@@ -408,6 +418,8 @@ model RecurringExpense {
   id                   Int       @id @default(autoincrement())
   workspaceId          Int?
   workspace            Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  companyId            Int
+  company              Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
   startDate            DateTime
   cadence              String
   dueDay               Int?
@@ -436,6 +448,7 @@ model RecurringExpense {
 
   generatedExpenses    Expense[]
   @@index([workspaceId])
+  @@index([workspaceId, companyId])
   @@index([startDate])
   @@index([supplierId])
   @@index([isActive])
@@ -465,8 +478,8 @@ model Expense {
   isRecurring          Boolean   @default(false)
   isAutomaticPayment   Boolean   @default(false)
   invoiceStatus         InvoiceStatus @default(IN_ATTESA)
-  companyId             Int?
-  company               Company?  @relation(fields: [companyId], references: [id])
+  companyId             Int
+  company               Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
   month                 Int
   year                  Int
   notes                 String?
@@ -486,6 +499,7 @@ model Expense {
 
   @@unique([recurringExpenseId, recurringExpensePeriodKey])
   @@index([workspaceId])
+  @@index([workspaceId, companyId])
   @@index([year, month])
   @@index([merchant])
   @@index([expenseType])
@@ -551,6 +565,8 @@ model Income {
   id              Int       @id @default(autoincrement())
   workspaceId     Int?
   workspace       Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  companyId       Int
+  company         Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
   customerId      Int?
   customer        Customer? @relation(fields: [customerId], references: [id], onDelete: Restrict)
   salesChannelId  Int
@@ -578,6 +594,7 @@ model Income {
   updatedAt       DateTime  @updatedAt
 
   @@index([workspaceId])
+  @@index([workspaceId, companyId])
   @@index([customerId])
   @@index([orderDate])
   @@index([creditDate])

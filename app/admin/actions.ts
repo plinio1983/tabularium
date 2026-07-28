@@ -39,7 +39,6 @@ function parseRole(role: string): WorkspaceRoleName {
 
 async function assignLegacyDataToWorkspace(workspaceId: number) {
   await prisma.$transaction([
-    prisma.company.updateMany({ where: { workspaceId: null }, data: { workspaceId } }),
     prisma.expenseCategory.updateMany({ where: { workspaceId: null }, data: { workspaceId } }),
     prisma.bank.updateMany({ where: { workspaceId: null }, data: { workspaceId } }),
     prisma.supplier.updateMany({ where: { workspaceId: null }, data: { workspaceId } }),

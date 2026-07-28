@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
-import type { CompanyCode, InvoiceStatus, PaymentStatus } from '../generated/prisma/client';
+import type { InvoiceStatus, PaymentStatus } from '../generated/prisma/client';
 import { defaultPaymentMethods, fallbackPaymentMethodName } from '@/lib/workspace-defaults';
 
 const fixedCategories = [
@@ -166,7 +166,7 @@ function mapPaymentMethodKind(name: string) {
   return found ? found[1] : 'BOTH';
 }
 
-function mapCompanyCode(value: unknown): CompanyCode {
+function mapCompanyCode(value: unknown): string {
   const text = textValue(value).toLowerCase();
   if (text.includes('altro') || text.includes('other')) return 'OTHER';
   if (text === 'ts') return 'TS';
@@ -182,9 +182,7 @@ function mapInvoiceStatus(value: unknown, hasElectronicInvoice: boolean): Invoic
   return 'IN_ATTESA';
 }
 
-async function ensureReferenceData(workspaceId?: number) {
-  await prisma.company.upsert({ where: { code: 'HM' }, update: { name: 'Herbal Market', ...(workspaceId ? { workspaceId } : {}) }, create: { code: 'HM', name: 'Herbal Market', ...(workspaceId ? { workspaceId } : {}) } });
-  await prisma.company.upsert({ where: { code: 'OTHER' }, update: { name: 'Altro Operatore', ...(workspaceId ? { workspaceId } : {}) }, create: { code: 'OTHER', name: 'Altro Operatore', ...(workspaceId ? { workspaceId } : {}) } });
+async function ensureReferenceData(workspaceId: number) {
 
   for (const categoryName of fixedCategories) {
     const code = categoryCode(categoryName);
@@ -208,7 +206,7 @@ async function ensureReferenceData(workspaceId?: number) {
   return {
     categories: Object.fromEntries((await prisma.expenseCategory.findMany()).map(category => [category.name, category])),
     banks: Object.fromEntries((await prisma.bank.findMany()).map(bank => [bank.name, bank])),
-    companies: Object.fromEntries((await prisma.company.findMany()).map(company => [company.code, company])),
+    companies: Object.fromEntries((await prisma.company.findMany({where: {workspaceId}})).map(company => [company.code, company])),
     paymentMethods: Object.fromEntries((await prisma.paymentMethod.findMany({ where: workspaceId ? { workspaceId } : {} })).map(method => [method.name, method]))
   };
 }
@@ -308,14 +306,14 @@ function mapAutomaticPayment(value: unknown) {
   return text.includes('auto');
 }
 
-export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean; workspaceId?: number } = {}): Promise<ExpenseImportResult> {
+export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean; workspaceId: number; companyId: number }): Promise<ExpenseImportResult> {
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const rows = getRecurringDefinitionRows(workbook);
   const sheets = Array.from(new Set(rows.map(item => item.sheetName)));
   let deleted = 0;
 
   if (options.clearBeforeImport) {
-    const deleteResult = await prisma.recurringExpense.deleteMany({ where: options.workspaceId ? { workspaceId: options.workspaceId } : {} });
+    const deleteResult = await prisma.recurringExpense.deleteMany({ where: {workspaceId: options.workspaceId, companyId: options.companyId} });
     deleted = deleteResult.count;
   }
 
@@ -371,6 +369,8 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
 
     const existing = await prisma.recurringExpense.findFirst({
       where: {
+        workspaceId: options.workspaceId,
+        companyId: options.companyId,
         supplierId: supplier.id,
         categoryId: category?.id ?? null,
         description: description || null,
@@ -388,6 +388,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
       data: {
         startDate,
         workspaceId: options.workspaceId,
+        companyId: options.companyId,
         cadence,
         dueDay,
         dueMonth,
@@ -414,7 +415,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
   return { imported, skipped, deleted, suppliersCreated, sheets };
 }
 
-export async function importExpensesWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean; workspaceId?: number } = {}): Promise<ExpenseImportResult> {
+export async function importExpensesWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean; workspaceId: number; companyId: number }): Promise<ExpenseImportResult> {
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const rows = getTabularRows(workbook);
   const sheets = Array.from(new Set(rows.map(item => item.sheetName)));
@@ -424,7 +425,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const [, , deleteResult] = await prisma.$transaction([
       prisma.expenseAttachment.deleteMany({ where: options.workspaceId ? { expense: { workspaceId: options.workspaceId } } : {} }),
       prisma.expensePayment.deleteMany({ where: options.workspaceId ? { expense: { workspaceId: options.workspaceId } } : {} }),
-      prisma.expense.deleteMany({ where: options.workspaceId ? { workspaceId: options.workspaceId } : {} })
+      prisma.expense.deleteMany({ where: {workspaceId: options.workspaceId, companyId: options.companyId} })
     ]);
     deleted = deleteResult.count;
   }
@@ -496,7 +497,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         isRecurring,
         isAutomaticPayment,
         invoiceStatus,
-        companyId: company?.id ?? null,
+        companyId: options.companyId,
         notes: notes || null,
         paymentStatus,
         paidAmount,

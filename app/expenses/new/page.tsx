@@ -15,7 +15,7 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
   const copyId = copyIdValue ? Number(copyIdValue) : null;
 
   const [copyExpense, categories, banks, paymentMethods, suppliers] = await Promise.all([
-    copyId ? prisma.expense.findFirst({ where: { id: copyId, workspaceId: current.workspace.id }, include: { supplier: true } }) : null,
+    copyId ? prisma.expense.findFirst({ where: { id: copyId, workspaceId: current.workspace.id, companyId: current.company.id }, include: { supplier: true } }) : null,
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),

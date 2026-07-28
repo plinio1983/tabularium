@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Mese non valido' }, { status: 400 });
     }
 
-    const totals = await getOrderDateMonthSummary(year, month, current.workspace.id);
+    const totals = await getOrderDateMonthSummary(year, month, current.workspace.id, current.company.id);
     return NextResponse.json({ year, month, totals });
   }
 
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     }
 
     const periods = [{ year, month }];
-    const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id });
+    const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id, companyId: current.company.id });
     return NextResponse.json({ periods, totals });
   }
 
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     }
 
     const periods = fiscalQuarterMonthsByIndex(year, quarterIndex);
-    const totals = await getOrderDatePeriodSummary(periods, current.workspace.id);
+    const totals = await getOrderDatePeriodSummary(periods, current.workspace.id, current.company.id);
     return NextResponse.json({ periods, totals });
   }
 
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
     }
 
     const periods = fiscalQuarterMonthsByIndex(year, quarterIndex);
-    const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id });
+    const totals = await getPeriodSummary(periods, { declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id, companyId: current.company.id });
     return NextResponse.json({ periods, totals });
   }
 

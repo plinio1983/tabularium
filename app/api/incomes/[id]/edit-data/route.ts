@@ -12,9 +12,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'ID incasso non valido' }, { status: 400 });
   }
 
-  const income = await prisma.income.findUnique({ where: { id: incomeId } });
+  const income = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id } });
 
-  if (!income || income.workspaceId !== current.workspace.id) {
+  if (!income) {
     return NextResponse.json({ error: 'Incasso non trovato' }, { status: 404 });
   }
 

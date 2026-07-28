@@ -118,7 +118,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const action = String(raw._action || 'update');
   const returnTo = new URL(request.url).searchParams.get('returnTo');
   if (action === 'delete') {
-    const deleted = await prisma.expense.deleteMany({ where: { id: expenseId, workspaceId: current.workspace.id } });
+    const deleted = await prisma.expense.deleteMany({ where: { id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id } });
     if (deleted.count) await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
       entityType: 'Expense', entityId: expenseId, request
@@ -127,7 +127,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return redirectToPath(appendFlash(target, { saved: 'deleted' }));
   }
   const data = ExpenseSchema.parse(raw);
-  const existing = await prisma.expense.findFirst({ where: { id: expenseId, workspaceId: current.workspace.id }, include: { attachments: true } });
+  const existing = await prisma.expense.findFirst({ where: { id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id }, include: { attachments: true } });
   if (!existing) {
     const target = safePath(returnTo, '/expenses', request.url);
     return redirectToPath(appendFlash(target, { error: 'not_found' }));

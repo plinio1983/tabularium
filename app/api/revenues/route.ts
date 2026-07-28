@@ -22,12 +22,11 @@ export async function POST(request: Request) {
   if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
   const current = access.current;
   const data = RevenueSchema.parse(await request.json());
-  const company = await prisma.company.findFirst({ where: { id: data.companyId, workspaceId: current.workspace.id }, select: { id: true } });
-  if (!company) return NextResponse.json({ error: 'Società non trovata' }, { status: 404 });
+  const companyId = current.company.id;
   const revenue = await prisma.monthlyRevenue.upsert({
-    where: { companyId_year_month: { companyId: data.companyId, year: data.year, month: data.month } },
-    update: { ...data, workspaceId: current.workspace.id },
-    create: { ...data, workspaceId: current.workspace.id }
+    where: { companyId_year_month: { companyId, year: data.year, month: data.month } },
+    update: { ...data, companyId, workspaceId: current.workspace.id },
+    create: { ...data, companyId, workspaceId: current.workspace.id }
   });
   return NextResponse.json(revenue);
 }

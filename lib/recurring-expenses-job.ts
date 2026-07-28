@@ -149,6 +149,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
         const existing = await prisma.expense.findFirst({
           where: {
             workspaceId: recurringExpense.workspaceId || null,
+            companyId: recurringExpense.companyId,
             recurringExpenseId: recurringExpense.id,
             recurringExpensePeriodKey
           }
@@ -162,6 +163,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
         await prisma.expense.create({
           data: {
             workspaceId: recurringExpense.workspaceId || null,
+            companyId: recurringExpense.companyId,
             receivedDate: dueDate,
             dueDate,
             merchant: recurringExpense.supplier.businessName,

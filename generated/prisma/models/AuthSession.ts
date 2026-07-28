@@ -30,12 +30,14 @@ export type AuthSessionAvgAggregateOutputType = {
   id: number | null
   userId: number | null
   workspaceId: number | null
+  activeCompanyId: number | null
 }
 
 export type AuthSessionSumAggregateOutputType = {
   id: number | null
   userId: number | null
   workspaceId: number | null
+  activeCompanyId: number | null
 }
 
 export type AuthSessionMinAggregateOutputType = {
@@ -43,6 +45,7 @@ export type AuthSessionMinAggregateOutputType = {
   tokenHash: string | null
   userId: number | null
   workspaceId: number | null
+  activeCompanyId: number | null
   expiresAt: Date | null
   createdAt: Date | null
 }
@@ -52,6 +55,7 @@ export type AuthSessionMaxAggregateOutputType = {
   tokenHash: string | null
   userId: number | null
   workspaceId: number | null
+  activeCompanyId: number | null
   expiresAt: Date | null
   createdAt: Date | null
 }
@@ -61,6 +65,7 @@ export type AuthSessionCountAggregateOutputType = {
   tokenHash: number
   userId: number
   workspaceId: number
+  activeCompanyId: number
   expiresAt: number
   createdAt: number
   _all: number
@@ -71,12 +76,14 @@ export type AuthSessionAvgAggregateInputType = {
   id?: true
   userId?: true
   workspaceId?: true
+  activeCompanyId?: true
 }
 
 export type AuthSessionSumAggregateInputType = {
   id?: true
   userId?: true
   workspaceId?: true
+  activeCompanyId?: true
 }
 
 export type AuthSessionMinAggregateInputType = {
@@ -84,6 +91,7 @@ export type AuthSessionMinAggregateInputType = {
   tokenHash?: true
   userId?: true
   workspaceId?: true
+  activeCompanyId?: true
   expiresAt?: true
   createdAt?: true
 }
@@ -93,6 +101,7 @@ export type AuthSessionMaxAggregateInputType = {
   tokenHash?: true
   userId?: true
   workspaceId?: true
+  activeCompanyId?: true
   expiresAt?: true
   createdAt?: true
 }
@@ -102,6 +111,7 @@ export type AuthSessionCountAggregateInputType = {
   tokenHash?: true
   userId?: true
   workspaceId?: true
+  activeCompanyId?: true
   expiresAt?: true
   createdAt?: true
   _all?: true
@@ -198,6 +208,7 @@ export type AuthSessionGroupByOutputType = {
   tokenHash: string
   userId: number
   workspaceId: number | null
+  activeCompanyId: number | null
   expiresAt: Date
   createdAt: Date
   _count: AuthSessionCountAggregateOutputType | null
@@ -230,10 +241,12 @@ export type AuthSessionWhereInput = {
   tokenHash?: Prisma.StringFilter<"AuthSession"> | string
   userId?: Prisma.IntFilter<"AuthSession"> | number
   workspaceId?: Prisma.IntNullableFilter<"AuthSession"> | number | null
+  activeCompanyId?: Prisma.IntNullableFilter<"AuthSession"> | number | null
   expiresAt?: Prisma.DateTimeFilter<"AuthSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"AuthSession"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   workspace?: Prisma.XOR<Prisma.WorkspaceNullableScalarRelationFilter, Prisma.WorkspaceWhereInput> | null
+  activeCompany?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
 }
 
 export type AuthSessionOrderByWithRelationInput = {
@@ -241,10 +254,12 @@ export type AuthSessionOrderByWithRelationInput = {
   tokenHash?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  activeCompanyId?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
+  activeCompany?: Prisma.CompanyOrderByWithRelationInput
 }
 
 export type AuthSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -255,10 +270,12 @@ export type AuthSessionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AuthSessionWhereInput | Prisma.AuthSessionWhereInput[]
   userId?: Prisma.IntFilter<"AuthSession"> | number
   workspaceId?: Prisma.IntNullableFilter<"AuthSession"> | number | null
+  activeCompanyId?: Prisma.IntNullableFilter<"AuthSession"> | number | null
   expiresAt?: Prisma.DateTimeFilter<"AuthSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"AuthSession"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   workspace?: Prisma.XOR<Prisma.WorkspaceNullableScalarRelationFilter, Prisma.WorkspaceWhereInput> | null
+  activeCompany?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
 }, "id" | "tokenHash">
 
 export type AuthSessionOrderByWithAggregationInput = {
@@ -266,6 +283,7 @@ export type AuthSessionOrderByWithAggregationInput = {
   tokenHash?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  activeCompanyId?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.AuthSessionCountOrderByAggregateInput
@@ -283,6 +301,7 @@ export type AuthSessionScalarWhereWithAggregatesInput = {
   tokenHash?: Prisma.StringWithAggregatesFilter<"AuthSession"> | string
   userId?: Prisma.IntWithAggregatesFilter<"AuthSession"> | number
   workspaceId?: Prisma.IntNullableWithAggregatesFilter<"AuthSession"> | number | null
+  activeCompanyId?: Prisma.IntNullableWithAggregatesFilter<"AuthSession"> | number | null
   expiresAt?: Prisma.DateTimeWithAggregatesFilter<"AuthSession"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AuthSession"> | Date | string
 }
@@ -293,6 +312,7 @@ export type AuthSessionCreateInput = {
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSessionsInput
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutSessionsInput
+  activeCompany?: Prisma.CompanyCreateNestedOneWithoutActiveSessionsInput
 }
 
 export type AuthSessionUncheckedCreateInput = {
@@ -300,6 +320,7 @@ export type AuthSessionUncheckedCreateInput = {
   tokenHash: string
   userId: number
   workspaceId?: number | null
+  activeCompanyId?: number | null
   expiresAt: Date | string
   createdAt?: Date | string
 }
@@ -310,6 +331,7 @@ export type AuthSessionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSessionsNestedInput
   workspace?: Prisma.WorkspaceUpdateOneWithoutSessionsNestedInput
+  activeCompany?: Prisma.CompanyUpdateOneWithoutActiveSessionsNestedInput
 }
 
 export type AuthSessionUncheckedUpdateInput = {
@@ -317,6 +339,7 @@ export type AuthSessionUncheckedUpdateInput = {
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  activeCompanyId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -326,6 +349,7 @@ export type AuthSessionCreateManyInput = {
   tokenHash: string
   userId: number
   workspaceId?: number | null
+  activeCompanyId?: number | null
   expiresAt: Date | string
   createdAt?: Date | string
 }
@@ -341,6 +365,7 @@ export type AuthSessionUncheckedUpdateManyInput = {
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  activeCompanyId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -360,6 +385,7 @@ export type AuthSessionCountOrderByAggregateInput = {
   tokenHash?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  activeCompanyId?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -368,6 +394,7 @@ export type AuthSessionAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  activeCompanyId?: Prisma.SortOrder
 }
 
 export type AuthSessionMaxOrderByAggregateInput = {
@@ -375,6 +402,7 @@ export type AuthSessionMaxOrderByAggregateInput = {
   tokenHash?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  activeCompanyId?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -384,6 +412,7 @@ export type AuthSessionMinOrderByAggregateInput = {
   tokenHash?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  activeCompanyId?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -392,6 +421,7 @@ export type AuthSessionSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  activeCompanyId?: Prisma.SortOrder
 }
 
 export type AuthSessionCreateNestedManyWithoutUserInput = {
@@ -478,17 +508,61 @@ export type AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput = {
   deleteMany?: Prisma.AuthSessionScalarWhereInput | Prisma.AuthSessionScalarWhereInput[]
 }
 
+export type AuthSessionCreateNestedManyWithoutActiveCompanyInput = {
+  create?: Prisma.XOR<Prisma.AuthSessionCreateWithoutActiveCompanyInput, Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput> | Prisma.AuthSessionCreateWithoutActiveCompanyInput[] | Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput[]
+  connectOrCreate?: Prisma.AuthSessionCreateOrConnectWithoutActiveCompanyInput | Prisma.AuthSessionCreateOrConnectWithoutActiveCompanyInput[]
+  createMany?: Prisma.AuthSessionCreateManyActiveCompanyInputEnvelope
+  connect?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+}
+
+export type AuthSessionUncheckedCreateNestedManyWithoutActiveCompanyInput = {
+  create?: Prisma.XOR<Prisma.AuthSessionCreateWithoutActiveCompanyInput, Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput> | Prisma.AuthSessionCreateWithoutActiveCompanyInput[] | Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput[]
+  connectOrCreate?: Prisma.AuthSessionCreateOrConnectWithoutActiveCompanyInput | Prisma.AuthSessionCreateOrConnectWithoutActiveCompanyInput[]
+  createMany?: Prisma.AuthSessionCreateManyActiveCompanyInputEnvelope
+  connect?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+}
+
+export type AuthSessionUpdateManyWithoutActiveCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.AuthSessionCreateWithoutActiveCompanyInput, Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput> | Prisma.AuthSessionCreateWithoutActiveCompanyInput[] | Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput[]
+  connectOrCreate?: Prisma.AuthSessionCreateOrConnectWithoutActiveCompanyInput | Prisma.AuthSessionCreateOrConnectWithoutActiveCompanyInput[]
+  upsert?: Prisma.AuthSessionUpsertWithWhereUniqueWithoutActiveCompanyInput | Prisma.AuthSessionUpsertWithWhereUniqueWithoutActiveCompanyInput[]
+  createMany?: Prisma.AuthSessionCreateManyActiveCompanyInputEnvelope
+  set?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+  disconnect?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+  delete?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+  connect?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+  update?: Prisma.AuthSessionUpdateWithWhereUniqueWithoutActiveCompanyInput | Prisma.AuthSessionUpdateWithWhereUniqueWithoutActiveCompanyInput[]
+  updateMany?: Prisma.AuthSessionUpdateManyWithWhereWithoutActiveCompanyInput | Prisma.AuthSessionUpdateManyWithWhereWithoutActiveCompanyInput[]
+  deleteMany?: Prisma.AuthSessionScalarWhereInput | Prisma.AuthSessionScalarWhereInput[]
+}
+
+export type AuthSessionUncheckedUpdateManyWithoutActiveCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.AuthSessionCreateWithoutActiveCompanyInput, Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput> | Prisma.AuthSessionCreateWithoutActiveCompanyInput[] | Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput[]
+  connectOrCreate?: Prisma.AuthSessionCreateOrConnectWithoutActiveCompanyInput | Prisma.AuthSessionCreateOrConnectWithoutActiveCompanyInput[]
+  upsert?: Prisma.AuthSessionUpsertWithWhereUniqueWithoutActiveCompanyInput | Prisma.AuthSessionUpsertWithWhereUniqueWithoutActiveCompanyInput[]
+  createMany?: Prisma.AuthSessionCreateManyActiveCompanyInputEnvelope
+  set?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+  disconnect?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+  delete?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+  connect?: Prisma.AuthSessionWhereUniqueInput | Prisma.AuthSessionWhereUniqueInput[]
+  update?: Prisma.AuthSessionUpdateWithWhereUniqueWithoutActiveCompanyInput | Prisma.AuthSessionUpdateWithWhereUniqueWithoutActiveCompanyInput[]
+  updateMany?: Prisma.AuthSessionUpdateManyWithWhereWithoutActiveCompanyInput | Prisma.AuthSessionUpdateManyWithWhereWithoutActiveCompanyInput[]
+  deleteMany?: Prisma.AuthSessionScalarWhereInput | Prisma.AuthSessionScalarWhereInput[]
+}
+
 export type AuthSessionCreateWithoutUserInput = {
   tokenHash: string
   expiresAt: Date | string
   createdAt?: Date | string
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutSessionsInput
+  activeCompany?: Prisma.CompanyCreateNestedOneWithoutActiveSessionsInput
 }
 
 export type AuthSessionUncheckedCreateWithoutUserInput = {
   id?: number
   tokenHash: string
   workspaceId?: number | null
+  activeCompanyId?: number | null
   expiresAt: Date | string
   createdAt?: Date | string
 }
@@ -527,6 +601,7 @@ export type AuthSessionScalarWhereInput = {
   tokenHash?: Prisma.StringFilter<"AuthSession"> | string
   userId?: Prisma.IntFilter<"AuthSession"> | number
   workspaceId?: Prisma.IntNullableFilter<"AuthSession"> | number | null
+  activeCompanyId?: Prisma.IntNullableFilter<"AuthSession"> | number | null
   expiresAt?: Prisma.DateTimeFilter<"AuthSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"AuthSession"> | Date | string
 }
@@ -536,12 +611,14 @@ export type AuthSessionCreateWithoutWorkspaceInput = {
   expiresAt: Date | string
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSessionsInput
+  activeCompany?: Prisma.CompanyCreateNestedOneWithoutActiveSessionsInput
 }
 
 export type AuthSessionUncheckedCreateWithoutWorkspaceInput = {
   id?: number
   tokenHash: string
   userId: number
+  activeCompanyId?: number | null
   expiresAt: Date | string
   createdAt?: Date | string
 }
@@ -572,10 +649,54 @@ export type AuthSessionUpdateManyWithWhereWithoutWorkspaceInput = {
   data: Prisma.XOR<Prisma.AuthSessionUpdateManyMutationInput, Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceInput>
 }
 
+export type AuthSessionCreateWithoutActiveCompanyInput = {
+  tokenHash: string
+  expiresAt: Date | string
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutSessionsInput
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutSessionsInput
+}
+
+export type AuthSessionUncheckedCreateWithoutActiveCompanyInput = {
+  id?: number
+  tokenHash: string
+  userId: number
+  workspaceId?: number | null
+  expiresAt: Date | string
+  createdAt?: Date | string
+}
+
+export type AuthSessionCreateOrConnectWithoutActiveCompanyInput = {
+  where: Prisma.AuthSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.AuthSessionCreateWithoutActiveCompanyInput, Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput>
+}
+
+export type AuthSessionCreateManyActiveCompanyInputEnvelope = {
+  data: Prisma.AuthSessionCreateManyActiveCompanyInput | Prisma.AuthSessionCreateManyActiveCompanyInput[]
+  skipDuplicates?: boolean
+}
+
+export type AuthSessionUpsertWithWhereUniqueWithoutActiveCompanyInput = {
+  where: Prisma.AuthSessionWhereUniqueInput
+  update: Prisma.XOR<Prisma.AuthSessionUpdateWithoutActiveCompanyInput, Prisma.AuthSessionUncheckedUpdateWithoutActiveCompanyInput>
+  create: Prisma.XOR<Prisma.AuthSessionCreateWithoutActiveCompanyInput, Prisma.AuthSessionUncheckedCreateWithoutActiveCompanyInput>
+}
+
+export type AuthSessionUpdateWithWhereUniqueWithoutActiveCompanyInput = {
+  where: Prisma.AuthSessionWhereUniqueInput
+  data: Prisma.XOR<Prisma.AuthSessionUpdateWithoutActiveCompanyInput, Prisma.AuthSessionUncheckedUpdateWithoutActiveCompanyInput>
+}
+
+export type AuthSessionUpdateManyWithWhereWithoutActiveCompanyInput = {
+  where: Prisma.AuthSessionScalarWhereInput
+  data: Prisma.XOR<Prisma.AuthSessionUpdateManyMutationInput, Prisma.AuthSessionUncheckedUpdateManyWithoutActiveCompanyInput>
+}
+
 export type AuthSessionCreateManyUserInput = {
   id?: number
   tokenHash: string
   workspaceId?: number | null
+  activeCompanyId?: number | null
   expiresAt: Date | string
   createdAt?: Date | string
 }
@@ -585,12 +706,14 @@ export type AuthSessionUpdateWithoutUserInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneWithoutSessionsNestedInput
+  activeCompany?: Prisma.CompanyUpdateOneWithoutActiveSessionsNestedInput
 }
 
 export type AuthSessionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  activeCompanyId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -599,6 +722,7 @@ export type AuthSessionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  activeCompanyId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -607,6 +731,7 @@ export type AuthSessionCreateManyWorkspaceInput = {
   id?: number
   tokenHash: string
   userId: number
+  activeCompanyId?: number | null
   expiresAt: Date | string
   createdAt?: Date | string
 }
@@ -616,12 +741,14 @@ export type AuthSessionUpdateWithoutWorkspaceInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSessionsNestedInput
+  activeCompany?: Prisma.CompanyUpdateOneWithoutActiveSessionsNestedInput
 }
 
 export type AuthSessionUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  activeCompanyId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -630,6 +757,42 @@ export type AuthSessionUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  activeCompanyId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AuthSessionCreateManyActiveCompanyInput = {
+  id?: number
+  tokenHash: string
+  userId: number
+  workspaceId?: number | null
+  expiresAt: Date | string
+  createdAt?: Date | string
+}
+
+export type AuthSessionUpdateWithoutActiveCompanyInput = {
+  tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutSessionsNestedInput
+  workspace?: Prisma.WorkspaceUpdateOneWithoutSessionsNestedInput
+}
+
+export type AuthSessionUncheckedUpdateWithoutActiveCompanyInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AuthSessionUncheckedUpdateManyWithoutActiveCompanyInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -641,10 +804,12 @@ export type AuthSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   tokenHash?: boolean
   userId?: boolean
   workspaceId?: boolean
+  activeCompanyId?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   workspace?: boolean | Prisma.AuthSession$workspaceArgs<ExtArgs>
+  activeCompany?: boolean | Prisma.AuthSession$activeCompanyArgs<ExtArgs>
 }, ExtArgs["result"]["authSession"]>
 
 export type AuthSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -652,10 +817,12 @@ export type AuthSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   tokenHash?: boolean
   userId?: boolean
   workspaceId?: boolean
+  activeCompanyId?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   workspace?: boolean | Prisma.AuthSession$workspaceArgs<ExtArgs>
+  activeCompany?: boolean | Prisma.AuthSession$activeCompanyArgs<ExtArgs>
 }, ExtArgs["result"]["authSession"]>
 
 export type AuthSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -663,10 +830,12 @@ export type AuthSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   tokenHash?: boolean
   userId?: boolean
   workspaceId?: boolean
+  activeCompanyId?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   workspace?: boolean | Prisma.AuthSession$workspaceArgs<ExtArgs>
+  activeCompany?: boolean | Prisma.AuthSession$activeCompanyArgs<ExtArgs>
 }, ExtArgs["result"]["authSession"]>
 
 export type AuthSessionSelectScalar = {
@@ -674,22 +843,26 @@ export type AuthSessionSelectScalar = {
   tokenHash?: boolean
   userId?: boolean
   workspaceId?: boolean
+  activeCompanyId?: boolean
   expiresAt?: boolean
   createdAt?: boolean
 }
 
-export type AuthSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tokenHash" | "userId" | "workspaceId" | "expiresAt" | "createdAt", ExtArgs["result"]["authSession"]>
+export type AuthSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tokenHash" | "userId" | "workspaceId" | "activeCompanyId" | "expiresAt" | "createdAt", ExtArgs["result"]["authSession"]>
 export type AuthSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   workspace?: boolean | Prisma.AuthSession$workspaceArgs<ExtArgs>
+  activeCompany?: boolean | Prisma.AuthSession$activeCompanyArgs<ExtArgs>
 }
 export type AuthSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   workspace?: boolean | Prisma.AuthSession$workspaceArgs<ExtArgs>
+  activeCompany?: boolean | Prisma.AuthSession$activeCompanyArgs<ExtArgs>
 }
 export type AuthSessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   workspace?: boolean | Prisma.AuthSession$workspaceArgs<ExtArgs>
+  activeCompany?: boolean | Prisma.AuthSession$activeCompanyArgs<ExtArgs>
 }
 
 export type $AuthSessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -697,12 +870,14 @@ export type $AuthSessionPayload<ExtArgs extends runtime.Types.Extensions.Interna
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     workspace: Prisma.$WorkspacePayload<ExtArgs> | null
+    activeCompany: Prisma.$CompanyPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     tokenHash: string
     userId: number
     workspaceId: number | null
+    activeCompanyId: number | null
     expiresAt: Date
     createdAt: Date
   }, ExtArgs["result"]["authSession"]>
@@ -1101,6 +1276,7 @@ export interface Prisma__AuthSessionClient<T, Null = never, ExtArgs extends runt
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   workspace<T extends Prisma.AuthSession$workspaceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AuthSession$workspaceArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  activeCompany<T extends Prisma.AuthSession$activeCompanyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AuthSession$activeCompanyArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1134,6 +1310,7 @@ export interface AuthSessionFieldRefs {
   readonly tokenHash: Prisma.FieldRef<"AuthSession", 'String'>
   readonly userId: Prisma.FieldRef<"AuthSession", 'Int'>
   readonly workspaceId: Prisma.FieldRef<"AuthSession", 'Int'>
+  readonly activeCompanyId: Prisma.FieldRef<"AuthSession", 'Int'>
   readonly expiresAt: Prisma.FieldRef<"AuthSession", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"AuthSession", 'DateTime'>
 }
@@ -1553,6 +1730,25 @@ export type AuthSession$workspaceArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   include?: Prisma.WorkspaceInclude<ExtArgs> | null
   where?: Prisma.WorkspaceWhereInput
+}
+
+/**
+ * AuthSession.activeCompany
+ */
+export type AuthSession$activeCompanyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyInclude<ExtArgs> | null
+  where?: Prisma.CompanyWhereInput
 }
 
 /**

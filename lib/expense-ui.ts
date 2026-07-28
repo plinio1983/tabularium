@@ -40,9 +40,9 @@ export const vatStylesNoText: Record<string, { label: string; className: string 
 
 export const invoiceStatusStyles: Record<string, { label: string; icon: string; className: string }> = {
   NON_PREVISTA: { label: 'NP', icon: '✕', className: 'tone-neutral' },
-  IN_ATTESA: { label: 'In attesa', icon: '⏳', className: 'tone-waiting' },
+  IN_ATTESA: { label: 'Attesa', icon: '⏳', className: 'tone-waiting' },
   INVIATA_SDI: { label: 'Emessa', icon: '✅', className: 'tone-received' },
-  CONTESTAZIONE: { label: 'Contestazione', icon: '⚠️', className: 'tone-dispute' },
+  CONTESTAZIONE: { label: 'Contesto', icon: '⚠️', className: 'tone-dispute' },
   RICEVUTA: { label: 'Emessa', icon: '✅', className: 'tone-received' },
   NONE: { label: 'Non impostato', icon: '  •  ', className: 'tone-neutral' },
   YES: { label: 'Si', icon: '✓', className: 'tone-yes' },

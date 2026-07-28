@@ -274,7 +274,8 @@ function ExpenseCategoryPieChart({data}: { data: ExpenseCategoryDatum[] }) {
                             <span className="expense-impact-pie-dot" style={{background: expensePieChartColors[index % expensePieChartColors.length]}}/>
                             <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
                             <div className="justify-end">
-                                <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
+                                <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong>
+                                <strong className="text-accent">{percentage.toFixed(1)}%</strong>
                             </div>
                         </div>
                         <div className="expense-impact-pie-bar-track">
@@ -613,7 +614,7 @@ export default async function ExpensesPage({searchParams}: {
 
     const [expenses, categories, banks, paymentMethods, suppliers] = await Promise.all([
         prisma.expense.findMany({
-            where: {workspaceId: current.workspace.id},
+            where: {workspaceId: current.workspace.id, companyId: current.company.id},
             include: {
                 category: true,
                 supplier: true,

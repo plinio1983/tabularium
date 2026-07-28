@@ -12,6 +12,8 @@ if (!filePath || filePath.startsWith('--')) {
 }
 
 const buffer = await readFile(filePath);
-const result = await importExpensesWorkbook(buffer, { clearBeforeImport });
+const company = await prisma.company.findFirst({where: {isActive: true}, orderBy: [{isDefault: 'desc'}, {id: 'asc'}]});
+if (!company) throw new Error('Nessuna società disponibile');
+const result = await importExpensesWorkbook(buffer, { clearBeforeImport, workspaceId: company.workspaceId, companyId: company.id });
 console.log(`Import completato: ${result.imported} spese importate, ${result.skipped} righe saltate, ${result.deleted} spese eliminate, ${result.suppliersCreated} fornitori creati.`);
 await prisma.$disconnect();

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     }) : null;
     if (category) {
       await prisma.income.updateMany({
-        where: { id: { in: ids }, workspaceId: current.workspace.id },
+        where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id },
         data: { incomeCategoryId: category.id }
       });
       await writeAuditLog({
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   }
 
   if (action === 'delete') {
-    const deleted = await prisma.income.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    const deleted = await prisma.income.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id } });
     await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_DELETE',
       entityType: 'Income', metadata: { ids, deleted: deleted.count }, request
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   }
 
   if (action === 'invoice_emitted') {
-    await prisma.income.updateMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, isFiscal: true }, data: { invoiceStatus: 'EMESSA' } });
+    await prisma.income.updateMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id, isFiscal: true }, data: { invoiceStatus: 'EMESSA' } });
     await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
       entityType: 'Income', metadata: { ids, operation: action }, request

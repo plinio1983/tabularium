@@ -12,7 +12,7 @@ export default async function EditIncomePage({ params, searchParams }: { params:
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/incomes/${id}`;
   const encodedReturnTo = encodeURIComponent(returnTo);
   const [income, banks, paymentMethods, salesChannels, customers] = await Promise.all([
-    prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id } }),
+    prisma.income.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] }),

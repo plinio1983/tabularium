@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import MainNav from '@/components/MainNav';
 import SettingsMenu from '@/components/SettingsMenu';
 import logoHorizontal from '../public/img/tabularium-logo-horiz.png';
+import ActiveCompanySwitcher from '@/components/ActiveCompanySwitcher';
 
 type Props = {
   slot: 'header' | 'footer';
@@ -29,6 +30,7 @@ function DesktopHeader({ compactOnMobile = false }: { compactOnMobile?: boolean 
   return <div className={className}>
     <div className="site-header-brand">
       <img className="site-header-logo" src={logoHorizontal.src} alt="Tabularium" width={logoHorizontal.width} height={logoHorizontal.height} />
+      <Suspense fallback={null}><ActiveCompanySwitcher /></Suspense>
     </div>
     <div className="site-header-actions">
       <Suspense fallback={null}>

@@ -584,7 +584,7 @@ export default async function IncomesPage({searchParams}: {
 
     const [incomes, expensesForVat, banks, paymentMethods, salesChannels, customers] = await Promise.all([
         prisma.income.findMany({
-            where: {workspaceId: current.workspace.id},
+            where: {workspaceId: current.workspace.id, companyId: current.company.id},
             include: {
                 paymentMethodRef: true,
                 creditBank: true,
@@ -593,7 +593,7 @@ export default async function IncomesPage({searchParams}: {
             },
             orderBy: [{creditDate: 'desc'}, {id: 'desc'}]
         }),
-        prisma.expense.findMany({where: {workspaceId: current.workspace.id}, include: {payments: true}, take: 5000}),
+        prisma.expense.findMany({where: {workspaceId: current.workspace.id, companyId: current.company.id}, include: {payments: true}, take: 5000}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),

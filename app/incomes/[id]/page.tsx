@@ -81,7 +81,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const currentDetailReturnTo = `/incomes/${id}?returnTo=${encodedReturnTo}`;
     const [income, banks, paymentMethods, salesChannels, customers] = await Promise.all([
         prisma.income.findFirst({
-            where: {id: Number(id), workspaceId: current.workspace.id},
+            where: {id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id},
             include: {
                 paymentMethodRef: true,
                 creditBank: true,

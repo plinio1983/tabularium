@@ -14,7 +14,7 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
   const encodedReturnTo = encodeURIComponent(returnTo);
   const copyId = copyIdValue ? Number(copyIdValue) : null;
   const [copyIncome, banks, paymentMethods, salesChannels, customers] = await Promise.all([
-    copyId ? prisma.income.findFirst({ where: { id: copyId, workspaceId: current.workspace.id } }) : null,
+    copyId ? prisma.income.findFirst({ where: { id: copyId, workspaceId: current.workspace.id, companyId: current.company.id } }) : null,
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] }),

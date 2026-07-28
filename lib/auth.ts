@@ -44,11 +44,16 @@ export async function createSession(userId: number, workspaceId?: number | null)
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + sessionTtlDays);
 
+  const activeCompany = workspaceId ? await prisma.company.findFirst({
+    where: {workspaceId, isActive: true},
+    orderBy: [{isDefault: 'desc'}, {id: 'asc'}]
+  }) : null;
   await prisma.authSession.create({
     data: {
       tokenHash: tokenHash(token),
       userId,
       workspaceId: workspaceId ?? null,
+      activeCompanyId: activeCompany?.id ?? null,
       expiresAt
     }
   });
@@ -90,7 +95,8 @@ export async function getCurrentSession() {
     where: { tokenHash: { in: tokens.map(tokenHash) } },
     include: {
       user: true,
-      workspace: true
+      workspace: true,
+      activeCompany: true
     }
   });
   const now = new Date();
@@ -112,13 +118,24 @@ export async function getCurrentSession() {
     orderBy: { id: 'asc' }
   });
   const currentMembership = memberships.find(membership => membership.workspaceId === session.workspaceId) ?? memberships[0] ?? null;
+  const workspaceId = currentMembership?.workspaceId ?? session.workspaceId;
+  const companies = workspaceId ? await prisma.company.findMany({
+    where: {workspaceId, isActive: true},
+    orderBy: [{isDefault: 'desc'}, {name: 'asc'}, {id: 'asc'}]
+  }) : [];
+  const activeCompany = companies.find(company => company.id === session.activeCompanyId) ?? companies[0] ?? null;
+  if (activeCompany && session.activeCompanyId !== activeCompany.id) {
+    await prisma.authSession.update({where: {id: session.id}, data: {activeCompanyId: activeCompany.id}});
+  }
 
   return {
     session,
     user: session.user,
     workspace: currentMembership?.workspace ?? session.workspace,
     membership: currentMembership,
-    memberships
+    memberships,
+    company: activeCompany,
+    companies
   };
 }
 
@@ -131,20 +148,23 @@ export async function requireSession(nextPath = '/') {
 export async function requireWorkspace(nextPath = '/') {
   const current = await requireSession(nextPath);
   if (!current.workspace || !current.membership) redirect('/admin');
+  if (!current.company) redirect('/settings/company-settings');
   return {
     ...current,
     workspace: current.workspace,
-    membership: current.membership
+    membership: current.membership,
+    company: current.company
   };
 }
 
 export async function getWorkspaceContext() {
   const current = await getCurrentSession();
-  if (!current?.workspace || !current.membership) return null;
+  if (!current?.workspace || !current.membership || !current.company) return null;
   return {
     ...current,
     workspace: current.workspace,
-    membership: current.membership
+    membership: current.membership,
+    company: current.company
   };
 }
 

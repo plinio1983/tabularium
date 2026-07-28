@@ -61,8 +61,8 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const currentDetailReturnTo = `/expenses/${id}?returnTo=${encodedReturnTo}`;
   const encodedCurrentDetailReturnTo = encodeURIComponent(currentDetailReturnTo);
   const [expense, categories, banks, paymentMethods, suppliers] = await Promise.all([
-    prisma.expense.findUnique({
-      where: { id: Number(id) },
+    prisma.expense.findFirst({
+      where: { id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id },
       include: { category: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } }, attachments: true }
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
@@ -71,7 +71,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
   ]);
 
-  if (!expense || expense.workspaceId !== current.workspace.id) notFound();
+  if (!expense) notFound();
 
   const supplierName = expense.supplier.businessName;
   const orderedBanks = orderBanks(banks);

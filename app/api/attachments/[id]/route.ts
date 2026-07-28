@@ -20,7 +20,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   const attachment = await prisma.expenseAttachment.findFirst({
     where: {
       id: attachmentId,
-      expense: { workspaceId: current.workspace.id }
+      expense: { workspaceId: current.workspace.id, companyId: current.company.id }
     }
   });
   if (!attachment) return NextResponse.json({ error: 'Allegato non trovato' }, { status: 404 });
@@ -40,4 +40,3 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     return NextResponse.json({ error: 'File allegato non disponibile' }, { status: 404 });
   }
 }
-

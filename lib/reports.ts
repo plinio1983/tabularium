@@ -31,12 +31,12 @@ function periodFromKey(key: number) {
   return { year, month: key - year * 12 };
 }
 
-function periodWhere(periods: Array<{ year: number; month: number }>, workspaceId?: number) {
-  return { ...(workspaceId ? { workspaceId } : {}), OR: periods.map(({ year, month }) => ({ year, month })) };
+function periodWhere(periods: Array<{ year: number; month: number }>, workspaceId?: number, companyId?: number) {
+  return { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), OR: periods.map(({ year, month }) => ({ year, month })) };
 }
 
-function incomePeriodWhere(periods: Array<{ year: number; month: number }>, workspaceId?: number) {
-  return { ...(workspaceId ? { workspaceId } : {}), OR: periods.map(({ year, month }) => ({ billingYear: year, billingMonth: month })) };
+function incomePeriodWhere(periods: Array<{ year: number; month: number }>, workspaceId?: number, companyId?: number) {
+  return { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), OR: periods.map(({ year, month }) => ({ billingYear: year, billingMonth: month })) };
 }
 
 function monthDateRange(year: number, month: number) {
@@ -46,9 +46,10 @@ function monthDateRange(year: number, month: number) {
   };
 }
 
-function incomePeriodWhereIncludingUncredited(periods: Array<{ year: number; month: number }>, workspaceId?: number) {
+function incomePeriodWhereIncludingUncredited(periods: Array<{ year: number; month: number }>, workspaceId?: number, companyId?: number) {
   return {
     ...(workspaceId ? { workspaceId } : {}),
+    ...(companyId ? {companyId} : {}),
     OR: [
       ...periods.map(({ year, month }) => ({ billingYear: year, billingMonth: month })),
       ...periods.map(({ year, month }) => ({ isCredited: false, creditDate: monthDateRange(year, month) }))
@@ -79,6 +80,7 @@ function periodRecordKey(record: any, kind: 'income' | 'expense') {
 type SummaryOptions = {
   declaredExpensesOnlyForOpenTotals?: boolean;
   workspaceId?: number;
+  companyId?: number;
 };
 
 function computeVatBalance(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>) {
@@ -187,18 +189,18 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
 
 export async function getPeriodSummary(periods: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const [incomes, expenses] = await Promise.all([
-    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(periods, options.workspaceId) }),
-    prisma.expense.findMany({ where: periodWhere(periods, options.workspaceId), include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(periods, options.workspaceId, options.companyId) }),
+    prisma.expense.findMany({ where: periodWhere(periods, options.workspaceId, options.companyId), include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
   ]);
 
   return summarizeRecords(incomes, expenses, periods, options);
 }
 
-export async function getOrderDateMonthSummary(year: number, month: number, workspaceId?: number) {
-  return getOrderDatePeriodSummary([{ year, month }], workspaceId);
+export async function getOrderDateMonthSummary(year: number, month: number, workspaceId?: number, companyId?: number) {
+  return getOrderDatePeriodSummary([{ year, month }], workspaceId, companyId);
 }
 
-export async function getOrderDatePeriodSummary(periods: Array<{ year: number; month: number }>, workspaceId?: number) {
+export async function getOrderDatePeriodSummary(periods: Array<{ year: number; month: number }>, workspaceId?: number, companyId?: number) {
   const orderedPeriods = [...periods].sort((a, b) => periodKey(a.year, a.month) - periodKey(b.year, b.month));
   const first = orderedPeriods[0];
   const last = orderedPeriods[orderedPeriods.length - 1];
@@ -208,8 +210,8 @@ export async function getOrderDatePeriodSummary(periods: Array<{ year: number; m
   const to = new Date(last.year, last.month, 1);
 
   const [incomes, expenses] = await Promise.all([
-    prisma.income.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), creditDate: { gte: from, lt: to } } }),
-    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), receivedDate: { gte: from, lt: to } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
+    prisma.income.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), creditDate: { gte: from, lt: to } } }),
+    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), receivedDate: { gte: from, lt: to } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
   ]);
 
   return summarizeRecords(incomes, expenses);
@@ -221,7 +223,8 @@ export async function getAccountingDashboardReport(
   selectedMonth?: { year: number; month: number },
   selectedQuarter?: { year: number; quarterIndex: number },
   annualYear = reportYear,
-  workspaceId?: number
+  workspaceId?: number,
+  companyId?: number
 ) {
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
@@ -235,10 +238,10 @@ export async function getAccountingDashboardReport(
   const reportPeriods = reportYears.flatMap(year => Array.from({ length: 12 }, (_, index) => ({ year, month: index + 1 })));
 
   const [currentFiscalMonth, currentFiscalQuarter, yearIncomes, yearExpenses] = await Promise.all([
-    getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
-    getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId }),
-    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId), include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true } }),
-    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), year: { in: reportYears } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true } })
+    getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId }),
+    getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId }),
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId, companyId), include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true } }),
+    prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), year: { in: reportYears } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true } })
   ]);
 
   const months = Array.from({ length: 12 }, (_, index) => {
@@ -302,20 +305,20 @@ export async function getAccountingDashboardReport(
   };
 }
 
-export async function getMonthlyReport(year: number, month: number, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal') {
+export async function getMonthlyReport(year: number, month: number, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal', companyId?: number) {
   const dateRange = monthDateRange(year, month);
   const [expenses, incomes] = await Promise.all([
     prisma.expense.findMany({
       where: mode === 'fiscal'
-        ? { ...(workspaceId ? { workspaceId } : {}), year, month }
-        : { ...(workspaceId ? { workspaceId } : {}), receivedDate: dateRange },
+        ? { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), year, month }
+        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), receivedDate: dateRange },
       include: { category: true, company: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } } },
       orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }]
     }),
     prisma.income.findMany({
       where: mode === 'fiscal'
-        ? incomePeriodWhereIncludingUncredited([{ year, month }], workspaceId)
-        : { ...(workspaceId ? { workspaceId } : {}), creditDate: dateRange },
+        ? incomePeriodWhereIncludingUncredited([{ year, month }], workspaceId, companyId)
+        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), creditDate: dateRange },
       include: { salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true, customer: true }
     })
   ]);
@@ -354,8 +357,8 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
   };
 }
 
-export async function getYearReport(year: number, workspaceId?: number) {
-  const months = await Promise.all(Array.from({ length: 12 }, (_, i) => getMonthlyReport(year, i + 1, workspaceId)));
+export async function getYearReport(year: number, workspaceId?: number, companyId?: number) {
+  const months = await Promise.all(Array.from({ length: 12 }, (_, i) => getMonthlyReport(year, i + 1, workspaceId, 'fiscal', companyId)));
   const totals = months.reduce((acc, m) => {
     for (const [k, v] of Object.entries(m.totals)) acc[k] = (acc[k] ?? 0) + Number(v);
     return acc;

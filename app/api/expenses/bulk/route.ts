@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     if (!category) return redirectToPath(redirectTo);
 
     await prisma.expense.updateMany({
-      where: { id: { in: ids }, workspaceId: current.workspace.id, expenseType: 'STANDARD' },
+      where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id, expenseType: 'STANDARD' },
       data: { categoryId }
     });
     await writeAuditLog({
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
   }
 
   if (action === 'delete') {
-    const deleted = await prisma.expense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    const deleted = await prisma.expense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id } });
     await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_DELETE',
       entityType: 'Expense', metadata: { ids, deleted: deleted.count }, request
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1;
     const expenses = await prisma.expense.findMany({
-      where: { id: { in: ids }, workspaceId: current.workspace.id },
+      where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id },
       orderBy: { id: 'asc' }
     });
 
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
   }
 
   if (action === 'invoice_emitted') {
-    const expenses = await prisma.expense.findMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, expenseType: 'STANDARD' }, select: { id: true, hasElectronicInvoice: true } });
+    const expenses = await prisma.expense.findMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id, expenseType: 'STANDARD' }, select: { id: true, hasElectronicInvoice: true } });
     await prisma.$transaction(expenses.map(expense => prisma.expense.update({
       where: { id: expense.id },
       data: { invoiceStatus: 'RICEVUTA' }
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
     const today = todayAtMidnight();
     const [expenses, fallbackMethod] = await Promise.all([
       prisma.expense.findMany({
-        where: { id: { in: ids }, workspaceId: current.workspace.id },
+        where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id },
         include: { payments: true }
       }),
       prisma.paymentMethod.findFirst({

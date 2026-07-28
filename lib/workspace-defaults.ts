@@ -140,6 +140,22 @@ export function orderPaymentMethods<T extends { id: number; name: string; kind: 
 }
 
 export async function ensureWorkspaceDefaults(workspaceId: number) {
+  const existingCompany = await prisma.company.findFirst({
+    where: {workspaceId, isActive: true},
+    orderBy: [{isDefault: 'desc'}, {id: 'asc'}]
+  });
+  if (!existingCompany) {
+    const workspace = await prisma.workspace.findUnique({where: {id: workspaceId}, select: {name: true}});
+    await prisma.company.create({
+      data: {
+        workspaceId,
+        code: 'MAIN',
+        name: workspace?.name || 'Società principale',
+        isDefault: true
+      }
+    });
+  }
+
   await prisma.customer.upsert({
     where: { workspaceId_systemRole: { workspaceId, systemRole: 'DEFAULT' } },
     update: {},

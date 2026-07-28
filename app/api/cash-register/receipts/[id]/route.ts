@@ -36,7 +36,7 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
     if (![0, 4, 10, 22].includes(vatRate)) return NextResponse.json({error: 'Aliquota non valida'}, {status: 400});
     const date = new Date(input.creditDate);
     const [receipt, channel, method] = await Promise.all([
-        prisma.income.findFirst({where: {id, workspaceId: current.workspace.id, incomeType: 'CASH_REGISTER'}}),
+        prisma.income.findFirst({where: {id, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'}}),
         prisma.incomeSalesChannel.findFirst({where: {id: input.salesChannelId, workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findFirst({
             where: {id: input.paymentMethodId, workspaceId: current.workspace.id, cashRegisterEnabled: true}
@@ -83,7 +83,7 @@ export async function DELETE(request: Request, {params}: { params: Promise<{ id:
     const id = Number((await params).id);
     if (!Number.isInteger(id)) return NextResponse.json({error: 'ID non valido'}, {status: 400});
     const result = await prisma.income.deleteMany({
-        where: {id, workspaceId: current.workspace.id, incomeType: 'CASH_REGISTER'}
+        where: {id, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'}
     });
     if (!result.count) return NextResponse.json({error: 'Scontrino non trovato'}, {status: 404});
     await writeAuditLog({

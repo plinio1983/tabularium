@@ -35,7 +35,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   const amountMinFilter = inputDefault(filters, 'amountMin');
   const amountMaxFilter = inputDefault(filters, 'amountMax');
   const amountWhere = decimalFilter(amountMinFilter, amountMaxFilter);
-  const where: Record<string, any> = { workspaceId: current.workspace.id };
+  const where: Record<string, any> = { workspaceId: current.workspace.id, companyId: current.company.id };
 
   if (merchantFilter) {
     where.OR = [

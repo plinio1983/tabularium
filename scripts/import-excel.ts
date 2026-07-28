@@ -1,7 +1,7 @@
 import XLSX from 'xlsx';
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, CompanyCode, InvoiceStatus } from "../generated/prisma/client";
+import { PrismaClient, InvoiceStatus } from "../generated/prisma/client";
 import { getDatabaseUrl } from "../lib/database-url";
 
 const connectionString = getDatabaseUrl();
@@ -125,9 +125,11 @@ async function getOrCreateSupplier(name?: string) {
 }
 
 async function main() {
-  await prisma.company.upsert({ where: { code: 'HM' }, update: {}, create: { code: 'HM', name: 'Herbal Market' } });
-  await prisma.company.upsert({ where: { code: 'TS' }, update: {}, create: { code: 'TS', name: 'TS' } });
-  await prisma.company.upsert({ where: { code: 'OTHER' }, update: {}, create: { code: 'OTHER', name: 'Altro' } });
+  const workspace = await prisma.workspace.findFirst({orderBy: {id: 'asc'}});
+  if (!workspace) throw new Error('Crea prima un workspace');
+  await prisma.company.upsert({ where: {workspaceId_code: {workspaceId: workspace.id, code: 'HM'}}, update: {}, create: { workspaceId: workspace.id, code: 'HM', name: 'Herbal Market', isDefault: true } });
+  await prisma.company.upsert({ where: {workspaceId_code: {workspaceId: workspace.id, code: 'TS'}}, update: {}, create: { workspaceId: workspace.id, code: 'TS', name: 'TS' } });
+  await prisma.company.upsert({ where: {workspaceId_code: {workspaceId: workspace.id, code: 'OTHER'}}, update: {}, create: { workspaceId: workspace.id, code: 'OTHER', name: 'Altro' } });
   for (const categoryName of fixedCategories) {
     const code = categoryCode(categoryName);
     const existing = await prisma.expenseCategory.findFirst({ where: { workspaceId: null, code } });
@@ -177,7 +179,7 @@ async function main() {
         isComplete: Boolean(row[9]),
         isDeclared: row[10]?.toString().toLowerCase() === 'si', hasElectronicInvoice: row[11]?.toString().toLowerCase() === 'si',
         invoiceStatus: (row[11]?.toString().toLowerCase() === 'si' ? 'IN_ATTESA' : 'RICEVUTA') as InvoiceStatus,
-        companyId: company?.id,
+        companyId: company?.id ?? companies.HM.id,
         paymentStatus: Boolean(row[9]) || row[5] ? 'COMPLETATO' : 'DA_PAGARE',
         paidAmount,
         year, month,

@@ -8,8 +8,8 @@ export async function GET(request: Request) {
     const search = new URL(request.url).searchParams.get('search')?.trim();
     const rows = await prisma.income.findMany({
         where: search
-            ? {workspaceId: current.workspace.id, description: {contains: search, mode: 'insensitive'}}
-            : {workspaceId: current.workspace.id, description: {not: null}},
+            ? {workspaceId: current.workspace.id, companyId: current.company.id, description: {contains: search, mode: 'insensitive'}}
+            : {workspaceId: current.workspace.id, companyId: current.company.id, description: {not: null}},
         select: {description: true},
         orderBy: {updatedAt: 'desc'},
         take: 120

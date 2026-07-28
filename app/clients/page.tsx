@@ -44,7 +44,7 @@ export default async function ClientsPage({searchParams}: {
     const currentYear = new Date().getFullYear();
     const customers = await prisma.customer.findMany({
         where: {workspaceId: current.workspace.id},
-        include: {incomes: true},
+        include: {incomes: {where: {companyId: current.company.id}}},
         orderBy: {businessName: 'asc'}
     });
     const rows = customers.map(customer => {

@@ -48,7 +48,7 @@ export default async function CashRegisterPage({searchParams}: {
             orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]
         }),
         sourceId ? prisma.income.findFirst({
-            where: {id: sourceId, workspaceId: current.workspace.id, incomeType: 'CASH_REGISTER'}
+            where: {id: sourceId, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'}
         }) : null
     ]);
     if (sourceId && !sourceReceipt) redirect('/incomes/cash-register/receipts');

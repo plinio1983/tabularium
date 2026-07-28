@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     if (file.size > 20 * 1024 * 1024) return redirectWithParams(request, { error: 'file_too_large' });
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const options = { clearBeforeImport, workspaceId: current.workspace.id };
+    const options = { clearBeforeImport, workspaceId: current.workspace.id, companyId: current.company.id };
     const result = importType === 'recurring_definitions'
       ? await importRecurringExpenseDefinitionsWorkbook(buffer, options)
       : importType === 'incomes'

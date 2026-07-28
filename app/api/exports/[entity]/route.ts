@@ -33,10 +33,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
   const ids = selectedIds(await request.formData());
   if (!ids.length) return NextResponse.json({ error: 'Seleziona almeno un record' }, { status: 400 });
   const workspaceId = access.current.workspace.id;
+  const companyId = access.current.company.id;
 
   if (entity === 'incomes') {
     const records = await prisma.income.findMany({
-      where: { id: { in: ids }, workspaceId },
+      where: { id: { in: ids }, workspaceId, companyId },
       include: { customer: true, salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true },
       orderBy: [{ orderDate: 'desc' }, { id: 'desc' }]
     });
@@ -54,7 +55,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
 
   if (entity === 'expenses') {
     const records = await prisma.expense.findMany({
-      where: { id: { in: ids }, workspaceId },
+      where: { id: { in: ids }, workspaceId, companyId },
       include: {
         supplier: true,
         category: true,
@@ -112,7 +113,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
   }
 
   const records = await prisma.recurringExpense.findMany({
-    where: { id: { in: ids }, workspaceId },
+    where: { id: { in: ids }, workspaceId, companyId },
     include: { supplier: true, category: true, paymentMethod: true, bank: true },
     orderBy: [{ startDate: 'desc' }, { id: 'desc' }]
   });

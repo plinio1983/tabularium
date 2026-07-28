@@ -7,5 +7,5 @@ export async function GET(request: Request) {
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const { searchParams } = new URL(request.url);
   const year = Number(searchParams.get('year') ?? 2026);
-  return NextResponse.json(await getYearReport(year, current.workspace.id));
+  return NextResponse.json(await getYearReport(year, current.workspace.id, current.company.id));
 }

@@ -82,6 +82,7 @@ export async function POST(request: Request) {
         const receipt = await prisma.income.create({
             data: {
                 workspaceId: current.workspace.id,
+                companyId: current.company.id,
                 customerId: customer.id,
                 salesChannelId: channel.id,
                 incomeCategoryId: category.id,
@@ -114,7 +115,7 @@ export async function POST(request: Request) {
         return NextResponse.json({receipt}, {status: 201});
     } catch (error: unknown) {
         const existing = await prisma.income.findFirst({
-            where: {workspaceId: current.workspace.id, cashRegisterRequestId: input.requestId},
+            where: {workspaceId: current.workspace.id, companyId: current.company.id, cashRegisterRequestId: input.requestId},
             include: {paymentMethodRef: true}
         });
         if (existing) return NextResponse.json({receipt: existing, duplicate: true});

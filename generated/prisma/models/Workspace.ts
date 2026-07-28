@@ -706,12 +706,10 @@ export type WorkspaceCreateNestedOneWithoutCompaniesInput = {
   connect?: Prisma.WorkspaceWhereUniqueInput
 }
 
-export type WorkspaceUpdateOneWithoutCompaniesNestedInput = {
+export type WorkspaceUpdateOneRequiredWithoutCompaniesNestedInput = {
   create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutCompaniesInput, Prisma.WorkspaceUncheckedCreateWithoutCompaniesInput>
   connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutCompaniesInput
   upsert?: Prisma.WorkspaceUpsertWithoutCompaniesInput
-  disconnect?: Prisma.WorkspaceWhereInput | boolean
-  delete?: Prisma.WorkspaceWhereInput | boolean
   connect?: Prisma.WorkspaceWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutCompaniesInput, Prisma.WorkspaceUpdateWithoutCompaniesInput>, Prisma.WorkspaceUncheckedUpdateWithoutCompaniesInput>
 }

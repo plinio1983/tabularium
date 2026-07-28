@@ -78,7 +78,7 @@ export default async function SuppliersPage({searchParams}: {
         prisma.supplier.findMany({
             where: {workspaceId: current.workspace.id},
             orderBy: {businessName: 'asc'},
-            include: {expenses: {include: {payments: true}}}
+            include: {expenses: {where: {companyId: current.company.id}, include: {payments: true}}}
         }),
         prisma.expenseCategory.findMany({
             where: {workspaceId: current.workspace.id},

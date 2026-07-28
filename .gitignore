@@ -8,6 +8,10 @@ backup.conf
 backups/
 .DS_Store
 prisma/migrations
+!prisma/migrations/
+prisma/migrations/*
+!prisma/migrations/20260728120000_multi_company_accounting/
+!prisma/migrations/20260728120000_multi_company_accounting/migration.sql
 data/Spese-Ricavi.xlsx
 /.idea/vcs.xml
 /generated/prisma/internal/class.ts

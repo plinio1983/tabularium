@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       });
       if (category) {
         await prisma.recurringExpense.updateMany({
-          where: { id: { in: ids }, workspaceId: current.workspace.id },
+          where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id },
           data: { categoryId }
         });
         await writeAuditLog({
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   }
 
   if (bulkAction === 'delete') {
-    const deleted = await prisma.recurringExpense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
+    const deleted = await prisma.recurringExpense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id } });
     await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_DELETE',
       entityType: 'RecurringExpense', metadata: { ids, deleted: deleted.count }, request

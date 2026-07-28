@@ -1792,9 +1792,9 @@ export default async function Dashboard({searchParams}: {
     const scheduleFrom = new Date(annualYear, 0, 1);
     const scheduleTo = new Date(annualYear + 1, 0, 1);
     const [report, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers, pendingIncomes, pendingExpenses] = await Promise.all([
-        getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id),
-        getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id),
-        getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id),
+        getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id, current.company.id),
+        getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id, current.company.id),
+        getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id, current.company.id),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
@@ -1806,6 +1806,7 @@ export default async function Dashboard({searchParams}: {
         prisma.income.findMany({
             where: {
                 workspaceId: current.workspace.id,
+                companyId: current.company.id,
                 isCredited: false,
                 creditDate: {gte: scheduleFrom, lt: scheduleTo}
             },
@@ -1814,6 +1815,7 @@ export default async function Dashboard({searchParams}: {
         prisma.expense.findMany({
             where: {
                 workspaceId: current.workspace.id,
+                companyId: current.company.id,
                 isComplete: false,
                 dueDate: {gte: scheduleFrom, lt: scheduleTo}
             },

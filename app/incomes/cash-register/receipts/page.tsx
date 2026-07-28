@@ -27,7 +27,8 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const [receipts, methods, channels] = await Promise.all([
         prisma.income.findMany({
             where: {
-                workspaceId: current.workspace.id,
+            workspaceId: current.workspace.id,
+            companyId: current.company.id,
                 incomeType: 'CASH_REGISTER',
                 billingYear,
                 billingMonth,

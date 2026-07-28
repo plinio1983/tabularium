@@ -17,7 +17,7 @@ export type DataImportResult = {
   errors: string[];
 };
 
-type ImportOptions = { clearBeforeImport?: boolean; workspaceId: number };
+type ImportOptions = { clearBeforeImport?: boolean; workspaceId: number; companyId: number };
 type TabularRow = { sheetName: string; rowNumber: number; row: Record<string, unknown> };
 
 function normalizeHeader(value: string) {
@@ -256,7 +256,7 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
     return Boolean(customer && amount > 0 && date);
   });
   if (options.clearBeforeImport && hasImportableRow) {
-    const deleted = await prisma.income.deleteMany({ where: { workspaceId: options.workspaceId } });
+    const deleted = await prisma.income.deleteMany({ where: { workspaceId: options.workspaceId, companyId: options.companyId } });
     result.deleted = deleted.count;
   }
 
@@ -298,6 +298,7 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
       const existingCandidates = await prisma.income.findMany({
         where: {
           workspaceId: options.workspaceId,
+          companyId: options.companyId,
           customerId: customerResult.record.id,
           amount,
           creditDate,
@@ -322,6 +323,7 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
       await prisma.income.create({
         data: {
           workspaceId: options.workspaceId,
+          companyId: options.companyId,
           customerId: customerResult.record.id,
           salesChannelId: channelResult.record.id,
           incomeCategoryId: incomeCategory.id,

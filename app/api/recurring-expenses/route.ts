@@ -78,7 +78,8 @@ export async function POST(request: Request) {
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
   const recurringExpense = await prisma.recurringExpense.create({
     data: {
-      workspaceId: current.workspace.id,
+    workspaceId: current.workspace.id,
+    companyId: current.company.id,
       startDate: new Date(data.startDate),
       cadence: data.cadence,
       dueDay: data.dueDay || null,

@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, CompanyCode, InvoiceStatus } from "../generated/prisma/client";
+import { PrismaClient, InvoiceStatus } from "../generated/prisma/client";
 import seed from '../data/seed.generated.json';
 import { getDatabaseUrl } from "../lib/database-url";
 
@@ -67,9 +67,11 @@ const categoryCodeAliases: Record<string, string> = {
 };
 
 async function main() {
-  await prisma.company.upsert({ where: { code: 'HM' }, update: { name: 'Herbal Market' }, create: { code: 'HM', name: 'Herbal Market' } });
-  await prisma.company.upsert({ where: { code: 'TS' }, update: { name: 'TS' }, create: { code: 'TS', name: 'TS' } });
-  await prisma.company.upsert({ where: { code: 'OTHER' }, update: { name: 'Altro Operatore' }, create: { code: 'OTHER', name: 'Altro Operatore' } });
+  const workspace = await prisma.workspace.findFirst({orderBy: {id: 'asc'}});
+  if (!workspace) throw new Error('Crea prima un workspace');
+  await prisma.company.upsert({ where: { workspaceId_code: {workspaceId: workspace.id, code: 'HM'} }, update: { name: 'Herbal Market' }, create: { workspaceId: workspace.id, code: 'HM', name: 'Herbal Market', isDefault: true } });
+  await prisma.company.upsert({ where: { workspaceId_code: {workspaceId: workspace.id, code: 'TS'} }, update: { name: 'TS' }, create: { workspaceId: workspace.id, code: 'TS', name: 'TS' } });
+  await prisma.company.upsert({ where: { workspaceId_code: {workspaceId: workspace.id, code: 'OTHER'} }, update: { name: 'Altro Operatore' }, create: { workspaceId: workspace.id, code: 'OTHER', name: 'Altro Operatore' } });
 
   for (const categoryName of fixedCategories) {
     const code = categoryCode(categoryName);
@@ -126,7 +128,7 @@ async function main() {
       isDeclared: expense.isDeclared ?? true,
       hasElectronicInvoice: expense.hasElectronicInvoice ?? true,
       invoiceStatus: (expense.hasElectronicInvoice ? 'IN_ATTESA' : 'RICEVUTA') as InvoiceStatus,
-      companyId: expense.companyCode ? companies[expense.companyCode] : null,
+      companyId: expense.companyCode ? companies[expense.companyCode] : companies.HM,
       paymentStatus: expense.isComplete ? 'COMPLETATO' : (paidAmount > 0 ? 'PAGATO_PARZIALMENTE' : 'DA_PAGARE'),
       paidAmount,
       year: expense.year,

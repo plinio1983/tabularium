@@ -36,7 +36,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       where: { id: Number(id) },
       include: {
         defaultExpenseCategory: true,
-        expenses: { include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true, supplier: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] }
+        expenses: { where: {companyId: current.company.id}, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true, supplier: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] }
       }
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
@@ -153,7 +153,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
                 {openExpenses.length} ordini aperti
               </span>
               <span className="badge supplier-default-category-badge">
-                Categoria predefinita: {supplier.defaultExpenseCategory
+                Categoria: {supplier.defaultExpenseCategory
                   ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
                   : 'Non impostata'}
               </span>

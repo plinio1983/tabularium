@@ -45,7 +45,7 @@ function redirectAfterFormSave(request: Request, fallback: string) {
 export async function GET() {
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
-  const incomes = await prisma.income.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { creditDate: 'desc' }, take: 500 });
+  const incomes = await prisma.income.findMany({ where: { workspaceId: current.workspace.id, companyId: current.company.id }, orderBy: { creditDate: 'desc' }, take: 500 });
   return NextResponse.json(incomes);
 }
 
@@ -70,6 +70,7 @@ export async function POST(request: Request) {
   const income = await prisma.income.create({
     data: {
       workspaceId: current.workspace.id,
+      companyId: current.company.id,
       customerId: customer.id,
       salesChannelId: salesChannel.id,
       incomeCategoryId: incomeCategory.id,

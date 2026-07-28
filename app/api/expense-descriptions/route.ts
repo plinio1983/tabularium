@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const search = searchParams.get('search')?.trim();
   const rows = await prisma.expense.findMany({
-    where: search ? { workspaceId: current.workspace.id, description: { contains: search, mode: 'insensitive' } } : { workspaceId: current.workspace.id, description: { not: null } },
+    where: search ? { workspaceId: current.workspace.id, companyId: current.company.id, description: { contains: search, mode: 'insensitive' } } : { workspaceId: current.workspace.id, companyId: current.company.id, description: { not: null } },
     select: { description: true },
     orderBy: { updatedAt: 'desc' },
     take: 120

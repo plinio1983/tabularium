@@ -12,12 +12,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'ID spesa ricorrente non valido' }, { status: 400 });
   }
 
-  const expense = await prisma.recurringExpense.findUnique({
-    where: { id: recurringExpenseId },
+  const expense = await prisma.recurringExpense.findFirst({
+    where: { id: recurringExpenseId, workspaceId: current.workspace.id, companyId: current.company.id },
     include: { supplier: true }
   });
 
-  if (!expense || expense.workspaceId !== current.workspace.id) {
+  if (!expense) {
     return NextResponse.json({ error: 'Spesa ricorrente non trovata' }, { status: 404 });
   }
 

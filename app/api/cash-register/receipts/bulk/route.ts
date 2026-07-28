@@ -23,6 +23,7 @@ export async function POST(request: Request) {
             where: {
                 id: {in: ids},
                 workspaceId: current.workspace.id,
+                companyId: current.company.id,
                 incomeType: 'CASH_REGISTER'
             }
         });
