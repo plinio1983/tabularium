@@ -3,6 +3,7 @@ import {prisma} from '@/lib/prisma';
 import DetailBackButton from '@/components/DetailBackButton';
 import CompanyCreatePanel from './CompanyCreatePanel';
 import {saveCompanyAction, setDefaultCompanyAction, toggleCompanyAction} from './actions';
+import CompanyFormFields from '@/components/CompanyFormFields';
 
 export default async function CompanyConfigurationPage({searchParams}: {searchParams?: Promise<Record<string, string | string[] | undefined>>}) {
   const current = await requireWorkspaceRole(workspaceManagementRoles, '/settings/company-settings');
@@ -38,20 +39,13 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
           <span className="company-settings-summary"><strong>{company.name}</strong><span className="company-settings-badges">{company.id === current.company.id ? <span className="badge">Attiva</span> : null} {company.isDefault ? <span className="badge">Predefinita</span> : null} {!company.isActive ? <span className="badge tone-neutral">Disabilitata</span> : null}</span></span>
           <span aria-hidden="true">+</span>
         </summary>
-        <form action={saveCompanyAction} className="form company-settings-form">
+        <form action={saveCompanyAction} className="form income-form expense-form supplier-form supplier-styled-form company-settings-form company-edit-form">
           <input type="hidden" name="id" value={company.id}/>
-          <label>Nome breve<input name="name" defaultValue={company.name} maxLength={100} required/></label>
-          <label>Codice<input name="code" defaultValue={company.code} maxLength={30} required/></label>
-          <label>Ragione sociale<input name="legalName" defaultValue={company.legalName ?? ''} maxLength={160}/></label>
-          <label>Partita IVA<input name="vatNumber" defaultValue={company.vatNumber ?? ''} maxLength={32}/></label>
-          <label>Codice fiscale<input name="taxCode" defaultValue={company.taxCode ?? ''} maxLength={32}/></label>
-          <label>PEC<input name="pec" type="email" defaultValue={company.pec ?? ''} maxLength={160}/></label>
-          <label>Codice SDI<input name="sdiCode" defaultValue={company.sdiCode ?? ''} maxLength={16}/></label>
-          <label className="span-2">Indirizzo<input name="address" defaultValue={company.address ?? ''} maxLength={240}/></label>
-          <div className="actions-row span-2 company-settings-actions">
-            {!company.isDefault && company.isActive ? <button className="btn btn-md btn-default" formAction={setDefaultCompanyAction} type="submit">Imposta predefinita</button> : null}
-            <button className="btn btn-md btn-default" formAction={toggleCompanyAction} type="submit">{company.isActive ? 'Disabilita' : 'Riattiva'}</button>
-            <button className="btn btn-md btn-primary" type="submit">✓ Salva</button>
+          <CompanyFormFields company={company} idPrefix={`company-${company.id}`}/>
+          <div className="actions-row form-actions-row full company-settings-actions">
+            {!company.isDefault && company.isActive ? <button className="btn btn-md btn-default" formAction={setDefaultCompanyAction} type="submit"><span className="btn-icon">☆</span> Imposta predefinita</button> : null}
+            <button className="btn btn-md btn-default" formAction={toggleCompanyAction} type="submit"><span className="btn-icon">{company.isActive ? '○' : '●'}</span> {company.isActive ? 'Disabilita' : 'Riattiva'}</button>
+            <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> Salva modifiche</button>
           </div>
         </form>
       </details>)}

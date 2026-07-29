@@ -27,7 +27,7 @@ export default function ActiveCompanySwitcher() {
         {companies.length > 1 ? <form action="/api/companies/switch" method="post">
             <input type="hidden" name="returnTo" value="/"/>
             <label>
-                <span className="active-company-label">Società</span>
+                {/*<span className="active-company-label">Società</span>*/}
                 <select name="companyId" value={activeCompanyId ?? ''} aria-label="Società attiva"
                         onChange={event => {
                             window.localStorage.removeItem('dmsAccounting.expenses.filters');
@@ -38,6 +38,6 @@ export default function ActiveCompanySwitcher() {
                 </select>
             </label>
         </form> : <span className="active-company-name" title="Società attiva">{active.name}</span>}
-        <span className="active-company-current" aria-label={`Società attiva: ${active.name}`}>{active.name}</span>
+        {/*<span className="active-company-current" aria-label={`Società attiva: ${active.name}`}>{active.name}</span>*/}
     </div>;
 }

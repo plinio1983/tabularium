@@ -151,7 +151,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
                 <span>Spesa #{expense.id}</span>
                 <span className={isVatSettlement ? 'badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : expense.isRecurring ? 'R' : 'S'}</span>
               </p>
-              <div className="flex align-center">
+              <div className="expense-detail-title">
                   <strong>{expense.description}</strong>
               </div>
               <div className="expense-detail-meta-line">
@@ -214,7 +214,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <strong>{formatPeriod(expense.month, expense.year)}</strong>
           </div>
           {!isVatSettlement ? <div>
-            <span>Detrazione</span>
+            <span>Fiscale</span>
             <strong>{fiscalLabel(expense.isDeclared)}</strong>
           </div> : null}
           <div>
@@ -227,7 +227,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </div>
           <div>
             <span>Descrizione</span>
-            <strong>{expense.description ?? 'Spesa senza descrizione'}</strong>
+            <strong className="">{expense.description ?? 'Spesa senza descrizione'}</strong>
           </div>
 
           {/*<div>*/}
@@ -321,7 +321,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             🗑 <span className="--hidden-mobile"> Rimuovi</span>
           </DeleteActionButton>
           <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
-            <span className="--hidden-mobile"> Copy</span>
+            <span className="--hidden-mobile"> Copia</span>
           </button>
           <Link className="btn btn-sm btn-primary" href="#" data-expense-detail-edit-id={expense.id}>✎
             <span className="--hidden-mobile"> Modifica</span>

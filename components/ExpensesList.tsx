@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
+import BulkCopyExpensesModal from '@/components/BulkCopyExpensesModal';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import ExpenseEditModalController from '@/components/ExpenseEditModalController';
@@ -172,6 +173,7 @@ export default function ExpensesList({
     <SortableTableController />
     {hasBulkControls ? <>
       <BulkSelectionController />
+      <BulkCopyExpensesModal formId={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`}/>
       <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <label className="bulk-select-all-inline">
           <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese visibili" />
@@ -190,7 +192,7 @@ export default function ExpensesList({
             </button>
             <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted"><span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
             {/*<button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>*/}
-            <button className="btn btn-sm btn-default" type="button" data-bulk-add-payment disabled>
+            <button className="btn btn-sm btn-default" type="button" data-bulk-add-payment>
               <span className="btn-icon">＋</span><span className="bulk-label">Inserisci pagamento</span>
             </button>
             <BulkChangeCategoryModal

@@ -57,17 +57,14 @@ type Props = {
   formId?: string;
 };
 
-function selectedExpenseIdFromBulk(formId: string) {
+function selectedExpenseIdsFromBulk(formId: string) {
   const selected = Array.from(
     document.querySelectorAll<HTMLInputElement>(
       `input[form="${formId}"][name="ids"]:checked, form#${formId} input[name="ids"]:checked`
     )
   );
-
-  if (selected.length !== 1) return null;
-
-  const id = Number(selected[0].value);
-  return Number.isInteger(id) && id > 0 ? id : null;
+  return [...new Set(selected.map(input => Number(input.value)))]
+    .filter(id => Number.isInteger(id) && id > 0);
 }
 
 export default function ExpenseEditModalController({ categories, banks, paymentMethods, suppliers, listHref, formId = "expenseBulkForm" }: Props) {
@@ -113,14 +110,21 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
 
       const editTrigger = target.closest<HTMLElement>("[data-expense-edit-id]");
       const copyTrigger = target.closest<HTMLElement>("[data-expense-copy-id]");
-      const paymentTrigger = target.closest<HTMLElement>("[data-expense-payment-id]");
+      const paymentTrigger = target.closest<HTMLElement>("[data-expense-payment-id], [data-bulk-add-payment]");
       const trigger = editTrigger ?? copyTrigger ?? paymentTrigger;
       if (!trigger) return;
 
       const nextMode = copyTrigger ? "copy" : paymentTrigger ? "payment" : "edit";
       let id = Number((copyTrigger ? copyTrigger.dataset.expenseCopyId : paymentTrigger ? paymentTrigger.dataset.expensePaymentId : editTrigger?.dataset.expenseEditId) || 0);
       if (!Number.isInteger(id) || id <= 0) {
-        id = selectedExpenseIdFromBulk(formId) ?? 0;
+        const selectedIds = selectedExpenseIdsFromBulk(formId);
+        if (paymentTrigger && selectedIds.length !== 1) {
+          event.preventDefault();
+          event.stopPropagation();
+          window.alert("Seleziona una sola spesa per inserire i pagamenti.");
+          return;
+        }
+        id = selectedIds.length === 1 ? selectedIds[0] : 0;
       }
       if (!Number.isInteger(id) || id <= 0) return;
 

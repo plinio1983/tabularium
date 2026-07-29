@@ -1,6 +1,7 @@
 'use client';
 
 import {useState} from 'react';
+import CompanyFormFields from '@/components/CompanyFormFields';
 
 type Props = {
   action: (formData: FormData) => void;
@@ -19,18 +20,11 @@ export default function CompanyCreatePanel({action}: Props) {
       <span>Nuova società</span>
       <span aria-hidden="true">{isOpen ? '−' : '+'}</span>
     </button>
-    {isOpen ? <form action={action} className="form company-settings-form">
-      <label>Nome breve<input name="name" maxLength={100} required/></label>
-      <label>Codice<input name="code" maxLength={30} placeholder="Generato dal nome"/></label>
-      <label>Ragione sociale<input name="legalName" maxLength={160}/></label>
-      <label>Partita IVA<input name="vatNumber" maxLength={32}/></label>
-      <label>Codice fiscale<input name="taxCode" maxLength={32}/></label>
-      <label>PEC<input name="pec" type="email" maxLength={160}/></label>
-      <label>Codice SDI<input name="sdiCode" maxLength={16}/></label>
-      <label className="span-2">Indirizzo<input name="address" maxLength={240}/></label>
-      <div className="actions-row span-2">
-        <button type="button" className="btn btn-md btn-default" onClick={() => setIsOpen(false)}>Annulla</button>
-        <button className="btn btn-md btn-primary" type="submit">＋ Aggiungi società</button>
+    {isOpen ? <form action={action} className="form income-form expense-form supplier-form supplier-styled-form company-settings-form company-create-form">
+      <CompanyFormFields idPrefix="company-new" autoFocus/>
+      <div className="actions-row form-actions-row full company-settings-actions company-create-actions">
+        <button type="button" className="btn btn-md btn-default" onClick={() => setIsOpen(false)}><span className="btn-icon">✕</span> Annulla</button>
+        <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">＋</span> Aggiungi società</button>
       </div>
     </form> : null}
   </section>;

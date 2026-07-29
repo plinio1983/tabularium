@@ -98,15 +98,15 @@ function toDateInput(value?: string | Date | null) {
 const today = new Date().toISOString().slice(0, 10);
 
 function datePlusDays(days: number) {
-    const date = new Date();
-    date.setDate(date.getDate() + days);
+    const now = new Date();
+    const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + days));
     return date.toISOString().slice(0, 10);
 }
 
 function addDaysToDateInput(value: string, days: number) {
-    const date = value ? new Date(`${value}T00:00:00`) : new Date();
-    if (Number.isNaN(date.getTime())) return datePlusDays(days);
-    date.setDate(date.getDate() + days);
+    const [year, month, day] = value.split("-").map(Number);
+    if (!year || !month || !day) return datePlusDays(days);
+    const date = new Date(Date.UTC(year, month - 1, day + days));
     return date.toISOString().slice(0, 10);
 }
 
@@ -443,7 +443,6 @@ export default function ExpenseForm({
     const amountRef = useRef<HTMLInputElement>(null);
     const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
     const didOpenNewPayment = useRef(false);
-    const didAutoOpenEmptyPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
     );
@@ -561,6 +560,7 @@ export default function ExpenseForm({
 
     function appendAmountKey(key: string) {
         setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
+        amountRef.current?.setCustomValidity("");
         focusAmount();
     }
 
@@ -682,21 +682,6 @@ export default function ExpenseForm({
         ]);
         setOpenPaymentKey(key);
     }
-
-    useEffect(() => {
-        if (mobileStep !== 4) {
-            didAutoOpenEmptyPayment.current = false;
-            return;
-        }
-        if (
-            didAutoOpenEmptyPayment.current
-            || payments.length > 0
-            || !window.matchMedia("(max-width: 900px)").matches
-        ) return;
-
-        didAutoOpenEmptyPayment.current = true;
-        addPaymentRow();
-    }, [mobileStep, payments.length]);
 
     useEffect(() => {
         if (!openNewPayment || didOpenNewPayment.current) return;
