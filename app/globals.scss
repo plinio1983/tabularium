@@ -1,22 +1,3 @@
 @use './styles/layout';
 @use './styles/mobile';
 @use './styles/desktop';
-/* Hub categorie impostazioni */
-.settings-category-hub {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
-}
-
-.settings-category-link {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: inherit;
-  text-decoration: none;
-}
-
-.settings-category-link-icon { font-size: 2rem; }
-.settings-category-link span:last-child { display: grid; gap: .25rem; }
-.settings-category-link small { color: var(--muted); }
-.income-entity-settings-section { display: grid; gap: .75rem; }

@@ -116,7 +116,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   return <div className="grid expense-detail-page">
     <ExpenseDetailEditModalController
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, systemRole: s.systemRole }))}
       returnTo={currentDetailReturnTo}
@@ -139,7 +139,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
               <span className="--hidden-mobile"> Copia</span>
             </button>
-            <Link className="btn btn-sm btn-primary" href="#" data-expense-detail-edit-id={expense.id}>✎
+            <Link className="btn btn-sm btn-default" href="#" data-expense-detail-edit-id={expense.id}>✎
               <span className="--hidden-mobile"> Modifica</span>
             </Link>
           </div>
@@ -242,7 +242,12 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               <h2>Pagamenti</h2>
               <p>{expense.payments.length ? 'Movimenti registrati per questa spesa.' : 'Nessun movimento registrato.'}</p>
             </div>
-            <span className="badge">{expense.payments.length} record</span>
+            <div className="expense-detail-section-heading-actions">
+              <span className="badge">{expense.payments.length} record</span>
+              <button className="btn btn-sm btn-primary" type="button" data-expense-detail-payment-id={expense.id}>
+                ＋ Aggiungi pagamento
+              </button>
+            </div>
           </div>
           {expense.payments.length ? <div className="expense-payment-timeline">
             {expense.payments.map(payment => <article className="expense-payment-card" key={payment.id}>
@@ -323,7 +328,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
             <span className="--hidden-mobile"> Copia</span>
           </button>
-          <Link className="btn btn-sm btn-primary" href="#" data-expense-detail-edit-id={expense.id}>✎
+          <Link className="btn btn-sm btn-default" href="#" data-expense-detail-edit-id={expense.id}>✎
             <span className="--hidden-mobile"> Modifica</span>
           </Link>
         </section>

@@ -29,6 +29,7 @@ const errorMessages: Record<string, string> = {
   cash_register_rule_bank: 'Seleziona una banca valida per ogni combinazione di metodo e canale.',
   cash_register_method_delete: 'Disabilita o sostituisci il metodo nel registratore prima di eliminarlo.',
   cash_bank_delete: 'Il canale di sistema Cassa non può essere eliminato.',
+  cash_bank_primary: 'Il canale di sistema Cassa non può essere impostato come banca principale.',
   fallback_delete: 'Il valore generico non può essere eliminato, ma puoi modificarne la label.',
   system_delete: 'Il metodo di pagamento di sistema non può essere eliminato, ma puoi modificarne la label.',
   in_use: 'Valore usato da movimenti esistenti: riassegnali prima di rimuoverlo.'
@@ -117,7 +118,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
           ? 'Configura i valori utilizzati nei movimenti e nel registratore di cassa.'
           : 'Seleziona la categoria di impostazioni da visualizzare.'}</p>
       </div>
-      {section ? <DetailBackButton href="/settings/payment-credit" /> : null}
+      <DetailBackButton href={section ? "/settings/payment-credit" : "/settings"} />
     </div>
 
     {saved ? <div className="form-summary full"><strong>{savedMessages[saved] ?? 'Configurazione aggiornata.'}</strong></div> : null}
@@ -140,21 +141,22 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
 
     {section === 'banks' ? <>
     <PaymentCreditCreatePanel action={createBankAction} type="bank" iconOptions={paymentCreditIconOptions} />
-    <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible" open>
+    <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible max-w-900" open>
       <summary className="category-create-toggle">
         <span>Banche / canali accredito</span>
         <span aria-hidden="true">+</span>
       </summary>
-      <div className="categories-settings-table-head payment-credit-table-head">
+      <div className="categories-settings-table-head payment-credit-table-head payment-credit-bank-table-head">
         <span>Label</span>
         <span>Icona</span>
         <span>Tipo</span>
+        <span>Principale</span>
         <span>Uso</span>
         <span>Azioni</span>
       </div>
       {orderedBanks.length ? orderedBanks.map(bank => {
         const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits + bank._count.cashRegisterBankRules;
-        return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Canale' : 'Banca'} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
+        return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Canale' : 'Banca'} primary={!bank.isFallback && current.company.primaryBankId === bank.id} canBePrimary={!bank.isFallback} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
       }) : <p className="muted">Nessuna banca configurata.</p>}
     </details>
     </> : null}
@@ -182,7 +184,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
             defaultBankId: method.cashRegisterDefaultBankId,
             primary: workspaceSettings?.cashRegisterPrimaryPaymentMethodId === method.id,
             cash: method.systemRole === 'CASH',
-            banks: orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))
+            banks: orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isPrimary: current.company.primaryBankId === bank.id}))
           } : undefined}/>;
       }) : <p className="muted">Nessun metodo configurato.</p>}
     </details>
@@ -209,7 +211,10 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
                 {routedMethods.map(method => <tr key={method.id}>
                   <th>{method.icon ?? ''} {method.name}</th>
                   {salesChannels.map(channel => {
-                    const selectedBankId = ruleBank.get(`${method.id}_${channel.id}`) ?? method.cashRegisterDefaultBankId ?? '';
+                    const selectedBankId = ruleBank.get(`${method.id}_${channel.id}`)
+                      ?? method.cashRegisterDefaultBankId
+                      ?? current.company.primaryBankId
+                      ?? '';
                     return <td key={channel.id} data-channel={`${channel.icon ?? ''} ${channel.name}`.trim()}>
                       <label>
                         <span className="sr-only">{method.name} · {channel.name}</span>

@@ -23,7 +23,7 @@ const ExpenseSchema = z.object({
   isDeclared: BooleanFromForm.default(false),
   isRecurring: BooleanFromForm.default(false),
   hasElectronicInvoice: BooleanFromForm.default(false),
-  invoiceStatus: z.enum(['NON_PREVISTA', 'IN_ATTESA', 'INVIATA_SDI', 'CONTESTAZIONE', 'RICEVUTA']).default('IN_ATTESA'),
+  invoiceStatus: z.enum(['NON_PREVISTA', 'IN_ATTESA', 'INVIATA_SDI', 'CONTESTAZIONE', 'PARZIALE', 'RICEVUTA']).default('IN_ATTESA'),
   billingPeriod: z.string().optional(),
   paymentStatus: z.enum(['DA_PAGARE', 'COMPLETATO', 'PAGATO_PARZIALMENTE']).default('DA_PAGARE'),
   notes: z.string().optional()

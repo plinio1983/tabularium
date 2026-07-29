@@ -39,8 +39,11 @@ function syncDirectActionGroup(group: HTMLElement) {
   const anyEnabled = selected > 0;
 
   if (edit) {
-    edit.classList.toggle("is-disabled", !singleEnabled);
-    edit.setAttribute("aria-disabled", singleEnabled ? "false" : "true");
+    const multiEditEnabled = group.getAttribute("data-bulk-multi-edit") === "true";
+    const editEnabled = singleEnabled || (multiEditEnabled && selected > 1);
+    edit.classList.toggle("is-disabled", !editEnabled);
+    edit.setAttribute("aria-disabled", editEnabled ? "false" : "true");
+    edit.dataset.bulkEditMode = selected > 1 && multiEditEnabled ? "bulk" : "single";
     const triggerAttr = group.getAttribute("data-edit-trigger-attr");
     if (triggerAttr) {
       edit.href = "#";
@@ -148,7 +151,7 @@ function formSubject(form: HTMLFormElement) {
   if (form.id === "clientBulkForm") return "clienti";
   if (form.id === "incomeBulkForm") return "incassi";
   if (form.id === "expenseBulkForm") return "spese";
-  if (form.id === "recurringExpenseBulkForm") return "spese ricorrenti";
+  if (form.id === "recurringExpenseBulkForm") return "uscite ricorrenti";
   return "record";
 }
 
@@ -436,7 +439,7 @@ export default function BulkSelectionController() {
       }
 
       const disabledLink = target.closest<HTMLAnchorElement>(".bulk-direct-link.is-disabled");
-      if (disabledLink) {
+      if (disabledLink && disabledLink.dataset.bulkEditMode !== "bulk") {
         event.preventDefault();
         return;
       }
@@ -449,6 +452,18 @@ export default function BulkSelectionController() {
         event.preventDefault();
         document.dispatchEvent(new CustomEvent("expense-bulk-copy-request", {
           detail: {formId},
+        }));
+        return;
+      }
+
+      const bulkEdit = target.closest<HTMLElement>("[data-bulk-edit]");
+      if (bulkEdit?.dataset.bulkEditMode === "bulk") {
+        const group = bulkEdit.closest<HTMLElement>("[data-bulk-direct-actions]");
+        const formId = group?.getAttribute("data-bulk-form") ?? "";
+        if (!formId) return;
+        event.preventDefault();
+        document.dispatchEvent(new CustomEvent("bulk-edit-request", {
+          detail: {formId, selectedCount: selectedInputsForForm(formId).length},
         }));
         return;
       }

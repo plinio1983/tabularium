@@ -20,6 +20,7 @@ type Props = {
 
 const invoiceStatusOptions = [
   ["NON_INVIATA", "Non inviata"],
+  ["PARZIALE", "Fatturato parzialmente"],
   ["EMESSA", "Emessa"],
   ["not_emitted", "Non emesse"],
 ];

@@ -4,6 +4,8 @@ import SortableTableController from '@/components/SortableTableController';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
 import NewIncomePanel from '@/components/NewIncomePanel';
 import BulkSelectionController from '@/components/BulkSelectionController';
+import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
+import BulkEditFieldsModal from '@/components/BulkEditFieldsModal';
 import {euro, moneyTone} from '@/lib/money';
 import {formatPeriod, vatStyles} from '@/lib/expense-ui';
 import {
@@ -97,6 +99,7 @@ function fiscalBadge(value: boolean) {
 
 type EntityOption = { id: number; code: string; name: string; icon?: string | null };
 type SimpleOption = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
+type CategoryOption = { id: number; name: string; icon?: string | null };
 
 export default function IncomesList({
                                         incomes,
@@ -107,6 +110,7 @@ export default function IncomesList({
                                         paymentMethods,
                                         salesChannels,
                                         customers,
+                                        categories = [],
                                         initialCustomerId,
                                         initialOpen = false,
                                         emptyMessage = 'Nessun incasso trovato.'
@@ -119,6 +123,7 @@ export default function IncomesList({
     paymentMethods: SimpleOption[];
     salesChannels: EntityOption[];
     customers: Array<{ id: number; businessName: string; alias?: string | null; systemRole?: string | null }>;
+    categories?: CategoryOption[];
     initialCustomerId?: number;
     initialOpen?: boolean;
     emptyMessage?: string;
@@ -132,6 +137,14 @@ export default function IncomesList({
         <SortableTableController/>
         <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
         <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers}/>
+        <BulkEditFieldsModal formId={formId} subject="incassi"/>
+        <BulkChangeCategoryModal
+            formId={formId}
+            action={`/api/incomes/bulk?returnTo=${returnTo}`}
+            fieldName="incomeCategoryId"
+            categories={categories.map(category => ({value: String(category.id), label: category.name, icon: category.icon}))}
+            hideTrigger
+        />
         <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi visibili"/></label>
             <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
@@ -151,7 +164,7 @@ export default function IncomesList({
                     </button>
                 </div>
             </details>
-            <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
+            <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
                 <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
@@ -210,7 +223,7 @@ export default function IncomesList({
                 const status = creditStatus(income);
                 const vatStyle = vatStyles[String(Number(income.vatRate))] ?? vatStyles['0'];
                 const amount = Number(income.amount);
-                const recordClass = ['income-mobile-item', 'expense-mobile-item', status === incomeCreditStatusStyles.SCADUTO ? 'expense-mobile-item-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
+                const recordClass = ['income-mobile-item', 'expense-mobile-item', status === incomeCreditStatusStyles.SCADUTO ? 'expense-mobile-item-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
                 return <div className={recordClass} key={`mobile-income-${income.id}`}>
                     <div className="expense-mobile-select">
                         <input form={formId} type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`}/>
@@ -317,7 +330,7 @@ export default function IncomesList({
                     const status = creditStatus(income);
                     const invoice = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
                     const paymentMethod = income.paymentMethodRef.name;
-                    const rowClass = ['clickable-desktop-row', status === incomeCreditStatusStyles.SCADUTO ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
+                    const rowClass = ['clickable-desktop-row', status === incomeCreditStatusStyles.SCADUTO ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
                     return <tr className={rowClass} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} data-sort-row
                                data-sort-billing-period={String(income.billingYear * 12 + income.billingMonth)}
                                data-sort-order-date={dateSortValue(income.orderDate ?? income.creditDate)}

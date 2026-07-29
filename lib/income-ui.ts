@@ -18,6 +18,7 @@ export const fiscalStyles = {
 
 export const incomeInvoiceStatusStyles: Record<string, { label: string; icon: string; className: string }> = {
   NON_INVIATA: { label: 'Non inviata', icon: '⏳', className: 'tone-waiting' },
+  PARZIALE: { label: 'Parziale', icon: '◐', className: 'tone-partial' },
   // EMESSA: { label: 'Emessa', icon: '✅', className: 'tone-received' },
   EMESSA: { label: 'Emessa', icon: '✓', className: 'tone-received' },
   NONE: { label: '', icon: '×', className: 'tone-neutral' }

@@ -28,7 +28,7 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
   return <div className="grid admin-page categories-settings-page company-settings-page">
     <div className="toolbar-card">
       <div><h2>Società</h2><p className="muted">Gestisci le entità contabili del workspace. La società attiva determina movimenti e report visualizzati.</p></div>
-      <DetailBackButton href="/"/>
+      <DetailBackButton href="/settings"/>
     </div>
     {saved ? <div className="form-summary full"><strong>{savedMessages[saved] ?? 'Configurazione aggiornata.'}</strong></div> : null}
     {error ? <div className="inline-form-error full">{errors[error] ?? 'Operazione non riuscita.'}</div> : null}

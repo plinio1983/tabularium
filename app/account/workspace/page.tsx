@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireWorkspace } from '@/lib/auth';
 import { updateWorkspaceNameAction } from './actions';
+import DetailBackButton from '@/components/DetailBackButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +30,7 @@ export default async function WorkspaceAccountPage({ searchParams }: { searchPar
         <h2>Workspace</h2>
         <p className="muted">La tua area di lavoro personale.</p>
       </div>
+      <DetailBackButton href="/settings" />
     </div>
 
     <div className="card workspace-account-card">

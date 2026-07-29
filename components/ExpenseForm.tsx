@@ -14,6 +14,7 @@ type Option = {
     name: string;
     icon?: string | null;
     isFallback?: boolean | null;
+    isPrimary?: boolean;
     systemRole?: string | null;
     isVatSettlementDefault?: boolean
 };
@@ -296,7 +297,26 @@ function SupplierAutocomplete({
                 name="merchant"
                 value={selected?.businessName ?? query}
             />
-            <FormField label="Esercente" icon="◎" className="supplier-autocomplete-field" htmlFor="expense-supplier-search">
+
+
+
+            <div className="app-form-field supplier-autocomplete-field">
+                <label className="app-form-field-label">
+                    <span className="app-form-field-icon" aria-hidden="true">◎</span>
+                    <span>Esercente</span>
+                    <span className="flex flex-grow justify-end">
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-link inline-link-button mr-22"
+                            onClick={() => setShowCreate(true)}
+                        >
+                        ＋ Nuovo
+                    </button>
+                    </span>
+                </label>
+            </div>
+
+            {/*<FormField label="Esercente" icon="◎" className="supplier-autocomplete-field" htmlFor="expense-supplier-search">*/}
                 <div className="supplier-input-row">
                     <div className={`app-autocomplete-control ${selected ? "has-selection" : ""}`}>
                         <span className="app-autocomplete-search-icon" aria-hidden="true">⌕</span>
@@ -311,7 +331,7 @@ function SupplierAutocomplete({
                             }}
                             onFocus={() => setIsOpen(true)}
                             onKeyDown={onKeyDown}
-                            placeholder="Cerca per ragione sociale o alias"
+                            placeholder="Cerca per ragione sociale o referente"
                             autoComplete="off"
                             role="combobox"
                             aria-expanded={isOpen}
@@ -358,20 +378,14 @@ function SupplierAutocomplete({
                             </div>
                         )}
                     </div>
-                    <button
-                        type="button"
-                        className="btn btn-sm btn-link inline-link-button"
-                        onClick={() => setShowCreate(true)}
-                    >
-                        ＋ Nuovo
-                    </button>
                 </div>
                 {selected ? <div className="app-autocomplete-selection">
                     <span aria-hidden="true">✓</span>
                     <div><strong>{selected.businessName}</strong>{selected.alias ?
                         <small>{selected.alias}</small> : null}</div>
                 </div> : null}
-            </FormField>
+            {/*</FormField>*/}
+
             <SupplierCreateModal
                 open={showCreate}
                 onClose={() => setShowCreate(false)}
@@ -414,6 +428,7 @@ export default function ExpenseForm({
         : paymentMethods;
     const defaultPaymentMethod = availablePaymentMethods.find(method => method.name === defaultChannel) ?? availablePaymentMethods[0];
     const fallbackBank = banks.find(bank => bank.name.toLowerCase() === cashBankName.toLowerCase()) ?? banks.find(bank => bank.isFallback) ?? banks[0];
+    const primaryBankIdValue = banks.find(bank => bank.isPrimary)?.id.toString() ?? "";
     const cashBankId = banks.find((bank) => bank.name.toLowerCase() === cashBankName.toLowerCase())?.id;
     const cashBankIdValue = cashBankId ? String(cashBankId) : (fallbackBank ? String(fallbackBank.id) : "");
     const methodName = (methodId: string) => paymentMethods.find(method => String(method.id) === methodId)?.name ?? "";
@@ -523,6 +538,7 @@ export default function ExpenseForm({
         () => {
             const base = [
                 ["IN_ATTESA", "⏳ In attesa"],
+                ["PARZIALE", "◐ Fatturato parzialmente"],
                 ["RICEVUTA", "✅ Emessa"],
                 ["CONTESTAZIONE", "⚠️ Contestazione"],
             ];
@@ -630,6 +646,12 @@ export default function ExpenseForm({
                 const nextMethodName = methodName(next.paymentMethodId);
                 if ("paymentMethodId" in patch && isCashChannel(nextMethodName) && cashBankIdValue) {
                     next.bankId = cashBankIdValue;
+                } else if (
+                    "paymentMethodId" in patch
+                    && isCashChannel(methodName(row.paymentMethodId))
+                    && primaryBankIdValue
+                ) {
+                    next.bankId = primaryBankIdValue;
                 }
                 return next;
             }),
@@ -676,6 +698,7 @@ export default function ExpenseForm({
             {
                 ...emptyPaymentRow(key),
                 paymentMethodId: defaultPaymentMethod ? String(defaultPaymentMethod.id) : "",
+                bankId: primaryBankIdValue,
                 amount: suggestedAmount,
                 amountTouched: Boolean(suggestedAmount),
             },
@@ -1109,7 +1132,7 @@ export default function ExpenseForm({
                                     }}
                                 />
                                 <span className="slider"/>
-                                <span className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? "Emessa" : "Non inviata"}</span>
+                                <span className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? "Emessa" : invoiceStatus === "PARZIALE" ? "Parziale" : "Non inviata"}</span>
                             </label>
                         </div>
 
@@ -1148,7 +1171,7 @@ export default function ExpenseForm({
                                         }}
                                     />
                                     <span className="slider"/>
-                                    <span className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? 'Ricevuta' : 'Non ricevuta'}</span>
+                                    <span className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? 'Ricevuta' : invoiceStatus === "PARZIALE" ? "Parziale" : 'Non ricevuta'}</span>
                                 </span>
                                 </label>
                             </div>

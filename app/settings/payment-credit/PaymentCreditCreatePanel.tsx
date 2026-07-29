@@ -40,7 +40,13 @@ export default function PaymentCreditCreatePanel({ action, type, iconOptions }: 
         <option value="BOTH">Entrambi</option>
         <option value="INCOME">Incassi</option>
         <option value="EXPENSE">Spese</option>
-      </select></label> : null}
+      </select></label> : <div className="payment-credit-primary-field">
+        <span>Principale</span>
+        <label className="switch" aria-label="Imposta come banca principale">
+          <input type="checkbox" name="primary" />
+          <span className="slider" />
+        </label>
+      </div>}
       <div className="actions-row">
         <button type="submit" className="btn btn-md btn-primary">{isBank ? 'Aggiungi' : 'Aggiungi metodo'}</button>
       </div>

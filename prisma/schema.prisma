@@ -23,6 +23,7 @@ enum InvoiceStatus {
   IN_ATTESA
   INVIATA_SDI
   CONTESTAZIONE
+  PARZIALE
   RICEVUTA
 }
 
@@ -242,6 +243,8 @@ model Company {
   isDefault Boolean @default(false)
   workspaceId Int
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  primaryBankId Int?
+  primaryBank Bank? @relation("CompanyPrimaryBank", fields: [primaryBankId], references: [id], onDelete: SetNull)
   expenses  Expense[]
   incomes Income[]
   recurringExpenses RecurringExpense[]
@@ -252,6 +255,7 @@ model Company {
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
+  @@index([primaryBankId])
 }
 
 model ExpenseCategory {
@@ -313,6 +317,7 @@ model Bank {
   incomeCredits Income[]
   cashRegisterPaymentMethods PaymentMethod[] @relation("CashRegisterDefaultBank")
   cashRegisterBankRules CashRegisterBankRule[]
+  primaryForCompanies Company[] @relation("CompanyPrimaryBank")
 
   @@unique([workspaceId, name])
   @@index([workspaceId])

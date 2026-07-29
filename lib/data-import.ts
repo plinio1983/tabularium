@@ -317,7 +317,8 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
       const rawInvoiceStatus = normalizeText(rowValue(item.row, ['Stato fattura', 'Fattura'])).toUpperCase();
       const invoiceStatus = !isFiscal ? null
         : ['EMESSA', 'INVIATA', 'OK', 'RICEVUTA'].includes(rawInvoiceStatus) ? 'EMESSA'
-          : 'NON_INVIATA';
+          : ['PARZIALE', 'FATTURATO PARZIALMENTE', 'FATTURATA PARZIALMENTE'].includes(rawInvoiceStatus) ? 'PARZIALE'
+            : 'NON_INVIATA';
       await prisma.income.create({
         data: {
           workspaceId: options.workspaceId,

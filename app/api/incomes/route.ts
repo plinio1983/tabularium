@@ -21,7 +21,7 @@ const IncomeSchema = z.object({
   isCredited: BooleanFromForm.default(true),
   billingPeriod: z.string().regex(/^\d{4}-\d{2}$/),
   isFiscal: BooleanFromForm.default(true),
-  invoiceStatus: z.string().optional().nullable(),
+  invoiceStatus: z.enum(['NON_INVIATA', 'PARZIALE', 'EMESSA']).optional().nullable(),
   vatRate: z.coerce.number().default(22),
   notes: z.string().optional().nullable()
 });

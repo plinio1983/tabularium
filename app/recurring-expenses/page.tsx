@@ -73,8 +73,8 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       created: 'Spesa ricorrente creata.',
       updated: 'Spesa ricorrente aggiornata.',
       deleted: 'Spesa ricorrente rimossa.',
-      bulk_updated: 'Spese ricorrenti aggiornate.',
-      bulk_deleted: 'Spese ricorrenti rimosse.'
+      bulk_updated: 'Uscite ricorrenti aggiornate.',
+      bulk_deleted: 'Uscite ricorrenti rimosse.'
     },
     errorMessages: {
       invalid: 'Controlla i dati della spesa ricorrente.',
@@ -86,10 +86,10 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
 
   return <div className="grid">
     <div className="toolbar-card expense-toolbar-card">
-      <div><h2>Spese ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
+      <div><h2>Uscite ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
       <NewRecurringExpensePanel
         categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
+        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
         paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
       />
@@ -105,7 +105,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       items={items}
       filters={filters}
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback }))}
+      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes }))}
     />

@@ -10,7 +10,7 @@ const importTypes = {
     note: "Importa lo storico delle spese. Le righe ricorrenti vengono marcate solo con il flag Ricorrente sì/no."
   },
   recurring_definitions: {
-    label: "Definizioni spese ricorrenti",
+    label: "Definizioni uscite ricorrenti",
     fileName: "import-spese-ricorrenti-template.xlsx",
     href: "/templates/import-spese-ricorrenti-template.xlsx",
     note: "Importa solo le definizioni ricorrenti. Non genera nessuna spesa: le spese saranno create dal processo api/cron/recurring-expenses."
@@ -58,7 +58,7 @@ export default function ExpenseImportTypeSelector({initialType}: {initialType?: 
       Tipo importazione
       <select form="expenseImportForm" name="importType" value={importType} onChange={(event) => setImportType(event.currentTarget.value as ImportType)}>
         <option value="single_expenses">Lista spese singole</option>
-        <option value="recurring_definitions">Definizioni spese ricorrenti</option>
+        <option value="recurring_definitions">Definizioni uscite ricorrenti</option>
         <option value="incomes">Incassi</option>
         <option value="customers">Clienti</option>
         <option value="suppliers">Fornitori</option>

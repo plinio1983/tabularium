@@ -3,6 +3,7 @@ import { getCurrentSession } from '@/lib/auth';
 import { revokeOtherSessionsAction, updateAccountAction } from './actions';
 import AccountCancelButton from './AccountCancelButton';
 import { prisma } from '@/lib/prisma';
+import DetailBackButton from '@/components/DetailBackButton';
 
 const errorMessages: Record<string, string> = {
   invalid: 'Compila email e password attuale.',
@@ -31,6 +32,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
         <h2>Account</h2>
         <p className="muted">Gestisci le informazioni di accesso del tuo utente.</p>
       </div>
+      <DetailBackButton href="/settings" />
     </div>
 
     <form action={updateAccountAction}>

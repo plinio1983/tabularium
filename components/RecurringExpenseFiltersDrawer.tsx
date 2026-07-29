@@ -56,10 +56,10 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
     </button>
 
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri spese ricorrenti" onMouseDown={(event) => event.stopPropagation()}>
+      <aside className="filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri uscite ricorrenti" onMouseDown={(event) => event.stopPropagation()}>
         <div className="filter-drawer-header">
           <div>
-            <h3>Filtri spese ricorrenti</h3>
+            <h3>Filtri uscite ricorrenti</h3>
             <p className="muted">Cerca tra regole, fornitori, importi e modalità di pagamento.</p>
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>

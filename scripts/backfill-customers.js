@@ -15,13 +15,13 @@ try {
 
   for (const { id: workspaceId } of workspaces.rows) {
     const existing = await client.query(
-      'SELECT id FROM "Customer" WHERE "workspaceId" = $1 AND "systemRole" = \'DEFAULT\' LIMIT 1',
-      [workspaceId]
+      'SELECT id FROM "Customer" WHERE "workspaceId" = $1 AND "businessName" = $2 ORDER BY id LIMIT 1',
+      [workspaceId, 'New customer']
     );
     let customerId = existing.rows[0]?.id;
     if (!customerId) {
       const created = await client.query(
-        'INSERT INTO "Customer" ("businessName", "systemRole", "workspaceId", "createdAt", "updatedAt") VALUES ($1, \'DEFAULT\', $2, NOW(), NOW()) RETURNING id',
+        'INSERT INTO "Customer" ("businessName", "workspaceId", "createdAt", "updatedAt") VALUES ($1, $2, NOW(), NOW()) RETURNING id',
         ['New customer', workspaceId]
       );
       customerId = created.rows[0].id;

@@ -22,6 +22,24 @@ export function FormField({ label, icon, hint, className = '', htmlFor, children
   </div>;
 }
 
+export function SupplierFormField({ label, icon, hint, className = '', htmlFor, children, onCreate }: FormFieldProps & { onCreate: () => void }) {
+  return <div className={`app-form-field ${className}`.trim()}>
+    <label className="app-form-field-label" htmlFor={htmlFor}>
+      {icon ? <span className="app-form-field-icon" aria-hidden="true">{icon}</span> : null}
+      <span>{label}</span>
+    </label>
+      <button
+          type="button"
+          className="btn btn-sm btn-link inline-link-button"
+          onClick={onCreate}
+      >
+          ＋ Nuovo
+      </button>
+    {children}
+    {hint ? <small className="app-form-field-hint">{hint}</small> : null}
+  </div>;
+}
+
 type SelectOption = {
   value: string | number;
   label: ReactNode;

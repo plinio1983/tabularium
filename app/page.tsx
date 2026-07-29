@@ -1904,7 +1904,7 @@ export default async function Dashboard({searchParams}: {
                 icon: c.icon,
                 isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId
             }))}
-            banks={orderedBanks.map(b => ({id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback}))}
+            banks={orderedBanks.map(b => ({id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId}))}
             paymentMethods={expensePaymentMethods.map(method => ({
                 id: method.id,
                 name: method.name,

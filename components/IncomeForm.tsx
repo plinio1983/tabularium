@@ -26,7 +26,7 @@ type InitialIncome = {
     notes?: string | null;
 };
 
-type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null };
+type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; isPrimary?: boolean };
 type PaymentMethodOption = Option & { kind?: string };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
@@ -103,10 +103,12 @@ export default function IncomeForm({
                                        salesChannels,
                                        customers,
                                    }: Props) {
-    const fallbackBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.toLowerCase().includes("altra")) ?? banks[0];
+    const cashBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.trim().toLowerCase() === "cassa");
+    const primaryBank = banks.find(bank => bank.isPrimary);
+    const defaultBank = primaryBank ?? banks.find(bank => !bank.isFallback) ?? banks[0];
     const defaultPaymentMethod = paymentMethods.find(method => method.name === "Bonifico") ?? paymentMethods[0];
     const initialPaymentMethodId = findOptionId(paymentMethods, initialIncome?.paymentMethodId) || (defaultPaymentMethod ? String(defaultPaymentMethod.id) : "");
-    const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId) || (fallbackBank ? String(fallbackBank.id) : "");
+    const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId) || (defaultBank ? String(defaultBank.id) : "");
     const initialSalesChannelId = initialIncome?.salesChannelId ? String(initialIncome.salesChannelId) : String(salesChannels[0]?.id ?? "");
     const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount).replace(".", ","));
     const [salesChannelId, setSalesChannelId] = useState(initialSalesChannelId);
@@ -135,12 +137,16 @@ export default function IncomeForm({
 
     const selectedPaymentMethod = paymentMethods.find(method => String(method.id) === paymentMethodId);
     const cashPaymentSelected = isCashMethod(selectedPaymentMethod);
+    const previousCashSelection = useRef(cashPaymentSelected);
 
     useEffect(() => {
-        if (cashPaymentSelected && fallbackBank && creditBankId !== String(fallbackBank.id)) {
-            setCreditBankId(String(fallbackBank.id));
+        if (cashPaymentSelected && cashBank && creditBankId !== String(cashBank.id)) {
+            setCreditBankId(String(cashBank.id));
+        } else if (!cashPaymentSelected && previousCashSelection.current && primaryBank) {
+            setCreditBankId(String(primaryBank.id));
         }
-    }, [cashPaymentSelected, fallbackBank, creditBankId]);
+        previousCashSelection.current = cashPaymentSelected;
+    }, [cashPaymentSelected, cashBank, primaryBank, creditBankId]);
 
     function toggleFiscal(nextValue: boolean) {
         setIsFiscal(nextValue);
@@ -234,7 +240,7 @@ export default function IncomeForm({
                     <button type="button" role="radio" aria-checked="false" disabled={Boolean(initialIncome?.id)}
                             onClick={() => window.location.assign("/incomes/cash-register")}>
                         <span aria-hidden="true">🧮</span>
-                        <strong>Registratore cassa</strong>
+                        <strong>Incasso da Banco</strong>
                         <small>Inserimento scontrini</small>
                     </button>
                 </div>
@@ -359,12 +365,12 @@ export default function IncomeForm({
                         label: `${method.icon ?? "•"} ${method.name}`
                     }))}/>
 
-                    <SelectField className="income-payment-field-wide" label="Canale accredito" icon="▥" name="creditBankId" value={cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId} onChange={setCreditBankId} disabled={cashPaymentSelected} required options={banks.map(bank => ({
+                    <SelectField className="income-payment-field-wide" label="Canale accredito" icon="▥" name="creditBankId" value={cashPaymentSelected && cashBank ? String(cashBank.id) : creditBankId} onChange={setCreditBankId} disabled={cashPaymentSelected} required options={banks.map(bank => ({
                         value: bank.id,
                         label: `${bank.icon ?? "•"} ${bank.name}`
                     }))}/>
-                    {cashPaymentSelected && fallbackBank ?
-                        <input type="hidden" name="creditBankId" value={fallbackBank.id}/> : null}
+                    {cashPaymentSelected && cashBank ?
+                        <input type="hidden" name="creditBankId" value={cashBank.id}/> : null}
 
                 </div>
             </details>
@@ -385,13 +391,14 @@ export default function IncomeForm({
                                 onChange={(event) => toggleInvoiceIssued(event.currentTarget.checked)}
                             />
                             <span className="slider"/>
-                            <span className="ml-12 text-muted">{isFiscal && invoiceStatus === "EMESSA" ? "Emessa" : "Non inviata"}</span>
+                            <span className="ml-12 text-muted">{isFiscal && invoiceStatus === "EMESSA" ? "Emessa" : invoiceStatus === "PARZIALE" ? "Parziale" : "Non inviata"}</span>
                         </label>
                     </div>
                     {/*<div className="toggle-field-wrap">*/}
                     <div>
                         <SelectField label="Stato fattura" icon="▤" name="invoiceStatus" value={invoiceStatus} disabled={!isFiscal} onChange={setInvoiceStatus} options={[
                             {value: "NON_INVIATA", label: "Non inviata"},
+                            {value: "PARZIALE", label: "Fatturato parzialmente"},
                             {value: "EMESSA", label: "Emessa"},
                         ]}/>
                         {!isFiscal && <input type="hidden" name="invoiceStatus" value=""/>}
@@ -432,7 +439,7 @@ export default function IncomeForm({
                                 <i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span>
                             </div>
                             <div className="expense-review-item wide">
-                                <i aria-hidden="true">€</i><span>Accredito<strong>{paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "Metodo non indicato"} · {banks.find(bank => String(bank.id) === (cashPaymentSelected && fallbackBank ? String(fallbackBank.id) : creditBankId))?.name ?? "Canale non indicato"} · {isCredited ? "Accreditato" : "Da accreditare"}</strong></span>
+                                <i aria-hidden="true">€</i><span>Accredito<strong>{paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "Metodo non indicato"} · {banks.find(bank => String(bank.id) === (cashPaymentSelected && cashBank ? String(cashBank.id) : creditBankId))?.name ?? "Canale non indicato"} · {isCredited ? "Accreditato" : "Da accreditare"}</strong></span>
                             </div>
                         </div>
                     </section>

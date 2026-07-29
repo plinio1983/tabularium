@@ -13,6 +13,10 @@ function formValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? '').trim();
 }
 
+function formChecked(formData: FormData, key: string) {
+  return formData.get(key) === 'on';
+}
+
 function settingsError(code: string): never {
   const section = code === 'cash_register_rule_bank'
     ? 'routing'
@@ -53,10 +57,19 @@ export async function createBankAction(formData: FormData) {
   const current = await requireWorkspaceRole(workspaceManagementRoles, settingsPath);
   const name = validateName(formData);
   const icon = validateIcon(formData);
+  const primary = formChecked(formData, 'primary');
   const existing = await prisma.bank.findFirst({ where: { workspaceId: current.workspace.id, name } });
   if (existing) settingsError('bank_exists');
 
-  await prisma.bank.create({ data: { workspaceId: current.workspace.id, name, icon } });
+  await prisma.$transaction(async tx => {
+    const bank = await tx.bank.create({ data: { workspaceId: current.workspace.id, name, icon } });
+    if (primary) {
+      await tx.company.update({
+        where: { id: current.company.id },
+        data: { primaryBankId: bank.id }
+      });
+    }
+  });
   refreshPaymentCreditPages();
   redirect(`${settingsPath}?section=banks&saved=bank_created`);
 }
@@ -66,14 +79,29 @@ export async function updateBankAction(formData: FormData) {
   const id = Number(formValue(formData, 'id'));
   const name = validateName(formData);
   const icon = validateIcon(formData);
+  const primary = formChecked(formData, 'primary');
   if (!Number.isInteger(id) || id <= 0) settingsError('invalid');
 
   const bank = await prisma.bank.findFirst({ where: { id, workspaceId: current.workspace.id } });
   if (!bank) settingsError('bank_not_found');
+  if (primary && bank.isFallback) settingsError('cash_bank_primary');
   const duplicate = await prisma.bank.findFirst({ where: { workspaceId: current.workspace.id, name, NOT: { id } } });
   if (duplicate) settingsError('bank_exists');
 
-  await prisma.bank.update({ where: { id }, data: { name, icon } });
+  await prisma.$transaction(async tx => {
+    await tx.bank.update({ where: { id }, data: { name, icon } });
+    if (primary) {
+      await tx.company.update({
+        where: { id: current.company.id },
+        data: { primaryBankId: id }
+      });
+    } else {
+      await tx.company.updateMany({
+        where: { id: current.company.id, primaryBankId: id },
+        data: { primaryBankId: null }
+      });
+    }
+  });
   refreshPaymentCreditPages();
   redirect(`${settingsPath}?section=banks&saved=bank_updated`);
 }

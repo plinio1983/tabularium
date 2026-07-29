@@ -112,7 +112,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const creditStatus = incomeCreditStatus(income);
     const detailToneClass = isIncomeCreditOverdue(income)
         ? 'income-row-overdue'
-        : income.invoiceStatus === 'NON_INVIATA'
+        : income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE'
             ? 'income-row-warning'
             : '';
     const flashMessages = {
@@ -131,7 +131,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
     return <div className="grid expense-detail-page income-detail-page">
         <IncomeEditModalController
             returnTo={currentDetailReturnTo}
-            banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
+            banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId}))}
             paymentMethods={incomePaymentMethods.map(method => ({
                 id: method.id,
                 name: method.name,
@@ -157,7 +157,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         <DetailBackButton href={returnTo} />
                     </div>
                     <div className="right-side">
-                        <Link className="btn btn-sm btn-primary" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
+                        <Link className="btn btn-sm btn-default" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
                         <DeleteActionButton
                             action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
                             confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata."

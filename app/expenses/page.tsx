@@ -26,6 +26,7 @@ const invoiceStatusOptions = [
     ['NON_PREVISTA', 'Non prevista'],
     ['IN_ATTESA', 'In attesa'],
     ['CONTESTAZIONE', 'Contestazione'],
+    ['PARZIALE', 'Fatturato parzialmente'],
     ['RICEVUTA', 'Emessa']
 ];
 
@@ -924,7 +925,7 @@ export default async function ExpensesPage({searchParams}: {
     ].filter(Boolean) as Array<{ label: string; value: string }>;
 
     return <div className="grid">
-        {/*<Link className="btn btn-md btn-default" href="/recurring-expenses"><span className="btn-icon">↻</span>Spese ricorrenti</Link>*/}
+        {/*<Link className="btn btn-md btn-default" href="/recurring-expenses"><span className="btn-icon">↻</span>Uscite ricorrenti</Link>*/}
         <NewExpensePanel
             categories={orderedCategories.map(c => ({
                 id: c.id,
@@ -933,7 +934,7 @@ export default async function ExpensesPage({searchParams}: {
                 icon: c.icon,
                 isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId
             }))}
-            banks={orderedBanks.map(b => ({id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback}))}
+            banks={orderedBanks.map(b => ({id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId}))}
             paymentMethods={expensePaymentMethods.map(method => ({
                 id: method.id,
                 name: method.name,
@@ -1343,7 +1344,7 @@ export default async function ExpensesPage({searchParams}: {
                     icon: c.icon,
                     isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId
                 }))}
-                banks={orderedBanks.map(b => ({id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback}))}
+                banks={orderedBanks.map(b => ({id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId}))}
                 paymentMethods={expensePaymentMethods.map(method => ({
                     id: method.id,
                     name: method.name,

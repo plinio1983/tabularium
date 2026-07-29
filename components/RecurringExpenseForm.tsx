@@ -13,6 +13,7 @@ type Option = {
     name: string;
     icon?: string | null;
     isFallback?: boolean | null;
+    isPrimary?: boolean;
     kind?: string
 };
 type SupplierOption = {
@@ -197,7 +198,7 @@ function SupplierAutocomplete({
                         }}
                         onFocus={() => setIsOpen(true)}
                         onKeyDown={onKeyDown}
-                        placeholder="Cerca per ragione sociale o alias"
+                        placeholder="Cerca per ragione sociale o referente"
                         autoComplete="off"
                         required
                     />
@@ -376,7 +377,7 @@ export default function RecurringExpenseForm({
     const initialSelectedPaymentMethodName = paymentMethods.find(method => String(method.id) === initialPaymentMethodId)?.name ?? "";
     const initialBankId = isCashChannel(initialSelectedPaymentMethodName) && cashBankIdValue
         ? cashBankIdValue
-        : initialExpense?.bankId?.toString() ?? "";
+        : initialExpense?.bankId?.toString() ?? banks.find(bank => bank.isPrimary)?.id.toString() ?? "";
     const [cadence, setCadence] = useState(initialExpense?.cadence ?? "MONTHLY");
     const [billingPeriodMode, setBillingPeriodMode] = useState(initialExpense?.billingPeriodMode ?? "SAME_MONTH");
     const [billingMonth, setBillingMonth] = useState(String(initialExpense?.billingMonth ?? new Date().getMonth() + 1));
@@ -713,7 +714,11 @@ export default function RecurringExpenseForm({
                                  onChange={(nextPaymentMethodId) => {
                                      const nextPaymentMethodName = paymentMethods.find(method => String(method.id) === nextPaymentMethodId)?.name ?? "";
                                      setPaymentMethodId(nextPaymentMethodId);
-                                     if (isCashChannel(nextPaymentMethodName) && cashBankIdValue) setBankId(cashBankIdValue);
+                                     if (isCashChannel(nextPaymentMethodName) && cashBankIdValue) {
+                                         setBankId(cashBankIdValue);
+                                     } else if (isCashChannel(selectedPaymentMethodName)) {
+                                         setBankId(banks.find(bank => bank.isPrimary)?.id.toString() ?? "");
+                                     }
                                  }}
                                  options={[{
                                      value: "",

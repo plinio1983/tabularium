@@ -93,7 +93,6 @@ export const defaultPaymentMethods = [
 
 export const vatSettlementSupplierName = 'Erario – Saldo IVA';
 export const vatSettlementCategoryCode = 'TAX';
-export const defaultCustomerName = 'New customer';
 export const cashRegisterCustomerName = 'Banco';
 
 export function orderExpenseCategories<T extends { id: number; code: string; name: string }>(categories: T[]) {
@@ -156,11 +155,6 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     });
   }
 
-  await prisma.customer.upsert({
-    where: { workspaceId_systemRole: { workspaceId, systemRole: 'DEFAULT' } },
-    update: {},
-    create: { workspaceId, businessName: defaultCustomerName, systemRole: 'DEFAULT' }
-  });
   await prisma.customer.upsert({
     where: { workspaceId_systemRole: { workspaceId, systemRole: 'CASH_REGISTER' } },
     update: { businessName: cashRegisterCustomerName },
@@ -226,6 +220,12 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     where: {workspaceId, isFallback: true, name: {not: cashCreditChannelName}},
     data: {isFallback: false}
   });
+  if (currentCashChannel) {
+    await prisma.company.updateMany({
+      where: {workspaceId, primaryBankId: currentCashChannel.id},
+      data: {primaryBankId: null}
+    });
+  }
 
   for (const [name, icon] of defaultBanks) {
     const existing = await prisma.bank.findFirst({ where: { workspaceId, name } });

@@ -14,6 +14,14 @@ prisma/migrations/*
 !prisma/migrations/20260728120000_multi_company_accounting/migration.sql
 !prisma/migrations/20260728183000_supplier_swift/
 !prisma/migrations/20260728183000_supplier_swift/migration.sql
+!prisma/migrations/20260729120000_normalize_default_customer/
+!prisma/migrations/20260729120000_normalize_default_customer/migration.sql
+!prisma/migrations/20260729223000_company_primary_bank/
+!prisma/migrations/20260729223000_company_primary_bank/migration.sql
+!prisma/migrations/20260730113000_disallow_cash_primary_bank/
+!prisma/migrations/20260730113000_disallow_cash_primary_bank/migration.sql
+!prisma/migrations/20260730150000_partial_invoice_status/
+!prisma/migrations/20260730150000_partial_invoice_status/migration.sql
 data/Spese-Ricavi.xlsx
 /.idea/vcs.xml
 /generated/prisma/internal/class.ts

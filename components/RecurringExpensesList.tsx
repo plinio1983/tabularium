@@ -194,7 +194,7 @@ export default function RecurringExpensesList({
     <MobileSortControl action="/recurring-expenses" currentValue={mobileSort} options={recurringMobileSortOptions} searchParams={currentFilters} />
     <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
       <label className="bulk-select-all-inline">
-        <input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le spese ricorrenti visibili" />
+        <input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le uscite ricorrenti visibili" />
       </label>
       <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
         <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span></summary>
@@ -226,7 +226,7 @@ export default function RecurringExpensesList({
       <div className="table-scroll recurring-expenses-desktop-table-scroll">
         <table className="expenses-table compact-recurring-expenses-table">
           <thead><tr>
-            <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le spese ricorrenti" /></th>
+            <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le uscite ricorrenti" /></th>
             <th className="cell-left">Stato</th>
             <th className="cell-left">Fornitore</th>
             <th className="cell-left">Descrizione</th>
@@ -266,7 +266,7 @@ export default function RecurringExpensesList({
         </table>
       </div>
 
-      <div className="recurring-expenses-mobile-list" aria-label="Lista spese ricorrenti">
+      <div className="recurring-expenses-mobile-list" aria-label="Lista uscite ricorrenti">
         {mobileSortedItems.map(item => {
           const cadence = cadenceLabels[item.cadence] ?? item.cadence;
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;

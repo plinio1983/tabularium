@@ -177,6 +177,7 @@ function mapInvoiceStatus(value: unknown, hasElectronicInvoice: boolean): Invoic
   const text = textValue(value).toLowerCase();
   if (['non prevista', 'non previsto', 'nonprevista', 'n/a', 'na'].includes(text)) return 'NON_PREVISTA';
   if (['ok', 'emessa', 'ricevuta'].includes(text)) return 'RICEVUTA';
+  if (['parziale', 'fatturato parzialmente', 'fatturata parzialmente'].includes(text)) return 'PARZIALE';
   if (['inviata sdi', 'sdi', 'emessa sdi'].includes(text)) return 'RICEVUTA';
   if (text.includes('contest')) return 'CONTESTAZIONE';
   return 'IN_ATTESA';

@@ -88,13 +88,13 @@ export default function NewExpensePanel({
                     {/*</Link>*/}
                 </div>
                 <div className="expense-toolbar-card-text">
-                    <p className="muted">Gestisci le spese registrate le spese ricorrenti.</p>
+                    <p className="muted">Gestisci le uscite ricorrenti.</p>
                 </div>
             </div>
             <div className="toolbar-actions expense-toolbar-actions">
                 {/*<Link className="btn btn-md btn-default expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>*/}
                 <Link className="btn btn-sm btn-secondary" href="/recurring-expenses">
-                    <span className="btn-icon">↻</span>Spese ricorrenti
+                    <span className="btn-icon">↻</span>Uscite ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary" type="button" onClick={() => setIsOpen(true)}>
                     <span className="btn-icon">+</span>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import BulkCopyExpensesModal from '@/components/BulkCopyExpensesModal';
+import BulkEditFieldsModal from '@/components/BulkEditFieldsModal';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import ExpenseEditModalController from '@/components/ExpenseEditModalController';
@@ -174,6 +175,7 @@ export default function ExpensesList({
     {hasBulkControls ? <>
       <BulkSelectionController />
       <BulkCopyExpensesModal formId={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`}/>
+      <BulkEditFieldsModal formId={formId} subject="spese"/>
       <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
         <label className="bulk-select-all-inline">
           <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese visibili" />
@@ -207,7 +209,7 @@ export default function ExpensesList({
             </button>
           </div>
         </details>
-        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId}
+        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true"
              data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-edit-trigger-attr="data-expense-edit-id" data-copy-trigger-attr="data-expense-copy-id" data-return-to={returnTo}>
           <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
             <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>

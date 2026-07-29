@@ -34,7 +34,7 @@ http://localhost:3000
 - Lista spese con filtri persistenti, selezione rapida periodo e totali calcolati sui risultati mostrati.
 - Copia spesa: dalla lista o dal dettaglio si apre un nuovo form precompilato senza pagamenti e con stato pagamento non pagato.
 - Anagrafica Fornitori con lista, creazione, modifica ed eliminazione.
-- Autocomplete fornitore nel form spesa, con ricerca per Ragione Sociale o Alias, navigabile anche da tastiera.
+- Autocomplete fornitore nel form spesa, con ricerca per Ragione Sociale o Referente, navigabile anche da tastiera.
 - Creazione rapida fornitore in modale dal form spesa.
 
 ## Prisma 7

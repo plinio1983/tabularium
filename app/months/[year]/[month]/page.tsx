@@ -42,7 +42,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
-    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers] = await Promise.all([
+    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers, incomeCategories] = await Promise.all([
         getMonthlyReport(year, month, current.workspace.id, mode, current.company.id),
         mode === 'fiscal'
             ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id, companyId: current.company.id})
@@ -56,7 +56,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             take: 100
         }),
         prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
-        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}})
+        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}}),
+        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}})
     ]);
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
@@ -94,7 +95,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 id: bank.id,
                 name: bank.name,
                 icon: bank.icon,
-                isFallback: bank.isFallback
+                isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId
             }))}
             paymentMethods={expensePaymentMethods.map(method => ({
                 id: method.id,
@@ -250,7 +251,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     icon: category.icon,
                     isVatSettlementDefault: category.id === current.workspace.vatSettlementCategoryId
                 }))}
-                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
+                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId}))}
                 paymentMethods={expensePaymentMethods.map(method => ({
                     id: method.id,
                     name: method.name,
@@ -286,10 +287,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 incomes={listedIncomes}
                 cashRegisterGroups={cashRegisterGroups}
                 returnTo={returnTo}
-                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback}))}
+                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId}))}
                 paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback}))}
                 salesChannels={salesChannels}
                 customers={customers}
+                categories={incomeCategories}
             /></div>
         </details>
         </div>

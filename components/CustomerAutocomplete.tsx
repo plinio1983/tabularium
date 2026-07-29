@@ -105,6 +105,20 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
       <span className="app-form-field-label">
         <span className="app-form-field-icon" aria-hidden="true">◎</span>
         <span>Cliente</span>
+          <span className="flex flex-grow justify-end mr-22">
+              <button
+                  type="button"
+                  className="btn btn-sm btn-link inline-link-button"
+                  onClick={() => {
+                      setCreateData({ ...emptyCustomer });
+                      setCreateError('');
+                      setShowCreate(true);
+                      setOpen(false);
+                  }}
+              >
+          ＋ Nuovo
+        </button>
+          </span>
       </span>
       <div className="supplier-input-row">
         <input
@@ -121,18 +135,6 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
             setOpen(true);
           }}
         />
-        <button
-          type="button"
-          className="btn btn-sm btn-link inline-link-button"
-          onClick={() => {
-            setCreateData({ ...emptyCustomer });
-            setCreateError('');
-            setShowCreate(true);
-            setOpen(false);
-          }}
-        >
-          ＋ Nuovo
-        </button>
       </div>
     </label>
 

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
+import DetailBackButton from '@/components/DetailBackButton';
 
 export default async function CategoriesSettingsPage() {
   await requireWorkspaceRole(workspaceManagementRoles, '/settings/categories');
@@ -7,6 +8,7 @@ export default async function CategoriesSettingsPage() {
   return <div className="grid admin-page categories-settings-page">
     <div className="toolbar-card">
       <div><h2>Categorie</h2><p className="muted">Scegli l’area di categorie da configurare.</p></div>
+      <DetailBackButton href="/settings" />
     </div>
     <div className="settings-category-hub">
       <Link className="card settings-category-link" href="/settings/categories/expenses">

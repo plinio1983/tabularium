@@ -30,6 +30,7 @@ const invoiceStatusOptions = [
   ["NON_PREVISTA", "Non prevista"],
   ["IN_ATTESA", "In attesa"],
   ["CONTESTAZIONE", "Contestazione"],
+  ["PARZIALE", "Fatturato parzialmente"],
   ["RICEVUTA", "Emessa"],
 ];
 
