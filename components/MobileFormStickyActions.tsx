@@ -1,5 +1,7 @@
 "use client";
 
+import {useEffect, useRef} from "react";
+
 type Props = {
     currentStep: number;
     submitStep: number;
@@ -29,10 +31,47 @@ export default function MobileFormStickyActions({
                                                     submitDisabled = false,
                                                     error,
                                                 }: Props) {
+    const rootRef = useRef<HTMLDivElement>(null);
     const showBack = currentStep > 1;
     const showSubmit = currentStep >= submitStep;
 
-    return <div className="expense-wizard-actions mobile-form-sticky-actions full">
+    useEffect(() => {
+        const root = rootRef.current;
+        const form = root?.closest("form");
+        if (!root || !form || showSubmit) return;
+
+        const inputs = Array.from(form.querySelectorAll<HTMLInputElement>("input:not([type='hidden']):not([type='file'])"));
+        const previousHints = inputs.map(input => input.getAttribute("enterkeyhint"));
+        inputs.forEach(input => input.setAttribute("enterkeyhint", "next"));
+
+        function handleEnter(event: KeyboardEvent) {
+            if (event.key !== "Enter" || event.defaultPrevented || event.isComposing || event.repeat) return;
+            if (getComputedStyle(root!).display === "none") return;
+            const target = event.target;
+            if (!(target instanceof HTMLElement) || !form!.contains(target)) return;
+            if (target.closest("textarea, select, button, a")) return;
+
+            const suggestionScope = target.closest<HTMLElement>(
+                ".product-suggestion-picker, .supplier-picker, .app-autocomplete-control",
+            );
+            if (suggestionScope?.querySelector("[role='listbox']")) return;
+
+            event.preventDefault();
+            onNext();
+        }
+
+        document.addEventListener("keydown", handleEnter);
+        return () => {
+            document.removeEventListener("keydown", handleEnter);
+            inputs.forEach((input, index) => {
+                const previousHint = previousHints[index];
+                if (previousHint === null) input.removeAttribute("enterkeyhint");
+                else input.setAttribute("enterkeyhint", previousHint);
+            });
+        };
+    }, [currentStep, onNext, showSubmit]);
+
+    return <div ref={rootRef} className="expense-wizard-actions mobile-form-sticky-actions full">
         {error ? <p className="inline-warning full">{error}</p> : null}
         <div className="expense-wizard-actions-row mobile-form-sticky-actions-row">
             {showBack ? (

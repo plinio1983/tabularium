@@ -1069,17 +1069,6 @@ export default async function ExpensesPage({searchParams}: {
                     />
                 </div>
             </div>
-            <form className="supplier-quick-search" action="/expenses" method="get" role="search">
-                {Object.entries(filters).flatMap(([key, value]) => key === 'supplierQuick' || key === 'mobileSort' ? [] : (Array.isArray(value) ? value.map(item =>
-                    <input type="hidden" name={key} value={item} key={`${key}-${item}`}/>) : value ? [
-                    <input type="hidden" name={key} value={value} key={key}/>] : []))}
-                <label htmlFor="expenseSupplierQuickSearch">Ricerca rapida</label>
-                <div className="supplier-quick-search-field">
-                    <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon/>
-                    </button>
-                </div>
-            </form>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">
                 <div>
@@ -1092,6 +1081,18 @@ export default async function ExpensesPage({searchParams}: {
                     </div>
                 </div>
             </div> : null}
+
+            <form className="supplier-quick-search" action="/expenses" method="get" role="search">
+                {Object.entries(filters).flatMap(([key, value]) => key === 'supplierQuick' || key === 'mobileSort' ? [] : (Array.isArray(value) ? value.map(item =>
+                    <input type="hidden" name={key} value={item} key={`${key}-${item}`}/>) : value ? [
+                    <input type="hidden" name={key} value={value} key={key}/>] : []))}
+                <label htmlFor="expenseSupplierQuickSearch">Ricerca rapida</label>
+                <div className="supplier-quick-search-field">
+                    <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
+                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon/>
+                    </button>
+                </div>
+            </form>
 
             <script dangerouslySetInnerHTML={{
                 __html: `

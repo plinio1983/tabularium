@@ -1436,7 +1436,7 @@
   }
 
   .expense-detail-section-heading-actions {
-    width: 100%;
+    //width: 100%;
     justify-content: space-between;
   }
 
@@ -2849,8 +2849,12 @@
     width: 100%;
   }
 
+  .expense-detail-payment-summary-list .payment-row-actions {
+    grid-template-columns: 1fr;
+  }
+
   .expense-form .payment-summary-row .payment-row-actions .btn {
-    width: 100%;
+    //width: 100%;
     max-width: none;
     justify-content: center;
   }

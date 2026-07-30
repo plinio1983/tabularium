@@ -12472,6 +12472,15 @@ button.bulk-direct-danger {
   align-self: center;
 }
 
+.expense-detail-payment-summary-list {
+  display: grid;
+  gap: 12px;
+}
+
+.expense-detail-payment-summary-list.expense-form .payment-row + .payment-row {
+  margin-top: 0;
+}
+
 .expense-form .payment-row-actions {
   display: flex;
   justify-content: flex-end;

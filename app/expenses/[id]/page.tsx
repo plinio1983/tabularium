@@ -243,51 +243,47 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               <p>{expense.payments.length ? 'Movimenti registrati per questa spesa.' : 'Nessun movimento registrato.'}</p>
             </div>
             <div className="expense-detail-section-heading-actions">
-              <span className="badge">{expense.payments.length} record</span>
+              <span className="badge hidden-mobile">{expense.payments.length} record</span>
               <button className="btn btn-sm btn-primary" type="button" data-expense-detail-payment-id={expense.id}>
                 ＋ Aggiungi pagamento
               </button>
             </div>
           </div>
-          {expense.payments.length ? <div className="expense-payment-timeline">
-            {expense.payments.map(payment => <article className="expense-payment-card" key={payment.id}>
-              <div className="expense-payment-date">
+          {expense.payments.length ? <div className="expense-form expense-detail-payment-summary-list">
+            {expense.payments.map(payment => <article className="payment-row payment-summary-row" key={payment.id}>
+              <div className="payment-summary-primary">
+                <span className="payment-summary-kicker">Pagamento effettuato</span>
+                <strong className="payment-summary-amount">{euro(payment.amount.toString())}</strong>
+              </div>
+              <div className="payment-summary-date">
                 <span>Data pagamento</span>
                 <strong>{dateLabel(payment.paymentDate)}</strong>
               </div>
-              <div className="expense-payment-data">
-                <div><span>Importo</span><strong>{euro(payment.amount.toString())}</strong></div>
-                <div><span>Canale</span><strong>{payment.paymentMethod.icon ?? '  •  '} {payment.paymentMethod.name}</strong></div>
-                <div><span>Banca</span><strong>{payment.bank ? `${payment.bank.icon ?? '  •  '} ${payment.bank.name}` : '-'}</strong></div>
+              <div className="payment-summary-meta">
+                <div>
+                  <span>Metodo</span>
+                  <strong>{payment.paymentMethod.icon ?? '•'} {payment.paymentMethod.name}</strong>
+                </div>
+                <div>
+                  <span>Banca</span>
+                  <strong>{payment.bank ? `${payment.bank.icon ?? '•'} ${payment.bank.name}` : 'Non impostata'}</strong>
+                </div>
+              </div>
+              <div className="payment-row-actions">
+                <button className="btn btn-sm btn-default" type="button"
+                        data-expense-id={expense.id}
+                        data-expense-detail-payment-edit-id={payment.id}>
+                  ✎ Modifica
+                </button>
               </div>
             </article>)}
           </div> : <div className="expense-empty-panel">Nessun pagamento registrato.</div>}
-
-          {expense.payments.length ? <div className="mobile-expense-payment-timeline">
-            {expense.payments.map(payment => <article className="expense-payment-card" key={payment.id}>
-              <div className="expense-payment-header">
-                <div className="expense-payment-date">
-                  <span>Data pagamento</span>
-                  <strong>{dateLabel(payment.paymentDate)}</strong>
-                </div>
-                <div className="expense-payment-date">
-                  <span>Importo</span>
-                  <strong>{euro(payment.amount.toString())}</strong>
-                </div>
-              </div>
-
-              <div className="expense-payment-data">
-                <div><span>Canale</span><strong>{payment.paymentMethod.icon ?? '  •  '} {payment.paymentMethod.name}</strong></div>
-                <div><span>Banca</span><strong>{payment.bank ? `${payment.bank.icon ?? '  •  '} ${payment.bank.name}` : '-'}</strong></div>
-              </div>
-            </article>)}
-          </div> : <div className="mobile-expense-empty-panel">Nessun pagamento registrato.</div>}
 
         </section>
 
         <section className="expense-detail-section">
           <div className="expense-detail-section-heading">
-            <div>
+            <div className="flex-grow">
               <h2>Altre Informazioni</h2>
               <p>Altri dati della spesa.</p>
             </div>
@@ -306,7 +302,13 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               <h2>Allegati</h2>
               <p>{expense.attachments.length ? 'Documenti associati alla spesa.' : 'Nessun documento caricato.'}</p>
             </div>
-            <span className="badge">{expense.attachments.length}</span>
+            <div className="expense-detail-section-heading-actions">
+              <span className="badge">{expense.attachments.length}</span>
+              <button className="btn btn-sm btn-default" type="button"
+                      data-expense-detail-attachments-id={expense.id}>
+                ✎ Modifica allegati
+              </button>
+            </div>
           </div>
           {expense.attachments.length ? <div className="expense-attachment-panel">
             {expense.attachments.map(attachment => <a className="expense-attachment-item" key={attachment.id} href={`/api/attachments/${attachment.id}`} target="_blank" rel="noreferrer">

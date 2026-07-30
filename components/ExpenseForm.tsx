@@ -88,6 +88,8 @@ type Props = {
     onSwitchToRecurring?: () => void;
     initialMobileStep?: number;
     openNewPayment?: boolean;
+    initialOpenPaymentId?: number;
+    focusAttachments?: boolean;
 };
 
 function toDateInput(value?: string | Date | null) {
@@ -420,6 +422,8 @@ export default function ExpenseForm({
                                         onSwitchToRecurring,
                                         initialMobileStep = 1,
                                         openNewPayment = false,
+                                        initialOpenPaymentId,
+                                        focusAttachments = false,
                                     }: Props) {
     const [isVatSettlement, setIsVatSettlement] = useState(initialExpense?.expenseType === "VAT_SETTLEMENT");
     const vatSettlementCategory = categories.find(category => category.isVatSettlementDefault);
@@ -446,7 +450,7 @@ export default function ExpenseForm({
     const [vatRate, setVatRate] = useState(normalizeMoney(initialExpense?.vatRate) || "22");
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [mobileStep, setMobileStep] = useState(() => Math.max(1, Math.min(6, initialMobileStep)));
+    const [mobileStep, setMobileStep] = useState(() => Math.max(1, Math.min(7, initialMobileStep)));
     const [supplierDisplayName, setSupplierDisplayName] = useState(
         suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.businessName
         ?? initialExpense?.merchant
@@ -470,8 +474,9 @@ export default function ExpenseForm({
             ? initialExpense.payments.map((payment, index) => paymentRowFromInitial(payment, index, paymentMethods)).map(normalizePaymentRow)
             : [],
     );
-    const [openPaymentKey, setOpenPaymentKey] = useState<number | null>(null);
+    const [openPaymentKey, setOpenPaymentKey] = useState<number | null>(() => initialOpenPaymentId ?? null);
     const openPaymentRef = useRef<HTMLDivElement | null>(null);
+    const attachmentsSectionRef = useRef<HTMLDetailsElement | null>(null);
     const [attachmentError, setAttachmentError] = useState("");
     const initialOrderDate = toDateInput(initialExpense?.receivedDate) || today;
     const initialBillingPeriod =
@@ -684,6 +689,16 @@ export default function ExpenseForm({
             });
         });
     }, [openPaymentKey]);
+
+    useEffect(() => {
+        if (!focusAttachments) return;
+        window.requestAnimationFrame(() => {
+            attachmentsSectionRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        });
+    }, [focusAttachments]);
 
     function addPaymentRow() {
         if (!canAddPayment) return;
@@ -1316,32 +1331,13 @@ export default function ExpenseForm({
                                     ref={openPaymentKey === payment.key ? openPaymentRef : null}
                                 >
                                     <input type="hidden" name="paymentId[]" value={payment.id ?? ""}/>
-                                    <div className="payment-date-field">
-                                        <span className="payment-date-label"><i aria-hidden="true">◷</i> Data pagamento</span>
-                                        <div className="payment-date-control">
-                                            <input
-                                                type="date"
-                                                name="paymentDate[]"
-                                                value={payment.paymentDate}
-                                                onChange={(event) => updatePayment(index, {paymentDate: event.currentTarget.value})}
-                                            />
-                                            <div className="payment-date-presentation" aria-hidden="true">
-                                                <strong>{payment.paymentDate ? formatDateInputLabel(payment.paymentDate) : "Seleziona la data"}</strong>
-                                                <span>Data del movimento</span>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                className="payment-date-picker-button"
-                                                aria-label="Apri calendario per data pagamento"
-                                                onClick={(event) => {
-                                                    const input = event.currentTarget.parentElement?.querySelector<HTMLInputElement>('input[type="date"]');
-                                                    input?.focus();
-                                                    input?.showPicker?.();
-                                                }}
-                                            >▦
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <DateField
+                                        className="payment-date-field"
+                                        label="Data pagamento"
+                                        name="paymentDate[]"
+                                        value={payment.paymentDate}
+                                        onChange={(value) => updatePayment(index, {paymentDate: value})}
+                                    />
                                     <label className="payment-amount-field">
                                         <div className="switch-toggle-field-label">
                                             <span className="app-form-field-icon">€</span>
@@ -1488,7 +1484,7 @@ export default function ExpenseForm({
                 </button>
             </section>
 
-            <details className="form-section full expense-wizard-step expense-wizard-step-7" open={mobileStep === 7}>
+            <details ref={attachmentsSectionRef} className="form-section full expense-wizard-step expense-wizard-step-7" open={mobileStep === 7}>
                 <summary>
                     <span>Allegati e note</span>
                     <small>File, XML, P7M e note interne</small>

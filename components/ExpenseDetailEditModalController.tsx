@@ -58,13 +58,19 @@ type Props = {
 
 export default function ExpenseDetailEditModalController({ categories, banks, paymentMethods, suppliers, returnTo }: Props) {
   const [expense, setExpense] = useState<EditExpense | null>(null);
-  const [mode, setMode] = useState<"edit" | "copy" | "payment">("edit");
+  const [mode, setMode] = useState<"edit" | "copy" | "payment" | "payment-edit" | "attachments">("edit");
+  const [targetPaymentId, setTargetPaymentId] = useState<number | null>(null);
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
 
-  async function openExpense(id: number, nextMode: "edit" | "copy" | "payment" = "edit") {
+  async function openExpense(
+    id: number,
+    nextMode: "edit" | "copy" | "payment" | "payment-edit" | "attachments" = "edit",
+    paymentId: number | null = null,
+  ) {
     setError("");
     setMode(nextMode);
+    setTargetPaymentId(paymentId);
     setLoadingId(id);
 
     try {
@@ -99,22 +105,40 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
       const detailCopyTrigger = target?.closest<HTMLElement>("[data-expense-detail-copy-id]");
       const genericCopyTrigger = target?.closest<HTMLElement>("[data-expense-copy-id]");
       const paymentTrigger = target?.closest<HTMLElement>("[data-expense-detail-payment-id]");
+      const paymentEditTrigger = target?.closest<HTMLElement>("[data-expense-detail-payment-edit-id]");
+      const attachmentsTrigger = target?.closest<HTMLElement>("[data-expense-detail-attachments-id]");
       const copyTrigger = detailCopyTrigger ?? genericCopyTrigger;
-      const trigger = editTrigger ?? copyTrigger ?? paymentTrigger;
+      const trigger = editTrigger ?? copyTrigger ?? paymentTrigger ?? paymentEditTrigger ?? attachmentsTrigger;
       if (!trigger) return;
 
-      const nextMode = copyTrigger ? "copy" : paymentTrigger ? "payment" : "edit";
-      const id = Number(copyTrigger
+      const nextMode = copyTrigger
+        ? "copy"
+        : paymentTrigger
+          ? "payment"
+          : paymentEditTrigger
+            ? "payment-edit"
+            : attachmentsTrigger
+              ? "attachments"
+              : "edit";
+      const id = Number(paymentEditTrigger
+        ? paymentEditTrigger.dataset.expenseId
+        : copyTrigger
         ? (detailCopyTrigger?.dataset.expenseDetailCopyId ?? genericCopyTrigger?.dataset.expenseCopyId)
         : paymentTrigger
           ? paymentTrigger.dataset.expenseDetailPaymentId
-          : editTrigger?.dataset.expenseDetailEditId);
+          : attachmentsTrigger
+            ? attachmentsTrigger.dataset.expenseDetailAttachmentsId
+            : editTrigger?.dataset.expenseDetailEditId);
       if (!Number.isInteger(id) || id <= 0) return;
+      const paymentId = paymentEditTrigger
+        ? Number(paymentEditTrigger.dataset.expenseDetailPaymentEditId)
+        : null;
+      if (paymentEditTrigger && (!Number.isInteger(paymentId) || Number(paymentId) <= 0)) return;
 
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      openExpense(id, nextMode);
+      openExpense(id, nextMode, paymentId);
     };
 
     document.addEventListener("click", handler, true);
@@ -125,17 +149,17 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
     {loadingId ? <div className="inline-modal-loading">Caricamento spesa #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : mode === "payment" ? `Inserisci pagamento per la spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
+    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : mode === "payment" ? `Inserisci pagamento per la spesa ${expense.id}` : mode === "payment-edit" ? `Modifica pagamento della spesa ${expense.id}` : mode === "attachments" ? `Modifica allegati della spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
       <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
-            <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : mode === "payment" ? `Nuovo pagamento · spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
-            <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : mode === "payment" ? "Registra un nuovo pagamento per questa spesa." : "Aggiorna dati, pagamenti e allegati."}</p>
+            <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : mode === "payment" ? `Nuovo pagamento · spesa #${expense.id}` : mode === "payment-edit" ? `Modifica pagamento · spesa #${expense.id}` : mode === "attachments" ? `Modifica allegati · spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
+            <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : mode === "payment" ? "Registra un nuovo pagamento per questa spesa." : mode === "payment-edit" ? "Aggiorna il pagamento selezionato." : mode === "attachments" ? "Aggiungi o aggiorna gli allegati della spesa." : "Aggiorna dati, pagamenti e allegati."}</p>
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
         </div>
         <ExpenseForm
-          key={`${mode}-${expense.id}`}
+          key={`${mode}-${expense.id}-${targetPaymentId ?? "none"}`}
           title={mode === "copy" ? "Nuova spesa da copia" : "Modifica spesa"}
           cancelHref={returnTo}
           onCancel={() => setExpense(null)}
@@ -146,8 +170,10 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
           paymentMethods={paymentMethods}
           suppliers={suppliers}
           initialExpense={expense}
-          initialMobileStep={mode === "payment" ? 4 : 1}
+          initialMobileStep={mode === "payment" || mode === "payment-edit" ? 4 : mode === "attachments" ? 7 : 1}
           openNewPayment={mode === "payment"}
+          initialOpenPaymentId={mode === "payment-edit" ? targetPaymentId ?? undefined : undefined}
+          focusAttachments={mode === "attachments"}
         />
       </div>
     </div> : null}
