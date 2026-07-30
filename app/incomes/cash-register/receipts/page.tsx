@@ -3,6 +3,9 @@ import CashRegisterReceiptList from '@/components/CashRegisterReceiptList';
 import {requireWorkspace} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {orderPaymentMethods} from '@/lib/workspace-defaults';
+import CashRegisterReceiptTrendChart from '@/components/CashRegisterReceiptTrendChart';
+import {buildDailyReceiptTrend} from '@/lib/cash-register-trend';
+import {Prisma} from '@/generated/prisma/client';
 
 function value(params: Record<string, string | string[] | undefined>, key: string) {
     const item = params[key];
@@ -23,8 +26,15 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const match = month.match(/^(\d{4})-(\d{2})$/);
     const billingYear = match ? Number(match[1]) : new Date().getFullYear();
     const billingMonth = match ? Number(match[2]) : new Date().getMonth() + 1;
+    const methodFilter = methodId ? Prisma.sql`AND "paymentMethodId" = ${methodId}` : Prisma.empty;
+    const channelFilter = channelId ? Prisma.sql`AND "salesChannelId" = ${channelId}` : Prisma.empty;
+    const fiscalFilter = fiscal === 'yes'
+        ? Prisma.sql`AND "isFiscal" = true`
+        : fiscal === 'no'
+            ? Prisma.sql`AND "isFiscal" = false`
+            : Prisma.empty;
 
-    const [receipts, methods, channels] = await Promise.all([
+    const [receipts, methods, channels, dailyAggregates] = await Promise.all([
         prisma.income.findMany({
             where: {
             workspaceId: current.workspace.id,
@@ -43,14 +53,37 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         prisma.paymentMethod.findMany({
             where: {workspaceId: current.workspace.id, cashRegisterEnabled: true, kind: {in: ['INCOME', 'BOTH']}}
         }),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]})
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
+        prisma.$queryRaw<Array<{day: string; count: number; total: string}>>(Prisma.sql`
+            SELECT
+                to_char((("creditDate" AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')::date, 'YYYY-MM-DD') AS day,
+                count(*)::int AS count,
+                coalesce(sum(amount), 0)::text AS total
+            FROM "Income"
+            WHERE "workspaceId" = ${current.workspace.id}
+              AND "companyId" = ${current.company.id}
+              AND "incomeType" = 'CASH_REGISTER'
+              AND "billingYear" = ${billingYear}
+              AND "billingMonth" = ${billingMonth}
+              ${methodFilter}
+              ${channelFilter}
+              ${fiscalFilter}
+            GROUP BY 1
+            ORDER BY 1
+        `)
     ]);
     const orderedMethods = orderPaymentMethods(methods, 'INCOME');
-    const total = receipts.reduce((sum, receipt) => sum + Number(receipt.amount), 0);
+    const trend = buildDailyReceiptTrend(
+        billingYear,
+        billingMonth,
+        dailyAggregates.map(item => ({day: item.day, count: item.count, total: Number(item.total)})),
+    );
+    const total = trend.reduce((sum, point) => sum + point.total, 0);
+    const receiptCount = trend.reduce((sum, point) => sum + point.count, 0);
 
     return <div className="grid cash-register-receipts-page">
         <div className="toolbar-card">
-            <div><h2>Scontrini registratore</h2><p className="muted">{receipts.length} movimenti · {total.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'})}</p></div>
+            <div><h2>Scontrini registratore</h2><p className="muted">{receiptCount} movimenti · {total.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'})}</p></div>
             <div className="toolbar-actions">
                 <Link className="btn btn-md btn-default" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
                 <Link className="btn btn-md btn-secondary" href="/incomes/cash-register">🧮 Reg. di cassa</Link>
@@ -73,6 +106,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             </select>
             <button className="btn btn-sm btn-primary" type="submit">Filtra</button>
         </form>
+        <CashRegisterReceiptTrendChart points={trend}/>
         <CashRegisterReceiptList
             receipts={receipts.map(receipt => ({
                 id: receipt.id,

@@ -5084,6 +5084,129 @@ table th, table td {
   gap: 8px;
 }
 
+.cash-register-trend-card {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.cash-register-trend-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.cash-register-trend-heading h2 {
+  margin: 0;
+}
+
+.cash-register-trend-heading p {
+  margin: 4px 0 0;
+}
+
+.cash-register-trend-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(105px, 1fr));
+  gap: 8px;
+}
+
+.cash-register-trend-kpis > div,
+.cash-register-trend-selection > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #f8fafc;
+}
+
+.cash-register-trend-kpis span,
+.cash-register-trend-selection span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.cash-register-trend-kpis strong,
+.cash-register-trend-selection strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-register-trend-chart-scroll {
+  overflow-x: auto;
+}
+
+.cash-register-trend-chart {
+  display: block;
+  width: 100%;
+  min-width: 720px;
+  height: auto;
+}
+
+.cash-register-trend-grid {
+  stroke: #e2e8f0;
+  stroke-width: 1;
+}
+
+.cash-register-trend-axis-label,
+.cash-register-trend-day-label {
+  fill: #64748b;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.cash-register-trend-area {
+  fill: rgba(37, 99, 235, .1);
+}
+
+.cash-register-trend-line {
+  fill: none;
+  stroke: #2563eb;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cash-register-trend-point {
+  cursor: pointer;
+  outline: none;
+}
+
+.cash-register-trend-point.has-data {
+  fill: #fff;
+  stroke: #2563eb;
+  stroke-width: 3;
+}
+
+.cash-register-trend-point.is-empty {
+  fill: #cbd5e1;
+}
+
+.cash-register-trend-point.is-selected,
+.cash-register-trend-point:focus {
+  fill: #2563eb;
+  stroke: #bfdbfe;
+  stroke-width: 5;
+}
+
+.cash-register-trend-selection {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.cash-register-trend-selection.is-empty > div:not(:first-child) {
+  background: #f8fafc;
+}
+
 .cash-register-receipt-list {
   display: grid;
   overflow: hidden;
