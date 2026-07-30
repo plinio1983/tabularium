@@ -306,7 +306,8 @@ export default function CashRegister({
             <div className="cash-register-header-actions">
                 <a className="btn btn-sm btn-secondary" href="/incomes/cash-register/receipts">
                     <span className="btn-icon" aria-hidden="true">📊</span>
-                    <span>Report<span className="hidden-sp"> scontrini</span> </span>
+                    <span className="hidden-sm">Report</span>
+                    <span className="hidden-sp">Report scontrini</span>
                 </a>
             </div>
             <div className="cash-register-header-actions">

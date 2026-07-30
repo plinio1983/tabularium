@@ -37,10 +37,12 @@ enum WorkspaceRole {
 enum ExpenseType {
   STANDARD
   VAT_SETTLEMENT
+  COUNTER
 }
 
 enum SupplierSystemRole {
   VAT_SETTLEMENT
+  COUNTER_MERCHANT
 }
 
 enum CustomerSystemRole {
@@ -489,6 +491,7 @@ model Expense {
   month                 Int
   year                  Int
   notes                 String?
+  counterExpenseRequestId String?
 
   paymentStatus         PaymentStatus @default(DA_PAGARE)
   paidAmount            Decimal   @db.Decimal(12, 2) @default(0)
@@ -509,6 +512,7 @@ model Expense {
   @@index([year, month])
   @@index([merchant])
   @@index([expenseType])
+  @@unique([workspaceId, counterExpenseRequestId])
 }
 
 model ExpensePayment {

@@ -184,7 +184,7 @@ export default async function ClientsPage({searchParams}: {
                         <th data-sort-key="alias">Referente</th>
                         <th className="text-center" data-sort-key="open-count" data-sort-type="number">Incassi<br/>non accr.
                         </th>
-                        <th className="" data-sort-key="open-amount" data-sort-type="number">Importo<br/>non accr.
+                        <th className="" data-sort-key="open-amount" data-sort-type="number">Importo<br/>Non accr.
                         </th>
                         <th className="text-center" data-sort-key="annual-count" data-sort-type="number">Ordini<br/>anno
                         </th>

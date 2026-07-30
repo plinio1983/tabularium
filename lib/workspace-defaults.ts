@@ -94,6 +94,7 @@ export const defaultPaymentMethods = [
 export const vatSettlementSupplierName = 'Erario – Saldo IVA';
 export const vatSettlementCategoryCode = 'TAX';
 export const cashRegisterCustomerName = 'Banco';
+export const counterExpenseSupplierName = 'Merchant';
 
 export function orderExpenseCategories<T extends { id: number; code: string; name: string }>(categories: T[]) {
   const defaultCodes = defaultCategories.map(([code]) => code);
@@ -253,6 +254,17 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
       data: { workspaceId, businessName: vatSettlementSupplierName, alias: 'Erario', systemRole: 'VAT_SETTLEMENT', internalNotes: 'Fornitore di sistema per i versamenti del saldo IVA.' }
     });
   }
+
+  await prisma.supplier.upsert({
+    where: {workspaceId_systemRole: {workspaceId, systemRole: 'COUNTER_MERCHANT'}},
+    update: {businessName: counterExpenseSupplierName},
+    create: {
+      workspaceId,
+      businessName: counterExpenseSupplierName,
+      systemRole: 'COUNTER_MERCHANT',
+      internalNotes: 'Fornitore di sistema per le spese da banco.'
+    }
+  });
 
   const workspace = await prisma.workspace.findUnique({ where: { id: workspaceId }, select: { vatSettlementCategoryId: true } });
   if (!workspace?.vatSettlementCategoryId) {

@@ -37,7 +37,7 @@ a {
 }
 
 .gap-2 {
-  gap: 2px
+  gap: 2px !important;
 }
 
 .gap-3 {
@@ -45,7 +45,7 @@ a {
 }
 
 .gap-4 {
-  gap: 4px
+  gap: 4px !important;
 }
 
 .gap-6 {
@@ -4640,7 +4640,7 @@ table th, table td {
 .cash-register-actions .cash-register-submit {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
+  grid-template-columns: 56px minmax(0, 1fr) 56px;
   align-items: stretch;
   justify-content: stretch;
   padding: 0;
@@ -4659,6 +4659,7 @@ table th, table td {
 
 .cash-register-actions.has-confirmation .cash-register-submit {
   grid-column: auto;
+  max-width: 100%;
 }
 
 .cash-register-actions .cash-register-cancel {
@@ -4684,7 +4685,7 @@ table th, table td {
   height: 100%;
   margin: 0;
   border-right: 1px solid rgba(255, 255, 255, .28);
-  background: rgba(0, 0, 0, .08);
+  //background: rgba(0, 0, 0, .08);
   font-size: 22px;
   line-height: 1;
 }
@@ -4792,6 +4793,172 @@ table th, table td {
 .cash-register-settings-form {
   display: grid;
   gap: 14px;
+}
+
+.counter-expense-shell {
+  grid-template-rows: auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto;
+}
+
+.counter-expense-controls {
+  grid-template-columns: auto minmax(170px, .8fr) minmax(180px, 1.2fr);
+}
+
+.counter-expense-actions {
+  grid-template-columns: 1fr;
+}
+
+.counter-expense-payment-modal {
+  width: min(768px, 100%);
+  max-height: min(760px, calc(100dvh - 36px));
+  overflow-y: auto;
+}
+
+.counter-expense-choice-list {
+  display: grid;
+  gap: 8px;
+}
+
+.counter-expense-payment-modal .counter-expense-choice-list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #f8fafc;
+  color: var(--text);
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.counter-expense-payment-modal .counter-expense-choice-list button > span:first-child {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  font-size: 20px;
+}
+
+.counter-expense-payment-modal .counter-expense-choice-list button.is-primary {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.counter-expense-payment-modal .counter-expense-choice-list button.is-selected {
+  border-color: #2563eb;
+  background: #dbeafe;
+  color: #1d4ed8;
+  box-shadow: inset 0 0 0 1px #2563eb;
+}
+
+.counter-expense-payment-modal .counter-expense-choice-list button small {
+  display: block;
+  margin-top: 2px;
+  color: #2563eb;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.counter-expense-summary {
+  display: grid;
+  gap: 12px;
+}
+
+.counter-expense-summary .expense-review-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 4px 2px;
+}
+
+.counter-expense-summary .expense-review-heading h3 {
+  margin: 3px 0 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.counter-expense-summary .expense-review-heading > strong {
+  color: var(--accent);
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+.counter-expense-summary .expense-review-kicker {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.counter-expense-summary .expense-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin: 22px 0 58px 0;
+}
+
+.counter-expense-summary .expense-review-grid > div {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.counter-expense-summary .expense-review-grid > div.wide {
+  grid-column: 1 / -1;
+}
+
+.counter-expense-summary .expense-review-item > i {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 11px;
+  background: #eef2ff;
+  color: var(--accent);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.counter-expense-summary .expense-review-grid span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.counter-expense-summary .expense-review-grid strong {
+  overflow-wrap: anywhere;
+  color: #172033;
+  font-size: 13px;
+}
+
+.counter-expense-bank-section {
+  display: grid;
+  gap: 8px;
+}
+
+.counter-expense-bank-section h3 {
+  margin: 4px 0 0;
+  font-size: 15px;
+}
+
+.counter-expense-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 12px;
 }
 
 .cash-register-settings-form {
@@ -12082,6 +12249,16 @@ button.bulk-direct-danger {
 .single-expense-form.expense-mobile-wizard .payment-amount-field .money-input > span {
   left: 14px;
   width: 20px;
+}
+
+.single-expense-form .expense-type-choice-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+@media (min-width: 900px) {
+  .single-expense-form .expense-type-choice-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
 }
 
 .expense-form textarea {

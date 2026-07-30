@@ -332,6 +332,12 @@
   }
 }
 
+@media (min-width: 577px) and (max-width: 768px) {
+  .hidden-sm {
+    display: none !important;
+  }
+}
+
 @media (min-width: 761px) {
   .hidden-desktop {
     display: none !important;
@@ -1182,6 +1188,11 @@
 @media (max-width: 576px) {
   .supplier-filters {
     grid-template-columns: 1fr;
+  }
+
+  .expense-form .form-section-grid {
+    padding: 12px 0;
+    gap: 13px;
   }
 }
 
@@ -2774,7 +2785,6 @@
     font-size: 15px;
   }
 
-  .expense-form .form-section-grid,
   .expense-form .form-section-stack {
     padding: 12px;
     gap: 13px;
@@ -3590,6 +3600,10 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 
+  .counter-expense-controls {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
   .cash-register-controls select {
     grid-column: 1 / -1;
     height: 54px;
@@ -3624,6 +3638,29 @@
     width: 100%;
     padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
     border-radius: 18px 18px 0 0;
+  }
+
+  .counter-expense-payment-modal {
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .counter-expense-summary {
+    gap: 16px;
+  }
+
+  .counter-expense-modal-actions {
+    position: sticky;
+    bottom: calc(-16px - env(safe-area-inset-bottom));
+    margin-right: -16px;
+    margin-left: -16px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: #fff;
+  }
+
+  .counter-expense-modal-actions .btn {
+    flex: 1;
+    min-width: 0;
   }
 
   .cash-register-receipt-filters {

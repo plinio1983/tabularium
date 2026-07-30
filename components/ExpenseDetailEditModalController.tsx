@@ -36,7 +36,7 @@ type EditExpense = {
   invoiceStatus?: string | null;
   isDeclared?: boolean;
   isRecurring?: boolean;
-  expenseType?: "STANDARD" | "VAT_SETTLEMENT";
+  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER";
   notes?: string | null;
   payments?: Array<{
     id?: number;

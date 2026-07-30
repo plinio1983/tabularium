@@ -16,8 +16,10 @@ function isCompactMobileHeaderPath(pathname: string) {
     || /^\/incomes\/\d+$/.test(pathname)
     || /^\/suppliers\/\d+$/.test(pathname)
     || pathname === '/expenses/new'
+    || pathname === '/expenses/counter'
     || pathname === '/recurring-expenses/new'
-    || pathname === '/incomes/new';
+    || pathname === '/incomes/new'
+    || pathname === '/incomes/cash-register';
 }
 
 function isChromeHiddenPath(pathname: string) {

@@ -21,7 +21,7 @@ type SupplierOption = {
 
 type EditExpense = {
   id: number;
-  expenseType?: "STANDARD" | "VAT_SETTLEMENT";
+  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER";
   receivedDate?: string | Date | null;
   dueDate?: string | Date | null;
   supplierId?: number | null;

@@ -67,7 +67,7 @@ type InitialExpense = {
     invoiceStatus?: string | null;
     isDeclared?: boolean;
     isRecurring?: boolean;
-    expenseType?: "STANDARD" | "VAT_SETTLEMENT";
+    expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER";
     payments?: InitialPayment[];
     notes?: string | null;
 };
@@ -773,7 +773,7 @@ export default function ExpenseForm({
     return (
         <form
             ref={formRef}
-            className={`card form expense-form single-expense-form expense-mobile-wizard expense-mobile-step-${mobileStep}`}
+            className={`form expense-form single-expense-form expense-mobile-wizard expense-mobile-step-${mobileStep}`}
             action={action}
             method="post"
             encType="multipart/form-data"
@@ -823,6 +823,15 @@ export default function ExpenseForm({
                         <span aria-hidden="true">●</span>
                         <strong>Singola</strong>
                         <small>Spesa occasionale</small>
+                    </button>
+                    <button
+                        type="button"
+                        disabled={isExistingExpense}
+                        onClick={() => window.location.assign("/expenses/counter")}
+                    >
+                        <span aria-hidden="true">🛍️</span>
+                        <strong>Da banco</strong>
+                        <small>Acquisto già pagato</small>
                     </button>
                     <button
                         type="button"
@@ -1139,7 +1148,7 @@ export default function ExpenseForm({
                         <div className="expense-invoice-step-row expense-wizard-step expense-wizard-step-5">
                             <div className="expense-invoice-switches">
                                 <label className="expense-wizard-mobile-switch app-form-field-label">
-                                    <span>Fattura elettronica</span>
+                                    <span className="app-form-label">Fattura elettronica</span>
                                     <span className="switch">
                                     <input
                                         type="checkbox"

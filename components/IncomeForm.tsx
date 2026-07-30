@@ -215,7 +215,7 @@ export default function IncomeForm({
             <div className="expense-wizard-header full">
                 <div className="expense-wizard-heading">
                     <span>Passaggio {mobileStep} di 6</span>
-                    <strong>{["Vendita", "Importo", "Cliente", "Pagamento", "Fattura", "Riepilogo"][mobileStep - 1]}</strong>
+                    <strong>{["Vendita", "Importo", "Cliente", "Accredito", "Fattura", "Riepilogo"][mobileStep - 1]}</strong>
                 </div>
                 <div className="expense-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
                     <span style={{width: `${mobileStep / 6 * 100}%`}}/>
@@ -278,8 +278,11 @@ export default function IncomeForm({
                 <div className="form-section-grid income-form-section-grid">
                     <div className="amount-vat-row full income-amount-vat-row expense-wizard-step expense-wizard-step-2 income-wizard-amount">
                         <div className="income-wizard-amount-entry">
-                            <div className="toggle-field switch-toggle-field income-switch-control income-fiscal-switch">
-                                <span>Fiscale</span>
+                            <div className="app-form-field-label toggle-field switch-toggle-field income-switch-control income-fiscal-switch">
+                                <div className="switch-toggle-field-label gap-4">
+                                    <span className="app-form-field-icon">⇆</span>
+                                    <span className="app-form-label">Fiscale</span>
+                                </div>
                                 <input type="hidden" name="isFiscal" value="false"/>
                                 <label className="switch">
                                     <input
@@ -339,10 +342,10 @@ export default function IncomeForm({
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
 
-                    <div className="toggle-field switch-toggle-field income-switch-control income-form-section-credit">
+                    <div className="app-form-field-label toggle-field-label switch-toggle-field income-switch-control income-form-section-credit">
                         <div className="switch-toggle-field-label">
                             <span className="app-form-field-icon">⇆</span>
-                            <label className="--app-form-label">Accreditato</label>
+                            <span className="app-form-label">Accreditato</span>
                         </div>
                         <input type="hidden" name="isCredited" value="false"/>
                         <label className="switch">
@@ -354,7 +357,7 @@ export default function IncomeForm({
                                 onChange={(event) => setIsCredited(event.currentTarget.checked)}
                             />
                             <span className="slider"/>
-                            <span className="ml-12 text-muted">{isCredited ? "Accreditato" : "Non accreditato"}</span>
+                            <small className="text-muted">{isCredited ? "Accreditato" : "Non accreditato"}</small>
                         </label>
                     </div>
 
@@ -382,8 +385,13 @@ export default function IncomeForm({
                 </summary>
                 <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
                     <MonthField label="Periodo contabile" name="billingPeriod" value={billingPeriod} onChange={setBillingPeriod} required/>
-                    <div className="toggle-field switch-toggle-field income-switch-control income-form-section-invoice-issued">
-                        <label className="app-form-label">Fattura emessa</label>
+                    <div className="app-form-field-label toggle-field switch-toggle-field income-switch-control income-form-section-invoice-issued">
+
+                        <div className="switch-toggle-field-label">
+                            <span className="app-form-field-icon">⇆</span>
+                            <span className="app-form-label">Fattura emessa</span>
+                        </div>
+                        {/*<label className="app-form-label">Fattura emessa</label>*/}
                         <label className="switch">
                             <input
                                 type="checkbox"
@@ -391,7 +399,7 @@ export default function IncomeForm({
                                 onChange={(event) => toggleInvoiceIssued(event.currentTarget.checked)}
                             />
                             <span className="slider"/>
-                            <span className="ml-12 text-muted">{isFiscal && invoiceStatus === "EMESSA" ? "Emessa" : invoiceStatus === "PARZIALE" ? "Parziale" : "Non inviata"}</span>
+                            <small className="text-muted">{isFiscal && invoiceStatus === "EMESSA" ? "Emessa" : invoiceStatus === "PARZIALE" ? "Parziale" : "Non inviata"}</small>
                         </label>
                     </div>
                     {/*<div className="toggle-field-wrap">*/}

@@ -34,7 +34,7 @@ type ExpenseListItem = {
   month: number;
   year: number;
   isRecurring: boolean;
-  expenseType?: 'STANDARD' | 'VAT_SETTLEMENT';
+  expenseType?: 'STANDARD' | 'VAT_SETTLEMENT' | 'COUNTER';
   recurringExpenseId?: number | null;
   isDeclared: boolean;
   hasElectronicInvoice: boolean;
