@@ -321,7 +321,7 @@ export default function IncomesList({
                         <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
                         <td>{aggregateVatBadge(group)}</td>
                         <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span></td>
-                        <td>-</td>
+                        <td className=""><span className="badge badge-color tone-muted">-</span></td>
                         <td>{dateLabel(group.latestCreditDate)}</td>
                         <td>{group.paymentMethodIcon ?? '  •  '} {group.paymentMethod}</td>
                     </tr>;
@@ -355,7 +355,7 @@ export default function IncomesList({
                         <td>{vatBadge(income.vatRate)}</td>
                         <td><span className={badgeClass(status.className)}>{status.icon} {status.label}</span></td>
                         <td>{income.isFiscal ?
-                            <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : '-'}</td>
+                            <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : <span className="badge tone-muted">-</span> }</td>
                         <td>{dateLabel(income.creditDate)}</td>
                         <td>{income.paymentMethodRef?.icon ?? '  •  '} {paymentMethod}</td>
                     </tr>;

@@ -6,6 +6,7 @@ import {DateField, FormField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
 import SupplierCreateModal from "@/components/SupplierCreateModal";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
+import MobileFormStickyActions from "@/components/MobileFormStickyActions";
 
 type Option = {
     id: number;
@@ -790,22 +791,17 @@ export default function RecurringExpenseForm({
                 </div>
             </details>
 
-            <div className="expense-wizard-actions full">
-                {submitError ? <p className="inline-warning full">{submitError}</p> : null}
-                <div className="expense-wizard-actions-row">
-                    {mobileStep > 1 ?
-                        <button className="btn btn-md btn-default" type="button" onClick={() => goToMobileStep(mobileStep - 1)}>← Indietro</button> : onCancel ?
-                            <button className="btn btn-md btn-default" type="button" onClick={onCancel}>× Annulla</button> : cancelHref ?
-                                <a className="btn btn-md btn-default" href={cancelHref}>× Annulla</a> : <span/>}
-                    {mobileStep < 6 ? <button className="btn btn-md btn-primary" type="button" onClick={event => {
-                            event.preventDefault();
-                            nextMobileStep();
-                        }}>Avanti →</button> :
-                        <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting}>
-                            <span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : "Salva spesa"}
-                        </button>}
-                </div>
-            </div>
+            <MobileFormStickyActions
+                currentStep={mobileStep}
+                submitStep={6}
+                onBack={() => goToMobileStep(mobileStep - 1)}
+                onNext={nextMobileStep}
+                onCancel={onCancel}
+                cancelHref={cancelHref}
+                submitLabel="Salva spesa"
+                isSubmitting={isSubmitting}
+                error={submitError}
+            />
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}

@@ -6,6 +6,7 @@ import {CurrencyInput} from "@/components/CurrencyInput";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 import {DateField, MonthField, SelectField} from "@/components/FormControls";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
+import MobileFormStickyActions from "@/components/MobileFormStickyActions";
 
 type InitialIncome = {
     id?: number;
@@ -166,10 +167,12 @@ export default function IncomeForm({
     }
 
     function handleAmountChange(value: string) {
+        amountRef.current?.setCustomValidity("");
         setAmount(formatCurrencyInput(value));
     }
 
     function appendAmountKey(key: string) {
+        amountRef.current?.setCustomValidity("");
         setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
         focusAmount();
     }
@@ -183,6 +186,15 @@ export default function IncomeForm({
     }, [mobileStep]);
 
     function validateMobileStep() {
+        if (mobileStep === 2) {
+            const amountIsValid = Number.isFinite(amountValue) && amountValue > 0;
+            amountRef.current?.setCustomValidity(amountIsValid ? "" : "Inserisci un importo maggiore di zero.");
+            if (!amountIsValid) {
+                amountRef.current?.reportValidity();
+                focusAmount();
+                return false;
+            }
+        }
         const elements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.expense-wizard-step-${mobileStep}`) ?? []);
         const fields = elements.flatMap(element =>
             Array.from(element.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea")),
@@ -458,19 +470,15 @@ export default function IncomeForm({
                 </div>
             </details>
 
-            <div className="expense-wizard-actions full">
-                <div className="expense-wizard-actions-row">
-                    {mobileStep > 1 ?
-                        <button className="btn btn-md btn-default" type="button" onClick={() => goToMobileStep(mobileStep - 1)}>← Indietro</button> : onCancel ?
-                            <button className="btn btn-md btn-default" type="button" onClick={onCancel}>× Annulla</button> :
-                            <a className="btn btn-md btn-default" href={cancelHref ?? "/incomes"}>× Annulla</a>}
-                    {mobileStep < 6 ? <button className="btn btn-md btn-primary" type="button" onClick={event => {
-                        event.preventDefault();
-                        nextMobileStep();
-                    }}>Avanti →</button> : <button className="btn btn-md btn-primary" type="submit">
-                        <span className="btn-icon">✓</span> {submitLabel}</button>}
-                </div>
-            </div>
+            <MobileFormStickyActions
+                currentStep={mobileStep}
+                submitStep={6}
+                onBack={() => goToMobileStep(mobileStep - 1)}
+                onNext={nextMobileStep}
+                onCancel={onCancel}
+                cancelHref={cancelHref ?? "/incomes"}
+                submitLabel={submitLabel}
+            />
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 <button className="btn btn-md btn-primary" type="submit">

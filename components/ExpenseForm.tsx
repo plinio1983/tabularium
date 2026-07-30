@@ -7,6 +7,7 @@ import {CurrencyInput} from "@/components/CurrencyInput";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import SupplierCreateModal from "@/components/SupplierCreateModal";
+import MobileFormStickyActions from "@/components/MobileFormStickyActions";
 
 type Option = {
     id: number;
@@ -1537,29 +1538,19 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            <div className="expense-wizard-actions full">
-                {submitError ? <p className="inline-warning full">{submitError}</p> : null}
-                <div className="expense-wizard-actions-row">
-                    {mobileStep > 1 ?
-                        <button className="btn btn-md btn-default" type="button" onClick={previousMobileStep}>
-                            ← {mobileStep === 7 ? "Riepilogo" : "Indietro"}
-                        </button> : onCancel ?
-                            <button className="btn btn-md btn-default" type="button" onClick={onCancel}>
-                                × Annulla
-                            </button> :
-                            <a className="btn btn-md btn-default" href={cancelHref ?? "/expenses"}>× Annulla</a>}
-                    {mobileStep < 6 ? <button className="btn btn-md btn-primary" type="button" onClick={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            nextMobileStep();
-                        }}>
-                            Avanti →
-                        </button> :
-                        <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting || Boolean(attachmentError)}>
-                            <span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
-                        </button>}
-                </div>
-            </div>
+            <MobileFormStickyActions
+                currentStep={mobileStep}
+                submitStep={6}
+                onBack={previousMobileStep}
+                onNext={nextMobileStep}
+                onCancel={onCancel}
+                cancelHref={cancelHref ?? "/expenses"}
+                backLabel={mobileStep === 7 ? "Riepilogo" : "Indietro"}
+                submitLabel={submitLabel}
+                isSubmitting={isSubmitting}
+                submitDisabled={Boolean(attachmentError)}
+                error={submitError}
+            />
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}
