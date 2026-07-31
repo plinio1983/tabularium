@@ -234,9 +234,12 @@ export default async function SuppliersPage({searchParams}: {
                     <SupplierFiltersDrawer filters={filters}/>
                 </div>
             </div>
-            <form className="supplier-quick-search" action="/suppliers" method="get" role="search">
-                <label htmlFor="supplierQuickSearch">Ricerca rapida</label>
-                <div className="supplier-quick-search-field">
+            <form className="supplier-quick-search app-quick-search-form" action="/suppliers" method="get" role="search">
+                <label className="app-form-field-label" htmlFor="supplierQuickSearch">
+                    <span className="app-form-field-icon" aria-hidden="true">⌕</span>
+                    <span>Ricerca fornitore</span>
+                </label>
+                <div className="supplier-quick-search-field app-quick-search-field">
                     <input
                         id="supplierQuickSearch"
                         name="businessName"

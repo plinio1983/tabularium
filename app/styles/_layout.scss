@@ -2139,6 +2139,8 @@ body.drawer-open {
 
 .recurring-mobile-middle {
   display: flex;
+  margin-top: -3px;
+  align-items: center;
 }
 
 .recurring-mobile-main-title strong,
@@ -10255,6 +10257,42 @@ button.bulk-direct-link {
   flex: 0 0 auto;
 }
 
+.app-quick-search-form {
+  width: min(100%, 560px);
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--card) 94%, var(--primary) 6%);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.app-quick-search-form > .app-form-field-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.app-quick-search-field {
+  gap: 8px;
+}
+
+.app-quick-search-field input {
+  min-height: 42px;
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.app-quick-search-field .btn {
+  min-width: 44px;
+  min-height: 42px;
+  border-radius: 10px;
+}
+
 /*.supplier-linked-expenses-table {*/
 /*    min-width: 1180px;*/
 /*}*/
@@ -11816,6 +11854,8 @@ button.bulk-direct-danger {
   align-items: flex-start;
   justify-content: space-between;
   gap: 4px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .expense-mobile-title-row strong {

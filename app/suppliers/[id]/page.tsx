@@ -113,7 +113,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <DetailBackButton href={returnTo}/>
           </div>
           {!supplier.systemRole ? <div className="right-side">
-            <button className="btn btn-sm btn-primary" type="button" data-supplier-edit-id={supplier.id}>
+            <button className="btn btn-sm btn-default" type="button" data-supplier-edit-id={supplier.id}>
               <span className="btn-icon">✎</span> Modifica
             </button>
             <DeleteActionButton

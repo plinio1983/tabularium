@@ -98,11 +98,14 @@ export default async function ClientsPage({searchParams}: {
             <div className="list-heading recurring-list-heading">
                 <div><h2>Lista clienti</h2><p className="muted">Risultati mostrati: {rows.length}</p></div>
                 <ClientFiltersDrawer filters={filters}/></div>
-            <form className="supplier-quick-search" action="/clients" method="get" role="search">
-                <label htmlFor="clientQuickSearch">Ricerca rapida</label>
-                <div className="supplier-quick-search-field">
+            <form className="supplier-quick-search app-quick-search-form" action="/clients" method="get" role="search">
+                <label className="app-form-field-label" htmlFor="clientQuickSearch">
+                    <span className="app-form-field-icon" aria-hidden="true">⌕</span>
+                    <span>Ricerca cliente</span>
+                </label>
+                <div className="supplier-quick-search-field app-quick-search-field">
                     <input id="clientQuickSearch" name="businessName" defaultValue={input(filters, 'businessName')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-secondary" type="submit" aria-label="Cerca cliente"><SearchIcon/>
+                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca cliente"><SearchIcon/>
                     </button>
                 </div>
             </form>
