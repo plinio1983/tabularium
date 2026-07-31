@@ -24,18 +24,8 @@ export async function updateAccountAction(formData: FormData) {
 
   const name = value(formData, 'name') || null;
   const email = normalizeEmail(value(formData, 'email'));
-  const currentPassword = value(formData, 'currentPassword');
-  const newPassword = value(formData, 'newPassword');
-  const confirmPassword = value(formData, 'confirmPassword');
 
   if (!email) accountError('invalid');
-  if (current.user.passwordHash && !currentPassword) accountError('invalid');
-  if (current.user.passwordHash && !verifyPassword(currentPassword, current.user.passwordHash)) accountError('password');
-  if (!current.user.passwordHash && currentPassword) accountError('password');
-  if (newPassword || confirmPassword) {
-    if (newPassword.length < 10) accountError('password_short');
-    if (newPassword !== confirmPassword) accountError('password_mismatch');
-  }
 
   if (email !== current.user.email) {
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -48,13 +38,12 @@ export async function updateAccountAction(formData: FormData) {
     data: {
       name,
       email,
-      ...(emailChanged ? { emailVerifiedAt: null, googleEmailVerified: false } : {}),
-      ...(newPassword ? { passwordHash: hashPassword(newPassword) } : {})
+      ...(emailChanged ? { emailVerifiedAt: null, googleEmailVerified: false } : {})
     }
   });
-  if (newPassword || emailChanged) {
+  if (emailChanged) {
     await prisma.authSession.deleteMany({
-      where: { userId: current.user.id, ...(emailChanged ? {} : { id: { not: current.session.id } }) }
+      where: { userId: current.user.id }
     });
   }
   if (current.workspace) await writeAuditLog({
@@ -65,7 +54,7 @@ export async function updateAccountAction(formData: FormData) {
     entityId: current.user.id,
     metadata: {
       emailChanged,
-      passwordChanged: Boolean(newPassword)
+      passwordChanged: false
     }
   });
   if (emailChanged) {
@@ -74,6 +63,45 @@ export async function updateAccountAction(formData: FormData) {
   }
 
   redirect('/settings/account?saved=1');
+}
+
+function passwordError(code: string): never {
+  redirect(`/settings/account/password?error=${encodeURIComponent(code)}`);
+}
+
+export async function updatePasswordAction(formData: FormData) {
+  const current = await getCurrentSession();
+  if (!current) redirect('/login?next=/settings/account/password');
+
+  const currentPassword = value(formData, 'currentPassword');
+  const newPassword = value(formData, 'newPassword');
+  const confirmPassword = value(formData, 'confirmPassword');
+
+  if (current.user.passwordHash && !currentPassword) passwordError('invalid');
+  if (current.user.passwordHash && !verifyPassword(currentPassword, current.user.passwordHash)) passwordError('password');
+  if (!newPassword || newPassword.length < 10) passwordError('password_short');
+  if (newPassword !== confirmPassword) passwordError('password_mismatch');
+
+  await prisma.$transaction([
+    prisma.user.update({
+      where: {id: current.user.id},
+      data: {passwordHash: hashPassword(newPassword)}
+    }),
+    prisma.authSession.deleteMany({
+      where: {userId: current.user.id, id: {not: current.session.id}}
+    })
+  ]);
+
+  if (current.workspace) await writeAuditLog({
+    workspaceId: current.workspace.id,
+    userId: current.user.id,
+    action: 'UPDATE',
+    entityType: 'UserAccount',
+    entityId: current.user.id,
+    metadata: {emailChanged: false, passwordChanged: true}
+  });
+
+  redirect('/settings/account/password?saved=1');
 }
 
 export async function revokeOtherSessionsAction() {

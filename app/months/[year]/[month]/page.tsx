@@ -12,6 +12,8 @@ import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/wor
 import SearchIcon from '@/components/SearchIcon';
 import {prepareIncomeList} from '@/lib/income-list';
 import {sortExpensesByReceivedDateDesc} from '@/lib/expense-calculations';
+import MonthComparisonPanel from '@/components/MonthComparisonPanel';
+import {comparisonPeriod, type MonthComparisonKind} from '@/lib/month-comparison';
 
 function capitalize(value: string) {
     return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : value;
@@ -38,12 +40,19 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const month = Number(resolvedParams.month);
     const rawMode = Array.isArray(query.mode) ? query.mode[0] : query.mode;
     const mode: 'overall' | 'fiscal' = rawMode === 'fiscal' ? 'fiscal' : 'overall';
+    const rawComparisonKind = Array.isArray(query.compare) ? query.compare[0] : query.compare;
+    const comparisonKind: MonthComparisonKind = rawComparisonKind === 'year' || rawComparisonKind === 'custom'
+        ? rawComparisonKind
+        : 'previous';
+    const rawComparisonMonth = Array.isArray(query.compareMonth) ? query.compareMonth[0] : query.compareMonth;
+    const comparedPeriod = comparisonPeriod({year, month}, comparisonKind, rawComparisonMonth);
     const backHref = safeReturnTo(query.returnTo);
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
-    const [report, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers, incomeCategories] = await Promise.all([
+    const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers, incomeCategories] = await Promise.all([
         getMonthlyReport(year, month, current.workspace.id, mode, current.company.id),
+        getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id),
         mode === 'fiscal'
             ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id, companyId: current.company.id})
             : getOrderDateMonthSummary(year, month, current.workspace.id, current.company.id),
@@ -166,6 +175,25 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     className="month-report-positive">{euroInt(report.totals.estimatedNetProfit)}</strong></div>
             </div>
         </section>
+
+        <MonthComparisonPanel
+            current={{
+                year,
+                month,
+                totals: report.totals,
+                hasMovements: report.expenses.length > 0 || report.incomes.length > 0
+            }}
+            comparison={{
+                year: comparedPeriod.year,
+                month: comparedPeriod.month,
+                totals: comparisonReport.totals,
+                hasMovements: comparisonReport.expenses.length > 0 || comparisonReport.incomes.length > 0
+            }}
+            kind={comparisonKind}
+            mode={mode}
+            returnTo={backHref}
+            isCurrentMonth={year === currentYear && month === currentMonth}
+        />
 
         <section className="month-report-section">
             <h3>Indicatori fiscali</h3>

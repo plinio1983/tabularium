@@ -1045,14 +1045,57 @@
   }
 
   .sales-channel-edit-actions {
-    margin-top: auto;
-    align-items: stretch;
-    flex-direction: column-reverse;
+    display: none !important;
   }
 
-  .sales-channel-edit-actions .btn {
+  .sales-channel-edit-form {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+
+  .sales-channel-edit-form .mobile-form-sticky-actions {
+    position: fixed;
+    z-index: 430;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 10px;
+    display: flex;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .98);
+    box-shadow: 0 -12px 34px rgba(15, 23, 42, .16);
+  }
+
+  .sales-channel-edit-form .mobile-form-sticky-actions-row {
+    display: flex;
+    gap: 10px;
     width: 100%;
-    max-width: none;
+  }
+
+  .sales-channel-edit-form .mobile-form-sticky-actions-row .btn {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sales-channel-register-card {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    padding: 15px;
+  }
+
+  .sales-channel-register-title {
+    align-items: flex-start;
+  }
+
+  .sales-channel-register-card select {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .sales-channel-register-card .btn {
+    width: 100%;
   }
 
   .app-form-modal,
@@ -1063,10 +1106,12 @@
 
   .modal-card-wide,
   .modal-card.modal-card-wide {
-    width: calc(100vw - 20px);
-    max-width: calc(100vw - 20px);
+    width: calc(100vw);
+    max-width: calc(100vw);
+    //width: calc(100vw - 20px);
+    //max-width: calc(100vw - 20px);
     max-height: calc(100dvh - 20px);
-    border-radius: 18px;
+    //border-radius: 18px;
     padding: 12px;
   }
 
@@ -2968,6 +3013,324 @@
     grid-template-columns: 1fr;
   }
 
+  .account-styled-form {
+    gap: 13px;
+    padding: 14px;
+    padding-bottom: 14px;
+  }
+
+  .account-form-intro {
+    align-items: flex-start;
+  }
+
+  .account-styled-form .account-form-section-grid,
+  .account-styled-form .account-password-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 14px;
+  }
+
+  .account-styled-form .account-form-section > summary {
+    padding: 13px 14px;
+  }
+
+  .account-styled-form .app-form-field-label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .account-styled-form .app-form-field-icon {
+    width: 25px;
+    height: 25px;
+    border-radius: 9px;
+  }
+
+  .account-styled-form .app-form-field input {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .account-form-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 2px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  .account-form-actions .btn {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .account-sessions-card {
+    padding: 15px;
+  }
+
+  .account-sessions-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .account-sessions-heading .badge {
+    margin-left: 54px;
+  }
+
+  .account-password-link-card .account-sessions-heading > .btn {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .account-sessions-card > form,
+  .account-sessions-card .btn {
+    width: 100%;
+  }
+
+  .workspace-profile-card,
+  .workspace-edit-card,
+  .workspace-audit-link {
+    width: 100%;
+  }
+
+  .workspace-profile-card {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 15px;
+  }
+
+  .workspace-profile-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+  }
+
+  .workspace-profile-copy {
+    width: calc(100% - 61px);
+  }
+
+  .workspace-role-badge {
+    margin-left: 61px;
+  }
+
+  .workspace-edit-card {
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .workspace-card-heading {
+    align-items: flex-start;
+  }
+
+  .workspace-edit-form .app-form-field-label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .workspace-edit-form .app-form-field-icon {
+    width: 25px;
+    height: 25px;
+    border-radius: 9px;
+  }
+
+  .workspace-edit-form .app-form-field input {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .workspace-form-actions {
+    //display: grid !important;
+    //grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding-top: 14px;
+  }
+
+  .workspace-form-actions .btn {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .workspace-audit-link {
+    padding: 15px;
+  }
+
+  .expense-category-list-card {
+    width: 100%;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .category-create-toggle {
+    align-items: flex-start;
+  }
+
+  .category-create-toggle-copy {
+    align-items: flex-start;
+  }
+
+  .category-create-toggle-copy small {
+    line-height: 1.35;
+  }
+
+  .expense-category-create-form {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding-top: 14px;
+  }
+
+  .expense-category-create-form .span-2,
+  .expense-category-create-form .full {
+    grid-column: 1;
+  }
+
+  .expense-category-create-form .app-form-field input,
+  .expense-category-create-form .app-select-control select {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .category-create-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  .category-create-actions .btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .expense-category-settings-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .expense-category-settings-actions .category-settings-delete-form {
+    order: 1;
+    display: block;
+    margin: 0;
+  }
+
+  .expense-category-settings-actions .btn {
+    min-width: 0;
+    max-width: 100%;
+    order: 2;
+  }
+
+  .expense-category-edit-backdrop {
+    padding: 0;
+  }
+
+  .expense-category-edit-modal {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: 14px;
+    border: 0;
+    border-radius: 0;
+    overflow-y: auto;
+  }
+
+  .expense-category-edit-form {
+    grid-template-columns: 1fr;
+    align-content: start;
+    padding: 14px 0 0;
+  }
+
+  .expense-category-edit-form .span-2,
+  .expense-category-edit-form .full {
+    grid-column: 1;
+  }
+
+  .expense-category-edit-form .app-form-field input,
+  .expense-category-edit-form .app-select-control select {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .expense-category-edit-actions {
+    display: none !important;
+  }
+
+  .expense-category-edit-form {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+
+  .expense-category-edit-form .mobile-form-sticky-actions {
+    position: fixed;
+    z-index: 430;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .98);
+    box-shadow: 0 -12px 34px rgba(15, 23, 42, .16);
+  }
+
+  .expense-category-edit-form .mobile-form-sticky-actions-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .expense-category-edit-form .mobile-form-sticky-actions-row > .btn {
+    flex: 1 1 0;
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .vat-settlement-category-card {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 16px;
+    padding: 15px;
+  }
+
+  .vat-settlement-category-title {
+    grid-column: 1;
+    align-items: flex-start;
+  }
+
+  .vat-settlement-category-field .app-form-field-label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .vat-settlement-category-field .app-form-field-icon {
+    width: 25px;
+    height: 25px;
+    border-radius: 9px;
+  }
+
+  .vat-settlement-category-field .app-select-control select {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .vat-settlement-category-actions,
+  .vat-settlement-category-actions .btn {
+    width: 100%;
+  }
+
   .company-settings-form {
     grid-template-columns: 1fr;
   }
@@ -3024,10 +3387,12 @@
     text-transform: uppercase;
   }
 
-  .category-settings-actions,
-  .category-settings-delete-form {
+  .category-settings-actions {
     justify-content: stretch;
     margin-top: 12px;
+  }
+  .category-settings-delete-form {
+    justify-content: stretch;
   }
 
   .category-settings-row {
@@ -3042,7 +3407,7 @@
     display: contents;
   }
 
-  .payment-credit-display-row {
+  .payment-credit-bank-display-row {
     //grid-template-columns: auto minmax(0, 1fr);
     grid-template-columns: minmax(50px, 85px) 1fr;
     gap: 8px 12px;
@@ -3054,7 +3419,62 @@
     }
   }
 
-  .payment-credit-display-row .payment-credit-display-name-wrap {
+  .payment-credit-method-row-shell {
+    margin-bottom: 9px;
+  }
+
+  .payment-credit-method-display-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px;
+    align-items: center;
+  }
+
+  .payment-credit-method-display-row .payment-credit-display-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .payment-credit-method-display-row .payment-credit-display-name-wrap {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .payment-credit-method-display-row .payment-credit-display-kind.hidden-desktop {
+    display: none;
+  }
+
+  .payment-credit-method-display-row .payment-credit-display-actions {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 2px 0 0;
+  }
+
+  .payment-credit-method-display-row .payment-credit-display-actions > *,
+  .payment-credit-method-display-row .payment-credit-display-actions .btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .payment-credit-method-display-row .payment-credit-display-actions .hidden-desktop {
+    display: none;
+  }
+
+  .payment-credit-method-display-row .payment-credit-display-actions form {
+    display: block;
+    max-width: none;
+  }
+
+  .payment-credit-method-meta {
+    gap: 3px 9px;
+    line-height: 1.35;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-display-name-wrap {
     order: 1;
     min-width: 95px;
   }
@@ -3157,19 +3577,19 @@
     max-width: fit-content;
   }
 
-  .payment-credit-display-name {
+  .payment-credit-bank-display-row .payment-credit-display-name {
     grid-column: 2;
     grid-row: 1;
     flex-grow: 1;
     min-width: 50%;
   }
 
-  .payment-credit-display-icon {
+  .payment-credit-bank-display-row .payment-credit-display-icon {
     grid-column: 1;
     grid-row: 1;
   }
 
-  .payment-credit-display-actions {
+  .payment-credit-bank-display-row .payment-credit-display-actions {
     //grid-column: 1 / -1;
     flex-grow: 1;
     justify-content: flex-end;
@@ -3187,8 +3607,73 @@
     }
   }
 
-  .payment-credit-display-actions form button {
+  .payment-credit-bank-display-row .payment-credit-display-actions form button {
     width: 100%;
+  }
+
+  .payment-credit-bank-display-row.expense-category-settings-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    gap: 10px;
+    padding: 11px;
+    align-items: center;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-display-icon {
+    grid-column: 1;
+    grid-row: 1;
+    width: 40px;
+    height: 40px;
+    order: initial;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-display-name-wrap {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    order: initial;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-display-kind.hidden-desktop {
+    display: none;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-primary-switch-form {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    width: 100%;
+    min-height: 50px;
+    justify-content: space-between;
+    padding: 8px 10px 8px 12px;
+    order: initial;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-display-actions {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 8px;
+    margin: 2px 0 0;
+    order: initial;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-display-actions > *,
+  .payment-credit-bank-display-row .payment-credit-display-actions .btn,
+  .payment-credit-bank-display-row .payment-credit-display-actions form {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-display-actions .hidden-desktop {
+    display: none;
+  }
+
+  .payment-credit-bank-display-row .payment-credit-display-actions > .btn:only-child,
+  .payment-credit-method-display-row .payment-credit-display-actions > .btn:only-child {
+    grid-column: 1 / -1;
   }
 
   .payment-credit-expanded-form {
@@ -3206,26 +3691,71 @@
     max-width: 100vw;
     height: 100dvh;
     max-height: 100dvh;
-    padding: 16px;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
     gap: 16px;
     border: 0;
     border-radius: 0;
   }
 
+  .payment-credit-edit-modal .modal-toolbar-card {
+    position: relative;
+    flex-direction: row;
+    align-items: flex-start;
+    padding-right: 46px;
+  }
+
+  .payment-credit-edit-modal .modal-close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+  }
+
   .payment-credit-modal-form {
-    flex: 1;
+    grid-template-columns: 1fr;
+    width: 100%;
+    min-height: 0;
     align-content: start;
-    padding: 0;
+    padding: 0 0 calc(92px + env(safe-area-inset-bottom));
   }
 
   .payment-credit-modal-form .payment-credit-expanded-actions {
-    position: sticky;
-    bottom: -16px;
-    margin: auto -16px -16px;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-    background: #fff;
-    border-top: 1px solid var(--line);
-    box-shadow: 0 -8px 24px rgba(15, 23, 42, .08);
+    display: none;
+  }
+
+  .payment-credit-modal-form .mobile-form-sticky-actions {
+    position: fixed;
+    z-index: 430;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 10px;
+    display: flex;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .98);
+    box-shadow: 0 -12px 34px rgba(15, 23, 42, .16);
+  }
+
+  .payment-credit-modal-form .mobile-form-sticky-actions-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .payment-credit-modal-form .mobile-form-sticky-actions-row .btn {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .payment-credit-create-form {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-credit-create-form .payment-credit-default-fields,
+  .payment-credit-create-form .category-create-actions {
+    grid-column: auto;
   }
 
   .payment-credit-expanded-form .payment-credit-primary-field {
@@ -3254,10 +3784,6 @@
 
   .category-settings-actions {
     grid-column: 1;
-  }
-
-  .category-settings-delete-form {
-    grid-column: 2;
   }
 
   .category-settings-actions .btn,
@@ -3564,6 +4090,19 @@
     display: flex;
     flex-direction: column;
     padding: 0;
+  }
+
+  .expense-category-settings-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .expense-category-settings-item {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px;
   }
 }
 
@@ -4158,6 +4697,64 @@
 
   .expense-mobile-wizard .form-section-grid:empty {
     display: none;
+  }
+
+  .month-comparison-panel {
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .month-comparison-heading {
+    display: grid;
+    gap: 12px;
+  }
+
+  .month-comparison-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+  }
+
+  .month-comparison-tabs a {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+  }
+
+  .month-comparison-tabs a:last-child {
+    border-bottom: 0;
+  }
+
+  .month-comparison-custom-form {
+    display: grid;
+    align-items: stretch;
+  }
+
+  .month-comparison-custom-form input,
+  .month-comparison-custom-form button {
+    width: 100%;
+  }
+
+  .month-comparison-period-field {
+    width: 100%;
+  }
+
+  .month-comparison-period-field .app-date-control input {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .month-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .month-comparison-metric {
+    display: grid;
+  }
+
+  .month-comparison-delta {
+    grid-template-columns: 1fr auto auto;
   }
 
   .app-form-modal .expense-mobile-wizard > .form-sticky-actions,

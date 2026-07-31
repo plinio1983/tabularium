@@ -17,6 +17,7 @@ type Option = {
     isFallback?: boolean | null;
     isPrimary?: boolean;
     systemRole?: string | null;
+    isExpenseDefault?: boolean;
     isVatSettlementDefault?: boolean
 };
 type SupplierOption = {
@@ -127,7 +128,6 @@ export function lastDayOfMonthInput(value: string) {
 }
 
 const currentBillingPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-const defaultChannel = "Bonifico";
 const cashChannel = "Cash";
 const cashBankName = "Cassa";
 
@@ -431,7 +431,7 @@ export default function ExpenseForm({
     const availablePaymentMethods = isVatSettlement
         ? paymentMethods.filter(method => method.systemRole !== "CASH" && !isCashChannel(method.name))
         : paymentMethods;
-    const defaultPaymentMethod = availablePaymentMethods.find(method => method.name === defaultChannel) ?? availablePaymentMethods[0];
+    const defaultPaymentMethod = availablePaymentMethods.find(method => method.isExpenseDefault) ?? availablePaymentMethods[0];
     const fallbackBank = banks.find(bank => bank.name.toLowerCase() === cashBankName.toLowerCase()) ?? banks.find(bank => bank.isFallback) ?? banks[0];
     const primaryBankIdValue = banks.find(bank => bank.isPrimary)?.id.toString() ?? "";
     const cashBankId = banks.find((bank) => bank.name.toLowerCase() === cashBankName.toLowerCase())?.id;

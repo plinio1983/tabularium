@@ -24,6 +24,8 @@ prisma/migrations/*
 !prisma/migrations/20260730150000_partial_invoice_status/migration.sql
 !prisma/migrations/20260730190000_counter_expenses/
 !prisma/migrations/20260730190000_counter_expenses/migration.sql
+!prisma/migrations/20260731200000_workspace_catalog_defaults/
+!prisma/migrations/20260731200000_workspace_catalog_defaults/migration.sql
 data/Spese-Ricavi.xlsx
 /.idea/vcs.xml
 /generated/prisma/internal/class.ts

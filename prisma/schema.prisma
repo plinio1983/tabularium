@@ -296,6 +296,8 @@ model IncomeSalesChannel {
   name        String
   icon        String?
   sortOrder   Int       @default(0)
+  isDefault   Boolean   @default(false)
+  isFallback  Boolean   @default(false)
   workspaceId Int
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   incomes     Income[]
@@ -331,6 +333,8 @@ model PaymentMethod {
   icon      String?
   kind      String    @default("BOTH")
   isFallback Boolean  @default(false)
+  isExpenseDefault Boolean @default(false)
+  isIncomeDefault Boolean @default(false)
   systemRole PaymentMethodSystemRole?
   workspaceId Int?
   workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)

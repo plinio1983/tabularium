@@ -2,17 +2,17 @@
 
 import {useEffect, useState, type ReactNode} from 'react';
 import {createPortal} from 'react-dom';
+import MobileFormStickyActions from '@/components/MobileFormStickyActions';
 
 type Action = (formData: FormData) => void | Promise<void>;
 
-function EditSurface({modal, title, onClose, children}: {
-    modal: boolean;
+function EditSurface({heading, title, onClose, children}: {
+    heading: string;
     title: string;
     onClose: () => void;
     children: ReactNode;
 }) {
     useEffect(() => {
-        if (!modal) return;
         const closeOnEscape = (event: KeyboardEvent) => {
             if (event.key === 'Escape') onClose();
         };
@@ -22,9 +22,8 @@ function EditSurface({modal, title, onClose, children}: {
             document.removeEventListener('keydown', closeOnEscape);
             document.body.classList.remove('payment-credit-edit-modal-open');
         };
-    }, [modal, onClose]);
+    }, [onClose]);
 
-    if (!modal) return children;
     return createPortal(
         <div className="app-form-modal-backdrop payment-credit-edit-modal-backdrop" role="presentation" onMouseDown={event => {
             if (event.target === event.currentTarget) onClose();
@@ -32,10 +31,10 @@ function EditSurface({modal, title, onClose, children}: {
             <div className="app-form-modal payment-credit-edit-modal" role="dialog" aria-modal="true" aria-labelledby="payment-credit-edit-modal-title">
                 <div className="modal-toolbar-card toolbar-card">
                     <div>
-                        <h2 id="payment-credit-edit-modal-title">Modifica banca</h2>
+                        <h2 id="payment-credit-edit-modal-title">{heading}</h2>
                         <p className="muted">{title}</p>
                     </div>
-                    <button type="button" className="btn btn-xs btn-default" aria-label="Chiudi" onClick={onClose}>×</button>
+                    <button type="button" className="btn btn-icon-only btn-default modal-close-button" aria-label="Chiudi" onClick={onClose}>×</button>
                 </div>
                 {children}
             </div>
@@ -52,6 +51,8 @@ type Props = {
     kindLabel: string;
     usageCount: number;
     protectedFromDelete: boolean;
+    isExpenseDefault?: boolean;
+    isIncomeDefault?: boolean;
     primary?: boolean;
     canBePrimary?: boolean;
     iconOptions: readonly string[];
@@ -74,6 +75,8 @@ export default function PaymentCreditEditRow({
                                                  kindLabel,
                                                  usageCount,
                                                  protectedFromDelete,
+                                                 isExpenseDefault = false,
+                                                 isIncomeDefault = false,
                                                  primary = false,
                                                  canBePrimary = true,
                                                  iconOptions,
@@ -90,13 +93,28 @@ export default function PaymentCreditEditRow({
         if (!enabled) setCashRegisterPrimary(false);
     }
 
-    return <div className="payment-credit-row-shell">
-        <div className={`payment-credit-display-row${kind ? '' : ' payment-credit-bank-display-row'}`}>
-            <div className="payment-credit-display-name-wrap">
-                <strong className="payment-credit-display-name">{name}</strong>
+    return <div className={`payment-credit-row-shell ${kind ? 'payment-credit-method-row-shell' : 'payment-credit-bank-row-shell'}`}>
+        <div className={`payment-credit-display-row expense-category-settings-item ${kind ? 'payment-credit-method-display-row' : 'payment-credit-bank-display-row'}`}>
+            <div className="payment-credit-display-name-wrap expense-category-settings-copy">
+                <strong className="payment-credit-display-name">
+                    {name}&nbsp;&nbsp;
+                    {protectedFromDelete ? <span className="badge tone-neutral">Sistema</span> : null}
+                </strong>
                 <div className="payment-credit-display-kind hidden-desktop">{kindLabel}</div>
+                {kind ? <div className="payment-credit-method-meta">
+                    <span>{kindLabel}</span>
+                    <span><strong>{usageCount}</strong> {usageCount === 1 ? 'movimento' : 'movimenti'}</span>
+                    {isExpenseDefault ? <span className="badge">Predefinito spese</span> : null}
+                    {isIncomeDefault ? <span className="badge">Predefinito incassi</span> : null}
+                    {/*{protectedFromDelete ? <span className="badge tone-neutral">Sistema</span> : null}*/}
+                </div> : null}
+                {!kind ? <div className="payment-credit-bank-meta">
+                    <span>{kindLabel}</span>
+                    <span><strong>{usageCount}</strong> {usageCount === 1 ? 'movimento' : 'movimenti'}</span>
+                    {primary ? <span className="badge">Principale</span> : null}
+                </div> : null}
             </div>
-            <span className="payment-credit-display-icon" aria-label={icon ? `Icona ${icon}` : 'Nessuna icona'}>{icon ?? '  •  '}</span>
+            <span className="payment-credit-display-icon expense-category-settings-icon" aria-label={icon ? `Icona ${icon}` : 'Nessuna icona'}>{icon ?? '  •  '}</span>
             <span className="payment-credit-display-kind hidden-mobile">{kindLabel}</span>
             {kind ? null : <form action={updateAction} className="payment-credit-primary-switch-form">
                 <input type="hidden" name="id" value={id}/>
@@ -115,22 +133,21 @@ export default function PaymentCreditEditRow({
                 </label>
             </form>}
             <span className="payment-credit-display-usage"><strong>{usageCount}</strong> {usageCount === 1 ? '' : ''}</span>
-            <div className="payment-credit-display-actions">
-                <div className="flex flex-grow hidden-desktop">&nbsp;</div>
-                <button type="button" className="btn btn-xs btn-default" aria-expanded={editing} onClick={() => setEditing(value => !value)}>
-                    {editing ? 'Chiudi' : 'Modifica'}
-                </button>
+            <div className="payment-credit-display-actions expense-category-settings-actions">
                 {protectedFromDelete
-                    ? <button type="button" className="btn btn-xs btn-danger" disabled>Rimuovi</button>
+                    ? null
                     : <form action={deleteAction}>
                         <input type="hidden" name="id" value={id}/>
-                        <button type="submit" className="btn btn-xs btn-danger">Rimuovi</button>
+                        <button type="submit" className="btn btn-sm btn-danger">Rimuovi</button>
                     </form>}
+                <button type="button" className="btn btn-sm btn-primary" aria-expanded={editing} onClick={() => setEditing(value => !value)}>
+                    ✎ {editing ? 'Chiudi' : 'Modifica'}
+                </button>
             </div>
         </div>
 
-        {editing ? <EditSurface modal={!kind} title={name} onClose={() => setEditing(false)}>
-          <form action={updateAction} className={`payment-credit-expanded-form${!kind ? ' payment-credit-modal-form' : ''}`}>
+        {editing ? <EditSurface heading={kind ? 'Modifica metodo di pagamento' : 'Modifica banca o canale'} title={name} onClose={() => setEditing(false)}>
+          <form action={updateAction} className="form expense-form payment-credit-expanded-form payment-credit-modal-form">
             <input type="hidden" name="id" value={id}/>
             {cashRegister ? <input type="hidden" name="cashRegisterManaged" value="1"/> : null}
             <label><span>Label</span><input name="name" defaultValue={name} maxLength={80} required/></label>
@@ -150,6 +167,23 @@ export default function PaymentCreditEditRow({
                 <option value="INCOME">Incassi</option>
                 <option value="EXPENSE">Spese</option>
             </select></label> : null}
+            {kind ? <fieldset className="payment-credit-default-fields">
+                <legend>Predefinito nei form</legend>
+                <div className="payment-credit-default-switch-row">
+                    <div><strong>Spese</strong><span>Preseleziona questo metodo nei nuovi pagamenti.</span></div>
+                    <label className="switch" aria-label="Metodo predefinito per le spese">
+                        <input type="checkbox" name="isExpenseDefault" defaultChecked={isExpenseDefault}/>
+                        <span className="slider"/>
+                    </label>
+                </div>
+                <div className="payment-credit-default-switch-row">
+                    <div><strong>Incassi</strong><span>Preseleziona questo metodo nei nuovi accrediti.</span></div>
+                    <label className="switch" aria-label="Metodo predefinito per gli incassi">
+                        <input type="checkbox" name="isIncomeDefault" defaultChecked={isIncomeDefault}/>
+                        <span className="slider"/>
+                    </label>
+                </div>
+            </fieldset> : null}
             {cashRegister ? <fieldset className="payment-credit-cash-register-fields">
                 <legend>Uso nel registratore di cassa</legend>
                 <div className="cash-register-setting-intro">
@@ -201,8 +235,16 @@ export default function PaymentCreditEditRow({
             </fieldset> : null}
             <div className="payment-credit-expanded-actions">
                 <button type="button" className="btn btn-sm btn-default" onClick={() => setEditing(false)}>Annulla</button>
-                <button type="submit" className="btn btn-sm btn-primary">✓ Salva</button>
+                <button type="submit" className="btn btn-sm btn-primary">✓ Salva modifiche</button>
             </div>
+            <MobileFormStickyActions
+                currentStep={1}
+                submitStep={1}
+                onBack={() => undefined}
+                onNext={() => undefined}
+                onCancel={() => setEditing(false)}
+                submitLabel={kind ? 'Salva metodo' : 'Salva banca'}
+            />
           </form>
         </EditSurface> : null}
     </div>;

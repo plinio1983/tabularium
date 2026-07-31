@@ -4,6 +4,7 @@ import { revokeOtherSessionsAction, updateAccountAction } from './actions';
 import AccountCancelButton from './AccountCancelButton';
 import { prisma } from '@/lib/prisma';
 import DetailBackButton from '@/components/DetailBackButton';
+import Link from 'next/link';
 
 const errorMessages: Record<string, string> = {
   invalid: 'Compila email e password attuale.',
@@ -35,32 +36,74 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
       <DetailBackButton href="/settings" />
     </div>
 
-    <form action={updateAccountAction}>
-      <div className="card form account-settings-form">
-        <h3>Dati account</h3>
-        {saved ? <div className="form-summary full"><strong>Account aggiornato.</strong></div> : null}
-        {error ? <div className="inline-form-error full">{errorMessages[error] ?? 'Impossibile aggiornare l’account.'}</div> : null}
-        <label>Nome<input name="name" defaultValue={current.user.name ?? ''} autoComplete="name" /></label>
-        <label>Email<input name="email" type="email" defaultValue={current.user.email} autoComplete="email" required /></label>
+    <form action={updateAccountAction} className="card form expense-form account-settings-form account-styled-form">
+      <div className="account-form-intro full">
+        <span className="account-form-intro-icon" aria-hidden="true">◎</span>
+        <div>
+          <h3>Profilo e accesso</h3>
+          <p className="muted">Aggiorna i dati personali e, se necessario, modifica la password.</p>
+        </div>
       </div>
-      <div className="card form account-settings-form">
-        <h3>Modifica password</h3>
-        {current.user.passwordHash ? <label>Password attuale<input name="currentPassword" type="password" autoComplete="current-password" required /></label> : null}
-        <label>Nuova password<input name="newPassword" type="password" autoComplete="new-password" minLength={10} /></label>
-        <label>Conferma nuova password<input name="confirmPassword" type="password" autoComplete="new-password" minLength={10} /></label>
-      </div>
-      <div className="actions-row full form-actions-row card form account-settings-form">
+      {saved ? <div className="form-summary full"><strong>Account aggiornato.</strong></div> : null}
+      {error ? <div className="inline-form-error full">{errorMessages[error] ?? 'Impossibile aggiornare l’account.'}</div> : null}
+
+      <details className="form-section full account-form-section" open>
+        <summary>
+          <span>Dati account</span>
+          <small>Nome ed email utilizzati per il tuo profilo</small>
+        </summary>
+        <div className="form-section-grid account-form-section-grid">
+          <div className="app-form-field">
+            <label className="app-form-field-label" htmlFor="account-name">
+              <span className="app-form-field-icon" aria-hidden="true">◎</span>
+              <span>Nome</span>
+            </label>
+            <input id="account-name" name="name" defaultValue={current.user.name ?? ''} autoComplete="name" />
+          </div>
+          <div className="app-form-field">
+            <label className="app-form-field-label" htmlFor="account-email">
+              <span className="app-form-field-icon" aria-hidden="true">@</span>
+              <span>Email</span>
+            </label>
+            <input id="account-email" name="email" type="email" defaultValue={current.user.email} autoComplete="email" required />
+          </div>
+        </div>
+      </details>
+
+      <div className="actions-row full form-actions-row account-form-actions">
         <AccountCancelButton />
-        <button type="submit" className="btn btn-md btn-primary">✓ Salva account</button>
+        <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">✓</span> Salva account</button>
       </div>
     </form>
-    <div className="card form account-settings-form">
-      <h3>Sessioni attive</h3>
-      <p className="muted">Sessioni valide per questo account: {activeSessions}.</p>
+    <section className="card account-sessions-card account-password-link-card">
+      <div className="account-sessions-heading">
+        <span className="account-form-intro-icon" aria-hidden="true">●</span>
+        <div>
+          <h3>Password</h3>
+          <p className="muted">{current.user.passwordHash
+            ? 'Aggiorna la password usata per accedere al tuo account.'
+            : 'Aggiungi una password per poter accedere anche senza Google.'}</p>
+        </div>
+        <Link className="btn btn-md btn-primary" href="/settings/account/password">
+          <span className="btn-icon" aria-hidden="true">✦</span> Cambia password
+        </Link>
+      </div>
+    </section>
+    <section className="card account-sessions-card">
+      <div className="account-sessions-heading">
+        <span className="account-form-intro-icon" aria-hidden="true">⌁</span>
+        <div>
+          <h3>Sessioni attive</h3>
+          <p className="muted">Controlla l’accesso dell’account sugli altri dispositivi.</p>
+        </div>
+        <span className="badge">{activeSessions} {activeSessions === 1 ? 'sessione' : 'sessioni'}</span>
+      </div>
       {sessionsRevoked !== undefined ? <div className="form-summary"><strong>Sessioni revocate: {sessionsRevoked}.</strong></div> : null}
       <form action={revokeOtherSessionsAction}>
-        <button type="submit" className="btn btn-md btn-default" disabled={activeSessions <= 1}>Disconnetti gli altri dispositivi</button>
+        <button type="submit" className="btn btn-md btn-default" disabled={activeSessions <= 1}>
+          <span className="btn-icon" aria-hidden="true">↪</span> Disconnetti gli altri dispositivi
+        </button>
       </form>
-    </div>
+    </section>
   </div>;
 }

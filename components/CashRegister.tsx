@@ -299,17 +299,22 @@ export default function CashRegister({
 
     return <main className={`cash-register-shell ${mode === 'edit' ? 'is-editing' : ''} ${notice ? 'has-notice' : ''}`}>
         <header className="cash-register-header">
-            <div>
+            <div className="flex gap-12">
                 <h1>{mode === 'edit' ? `Modifica scontrino #${initialReceipt?.id}` : mode === 'copy' ? 'Copia scontrino' : 'Registratore di cassa'}</h1>
-                {/*<Link href="/incomes/cash-register/receipts">Report scontrini</Link>*/}
-            </div>
-            <div className="cash-register-header-actions">
                 <a className="btn btn-sm btn-secondary" href="/incomes/cash-register/receipts">
                     <span className="btn-icon" aria-hidden="true">📊</span>
                     <span className="hidden-sm">Report</span>
                     <span className="hidden-sp">Report scontrini</span>
                 </a>
+                {/*<Link href="/incomes/cash-register/receipts">Report scontrini</Link>*/}
             </div>
+            {/*<div className="cash-register-header-actions">*/}
+            {/*    <a className="btn btn-sm btn-secondary" href="/incomes/cash-register/receipts">*/}
+            {/*        <span className="btn-icon" aria-hidden="true">📊</span>*/}
+            {/*        <span className="hidden-sm">Report</span>*/}
+            {/*        <span className="hidden-sp">Report scontrini</span>*/}
+            {/*    </a>*/}
+            {/*</div>*/}
             <div className="cash-register-header-actions">
                 <a className="btn btn-circle btn-sm btn-neutral btn-close" href="/incomes/">
                     <span className="btn-icon" aria-hidden="true">✕</span>

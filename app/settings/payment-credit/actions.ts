@@ -135,10 +135,22 @@ export async function createPaymentMethodAction(formData: FormData) {
   const name = validateName(formData);
   const kind = validateKind(formData);
   const icon = validateIcon(formData);
+  const isExpenseDefault = formChecked(formData, 'isExpenseDefault') && (kind === 'EXPENSE' || kind === 'BOTH');
+  const isIncomeDefault = formChecked(formData, 'isIncomeDefault') && (kind === 'INCOME' || kind === 'BOTH');
   const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId: current.workspace.id, name } });
   if (existing) settingsError('method_exists');
 
-  await prisma.paymentMethod.create({ data: { workspaceId: current.workspace.id, name, kind, icon } });
+  await prisma.$transaction(async tx => {
+    if (isExpenseDefault) {
+      await tx.paymentMethod.updateMany({where: {workspaceId: current.workspace.id}, data: {isExpenseDefault: false}});
+    }
+    if (isIncomeDefault) {
+      await tx.paymentMethod.updateMany({where: {workspaceId: current.workspace.id}, data: {isIncomeDefault: false}});
+    }
+    await tx.paymentMethod.create({
+      data: { workspaceId: current.workspace.id, name, kind, icon, isExpenseDefault, isIncomeDefault }
+    });
+  });
   refreshPaymentCreditPages();
   redirect(`${settingsPath}?section=methods&saved=method_created`);
 }
@@ -149,6 +161,8 @@ export async function updatePaymentMethodAction(formData: FormData) {
   const name = validateName(formData);
   const kind = validateKind(formData);
   const icon = validateIcon(formData);
+  const isExpenseDefault = formChecked(formData, 'isExpenseDefault') && (kind === 'EXPENSE' || kind === 'BOTH');
+  const isIncomeDefault = formChecked(formData, 'isIncomeDefault') && (kind === 'INCOME' || kind === 'BOTH');
   if (!Number.isInteger(id) || id <= 0) settingsError('invalid');
 
   const method = await prisma.paymentMethod.findFirst({ where: { id, workspaceId: current.workspace.id } });
@@ -195,19 +209,27 @@ export async function updatePaymentMethodAction(formData: FormData) {
     replacementPrimaryId = replacement?.id ?? null;
   }
 
-  await prisma.$transaction([
-    prisma.paymentMethod.update({
+  await prisma.$transaction(async tx => {
+    if (isExpenseDefault) {
+      await tx.paymentMethod.updateMany({where: {workspaceId: current.workspace.id, id: {not: id}}, data: {isExpenseDefault: false}});
+    }
+    if (isIncomeDefault) {
+      await tx.paymentMethod.updateMany({where: {workspaceId: current.workspace.id, id: {not: id}}, data: {isIncomeDefault: false}});
+    }
+    await tx.paymentMethod.update({
       where: { id },
       data: {
-        name, kind, icon,
+        name, kind, icon, isExpenseDefault, isIncomeDefault,
         ...(cashRegisterManaged ? {cashRegisterEnabled, cashRegisterDefaultBankId} : {})
       }
-    }),
-    ...(replacementPrimaryId !== undefined ? [prisma.workspace.update({
-      where: {id: current.workspace.id},
-      data: {cashRegisterPrimaryPaymentMethodId: replacementPrimaryId}
-    })] : [])
-  ]);
+    });
+    if (replacementPrimaryId !== undefined) {
+      await tx.workspace.update({
+        where: {id: current.workspace.id},
+        data: {cashRegisterPrimaryPaymentMethodId: replacementPrimaryId}
+      });
+    }
+  });
   refreshPaymentCreditPages();
   redirect(`${settingsPath}?section=methods&saved=method_updated`);
 }

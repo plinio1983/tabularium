@@ -28,8 +28,8 @@ type InitialIncome = {
 };
 
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; isPrimary?: boolean };
-type PaymentMethodOption = Option & { kind?: string };
-type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
+type PaymentMethodOption = Option & { kind?: string; isIncomeDefault?: boolean };
+type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null; isDefault?: boolean; isFallback?: boolean };
 type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
 
 type Props = {
@@ -107,10 +107,13 @@ export default function IncomeForm({
     const cashBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.trim().toLowerCase() === "cassa");
     const primaryBank = banks.find(bank => bank.isPrimary);
     const defaultBank = primaryBank ?? banks.find(bank => !bank.isFallback) ?? banks[0];
-    const defaultPaymentMethod = paymentMethods.find(method => method.name === "Bonifico") ?? paymentMethods[0];
+    const defaultPaymentMethod = paymentMethods.find(method => method.isIncomeDefault) ?? paymentMethods[0];
     const initialPaymentMethodId = findOptionId(paymentMethods, initialIncome?.paymentMethodId) || (defaultPaymentMethod ? String(defaultPaymentMethod.id) : "");
     const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId) || (defaultBank ? String(defaultBank.id) : "");
-    const initialSalesChannelId = initialIncome?.salesChannelId ? String(initialIncome.salesChannelId) : String(salesChannels[0]?.id ?? "");
+    const defaultSalesChannel = salesChannels.find(channel => channel.isDefault)
+        ?? salesChannels.find(channel => !channel.isFallback)
+        ?? salesChannels.find(channel => channel.isFallback);
+    const initialSalesChannelId = initialIncome?.salesChannelId ? String(initialIncome.salesChannelId) : String(defaultSalesChannel?.id ?? "");
     const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount).replace(".", ","));
     const [salesChannelId, setSalesChannelId] = useState(initialSalesChannelId);
     const [orderDate, setOrderDate] = useState(toDateInput(initialIncome?.orderDate) || today);

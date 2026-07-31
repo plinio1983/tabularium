@@ -13,6 +13,10 @@ function value(formData: FormData, key: string) {
   return String(formData.get(key) ?? '').trim();
 }
 
+function checked(formData: FormData, key: string) {
+  return formData.get(key) === 'on';
+}
+
 function fail(error: string, kind?: string, usage?: number): never {
   const query = new URLSearchParams({ error });
   if (kind) query.set('kind', kind);
@@ -89,8 +93,20 @@ export async function updateIncomeEntityAction(formData: FormData) {
     const entity = await prisma.incomeSalesChannel.findFirst({ where: { id, workspaceId: current.workspace.id } });
     if (!entity) fail('not_found', input.kind);
     const sortOrder = Number(value(formData, 'sortOrder'));
+    const isDefault = checked(formData, 'isDefault') && !entity.isFallback;
     if (!Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 9999) fail('invalid', input.kind);
-    await prisma.incomeSalesChannel.update({ where: { id }, data: { name: input.name, icon: input.icon, sortOrder } });
+    await prisma.$transaction(async tx => {
+      if (isDefault) {
+        await tx.incomeSalesChannel.updateMany({
+          where: {workspaceId: current.workspace.id, id: {not: id}},
+          data: {isDefault: false}
+        });
+      }
+      await tx.incomeSalesChannel.update({
+        where: { id },
+        data: { name: input.name, icon: input.icon, sortOrder, isDefault }
+      });
+    });
   }
   await writeAuditLog({ workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE', entityType: input.kind === 'category' ? 'IncomeCategory' : 'IncomeSalesChannel', entityId: id });
   redirect(`${path}?saved=updated&kind=${input.kind}`);
@@ -111,6 +127,7 @@ export async function deleteIncomeEntityAction(formData: FormData) {
   } else {
     const entity = await prisma.incomeSalesChannel.findFirst({ where: { id, workspaceId: current.workspace.id }, include: { _count: { select: { incomes: true } } } });
     if (!entity) fail('not_found', kind);
+    if (entity.isFallback) fail('fallback_delete', kind);
     const configured = await prisma.workspace.count({where: {id: current.workspace.id, cashRegisterSalesChannelId: id}});
     if (configured) fail('cash_register_in_use', kind);
     if (entity._count.incomes) fail('in_use', kind, entity._count.incomes);

@@ -2,12 +2,15 @@
 
 import {useEffect, useState} from 'react';
 import IncomeEntityDeleteForm from './IncomeEntityDeleteForm';
+import MobileFormStickyActions from '@/components/MobileFormStickyActions';
 
 type Channel = {
   id: number;
   name: string;
   icon: string | null;
   sortOrder: number;
+  isDefault?: boolean;
+  isFallback?: boolean;
   _count: {incomes: number};
 };
 
@@ -36,27 +39,29 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
   }, [editing]);
 
   return <>
-    <div className="sales-channel-settings-grid">
-      {channels.map(channel => <article className="card sales-channel-settings-card" key={channel.id}>
-        <div className="sales-channel-settings-card-heading">
-          <span className="sales-channel-settings-icon" aria-hidden="true">{channel.icon || '•'}</span>
-          <div><h4>{channel.name}</h4><p className="muted">Posizione nelle select: {channel.sortOrder}</p></div>
+    <section className="card expense-category-list-card sales-channel-list-card">
+      <div className="expense-category-list-heading"><div><h3>Canali configurati</h3><p className="muted">{channels.length} {channels.length === 1 ? 'canale' : 'canali'}</p></div></div>
+      <div className="expense-category-settings-list">
+      {channels.map(channel => <article className="expense-category-settings-item" key={channel.id}>
+        <span className="expense-category-settings-icon" aria-hidden="true">{channel.icon || '•'}</span>
+        <div className="expense-category-settings-copy">
+          <strong>{channel.name} {channel.isDefault ? <span className="badge">Preselezionato</span> : null} {channel.isFallback ? <span className="badge tone-neutral">Fallback</span> : null}</strong>
+          <span>Ordine {channel.sortOrder} · {channel._count.incomes} {channel._count.incomes === 1 ? 'incasso' : 'incassi'}</span>
         </div>
-        <div className="sales-channel-settings-usage">
-          <strong>{channel._count.incomes}</strong>
-          <span>{channel._count.incomes === 1 ? 'incasso collegato' : 'incassi collegati'}</span>
-        </div>
-        <div className="actions-row sales-channel-settings-card-actions">
-          <IncomeEntityDeleteForm id={channel.id} kind="channel" name={channel.name} action={deleteAction}/>
+        <div className="expense-category-settings-actions">
+          {!channel.isFallback
+            ? <IncomeEntityDeleteForm id={channel.id} kind="channel" name={channel.name} action={deleteAction}/>
+            : <button className="btn btn-sm btn-danger" type="button" disabled>Rimuovi</button>}
           <button className="btn btn-sm btn-primary" type="button" onClick={() => setEditing(channel)}>
             ✎ Modifica
           </button>
         </div>
       </article>)}
-    </div>
+      </div>
+    </section>
 
     {editing ? <div
-      className="modal-backdrop sales-channel-edit-backdrop"
+      className="modal-backdrop app-form-modal sales-channel-edit-backdrop"
       role="presentation"
       onMouseDown={() => setEditing(null)}
     >
@@ -67,7 +72,7 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
         aria-labelledby="sales-channel-edit-title"
         onMouseDown={event => event.stopPropagation()}
       >
-        <div className="modal-title">
+        <div className="toolbar-card modal-toolbar-card">
           <div>
             <h3 id="sales-channel-edit-title">Modifica canale di vendita</h3>
             <p className="muted">Aggiorna nome, icona e posizione nelle select.</p>
@@ -77,20 +82,25 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
         <form action={updateAction} className="form expense-form sales-channel-edit-form">
           <input type="hidden" name="id" value={editing.id}/>
           <input type="hidden" name="kind" value="channel"/>
-          <label className="span-2">Nome<input name="name" defaultValue={editing.name} maxLength={80} required autoFocus/></label>
-          <label>Icona
+          <div className="app-form-field span-2"><label className="app-form-field-label">Nome</label><input name="name" defaultValue={editing.name} maxLength={80} required autoFocus/></div>
+          <div className="app-form-field"><label className="app-form-field-label">Icona</label>
             <select name="icon" defaultValue={editing.icon ?? ''}>
               <option value="">Nessuna</option>
               {iconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}
             </select>
-          </label>
-          <label>Ordine nelle select
+          </div>
+          <label className="app-form-field">Ordine nelle select
             <input name="sortOrder" type="number" min="0" max="9999" step="1" defaultValue={editing.sortOrder}/>
           </label>
+          {!editing.isFallback ? <label className="span-2">
+            <span><input name="isDefault" type="checkbox" defaultChecked={editing.isDefault}/> Preseleziona questo canale nei nuovi incassi</span>
+          </label> : <p className="muted span-2">Questo è il canale tecnico di fallback e viene usato solo quando non sono disponibili canali ordinari.</p>}
           <div className="actions-row span-2 sales-channel-edit-actions">
             <button className="btn btn-md btn-default" type="button" onClick={() => setEditing(null)}>Annulla</button>
             <button className="btn btn-md btn-primary" type="submit">✓ Salva modifiche</button>
           </div>
+          <MobileFormStickyActions currentStep={1} submitStep={1} onBack={() => undefined} onNext={() => undefined}
+            onCancel={() => setEditing(null)} submitLabel="Salva canale"/>
         </form>
       </section>
     </div> : null}

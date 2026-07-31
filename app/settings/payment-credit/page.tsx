@@ -141,44 +141,38 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
 
     {section === 'banks' ? <>
     <PaymentCreditCreatePanel action={createBankAction} type="bank" iconOptions={paymentCreditIconOptions} />
-    <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible max-w-900" open>
-      <summary className="category-create-toggle">
-        <span>Banche / canali accredito</span>
-        <span aria-hidden="true">+</span>
-      </summary>
-      <div className="categories-settings-table-head payment-credit-table-head payment-credit-bank-table-head">
-        <span>Label</span>
-        <span>Icona</span>
-        <span>Tipo</span>
-        <span>Principale</span>
-        <span>Uso</span>
-        <span>Azioni</span>
+    <section className="card expense-category-list-card payment-credit-settings-card payment-banks-list-card">
+      <div className="expense-category-list-heading">
+        <div>
+          <h3>Banche e canali configurati</h3>
+          <p className="muted">{orderedBanks.length} {orderedBanks.length === 1 ? 'elemento' : 'elementi'}</p>
+        </div>
       </div>
+      <div className="expense-category-settings-list payment-banks-settings-list">
       {orderedBanks.length ? orderedBanks.map(bank => {
         const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits + bank._count.cashRegisterBankRules;
         return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Canale' : 'Banca'} primary={!bank.isFallback && current.company.primaryBankId === bank.id} canBePrimary={!bank.isFallback} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
       }) : <p className="muted">Nessuna banca configurata.</p>}
-    </details>
+      </div>
+    </section>
     </> : null}
 
     {section === 'methods' ? <>
     <PaymentCreditCreatePanel action={createPaymentMethodAction} type="method" iconOptions={paymentCreditIconOptions} />
-    <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible" open>
-      <summary className="category-create-toggle">
-        <span>Metodi pagamento/accredito</span>
-        <span aria-hidden="true">+</span>
-      </summary>
-      <div className="categories-settings-table-head payment-credit-table-head">
-        <span>Label</span>
-        <span>Icona</span>
-        <span>Uso</span>
-        <span>Movimenti</span>
-        <span>Azioni</span>
+    <section className="card expense-category-list-card payment-credit-settings-card payment-methods-list-card">
+      <div className="expense-category-list-heading">
+        <div>
+          <h3>Metodi configurati</h3>
+          <p className="muted">{orderedMethods.length} {orderedMethods.length === 1 ? 'metodo' : 'metodi'}</p>
+        </div>
       </div>
+      <div className="expense-category-settings-list payment-methods-settings-list">
       {orderedMethods.length ? orderedMethods.map(method => {
         const usageCount = method._count.incomePayments + method._count.expensePayments + method._count.recurringExpenses;
         const eligibleForCashRegister = method.kind === 'INCOME' || method.kind === 'BOTH';
         return <PaymentCreditEditRow key={method.id} id={method.id} name={method.name} icon={method.icon} kind={method.kind} kindLabel={method.isFallback ? 'Generico' : kindLabels[method.kind] ?? method.kind} usageCount={usageCount} protectedFromDelete={method.isFallback || Boolean(method.systemRole)} iconOptions={paymentCreditIconOptions} updateAction={updatePaymentMethodAction} deleteAction={deletePaymentMethodAction}
+          isExpenseDefault={method.isExpenseDefault}
+          isIncomeDefault={method.isIncomeDefault}
           cashRegister={eligibleForCashRegister ? {
             enabled: method.cashRegisterEnabled,
             defaultBankId: method.cashRegisterDefaultBankId,
@@ -187,7 +181,8 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
             banks: orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isPrimary: current.company.primaryBankId === bank.id}))
           } : undefined}/>;
       }) : <p className="muted">Nessun metodo configurato.</p>}
-    </details>
+      </div>
+    </section>
     </> : null}
 
     {section === 'routing' ?

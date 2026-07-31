@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { categoryIconOptions, orderExpenseCategories } from '@/lib/workspace-defaults';
 import { createCategoryAction, deleteCategoryAction, setVatSettlementCategoryAction, updateCategoryAction } from '../actions';
 import CategoryCreatePanel from '../CategoryCreatePanel';
-import CategoryDeleteForm from '../CategoryDeleteForm';
+import ExpenseCategoryList from './ExpenseCategoryList';
+import DetailBackButton from '@/components/DetailBackButton';
 
 const errorMessages: Record<string, string> = {
   invalid: 'Compila nome e acronimo.',
@@ -42,41 +43,50 @@ export default async function ExpenseCategoriesSettingsPage({ searchParams }: { 
   const categories = orderExpenseCategories(categoryRecords);
 
   return <div className="grid admin-page categories-settings-page">
-    <div className="toolbar-card"><div><h2>Categorie di spesa</h2><p className="muted">Gestisci categorie, acronimi e icone usati da spese, filtri e report.</p></div></div>
+    <div className="toolbar-card">
+      <div><h2>Categorie di spesa</h2><p className="muted">Gestisci categorie, acronimi e icone usati da spese, filtri e report.</p></div>
+      <DetailBackButton href="/settings"/>
+    </div>
     {saved ? <div className="form-summary full"><strong>{savedMessages[saved] ?? 'Categorie aggiornate.'}</strong></div> : null}
     {error ? <div className="inline-form-error full">{errorMessages[error] ?? 'Impossibile aggiornare le categorie.'}{error === 'in_use' && usage ? <span> Movimenti collegati: {usage}.</span> : null}</div> : null}
     <CategoryCreatePanel action={createCategoryAction} iconOptions={categoryIconOptions} />
-    <div className="card categories-settings-card">
-      <div className="categories-settings-table-head"><span>Nome</span><span>Acronimo</span><span>Icona</span><span>Uso</span><span>Azioni</span></div>
-      {categories.length ? categories.map(category => {
-        const usageCount = category._count.expenses + category._count.recurringExpenses;
-        return <div className="category-settings-row" key={category.id}>
-          <form action={updateCategoryAction} className="category-settings-edit-form">
-            <input type="hidden" name="id" value={category.id} />
-            <label><span>Nome</span><input name="name" defaultValue={category.name} maxLength={80} required /></label>
-            <label><span>Acronimo</span><input name="code" defaultValue={category.code} maxLength={5} pattern="[A-Za-z0-9]{1,5}" required /></label>
-            <div className="span-2 category-settings-usage-wrap">
-              <label><span>Icona</span><select name="icon" defaultValue={category.icon ?? ''}><option value="">Nessuna</option>{categoryIconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></label>
-              <div className="category-settings-usage"><strong>{usageCount}</strong><small>{usageCount === 1 ? 'movimento' : 'movimenti'}</small></div>
-            </div>
-            <div className="category-settings-actions"><button type="submit" className="btn btn-xs btn-primary">✓ Salva</button></div>
-          </form>
-          <CategoryDeleteForm id={category.id} name={category.name} action={deleteCategoryAction} />
-        </div>;
-      }) : <p className="muted">Nessuna categoria configurata.</p>}
-    </div>
-    <form action={setVatSettlementCategoryAction} className="card form vat-settlement-category-setting">
+    <ExpenseCategoryList
+      categories={categories.map(category => ({
+        id: category.id,
+        name: category.name,
+        code: category.code,
+        icon: category.icon,
+        usageCount: category._count.expenses + category._count.recurringExpenses
+      }))}
+      iconOptions={categoryIconOptions}
+      updateAction={updateCategoryAction}
+      deleteAction={deleteCategoryAction}
+    />
+    <form action={setVatSettlementCategoryAction} className="card form vat-settlement-category-setting vat-settlement-category-card">
       <div className="vat-settlement-category-title">
-        <h3>Categoria Saldo IVA</h3>
-        <p className="muted">Categoria assegnata automaticamente alle spese che registrano un versamento IVA.</p>
+        <span className="vat-settlement-category-icon" aria-hidden="true">%</span>
+        <div>
+          <h3>Categoria Saldo IVA</h3>
+          <p className="muted">Categoria assegnata automaticamente alle spese che registrano un versamento IVA.</p>
+        </div>
       </div>
-      <label>Categoria predefinita
-        <select name="categoryId" defaultValue={workspace?.vatSettlementCategoryId ?? ''} required>
-          <option value="" disabled>Seleziona una categoria</option>
-          {categories.map(category => <option key={category.id} value={category.id}>{category.icon ? `${category.icon} ` : ''}{category.name}</option>)}
-        </select>
-      </label>
-      <div className="actions-row"><button className="btn btn-md btn-primary" type="submit">Salva configurazione</button></div>
+      <div className="app-form-field vat-settlement-category-field">
+        <label className="app-form-field-label" htmlFor="vat-settlement-category">
+          <span className="app-form-field-icon" aria-hidden="true">🏷</span>
+          <span>Categoria predefinita</span>
+        </label>
+        <div className="app-select-control">
+          <select id="vat-settlement-category" name="categoryId" defaultValue={workspace?.vatSettlementCategoryId ?? ''} required>
+            <option value="" disabled>Seleziona una categoria</option>
+            {categories.map(category => <option key={category.id} value={category.id}>{category.icon ? `${category.icon} ` : ''}{category.name}</option>)}
+          </select>
+          <span className="app-select-caret" aria-hidden="true">⌄</span>
+        </div>
+        <small className="app-form-field-hint">Verrà applicata automaticamente alle nuove spese di tipo Saldo IVA.</small>
+      </div>
+      <div className="actions-row vat-settlement-category-actions">
+        <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> Salva configurazione</button>
+      </div>
     </form>
   </div>;
 }

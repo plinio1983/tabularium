@@ -1,17 +1,14 @@
 import { prisma } from '@/lib/prisma';
 
 export const defaultCategories = [
-  ['SBANC', 'Servizi Bancari', '🏦'],
-  ['ASSIC', 'Assicurazioni', '🛡️'],
-  ['AFFUT', 'Affitti/Utenze', '🏠'],
-  ['WEB', 'Servizi Web', '🌐'],
-  ['SPED', 'Spedizioni/Corrieri', '🚚'],
   ['TAX', 'Tasse/Imposte', '🧾'],
-  ['ALSRV', 'Altri Servizi', '🧰'],
   ['MERCE', 'Merce/Forniture', '📦'],
-  ['SUPP', 'Articoli di Supporto', '🧩'],
-  ['PERS', 'Prestazioni/Dipendenti', '👥'],
-  ['RATE', 'Rateizzazione', '📆']
+  ['SPED', 'Spedizioni', '🚚'],
+  ['ASSIC', 'Assicurazioni', '🛡️'],
+  ['SBANC', 'Servizi Bancari', '🏦'],
+  ['WEB', 'Servizi Web/Networking', '🌐'],
+  ['SUPP', 'Articoli di supporto', '🧩'],
+  ['ALSRV', 'Altri Servizi', '🧰']
 ] as const;
 
 export const categoryIconOptions = [
@@ -44,9 +41,10 @@ export const defaultIncomeCategories = [
 ] as const;
 
 export const defaultIncomeSalesChannels = [
-  ['SHOP', 'Shop', '🏬'],
-  ['ONLINE_SHOP', 'Online Shop', '🛒'],
-  ['OTHER', 'Altro Canale', '🔀']
+  ['GOODS', 'Vendita Beni', '🛍️', false, false],
+  ['SERVICES', 'Vendita Servizi', '💼', false, false],
+  ['B2B', 'Vendita B2B', '🤝', false, false],
+  ['DEFAULT', 'Predefinito', '🔀', false, true]
 ] as const;
 
 export const incomeEntityIconOptions = [
@@ -71,24 +69,20 @@ export const paymentCreditIconOptions = [
 ] as const;
 
 export const defaultBanks = [
-  ['MyTu', '🏦'],
-  ['Unicredit', '🏛️'],
-  ['Wise', '🌍'],
+  ['Hype', '📱'],
+  ['Revolut', '🌍'],
   [fallbackBankName, '💶']
 ] as const;
 
 export const defaultPaymentMethods = [
-  ['Bonifico', 'BOTH', '🏦'],
-  ['Carta di Debito/Credit', 'BOTH', '💳'],
-  ['Criptovaluta', 'INCOME', '₿'],
-  ['Stripe', 'INCOME', '◈'],
-  ['Cash', 'BOTH', '💶'],
-  ['Addebito', 'EXPENSE', '🔁'],
-  ['RID Bancario', 'EXPENSE', '🏦'],
-  ['Modello F24', 'EXPENSE', '🧾'],
-  ['PayPal', 'EXPENSE', '💳'],
-  ['Mooney', 'EXPENSE', '💸'],
-  [fallbackPaymentMethodName, 'BOTH', null]
+  ['Cash', 'BOTH', '💶', true, true],
+  ['Bonifico', 'BOTH', '🏦', false, false],
+  ['Carta', 'EXPENSE', '💳', false, false],
+  ['Modello F24', 'EXPENSE', '🧾', false, false],
+  ['Addebito RID', 'EXPENSE', '🔁', false, false],
+  ['PayPal', 'BOTH', '💳', false, false],
+  ['Cripto', 'BOTH', '₿', false, false],
+  [fallbackPaymentMethodName, 'BOTH', null, false, false]
 ] as const;
 
 export const vatSettlementSupplierName = 'Erario – Saldo IVA';
@@ -123,8 +117,20 @@ export function orderBanks<T extends { id: number; name: string; isFallback?: bo
   return [...defaultItems.filter(bank => !bank.isFallback), ...customItems, ...defaultItems.filter(bank => bank.isFallback), ...fallbackItems];
 }
 
-export function orderPaymentMethods<T extends { id: number; name: string; kind: string; isFallback?: boolean | null }>(methods: T[], kind?: 'INCOME' | 'EXPENSE') {
+export function orderPaymentMethods<T extends {
+  id: number;
+  name: string;
+  kind: string;
+  isFallback?: boolean | null;
+  isExpenseDefault?: boolean | null;
+  isIncomeDefault?: boolean | null;
+}>(methods: T[], kind?: 'INCOME' | 'EXPENSE') {
   const filtered = kind ? methods.filter(method => method.kind === kind || method.kind === 'BOTH') : methods;
+  const selectedDefault = kind === 'EXPENSE'
+    ? filtered.find(method => method.isExpenseDefault)
+    : kind === 'INCOME'
+      ? filtered.find(method => method.isIncomeDefault)
+      : undefined;
   const defaultNames = defaultPaymentMethods.map(([name]) => name);
   const defaultItems = defaultNames
     .map(name => filtered.find(method => method.name === name))
@@ -136,7 +142,10 @@ export function orderPaymentMethods<T extends { id: number; name: string; kind: 
     .filter(method => !defaultIds.has(method.id) && !fallbackIds.has(method.id))
     .sort((a, b) => a.name.localeCompare(b.name, 'it'));
 
-  return [...defaultItems.filter(method => !method.isFallback), ...customItems, ...defaultItems.filter(method => method.isFallback), ...fallbackItems];
+  const ordered = [...defaultItems.filter(method => !method.isFallback), ...customItems, ...defaultItems.filter(method => method.isFallback), ...fallbackItems];
+  return selectedDefault
+    ? [selectedDefault, ...ordered.filter(method => method.id !== selectedDefault.id)]
+    : ordered;
 }
 
 export async function ensureWorkspaceDefaults(workspaceId: number) {
@@ -179,9 +188,9 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
 
   const existingIncomeSalesChannels = await prisma.incomeSalesChannel.count({where: {workspaceId}});
   if (existingIncomeSalesChannels === 0) {
-    for (const [index, [code, name, icon]] of defaultIncomeSalesChannels.entries()) {
+    for (const [index, [code, name, icon, isDefault, isFallback]] of defaultIncomeSalesChannels.entries()) {
       await prisma.incomeSalesChannel.create({
-        data: {workspaceId, code, name, icon, sortOrder: (index + 1) * 10}
+        data: {workspaceId, code, name, icon, isDefault, isFallback, sortOrder: (index + 1) * 10}
       });
     }
   }
@@ -228,20 +237,21 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     });
   }
 
-  for (const [name, icon] of defaultBanks) {
-    const existing = await prisma.bank.findFirst({ where: { workspaceId, name } });
-    if (!existing) await prisma.bank.create({ data: { workspaceId, name, icon, isFallback: name === fallbackBankName } });
-    else if ((name === fallbackBankName && !existing.isFallback) || (!existing.icon && icon)) await prisma.bank.update({ where: { id: existing.id }, data: { ...(name === fallbackBankName ? { isFallback: true } : {}), ...(!existing.icon && icon ? { icon } : {}) } });
+  const existingBankCount = await prisma.bank.count({where: {workspaceId}});
+  if (existingBankCount === 0) {
+    for (const [name, icon] of defaultBanks) {
+      await prisma.bank.create({ data: { workspaceId, name, icon, isFallback: name === fallbackBankName } });
+    }
   }
 
   const existingPaymentMethodCount = await prisma.paymentMethod.count({where: {workspaceId}});
-  for (const [name, kind, icon] of defaultPaymentMethods) {
+  for (const [name, kind, icon, isExpenseDefault, isIncomeDefault] of defaultPaymentMethods) {
     // Nei workspace già configurati non aggiungiamo l'intero catalogo standard:
     // evitiamo doppioni semantici come "Carta" / "Carta di Debito/Credit".
     if (existingPaymentMethodCount > 0 && name !== 'Cash') continue;
     const existing = await prisma.paymentMethod.findFirst({ where: { workspaceId, name } });
     const systemRole = name === 'Cash' ? 'CASH' as const : null;
-    if (!existing) await prisma.paymentMethod.create({ data: { workspaceId, name, kind, icon, isFallback: name === fallbackPaymentMethodName, systemRole } });
+    if (!existing) await prisma.paymentMethod.create({ data: { workspaceId, name, kind, icon, isFallback: name === fallbackPaymentMethodName, isExpenseDefault, isIncomeDefault, systemRole } });
     else if ((name === fallbackPaymentMethodName && !existing.isFallback) || (systemRole && existing.systemRole !== systemRole) || (!existing.icon && icon)) {
       await prisma.paymentMethod.update({ where: { id: existing.id }, data: { ...(name === fallbackPaymentMethodName ? { isFallback: true } : {}), ...(systemRole ? { systemRole } : {}), ...(!existing.icon && icon ? { icon } : {}) } });
     }
@@ -282,7 +292,13 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
   });
   const [registerCategory, registerChannel, cashMethod, cardMethod, cashCreditChannel, firstBank] = await Promise.all([
     prisma.incomeCategory.findFirst({ where: { workspaceId, code: 'B2C' } }),
-    prisma.incomeSalesChannel.findFirst({ where: { workspaceId }, orderBy: [{sortOrder: 'asc'}, {id: 'asc'}] }),
+    prisma.incomeSalesChannel.findFirst({
+      where: { workspaceId, isFallback: false },
+      orderBy: [{isDefault: 'desc'}, {sortOrder: 'asc'}, {id: 'asc'}]
+    }).then(channel => channel ?? prisma.incomeSalesChannel.findFirst({
+      where: {workspaceId, isFallback: true},
+      orderBy: [{sortOrder: 'asc'}, {id: 'asc'}]
+    })),
     prisma.paymentMethod.findFirst({ where: { workspaceId, systemRole: 'CASH' } }),
     prisma.paymentMethod.findFirst({
       where: { workspaceId, OR: [{name: 'Carta di Debito/Credit'}, {name: {startsWith: 'Carta', mode: 'insensitive'}}] },
