@@ -4,7 +4,6 @@ import SortableTableController from '@/components/SortableTableController';
 import IncomeEditModalController from '@/components/IncomeEditModalController';
 import NewIncomePanel from '@/components/NewIncomePanel';
 import BulkSelectionController from '@/components/BulkSelectionController';
-import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import BulkEditFieldsModal from '@/components/BulkEditFieldsModal';
 import {euro, moneyTone} from '@/lib/money';
 import {formatPeriod, vatStyles} from '@/lib/expense-ui';
@@ -103,7 +102,6 @@ function fiscalBadge(value: boolean) {
 
 type EntityOption = { id: number; code: string; name: string; icon?: string | null };
 type SimpleOption = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; isIncomeDefault?: boolean };
-type CategoryOption = { id: number; name: string; icon?: string | null };
 
 export default function IncomesList({
                                         incomes,
@@ -114,7 +112,6 @@ export default function IncomesList({
                                         paymentMethods,
                                         salesChannels,
                                         customers,
-                                        categories = [],
                                         initialCustomerId,
                                         initialOpen = false,
                                         emptyMessage = 'Nessun incasso trovato.'
@@ -127,7 +124,6 @@ export default function IncomesList({
     paymentMethods: SimpleOption[];
     salesChannels: EntityOption[];
     customers: Array<{ id: number; businessName: string; alias?: string | null; systemRole?: string | null }>;
-    categories?: CategoryOption[];
     initialCustomerId?: number;
     initialOpen?: boolean;
     emptyMessage?: string;
@@ -142,13 +138,6 @@ export default function IncomesList({
         <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
         <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers}/>
         <BulkEditFieldsModal formId={formId} subject="incassi"/>
-        <BulkChangeCategoryModal
-            formId={formId}
-            action={`/api/incomes/bulk?returnTo=${returnTo}`}
-            fieldName="incomeCategoryId"
-            categories={categories.map(category => ({value: String(category.id), label: category.name, icon: category.icon}))}
-            hideTrigger
-        />
         <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi visibili"/></label>
             <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>

@@ -50,7 +50,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
-    const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers, incomeCategories] = await Promise.all([
+    const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers] = await Promise.all([
         getMonthlyReport(year, month, current.workspace.id, mode, current.company.id),
         getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id),
         mode === 'fiscal'
@@ -65,8 +65,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             take: 100
         }),
         prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
-        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}}),
-        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}})
+        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}})
     ]);
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
@@ -319,7 +318,6 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback}))}
                 salesChannels={salesChannels}
                 customers={customers}
-                categories={incomeCategories}
             /></div>
         </details>
         </div>

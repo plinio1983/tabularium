@@ -8,15 +8,15 @@ export default function IncomeEntityCreatePanel({
   iconOptions
 }: {
   action: (formData: FormData) => void;
-  kind: 'category' | 'channel';
+  kind: 'channel';
   iconOptions: readonly string[];
 }) {
   const [open, setOpen] = useState(false);
-  const label = kind === 'category' ? 'categoria' : 'canale';
+  const label = 'canale';
   return <section className="card category-create-panel">
     <button type="button" className="category-create-toggle" aria-expanded={open} onClick={() => setOpen(value => !value)}>
       <span className="category-create-toggle-copy"><span className="category-create-toggle-icon" aria-hidden="true">＋</span><span>
-        <strong>Nuov{kind === 'category' ? 'a' : 'o'} {label}</strong>
+        <strong>Nuovo {label}</strong>
         <small>Aggiungi un nuovo valore disponibile nei form di incasso.</small>
       </span></span><span aria-hidden="true">{open ? '−' : '+'}</span>
     </button>

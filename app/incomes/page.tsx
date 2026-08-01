@@ -583,7 +583,7 @@ export default async function IncomesPage({searchParams}: {
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
 
-    const [incomes, expensesForVat, banks, paymentMethods, salesChannels, customers, incomeCategories] = await Promise.all([
+    const [incomes, expensesForVat, banks, paymentMethods, salesChannels, customers] = await Promise.all([
         prisma.income.findMany({
             where: {workspaceId: current.workspace.id, companyId: current.company.id},
             include: {
@@ -599,8 +599,7 @@ export default async function IncomesPage({searchParams}: {
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
-        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}}),
-        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {name: 'asc'}})
+        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}})
     ]);
     const orderedBanks = orderBanks(banks);
     const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
@@ -1194,7 +1193,6 @@ export default async function IncomesPage({searchParams}: {
                 }))}
                 salesChannels={salesChannels}
                 customers={customers}
-                categories={incomeCategories}
                 initialOpen={inputDefault(filters, 'new') === '1'}
                 emptyMessage="Nessun incasso trovato con i filtri selezionati."
             />

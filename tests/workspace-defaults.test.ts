@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   defaultBanks,
   defaultCategories,
+  defaultIncomeCategories,
   defaultIncomeSalesChannels,
   defaultPaymentMethods,
   orderPaymentMethods
@@ -20,6 +21,7 @@ test('the new workspace catalog contains the requested values', () => {
     'Altri Servizi'
   ]);
   assert.deepEqual(defaultBanks.map(([name]) => name), ['Hype', 'Revolut', 'Cassa']);
+  assert.deepEqual(defaultIncomeCategories, [['DEFAULT', 'Predefinita', '•']]);
   assert.deepEqual(defaultIncomeSalesChannels.map(([, name]) => name), [
     'Vendita Beni',
     'Vendita Servizi',

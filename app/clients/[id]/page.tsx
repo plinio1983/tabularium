@@ -24,12 +24,11 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   const query = (await searchParams) ?? {};
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const backHref = detailBackHref(rawReturnTo, `/clients/${id}`, '/clients');
-  const [customer, banks, paymentMethods, salesChannels, customers, incomeCategories] = await Promise.all([
+  const [customer, banks, paymentMethods, salesChannels, customers] = await Promise.all([
     prisma.customer.findFirst({ where: { id, workspaceId: current.workspace.id }, include: { incomes: { where: {companyId: current.company.id}, include: { salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true, credits: true }, orderBy: { creditDate: 'desc' } } } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }), prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] }),
-    prisma.customer.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' } }),
-    prisma.incomeCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { name: 'asc' } })
+    prisma.customer.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' } })
   ]);
   if (!customer) notFound();
   const uncredited = customer.incomes.filter(income => !income.isCredited);
@@ -53,6 +52,6 @@ export default async function ClientDetailPage({ params, searchParams }: { param
         <CopyableField label="Ragione sociale" value={customer.businessName} /><CopyableField label="Referente" value={customer.alias} /><CopyableField label="Email" value={customer.email} /><CopyableField label="P.IVA / C.F." value={customer.vatNumber} /><CopyableField label="Cod. SDI" value={customer.taxCodeSdi} /><CopyableField label="PEC" value={customer.pec} /><CopyableField label="IBAN" value={customer.iban} /><CopyableField label="Swift" value={customer.swift} /><CopyableField label="Note interne" value={customer.internalNotes} className="span-2" />
       </div></details>
     </article></div>
-    <div className="card record-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p></div></div><IncomesList incomes={listedIncomes} cashRegisterGroups={cashRegisterGroups} returnTo={returnTo} banks={orderBanks(banks).map(bank => ({...bank, isPrimary: bank.id === current.company.primaryBankId}))} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} categories={incomeCategories} initialCustomerId={customer.id} emptyMessage="Nessun incasso collegato a questo cliente." /></div>
+    <div className="card record-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p></div></div><IncomesList incomes={listedIncomes} cashRegisterGroups={cashRegisterGroups} returnTo={returnTo} banks={orderBanks(banks).map(bank => ({...bank, isPrimary: bank.id === current.company.primaryBankId}))} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} emptyMessage="Nessun incasso collegato a questo cliente." /></div>
   </div>;
 }

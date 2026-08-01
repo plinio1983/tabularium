@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { redirectToPath } from '@/lib/redirect';
+import {resolveDefaultIncomeCategory} from '@/lib/income-category';
 
 const bool = z.preprocess(value => ['true', 'on', '1', true].includes(value as never), z.boolean());
 const recurringIncomeSchema = z.object({
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
   const companyId = access.current.company.id;
   const [channel, category, customer, method, bank] = await Promise.all([
     prisma.incomeSalesChannel.findFirst({ where: { id: data.salesChannelId, workspaceId } }),
-    prisma.incomeCategory.findFirst({ where: { workspaceId, code: 'B2C' } }).then(value => value ?? prisma.incomeCategory.findFirst({ where: { workspaceId }, orderBy: { id: 'asc' } })),
+    resolveDefaultIncomeCategory(workspaceId),
     data.customerId ? prisma.customer.findFirst({ where: { id: data.customerId, workspaceId } }) : null,
     data.paymentMethodId ? prisma.paymentMethod.findFirst({ where: { id: data.paymentMethodId, workspaceId } }) : null,
     data.bankId ? prisma.bank.findFirst({ where: { id: data.bankId, workspaceId } }) : null

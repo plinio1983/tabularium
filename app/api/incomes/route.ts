@@ -7,6 +7,7 @@ import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { ensureWorkspaceDefaults } from '@/lib/workspace-defaults';
 import { writeAuditLog } from '@/lib/audit';
 import { parseIncomeCredits, validateIncomeCredits } from '@/lib/income-credits';
+import {resolveDefaultIncomeCategory} from '@/lib/income-category';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -77,8 +78,7 @@ export async function POST(request: Request) {
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.incomeSalesChannel.findFirst({ where: { id: parsed.salesChannelId, workspaceId: current.workspace.id } }),
-    prisma.incomeCategory.findFirst({ where: { workspaceId: current.workspace.id, code: 'B2C' } })
-      .then(category => category ?? prisma.incomeCategory.findFirst({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } })),
+    resolveDefaultIncomeCategory(current.workspace.id),
     prisma.customer.findFirst({ where: { id: parsed.customerId, workspaceId: current.workspace.id } })
   ]);
   const fallbackMethod = methods.find(method => method.isIncomeDefault) ?? methods[0];

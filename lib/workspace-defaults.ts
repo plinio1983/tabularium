@@ -35,9 +35,7 @@ export const categoryIconOptions = [
 ] as const;
 
 export const defaultIncomeCategories = [
-  ['B2C', 'B2C', '👤'],
-  ['B2B', 'B2B', '🏢'],
-  ['OTHER', 'Altro', '  •  ']
+  ['DEFAULT', 'Predefinita', '•']
 ] as const;
 
 export const defaultIncomeSalesChannels = [
@@ -292,7 +290,7 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     }
   });
   const [registerCategory, registerChannel, cashMethod, cardMethod, cashCreditChannel, firstBank] = await Promise.all([
-    prisma.incomeCategory.findFirst({ where: { workspaceId, code: 'B2C' } }),
+    prisma.incomeCategory.findFirst({ where: { workspaceId, code: 'DEFAULT' } }),
     prisma.incomeSalesChannel.findFirst({
       where: { workspaceId, isFallback: false },
       orderBy: [{isDefault: 'desc'}, {sortOrder: 'asc'}, {id: 'asc'}]

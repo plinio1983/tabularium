@@ -22,7 +22,7 @@ const errors: Record<string, string> = {
 
 function EntitySection({title, kind, entities}: {
     title: string;
-    kind: 'category' | 'channel';
+    kind: 'channel';
     entities: Array<{
         id: number;
         code: string;

@@ -7,7 +7,7 @@ export default function IncomeEntityDeleteForm({
   action
 }: {
   id: number;
-  kind: 'category' | 'channel';
+  kind: 'channel';
   name: string;
   action: (formData: FormData) => void;
 }) {
@@ -15,7 +15,7 @@ export default function IncomeEntityDeleteForm({
     action={action}
     className="category-settings-delete-form"
     onSubmit={event => {
-      if (!window.confirm(`Rimuovere ${kind === 'category' ? 'la categoria' : 'il canale'} "${name}"?`)) event.preventDefault();
+      if (!window.confirm(`Rimuovere il canale "${name}"?`)) event.preventDefault();
     }}
   >
     <input type="hidden" name="id" value={id} />

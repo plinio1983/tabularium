@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
+import {resolveDefaultIncomeCategory} from '@/lib/income-category';
 import {
   ensureWorkspaceDefaults,
   fallbackBankName,
@@ -203,9 +204,9 @@ async function getOrCreateCustomer(workspaceId: number, businessName: string) {
   return { record, created: true };
 }
 
-async function getOrCreateIncomeEntity(kind: 'category' | 'channel', workspaceId: number, raw: unknown) {
+async function getOrCreateIncomeEntity(kind: 'channel', workspaceId: number, raw: unknown) {
   const name = normalizeText(raw);
-  const delegate = kind === 'category' ? prisma.incomeCategory : prisma.incomeSalesChannel;
+  const delegate = prisma.incomeSalesChannel;
   if (!name) {
     const fallback = await (delegate as any).findFirst({ where: { workspaceId, code: 'OTHER' } });
     return { record: fallback, created: false };
@@ -272,19 +273,14 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
       if (customerResult.created) result.relatedCreated++;
       const channelResult = await getOrCreateIncomeEntity('channel', options.workspaceId, rowValue(item.row, ['Canale vendita', 'Canale']));
       if (channelResult.created) result.relatedCreated++;
-      const incomeCategory = await prisma.incomeCategory.findFirst({
-        where: { workspaceId: options.workspaceId, code: 'B2C' }
-      }) ?? await prisma.incomeCategory.findFirst({
-        where: { workspaceId: options.workspaceId },
-        orderBy: { id: 'asc' }
-      });
+      const incomeCategory = await resolveDefaultIncomeCategory(options.workspaceId);
       const refs = await configuredIncomeReferences(
         options.workspaceId,
         rowValue(item.row, ['Metodo accredito', 'Metodo pagamento', 'Metodo']),
         rowValue(item.row, ['Banca', 'Banca accredito'])
       );
       if (!incomeCategory || !channelResult.record || !refs.paymentMethod || !refs.bank) {
-        addRowError(result, item, 'configurazione di categoria, canale, metodo o banca non disponibile');
+        addRowError(result, item, 'configurazione di canale, metodo o banca non disponibile');
         continue;
       }
       const description = normalizeText(rowValue(item.row, ['Descrizione', 'Prodotto/servizio']));

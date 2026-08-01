@@ -5,6 +5,7 @@ import {prisma} from '@/lib/prisma';
 import {ensureWorkspaceDefaults} from '@/lib/workspace-defaults';
 import {writeAuditLog} from '@/lib/audit';
 import {resolveCashRegisterBankId} from '@/lib/cash-register-bank';
+import {resolveDefaultIncomeCategory} from '@/lib/income-category';
 
 const allowedVatRates = [0, 4, 10, 22];
 const ReceiptSchema = z.object({
@@ -44,11 +45,8 @@ export async function POST(request: Request) {
     const date = new Date(input.creditDate);
     if (Number.isNaN(date.getTime())) return NextResponse.json({error: 'Data non valida'}, {status: 400});
 
-    const [workspace, customer, method, channel] = await Promise.all([
-        prisma.workspace.findUnique({
-            where: {id: current.workspace.id},
-            select: {cashRegisterIncomeCategoryId: true}
-        }),
+    const [category, customer, method, channel] = await Promise.all([
+        resolveDefaultIncomeCategory(current.workspace.id),
         prisma.customer.findFirst({where: {workspaceId: current.workspace.id, systemRole: 'CASH_REGISTER'}}),
         prisma.paymentMethod.findFirst({
             where: {
@@ -62,16 +60,12 @@ export async function POST(request: Request) {
             where: {id: input.salesChannelId, workspaceId: current.workspace.id}
         })
     ]);
-    if (!workspace?.cashRegisterIncomeCategoryId || !customer || !method || !channel) {
+    if (!category || !customer || !method || !channel) {
         return NextResponse.json({error: 'Completa la configurazione del registratore di cassa'}, {status: 409});
     }
     if (!input.isFiscal && method.systemRole !== 'CASH') {
         return NextResponse.json({error: 'Gli incassi non fiscali possono essere registrati solo in contanti'}, {status: 400});
     }
-    const category = await prisma.incomeCategory.findFirst({
-        where: {id: workspace.cashRegisterIncomeCategoryId, workspaceId: current.workspace.id}
-    });
-    if (!category) return NextResponse.json({error: 'Categoria registratore non valida'}, {status: 409});
     const creditBankId = await resolveCashRegisterBankId(current.workspace.id, method, channel.id);
     if (!creditBankId) {
         return NextResponse.json({error: 'Configura la banca per questo metodo e canale di vendita'}, {status: 409});

@@ -2787,11 +2787,17 @@
     box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
   }
 
-  .app-form-wizard .app-form-wizard-step-4,
+  .app-form-wizard .app-form-wizard-step-4 {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
   .app-form-wizard .app-form-wizard-step-4 .payments-box {
     border: 0;
     background: transparent;
     box-shadow: none;
+    margin-bottom: 92px;
   }
 
   .app-form-wizard .app-form-wizard-step-2.amount-vat-row > label:nth-child(2) {

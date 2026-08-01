@@ -182,7 +182,7 @@ export default function IncomeForm({
     const creditResidual = Math.max(0, amountValue - creditedAmount);
     const isCredited = amountValue > 0 && creditedAmount >= amountValue - 0.005;
     const creditStatusLabel = isCredited ? "Accreditato" : creditedAmount > 0 ? "Accreditato parzialmente" : "Da accreditare";
-    const canAddCredit = credits.every(isCreditComplete) && creditResidual > 0.005;
+    const canAddCredit = openCreditKey === null && credits.every(isCreditComplete) && creditResidual > 0.005;
 
     function updateCredit(index: number, patch: Partial<CreditRow>) {
         setCredits(rows => rows.map((credit, rowIndex) => {
@@ -450,9 +450,9 @@ export default function IncomeForm({
                             <div><span className="muted">Accreditato</span><strong>{formatEuro(creditedAmount)}</strong></div>
                             <div><span className="muted">Residuo</span><strong className={creditResidual > 0 ? "text-critical" : "text-ok"}>{formatEuro(creditResidual)}</strong></div>
                             <div><span className="muted">Stato</span><strong className={isCredited ? "text-ok" : creditedAmount > 0 ? "text-warning" : "text-critical"}>{creditStatusLabel}</strong></div>
-                            <button type="button" className="btn btn-sm btn-default"
-                                    onClick={() => credits.length ? setOpenCreditKey(credits[0].key) : addCredit()}>
-                                {credits.length ? "✎ Modifica accrediti" : "➕ Aggiungi accredito"}
+                            <button type="button" className="btn btn-sm btn-default" disabled={!canAddCredit}
+                                    onClick={addCredit}>
+                                ➕ Aggiungi accredito
                             </button>
                         </div>
 
@@ -521,9 +521,6 @@ export default function IncomeForm({
                             </div>;
                         })}
 
-                        {credits.length && canAddCredit ? <div className="income-additional-credit-action">
-                            <button type="button" className="btn btn-sm btn-default" onClick={addCredit}>➕ Aggiungi altro accredito</button>
-                        </div> : null}
                         {credits.length && !canAddCredit && creditResidual > 0.005 ? <p className="inline-warning">Completa l’accredito aperto prima di aggiungerne un altro.</p> : null}
                     </section>
                 </div>

@@ -249,7 +249,7 @@ export async function getAccountingDashboardReport(
   const [currentFiscalMonth, currentFiscalQuarter, yearIncomes, yearExpenses] = await Promise.all([
     getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId }),
     getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId }),
-    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId, companyId), include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true, credits: true } }),
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId, companyId), include: { salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true, credits: true } }),
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), year: { in: reportYears } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true } })
   ]);
 
@@ -280,9 +280,8 @@ export async function getAccountingDashboardReport(
   const incomesBySalesChannelMap = new Map<string, { name: string; code: string; total: number }>();
   for (const income of yearlyIncomes) {
     const salesChannel = income.salesChannelRef.name;
-    const saleCategory = income.incomeCategory.name;
-    const name = `${salesChannel} / ${saleCategory}`;
-    const code = `${String(salesChannel).split(/\s+/).map(part => part[0]).join('')}${String(saleCategory).split(/\s+/).map(part => part[0]).join('')}`.slice(0, 6).toUpperCase() || 'CAN';
+    const name = salesChannel;
+    const code = income.salesChannelRef.code;
     const key = `${code}-${name}`;
     const current = incomesBySalesChannelMap.get(key) ?? { name, code, total: 0 };
     current.total += Number(income.amount);
@@ -329,7 +328,7 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
         ? incomePeriodWhereIncludingUncredited([{ year, month }], workspaceId, companyId)
         : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {creditDate: dateRange}} },
       include: {
-        salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true, customer: true,
+        salesChannelRef: true, paymentMethodRef: true, creditBank: true, customer: true,
         credits: mode === 'fiscal' ? true : {where: {creditDate: dateRange}}
       }
     })
