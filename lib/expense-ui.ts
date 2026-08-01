@@ -39,7 +39,7 @@ export const vatStylesNoText: Record<string, { label: string; className: string 
 };
 
 export const invoiceStatusStyles: Record<string, { label: string; icon: string; className: string }> = {
-  NON_PREVISTA: { label: 'NP', icon: '✕', className: 'tone-neutral' },
+  NON_PREVISTA: { label: 'NP', icon: '✕', className: 'tone-muted' },
   IN_ATTESA: { label: 'Attesa', icon: '⏳', className: 'tone-waiting' },
   INVIATA_SDI: { label: 'Emessa', icon: '✅', className: 'tone-received' },
   CONTESTAZIONE: { label: 'Contesto', icon: '⚠️', className: 'tone-dispute' },
@@ -47,9 +47,9 @@ export const invoiceStatusStyles: Record<string, { label: string; icon: string; 
   RICEVUTA: { label: 'Emessa', icon: '✅', className: 'tone-received' },
   NONE: { label: 'Non impostato', icon: '  •  ', className: 'tone-neutral' },
   YES: { label: 'Si', icon: '✓', className: 'tone-yes' },
-  NO: { label: 'No', icon: '×', className: 'tone-no' },
+  NO: { label: 'No', icon: '×', className: 'tone-muted' },
   OK: { label: 'Ok', icon: '✓', className: 'tone-yes' },
-  KO: { label: 'Ko', icon: '×', className: 'tone-no' }
+  KO: { label: 'Ko', icon: '×', className: 'tone-muted' }
 };
 
 type CategoryDisplay = { name?: string | null; code?: string | null; icon?: string | null };

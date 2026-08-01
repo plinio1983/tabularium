@@ -117,7 +117,7 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
 }
 
 function invoiceBadge(value: boolean, invoiceStatus?: string) {
-  let style = !value ? yesNoStyles.no.className : yesNoStyles.yes.className;
+  let style = !value ? 'tone-muted' : yesNoStyles.yes.className;
   let label = '';
   if (!value) {
     if (invoiceStatus === 'NON_PREVISTA') {

@@ -16,6 +16,7 @@ import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {getIncomeTrendData} from '@/lib/income-trend';
 import AnnualIncomeTrendChart from '@/components/AnnualIncomeTrendChart';
+import MonthlyEconomicTrendChart from '@/components/MonthlyEconomicTrendChart';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
     if (!periods.length) return '-';
@@ -1383,80 +1384,6 @@ type DashboardMonth = {
     totals: any;
 };
 
-function EconomicTrendChart({months, year}: { months: DashboardMonth[]; year: number }) {
-    const positiveValues = months.flatMap(month => [month.totals.incassoTotale, month.totals.speseTotali, month.totals.utileNetto]);
-    const maxValue = Math.max(...positiveValues, 1);
-    const minValue = Math.min(0, ...months.map(month => month.totals.utileNetto));
-    const range = Math.max(maxValue - minValue, 1);
-    const width = 960;
-    const height = 300;
-    const left = 42;
-    const right = 18;
-    const top = 24;
-    const bottom = 48;
-    const chartWidth = width - left - right;
-    const chartHeight = height - top - bottom;
-    const groupWidth = chartWidth / Math.max(months.length, 1);
-    const y = (value: number) => top + ((maxValue - value) / range) * chartHeight;
-    const baselineY = y(0);
-    const profitPoints = months.map((month, index) => {
-        const x = left + groupWidth * index + groupWidth / 2;
-        return `${x},${y(month.totals.utileNetto)}`;
-    }).join(' ');
-
-    return <section className="card dashboard-insight-card full">
-        <div className="card-heading-row">
-            <div>
-                <h2>Entrate, uscite e utile per mese</h2>
-                <p className="muted">Andamento economico dell’anno {year}. La linea rappresenta l’utile netto.</p>
-            </div>
-            <div className="dashboard-chart-legend" aria-label="Legenda">
-                <span><i className="legend-income"/>Entrate</span>
-                <span><i className="legend-expense"/>Uscite</span>
-                <span><i className="legend-profit"/>Utile netto</span>
-            </div>
-        </div>
-        {months.length ? <div className="dashboard-svg-chart-scroll">
-            <svg className="dashboard-economic-chart" viewBox={`0 0 ${width} ${height}`} role="img"
-                 aria-label={`Entrate, uscite e utile netto mensile ${year}`}>
-                {[minValue, 0, maxValue / 2, maxValue].filter((value, index, all) => all.indexOf(value) === index).map(value => {
-                    const gridY = y(value);
-                    return <g key={value}>
-                        <line className={value === 0 ? 'dashboard-chart-zero-line' : 'dashboard-chart-grid-line'}
-                              x1={left} y1={gridY} x2={width - right} y2={gridY}/>
-                        <text className="dashboard-chart-axis-label" x={left - 8} y={gridY + 4} textAnchor="end">
-                            {chartEuro(value)}
-                        </text>
-                    </g>;
-                })}
-                {months.map((month, index) => {
-                    const center = left + groupWidth * index + groupWidth / 2;
-                    const barWidth = Math.min(22, groupWidth * .28);
-                    const incomeY = y(month.totals.incassoTotale);
-                    const expenseY = y(month.totals.speseTotali);
-                    return <g key={`${month.year}-${month.month}`}>
-                        <rect className="dashboard-chart-income-bar" x={center - barWidth - 2} y={incomeY}
-                              width={barWidth} height={Math.max(baselineY - incomeY, 0)} rx="3"/>
-                        <rect className="dashboard-chart-expense-bar" x={center + 2} y={expenseY}
-                              width={barWidth} height={Math.max(baselineY - expenseY, 0)} rx="3"/>
-                        <text className="dashboard-chart-month-label" x={center} y={height - 20} textAnchor="middle">
-                            {capitalizedMonthName(month.month).slice(0, 3)}
-                        </text>
-                    </g>;
-                })}
-                <polyline className="dashboard-chart-profit-line" points={profitPoints}/>
-                {months.map((month, index) => {
-                    const x = left + groupWidth * index + groupWidth / 2;
-                    return <circle key={`profit-${month.month}`} className={month.totals.utileNetto < 0 ? 'dashboard-chart-profit-point is-negative' : 'dashboard-chart-profit-point'}
-                                   cx={x} cy={y(month.totals.utileNetto)} r="4"
-                                   role="img"
-                                   aria-label={`${capitalizedMonthName(month.month)}: utile netto ${chartEuro(month.totals.utileNetto)}`}/>;
-                })}
-            </svg>
-        </div> : <p className="muted">Nessun dato economico disponibile per l’anno selezionato.</p>}
-    </section>;
-}
-
 function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]; year: number }) {
     const totalIncome = months.reduce((sum, month) => sum + month.totals.incassoTotale, 0);
     const totalNetProfit = months.reduce((sum, month) => sum + month.totals.utileNetto, 0);
@@ -2259,7 +2186,7 @@ export default async function Dashboard({searchParams}: {
 
         <div className="dashboard-report-charts">
             <div className="dashboard-insights-grid">
-                <EconomicTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+                <MonthlyEconomicTrendChart data={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <CashScheduleChart items={cashSchedule} year={report.annualYear}/>
                 <VatSituationCard months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
             </div>

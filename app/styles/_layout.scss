@@ -2839,6 +2839,7 @@ body.drawer-open {
   border-color: #ffd1d1;
 }
 
+.tone-muted,
 .tone-vat-0 {
   background: #f5f7fa;
   color: #536072;
@@ -7698,6 +7699,136 @@ html, body {
   stroke: #dc2626;
 }
 
+.dashboard-chart-profit-marker {
+  cursor: pointer;
+  outline: none;
+}
+
+.dashboard-chart-profit-hit-area {
+  fill: transparent;
+}
+
+.dashboard-chart-profit-marker:hover .dashboard-chart-profit-point,
+.dashboard-chart-profit-marker:focus .dashboard-chart-profit-point,
+.dashboard-chart-profit-marker:focus-visible .dashboard-chart-profit-point {
+  r: 6px;
+  stroke-width: 3px;
+}
+
+.dashboard-chart-profit-tooltip {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.dashboard-chart-profit-marker:hover .dashboard-chart-profit-tooltip,
+.dashboard-chart-profit-marker:focus .dashboard-chart-profit-tooltip,
+.dashboard-chart-profit-marker:focus-visible .dashboard-chart-profit-tooltip {
+  opacity: 1;
+}
+
+.dashboard-chart-profit-tooltip rect {
+  fill: #0f172a;
+  stroke: rgb(255 255 255 / 35%);
+  stroke-width: 1px;
+}
+
+.dashboard-chart-profit-tooltip text {
+  fill: #cbd5e1;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.dashboard-chart-profit-tooltip .dashboard-chart-profit-tooltip-value {
+  fill: #fff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.monthly-economic-selection-scroll {
+  min-width: 0;
+}
+
+.monthly-economic-selection {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+
+.monthly-economic-selection > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.monthly-economic-selection span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.monthly-economic-selection strong {
+  min-width: 0;
+  color: var(--text);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.monthly-economic-selection > .btn {
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 10px;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+}
+
+.monthly-economic-selection-scroll.is-empty {
+  padding: 12px 14px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+}
+
+.monthly-economic-selection-scroll.is-empty p {
+  margin: 0;
+}
+
+@media (hover: none) {
+  .dashboard-chart-profit-tooltip {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .monthly-economic-selection {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .monthly-economic-selection > div {
+    padding: 7px 5px;
+  }
+
+  .monthly-economic-selection span,
+  .monthly-economic-selection strong {
+    font-size: 13px;
+  }
+
+  .monthly-economic-selection > .btn {
+    grid-column: 1 / -1;
+    width: auto;
+    padding-inline: 6px;
+    justify-self: end;
+  }
+}
+
 .monthly-profit-comparison-card {
   grid-column: 1 / -1;
 }
@@ -10693,7 +10824,7 @@ button.bulk-direct-link {
 .annual-income-trend-kpis span,
 .annual-income-trend-selection span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -10703,6 +10834,10 @@ button.bulk-direct-link {
 .annual-income-trend-selection strong {
   color: var(--text);
   font-size: 16px;
+}
+
+.annual-income-trend-selection strong {
+  white-space: nowrap;
 }
 
 .annual-income-trend-scroll {
@@ -10798,6 +10933,25 @@ button.bulk-direct-link {
 
 .annual-income-trend-selection.is-empty p {
   margin: 0;
+}
+
+@media (max-width: 576px) {
+  .annual-income-trend-selection {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .annual-income-trend-selection > div {
+    min-width: 0;
+    padding: 8px 6px;
+  }
+
+  .annual-income-trend-selection > .btn {
+    grid-column: 1 / -1;
+    width: auto;
+    min-height: 38px;
+    justify-self: end;
+  }
 }
 
 .annual-income-trend-empty {
@@ -13253,6 +13407,16 @@ button.bulk-direct-danger {
   min-width: 130px;
 }
 
+.expense-form .payment-collapse-action {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .expense-form .payment-collapse-action {
+    display: inline-flex;
+  }
+}
+
 
 /*.edit-expense-client-modal {*/
 /*    align-items: flex-start;*/
@@ -14836,9 +15000,6 @@ table .cell-description {
     grid-template-columns: 1fr 1fr;
   }
 
-  .payment-row .remove-row {
-    grid-column: 1 / -1;
-  }
 }
 
 @media (max-width: 900px) {

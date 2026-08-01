@@ -1285,7 +1285,7 @@ export default function ExpenseForm({
                             </div>
                         </div>
                         {payments.map((payment, index) => {
-                            const isOpen = openPaymentKey === payment.key || !payment.id;
+                            const isOpen = openPaymentKey === payment.key;
                             const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
                             const paymentMethod = paymentMethods.find(method => String(method.id) === payment.paymentMethodId);
                             const paymentBank = banks.find(bank => String(bank.id) === payment.bankId);
@@ -1423,6 +1423,14 @@ export default function ExpenseForm({
                                             onClick={() => removePaymentRow(index)}
                                         >
                                             🗑️ Rimuovi
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-primary payment-collapse-action"
+                                            disabled={!isPaymentComplete(normalizePaymentRow(payment))}
+                                            onClick={() => setOpenPaymentKey(null)}
+                                        >
+                                            ✓ Ok
                                         </button>
                                         {/*<button*/}
                                         {/*    type="button"*/}

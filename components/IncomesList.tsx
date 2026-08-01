@@ -284,7 +284,7 @@ export default function IncomesList({
                     <th data-sort-key="description">Descrizione</th>
                     <th data-sort-key="vat" data-sort-type="number">IVA</th>
                     <th data-sort-key="credit-status">Accr.</th>
-                    <th data-sort-key="invoice-status">Stato fatt.</th>
+                    <th data-sort-key="invoice-status" className="text-center">Stato fatt.</th>
                     <th data-sort-key="credit-date" data-sort-type="date">Data accr.</th>
                     <th data-sort-key="payment-method">Metodo pag.</th>
                 </tr>
@@ -321,7 +321,7 @@ export default function IncomesList({
                         <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
                         <td>{aggregateVatBadge(group)}</td>
                         <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span></td>
-                        <td className=""><span className="badge badge-color tone-muted">-</span></td>
+                        <td className="text-center"><span className="badge badge-color tone-muted">✕</span></td>
                         <td>{dateLabel(group.latestCreditDate)}</td>
                         <td>{group.paymentMethodIcon ?? '  •  '} {group.paymentMethod}</td>
                     </tr>;
@@ -354,8 +354,8 @@ export default function IncomesList({
                         <td>{income.description ?? '-'}</td>
                         <td>{vatBadge(income.vatRate)}</td>
                         <td><span className={badgeClass(status.className)}>{status.icon} {status.label}</span></td>
-                        <td>{income.isFiscal ?
-                            <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : <span className="badge tone-muted">-</span> }</td>
+                        <td className="text-center">{income.isFiscal ?
+                            <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : <span className="badge tone-muted">✕</span> }</td>
                         <td>{dateLabel(income.creditDate)}</td>
                         <td>{income.paymentMethodRef?.icon ?? '  •  '} {paymentMethod}</td>
                     </tr>;
