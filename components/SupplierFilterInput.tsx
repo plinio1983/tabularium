@@ -64,9 +64,9 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
     if (event.key === 'Escape') setOpen(false);
   }
 
-  return <div className="supplier-filter-label app-form-field expense-filter-field">
+  return <div className="supplier-filter-label app-form-field record-filter-field">
     <span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">◎</span>Esercente</span>
-    <div className="supplier-picker filter-supplier-picker" ref={containerRef}>
+    <div className="entity-autocomplete filter-entity-autocomplete" ref={containerRef}>
       <input
         name="merchant"
         value={query}
@@ -79,7 +79,7 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
         placeholder="Cerca fornitore o alias"
         autoComplete="off"
       />
-      {open && <div className="supplier-results filter-supplier-results" role="listbox">
+      {open && <div className="entity-autocomplete-results filter-entity-autocomplete-results" role="listbox">
         {results.length ? results.map((supplier, index) => <button
           type="button"
           key={supplier.id}
@@ -92,7 +92,7 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
         >
           <strong>{supplier.businessName}</strong>
           {supplier.alias && <small>Referente: {supplier.alias}</small>}
-        </button>) : <div className="empty-supplier-result">Nessun fornitore trovato.</div>}
+        </button>) : <div className="entity-autocomplete-empty">Nessun fornitore trovato.</div>}
       </div>}
     </div>
   </div>;

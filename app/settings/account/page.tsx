@@ -36,7 +36,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
       <DetailBackButton href="/settings" />
     </div>
 
-    <form action={updateAccountAction} className="card form expense-form account-settings-form account-styled-form">
+    <form action={updateAccountAction} className="card form app-record-form account-settings-form account-styled-form">
       <div className="account-form-intro full">
         <span className="account-form-intro-icon" aria-hidden="true">◎</span>
         <div>

@@ -287,7 +287,7 @@ export default function IncomeForm({
                 return false;
             }
         }
-        const elements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.expense-wizard-step-${mobileStep}`) ?? []);
+        const elements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.app-form-wizard-step-${mobileStep}`) ?? []);
         const fields = elements.flatMap(element =>
             Array.from(element.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea")),
         );
@@ -315,21 +315,21 @@ export default function IncomeForm({
     }
 
     return (
-        <form ref={formRef} className={`card form income-form expense-form expense-mobile-wizard income-mobile-wizard expense-mobile-step-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit}>
-            <div className="expense-wizard-header full">
-                <div className="expense-wizard-heading">
+        <form ref={formRef} className={`card form income-form app-record-form app-form-wizard income-mobile-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit}>
+            <div className="app-form-wizard-header full">
+                <div className="app-form-wizard-heading">
                     <span>Passaggio {mobileStep} di 6</span>
                     <strong>{["Vendita", "Importo", "Cliente", "Accredito", "Fattura", "Riepilogo"][mobileStep - 1]}</strong>
                 </div>
-                <div className="expense-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
+                <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
                     <span style={{width: `${mobileStep / 6 * 100}%`}}/>
                 </div>
             </div>
             {/*<h2 className="full">{title}</h2>*/}
 
-            <div className="expense-type-choice full expense-wizard-step expense-wizard-step-1">
-                <span className="expense-type-choice-title">Tipo di incasso</span>
-                <div className="expense-type-choice-grid" role="radiogroup" aria-label="Tipo di incasso">
+            <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
+                <span className="entry-type-choice-title">Tipo di incasso</span>
+                <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di incasso">
                     <button type="button" className="is-selected" role="radio" aria-checked="true">
                         <span aria-hidden="true">●</span>
                         <strong>Incasso <br/>singolo</strong>
@@ -356,9 +356,9 @@ export default function IncomeForm({
                     <small>Dati principali dell'incasso</small>
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
-                    <DateField className="expense-wizard-step expense-wizard-step-1" label="Data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/>
+                    <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/>
 
-                    <SelectField className="expense-wizard-step expense-wizard-step-1" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({
+                    <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({
                         value: option.id,
                         label: `${option.icon ?? "•"} ${option.name}`
                     }))}/>
@@ -369,7 +369,7 @@ export default function IncomeForm({
                                              placeholder="Descrizione dell'incasso"
                                              initialValue={initialIncome?.description ?? ""}
                                              onValueChange={setDescription}
-                                             className="full expense-wizard-step expense-wizard-step-3"/>
+                                             className="full app-form-wizard-step app-form-wizard-step-3"/>
 
                 </div>
             </details>
@@ -380,7 +380,7 @@ export default function IncomeForm({
                     <small>Fiscalità, importo e aliquota IVA</small>
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
-                    <div className="amount-vat-row full income-amount-vat-row expense-wizard-step expense-wizard-step-2 income-wizard-amount">
+                    <div className="amount-vat-row full income-amount-vat-row app-form-wizard-step app-form-wizard-step-2 income-wizard-amount">
                         <div className="income-wizard-amount-entry">
                             <div className="app-form-field-label toggle-field switch-toggle-field income-switch-control income-fiscal-switch">
                                 <div className="switch-toggle-field-label gap-4">
@@ -415,7 +415,7 @@ export default function IncomeForm({
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
                                     </div>
                                 </label>
-                                <div className="expense-wizard-vat-buttons income-vat-buttons align-center" aria-label="Aliquota IVA">
+                                <div className="app-vat-rate-buttons income-vat-buttons align-center" aria-label="Aliquota IVA">
                                     <div className="hidden-sp">
                                         <label className="ml-12">IVA</label>
                                     </div>
@@ -430,7 +430,7 @@ export default function IncomeForm({
 
                         <input type="hidden" name="vatRate" value={isFiscal ? vatRate : "0"}/>
 
-                        <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
+                        <div className="app-amount-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key =>
                                 <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
                         </div>
@@ -439,7 +439,7 @@ export default function IncomeForm({
                 </div>
             </details>
 
-            <details className="form-section full income-form-section income-payment-section expense-wizard-step expense-wizard-step-4" open>
+            <details className="form-section full income-form-section income-payment-section app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
                     <span>Accrediti</span>
                     <small>Importi, date e conti di destinazione</small>
@@ -529,7 +529,7 @@ export default function IncomeForm({
                 </div>
             </details>
 
-            <details className="form-section full income-form-section income-fiscal-section expense-wizard-step expense-wizard-step-5" open>
+            <details className="form-section full income-form-section income-fiscal-section app-form-wizard-step app-form-wizard-step-5" open>
                 <summary>
                     <span>Fattura</span>
                     <small>Stato fattura e periodo contabile</small>
@@ -566,38 +566,38 @@ export default function IncomeForm({
                 </div>
             </details>
 
-            <details className="form-section full income-form-section income-notes-section expense-wizard-step expense-wizard-step-6" open={mobileStep === 6}>
+            <details className="form-section full income-form-section income-notes-section app-form-wizard-step app-form-wizard-step-6" open={mobileStep === 6}>
                 <summary>
                     <span>Riepilogo e note</span>
                     <small>Controllo finale e note interne</small>
                 </summary>
                 <div className="form-section-stack income-form-section-stack">
                     <section className="recurring-review-summary income-review-summary" aria-label="Riepilogo incasso">
-                        <div className="expense-review-heading">
-                            <div><span className="expense-review-kicker">Controlla prima di salvare</span>
+                        <div className="record-review-heading">
+                            <div><span className="record-review-kicker">Controlla prima di salvare</span>
                                 <h3>Riepilogo dell’incasso</h3></div>
                             <strong>{formatEuro(amountValue)}</strong>
                         </div>
-                        <div className="expense-review-grid">
-                            <div className="expense-review-item">
+                        <div className="record-review-grid">
+                            <div className="record-review-item">
                                 <i aria-hidden="true">▣</i><span>Canale di vendita<strong>{salesChannels.find(channel => String(channel.id) === salesChannelId)?.name ?? "Non indicato"}</strong></span>
                             </div>
-                            <div className="expense-review-item">
+                            <div className="record-review-item">
                                 <i aria-hidden="true">◷</i><span>Data ordine<strong>{orderDate ? new Date(`${orderDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span>
                             </div>
-                            <div className="expense-review-item wide">
+                            <div className="record-review-item wide">
                                 <i aria-hidden="true">◎</i><span>Cliente<strong>{customerName || "Non indicato"}</strong></span>
                             </div>
-                            <div className="expense-review-item wide">
+                            <div className="record-review-item wide">
                                 <i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span>
                             </div>
-                            <div className="expense-review-item">
+                            <div className="record-review-item">
                                 <i aria-hidden="true">▤</i><span>Fiscale / IVA<strong>{isFiscal ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span>
                             </div>
-                            <div className="expense-review-item">
+                            <div className="record-review-item">
                                 <i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span>
                             </div>
-                            <div className="expense-review-item wide">
+                            <div className="record-review-item wide">
                                 <i aria-hidden="true">€</i><span>Accrediti<strong>{formatEuro(creditedAmount)} · Residuo {formatEuro(creditResidual)} · {creditStatusLabel}</strong></span>
                             </div>
                         </div>

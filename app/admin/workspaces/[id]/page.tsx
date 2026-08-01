@@ -56,7 +56,7 @@ export default async function SystemWorkspaceDetailPage({ params }: { params: Pr
       </div>
     </form>
 
-    <div className="card expenses-list-card">
+    <div className="card record-list-card">
       <div className="list-heading">
         <h3>Membri</h3>
         <p className="muted">Risultati mostrati: {workspace.members.length}</p>

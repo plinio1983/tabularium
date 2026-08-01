@@ -39,7 +39,7 @@ export default function SupplierFiltersDrawer({ filters }: Props) {
 
   const drawer = mounted ? createPortal(
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel expense-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri fornitori" onMouseDown={(event) => event.stopPropagation()}>
+      <aside className="filter-drawer-panel record-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri fornitori" onMouseDown={(event) => event.stopPropagation()}>
         <div className="filter-drawer-header">
           <div>
             <h3>Filtri fornitori</h3>
@@ -48,7 +48,7 @@ export default function SupplierFiltersDrawer({ filters }: Props) {
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="expense-filters recurring-drawer-filters supplier-filters" action="/suppliers" method="get">
+        <form className="record-filters recurring-drawer-filters party-filters" action="/suppliers" method="get">
           <label>Ragione sociale<input name="businessName" defaultValue={inputDefault(filters, "businessName")} /></label>
           <label>Referente<input name="alias" defaultValue={inputDefault(filters, "alias")} /></label>
           <label>Email<input name="email" type="email" defaultValue={inputDefault(filters, "email")} /></label>

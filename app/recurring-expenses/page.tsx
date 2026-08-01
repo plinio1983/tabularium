@@ -85,7 +85,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   };
 
   return <div className="grid">
-    <div className="toolbar-card expense-toolbar-card">
+    <div className="toolbar-card record-toolbar-card">
       <div><h2>Uscite ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
       <NewRecurringExpensePanel
         categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}

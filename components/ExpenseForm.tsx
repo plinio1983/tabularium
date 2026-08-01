@@ -293,7 +293,7 @@ function SupplierAutocomplete({
     }
 
     return (
-        <div className="supplier-picker supplier-picker-wide expense-wizard-step expense-wizard-step-3" ref={containerRef}>
+        <div className="entity-autocomplete entity-autocomplete-wide app-form-wizard-step app-form-wizard-step-3" ref={containerRef}>
             <input type="hidden" name="supplierId" value={selected?.id ?? ""}/>
             <input
                 type="hidden"
@@ -303,7 +303,7 @@ function SupplierAutocomplete({
 
 
 
-            <div className="app-form-field supplier-autocomplete-field">
+            <div className="app-form-field entity-autocomplete-field">
                 <label className="app-form-field-label">
                     <span className="app-form-field-icon" aria-hidden="true">◎</span>
                     <span>Esercente</span>
@@ -319,8 +319,8 @@ function SupplierAutocomplete({
                 </label>
             </div>
 
-            {/*<FormField label="Esercente" icon="◎" className="supplier-autocomplete-field" htmlFor="expense-supplier-search">*/}
-                <div className="supplier-input-row">
+            {/*<FormField label="Esercente" icon="◎" className="entity-autocomplete-field" htmlFor="expense-supplier-search">*/}
+                <div className="entity-autocomplete-input-row">
                     <div className={`app-autocomplete-control ${selected ? "has-selection" : ""}`}>
                         <span className="app-autocomplete-search-icon" aria-hidden="true">⌕</span>
                         <input
@@ -354,7 +354,7 @@ function SupplierAutocomplete({
                             }}
                         >×</button> : null}
                         {isOpen && (
-                            <div className="supplier-results" role="listbox">
+                            <div className="entity-autocomplete-results" role="listbox">
                                 {results.length ? (
                                     results.map((supplier, index) => (
                                         <button
@@ -374,7 +374,7 @@ function SupplierAutocomplete({
                                         </button>
                                     ))
                                 ) : (
-                                    <div className="empty-supplier-result">
+                                    <div className="entity-autocomplete-empty">
                                         Nessun fornitore trovato.
                                     </div>
                                 )}
@@ -618,7 +618,7 @@ export default function ExpenseForm({
             amountRef.current?.focus();
             return false;
         }
-        const stepElements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.expense-wizard-step-${mobileStep}`) ?? []);
+        const stepElements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.app-form-wizard-step-${mobileStep}`) ?? []);
         if (!stepElements.length) return true;
         const fields = stepElements.flatMap(step =>
             Array.from(step.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea")),
@@ -797,21 +797,21 @@ export default function ExpenseForm({
     return (
         <form
             ref={formRef}
-            className={`form expense-form single-expense-form expense-mobile-wizard expense-mobile-step-${mobileStep}`}
+            className={`form app-record-form single-expense-form app-form-wizard app-form-wizard-current-${mobileStep}`}
             action={action}
             method="post"
             encType="multipart/form-data"
             onSubmit={handleSubmit}
             data-in-place-submit={onSaved ? "true" : undefined}
         >
-            <div className="expense-wizard-header full">
-                <div className="expense-wizard-heading">
+            <div className="app-form-wizard-header full">
+                <div className="app-form-wizard-heading">
                     <span>{mobileStep === 7
                         ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}`
                         : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}</span>
                     <strong>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati e note"][mobileStep - 1]}</strong>
                 </div>
-                <div className="expense-wizard-progress" aria-label={mobileStep === 7 ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}` : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}>
+                <div className="app-form-wizard-progress" aria-label={mobileStep === 7 ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}` : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}>
                     <span style={{width: `${isVatSettlement ? Math.min(mobileStep === 6 ? 5 : mobileStep, 5) / 5 * 100 : Math.min(mobileStep, 6) / 6 * 100}%`}}/>
                 </div>
             </div>
@@ -828,11 +828,11 @@ export default function ExpenseForm({
             {/*  </div>*/}
             {/*</div>*/}
 
-            <div className="expense-type-choice full expense-wizard-step expense-wizard-step-1">
-                <span className="expense-type-choice-title">Tipo di spesa</span>
+            <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
+                <span className="entry-type-choice-title">Tipo di spesa</span>
                 <input type="hidden" name="isRecurring" value={isRecurring ? "true" : "false"}/>
                 <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : "STANDARD"}/>
-                <div className="expense-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
+                <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
                     <button
                         type="button"
                         className={!isRecurring && !isVatSettlement ? "is-selected" : ""}
@@ -891,7 +891,7 @@ export default function ExpenseForm({
                 </div>
             </div>
 
-            <details className="form-section full expense-wizard-split-section expense-wizard-document-section expense-wizard-dates-section" open>
+            <details className="form-section full app-form-wizard-split-section expense-wizard-document-section expense-wizard-dates-section" open>
                 <summary>
                     <span>Tipo e date</span>
                     <small>Tipologia della spesa e date principali</small>
@@ -899,12 +899,12 @@ export default function ExpenseForm({
                 <div className="form-section-grid">
 
                     {isVatSettlement && (!vatSettlementCategory || !vatSettlementSupplier) ?
-                        <div className="inline-form-error full expense-wizard-step expense-wizard-step-1">
+                        <div className="inline-form-error full app-form-wizard-step app-form-wizard-step-1">
                             Configura la categoria Saldo IVA nelle Impostazioni. Il fornitore di sistema deve essere inizializzato per il workspace.
                         </div> : null}
 
                     {isVatSettlement ? <MonthField
-                        className="expense-wizard-step expense-wizard-step-1"
+                        className="app-form-wizard-step app-form-wizard-step-1"
                         label="Periodo contabile"
                         name="billingPeriod"
                         value={billingPeriod}
@@ -921,7 +921,7 @@ export default function ExpenseForm({
                     /> : null}
 
                     {isVatSettlement ? <input type="hidden" name="receivedDate" value={dueDate}/> : <DateField
-                        className="expense-wizard-step expense-wizard-step-1"
+                        className="app-form-wizard-step app-form-wizard-step-1"
                         label="Data ordine"
                         name="receivedDate"
                         value={orderDate}
@@ -936,7 +936,7 @@ export default function ExpenseForm({
                         required
                     />}
                     <DateField
-                        className="expense-wizard-step expense-wizard-step-1 expense-due-date-field"
+                        className="app-form-wizard-step app-form-wizard-step-1 expense-due-date-field"
                         label="Data scadenza"
                         name="dueDate"
                         value={dueDate}
@@ -965,13 +965,13 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full expense-wizard-split-section expense-wizard-details-section" open>
+            <details className="form-section full app-form-wizard-split-section app-form-wizard-details-section" open>
                 <summary>
                     <span>Fornitore e dettagli</span>
                     <small>Fornitore, descrizione e categoria della spesa</small>
                 </summary>
                 <div className="form-section-grid">
-                    {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
+                    {isVatSettlement ? <label className="app-form-wizard-step app-form-wizard-step-3">
                         Esercente
                         <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly/>
                         <input type="hidden" name="supplierId" value={vatSettlementSupplier?.id ?? ""}/>
@@ -988,12 +988,12 @@ export default function ExpenseForm({
                             }
                         }}
                     />}
-                    {isVatSettlement ? <label className="expense-wizard-step expense-wizard-step-3">
+                    {isVatSettlement ? <label className="app-form-wizard-step app-form-wizard-step-3">
                         Categoria
                         <input value={vatSettlementCategory?.name ?? "Non configurata"} readOnly/>
                         <input type="hidden" name="categoryId" value={vatSettlementCategory?.id ?? ""}/>
                     </label> : <SelectField
-                        className="expense-wizard-step expense-wizard-step-3 expense-category-field"
+                        className="app-form-wizard-step app-form-wizard-step-3 expense-category-field"
                         label="Categoria"
                         icon="◇"
                         name="categoryId"
@@ -1012,18 +1012,18 @@ export default function ExpenseForm({
                         initialValue={initialExpense?.description ?? ""}
                         onValueChange={setDescription}
                         required
-                        className="span-2 expense-wizard-step expense-wizard-step-3"
+                        className="span-2 app-form-wizard-step app-form-wizard-step-3"
                     />
                 </div>
             </details>
 
-            <details className="form-section full expense-wizard-split-section expense-wizard-amount-section" open>
+            <details className="form-section full app-form-wizard-split-section app-form-wizard-amount-section" open>
                 <summary>
                     <span>Importo e IVA</span>
                     <small>Imponibile fiscale, importo e aliquota IVA</small>
                 </summary>
                 <div className="form-section-grid">
-                    <div className="amount-vat-row full expense-wizard-step expense-wizard-step-2">
+                    <div className="amount-vat-row full app-form-wizard-step app-form-wizard-step-2">
                         <div className="expense-wizard-amount-entry">
                             {!isVatSettlement ?
                                 <div className="toggle-field switch-toggle-field expense-fiscal-desktop-control">
@@ -1043,7 +1043,7 @@ export default function ExpenseForm({
                                         <span className="text-muted">{isDeclared ? 'Fiscale' : 'Non fiscale'}</span>
                                     </label>
                                 </div> : null}
-                            {!isVatSettlement ? <label className="expense-wizard-mobile-switch">
+                            {!isVatSettlement ? <label className="app-form-wizard-mobile-switch">
                                 <span>Fiscale</span>
                                 <span className="switch">
                                     <input
@@ -1073,7 +1073,7 @@ export default function ExpenseForm({
                                     </label>
 
                                 {!isVatSettlement ?
-                                    <div className="expense-wizard-vat-buttons" aria-label="Aliquota IVA">
+                                    <div className="app-vat-rate-buttons" aria-label="Aliquota IVA">
                                         <label>Aliquota IVA </label>
                                         {["0", "4", "10", "22"].map(rate => <button
                                             type="button"
@@ -1091,7 +1091,7 @@ export default function ExpenseForm({
                         </div>
                         {!isVatSettlement ?
                             <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/> : null}
-                        <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
+                        <div className="app-amount-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button
                                 type="button"
                                 key={key}
@@ -1106,13 +1106,13 @@ export default function ExpenseForm({
             </details>
 
             {!isVatSettlement ?
-                <details className="form-section full expense-wizard-split-section expense-wizard-fiscal-section" open>
+                <details className="form-section full app-form-wizard-split-section app-form-wizard-fiscal-section" open>
                     <summary>
                         <span>Fiscale</span>
                         <small>IVA, detrazione e fattura elettronica</small>
                     </summary>
                     <div className="form-section-grid">
-                        <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
+                        <div className="toggle-field switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
                             <div className="switch-toggle-field-label">
                                 <span className="app-form-field-icon">⇆</span>
                                 <label>Fattura elettronica</label>
@@ -1136,7 +1136,7 @@ export default function ExpenseForm({
                         </div>
 
                         <MonthField
-                            className="expense-wizard-step expense-wizard-step-5"
+                            className="app-form-wizard-step app-form-wizard-step-5"
                             label="Periodo contabile"
                             name="billingPeriod"
                             value={billingPeriod}
@@ -1146,7 +1146,7 @@ export default function ExpenseForm({
                         />
                     </div>
                     <div className="form-section-grid pt-0">
-                        <div className="toggle-field switch-toggle-field expense-wizard-step expense-wizard-step-5 expense-invoice-desktop-control">
+                        <div className="toggle-field switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
                             <div className="switch-toggle-field-label">
                                 <span className="app-form-field-icon">⇆</span>
                                 <label>Fattura emessa</label>
@@ -1169,9 +1169,9 @@ export default function ExpenseForm({
                             </label>
                         </div>
 
-                        <div className="expense-invoice-step-row expense-wizard-step expense-wizard-step-5">
+                        <div className="expense-invoice-step-row app-form-wizard-step app-form-wizard-step-5">
                             <div className="expense-invoice-switches">
-                                <label className="expense-wizard-mobile-switch app-form-field-label">
+                                <label className="app-form-wizard-mobile-switch app-form-field-label">
                                     <span className="app-form-label">Fattura elettronica</span>
                                     <span className="switch">
                                     <input
@@ -1188,7 +1188,7 @@ export default function ExpenseForm({
                                     <span className="text-muted">{hasElectronicInvoice ? 'Elettronica' : 'PDF'}</span>
                                 </span>
                                 </label>
-                                <label className="expense-wizard-mobile-switch expense-invoice-emitted-switch app-form-field-label">
+                                <label className="app-form-wizard-mobile-switch expense-invoice-emitted-switch app-form-field-label">
                                     <span>Fattura emessa</span>
                                     <span className="switch">
                                     <input
@@ -1233,7 +1233,7 @@ export default function ExpenseForm({
                     <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>
                 </>}
 
-            <details className="form-section full expense-wizard-step expense-wizard-step-4" open>
+            <details className="form-section full app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
                     <span>Pagamenti</span>
                     <small>Stato, residuo e movimenti registrati</small>
@@ -1455,41 +1455,41 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            <section className="expense-review-step full expense-wizard-step expense-wizard-step-6" aria-label="Riepilogo spesa">
-                <div className="expense-review-heading">
+            <section className="expense-review-step full app-form-wizard-step app-form-wizard-step-6" aria-label="Riepilogo spesa">
+                <div className="record-review-heading">
                     <div>
-                        <span className="expense-review-kicker">Controlla prima di salvare</span>
+                        <span className="record-review-kicker">Controlla prima di salvare</span>
                         <h3>Riepilogo della spesa</h3>
                     </div>
                     <strong>{formatEuro(amountValue)}</strong>
                 </div>
-                <div className="expense-review-grid">
-                    {!isVatSettlement ? <div className="expense-review-item"><i aria-hidden="true">◷</i><span>Data ordine<strong>{formatDateInputLabel(orderDate)}</strong></span>
+                <div className="record-review-grid">
+                    {!isVatSettlement ? <div className="record-review-item"><i aria-hidden="true">◷</i><span>Data ordine<strong>{formatDateInputLabel(orderDate)}</strong></span>
                     </div> : null}
-                    <div className="expense-review-item">
+                    <div className="record-review-item">
                         <i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span>
                     </div>
-                    <div className="expense-review-item wide">
+                    <div className="record-review-item wide">
                         <i aria-hidden="true">◎</i><span>Fornitore<strong>{currentSupplierName}</strong></span></div>
-                    <div className="expense-review-item wide">
+                    <div className="record-review-item wide">
                         <i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span>
                     </div>
-                    <div className="expense-review-item wide">
+                    <div className="record-review-item wide">
                         <i aria-hidden="true">◇</i><span>Categoria<strong>{selectedCategory ? `${selectedCategory.icon ? `${categoryIcon(selectedCategory)} ` : ""}${selectedCategory.name}` : "Non indicata"}</strong></span>
                     </div>
-                    <div className="expense-review-item">
+                    <div className="record-review-item">
                         <i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span>
                     </div>
-                    <div className="expense-review-item">
+                    <div className="record-review-item">
                         <i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span>
                     </div>
-                    <div className="expense-review-item wide">
+                    <div className="record-review-item wide">
                         <i aria-hidden="true">▤</i><span>Fattura elettronica<strong>{hasElectronicInvoice ? `Sì · ${currentInvoiceStatusLabel}` : `No · ${currentInvoiceStatusLabel}`}</strong></span>
                     </div>
-                    <div className="expense-review-item">
+                    <div className="record-review-item">
                         <i aria-hidden="true">€</i><span>Pagamenti<strong>{payments.length ? `${payments.length} · ${formatEuro(paidAmountValue)}` : "Nessun pagamento"}</strong></span>
                     </div>
-                    <div className="expense-review-item">
+                    <div className="record-review-item">
                         <i aria-hidden="true">=</i><span>Residuo<strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong></span>
                     </div>
                 </div>
@@ -1500,7 +1500,7 @@ export default function ExpenseForm({
                 </button>
             </section>
 
-            <details ref={attachmentsSectionRef} className="form-section full expense-wizard-step expense-wizard-step-7" open={mobileStep === 7}>
+            <details ref={attachmentsSectionRef} className="form-section full app-form-wizard-step app-form-wizard-step-7" open={mobileStep === 7}>
                 <summary>
                     <span>Allegati e note</span>
                     <small>File, XML, P7M e note interne</small>

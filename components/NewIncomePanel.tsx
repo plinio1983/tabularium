@@ -60,8 +60,8 @@ export default function NewIncomePanel({ initialOpen = false, initialType = 'sin
         </button>
       </div> : null}
 
-      {isOpen ? <div className="modal-backdrop app-form-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label="Inserisci incasso" onMouseDown={() => setIsOpen(false)}>
-        <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
+      {isOpen ? <div className="modal-backdrop app-form-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label="Inserisci incasso" onMouseDown={() => setIsOpen(false)}>
+        <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
           <div className="modal-title">
             <div>
               <h3>{creationType === 'recurring' ? 'Nuova ricorrente' : 'Nuovo incasso'}</h3>

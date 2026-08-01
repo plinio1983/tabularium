@@ -118,7 +118,7 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
 
 function buildFloatingSelectAll(original: HTMLInputElement) {
   const label = document.createElement("label");
-  label.className = "bulk-select-all-inline floating-bulk-select-all-inline expense-mobile-select";
+  label.className = "bulk-select-all-inline floating-bulk-select-all-inline mobile-record-select";
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
@@ -396,7 +396,7 @@ export default function BulkSelectionController() {
         syncFloatingBar(bar, floating);
 
         const rect = bar.getBoundingClientRect();
-        const listCard = bar.closest<HTMLElement>(".expenses-list-card");
+        const listCard = bar.closest<HTMLElement>(".record-list-card");
         const cardRect = listCard?.getBoundingClientRect();
         const hasScrollableArea = cardRect ? cardRect.bottom > 120 && cardRect.top < window.innerHeight - 80 : true;
         const shouldShow = rect.bottom < 0 && hasScrollableArea;

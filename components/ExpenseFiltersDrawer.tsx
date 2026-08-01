@@ -74,7 +74,7 @@ function inputDefault(filters: Record<string, string | string[] | undefined>, ke
 }
 
 function FilterField({label, icon, children}: {label: string; icon: string; children: ReactNode}) {
-  return <div className="app-form-field expense-filter-field">
+  return <div className="app-form-field record-filter-field">
     <span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">{icon}</span>{label}</span>
     {children}
   </div>;
@@ -255,7 +255,7 @@ export default function ExpenseFiltersDrawer({
 
   const drawer = mounted ? createPortal(
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel expense-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri spese" onMouseDown={(event) => event.stopPropagation()}>
+      <aside className="filter-drawer-panel record-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri spese" onMouseDown={(event) => event.stopPropagation()}>
         <div className="filter-drawer-header">
           <div>
             <h3>Filtri spese</h3>
@@ -264,7 +264,7 @@ export default function ExpenseFiltersDrawer({
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="expense-filters recurring-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        <form className="record-filters recurring-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
             <FilterField label="Periodo fiscale rapido" icon="▦"><select id="billingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>

@@ -79,7 +79,7 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}>×</button>
         </div>
-        <form action={updateAction} className="form expense-form sales-channel-edit-form">
+        <form action={updateAction} className="form app-record-form sales-channel-edit-form">
           <input type="hidden" name="id" value={editing.id}/>
           <input type="hidden" name="kind" value="channel"/>
           <div className="app-form-field span-2"><label className="app-form-field-label">Nome</label><input name="name" defaultValue={editing.name} maxLength={80} required autoFocus/></div>

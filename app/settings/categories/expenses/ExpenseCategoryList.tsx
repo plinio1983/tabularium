@@ -76,7 +76,7 @@ export default function ExpenseCategoryList({categories, iconOptions, updateActi
             </div>
             <button className="btn btn-icon-only btn-default" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}>×</button>
           </div>
-          <form action={updateAction} className="form expense-form expense-category-edit-form">
+          <form action={updateAction} className="form app-record-form expense-category-edit-form">
             <input type="hidden" name="id" value={editing.id}/>
             <div className="app-form-field span-2">
               <label className="app-form-field-label" htmlFor="expense-category-name">

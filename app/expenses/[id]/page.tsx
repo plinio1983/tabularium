@@ -113,7 +113,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     }
   };
 
-  return <div className="grid expense-detail-page">
+  return <div className="grid record-detail-page">
     <ExpenseDetailEditModalController
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
@@ -129,9 +129,9 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       defaultErrorMessage="Impossibile completare l’operazione."
     />
 
-    <div className="expense-detail-shell">
-      <article className="expense-detail-document">
-        <div className="expense-detail-action-row">
+    <div className="record-detail-shell">
+      <article className="record-detail-document">
+        <div className="record-detail-action-row">
           <div className="left-side">
             <DetailBackButton href={returnTo} />
           </div>
@@ -144,17 +144,17 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             </Link>
           </div>
         </div>
-        <section className="expense-detail-hero">
+        <section className="record-detail-hero">
           <div>
-            <div className="expense-detail-title-block">
-              <p className="expense-detail-kicker">
+            <div className="record-detail-title-block">
+              <p className="record-detail-kicker">
                 <span>Spesa #{expense.id}</span>
                 <span className={isVatSettlement ? 'badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : expense.isRecurring ? 'R' : 'S'}</span>
               </p>
               <div className="expense-detail-title">
                   <strong>{expense.description}</strong>
               </div>
-              <div className="expense-detail-meta-line">
+              <div className="record-detail-meta-line">
                   <strong className="text-accent">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</strong>
                   <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
                   {/*<strong>{fiscalBadge(expense.isDeclared)}</strong>*/}
@@ -162,13 +162,13 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             </div>
           </div>
 
-          <aside className="expense-detail-amount-panel">
-            <div className="expense-detail-amount-panel-header-row">
-              <span className="expense-detail-amount-panel-header">{isVatSettlement ? 'Importo interamente IVA' : 'IVA inclusa'} </span>
+          <aside className="record-detail-amount-panel">
+            <div className="record-detail-amount-panel-header-row">
+              <span className="record-detail-amount-panel-header">{isVatSettlement ? 'Importo interamente IVA' : 'IVA inclusa'} </span>
               {!isVatSettlement ? <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span> : null}
             </div>
             <strong>{euro(expense.amount.toString())}</strong>
-            <div className="expense-detail-badge-row">
+            <div className="record-detail-badge-row">
               <span className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>
                 {paymentHeroLabel}
               </span>
@@ -177,7 +177,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </aside>
         </section>
 
-        <section className="expense-detail-status-strip">
+        <section className="record-detail-status-strip">
           <div>
             <span>Pagato</span>
             <strong>{euro(paid)}</strong>
@@ -186,17 +186,17 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <span>Residuo</span>
             <strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong>
           </div>
-          <div className="expense-detail-payment span-2">
-            {/*<div className="expense-detail-payment-icon">{paymentStyle.icon}</div>*/}
+          <div className="record-detail-payment span-2">
+            {/*<div className="record-detail-payment-icon">{paymentStyle.icon}</div>*/}
             <span>Stato pagamento</span>
             {/*<strong className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>{/*{paymentHeroLabel}}</strong>*/}
             <strong>{paymentStyle.icon} {paymentStyle.label}</strong>
           </div>
         </section>
-          <div className="expense-detail-progress" aria-label={`Pagamento completato al ${paidPercent.toFixed(0)}%`}>
+          <div className="record-detail-progress" aria-label={`Pagamento completato al ${paidPercent.toFixed(0)}%`}>
             <span style={{ width: `${paidPercent}%` }} />
           </div>
-        <section className="expense-detail-status-strip">
+        <section className="record-detail-status-strip">
           <div>
             <span>Data ordine</span>
             <strong>{dateLabel(expense.receivedDate)}</strong>
@@ -236,20 +236,20 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           {/*</div>*/}
         </section>
 
-        <section className="expense-detail-section">
-          <div className="expense-detail-section-heading">
+        <section className="record-detail-section">
+          <div className="record-detail-section-heading">
             <div>
               <h2>Pagamenti</h2>
               <p>{expense.payments.length ? 'Movimenti registrati per questa spesa.' : 'Nessun movimento registrato.'}</p>
             </div>
-            <div className="expense-detail-section-heading-actions">
+            <div className="record-detail-section-heading-actions">
               <span className="badge hidden-mobile">{expense.payments.length} record</span>
               <button className="btn btn-sm btn-primary" type="button" data-expense-detail-payment-id={expense.id}>
                 ＋ Aggiungi pagamento
               </button>
             </div>
           </div>
-          {expense.payments.length ? <div className="expense-form expense-detail-payment-summary-list">
+          {expense.payments.length ? <div className="app-record-form record-detail-payment-summary-list">
             {expense.payments.map(payment => <article className="payment-row payment-summary-row" key={payment.id}>
               <div className="payment-summary-primary">
                 <span className="payment-summary-kicker">Pagamento effettuato</span>
@@ -277,32 +277,32 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
                 </button>
               </div>
             </article>)}
-          </div> : <div className="expense-empty-panel">Nessun pagamento registrato.</div>}
+          </div> : <div className="record-empty-state">Nessun pagamento registrato.</div>}
 
         </section>
 
-        <section className="expense-detail-section">
-          <div className="expense-detail-section-heading">
+        <section className="record-detail-section">
+          <div className="record-detail-section-heading">
             <div className="flex-grow">
               <h2>Altre Informazioni</h2>
               <p>Altri dati della spesa.</p>
             </div>
           </div>
           <div className="">
-            <div className="expense-detail-item expense-detail-item-wide">
+            <div className="record-detail-item record-detail-item-wide">
               <span>Note</span>
               <strong className="displayed-notes">{expense.notes ?? '-'}</strong>
             </div>
           </div>
         </section>
 
-        <section className="expense-detail-section">
-          <div className="expense-detail-section-heading">
+        <section className="record-detail-section">
+          <div className="record-detail-section-heading">
             <div>
               <h2>Allegati</h2>
               <p>{expense.attachments.length ? 'Documenti associati alla spesa.' : 'Nessun documento caricato.'}</p>
             </div>
-            <div className="expense-detail-section-heading-actions">
+            <div className="record-detail-section-heading-actions">
               <span className="badge">{expense.attachments.length}</span>
               <button className="btn btn-sm btn-default" type="button"
                       data-expense-detail-attachments-id={expense.id}>
@@ -316,11 +316,11 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               <strong>{attachment.originalName}</strong>
               <small>{attachment.sizeBytes ? `${Math.round(attachment.sizeBytes / 1024)} KB` : ''}</small>
             </a>)}
-          </div> : <div className="expense-empty-panel">Nessun allegato caricato.</div>}
+          </div> : <div className="record-empty-state">Nessun allegato caricato.</div>}
         </section>
 
 
-        <section className="expense-detail-section expense-detail-section-actions">
+        <section className="record-detail-section record-detail-section-actions">
           <DeleteActionButton
               action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
               confirmMessage="Confermi la rimozione della spesa? L’operazione non può essere annullata."

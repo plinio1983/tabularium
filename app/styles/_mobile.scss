@@ -239,7 +239,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .recurring-expense-form .amount-vat-row {
+  .recurring-record-form .amount-vat-row {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 112px;
     gap: 10px;
@@ -250,7 +250,7 @@
   }
 
   .income-form .amount-vat-row,
-  .expense-form .amount-vat-row {
+  .app-record-form .amount-vat-row {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 1fr;
     gap: 10px;
@@ -287,38 +287,38 @@
 }
 
 @media (max-width: 576px) {
-  .recurring-expense-form .recurring-form-section-grid {
+  .recurring-record-form .recurring-form-section-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .recurring-expense-form .recurring-form-section-grid > * {
+  .recurring-record-form .recurring-form-section-grid > * {
     grid-column: 1 / -1 !important;
     min-width: 0;
     width: 100%;
   }
 
-  .recurring-expense-form .form-section-stack > *,
-  .recurring-expense-form .span-2,
-  .recurring-expense-form .span-3,
-  .recurring-expense-form .full,
-  .recurring-expense-form .supplier-picker-wide,
-  .recurring-expense-form .product-suggestion-picker {
+  .recurring-record-form .form-section-stack > *,
+  .recurring-record-form .span-2,
+  .recurring-record-form .span-3,
+  .recurring-record-form .full,
+  .recurring-record-form .entity-autocomplete-wide,
+  .recurring-record-form .product-suggestion-picker {
     grid-column: 1 / -1 !important;
     min-width: 0;
   }
 
-  .recurring-expense-form .toggle-field-wrap {
+  .recurring-record-form .toggle-field-wrap {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     row-gap: 12px;
     column-gap: 0;
   }
 
-  .recurring-expense-form .toggle-field-wrap .switch-toggle-field {
+  .recurring-record-form .toggle-field-wrap .switch-toggle-field {
     width: 100%;
   }
 
-  .recurring-expense-form .form-actions-row {
+  .recurring-record-form .form-actions-row {
     position: sticky;
     bottom: 0;
     z-index: 20;
@@ -329,7 +329,7 @@
     backdrop-filter: blur(8px);
   }
 
-  .recurring-expense-form .form-actions-row .btn {
+  .recurring-record-form .form-actions-row .btn {
     flex: 1 1 auto;
   }
 
@@ -508,12 +508,12 @@
 }
 
 @media (max-width: 760px) {
-  .expense-detail-hero {
+  .record-detail-hero {
     //grid-template-columns: 1fr;
     padding: 18px;
   }
 
-  .expense-detail-hero-side {
+  .record-detail-hero-side {
     padding: 18px 12px;
   }
 
@@ -547,7 +547,7 @@
     display: none;
   }
 
-  .expense-detail-section-title {
+  .record-detail-section-title {
     flex-direction: column;
   }
 
@@ -560,13 +560,13 @@
     gap: 12px;
   }
 
-  .recurring-detail-hero .expense-detail-hero-side-wrap .text-pre {
+  .recurring-detail-hero .record-detail-hero-side-wrap .text-pre {
     font-size: 15px;
   }
 }
 
 @media (max-width: 760px) {
-  .expense-filters, .totals-row {
+  .record-filters, .totals-row {
     grid-template-columns: 1fr;
   }
 }
@@ -578,7 +578,7 @@
 }
 
 @media (max-width: 760px) {
-  .supplier-form, .modal-form-grid {
+  .entity-form, .modal-form-grid {
     grid-template-columns:1fr;
   }
 
@@ -604,7 +604,7 @@
 }
 
 @media (max-width: 496px) {
-  .expense-summary-row .expense-column-panel,
+  .record-summary-row .expense-column-panel,
   .income-sales-channel-chart {
     display: none !important;
   }
@@ -1186,7 +1186,7 @@
   .modal-page-card .form,
   .modal-card-wide .income-form,
   .modal-page-card .income-form,
-  .modal-card-wide .supplier-form {
+  .modal-card-wide .entity-form {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -1204,7 +1204,7 @@
     display: none;
   }
 
-  .recurring-generated-expenses-list .expense-mobile-list {
+  .recurring-generated-expenses-list .mobile-record-list {
     display: grid;
   }
 
@@ -1275,17 +1275,17 @@
     word-break: break-word;
   }
 
-  .expense-mobile-main {
+  .mobile-record-main {
     gap: 4px;
   }
 }
 
 @media (max-width: 576px) {
-  .supplier-filters {
+  .party-filters {
     grid-template-columns: 1fr;
   }
 
-  .expense-form .form-section-grid {
+  .app-record-form .form-section-grid {
     padding: 12px 0;
     gap: 13px;
   }
@@ -1361,11 +1361,11 @@
 }
 
 @media (max-width: 640px) {
-  .expenses-list-card > .list-heading {
+  .record-list-card > .list-heading {
     top: 0 !important;
   }
 
-  .expenses-list-card > .bulk-actions-bar {
+  .record-list-card > .bulk-actions-bar {
     top: 52px !important;
     overflow-y: visible !important;
     -webkit-overflow-scrolling: touch;
@@ -1399,7 +1399,7 @@
     padding: 0 12px;
   }
 
-  .floating-bulk-actions-inner .expense-mobile-select {
+  .floating-bulk-actions-inner .mobile-record-select {
     padding: 5px 0 2px 14px;
   }
 }
@@ -1427,7 +1427,7 @@
 }
 
 @media (max-width: 760px) {
-  .expense-detail-status-strip strong {
+  .record-detail-status-strip strong {
     font-size: 16px !important;
   }
 }
@@ -1439,29 +1439,29 @@
 }
 
 @media (max-width: 760px) {
-  .expense-detail-hero,
-  .expense-detail-section {
+  .record-detail-hero,
+  .record-detail-section {
     padding: 18px 12px;
   }
 
-  .expense-detail-action-row {
+  .record-detail-action-row {
     display: flex;
     align-items: center;
     gap: 20px;
     padding: 12px;
   }
 
-  .expense-detail-action-row button,
-  .expense-detail-action-row a {
+  .record-detail-action-row button,
+  .record-detail-action-row a {
     flex-grow: 1;
     max-width: 100%;
   }
 
-  .expense-detail-action-row .left-side {
+  .record-detail-action-row .left-side {
     flex: 1 1 0;
   }
 
-  .expense-detail-action-row .right-side {
+  .record-detail-action-row .right-side {
     display: flex;
     gap: 8px;
     flex-grow: 1;
@@ -1470,25 +1470,25 @@
 }
 
 @media (max-width: 700px) {
-  .expense-detail-document {
+  .record-detail-document {
     border-radius: 20px;
   }
 
-  .mobile-expense-empty-panel {
+  .mobile-record-empty-state {
     display: block;
   }
 
   .expense-detail-info-grid,
-  .expense-detail-status-strip,
+  .record-detail-status-strip,
   .expense-payment-data {
     grid-template-columns: 1fr 1fr;
   }
 
-  .expense-detail-status-strip {
+  .record-detail-status-strip {
     grid-template-columns: 1fr 1fr;
   }
 
-  .expense-detail-status-strip > div {
+  .record-detail-status-strip > div {
     border-bottom: 1px solid rgba(226, 232, 240, .85);
   }
 
@@ -1525,17 +1525,17 @@
     border-right: 0;
   }
 
-  .expense-detail-section-heading {
+  .record-detail-section-heading {
     align-items: flex-start;
     gap: 4px;
   }
 
-  .expense-detail-section-heading-actions {
+  .record-detail-section-heading-actions {
     //width: 100%;
     justify-content: space-between;
   }
 
-  .expense-detail-section-heading-actions .btn {
+  .record-detail-section-heading-actions .btn {
     min-width: 0;
   }
 
@@ -1625,25 +1625,25 @@
 }
 
 @media (max-width: 760px) {
-  .expenses-list-card > .list-heading {
+  .record-list-card > .list-heading {
     display: flex !important;
     align-items: flex-start !important;
     gap: 10px !important;
   }
 
-  .expenses-list-card > .list-heading > div:first-child {
+  .record-list-card > .list-heading > div:first-child {
     display: block !important;
     flex: 1 1 auto !important;
     min-width: 0 !important;
   }
 
-  .expenses-list-card > .list-heading > div:last-child {
+  .record-list-card > .list-heading > div:last-child {
     display: flex !important;
     flex: 0 0 auto !important;
     justify-content: flex-end !important;
   }
 
-  .expenses-list-card .table-scroll {
+  .record-list-card .table-scroll {
     display: none;
   }
 
@@ -1651,11 +1651,11 @@
     display: none;
   }
 
-  .expenses-list-card .dashboard-statement-panel {
+  .record-list-card .dashboard-statement-panel {
     padding: 14px 8px;
   }
 
-  .expense-mobile-list {
+  .mobile-record-list {
     display: grid;
   }
 
@@ -1677,7 +1677,7 @@
     max-width: 100% !important;
   }
 
-  .expense-mobile-link .badge {
+  .mobile-record-link .badge {
     padding: 2px 6px;
     border: none;
     font-size: 13px;
@@ -1710,8 +1710,8 @@
     border-bottom: 1px solid var(--line);
   }
 
-  .expense-toolbar-card .expense-toolbar-actions a,
-  .expense-toolbar-card .expense-toolbar-actions button {
+  .record-toolbar-card .record-toolbar-actions a,
+  .record-toolbar-card .record-toolbar-actions button {
     max-width: initial;
   }
 
@@ -1737,28 +1737,28 @@
     display: grid;
     margin-top: 12px;
 
-    .income-mobile-item.expense-mobile-item {
+    .income-mobile-item.mobile-record-item {
       margin-left: -9px;
     }
   }
 
   .income-mobile-item {
-    .expense-mobile-title-row {
+    .mobile-record-title-row {
       justify-content: flex-start;
       align-items: center;
 
-      .expense-mobile-subtitle {
+      .mobile-record-subtitle {
         display: block;
       }
     }
 
-    .expense-mobile-title-row > .right-side,
+    .mobile-record-title-row > .right-side,
     .income-mobile-status-row > :last-child {
       margin-left: auto;
     }
   }
 
-  .income-mobile-item .expense-mobile-footer {
+  .income-mobile-item .mobile-record-footer {
     justify-content: flex-start;
     flex-wrap: wrap;
     gap: 6px;
@@ -1770,7 +1770,7 @@
     display: none;
   }
 
-  .supplier-mobile-list {
+  .party-mobile-list {
     display: grid;
     margin-top: 12px;
   }
@@ -1848,12 +1848,12 @@
 }
 
 @media (max-width: 900px) {
-  .expense-wizard-modal {
+  .app-wizard-modal {
     padding: 0;
     overflow: hidden;
   }
 
-  .expense-wizard-modal-card {
+  .app-wizard-modal-card {
     flex: 1 1 auto;
     width: 100vw;
     max-width: 100vw;
@@ -1866,11 +1866,11 @@
     overflow-y: auto;
   }
 
-  .expense-form {
+  .app-record-form {
     gap: 12px;
   }
 
-  .expense-mobile-wizard {
+  .app-form-wizard {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -1879,7 +1879,7 @@
     padding-bottom: 92px;
   }
 
-  .expense-mobile-wizard .expense-wizard-header {
+  .app-form-wizard .app-form-wizard-header {
     display: flex;
     flex-direction: column;
     flex: 0 0 60px;
@@ -1898,32 +1898,32 @@
     backdrop-filter: blur(10px);
   }
 
-  .expense-wizard-heading {
+  .app-form-wizard-heading {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
     gap: 12px;
   }
 
-  .expense-wizard-heading span {
+  .app-form-wizard-heading span {
     color: var(--muted);
     font-size: 12px;
     font-weight: 800;
   }
 
-  .expense-wizard-heading strong {
+  .app-form-wizard-heading strong {
     color: var(--text);
     font-size: 18px;
   }
 
-  .expense-wizard-progress {
+  .app-form-wizard-progress {
     height: 5px;
     overflow: hidden;
     border-radius: 999px;
     background: #e7ecf5;
   }
 
-  .expense-wizard-progress span {
+  .app-form-wizard-progress span {
     display: block;
     height: 100%;
     border-radius: inherit;
@@ -1931,29 +1931,29 @@
     transition: width .2s ease;
   }
 
-  .expense-mobile-wizard .expense-wizard-step {
+  .app-form-wizard .app-form-wizard-step {
     display: none !important;
     width: 100%;
     margin-inline: 0;
 
-    &.expense-wizard-step-5 {
+    &.app-form-wizard-step-5 {
       row-gap: 16px;
     }
   }
 
-  .expense-mobile-step-1 .expense-wizard-step-1,
-  .expense-mobile-step-2 .expense-wizard-step-2,
-  .expense-mobile-step-3 .expense-wizard-step-3,
-  .expense-mobile-step-4 .expense-wizard-step-4,
-  .expense-mobile-step-5 .expense-wizard-step-5,
-  .expense-mobile-step-6 .expense-wizard-step-6,
-  .expense-mobile-step-7 .expense-wizard-step-7 {
+  .app-form-wizard-current-1 .app-form-wizard-step-1,
+  .app-form-wizard-current-2 .app-form-wizard-step-2,
+  .app-form-wizard-current-3 .app-form-wizard-step-3,
+  .app-form-wizard-current-4 .app-form-wizard-step-4,
+  .app-form-wizard-current-5 .app-form-wizard-step-5,
+  .app-form-wizard-current-6 .app-form-wizard-step-6,
+  .app-form-wizard-current-7 .app-form-wizard-step-7 {
     display: flex !important;
     flex-direction: column;
     align-items: stretch;
   }
 
-  .expense-mobile-wizard .expense-wizard-split-section {
+  .app-form-wizard .app-form-wizard-split-section {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -1962,29 +1962,29 @@
     box-shadow: none;
   }
 
-  .expense-mobile-step-4 .expense-wizard-split-section,
-  .expense-mobile-step-6 .expense-wizard-split-section,
-  .expense-mobile-step-7 .expense-wizard-split-section,
-  .expense-mobile-step-1 .expense-wizard-details-section,
-  .expense-mobile-step-1 .expense-wizard-amount-section,
-  .expense-mobile-step-1 .expense-wizard-fiscal-section,
-  .expense-mobile-step-2 .expense-wizard-dates-section,
-  .expense-mobile-step-2 .expense-wizard-details-section,
-  .expense-mobile-step-2 .expense-wizard-fiscal-section,
-  .expense-mobile-step-3 .expense-wizard-dates-section,
-  .expense-mobile-step-3 .expense-wizard-amount-section,
-  .expense-mobile-step-3 .expense-wizard-fiscal-section,
-  .expense-mobile-step-5 .expense-wizard-dates-section,
-  .expense-mobile-step-5 .expense-wizard-details-section,
-  .expense-mobile-step-5 .expense-wizard-amount-section {
+  .app-form-wizard-current-4 .app-form-wizard-split-section,
+  .app-form-wizard-current-6 .app-form-wizard-split-section,
+  .app-form-wizard-current-7 .app-form-wizard-split-section,
+  .app-form-wizard-current-1 .app-form-wizard-details-section,
+  .app-form-wizard-current-1 .app-form-wizard-amount-section,
+  .app-form-wizard-current-1 .app-form-wizard-fiscal-section,
+  .app-form-wizard-current-2 .expense-wizard-dates-section,
+  .app-form-wizard-current-2 .app-form-wizard-details-section,
+  .app-form-wizard-current-2 .app-form-wizard-fiscal-section,
+  .app-form-wizard-current-3 .expense-wizard-dates-section,
+  .app-form-wizard-current-3 .app-form-wizard-amount-section,
+  .app-form-wizard-current-3 .app-form-wizard-fiscal-section,
+  .app-form-wizard-current-5 .expense-wizard-dates-section,
+  .app-form-wizard-current-5 .app-form-wizard-details-section,
+  .app-form-wizard-current-5 .app-form-wizard-amount-section {
     display: none;
   }
 
-  .expense-mobile-wizard .expense-wizard-split-section > summary {
+  .app-form-wizard .app-form-wizard-split-section > summary {
     display: none;
   }
 
-  .expense-mobile-wizard .expense-wizard-split-section > .form-section-grid {
+  .app-form-wizard .app-form-wizard-split-section > .form-section-grid {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -1993,36 +1993,36 @@
     gap: 22px;
   }
 
-  .expense-mobile-wizard .expense-wizard-step-4,
-  .expense-mobile-wizard .expense-wizard-step-6,
-  .expense-mobile-wizard .expense-wizard-step-7 {
+  .app-form-wizard .app-form-wizard-step-4,
+  .app-form-wizard .app-form-wizard-step-6,
+  .app-form-wizard .app-form-wizard-step-7 {
     width: 100%;
     margin: 0;
     overflow: visible;
   }
 
-  .expense-mobile-wizard > details.expense-wizard-step > summary {
+  .app-form-wizard > details.app-form-wizard-step > summary {
     display: none;
   }
 
-  .expense-mobile-wizard > details.expense-wizard-step > .form-section-stack {
+  .app-form-wizard > details.app-form-wizard-step > .form-section-stack {
     padding: 0;
     background: transparent;
   }
 
-  .expense-mobile-wizard .payments-box,
-  .expense-mobile-wizard .payment-row {
+  .app-form-wizard .payments-box,
+  .app-form-wizard .payment-row {
     gap: 18px;
   }
 
-  .expense-mobile-wizard .expense-wizard-step-1,
-  .expense-mobile-wizard .expense-wizard-step-2,
-  .expense-mobile-wizard .expense-wizard-step-3,
-  .expense-mobile-wizard .expense-wizard-step-5 {
+  .app-form-wizard .app-form-wizard-step-1,
+  .app-form-wizard .app-form-wizard-step-2,
+  .app-form-wizard .app-form-wizard-step-3,
+  .app-form-wizard .app-form-wizard-step-5 {
     row-gap: 9px;
   }
 
-  .expense-mobile-wizard .expense-wizard-actions {
+  .app-form-wizard .app-form-wizard-actions {
     position: fixed;
     left: 10px;
     right: 10px;
@@ -2038,14 +2038,14 @@
     box-shadow: 0 -12px 34px rgba(15, 23, 42, .16);
   }
 
-  .expense-wizard-actions-row {
+  .app-form-wizard-actions-row {
     display: flex;
     gap: 10px;
     width: 100%;
   }
 
-  .expense-wizard-actions-row > .btn,
-  .expense-wizard-actions-row > a {
+  .app-form-wizard-actions-row > .btn,
+  .app-form-wizard-actions-row > a {
     flex: 1 1 0;
     width: 100%;
     max-width: none;
@@ -2053,24 +2053,24 @@
     justify-content: center;
   }
 
-  .expense-mobile-wizard .expense-due-date-shortcuts {
+  .app-form-wizard .expense-due-date-shortcuts {
     display: flex;
     gap: 7px;
     margin-top: 2px;
   }
 
-  .expense-mobile-wizard .app-form-field {
+  .app-form-wizard .app-form-field {
     gap: 9px;
   }
 
-  .expense-mobile-wizard .app-form-field-label {
+  .app-form-wizard .app-form-field-label {
     color: #334155;
     font-size: 13px;
     font-weight: 900;
     letter-spacing: .01em;
   }
 
-  .expense-mobile-wizard .app-form-field-icon {
+  .app-form-wizard .app-form-field-icon {
     width: 25px;
     height: 25px;
     border-radius: 9px;
@@ -2078,15 +2078,15 @@
     box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
   }
 
-  .expense-mobile-wizard .app-select-control select,
-  .expense-mobile-wizard .payment-select-control select,
-  .expense-mobile-wizard .app-autocomplete-control input,
-  .expense-mobile-wizard .product-suggestion-picker > input,
-  .expense-mobile-wizard .expense-invoice-status-field > select,
-  .expense-mobile-wizard .amount-vat-row > label > select,
-  .expense-mobile-wizard label > input[type="month"],
-  .expense-mobile-wizard .payment-row label > input,
-  .expense-mobile-wizard .payment-row label > select {
+  .app-form-wizard .app-select-control select,
+  .app-form-wizard .payment-select-control select,
+  .app-form-wizard .app-autocomplete-control input,
+  .app-form-wizard .product-suggestion-picker > input,
+  .app-form-wizard .expense-invoice-status-field > select,
+  .app-form-wizard .amount-vat-row > label > select,
+  .app-form-wizard label > input[type="month"],
+  .app-form-wizard .payment-row label > input,
+  .app-form-wizard .payment-row label > select {
     min-height: 54px;
     border: 1px solid #cbd5e1;
     border-radius: 16px;
@@ -2098,16 +2098,16 @@
     transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
   }
 
-  .expense-mobile-wizard .payment-amount-field .money-input,
-  .expense-mobile-wizard .payment-amount-field .money-input > input {
+  .app-form-wizard .payment-amount-field .money-input,
+  .app-form-wizard .payment-amount-field .money-input > input {
     min-height: 54px;
   }
 
-  .expense-mobile-wizard .payment-amount-field {
+  .app-form-wizard .payment-amount-field {
     align-content: start;
   }
 
-  .expense-mobile-wizard .payment-amount-field .money-input {
+  .app-form-wizard .payment-amount-field .money-input {
     overflow: hidden;
     border-color: #cbd5e1;
     border-style: solid;
@@ -2118,18 +2118,18 @@
     transition: border-color .16s ease, box-shadow .16s ease;
   }
 
-  .expense-mobile-wizard .payment-amount-field .money-input:focus-within {
+  .app-form-wizard .payment-amount-field .money-input:focus-within {
     border-color: var(--accent);
     box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
   }
 
-  .expense-mobile-wizard .payment-amount-field .money-input > span {
+  .app-form-wizard .payment-amount-field .money-input > span {
     left: 13px;
     color: var(--accent);
     //font-size: 15px;
   }
 
-  .expense-mobile-wizard .payment-amount-field .money-input > input {
+  .app-form-wizard .payment-amount-field .money-input > input {
     padding: 10px 12px 10px 34px;
     border: 0;
     border-radius: 0;
@@ -2139,31 +2139,31 @@
     font-weight: 850;
   }
 
-  .expense-mobile-wizard .payment-amount-field .money-input > input:focus {
+  .app-form-wizard .payment-amount-field .money-input > input:focus {
     outline: 0;
   }
 
-  .expense-mobile-wizard .payment-date-field {
+  .app-form-wizard .payment-date-field {
     gap: 7px;
     color: #334155;
     font-weight: 850;
   }
 
-  .expense-mobile-wizard .payment-select-field {
+  .app-form-wizard .payment-select-field {
     gap: 9px;
     color: #334155;
     font-weight: 900;
   }
 
-  .expense-mobile-wizard .payment-date-label,
-  .expense-mobile-wizard .payment-select-label {
+  .app-form-wizard .payment-date-label,
+  .app-form-wizard .payment-select-label {
     display: flex;
     align-items: center;
     gap: 7px;
   }
 
-  .expense-mobile-wizard .payment-date-label > i,
-  .expense-mobile-wizard .payment-select-label > i {
+  .app-form-wizard .payment-date-label > i,
+  .app-form-wizard .payment-select-label > i {
     display: inline-grid;
     width: 25px;
     height: 25px;
@@ -2177,17 +2177,17 @@
     box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
   }
 
-  .expense-mobile-wizard .payment-select-control select {
+  .app-form-wizard .payment-select-control select {
     appearance: none;
     padding-right: 52px;
   }
 
-  .expense-mobile-wizard .payment-select-control:focus-within select {
+  .app-form-wizard .payment-select-control:focus-within select {
     border-color: var(--accent);
     box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
   }
 
-  .expense-mobile-wizard .payment-select-caret {
+  .app-form-wizard .payment-select-caret {
     position: absolute;
     top: 50%;
     right: 11px;
@@ -2203,11 +2203,11 @@
     transform: translateY(-54%);
   }
 
-  .expense-mobile-wizard .payment-select-control select:disabled + .payment-select-caret {
+  .app-form-wizard .payment-select-control select:disabled + .payment-select-caret {
     opacity: .45;
   }
 
-  .expense-mobile-wizard .payment-date-control {
+  .app-form-wizard .payment-date-control {
     min-height: 54px;
     overflow: hidden;
     border: 1px solid #cbd5e1;
@@ -2216,12 +2216,12 @@
     box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
   }
 
-  .expense-mobile-wizard .payment-date-control:focus-within {
+  .app-form-wizard .payment-date-control:focus-within {
     border-color: var(--accent);
     box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
   }
 
-  .expense-mobile-wizard .payment-date-control > input {
+  .app-form-wizard .payment-date-control > input {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -2232,7 +2232,7 @@
     cursor: pointer;
   }
 
-  .expense-mobile-wizard .payment-date-presentation {
+  .app-form-wizard .payment-date-presentation {
     display: flex;
     min-height: 54px;
     flex-direction: column;
@@ -2242,18 +2242,18 @@
     pointer-events: none;
   }
 
-  .expense-mobile-wizard .payment-date-presentation strong {
+  .app-form-wizard .payment-date-presentation strong {
     color: #172033;
     font-size: 17px;
   }
 
-  .expense-mobile-wizard .payment-date-presentation span {
+  .app-form-wizard .payment-date-presentation span {
     color: var(--muted);
     font-size: 12px;
     font-weight: 750;
   }
 
-  .expense-mobile-wizard .payment-date-picker-button {
+  .app-form-wizard .payment-date-picker-button {
     position: absolute;
     top: 50%;
     right: 10px;
@@ -2271,17 +2271,17 @@
     transform: translateY(-50%);
   }
 
-  .expense-mobile-wizard .app-select-control:focus-within select,
-  .expense-mobile-wizard .app-autocomplete-control:focus-within input,
-  .expense-mobile-wizard .product-suggestion-picker:focus-within > input,
-  .expense-mobile-wizard .expense-invoice-status-field:focus-within > select,
-  .expense-mobile-wizard .amount-vat-row > label:focus-within > select,
-  .expense-mobile-wizard .app-date-control:focus-within {
+  .app-form-wizard .app-select-control:focus-within select,
+  .app-form-wizard .app-autocomplete-control:focus-within input,
+  .app-form-wizard .product-suggestion-picker:focus-within > input,
+  .app-form-wizard .expense-invoice-status-field:focus-within > select,
+  .app-form-wizard .amount-vat-row > label:focus-within > select,
+  .app-form-wizard .app-date-control:focus-within {
     border-color: var(--accent);
     box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
   }
 
-  .expense-mobile-wizard .app-select-caret {
+  .app-form-wizard .app-select-caret {
     display: grid;
     width: 30px;
     height: 30px;
@@ -2292,7 +2292,7 @@
     color: var(--accent);
   }
 
-  .expense-mobile-wizard .app-date-control {
+  .app-form-wizard .app-date-control {
     min-height: 54px;
     overflow: hidden;
     border: 1px solid #cbd5e1;
@@ -2301,7 +2301,7 @@
     box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
   }
 
-  .expense-mobile-wizard .app-date-control input {
+  .app-form-wizard .app-date-control input {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -2311,7 +2311,7 @@
     cursor: pointer;
   }
 
-  .expense-mobile-wizard .app-date-presentation {
+  .app-form-wizard .app-date-presentation {
     display: flex;
     min-height: 54px;
     flex-direction: column;
@@ -2321,20 +2321,20 @@
     pointer-events: none;
   }
 
-  .expense-mobile-wizard .app-date-presentation strong {
+  .app-form-wizard .app-date-presentation strong {
     color: #172033;
     font-size: 17px;
     text-transform: capitalize;
   }
 
-  .expense-mobile-wizard .app-date-presentation span {
+  .app-form-wizard .app-date-presentation span {
     color: var(--muted);
     font-size: 12px;
     font-weight: 750;
     text-transform: capitalize;
   }
 
-  .expense-mobile-wizard .app-date-picker-button {
+  .app-form-wizard .app-date-picker-button {
     position: absolute;
     top: 50%;
     right: 10px;
@@ -2352,44 +2352,44 @@
     transform: translateY(-50%);
   }
 
-  .expense-mobile-wizard .expense-due-date-shortcuts {
+  .app-form-wizard .expense-due-date-shortcuts {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
   }
 
-  .expense-mobile-wizard .expense-due-date-shortcuts button {
+  .app-form-wizard .expense-due-date-shortcuts button {
     min-width: 0;
     min-height: 38px;
     padding-inline: 5px;
     border-radius: 12px;
   }
 
-  .expense-mobile-wizard .supplier-input-row {
+  .app-form-wizard .entity-autocomplete-input-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px;
   }
 
-  .expense-mobile-wizard .supplier-input-row .inline-link-button {
+  .app-form-wizard .entity-autocomplete-input-row .inline-link-button {
     min-height: 54px;
     border-radius: 16px;
     font-size: 13px;
     font-weight: 900;
   }
 
-  .expense-mobile-wizard .app-autocomplete-control.has-selection input {
+  .app-form-wizard .app-autocomplete-control.has-selection input {
     border-color: #86efac;
     background: #f7fff9;
   }
 
-  .expense-mobile-wizard .app-autocomplete-selection {
+  .app-form-wizard .app-autocomplete-selection {
     padding: 8px 10px;
     border-radius: 12px;
     background: #f0fdf4;
   }
 
-  .expense-mobile-wizard .supplier-results {
+  .app-form-wizard .entity-autocomplete-results {
     position: absolute;
     left: 0;
     right: 0;
@@ -2404,24 +2404,24 @@
     box-shadow: 0 -18px 48px rgba(15, 23, 42, .22);
   }
 
-  .expense-mobile-wizard .supplier-results button {
+  .app-form-wizard .entity-autocomplete-results button {
     min-height: 54px;
     padding: 10px 12px;
     border: 0;
     border-radius: 13px;
   }
 
-  .expense-mobile-wizard .supplier-results button + button {
+  .app-form-wizard .entity-autocomplete-results button + button {
     margin-top: 3px;
   }
 
-  .expense-mobile-wizard .supplier-results button.active {
+  .app-form-wizard .entity-autocomplete-results button.active {
     background: #eef2ff;
     box-shadow: inset 3px 0 0 var(--accent);
   }
 
   .expense-due-date-shortcuts button,
-  .expense-wizard-vat-buttons button {
+  .app-vat-rate-buttons button {
     min-height: 34px;
     padding: 6px 10px;
     border: 1px solid var(--line);
@@ -2433,36 +2433,36 @@
   }
 
   .expense-due-date-shortcuts button.is-selected,
-  .expense-wizard-vat-buttons button.is-selected {
+  .app-vat-rate-buttons button.is-selected {
     border-color: var(--accent);
     background: var(--accent);
     color: #fff;
   }
 
-  .expense-mobile-wizard .expense-wizard-vat-buttons {
+  .app-form-wizard .app-vat-rate-buttons {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 7px;
   }
 
-  .expense-mobile-wizard .expense-wizard-vat-buttons > label {
+  .app-form-wizard .app-vat-rate-buttons > label {
     display: none;
   }
 
-  .expense-mobile-wizard .expense-amount-control {
+  .app-form-wizard .expense-amount-control {
     display: grid;
     flex: 1 1 auto;
     min-width: 0;
     gap: 8px;
   }
 
-  .expense-mobile-wizard .expense-wizard-keypad {
+  .app-form-wizard .app-amount-keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
 
-  .expense-wizard-keypad button {
+  .app-amount-keypad button {
     min-height: 54px;
     border: 1px solid var(--line);
     border-radius: 12px;
@@ -2472,35 +2472,35 @@
     font-weight: 850;
   }
 
-  .expense-wizard-keypad button:active {
+  .app-amount-keypad button:active {
     transform: translateY(1px);
     background: #e9eff7;
   }
 
-  .expense-mobile-wizard .expense-fiscal-desktop-control,
-  .expense-mobile-wizard .expense-invoice-desktop-control {
+  .app-form-wizard .expense-fiscal-desktop-control,
+  .app-form-wizard .expense-invoice-desktop-control {
     display: none !important;
   }
 
-  .expense-mobile-wizard .expense-wizard-fiscal-section .toggle-field-wrap {
+  .app-form-wizard .app-form-wizard-fiscal-section .toggle-field-wrap {
     display: none;
   }
 
-  .expense-wizard-fiscal-section .expense-mobile-wizard .form-section-grid {
+  .app-form-wizard .app-form-wizard-fiscal-section .form-section-grid {
     display: flex;
     flex-wrap: wrap;
   }
 
-  .expense-wizard-fiscal-section .expense-mobile-wizard .form-section-grid > div {
+  .app-form-wizard .app-form-wizard-fiscal-section .form-section-grid > div {
     min-width: 45%;
   }
 
-  .expense-mobile-wizard .expense-wizard-mobile-switch,
-  .recurring-mobile-wizard .recurring-switch-control,
+  .app-form-wizard .app-form-wizard-mobile-switch,
+  .recurring-form-wizard .recurring-switch-control,
   .income-mobile-wizard .income-switch-control {
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
     justify-content: flex-end;
     gap: 24px;
     font-weight: 800;
@@ -2517,13 +2517,13 @@
     max-width: max-content;
   }
 
-  .recurring-mobile-wizard .recurring-switch-control {
+  .recurring-form-wizard .recurring-switch-control {
     justify-content: space-between;
     max-height: max-content;
   }
 
-  .expense-mobile-wizard .expense-wizard-mobile-switch .switch,
-  .recurring-mobile-wizard .recurring-switch-control .switch,
+  .app-form-wizard .app-form-wizard-mobile-switch .switch,
+  .recurring-form-wizard .recurring-switch-control .switch,
   .income-mobile-wizard .income-switch-control .switch {
     //min-height: 46px;
     align-items: center;
@@ -2564,7 +2564,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .expense-invoice-switches .expense-wizard-mobile-switch {
+  .expense-invoice-switches .app-form-wizard-mobile-switch {
     min-width: 156px;
   }
 
@@ -2574,7 +2574,7 @@
     min-width: 0;
   }
 
-  .expense-mobile-wizard .expense-wizard-amount-field .money-input {
+  .app-form-wizard .expense-wizard-amount-field .money-input {
     min-height: 70px;
     overflow: hidden;
     border: 1px solid #dbe3ef;
@@ -2582,12 +2582,12 @@
     //background: #f8fafc;
   }
 
-  .expense-mobile-wizard .expense-wizard-amount-field .money-input > span {
+  .app-form-wizard .expense-wizard-amount-field .money-input > span {
     left: 16px;
     font-size: 24px;
   }
 
-  .expense-mobile-wizard .expense-wizard-amount-field .money-input input {
+  .app-form-wizard .expense-wizard-amount-field .money-input input {
     height: 68px;
     padding: 6px 14px 6px 48px;
     border: 0;
@@ -2599,44 +2599,44 @@
     text-align: right;
   }
 
-  .expense-mobile-wizard .expense-wizard-amount-field .money-input:focus-within {
+  .app-form-wizard .expense-wizard-amount-field .money-input:focus-within {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
   }
 
-  .expense-mobile-wizard .expense-wizard-step-6 {
+  .app-form-wizard .app-form-wizard-step-6 {
     border: 0;
     background: transparent;
     box-shadow: none;
   }
 
-  .expense-mobile-wizard .expense-review-step {
+  .app-form-wizard .expense-review-step {
     gap: 16px;
     padding: 0;
   }
 
-  .recurring-expense-form .recurring-switch-control {
+  .recurring-record-form .recurring-switch-control {
     //width: 100%;
   }
 
-  .recurring-expense-form .recurring-form-section-grid .recurring-accrual-toggle,
-  .recurring-expense-form .recurring-fiscal-section .recurring-form-section-grid .app-form-field {
+  .recurring-record-form .recurring-form-section-grid .recurring-accrual-toggle,
+  .recurring-record-form .recurring-fiscal-section .recurring-form-section-grid .app-form-field {
     width: 100%;
   }
 
-  .expense-mobile-wizard .recurring-payment-section .recurring-form-section-grid > div {
+  .app-form-wizard .recurring-payment-section .recurring-form-section-grid > div {
     width: 100%;
   }
 
-  .expense-mobile-wizard .expense-fiscal-desktop-control > span,
-  .expense-mobile-wizard .expense-invoice-desktop-control > span,
-  .recurring-expense-form .recurring-switch-control > span {
+  .app-form-wizard .expense-fiscal-desktop-control > span,
+  .app-form-wizard .expense-invoice-desktop-control > span,
+  .recurring-record-form .recurring-switch-control > span {
     color: #334155;
     font-size: 13px;
     font-weight: 850;
   }
 
-  .expense-review-heading {
+  .record-review-heading {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -2644,19 +2644,19 @@
     padding: 4px 2px;
   }
 
-  .expense-review-heading h3 {
+  .record-review-heading h3 {
     margin: 3px 0 0;
     color: var(--text);
     font-size: 20px;
   }
 
-  .expense-review-heading > strong {
+  .record-review-heading > strong {
     color: var(--accent);
     font-size: 22px;
     white-space: nowrap;
   }
 
-  .expense-review-kicker {
+  .record-review-kicker {
     color: var(--muted);
     font-size: 11px;
     font-weight: 900;
@@ -2664,13 +2664,13 @@
     text-transform: uppercase;
   }
 
-  .expense-review-grid {
+  .record-review-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 9px;
   }
 
-  .expense-review-grid > div {
+  .record-review-grid > div {
     display: flex;
     min-width: 0;
     align-items: center;
@@ -2679,11 +2679,11 @@
     border-bottom: 1px solid #e2e8f0;
   }
 
-  .expense-review-grid > div.wide {
+  .record-review-grid > div.wide {
     grid-column: 1 / -1;
   }
 
-  .expense-review-item > i {
+  .record-review-item > i {
     display: grid;
     flex: 0 0 34px;
     width: 34px;
@@ -2697,7 +2697,7 @@
     font-weight: 900;
   }
 
-  .expense-review-grid span {
+  .record-review-grid span {
     display: grid;
     min-width: 0;
     gap: 3px;
@@ -2706,7 +2706,7 @@
     font-weight: 800;
   }
 
-  .expense-review-grid strong {
+  .record-review-grid strong {
     overflow-wrap: anywhere;
     color: #172033;
     font-size: 13px;
@@ -2720,15 +2720,15 @@
     width: 100%;
   }
 
-  .recurring-expense-form .recurring-fiscal-switch,
-  .recurring-expense-form .recurring-invoice-switch,
-  .recurring-expense-form .recurring-accrual-toggle {
+  .recurring-record-form .recurring-fiscal-switch,
+  .recurring-record-form .recurring-invoice-switch,
+  .recurring-record-form .recurring-accrual-toggle {
     min-height: 78px;
     max-width: max-content;
     min-width: 0;
   }
 
-  .recurring-expense-form .recurring-invoice-switch {
+  .recurring-record-form .recurring-invoice-switch {
     width: 100%;
   }
 
@@ -2743,7 +2743,7 @@
     background: transparent;
   }
 
-  .recurring-review-summary .expense-review-grid {
+  .recurring-review-summary .record-review-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2772,13 +2772,13 @@
     font-size: 11px;
   }
 
-  .expense-mobile-wizard .expense-wizard-step-7 {
+  .app-form-wizard .app-form-wizard-step-7 {
     border: 0;
     background: transparent;
     box-shadow: none;
   }
 
-  .expense-mobile-wizard .expense-wizard-step-7 textarea {
+  .app-form-wizard .app-form-wizard-step-7 textarea {
     min-height: 118px;
     border: 1px solid #cbd5e1;
     border-radius: 16px;
@@ -2787,39 +2787,39 @@
     box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
   }
 
-  .expense-mobile-wizard .expense-wizard-step-4,
-  .expense-mobile-wizard .expense-wizard-step-4 .payments-box {
+  .app-form-wizard .app-form-wizard-step-4,
+  .app-form-wizard .app-form-wizard-step-4 .payments-box {
     border: 0;
     background: transparent;
     box-shadow: none;
   }
 
-  .expense-mobile-wizard .expense-wizard-step-2.amount-vat-row > label:nth-child(2) {
+  .app-form-wizard .app-form-wizard-step-2.amount-vat-row > label:nth-child(2) {
     display: none;
   }
 
-  .expense-mobile-wizard .expense-type-desktop {
+  .app-form-wizard .expense-type-desktop {
     display: none;
   }
 
-  .expense-mobile-wizard .expense-type-choice {
+  .app-form-wizard .entry-type-choice {
     gap: 9px;
     margin-bottom: 22px;
   }
 
-  .expense-type-choice-title {
+  .entry-type-choice-title {
     color: var(--muted);
     font-size: 13px;
     font-weight: 800;
   }
 
-  .expense-type-choice-grid {
+  .entry-type-choice-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 7px;
   }
 
-  .expense-type-choice-grid button {
+  .entry-type-choice-grid button {
     display: grid;
     min-width: 0;
     min-height: 92px;
@@ -2834,156 +2834,156 @@
     text-align: center;
   }
 
-  .expense-type-choice-grid button > span {
+  .entry-type-choice-grid button > span {
     color: var(--accent);
     font-size: 15px;
     font-weight: 900;
   }
 
-  .expense-type-choice-grid button strong {
+  .entry-type-choice-grid button strong {
     font-size: 13px;
   }
 
-  .expense-type-choice-grid button small {
+  .entry-type-choice-grid button small {
     color: var(--muted);
     font-size: 10px;
   }
 
-  .expense-type-choice-grid button.is-selected {
+  .entry-type-choice-grid button.is-selected {
     border-color: var(--accent);
     background: #eef4ff;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, .1);
   }
 
-  .expense-type-choice-grid button:disabled {
+  .entry-type-choice-grid button:disabled {
     opacity: .55;
   }
 
-  .expense-form h2.full {
+  .app-record-form h2.full {
     font-size: 22px;
   }
 
-  .expense-form .form-section {
+  .app-record-form .form-section {
     border-radius: 18px;
   }
 
-  .expense-form .form-section > summary {
+  .app-record-form .form-section > summary {
     min-height: 54px;
     padding: 13px 12px;
   }
 
-  .expense-form .form-section > summary span {
+  .app-record-form .form-section > summary span {
     font-size: 15px;
   }
 
-  .expense-form .form-section-stack {
+  .app-record-form .form-section-stack {
     padding: 12px;
     gap: 13px;
   }
 
-  .expense-form .toggle-field-wrap {
+  .app-record-form .toggle-field-wrap {
     display: flex;
   }
 
-  .expense-form .payment-status-note {
+  .app-record-form .payment-status-note {
     grid-template-columns: 1fr;
   }
 
-  .expense-form .payments-box {
+  .app-record-form .payments-box {
     padding: 12px;
   }
 
-  .expense-form .payments-box .section-title {
+  .app-record-form .payments-box .section-title {
     display: flex;
     gap: 10px;
   }
 
-  .expense-form .payments-box .section-title .btn {
+  .app-record-form .payments-box .section-title .btn {
     width: 100%;
   }
 
-  .expense-form .payment-row {
+  .app-record-form .payment-row {
     padding: 12px;
   }
 
-  .expense-form .payment-summary-row {
+  .app-record-form .payment-summary-row {
     grid-template-columns: 1fr;
     gap: 10px;
     padding: 12px;
   }
 
-  .expense-form .payment-summary-primary {
+  .app-record-form .payment-summary-primary {
     padding: 16px;
   }
 
-  .expense-form .payment-summary-amount {
+  .app-record-form .payment-summary-amount {
     font-size: 30px;
   }
 
-  .expense-form .payment-summary-date strong {
+  .app-record-form .payment-summary-date strong {
     font-size: 18px;
   }
 
-  .expense-form .payment-summary-meta {
+  .app-record-form .payment-summary-meta {
     grid-template-columns: 1fr 1fr;
   }
 
-  .expense-form .payment-summary-meta > div {
+  .app-record-form .payment-summary-meta > div {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
   }
 
-  .expense-form .payment-summary-row .payment-row-actions {
+  .app-record-form .payment-summary-row .payment-row-actions {
     grid-column: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
   }
 
-  .expense-detail-payment-summary-list .payment-row-actions {
+  .record-detail-payment-summary-list .payment-row-actions {
     grid-template-columns: 1fr;
   }
 
-  .expense-form .payment-summary-row .payment-row-actions .btn {
+  .app-record-form .payment-summary-row .payment-row-actions .btn {
     //width: 100%;
     max-width: none;
     justify-content: center;
   }
 
-  .expense-form .payment-row-actions {
+  .app-record-form .payment-row-actions {
     display: flex;
     grid-template-columns: 1fr 1fr;
   }
 
-  .expense-form .attachment-row-title,
-  .expense-form .attachment-row {
+  .app-record-form .attachment-row-title,
+  .app-record-form .attachment-row {
     display: grid;
     grid-template-columns: 1fr;
   }
 
-  .expense-form .attachments-note {
+  .app-record-form .attachments-note {
     min-width: 0;
     text-align: left;
   }
 
-  .expense-form .form-sticky-summary {
+  .app-record-form .form-sticky-summary {
     top: 0;
     grid-column: 1 / -1;
   }
 
-  .expense-form .form-sticky-actions .btn {
+  .app-record-form .form-sticky-actions .btn {
     min-width: 0;
   }
 
-  .expense-form .form-sticky-actions {
+  .app-record-form .form-sticky-actions {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 760px) {
 
-  .expense-form .payment-edit-actions .remove-row,
-  .expense-form .payment-edit-actions .btn {
+  .app-record-form .payment-edit-actions .remove-row,
+  .app-record-form .payment-edit-actions .btn {
     min-width: 0;
     width: 100%;
     justify-content: center;
@@ -2991,7 +2991,7 @@
 }
 
 @media (max-width: 760px) {
-  .app-form-modal .expense-form.supplier-form .supplier-form-actions {
+  .app-form-modal .app-record-form.entity-form .entity-form-actions {
     bottom: 0;
     width: 100% !important;
     max-width: 100%;
@@ -3001,15 +3001,15 @@
     box-sizing: border-box;
   }
 
-  .app-form-modal .expense-form.supplier-form .supplier-form-actions .btn {
+  .app-form-modal .app-record-form.entity-form .entity-form-actions .btn {
     width: 100%;
     min-width: 0;
     max-width: 100%;
     padding-inline: 8px;
   }
 
-  .app-form-modal .expense-form .form-actions-row,
-  .app-form-modal .expense-form .form-sticky-actions {
+  .app-form-modal .app-record-form .form-actions-row,
+  .app-form-modal .app-record-form .form-sticky-actions {
     bottom: calc(10px + env(safe-area-inset-bottom));
     width: calc(100vw - 20px);
     display: grid !important;
@@ -3018,8 +3018,8 @@
     border-radius: 18px;
   }
 
-  .app-form-modal .expense-form .form-actions-row button,
-  .app-form-modal .expense-form .form-sticky-actions button {
+  .app-form-modal .app-record-form .form-actions-row button,
+  .app-form-modal .app-record-form .form-sticky-actions button {
     min-width: 0;
     width: 100%;
     max-width: 100%;
@@ -3941,20 +3941,20 @@
     display: none;
   }
 
-  .modal-card.modal-card-wide .expense-form {
+  .modal-card.modal-card-wide .app-record-form {
     background: none;
     border: none;
     //padding: 0 !important;
   }
 
-  .expense-mobile-title-left {
+  .mobile-record-title-left {
     display: flex;
     flex-direction: column;
     font-weight: 400;
     flex-grow: 1;
   }
 
-  .expense-mobile-meta .expense-mobile-meta-left {
+  .mobile-record-meta .mobile-record-meta-left {
     display: flex;
     gap: 2px;
     flex-grow: 1;
@@ -4043,11 +4043,11 @@
   }
 
   .modal-card.modal-card-wide .income-form,
-  .modal-card.modal-card-wide .expense-form {
+  .modal-card.modal-card-wide .app-record-form {
     margin-bottom: 72px;
   }
 
-  .card .expense-form {
+  .card .app-record-form {
     padding: 0;
     border: none;
   }
@@ -4078,7 +4078,7 @@
     //flex-grow: 1;
   }
 
-  .supplier-form {
+  .entity-form {
     margin-bottom: 86px;
   }
 
@@ -4101,7 +4101,7 @@
   }
 
   .expense-detail-info-grid,
-  .expense-detail-status-strip {
+  .record-detail-status-strip {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -4109,24 +4109,24 @@
   .modal-page-card .form,
   .modal-card-wide .income-form,
   .modal-page-card .income-form,
-  .modal-card-wide .supplier-form {
+  .modal-card-wide .entity-form {
     grid-template-columns: 1fr;
   }
 
-  .expense-mobile-title-right {
+  .mobile-record-title-right {
     display: flex;
     flex-direction: column;
     font-weight: 400;
   }
 
-  .expense-mobile-title-right .expense-mobile-date {
+  .mobile-record-title-right .mobile-record-date {
     font-size: 12px;
     color: var(--muted);
     font-weight: 400;
     padding-bottom: 1px;
   }
 
-  .expense-mobile-meta .expense-mobile-meta-right {
+  .mobile-record-meta .mobile-record-meta-right {
     display: flex;
     gap: 2px;
     text-align: right;
@@ -4332,23 +4332,23 @@
     grid-column: 1 / -1;
   }
 
-  .app-form-model .expense-form .form-sticky-actions {
+  .app-form-modal .app-record-form .form-sticky-actions {
     display: grid !important;
   }
 
-  .expense-top-summary .card-heading-row {
+  .record-top-summary .card-heading-row {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .expense-impact-pie-row-wrap {
+  .composition-pie-row-wrap {
     margin: 4px 0;
   }
 
-  .expense-impact-pie-layout {
+  .composition-pie-layout {
     flex-direction: column;
 
-    .expense-impact-pie-legend {
+    .composition-pie-legend {
       max-width: 100%;
       width: 100%;
       padding: 0 14px;
@@ -4363,7 +4363,7 @@
     max-width: 100%;
     min-width: 0;
     margin-right: 0;
-    align-items: start;
+    align-items: flex-start;
   }
 
   .month-report-collapsible > .month-report-section-heading h3 {
@@ -4376,10 +4376,10 @@
     text-align: right;
   }
 
-  .month-report-collapsible .expenses-list-card,
-  .month-report-collapsible .expense-mobile-list,
+  .month-report-collapsible .record-list-card,
+  .month-report-collapsible .mobile-record-list,
   .month-report-collapsible .income-mobile-list,
-  .month-report-collapsible .expense-mobile-item {
+  .month-report-collapsible .mobile-record-item {
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
@@ -4452,13 +4452,13 @@
     padding: 6px;
   }
 
-  .expenses-list-card {
+  .record-list-card {
     padding: 14px 6px;
   }
 }
 
 @media (max-width: 760px) {
-  .supplier-quick-search {
+  .entity-quick-search {
     width: 100%;
   }
 
@@ -4552,10 +4552,10 @@
   .dashboard-pie-legend-collapsible > summary::-webkit-details-marker {
     display: none;
   }
-  .dashboard-pie-legend-collapsible:not([open]) > .expense-impact-pie-legend {
+  .dashboard-pie-legend-collapsible:not([open]) > .composition-pie-legend {
     display: none !important;
   }
-  .dashboard-pie-legend-collapsible[open] > .expense-impact-pie-legend {
+  .dashboard-pie-legend-collapsible[open] > .composition-pie-legend {
     display: grid !important;
     padding: 0 12px 12px;
   }
@@ -4600,19 +4600,19 @@
     background: transparent;
   }
 
-  .expense-mobile-step-1.income-mobile-wizard .income-amount-section,
-  .expense-mobile-step-2.income-mobile-wizard .income-document-section,
-  .expense-mobile-step-3.income-mobile-wizard .income-amount-section,
-  .expense-mobile-step-4.income-mobile-wizard .income-document-section,
-  .expense-mobile-step-4.income-mobile-wizard .income-amount-section,
-  .expense-mobile-step-5.income-mobile-wizard .income-document-section,
-  .expense-mobile-step-5.income-mobile-wizard .income-amount-section,
-  .expense-mobile-step-6.income-mobile-wizard .income-document-section,
-  .expense-mobile-step-6.income-mobile-wizard .income-amount-section {
+  .app-form-wizard-current-1.income-mobile-wizard .income-amount-section,
+  .app-form-wizard-current-2.income-mobile-wizard .income-document-section,
+  .app-form-wizard-current-3.income-mobile-wizard .income-amount-section,
+  .app-form-wizard-current-4.income-mobile-wizard .income-document-section,
+  .app-form-wizard-current-4.income-mobile-wizard .income-amount-section,
+  .app-form-wizard-current-5.income-mobile-wizard .income-document-section,
+  .app-form-wizard-current-5.income-mobile-wizard .income-amount-section,
+  .app-form-wizard-current-6.income-mobile-wizard .income-document-section,
+  .app-form-wizard-current-6.income-mobile-wizard .income-amount-section {
     display: none;
   }
 
-  .expense-wizard-modal-card > .income-mobile-wizard {
+  .app-wizard-modal-card > .income-mobile-wizard {
     flex: 1 1 auto;
     min-height: 0;
   }
@@ -4707,11 +4707,11 @@
     }
   }
 
-  .expense-mobile-step-6.income-mobile-wizard .income-notes-section > .income-form-section-stack {
+  .app-form-wizard-current-6.income-mobile-wizard .income-notes-section > .income-form-section-stack {
     padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
   }
 
-  .recurring-mobile-wizard .recurring-form-section {
+  .recurring-form-wizard .recurring-form-section {
     width: 100%;
     margin: 0;
     border: 0;
@@ -4719,7 +4719,7 @@
     box-shadow: none;
   }
 
-  .expense-wizard-modal-card > .recurring-mobile-wizard {
+  .app-wizard-modal-card > .recurring-form-wizard {
     flex: 1 1 auto;
     min-height: 0;
     max-height: 100%;
@@ -4732,11 +4732,11 @@
     scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
   }
 
-  .expense-wizard-modal-card:has(> .recurring-mobile-wizard) {
+  .app-wizard-modal-card:has(> .recurring-form-wizard) {
     overflow: hidden;
   }
 
-  .expense-wizard-modal-card:has(> .recurring-mobile-wizard) > .modal-title {
+  .app-wizard-modal-card:has(> .recurring-form-wizard) > .modal-title {
     flex: 0 0 auto;
   }
 
@@ -4744,19 +4744,19 @@
     min-height: calc(100dvh - 72px);
   }
 
-  .recurring-wizard-page-card > .recurring-mobile-wizard {
+  .recurring-wizard-page-card > .recurring-form-wizard {
     flex: 1 1 auto;
     min-height: 0;
     padding-bottom: calc(180px + env(safe-area-inset-bottom));
     scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
   }
 
-  .recurring-mobile-wizard .recurring-form-section > summary {
+  .recurring-form-wizard .recurring-form-section > summary {
     display: none;
   }
 
-  .recurring-mobile-wizard .recurring-form-section > .recurring-form-section-grid,
-  .recurring-mobile-wizard .recurring-form-section > .form-section-stack {
+  .recurring-form-wizard .recurring-form-section > .recurring-form-section-grid,
+  .recurring-form-wizard .recurring-form-section > .form-section-stack {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -4766,45 +4766,45 @@
     background: transparent;
   }
 
-  .recurring-mobile-wizard .recurring-type-desktop {
+  .recurring-form-wizard .recurring-type-desktop {
     display: none;
   }
 
-  .expense-mobile-step-4.recurring-mobile-wizard .recurring-document-section,
-  .expense-mobile-step-5.recurring-mobile-wizard .recurring-document-section,
-  .expense-mobile-step-6.recurring-mobile-wizard .recurring-document-section {
+  .app-form-wizard-current-4.recurring-form-wizard .recurring-document-section,
+  .app-form-wizard-current-5.recurring-form-wizard .recurring-document-section,
+  .app-form-wizard-current-6.recurring-form-wizard .recurring-document-section {
     display: none;
   }
 
-  .expense-mobile-step-1.recurring-mobile-wizard .recurring-details-section,
-  .expense-mobile-step-1.recurring-mobile-wizard .recurring-amount-section,
-  .expense-mobile-step-2.recurring-mobile-wizard .recurring-dates-section,
-  .expense-mobile-step-2.recurring-mobile-wizard .recurring-details-section,
-  .expense-mobile-step-3.recurring-mobile-wizard .recurring-dates-section,
-  .expense-mobile-step-3.recurring-mobile-wizard .recurring-amount-section {
+  .app-form-wizard-current-1.recurring-form-wizard .recurring-details-section,
+  .app-form-wizard-current-1.recurring-form-wizard .recurring-amount-section,
+  .app-form-wizard-current-2.recurring-form-wizard .recurring-dates-section,
+  .app-form-wizard-current-2.recurring-form-wizard .recurring-details-section,
+  .app-form-wizard-current-3.recurring-form-wizard .recurring-dates-section,
+  .app-form-wizard-current-3.recurring-form-wizard .recurring-amount-section {
     display: none;
   }
 
-  .recurring-mobile-wizard .recurring-wizard-amount {
+  .recurring-form-wizard .recurring-wizard-amount {
     align-items: stretch;
     gap: 14px;
   }
 
-  .recurring-mobile-wizard .recurring-vat-buttons-desktop {
+  .recurring-form-wizard .recurring-vat-buttons-desktop {
     display: none !important;
   }
 
-  .recurring-mobile-wizard .recurring-vat-buttons-mobile {
+  .recurring-form-wizard .recurring-vat-buttons-mobile {
     display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     width: 100%;
   }
 
-  .recurring-mobile-wizard .recurring-wizard-amount > label {
+  .recurring-form-wizard .recurring-wizard-amount > label {
     width: 100%;
   }
 
-  .recurring-mobile-wizard .recurring-wizard-amount .money-input {
+  .recurring-form-wizard .recurring-wizard-amount .money-input {
     min-height: 70px;
     overflow: hidden;
     border: 1px solid #dbe3ef;
@@ -4812,12 +4812,12 @@
     background: #f8fafc;
   }
 
-  .recurring-mobile-wizard .recurring-wizard-amount .money-input > span {
+  .recurring-form-wizard .recurring-wizard-amount .money-input > span {
     left: 16px;
     font-size: 26px;
   }
 
-  .recurring-mobile-wizard .recurring-wizard-amount .money-input input {
+  .recurring-form-wizard .recurring-wizard-amount .money-input input {
     height: 68px;
     padding: 6px 14px 6px 48px;
     border: 0;
@@ -4829,11 +4829,11 @@
     text-align: right;
   }
 
-  .expense-mobile-step-6.recurring-mobile-wizard .recurring-notes-section > .form-section-stack {
+  .app-form-wizard-current-6.recurring-form-wizard .recurring-notes-section > .form-section-stack {
     padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
   }
 
-  .expense-mobile-wizard .form-section-grid:empty {
+  .app-form-wizard .form-section-grid:empty {
     display: none;
   }
 
@@ -4895,9 +4895,9 @@
     grid-template-columns: 1fr auto auto;
   }
 
-  .app-form-modal .expense-mobile-wizard > .form-sticky-actions,
-  .modal-page-card .expense-mobile-wizard > .form-sticky-actions,
-  .expense-mobile-wizard > .form-sticky-actions {
+  .app-form-modal .app-form-wizard > .form-sticky-actions,
+  .modal-page-card .app-form-wizard > .form-sticky-actions,
+  .app-form-wizard > .form-sticky-actions {
     display: none !important;
   }
 }

@@ -13,9 +13,9 @@ export default function ClientFiltersDrawer({ filters }: Props) {
   useEffect(() => setMounted(true), []);
   useEffect(() => { if (!open) return; const key = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false); document.body.classList.add('drawer-open'); document.addEventListener('keydown', key); return () => { document.body.classList.remove('drawer-open'); document.removeEventListener('keydown', key); }; }, [open]);
   const drawer = mounted ? createPortal(<div className={open ? 'filter-drawer-backdrop is-open' : 'filter-drawer-backdrop'} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-    <aside className="filter-drawer-panel expense-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri clienti" onMouseDown={event => event.stopPropagation()}>
+    <aside className="filter-drawer-panel record-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri clienti" onMouseDown={event => event.stopPropagation()}>
       <div className="filter-drawer-header"><h3>Filtri clienti</h3><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button></div>
-      <form className="expense-filters recurring-drawer-filters supplier-filters" action="/clients" method="get">
+      <form className="record-filters recurring-drawer-filters party-filters" action="/clients" method="get">
         <label>Ragione sociale<input name="businessName" defaultValue={value(filters, 'businessName')} /></label>
         <label>Referente<input name="alias" defaultValue={value(filters, 'alias')} /></label>
         <label>Email<input type="email" name="email" defaultValue={value(filters, 'email')} /></label>

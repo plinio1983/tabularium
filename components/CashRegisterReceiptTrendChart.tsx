@@ -103,6 +103,6 @@ export default function CashRegisterReceiptTrendChart({points}: {points: DailyRe
         <div><span>Scontrini</span><strong>{selected.count}</strong></div>
         <div><span>Ticket medio</span><strong>{selected.count ? euro(selected.average) : '—'}</strong></div>
       </div> : null}
-    </> : <div className="expense-empty-panel">Nessun dato disponibile per il periodo selezionato.</div>}
+    </> : <div className="record-empty-state">Nessun dato disponibile per il periodo selezionato.</div>}
   </section>;
 }

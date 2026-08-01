@@ -259,28 +259,28 @@ function ExpenseCategoryPieChart({data}: { data: ExpenseCategoryDatum[] }) {
         }), {name: 'Altre categorie', code: 'ALTRO', total: 0, residual: 0})]
         : orderedData;
 
-    return <section className="expense-category-chart-card expense-page-category-pie-chart summary-composition-card">
+    return <section className="category-chart-card category-pie-chart summary-composition-card">
         <div className="card-heading-row">
             <div>
                 <h2>Composizione delle spese</h2>
                 <p className="muted">Peso delle categorie sul totale filtrato.</p>
             </div>
         </div>
-        {groupedData.length && total > 0 ? <div className="expense-impact-pie-legend summary-composition-list"
+        {groupedData.length && total > 0 ? <div className="composition-pie-legend summary-composition-list"
                                                   aria-label="Composizione delle spese per categoria">
                 {groupedData.map((item, index) => {
                     const percentage = total ? (item.total / total) * 100 : 0;
-                    return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
-                        <div className="expense-impact-pie-legend-row">
-                            <span className="expense-impact-pie-dot" style={{background: expensePieChartColors[index % expensePieChartColors.length]}}/>
+                    return <div className="composition-pie-row-wrap" key={`${item.code}-${item.name}`}>
+                        <div className="composition-pie-legend-row">
+                            <span className="composition-pie-dot" style={{background: expensePieChartColors[index % expensePieChartColors.length]}}/>
                             <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
                             <div className="justify-end">
                                 <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong>
                                 <strong className="text-accent">{percentage.toFixed(1)}%</strong>
                             </div>
                         </div>
-                        <div className="expense-impact-pie-bar-track">
-                            <div className="expense-impact-pie-bar" style={{
+                        <div className="composition-pie-bar-track">
+                            <div className="composition-pie-bar" style={{
                                 width: `${percentage.toFixed(1)}%`,
                                 background: expensePieChartColors[index % expensePieChartColors.length]
                             }}/>
@@ -966,7 +966,7 @@ export default async function ExpensesPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
-        <div className="card expenses-list-card">
+        <div className="card record-list-card">
             <div className="filter-drawer-wrapper">
                 <ExpenseFiltersDrawer
                     filters={filters}
@@ -992,10 +992,10 @@ export default async function ExpensesPage({searchParams}: {
                 useFiscalPeriodFilter={useFiscalPeriodFilter}
             />
 
-            <section className="expense-top-summary" aria-labelledby="expense-top-summary-title">
+            <section className="record-top-summary" aria-labelledby="record-top-summary-title">
                 <div className="card-heading-row">
                     <div>
-                        <h2 id="expense-top-summary-title">{totalsPeriodLabel}</h2>
+                        <h2 id="record-top-summary-title">{totalsPeriodLabel}</h2>
                         <p className="muted">Riepilogo immediato delle spese comprese nei filtri correnti.</p>
                     </div>
                     {/*{monthlyReportHref ? <Link className="btn btn-sm btn-secondary" href={monthlyReportHref}>*/}
@@ -1010,30 +1010,30 @@ export default async function ExpensesPage({searchParams}: {
                     {/*    <span>Report mensile</span>*/}
                     {/*</Link> : null}*/}
             </div>
-            <div className="expense-top-summary-grid">
-                    <div className="expense-top-summary-item is-primary">
+            <div className="record-top-summary-grid">
+                    <div className="record-top-summary-item is-primary">
                         <span>Spese totali IVA inclusa</span>
                         <strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong>
                     </div>
-                    <Link className="expense-top-summary-item" href={nonDeclaredTotalsHref}>
+                    <Link className="record-top-summary-item" href={nonDeclaredTotalsHref}>
                         <span>Spese non dichiarate</span>
                         <strong className={moneyTone(totals.nonDeclared)}>{euro(totals.nonDeclared)}</strong>
                     </Link>
-                    <Link className={`expense-top-summary-item ${totals.toPay > 0 ? 'is-warning' : ''}`}
+                    <Link className={`record-top-summary-item ${totals.toPay > 0 ? 'is-warning' : ''}`}
                           href={unpaidTotalsHref}>
                         <span>Non saldato</span>
                         <strong className={moneyTone(totals.toPay)}>{euro(totals.toPay)}</strong>
                     </Link>
-                    <div className="expense-top-summary-item">
+                    <div className="record-top-summary-item">
                         <span>IVA versata</span>
                         <strong className={moneyTone(totals.paidVat)}>{euro(totals.paidVat)}</strong>
                     </div>
-                    <Link className={`expense-top-summary-item ${totals.invoicesNotReceived > 0 ? 'is-invoice-waiting' : ''}`}
+                    <Link className={`record-top-summary-item ${totals.invoicesNotReceived > 0 ? 'is-invoice-waiting' : ''}`}
                           href={invoicesNotReceivedHref}>
                         <span>Fatture non ricevute</span>
                         <strong>{totals.invoicesNotReceived}</strong>
                     </Link>
-                    <Link className={`expense-top-summary-item ${totals.overdueCount > 0 ? 'is-critical' : ''}`}
+                    <Link className={`record-top-summary-item ${totals.overdueCount > 0 ? 'is-critical' : ''}`}
                           href={overduePaymentsHref}>
                         <span>Pagamenti scaduti</span>
                         <strong>{totals.overdueCount}</strong>
@@ -1041,11 +1041,11 @@ export default async function ExpensesPage({searchParams}: {
                 </div>
             </section>
 
-            <div className="expense-summary-chart">
+            <div className="record-summary-chart">
                 <ExpenseCategoryPieChart data={expensesByCategory}/>
             </div>
         </div>
-        <div className="card expenses-list-card">
+        <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista spese</h2>
@@ -1082,7 +1082,7 @@ export default async function ExpensesPage({searchParams}: {
                 </div>
             </div> : null}
 
-            <form className="supplier-quick-search app-quick-search-form" action="/expenses" method="get" role="search">
+            <form className="entity-quick-search app-quick-search-form" action="/expenses" method="get" role="search">
                 {Object.entries(filters).flatMap(([key, value]) => key === 'supplierQuick' || key === 'mobileSort' ? [] : (Array.isArray(value) ? value.map(item =>
                     <input type="hidden" name={key} value={item} key={`${key}-${item}`}/>) : value ? [
                     <input type="hidden" name={key} value={value} key={key}/>] : []))}
@@ -1090,7 +1090,7 @@ export default async function ExpensesPage({searchParams}: {
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
                     <span>Ricerca fornitore</span>
                 </label>
-                <div className="supplier-quick-search-field app-quick-search-field">
+                <div className="entity-quick-search-field app-quick-search-field">
                     <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
                     <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon/>
                     </button>
@@ -1148,7 +1148,7 @@ export default async function ExpensesPage({searchParams}: {
           };
           if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
           const query = sanitizedSearch(window.location.search);
-          const form = document.querySelector('form.expense-filters');
+          const form = document.querySelector('form.record-filters');
           if (query && query !== '?') writeStoredFilter(query);
           else {
             const saved = sanitizedSearch(readStoredFilter());
@@ -1373,7 +1373,7 @@ export default async function ExpensesPage({searchParams}: {
                 emptyMessage="Nessuna spesa trovata con i filtri selezionati."
             />
         </div>
-        {/*<div className="card expenses-list-card">*/}
+        {/*<div className="card record-list-card">*/}
         {/*  <ExpenseCategoryChart data={expensesByCategory} />*/}
         {/*</div>*/}
     </div>;

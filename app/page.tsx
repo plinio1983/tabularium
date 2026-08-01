@@ -378,8 +378,8 @@ function DashboardPieChart({
             const percentage = percentageDenominator ? (chartValue(item) / percentageDenominator) * 100 : 0;
             const barWidth = Math.min(percentage, 100);
             const rowContent = <>
-                <div className="expense-impact-pie-legend-row">
-                    <span className="expense-impact-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/>
+                <div className="composition-pie-legend-row">
+                    <span className="composition-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/>
                     <div>
                         <strong className="hidden-mobile">{item.code}</strong>
                         <span>{item.name}</span>
@@ -389,17 +389,17 @@ function DashboardPieChart({
                         <small>{percentage.toFixed(1)}%</small>
                     </div>
                 </div>
-                <div className="expense-impact-pie-bar" style={{
+                <div className="composition-pie-bar" style={{
                     width: `${barWidth.toFixed(1)}%`,
                     background: dashboardChartColors[index % dashboardChartColors.length]
                 }}/>
             </>;
             return item.href ?
-                <Link className="expense-impact-pie-row-wrap expense-impact-pie-row-link" href={item.href} key={`${item.code}-${item.name}`}>{rowContent}</Link> :
-                <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>{rowContent}</div>;
+                <Link className="composition-pie-row-wrap composition-pie-row-link" href={item.href} key={`${item.code}-${item.name}`}>{rowContent}</Link> :
+                <div className="composition-pie-row-wrap" key={`${item.code}-${item.name}`}>{rowContent}</div>;
         })}
-        {denominator > chartTotal && remainderLabel && remainderName ? <div className="expense-impact-pie-legend-row">
-            <span className="expense-impact-pie-dot expense-impact-pie-dot-muted"/>
+        {denominator > chartTotal && remainderLabel && remainderName ? <div className="composition-pie-legend-row">
+            <span className="composition-pie-dot composition-pie-dot-muted"/>
             <div><strong>{remainderLabel}</strong><span>{remainderName}</span></div>
             <div>
                 <strong>{chartEuro(denominator - chartTotal)}</strong><small>{(((denominator - chartTotal) / percentageDenominator) * 100).toFixed(1)}%</small>
@@ -407,7 +407,7 @@ function DashboardPieChart({
         </div> : null}
     </>;
 
-    return <div className="card expense-category-chart-card expense-impact-pie-card">
+    return <div className="card category-chart-card composition-pie-card">
         <div className="card-heading-row">
             <div>
                 <h2>{title}</h2>
@@ -418,22 +418,22 @@ function DashboardPieChart({
                 {secondaryBadge ? <div className="dashboard-chart-main-total">{secondaryBadge}</div> : null}
             </div> : null}
         </div>
-        {data.length && denominator > 0 ? <div className="expense-impact-pie-layout">
-            <div className="expense-impact-pie" style={{background}} aria-label={title}>
+        {data.length && denominator > 0 ? <div className="composition-pie-layout">
+            <div className="composition-pie" style={{background}} aria-label={title}>
                 <div>
                     <span>{centerLabel}</span>
                     <strong className="main-label">{centerValue ?? chartEuro(total)}</strong>
                     {centerDetail === null ? null : <span>{centerDetail ?? chartEuro(total.toFixed(2))}</span>}
                 </div>
             </div>
-            <div className="expense-impact-pie-legend dashboard-pie-legend-desktop">{legendContent}</div>
+            <div className="composition-pie-legend dashboard-pie-legend-desktop">{legendContent}</div>
             <details className="dashboard-pie-legend-collapsible">
                 <summary>
                     <span className="dashboard-pie-legend-show">Mostra legenda</span>
                     <span className="dashboard-pie-legend-hide">Nascondi legenda</span>
                     <span className="dashboard-pie-legend-caret" aria-hidden="true">⌄</span>
                 </summary>
-                <div className="expense-impact-pie-legend">{legendContent}</div>
+                <div className="composition-pie-legend">{legendContent}</div>
             </details>
         </div> : <p className="muted">{emptyMessage}</p>}
     </div>;
@@ -542,7 +542,7 @@ function ExpenseCompositionChart({data, total, incomeTotal}: {
                 const incomeImpact = incomeTotal ? item.total / incomeTotal * 100 : 0;
                 return <div className="dashboard-composition-row" key={`${item.code}-${item.name}`}>
                     <div className="dashboard-composition-label">
-                        <span className="expense-impact-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/>
+                        <span className="composition-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/>
                         <strong>{item.name}</strong>
                     </div>
                     <div className="dashboard-composition-bar-wrap">

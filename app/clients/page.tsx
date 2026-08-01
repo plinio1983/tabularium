@@ -95,16 +95,16 @@ export default async function ClientsPage({searchParams}: {
             in_use: 'Il cliente è collegato a degli incassi.',
             system_protected: 'Il cliente predefinito non può essere eliminato.'
         }} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
-        <div className="card expenses-list-card">
+        <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
                 <div><h2>Lista clienti</h2><p className="muted">Risultati mostrati: {rows.length}</p></div>
                 <ClientFiltersDrawer filters={filters}/></div>
-            <form className="supplier-quick-search app-quick-search-form" action="/clients" method="get" role="search">
+            <form className="entity-quick-search app-quick-search-form" action="/clients" method="get" role="search">
                 <label className="app-form-field-label" htmlFor="clientQuickSearch">
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
                     <span>Ricerca cliente</span>
                 </label>
-                <div className="supplier-quick-search-field app-quick-search-field">
+                <div className="entity-quick-search-field app-quick-search-field">
                     <input id="clientQuickSearch" name="businessName" defaultValue={input(filters, 'businessName')} placeholder="Nome o ragione sociale" autoComplete="off"/>
                     <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca cliente"><SearchIcon/>
                     </button>
@@ -147,37 +147,37 @@ export default async function ClientsPage({searchParams}: {
                 </div>
             </form>
             <SortableTableController/>
-            <div className="supplier-mobile-list expense-mobile-list" aria-label="Lista clienti mobile">{sortedRows.map(({
+            <div className="party-mobile-list mobile-record-list" aria-label="Lista clienti mobile">{sortedRows.map(({
                                                                                                                              customer,
                                                                                                                              openCount,
                                                                                                                              openAmount,
                                                                                                                              annualCount,
                                                                                                                              annualAmount
                                                                                                                          }) =>
-                <div className={openCount ? 'supplier-mobile-item expense-mobile-item expense-mobile-item-overdue' : 'supplier-mobile-item expense-mobile-item'} key={customer.id}>
-                    <div className="expense-mobile-select">
+                <div className={openCount ? 'party-mobile-item mobile-record-item mobile-record-item-overdue' : 'party-mobile-item mobile-record-item'} key={customer.id}>
+                    <div className="mobile-record-select">
                         <input form="clientBulkForm" type="checkbox" name="ids" value={customer.id} disabled={Boolean(customer.systemRole)}/>
                     </div>
-                    <Link className="expense-mobile-link supplier-mobile-link" href={`/clients/${customer.id}?returnTo=${returnTo}`}>
-                        <div className="expense-mobile-main">
-                            <div className="expense-mobile-title-row">
-                                <div className="expense-mobile-title-left">
+                    <Link className="mobile-record-link party-mobile-link" href={`/clients/${customer.id}?returnTo=${returnTo}`}>
+                        <div className="mobile-record-main">
+                            <div className="mobile-record-title-row">
+                                <div className="mobile-record-title-left">
                                     <strong>{customer.businessName}</strong>
                                     {/*{customer.systemRole ? <span className="badge">Sistema</span> : null}*/}
                                 </div>
-                                <div className="expense-mobile-title-right">
+                                <div className="mobile-record-title-right">
                                     <span className={openAmount ? 'text-warning' : 'text-ok'}>{euro(openAmount)}</span>
                                 </div>
                             </div>
-                            <div className="expense-mobile-subtitle">
-                                <span className="supplier-mobile-row-grow">{customer.alias || 'Nessun referente'}</span><span className="supplier-mobile-row-grow text-right"><strong>{openCount}</strong> incassi da accreditare</span>
+                            <div className="mobile-record-subtitle">
+                                <span className="party-mobile-row-grow">{customer.alias || 'Nessun referente'}</span><span className="party-mobile-row-grow text-right"><strong>{openCount}</strong> incassi da accreditare</span>
                             </div>
-                            <div className="expense-mobile-meta">
-                                <span className="supplier-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualAmount)}</strong> incassati {currentYear}</span><span className="badge badge-color">{annualCount} incassi {currentYear}</span>
+                            <div className="mobile-record-meta">
+                                <span className="party-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualAmount)}</strong> incassati {currentYear}</span><span className="badge badge-color">{annualCount} incassi {currentYear}</span>
                             </div>
                         </div>
                     </Link></div>)}{!rows.length ?
-                <div className="expense-empty-panel">Nessun cliente trovato.</div> : null}</div>
+                <div className="record-empty-state">Nessun cliente trovato.</div> : null}</div>
             <div className="table-scroll">
                 <table className="suppliers-table compact-suppliers-table" data-sortable-table data-default-sort="business-name" data-default-sort-dir="asc">
                     <thead>
@@ -208,13 +208,13 @@ export default async function ClientsPage({searchParams}: {
                             <td>{customer.alias ?? '-'}</td>
                             <td className="text-center">
                                 <strong className={openCount ? 'text-warning' : ''}>{openCount}</strong></td>
-                            <td className="supplier-amount-cell">
+                            <td className="party-amount-cell">
                                 <strong className={openAmount ? 'text-warning' : 'text-ok'}>{euro(openAmount)}</strong>
                             </td>
                             <td className="text-center">
                                 <strong>{annualCount}</strong>
                             </td>
-                            <td className="text-right supplier-amount-cell">
+                            <td className="text-right party-amount-cell">
                                 <strong className="badge color-badge tone-insurance">{euro(annualAmount)}</strong>
                             </td>
                         </tr>)}{!rows.length ? <tr>

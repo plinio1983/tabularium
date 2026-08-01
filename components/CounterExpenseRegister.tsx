@@ -334,27 +334,27 @@ export default function CounterExpenseRegister({
           <p className="cash-register-keyboard-hint">Usa le frecce per scegliere e premi Invio per selezionare.</p>
         </div> : <>
           <div className="counter-expense-summary">
-            <div className="expense-review-heading">
+            <div className="record-review-heading">
               <div>
-                <span className="expense-review-kicker">Controlla prima di salvare</span>
+                <span className="record-review-kicker">Controlla prima di salvare</span>
                 <h3>Riepilogo della spesa</h3>
               </div>
               <strong>{euro(numericAmount)}</strong>
             </div>
-            <div className="expense-review-grid">
-              <div className="expense-review-item">
+            <div className="record-review-grid">
+              <div className="record-review-item">
                 <i aria-hidden="true">◷</i>
                 <span>Data pagamento<strong>{new Intl.DateTimeFormat('it-IT').format(new Date(`${paymentDate}T12:00:00`))}</strong></span>
               </div>
-              <div className="expense-review-item">
+              <div className="record-review-item">
                 <i aria-hidden="true">%</i>
                 <span>Fiscale / IVA<strong>{isDeductible ? `Sì · ${vatRate}%` : 'No · 0%'}</strong></span>
               </div>
-              <div className="expense-review-item wide">
+              <div className="record-review-item wide">
                 <i aria-hidden="true">◇</i>
                 <span>Categoria<strong>{selectedCategory?.icon} {selectedCategory?.name}</strong></span>
               </div>
-              <div className="expense-review-item wide">
+              <div className="record-review-item wide">
                 <i aria-hidden="true">€</i>
                 <span>Metodo di pagamento<strong>{selectedMethod.icon} {selectedMethod.name}</strong></span>
               </div>

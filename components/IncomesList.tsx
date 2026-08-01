@@ -179,37 +179,37 @@ export default function IncomesList({
                     <span className="btn-icon">+</span><span className="bulk-label">Incasso</span></button>
             </div>
         </form>
-        <div className="income-mobile-list expense-mobile-list" aria-label="Lista incassi mobile">
+        <div className="income-mobile-list mobile-record-list" aria-label="Lista incassi mobile">
             {cashRegisterGroups.map(group => {
                 const fiscalStyle = group.isFiscal ? fiscalStyles.yes : fiscalStyles.no;
                 const vatStyle = vatStyles[String(Number(group.vatRates))] ?? vatStyles['0'];
-                return <div className="income-mobile-item expense-mobile-item cash-register-aggregate-mobile-item" key={`mobile-cash-${group.key}`}>
-                    <div className="expense-mobile-select">
+                return <div className="income-mobile-item mobile-record-item cash-register-aggregate-mobile-item" key={`mobile-cash-${group.key}`}>
+                    <div className="mobile-record-select">
                         <input type="checkbox" disabled aria-label="I cumulativi degli scontrini non sono selezionabili"/>
                     </div>
-                    <Link className="expense-mobile-link income-mobile-link" href={cashRegisterGroupHref(group)}>
-                        <div className="expense-mobile-main">
-                            <div className="expense-mobile-header">
+                    <Link className="mobile-record-link income-mobile-link" href={cashRegisterGroupHref(group)}>
+                        <div className="mobile-record-main">
+                            <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
                                     <span className="badge income-badge-compact">🧾 Scontrini</span>
                                     <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ DF' : '✕ NF'}</span>
                                     {/*<span className="text-pre text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
                                 </div>
                                 <div className="right-side">
-                                    <strong className="expense-mobile-date text-pre">{mobileDateLabel(group.latestCreditDate)}</strong>
+                                    <strong className="mobile-record-date text-pre">{mobileDateLabel(group.latestCreditDate)}</strong>
                                 </div>
                             </div>
-                            <div className="expense-mobile-title-row">
+                            <div className="mobile-record-title-row">
                                 <div className="left-side flex-grow pl-6">
                                     <span>{group.salesChannelIcon ?? ''} {group.salesChannel}</span>
-                                    <div className="expense-mobile-subtitle">{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</div>
+                                    <div className="mobile-record-subtitle">{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</div>
                                 </div>
                                 <div className="right-side">
                                     <span>{group.paymentMethodIcon ?? '  •  '}</span>
                                     <span className={moneyTone(group.amount)}>{euro(group.amount)}</span>
                                 </div>
                             </div>
-                            <div className="expense-mobile-title-row income-mobile-status-row">
+                            <div className="mobile-record-title-row income-mobile-status-row">
                                 <span className={badgeClass(vatStyle.className)}>IVA &nbsp;{Number(group.vatRates)}%</span>
                                 {/*<span className="badge">IVA &nbsp;{aggregateVatLabel(group)}</span>*/}
                                 <small className="text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</small>
@@ -227,14 +227,14 @@ export default function IncomesList({
                 const status = creditStatus(income);
                 const vatStyle = vatStyles[String(Number(income.vatRate))] ?? vatStyles['0'];
                 const amount = Number(income.amount);
-                const recordClass = ['income-mobile-item', 'expense-mobile-item', status === incomeCreditStatusStyles.SCADUTO ? 'expense-mobile-item-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
+                const recordClass = ['income-mobile-item', 'mobile-record-item', status === incomeCreditStatusStyles.SCADUTO ? 'mobile-record-item-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
                 return <div className={recordClass} key={`mobile-income-${income.id}`}>
-                    <div className="expense-mobile-select">
+                    <div className="mobile-record-select">
                         <input form={formId} type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`}/>
                     </div>
-                    <Link className="expense-mobile-link income-mobile-link" href={`/incomes/${income.id}?returnTo=${returnTo}`}>
-                        <div className="expense-mobile-main">
-                            <div className="expense-mobile-header">
+                    <Link className="mobile-record-link income-mobile-link" href={`/incomes/${income.id}?returnTo=${returnTo}`}>
+                        <div className="mobile-record-main">
+                            <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
                                     <span className="badge">{income.salesChannelRef.name}</span>
                                     {fiscalBadge(income.isFiscal)}
@@ -245,22 +245,22 @@ export default function IncomesList({
                                         <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span> : ''}
                                 </div>
                                 <div className="right-side">
-                                    <span className="badge expense-mobile-date text-pre">{mobileDateLabel(income.creditDate)}</span>
+                                    <span className="badge mobile-record-date text-pre">{mobileDateLabel(income.creditDate)}</span>
                                 </div>
                             </div>
-                            <div className="expense-mobile-title-row">
+                            <div className="mobile-record-title-row">
                                 <div className="left-side flex-grow pl-6">
                                     <span>{income.customer?.businessName}</span>
-                                    <div className="expense-mobile-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>
+                                    <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>
                                 </div>
                                 <div className="right-side">
                                     <span>{income.paymentMethodRef?.icon ?? '  •  '}</span><span className={moneyTone(amount)}>{euro(amount)}</span>
                                 </div>
                             </div>
-                            {/*<div className="expense-mobile-title-row">*/}
-                            {/*    <div className="expense-mobile-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>*/}
+                            {/*<div className="mobile-record-title-row">*/}
+                            {/*    <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>*/}
                             {/*</div>*/}
-                            <div className="expense-mobile-title-row income-mobile-status-row">
+                            <div className="mobile-record-title-row income-mobile-status-row">
                                 <span className={badgeClass(vatStyle.className)}>IVA &nbsp; {Number(income.vatRate)}%</span>
                                 <small className="text-pre text-muted">{formatPeriod(income.billingMonth, income.billingYear)}</small>
                                 <span title={status.label} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {status.label}</span>
@@ -269,7 +269,7 @@ export default function IncomesList({
                     </Link>
                 </div>;
             })}
-            {!incomes.length && !cashRegisterGroups.length ? <div className="expense-empty-panel">{emptyMessage}</div> : null}
+            {!incomes.length && !cashRegisterGroups.length ? <div className="record-empty-state">{emptyMessage}</div> : null}
         </div>
 
         <div className="table-scroll incomes-table-scroll">

@@ -255,11 +255,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <div className="month-report-value month-report-inline-total"><span>Spese non saldate</span><strong
                     className="money-warning">{euroInt(fiscalTotals.nonSaldato)}</strong></div>
             </summary>
-            <form className="supplier-quick-search" action={`/months/${year}/${month}`} method="get" role="search">
+            <form className="entity-quick-search" action={`/months/${year}/${month}`} method="get" role="search">
                 <input type="hidden" name="mode" value={mode}/>
                 <input type="hidden" name="returnTo" value={backHref}/>
                 <label htmlFor="monthExpenseSupplierQuickSearch">Ricerca rapida</label>
-                <div className="supplier-quick-search-field">
+                <div className="entity-quick-search-field">
                     <input id="monthExpenseSupplierQuickSearch" name="supplierQuick" defaultValue={supplierQuickValue} placeholder="Nome o ragione sociale" autoComplete="off"/>
                     <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon /></button>
                 </div>
@@ -311,7 +311,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <div className="month-report-value month-report-inline-total flex-grow"><span>Totale incassi</span><strong
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
             </summary>
-            <div className="--card expenses-list-card"><IncomesList
+            <div className="--card record-list-card"><IncomesList
                 incomes={listedIncomes}
                 cashRegisterGroups={cashRegisterGroups}
                 returnTo={returnTo}

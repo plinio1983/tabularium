@@ -149,8 +149,8 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
     {loadingId ? <div className="inline-modal-loading">Caricamento spesa #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : mode === "payment" ? `Inserisci pagamento per la spesa ${expense.id}` : mode === "payment-edit" ? `Modifica pagamento della spesa ${expense.id}` : mode === "attachments" ? `Modifica allegati della spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
-      <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
+    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : mode === "payment" ? `Inserisci pagamento per la spesa ${expense.id}` : mode === "payment-edit" ? `Modifica pagamento della spesa ${expense.id}` : mode === "attachments" ? `Modifica allegati della spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
+      <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
             <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : mode === "payment" ? `Nuovo pagamento · spesa #${expense.id}` : mode === "payment-edit" ? `Modifica pagamento · spesa #${expense.id}` : mode === "attachments" ? `Modifica allegati · spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>

@@ -31,7 +31,7 @@ export default async function PasswordSettingsPage({searchParams}: {
       <DetailBackButton href="/settings/account"/>
     </div>
 
-    <form action={updatePasswordAction} className="card form expense-form account-settings-form account-styled-form account-password-form">
+    <form action={updatePasswordAction} className="card form app-record-form account-settings-form account-styled-form account-password-form">
       <div className="account-form-intro full">
         <span className="account-form-intro-icon" aria-hidden="true">●</span>
         <div>

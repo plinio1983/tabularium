@@ -47,7 +47,7 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
             : current.filter(item => item !== id));
     }
 
-    return <div className="card expenses-list-card cash-register-receipt-list-card">
+    return <div className="card record-list-card cash-register-receipt-list-card">
         <BulkSelectionController/>
         <form id={formId}
               action={`/api/cash-register/receipts/bulk?returnTo=${returnTo}`}
@@ -96,7 +96,7 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
 
         <div className="cash-register-receipt-list" aria-label="Lista scontrini">
             {receipts.map(receipt => <article className="cash-register-receipt-row" key={receipt.id}>
-                <div className="expense-mobile-select cash-register-receipt-select">
+                <div className="mobile-record-select cash-register-receipt-select">
                     <input form={formId} type="checkbox" name="ids" value={receipt.id}
                            checked={selectedIds.includes(receipt.id)}
                            onChange={event => toggleReceipt(receipt.id, event.currentTarget.checked)}
@@ -117,7 +117,7 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
                     <strong className="cash-register-receipt-amount">{euro(receipt.amount)}</strong>
                 </div>
             </article>)}
-            {!receipts.length ? <div className="expense-empty-panel">Nessuno scontrino nel periodo selezionato.</div> : null}
+            {!receipts.length ? <div className="record-empty-state">Nessuno scontrino nel periodo selezionato.</div> : null}
         </div>
     </div>;
 }

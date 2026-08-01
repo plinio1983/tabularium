@@ -241,7 +241,7 @@ export default function ExpensesList({
       />
     </> : null}
 
-    <div className="expense-mobile-list" aria-label={mobileLabel}>
+    <div className="mobile-record-list" aria-label={mobileLabel}>
       {mobileItems.map(expense => {
         const isVatSettlement = expense.expenseType === 'VAT_SETTLEMENT';
         const amount = Number(expense.amount);
@@ -255,43 +255,43 @@ export default function ExpensesList({
         const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
         let recordAddClass = '';
         if (overdue) {
-          recordAddClass = 'expense-mobile-item-overdue';
+          recordAddClass = 'mobile-record-item-overdue';
         } else if (unpaid) {
-          recordAddClass = 'expense-mobile-item-unpaid';
+          recordAddClass = 'mobile-record-item-unpaid';
         } else if (invoiceWaiting) {
-          recordAddClass = 'expense-mobile-item-invoice-waiting';
+          recordAddClass = 'mobile-record-item-invoice-waiting';
         }
-        const recordClass = `expense-mobile-item ${recordAddClass}`;
+        const recordClass = `mobile-record-item ${recordAddClass}`;
         const detailHref = expenseDetailHref(expense, returnTo, linkRecurringExpensesToDefinition);
 
         return <div className={recordClass} key={`mobile-${expense.id}`}>
-          {selectable ? <div className="expense-mobile-select">
+          {selectable ? <div className="mobile-record-select">
             <input form={formId} type="checkbox" name="ids" value={expense.id} aria-label={`Seleziona spesa ${expense.id}`} />
           </div> : null}
-          <Link className="expense-mobile-link" href={detailHref}>
-            <div className="expense-mobile-main">
-              <div className="expense-mobile-meta">
-                <div className="expense-mobile-meta-left">
+          <Link className="mobile-record-link" href={detailHref}>
+            <div className="mobile-record-main">
+              <div className="mobile-record-meta">
+                <div className="mobile-record-meta-left">
                   {expense.category ? <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : null}
                   {!isVatSettlement ? fiscalBadgeMobile(expense.isDeclared) : null}
-                  <span className="expense-mobile-date">{formatPeriod(expense.month, expense.year)}</span>
+                  <span className="mobile-record-date">{formatPeriod(expense.month, expense.year)}</span>
                 </div>
-                <div className="expense-mobile-meta-right">
+                <div className="mobile-record-meta-right">
                   {!isVatSettlement && expense.isDeclared ? electronicInvoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus) : null}
-                  <span className="expense-mobile-date">{mobileDateLabel(expense.dueDate)}</span>
+                  <span className="mobile-record-date">{mobileDateLabel(expense.dueDate)}</span>
                 </div>
               </div>
-              <div className="expense-mobile-title-row">
+              <div className="mobile-record-title-row">
                 <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : expense.isRecurring ? 'R' : 'S'}</span>
-                <div className="expense-mobile-title-left">
+                <div className="mobile-record-title-left">
                   <strong>{showSupplierColumn ? supplierName : (expense.description || 'Spesa senza descrizione')}</strong>
                 </div>
-                <div className="expense-mobile-title-right">
+                <div className="mobile-record-title-right">
                   <span className={moneyTone(amount)}>{expensePaymentIcon(expense)} &nbsp;{euro(expense.amount as string | number)}</span>
                 </div>
               </div>
-              <div className="expense-mobile-subtitle">
-                <div className="expense-mobile-subtitle-left">
+              <div className="mobile-record-subtitle">
+                <div className="mobile-record-subtitle-left">
                   {showSupplierColumn ? <span className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'}</span> : supplierName }
                   {isVatSettlement ? <span className="badge tone-neutral">100%</span> : <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}
                 </div>

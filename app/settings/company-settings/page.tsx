@@ -39,7 +39,7 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
           <span className="company-settings-summary"><strong>{company.name}</strong><span className="company-settings-badges">{company.id === current.company.id ? <span className="badge">Attiva</span> : null} {company.isDefault ? <span className="badge">Predefinita</span> : null} {!company.isActive ? <span className="badge tone-neutral">Disabilitata</span> : null}</span></span>
           <span aria-hidden="true">+</span>
         </summary>
-        <form action={saveCompanyAction} className="form income-form expense-form supplier-form supplier-styled-form company-settings-form company-edit-form">
+        <form action={saveCompanyAction} className="form app-record-form entity-form entity-styled-form company-settings-form company-edit-form">
           <input type="hidden" name="id" value={company.id}/>
           <CompanyFormFields company={company} idPrefix={`company-${company.id}`}/>
           <div className="actions-row form-actions-row full company-settings-actions">

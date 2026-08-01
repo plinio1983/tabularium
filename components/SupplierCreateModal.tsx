@@ -93,7 +93,7 @@ export default function SupplierCreateModal({
                 if (event.target === event.currentTarget && !isSaving) onClose();
             }}
         >
-            <div className="modal-card modal-card-wide supplier-form-modal-card" onMouseDown={(event) => event.stopPropagation()}>
+            <div className="modal-card modal-card-wide entity-form-modal-card" onMouseDown={(event) => event.stopPropagation()}>
                 <div className="modal-title">
                     <div>
                         <h3>Nuovo fornitore</h3>
@@ -102,7 +102,7 @@ export default function SupplierCreateModal({
                     <button className="btn btn-icon-only btn-default modal-close-button" type="button" disabled={isSaving} onClick={onClose}>×</button>
                 </div>
                 <form
-                    className="card form income-form expense-form supplier-form supplier-styled-form inline-create-form"
+                    className="card form app-record-form entity-form entity-styled-form inline-create-form"
                     action={action}
                     method="post"
                     onSubmit={handleSubmit}
@@ -113,7 +113,7 @@ export default function SupplierCreateModal({
                     />
 
                     {error ? <p className="full form-error" role="alert">{error}</p> : null}
-                    <div className="full actions-row form-actions-row form-sticky-actions supplier-form-actions">
+                    <div className="full actions-row form-actions-row form-sticky-actions entity-form-actions">
                         <button className="btn btn-md btn-default" type="button" disabled={isSaving} onClick={onClose}>
                             <span className="btn-icon">✕</span> Annulla
                         </button>

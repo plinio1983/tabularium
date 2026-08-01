@@ -120,7 +120,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
     }
   };
 
-  return <div className="grid expense-detail-page recurring-expense-detail-page">
+  return <div className="grid record-detail-page recurring-record-detail-page">
     <RecurringExpenseDetailEditModalController
       categories={categories.map(category => ({ id: category.id, code: category.code, name: category.name, icon: category.icon }))}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId }))}
@@ -136,9 +136,9 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       defaultErrorMessage="Impossibile completare l’operazione."
     />
 
-    <div className="expense-detail-shell">
-      <article className="expense-detail-document recurring-detail-document">
-        <div className="expense-detail-action-row">
+    <div className="record-detail-shell">
+      <article className="record-detail-document recurring-detail-document">
+        <div className="record-detail-action-row">
           <div className="left-side">
             <DetailBackButton href={returnTo} />
           </div>
@@ -154,35 +154,35 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           </div>
         </div>
 
-        <section className="expense-detail-hero">
+        <section className="record-detail-hero">
           <div>
-            <div className="expense-detail-title-block">
-              <p className="expense-detail-kicker">
+            <div className="record-detail-title-block">
+              <p className="record-detail-kicker">
                 <span>Spesa ricorrente #{item.id}</span>
                 <span className={badgeClass(activeClass)}>{item.isActive ? 'ON' : 'OFF'}</span>
               </p>
               <h1>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{merchant}</Link> : merchant}</h1>
-              <div className="expense-detail-meta-line">
+              <div className="record-detail-meta-line">
                 <span>{item.category ? categoryLabel(item.category, item.category.name) : 'Senza categoria'}</span>
                 <span>{item.description ?? 'Spesa ricorrente senza descrizione'}</span>
               </div>
             </div>
           </div>
 
-          <aside className="expense-detail-amount-panel">
-            <div className="expense-detail-amount-panel-header-row">
-              <span className="expense-detail-amount-panel-header">Importo ricorrente</span>
+          <aside className="record-detail-amount-panel">
+            <div className="record-detail-amount-panel-header-row">
+              <span className="record-detail-amount-panel-header">Importo ricorrente</span>
               <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
             </div>
             <strong>{euro(item.amount.toString())}</strong>
-            <div className="expense-detail-badge-row">
+            <div className="record-detail-badge-row">
               <span className={badgeClass(activeClass)}>{item.isActive ? 'Regola attiva' : 'Regola disattivata'}</span>
               <span className="badge">{cadenceLabels[item.cadence] ?? item.cadence}</span>
             </div>
           </aside>
         </section>
 
-        <section className="expense-detail-status-strip">
+        <section className="record-detail-status-strip">
           <div>
             <span>Cadenza</span>
             <strong>{cadenceLabels[item.cadence] ?? item.cadence}</strong>
@@ -200,18 +200,18 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <strong>{item.isAutomaticPayment ? 'Automatico' : 'Manuale'}</strong>
           </div>
         </section>
-        <div className="expense-detail-progress" aria-label={item.isActive ? 'Regola attiva' : 'Regola disattivata'}>
+        <div className="record-detail-progress" aria-label={item.isActive ? 'Regola attiva' : 'Regola disattivata'}>
           <span style={{ width: item.isActive ? '100%' : '0%' }} />
         </div>
 
-        <section className="expense-detail-section">
-          <div className="expense-detail-section-heading">
+        <section className="record-detail-section">
+          <div className="record-detail-section-heading">
             <div>
               <h2>Dati ricorrenza</h2>
               <p>Fornitore, categoria e impostazioni fiscali della regola.</p>
             </div>
           </div>
-          <div className="expense-detail-status-strip">
+          <div className="record-detail-status-strip">
             <div>
               <span>Descrizione</span>
               <strong>{item.description ?? '-'}</strong>
@@ -243,14 +243,14 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           </div>
         </section>
 
-        <section className="expense-detail-section">
-          <div className="expense-detail-section-heading">
+        <section className="record-detail-section">
+          <div className="record-detail-section-heading">
             <div>
               <h2>Regola di pagamento</h2>
               <p>Metodo, banca e note configurate per la ricorrenza.</p>
             </div>
           </div>
-          <div className="expense-detail-status-strip">
+          <div className="record-detail-status-strip">
             <div>
               <span>Canale pagamento</span>
               <strong>{paymentChannelName ? `${item.paymentMethod?.icon ?? ' • '} ${paymentChannelName}` : '-'}</strong>
@@ -270,15 +270,15 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           </div>
         </section>
 
-        <section className="expense-detail-section">
-          <div className="expense-detail-item expense-detail-item-wide">
+        <section className="record-detail-section">
+          <div className="record-detail-item record-detail-item-wide">
             <span>Note</span>
             <strong className="displayed-notes">{item.notes ?? '-'}</strong>
           </div>
         </section>
 
-        <section className="expense-detail-section">
-          <div className="expense-detail-section-heading">
+        <section className="record-detail-section">
+          <div className="record-detail-section-heading">
             <div>
               <h2>Spese generate</h2>
               <p>Ultime spese create da questa regola ricorrente.</p>

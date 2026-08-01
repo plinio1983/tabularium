@@ -30,12 +30,12 @@ function Field({idPrefix, name, label, icon, className = "", children}: {
 
 export default function CompanyFormFields({company, idPrefix = "company", autoFocus = false}: {company?: CompanyValues; idPrefix?: string; autoFocus?: boolean}) {
     return <>
-        <details className="form-section full income-form-section supplier-form-section company-form-section" open>
+        <details className="form-section full entity-form-section company-form-section" open>
             <summary>
-                <span><span className="supplier-form-section-icon" aria-hidden="true">◎</span>Identità</span>
+                <span><span className="entity-form-section-icon" aria-hidden="true">◎</span>Identità</span>
                 <small>Nome visualizzato e dati anagrafici della società</small>
             </summary>
-            <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
+            <div className="form-section-grid entity-form-section-grid">
                 <Field idPrefix={idPrefix} name="name" label="Nome breve" icon="◎">
                     <input id={`${idPrefix}-name`} name="name" defaultValue={company?.name ?? ""} placeholder="Es. Azienda principale" autoComplete="organization" maxLength={100} required autoFocus={autoFocus}/>
                 </Field>
@@ -48,12 +48,12 @@ export default function CompanyFormFields({company, idPrefix = "company", autoFo
             </div>
         </details>
 
-        <details className="form-section full income-form-section supplier-form-section company-form-section" open>
+        <details className="form-section full entity-form-section company-form-section" open>
             <summary>
-                <span><span className="supplier-form-section-icon" aria-hidden="true">▤</span>Dati fiscali e sede</span>
+                <span><span className="entity-form-section-icon" aria-hidden="true">▤</span>Dati fiscali e sede</span>
                 <small>Identificativi fiscali, fatturazione elettronica e indirizzo</small>
             </summary>
-            <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
+            <div className="form-section-grid entity-form-section-grid">
                 <Field idPrefix={idPrefix} name="vatNumber" label="Partita IVA" icon="#">
                     <input id={`${idPrefix}-vatNumber`} name="vatNumber" defaultValue={company?.vatNumber ?? ""} placeholder="IT01234567890" autoComplete="off" maxLength={32}/>
                 </Field>

@@ -147,7 +147,7 @@ export default function PaymentCreditEditRow({
         </div>
 
         {editing ? <EditSurface heading={kind ? 'Modifica metodo di pagamento' : 'Modifica banca o canale'} title={name} onClose={() => setEditing(false)}>
-          <form action={updateAction} className="form expense-form payment-credit-expanded-form payment-credit-modal-form">
+          <form action={updateAction} className="form app-record-form payment-credit-expanded-form payment-credit-modal-form">
             <input type="hidden" name="id" value={id}/>
             {cashRegister ? <input type="hidden" name="cashRegisterManaged" value="1"/> : null}
             <label><span>Label</span><input name="name" defaultValue={name} maxLength={80} required/></label>

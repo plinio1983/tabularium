@@ -36,12 +36,12 @@ export default function SupplierFormFields({supplier, categories}: {
   categories: CategoryOption[];
 }) {
   return <>
-    <details className="form-section full income-form-section supplier-form-section" open>
+    <details className="form-section full entity-form-section" open>
       <summary>
-        <span><span className="supplier-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span>
+        <span><span className="entity-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span>
         <small>Dati fiscali, referente e coordinate di pagamento</small>
       </summary>
-      <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
+      <div className="form-section-grid entity-form-section-grid">
         <Field name="businessName" label="Ragione sociale" icon="◉" className="span-2">
           <input id="supplier-businessName" name="businessName" defaultValue={supplier?.businessName ?? ''} placeholder="Es. Azienda S.r.l." autoComplete="organization" maxLength={160} required autoFocus/>
         </Field>
@@ -80,12 +80,12 @@ export default function SupplierFormFields({supplier, categories}: {
       </div>
     </details>
 
-    <details className="form-section full income-form-section supplier-form-section" open>
+    <details className="form-section full entity-form-section" open>
       <summary>
-        <span><span className="supplier-form-section-icon" aria-hidden="true">≡</span>Note</span>
+        <span><span className="entity-form-section-icon" aria-hidden="true">≡</span>Note</span>
         <small>Annotazioni interne e informazioni operative</small>
       </summary>
-      <div className="form-section-stack income-form-section-stack">
+      <div className="form-section-stack">
         <Field name="internalNotes" label="Note interne" icon="≡" className="full">
           <textarea id="supplier-internalNotes" name="internalNotes" rows={4} defaultValue={supplier?.internalNotes ?? ''} placeholder="Inserisci eventuali riferimenti o annotazioni utili…"/>
         </Field>

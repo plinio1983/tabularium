@@ -106,8 +106,8 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
     {loadingId ? <div className="inline-modal-loading">Caricamento incasso #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
-      <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
+    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
+      <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
             <h3>{mode === "copy" ? `Copia incasso #${income.id}` : `Modifica incasso #${income.id}`}</h3>

@@ -22,7 +22,7 @@ const emptyCustomer = {
   internalNotes: ''
 };
 
-export default function CustomerAutocomplete({ customers, initialCustomerId, onValueChange, wizardStepClass = 'expense-wizard-step expense-wizard-step-3' }: { customers: Customer[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void; wizardStepClass?: string }) {
+export default function CustomerAutocomplete({ customers, initialCustomerId, onValueChange, wizardStepClass = 'app-form-wizard-step app-form-wizard-step-3' }: { customers: Customer[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void; wizardStepClass?: string }) {
   const fallback = customers.find(customer => customer.id === initialCustomerId);
   const [selected, setSelected] = useState<Customer | undefined>(fallback);
   const [query, setQuery] = useState(fallback?.businessName ?? '');
@@ -99,7 +99,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
     setCreateData(data => ({ ...data, [field]: value }));
   }
 
-  return <div className={`supplier-picker supplier-picker-wide full ${wizardStepClass}`} ref={containerRef}>
+  return <div className={`entity-autocomplete entity-autocomplete-wide full ${wizardStepClass}`} ref={containerRef}>
     <input type="hidden" name="customerId" value={selected?.id ?? ''} />
     <label className="income-customer-field">
       <span className="app-form-field-label">
@@ -120,7 +120,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
         </button>
           </span>
       </span>
-      <div className="supplier-input-row">
+      <div className="entity-autocomplete-input-row">
         <input
           value={query}
           required
@@ -138,7 +138,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
       </div>
     </label>
 
-    {open ? <div className="supplier-results" role="listbox">
+    {open ? <div className="entity-autocomplete-results" role="listbox">
       {matches.map((customer, index) => <button
         type="button"
         role="option"
@@ -154,7 +154,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
         <strong>{customer.businessName}</strong>
         {customer.alias ? <small>Referente: {customer.alias}</small> : null}
       </button>)}
-      {!matches.length ? <div className="empty-supplier-result">Nessun cliente trovato.</div> : null}
+      {!matches.length ? <div className="entity-autocomplete-empty">Nessun cliente trovato.</div> : null}
     </div> : null}
 
     {showCreate && createPortal(

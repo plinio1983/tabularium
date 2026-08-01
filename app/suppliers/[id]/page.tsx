@@ -61,7 +61,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
-  return <div className="grid expense-detail-page supplier-detail-page">
+  return <div className="grid record-detail-page party-detail-page">
     <SupplierEditModalController categories={orderedCategories.map(category => ({ id: category.id, name: category.name, icon: category.icon }))}/>
     <NewExpensePanel
       categories={orderedCategories.map(c => ({
@@ -106,9 +106,9 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       });
     ` }} />
 
-    <div className="expense-detail-shell">
-      <article className="expense-detail-document supplier-detail-document">
-        <div className="expense-detail-action-row">
+    <div className="record-detail-shell">
+      <article className="record-detail-document party-detail-document">
+        <div className="record-detail-action-row">
           <div className="left-side">
             <DetailBackButton href={returnTo}/>
           </div>
@@ -126,12 +126,12 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           </div> : <span className="badge">Fornitore di sistema</span>}
         </div>
 
-        <section className="expense-detail-hero">
+        <section className="record-detail-hero">
           <div>
-            <div className="expense-detail-title-block">
-              <p className="expense-detail-kicker">Fornitore #{supplier.id}</p>
+            <div className="record-detail-title-block">
+              <p className="record-detail-kicker">Fornitore #{supplier.id}</p>
               <h1>{supplier.businessName}</h1>
-              <div className="expense-detail-meta-line">
+              <div className="record-detail-meta-line">
                 <span>{valueOrDash(supplier.alias)}</span>
                 <span className="badge">{supplier.expenses.length} spese collegate</span>
                 {/*<span>{valueOrDash(supplier.email)}</span>*/}
@@ -139,12 +139,12 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             </div>
           </div>
 
-          <aside className="expense-detail-amount-panel">
-            <div className="expense-detail-amount-panel-header-row">
-              <span className="expense-detail-amount-panel-header">Da saldare</span>
+          <aside className="record-detail-amount-panel">
+            <div className="record-detail-amount-panel-header-row">
+              <span className="record-detail-amount-panel-header">Da saldare</span>
             </div>
             <strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
-            <div className="expense-detail-badge-row">
+            <div className="record-detail-badge-row">
               {/*<span className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>*/}
               {/*  {amountToPay > 0 ? `${paymentStatusStyles.DA_PAGARE.icon} Da saldare` : `${yesNoStyles.yes.icon} In pari`}*/}
               {/*</span>*/}
@@ -161,7 +161,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           </aside>
         </section>
 
-        <section className="expense-detail-status-strip">
+        <section className="record-detail-status-strip">
           <div>
             <span>Spese collegate</span>
             <strong>{supplier.expenses.length}</strong>
@@ -180,15 +180,15 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           </div>
         </section>
 
-        <details className="expense-detail-section supplier-detail-collapsible">
-          <summary className="expense-detail-section-heading">
+        <details className="record-detail-section party-detail-collapsible">
+          <summary className="record-detail-section-heading">
             <div>
               <h2>Anagrafica</h2>
               <p>Dati principali del fornitore.</p>
             </div>
-            <span className="supplier-detail-collapsible-toggle" aria-hidden="true">⌄</span>
+            <span className="party-detail-collapsible-toggle" aria-hidden="true">⌄</span>
           </summary>
-          <div className="expense-detail-status-strip supplier-detail-info-strip">
+          <div className="record-detail-status-strip party-detail-info-strip">
             <CopyableField label="Ragione sociale" value={supplier.businessName} />
             <CopyableField label="Referente" value={supplier.alias} />
             <CopyableField label="Email" value={supplier.email} />
@@ -209,7 +209,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       </article>
     </div>
 
-    <div className="card expenses-list-card">
+    <div className="card record-list-card">
       <div className="list-heading">
         <div>
           <h2>Spese collegate</h2>

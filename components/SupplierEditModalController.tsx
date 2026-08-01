@@ -61,7 +61,7 @@ export default function SupplierEditModalController({categories = []}: { categor
 
   return <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true"
               aria-label={`Modifica fornitore ${supplier.businessName}`} onMouseDown={() => setSupplier(null)}>
-    <div className="modal-card modal-card-wide supplier-form-modal-card"
+    <div className="modal-card modal-card-wide entity-form-modal-card"
          onMouseDown={event => event.stopPropagation()}>
       <div className="modal-title">
         <div>
@@ -72,11 +72,11 @@ export default function SupplierEditModalController({categories = []}: { categor
                 onClick={() => setSupplier(null)}>×</button>
       </div>
 
-      <form className="card form income-form expense-form supplier-form supplier-styled-form"
+      <form className="card form app-record-form entity-form entity-styled-form"
             action={`/api/suppliers/${supplier.id}?returnTo=${encodeURIComponent(returnTo)}`} method="post">
         <SupplierFormFields supplier={supplier} categories={categories}/>
 
-        <div className="full actions-row form-actions-row form-sticky-actions supplier-form-actions">
+        <div className="full actions-row form-actions-row form-sticky-actions entity-form-actions">
           <button className="btn btn-md btn-default" type="button" onClick={() => setSupplier(null)}>
             <span className="btn-icon">✕</span> Annulla
           </button>

@@ -250,7 +250,7 @@ export default function IncomeFiltersDrawer({
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="expense-filters recurring-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        <form className="record-filters recurring-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
             <label>Selezione rapida periodo<select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>

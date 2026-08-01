@@ -433,7 +433,7 @@ function IncomeBreakdownChart({title, description, data}: {
     const max = Math.max(...data.map(item => item.total), 0);
     const total = data.reduce((sum, item) => sum + item.total, 0);
 
-    return <div className="card expense-category-chart-card embedded-chart-card income-chart">
+    return <div className="card category-chart-card embedded-chart-card income-chart">
         <div className="card-heading-row">
             <div>
                 <h2>{title}</h2>
@@ -482,27 +482,27 @@ function IncomePieBreakdownChart({title, data}: {
         }), {name: 'Altri canali', code: 'ALTRO', total: 0})]
         : orderedData;
 
-    return <section className="expense-category-chart-card expense-page-category-pie-chart income-chart summary-composition-card">
+    return <section className="category-chart-card category-pie-chart income-chart summary-composition-card">
         <div className="card-heading-row">
             <div>
                 <h2>{title}</h2>
                 <p className="muted">Peso dei canali di vendita sul totale filtrato.</p>
             </div>
         </div>
-        {groupedData.length && total > 0 ? <div className="expense-impact-pie-legend summary-composition-list"
+        {groupedData.length && total > 0 ? <div className="composition-pie-legend summary-composition-list"
                                                    aria-label={title}>
                 {groupedData.map((item, index) => {
                     const percentage = total ? (item.total / total) * 100 : 0;
-                    return <div className="expense-impact-pie-row-wrap" key={`${item.code}-${item.name}`}>
-                        <div className="expense-impact-pie-legend-row">
-                            <span className="expense-impact-pie-dot" style={{background: incomePieChartColors[index % incomePieChartColors.length]}}/>
+                    return <div className="composition-pie-row-wrap" key={`${item.code}-${item.name}`}>
+                        <div className="composition-pie-legend-row">
+                            <span className="composition-pie-dot" style={{background: incomePieChartColors[index % incomePieChartColors.length]}}/>
                             <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
                             <div className="justify-end">
                                 <strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
                             </div>
                         </div>
-                        <div className="expense-impact-pie-bar-track">
-                            <div className="expense-impact-pie-bar" style={{
+                        <div className="composition-pie-bar-track">
+                            <div className="composition-pie-bar" style={{
                                 width: `${percentage.toFixed(1)}%`,
                                 background: incomePieChartColors[index % incomePieChartColors.length]
                             }}/>
@@ -849,7 +849,7 @@ export default async function IncomesPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
-        <div className="card expenses-list-card">
+        <div className="card record-list-card">
             <div className="filter-drawer-wrapper">
                 <IncomeFiltersDrawer
                     filters={filters}
@@ -876,7 +876,7 @@ export default async function IncomesPage({searchParams}: {
                 useFiscalPeriodFilter={useFiscalPeriodFilter}
             />
 
-            <section className="expense-top-summary" aria-labelledby="income-top-summary-title">
+            <section className="record-top-summary" aria-labelledby="income-top-summary-title">
                 <div className="card-heading-row">
                     <div>
                         <h2 id="income-top-summary-title">{totalsPeriodLabel}</h2>
@@ -894,28 +894,28 @@ export default async function IncomesPage({searchParams}: {
                     {/*    <span>Report mensile</span>*/}
                     {/*</Link> : null}*/}
                 </div>
-                <div className="expense-top-summary-grid">
-                    <div className="expense-top-summary-item is-primary">
+                <div className="record-top-summary-grid">
+                    <div className="record-top-summary-item is-primary">
                         <span>Entrate totali</span>
                         <strong className={moneyTone(totals.total)}>{euro(totals.total)}</strong>
                     </div>
-                    <Link className="expense-top-summary-item" href={fiscalTotalsHref}>
+                    <Link className="record-top-summary-item" href={fiscalTotalsHref}>
                         <span>Incasso fiscale</span>
                         <strong className={moneyTone(totals.fiscal)}>{euro(totals.fiscal)}</strong>
                     </Link>
-                    <div className="expense-top-summary-item">
+                    <div className="record-top-summary-item">
                         <span>Imponibile</span>
                         <strong className={moneyTone(totals.taxable)}>{euro(totals.taxable)}</strong>
                     </div>
-                    <Link className="expense-top-summary-item" href={nonFiscalTotalsHref}>
+                    <Link className="record-top-summary-item" href={nonFiscalTotalsHref}>
                         <span>Incasso non fiscale</span>
                         <strong className={moneyTone(totals.nonFiscal)}>{euro(totals.nonFiscal)}</strong>
                     </Link>
-                    <div className="expense-top-summary-item">
+                    <div className="record-top-summary-item">
                         <span>Non ancora accreditato</span>
                         <strong className={moneyTone(totals.uncredited)}>{euro(totals.uncredited)}</strong>
                     </div>
-                    <Link className={`expense-top-summary-item ${totals.invoicesNotSent > 0 ? 'is-warning' : ''}`}
+                    <Link className={`record-top-summary-item ${totals.invoicesNotSent > 0 ? 'is-warning' : ''}`}
                           href={invoicesNotSentHref}>
                         <span>Fatture non inviate</span>
                         <strong>{totals.invoicesNotSent}</strong>
@@ -923,11 +923,11 @@ export default async function IncomesPage({searchParams}: {
                 </div>
             </section>
 
-            <div className="expense-summary-chart">
+            <div className="record-summary-chart">
                 <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>
             </div>
         </div>
-        <div className="card expenses-list-card">
+        <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista incassi</h2>
@@ -951,12 +951,12 @@ export default async function IncomesPage({searchParams}: {
                         salesChannels={salesChannels}/>
                 </div>
             </div>
-            <form className="supplier-quick-search app-quick-search-form" action="/incomes" method="get" role="search">
+            <form className="entity-quick-search app-quick-search-form" action="/incomes" method="get" role="search">
                 <label className="app-form-field-label" htmlFor="incomeCustomerQuickSearch">
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
                     <span>Ricerca cliente</span>
                 </label>
-                <div className="supplier-quick-search-field app-quick-search-field">
+                <div className="entity-quick-search-field app-quick-search-field">
                     <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
                     <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca cliente"><SearchIcon/>
                     </button>
@@ -1027,7 +1027,7 @@ export default async function IncomesPage({searchParams}: {
                   };
                   if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
                   const query = sanitizedSearch(window.location.search);
-                  const form = document.querySelector('form.expense-filters');
+                  const form = document.querySelector('form.record-filters');
                   if (query && query !== '?') writeStoredFilter(query);
                   else {
                     const saved = sanitizedSearch(readStoredFilter());
@@ -1199,7 +1199,7 @@ export default async function IncomesPage({searchParams}: {
                 emptyMessage="Nessun incasso trovato con i filtri selezionati."
             />
         </div>
-        {/*<div className="card expenses-list-card">*/}
+        {/*<div className="card record-list-card">*/}
         {/*  <div className="charts-grid">*/}
         {/*    <IncomePieBreakdownChart title="Entrate per canale di vendita" data={incomesBySalesChannel} />*/}
         {/*    <IncomeBreakdownChart title="Grafico entrate dichiarate" description="Distribuzione degli incassi fiscali e non fiscali sui risultati filtrati." data={incomesByFiscalStatus} />*/}

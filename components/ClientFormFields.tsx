@@ -20,9 +20,9 @@ function Field({name, label, icon, className = '', children}: {
 
 export default function ClientFormFields({ customer }: { customer?: Customer }) {
   return <>
-    <details className="form-section full income-form-section supplier-form-section" open>
-      <summary><span><span className="supplier-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span><small>Dati principali del cliente</small></summary>
-      <div className="form-section-grid income-form-section-grid supplier-form-section-grid">
+    <details className="form-section full entity-form-section" open>
+      <summary><span><span className="entity-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span><small>Dati principali del cliente</small></summary>
+      <div className="form-section-grid entity-form-section-grid">
         <Field name="businessName" label="Ragione sociale" icon="◉" className="span-2">
           <input id="client-businessName" name="businessName" required defaultValue={customer?.businessName ?? ''} placeholder="Es. Cliente S.r.l." autoComplete="organization" maxLength={160} autoFocus/>
         </Field>
@@ -49,9 +49,9 @@ export default function ClientFormFields({ customer }: { customer?: Customer }) 
         </Field>
       </div>
     </details>
-    <details className="form-section full income-form-section supplier-form-section" open>
-      <summary><span><span className="supplier-form-section-icon" aria-hidden="true">≡</span>Note</span><small>Annotazioni interne</small></summary>
-      <div className="form-section-stack income-form-section-stack">
+    <details className="form-section full entity-form-section" open>
+      <summary><span><span className="entity-form-section-icon" aria-hidden="true">≡</span>Note</span><small>Annotazioni interne</small></summary>
+      <div className="form-section-stack">
         <Field name="internalNotes" label="Note interne" icon="≡" className="full">
           <textarea id="client-internalNotes" name="internalNotes" rows={4} defaultValue={customer?.internalNotes ?? ''} placeholder="Inserisci eventuali riferimenti o annotazioni utili…"/>
         </Field>

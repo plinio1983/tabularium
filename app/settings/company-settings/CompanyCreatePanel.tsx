@@ -20,7 +20,7 @@ export default function CompanyCreatePanel({action}: Props) {
       <span>Nuova società</span>
       <span aria-hidden="true">{isOpen ? '−' : '+'}</span>
     </button>
-    {isOpen ? <form action={action} className="form income-form expense-form supplier-form supplier-styled-form company-settings-form company-create-form">
+    {isOpen ? <form action={action} className="form app-record-form entity-form entity-styled-form company-settings-form company-create-form">
       <CompanyFormFields idPrefix="company-new" autoFocus/>
       <div className="actions-row form-actions-row full company-settings-actions company-create-actions">
         <button type="button" className="btn btn-md btn-default" onClick={() => setIsOpen(false)}><span className="btn-icon">✕</span> Annulla</button>

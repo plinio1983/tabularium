@@ -52,7 +52,7 @@ export default function MobileFormStickyActions({
             if (target.closest("textarea, select, button, a")) return;
 
             const suggestionScope = target.closest<HTMLElement>(
-                ".product-suggestion-picker, .supplier-picker, .app-autocomplete-control",
+                ".product-suggestion-picker, .entity-autocomplete, .app-autocomplete-control",
             );
             if (suggestionScope?.querySelector("[role='listbox']")) return;
 
@@ -71,9 +71,9 @@ export default function MobileFormStickyActions({
         };
     }, [currentStep, onNext, showSubmit]);
 
-    return <div ref={rootRef} className="expense-wizard-actions mobile-form-sticky-actions full">
+    return <div ref={rootRef} className="app-form-wizard-actions mobile-form-sticky-actions full">
         {error ? <p className="inline-warning full">{error}</p> : null}
-        <div className="expense-wizard-actions-row mobile-form-sticky-actions-row">
+        <div className="app-form-wizard-actions-row mobile-form-sticky-actions-row">
             {showBack ? (
                 <button className="btn btn-md btn-default" type="button" onClick={onBack}>
                     ← {backLabel}

@@ -23,7 +23,7 @@ export default async function SystemWorkspacesPage() {
       </div>
     </div>
 
-    <div className="card expenses-list-card">
+    <div className="card record-list-card">
       <div className="table-scroll"><table className="expenses-table compact-expenses-table"><thead><tr>
         <th>Workspace</th>
         <th>Owner</th>

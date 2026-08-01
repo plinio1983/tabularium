@@ -132,7 +132,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
         }
     };
 
-    return <div className="grid expense-detail-page income-detail-page">
+    return <div className="grid record-detail-page income-detail-page">
         <IncomeEditModalController
             returnTo={currentDetailReturnTo}
             banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId}))}
@@ -155,9 +155,9 @@ export default async function IncomeDetailPage({params, searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
-        <div className="expense-detail-shell">
-            <article className={['expense-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
-                <div className="expense-detail-action-row">
+        <div className="record-detail-shell">
+            <article className={['record-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
+                <div className="record-detail-action-row">
                     <div className="left-side">
                         <DetailBackButton href={returnTo} />
                     </div>
@@ -173,26 +173,26 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     </div>
                 </div>
 
-                <section className="expense-detail-hero">
+                <section className="record-detail-hero">
                     <div>
-                        <div className="expense-detail-title-block">
-                            <p className="expense-detail-kicker">Incasso #{income.id}</p>
+                        <div className="record-detail-title-block">
+                            <p className="record-detail-kicker">Incasso #{income.id}</p>
                             <h1>{income.customer ? <Link href={`/clients/${income.customer.id}`}>{title}</Link> : title}</h1>
                             <div className="income-detail-description">{income.description?.trim()}</div>
-                            {/*<div className="expense-detail-meta-line">*/}
+                            {/*<div className="record-detail-meta-line">*/}
                             {/*    {fiscalBadge(income.isFiscal)}*/}
                             {/*    <span>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</span>*/}
                             {/*</div>*/}
                         </div>
                     </div>
 
-                    <aside className="expense-detail-amount-panel">
-                        <div className="expense-detail-amount-panel-header-row">
-                            <span className="expense-detail-amount-panel-header">IVA inclusa</span>
+                    <aside className="record-detail-amount-panel">
+                        <div className="record-detail-amount-panel-header-row">
+                            <span className="record-detail-amount-panel-header">IVA inclusa</span>
                             <strong className="badge">{vatRateLabel(vatRate)}</strong>
                         </div>
                         <strong>{euro(amount)}</strong>
-                        <div className="expense-detail-badge-row">
+                        <div className="record-detail-badge-row">
                             <span className={badgeClass(creditStatus.className)}>{creditStatus.icon} {creditStatus.label}</span>
                             {/*<span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '  •  '} {incomePaymentMethodName}</span>*/}
                             <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span>
@@ -200,7 +200,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     </aside>
                 </section>
 
-                <section className="expense-detail-status-strip">
+                <section className="record-detail-status-strip">
                     <div>
                         <span>Imponibile</span>
                         <strong>{euro(netAmount)}</strong>
@@ -209,8 +209,8 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         <span>IVA</span>
                         <strong>{euro(vatAmount)} ({vatRateLabel(income.vatRate)})</strong>
                     </div>
-                    <div className="expense-detail-payment">
-                        {/*<div className="expense-detail-payment-icon">{creditStatus.icon}</div>*/}
+                    <div className="record-detail-payment">
+                        {/*<div className="record-detail-payment-icon">{creditStatus.icon}</div>*/}
                         <span>Stato</span>
                         <strong>{creditStatus.icon} {creditStatus.label}</strong>
                     </div>
@@ -219,22 +219,22 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         <strong>{invoiceStyle.icon} {invoiceStyle.label}</strong>
                     </div>
                 </section>
-                <div className="expense-detail-progress" aria-label={`Accreditato ${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0).toFixed(0)}%`}>
+                <div className="record-detail-progress" aria-label={`Accreditato ${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0).toFixed(0)}%`}>
                     <span style={{width: `${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0)}%`}}/>
                 </div>
 
-                <section className="expense-detail-section">
-                    <div className="expense-detail-section-heading">
+                <section className="record-detail-section">
+                    <div className="record-detail-section-heading">
                         <div>
                             <h2>Dati incasso</h2>
                             <p>Canale, accredito e metodo di pagamento.</p>
                         </div>
                     </div>
-                    <div className="expense-detail-item expense-detail-item-wide">
+                    <div className="record-detail-item record-detail-item-wide">
                         <span>Descrizione</span>
                         <strong>{income.description ?? 'Nessuna descrizione inserita.'}</strong>
                     </div>
-                    <div className="expense-detail-status-strip">
+                    <div className="record-detail-status-strip">
                         <div className="span-2"><span>Cliente</span><strong>{income.customer ?
                             <Link href={`/clients/${income.customer.id}`}>{income.customer.businessName}</Link> : 'Non assegnato'}</strong>
                         </div>
@@ -251,11 +251,11 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     </div>
                 </section>
 
-                <section className="expense-detail-section">
-                    <div className="expense-detail-section-heading">
+                <section className="record-detail-section">
+                    <div className="record-detail-section-heading">
                         <div><h2>Accrediti</h2><p>Movimenti registrati per questo incasso.</p></div>
                     </div>
-                    {income.credits.length ? <div className="expense-form expense-detail-payment-summary-list">
+                    {income.credits.length ? <div className="app-record-form record-detail-payment-summary-list">
                         {income.credits.map(credit => <article className="payment-row payment-summary-row" key={credit.id}>
                             <div className="payment-summary-primary"><span className="payment-summary-kicker">Accredito effettuato</span><strong className="payment-summary-amount">{euro(Number(credit.amount))}</strong></div>
                             <div className="payment-summary-date"><span>Data accredito</span><strong>{dateLabel(credit.creditDate)}</strong></div>
@@ -267,14 +267,14 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     </div> : <p className="muted">Nessun accredito registrato.</p>}
                 </section>
 
-                <section className="expense-detail-section">
-                    <div className="expense-detail-section-heading">
+                <section className="record-detail-section">
+                    <div className="record-detail-section-heading">
                         <div>
                             <h2>Dati contabili</h2>
                             <p>Periodo fiscale, rilevanza, IVA e fatturazione.</p>
                         </div>
                     </div>
-                    <div className="expense-detail-status-strip">
+                    <div className="record-detail-status-strip">
                         <div>
                             <span>Contabilità</span><strong>{formatPeriod(income.billingMonth, income.billingYear)}</strong>
                         </div>
@@ -287,14 +287,14 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     </div>
                 </section>
 
-                <section className="expense-detail-section">
-                    <div className="expense-detail-section-heading">
+                <section className="record-detail-section">
+                    <div className="record-detail-section-heading">
                         <div>
                             <h2>Note</h2>
                             <p>Annotazioni interne collegate all’incasso.</p>
                         </div>
                     </div>
-                    <div className="expense-detail-item expense-detail-item-wide">
+                    <div className="record-detail-item record-detail-item-wide">
                         <span>Note</span>
                         <strong className="displayed-notes">{income.notes ?? 'Nessuna nota inserita.'}</strong>
                     </div>

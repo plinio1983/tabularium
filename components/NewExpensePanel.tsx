@@ -77,9 +77,9 @@ export default function NewExpensePanel({
     }
 
     return <div className="grid">
-        {showToolbar ? <div className="toolbar-card expense-toolbar-card">
-            <div className="expense-toolbar-card-content">
-                <div className="expense-toolbar-card-title">
+        {showToolbar ? <div className="toolbar-card record-toolbar-card">
+            <div className="record-toolbar-card-content">
+                <div className="record-toolbar-card-title">
                     <h2>Spese</h2>
                     {/*<Link className="btn btn-md btn-default expense-import-btn" href="/expenses/import">*/}
                     {/*  <span className="btn-icon">⬆</span>*/}
@@ -87,11 +87,11 @@ export default function NewExpensePanel({
                     {/*  <span className="expense-import-btn-text-compact"> XLS</span>*/}
                     {/*</Link>*/}
                 </div>
-                <div className="expense-toolbar-card-text">
+                <div className="record-toolbar-card-text">
                     <p className="muted">Gestisci le uscite ricorrenti.</p>
                 </div>
             </div>
-            <div className="toolbar-actions expense-toolbar-actions">
+            <div className="toolbar-actions record-toolbar-actions">
                 {/*<Link className="btn btn-md btn-default expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>*/}
                 <Link className="btn btn-sm btn-secondary" href="/recurring-expenses">
                     <span className="btn-icon">↻</span>Uscite ricorrenti
@@ -105,8 +105,8 @@ export default function NewExpensePanel({
         </div> : null}
 
         {isOpen ?
-            <div className="modal-backdrop app-form-modal expense-wizard-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuova spesa" onMouseDown={() => setIsOpen(false)}>
-                <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
+            <div className="modal-backdrop app-form-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuova spesa" onMouseDown={() => setIsOpen(false)}>
+                <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
                     <div className="modal-title">
                         <div>
                             <h3>Nuova spesa</h3>

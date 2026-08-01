@@ -224,7 +224,7 @@ export default async function SuppliersPage({searchParams}: {
 
         <script dangerouslySetInnerHTML={{__html: `document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });`}}/>
 
-        <div className="card expenses-list-card">
+        <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista fornitori</h2>
@@ -234,12 +234,12 @@ export default async function SuppliersPage({searchParams}: {
                     <SupplierFiltersDrawer filters={filters}/>
                 </div>
             </div>
-            <form className="supplier-quick-search app-quick-search-form" action="/suppliers" method="get" role="search">
+            <form className="entity-quick-search app-quick-search-form" action="/suppliers" method="get" role="search">
                 <label className="app-form-field-label" htmlFor="supplierQuickSearch">
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
                     <span>Ricerca fornitore</span>
                 </label>
-                <div className="supplier-quick-search-field app-quick-search-field">
+                <div className="entity-quick-search-field app-quick-search-field">
                     <input
                         id="supplierQuickSearch"
                         name="businessName"
@@ -287,8 +287,8 @@ export default async function SuppliersPage({searchParams}: {
             }
           });
           const query = sanitizedSearch(window.location.search);
-          const form = document.querySelector('form.supplier-filters');
-          const quickSearchForm = document.querySelector('form.supplier-quick-search');
+          const form = document.querySelector('form.party-filters');
+          const quickSearchForm = document.querySelector('form.entity-quick-search');
           if (query && query !== '?') localStorage.setItem(storageKey, query);
           else {
             const saved = sanitizedSearch(localStorage.getItem(storageKey) || '');
@@ -421,7 +421,7 @@ export default async function SuppliersPage({searchParams}: {
             </form>
             <SortableTableController/>
 
-            <div className="supplier-mobile-list expense-mobile-list" aria-label="Lista fornitori mobile">
+            <div className="party-mobile-list mobile-record-list" aria-label="Lista fornitori mobile">
                 {mobileSortedSupplierRows.map(({
                                                    supplier,
                                                    openExpensesCount,
@@ -430,28 +430,28 @@ export default async function SuppliersPage({searchParams}: {
                                                    annualPurchasedAmount
                                                }) => {
                     const detailHref = `/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`;
-                    return <div className={amountToPay > 0 ? "supplier-mobile-item expense-mobile-item expense-mobile-item-overdue" : "supplier-mobile-item expense-mobile-item"} key={`mobile-supplier-${supplier.id}`}>
-                        <div className="expense-mobile-select">
+                    return <div className={amountToPay > 0 ? "party-mobile-item mobile-record-item mobile-record-item-overdue" : "party-mobile-item mobile-record-item"} key={`mobile-supplier-${supplier.id}`}>
+                        <div className="mobile-record-select">
                             <input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} disabled={Boolean(supplier.systemRole)}/>
                         </div>
-                        <Link className="expense-mobile-link supplier-mobile-link" href={detailHref}>
-                            <div className="expense-mobile-main">
-                                <div className="expense-mobile-title-row">
-                                    <div className="expense-mobile-title-left">
+                        <Link className="mobile-record-link party-mobile-link" href={detailHref}>
+                            <div className="mobile-record-main">
+                                <div className="mobile-record-title-row">
+                                    <div className="mobile-record-title-left">
                                         <strong>{supplier.businessName}</strong>
                                     </div>
-                                    <div className="expense-mobile-title-right">
+                                    <div className="mobile-record-title-right">
                                         <span className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</span>
                                     </div>
                                 </div>
-                                <div className="expense-mobile-subtitle">
+                                <div className="mobile-record-subtitle">
                                     {supplier.systemRole ? <span className="badge">System</span> : null}&nbsp;
-                                    <span className="supplier-mobile-row-grow">{supplier.alias || 'Nessun referente'}</span>
-                                    <span className="supplier-mobile-row-grow text-right"><strong>{openExpensesCount}</strong> ordini da saldare</span>
+                                    <span className="party-mobile-row-grow">{supplier.alias || 'Nessun referente'}</span>
+                                    <span className="party-mobile-row-grow text-right"><strong>{openExpensesCount}</strong> ordini da saldare</span>
                                 </div>
-                                <div className="expense-mobile-meta">
-                                    <span className="supplier-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong> Spesi {currentYear}</span>
-                                    <div className="supplier-mobile-row-right">
+                                <div className="mobile-record-meta">
+                                    <span className="party-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong> Spesi {currentYear}</span>
+                                    <div className="party-mobile-row-right">
                                         <span className="badge badge-color">{annualOrdersCount} ordini {currentYear}</span>
                                     </div>
                                     {/*<span>{euro(annualPurchasedAmount)} acquistati {currentYear}</span>*/}
@@ -462,7 +462,7 @@ export default async function SuppliersPage({searchParams}: {
                         </Link>
                     </div>;
                 })}
-                {!filteredSupplierRows.length && <div className="expense-empty-panel">Nessun fornitore trovato.</div>}
+                {!filteredSupplierRows.length && <div className="record-empty-state">Nessun fornitore trovato.</div>}
             </div>
 
             <div className="table-scroll">
@@ -514,11 +514,11 @@ export default async function SuppliersPage({searchParams}: {
                             <td className="text-center">
                                 <strong className={openExpensesCount > 0 ? 'text-warning' : ''}>{openExpensesCount}</strong>
                             </td>
-                            <td className="text-right supplier-amount-cell">
+                            <td className="text-right party-amount-cell">
                                 <strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
                             </td>
                             <td className="text-center"><strong>{annualOrdersCount}</strong></td>
-                            <td className="text-right supplier-amount-cell">
+                            <td className="text-right party-amount-cell">
                                 <strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong>
                             </td>
                         </tr>;

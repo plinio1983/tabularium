@@ -180,7 +180,7 @@ function SupplierAutocomplete({
     }
 
     return (
-        <div className="supplier-picker supplier-picker-wide expense-wizard-step expense-wizard-step-3" ref={containerRef}>
+        <div className="entity-autocomplete entity-autocomplete-wide app-form-wizard-step app-form-wizard-step-3" ref={containerRef}>
             <input type="hidden" name="supplierId" value={selected?.id ?? ""}/>
             <input type="hidden" name="merchant" value={selected?.businessName ?? query}/>
             <label className="recurring-supplier-field">
@@ -188,7 +188,7 @@ function SupplierAutocomplete({
           <span className="app-form-field-icon" aria-hidden="true">◎</span>
           <span>Esercente/Fornitore</span>
         </span>
-                <div className="supplier-input-row">
+                <div className="entity-autocomplete-input-row">
                     <input
                         value={query}
                         onChange={(event) => {
@@ -214,7 +214,7 @@ function SupplierAutocomplete({
             </label>
 
             {isOpen && (
-                <div className="supplier-results" role="listbox">
+                <div className="entity-autocomplete-results" role="listbox">
                     {results.length ? (
                         results.map((supplier, index) => (
                             <button
@@ -232,7 +232,7 @@ function SupplierAutocomplete({
                             </button>
                         ))
                     ) : (
-                        <div className="empty-supplier-result">Nessun esercente/fornitore trovato.</div>
+                        <div className="entity-autocomplete-empty">Nessun esercente/fornitore trovato.</div>
                     )}
                 </div>
             )}
@@ -445,7 +445,7 @@ export default function RecurringExpenseForm({
     }, [mobileStep]);
 
     function validateMobileStep() {
-        const elements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.expense-wizard-step-${mobileStep}`) ?? []);
+        const elements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.app-form-wizard-step-${mobileStep}`) ?? []);
         const fields = elements.flatMap(element =>
             Array.from(element.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea")),
         );
@@ -504,20 +504,20 @@ export default function RecurringExpenseForm({
     }
 
     return (
-        <form ref={formRef} className={`card form expense-form recurring-expense-form expense-mobile-wizard recurring-mobile-wizard expense-mobile-step-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
-            <div className="expense-wizard-header full">
-                <div className="expense-wizard-heading">
+        <form ref={formRef} className={`card form app-record-form recurring-record-form app-form-wizard recurring-form-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
+            <div className="app-form-wizard-header full">
+                <div className="app-form-wizard-heading">
                     <span>Passaggio {mobileStep} di 6</span>
                     <strong>{["Ricorrenza", "Importo", "Dettagli", "Fatturazione", "Pagamento", "Note"][mobileStep - 1]}</strong>
                 </div>
-                <div className="expense-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
+                <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
                     <span style={{width: `${mobileStep / 6 * 100}%`}}/>
                 </div>
             </div>
 
-            <div className="expense-type-choice full expense-wizard-step expense-wizard-step-1">
-                <span className="expense-type-choice-title">Tipo di spesa</span>
-                <div className="expense-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
+            <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
+                <span className="entry-type-choice-title">Tipo di spesa</span>
+                <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
                     <button type="button" role="radio" aria-checked={false} disabled={!onSwitchToSingle} onClick={onSwitchToSingle}>
                         <span aria-hidden="true">●</span>
                         <strong>Singola</strong>
@@ -542,10 +542,10 @@ export default function RecurringExpenseForm({
                     <small>Data iniziale, cadenza e giorno previsto</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
-                    <DateField className="expense-wizard-step expense-wizard-step-1" label="Data inizio" name="startDate" value={startDate} onChange={setStartDate} required/>
+                    <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data inizio" name="startDate" value={startDate} onChange={setStartDate} required/>
 
                     <SelectField
-                        className="expense-wizard-step expense-wizard-step-1"
+                        className="app-form-wizard-step app-form-wizard-step-1"
                         label="Cadenza"
                         icon="↻"
                         name="cadence"
@@ -564,16 +564,16 @@ export default function RecurringExpenseForm({
 
                     {isYearly ? (
                         <>
-                            <FormField className="expense-wizard-step expense-wizard-step-1" label="Giorno scadenza" icon="№">
+                            <FormField className="app-form-wizard-step app-form-wizard-step-1" label="Giorno scadenza" icon="№">
                                 <input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required/>
                             </FormField>
-                            <SelectField className="expense-wizard-step expense-wizard-step-1" label="Mese scadenza" icon="▦" name="dueMonth" value={dueMonth} onChange={setDueMonth} required options={monthOptions.map(([value, label]) => ({
+                            <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Mese scadenza" icon="▦" name="dueMonth" value={dueMonth} onChange={setDueMonth} required options={monthOptions.map(([value, label]) => ({
                                 value,
                                 label
                             }))}/>
                         </>
                     ) : (
-                        <FormField className="expense-wizard-step expense-wizard-step-1" label="Giorno del mese" icon="№">
+                        <FormField className="app-form-wizard-step app-form-wizard-step-1" label="Giorno del mese" icon="№">
                             <input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required/>
                         </FormField>
                     )}
@@ -588,7 +588,7 @@ export default function RecurringExpenseForm({
                 <div className="form-section-grid recurring-form-section-grid">
                     <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} categories={categories}/>
 
-                    <SelectField className="expense-wizard-step expense-wizard-step-3" label="Categoria" icon="◇" name="categoryId" required value={categoryId} onChange={setCategoryId} options={[
+                    <SelectField className="app-form-wizard-step app-form-wizard-step-3" label="Categoria" icon="◇" name="categoryId" required value={categoryId} onChange={setCategoryId} options={[
                         {value: "", label: "Seleziona categoria", disabled: true},
                         ...categories.map(category => ({
                             value: category.id,
@@ -606,7 +606,7 @@ export default function RecurringExpenseForm({
                     <small>Fiscalità, importo e aliquota IVA</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
-                    <div className="amount-vat-row expense-wizard-step expense-wizard-step-2 recurring-wizard-amount">
+                    <div className="amount-vat-row app-form-wizard-step app-form-wizard-step-2 recurring-wizard-amount">
                         <div className="recurring-wizard-amount-entry full">
                             <div className="toggle-field switch-toggle-field recurring-switch-control recurring-fiscal-switch">
                                 <div className="switch-toggle-field-label">
@@ -624,7 +624,7 @@ export default function RecurringExpenseForm({
                             </div>
                             <div className="recurring-amount-control flex-grow">
                                 <label className="recurring-wizard-amount-field">Costo IVA inclusa<MoneyInput inputRef={amountRef} value={amount} onValueChange={handleAmountChange} required/><input type="hidden" name="amount" value={normalizedAmount}/></label>
-                                <div className="expense-wizard-vat-buttons recurring-vat-buttons-desktop" aria-label="Selezione rapida IVA">
+                                <div className="app-vat-rate-buttons recurring-vat-buttons-desktop" aria-label="Selezione rapida IVA">
                                     {["0", "4", "10", "22"].map(rate =>
                                         <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onMouseDown={event => event.preventDefault()} onClick={() => {
                                             setVatRate(rate);
@@ -633,7 +633,7 @@ export default function RecurringExpenseForm({
                                 </div>
                             </div>
                         </div>
-                        <div className="expense-wizard-vat-buttons recurring-vat-buttons-mobile" aria-label="Selezione rapida IVA">
+                        <div className="app-vat-rate-buttons recurring-vat-buttons-mobile" aria-label="Selezione rapida IVA">
                             {["0", "4", "10", "22"].map(rate =>
                                 <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onMouseDown={event => event.preventDefault()} onClick={() => {
                                     setVatRate(rate);
@@ -641,7 +641,7 @@ export default function RecurringExpenseForm({
                                 }}>{rate}%</button>)}
                         </div>
                         <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/>
-                        <div className="expense-wizard-keypad full" aria-label="Tastiera numerica">
+                        <div className="app-amount-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key =>
                                 <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
                         </div>
@@ -649,7 +649,7 @@ export default function RecurringExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full recurring-form-section recurring-fiscal-section expense-wizard-step expense-wizard-step-4" open>
+            <details className="form-section full recurring-form-section recurring-fiscal-section app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
                     <span>Fatturazione</span>
                     <small>Fattura elettronica e periodo fatturazione</small>
@@ -688,7 +688,7 @@ export default function RecurringExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full recurring-form-section recurring-payment-section expense-wizard-step expense-wizard-step-5" open>
+            <details className="form-section full recurring-form-section recurring-payment-section app-form-wizard-step app-form-wizard-step-5" open>
                 <summary>
                     <span>Pagamento</span>
                     <small>Automazione, canale e banca</small>
@@ -739,26 +739,26 @@ export default function RecurringExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full recurring-form-section recurring-notes-section expense-wizard-step expense-wizard-step-6" open={mobileStep === 6}>
+            <details className="form-section full recurring-form-section recurring-notes-section app-form-wizard-step app-form-wizard-step-6" open={mobileStep === 6}>
                 <summary>
                     <span>Note</span>
                     <small>Note interne opzionali</small>
                 </summary>
                 <div className="form-section-stack">
                     <section className="recurring-review-summary" aria-label="Riepilogo spesa ricorrente">
-                        <div className="expense-review-heading">
-                            <div><span className="expense-review-kicker">Controlla prima di salvare</span>
+                        <div className="record-review-heading">
+                            <div><span className="record-review-kicker">Controlla prima di salvare</span>
                                 <h3>Riepilogo della ricorrenza</h3></div>
                             <strong>€ {Number(normalizedAmount || 0).toLocaleString("it-IT", {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
                             })}</strong>
                         </div>
-                        <div className="expense-review-grid">
-                            <div className="expense-review-item">
+                        <div className="record-review-grid">
+                            <div className="record-review-item">
                                 <i aria-hidden="true">◷</i><span>Data inizio<strong>{startDate ? new Date(`${startDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span>
                             </div>
-                            <div className="expense-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({
+                            <div className="record-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({
                                 MONTHLY: "Ogni mese",
                                 EVERY_2_MONTHS: "Ogni 2 mesi",
                                 EVERY_3_MONTHS: "Ogni 3 mesi",
@@ -767,22 +767,22 @@ export default function RecurringExpenseForm({
                                 EVERY_2_YEARS: "Ogni 2 anni"
                             } as Record<string, string>)[cadence]} · giorno {dueDay}{isYearly ? ` ${monthOptions.find(([value]) => String(value) === dueMonth)?.[1] ?? ""}` : ""}</strong></span>
                             </div>
-                            <div className="expense-review-item wide">
+                            <div className="record-review-item wide">
                                 <i aria-hidden="true">◎</i><span>Fornitore<strong>{supplierName || "Non indicato"}</strong></span>
                             </div>
-                            <div className="expense-review-item wide">
+                            <div className="record-review-item wide">
                                 <i aria-hidden="true">◇</i><span>Categoria<strong>{categories.find(category => String(category.id) === categoryId)?.name ?? "Non indicata"}</strong></span>
                             </div>
-                            <div className="expense-review-item wide">
+                            <div className="record-review-item wide">
                                 <i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span>
                             </div>
-                            <div className="expense-review-item">
+                            <div className="record-review-item">
                                 <i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span>
                             </div>
-                            <div className="expense-review-item">
+                            <div className="record-review-item">
                                 <i aria-hidden="true">▤</i><span>Fatturazione<strong>{hasElectronicInvoice ? "Fattura elettronica" : "Senza fattura elettronica"}</strong></span>
                             </div>
-                            <div className="expense-review-item wide">
+                            <div className="record-review-item wide">
                                 <i aria-hidden="true">€</i><span>Pagamento<strong>{isAutomaticAccrual ? `${selectedPaymentMethodName || "Canale non indicato"} · ${banks.find(bank => String(bank.id) === bankId)?.name ?? "Banca non indicata"}` : "Manuale"}</strong></span>
                             </div>
                         </div>
