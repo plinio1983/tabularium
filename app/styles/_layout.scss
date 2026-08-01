@@ -1479,6 +1479,7 @@ button {
   margin: 2px -18px -18px;
   padding: 16px 18px calc(16px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
+  z-index: 10;
 }
 
 .income-drawer-filters .filter-group {
@@ -2041,7 +2042,7 @@ body.drawer-open {
 }
 
 .filter-drawer-panel {
-  width: min(440px, calc(100vw - 28px));
+  //width: min(440px, calc(100vw - 28px));
   height: 100%;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -16131,4 +16132,129 @@ table .cell-description {
   .month-comparison-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.dashboard-anchor-section {
+  min-width: 0;
+  scroll-margin-top: 92px;
+}
+
+.dashboard-monthly-section {
+  display: grid;
+  min-width: 0;
+  gap: 16px;
+}
+
+.dashboard-section-nav-slot {
+  align-self: start;
+  min-width: 0;
+}
+
+.dashboard-section-nav {
+  border: 1px solid #dbe3ef;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .08);
+  backdrop-filter: blur(12px);
+}
+
+.dashboard-section-nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  max-width: 100%;
+  padding: 7px 9px;
+  border-radius: 14px;
+}
+
+.dashboard-section-nav-desktop > span {
+  padding: 0 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.dashboard-section-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.15;
+  text-decoration: none;
+  transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.dashboard-section-nav a:hover {
+  background: #eef2ff;
+  color: #1f3ea8;
+}
+
+.dashboard-section-nav a.is-active {
+  background: #1f3ea8;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(31, 62, 168, .2);
+}
+
+.dashboard-section-nav-mobile {
+  display: none;
+}
+
+.dashboard-section-floating-nav {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 7px 9px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .16);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -16px);
+  transition: opacity .18s ease, transform .18s ease;
+  backdrop-filter: blur(12px);
+  scrollbar-width: thin;
+}
+
+.dashboard-section-floating-nav.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+.dashboard-section-floating-nav a {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.dashboard-section-floating-nav a.is-active {
+  background: #1f3ea8;
+  color: #fff;
+}
+
+/* `overflow-x: hidden` su html/body crea un contenitore di scorrimento che
+   impedisce agli elementi sticky della dashboard di seguire il viewport. */
+html:has(.dashboard-grid),
+body:has(.dashboard-grid) {
+  overflow-x: clip;
 }

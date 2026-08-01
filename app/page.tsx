@@ -10,6 +10,7 @@ import {
     getOrderDatePeriodSummary
 } from '@/lib/reports';
 import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
+import DashboardSectionNav from '@/components/DashboardSectionNav';
 import {requireWorkspace} from '@/lib/auth';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
@@ -1561,7 +1562,7 @@ type CashScheduleItem = { month: number; incoming: number; outgoing: number; ove
 
 function CashScheduleChart({items, year}: { items: CashScheduleItem[]; year: number }) {
     const maxValue = Math.max(...items.flatMap(item => [item.incoming, item.outgoing, item.overdue]), 1);
-    return <section className="card dashboard-insight-card">
+    return <section id="scadenze" className="card dashboard-insight-card dashboard-anchor-section">
         <div className="card-heading-row">
             <div>
                 <h2>Scadenzario incassi e pagamenti</h2>
@@ -1613,7 +1614,7 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
     const effectiveRate = fiscalIncome ? generated / fiscalIncome * 100 : 0;
     const maxValue = Math.max(...rows.flatMap(row => [row.generated, row.deductible, row.settled]), 1);
 
-    return <section className="card dashboard-insight-card vat-situation-card">
+    return <section id="iva" className="card dashboard-insight-card vat-situation-card dashboard-anchor-section">
         <div className="card-heading-row">
             <div>
                 <h2>Situazione IVA</h2>
@@ -1963,17 +1964,21 @@ export default async function Dashboard({searchParams}: {
             </div>
         </div>
 
-        <div className="dashboard-report-charts">
+        <DashboardSectionNav/>
+
+        <div id="sintesi" className="dashboard-report-charts dashboard-anchor-section">
             <div className="charts-grid dashboard-overview-charts">
-                <IncomeBreakdownChart title="Entrate per canale e categoria"
-                                      description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`}
+                <IncomeBreakdownChart title="Entrate per canale di vendita"
+                                      description={`Distribuzione degli incassi per canale di vendita nell’anno fiscale ${report.annualYear}.`}
                                       data={report.incomesBySalesChannel}/>
                 <ExpenseCompositionChart data={report.expensesByCategory} total={report.totals.speseTotali} incomeTotal={report.totals.incassoTotale}/>
                 <ProfitabilitySummaryCard totals={report.totals} year={report.annualYear}/>
             </div>
         </div>
 
-        <FiscalNonFiscalOverview totals={report.totals} year={report.annualYear} periods={annualPeriods}/>
+        <div id="fiscale" className="dashboard-anchor-section">
+            <FiscalNonFiscalOverview totals={report.totals} year={report.annualYear} periods={annualPeriods}/>
+        </div>
         <AnnualIncomeTrendChart initialData={initialIncomeTrend}/>
 
         <div className="grid grid-2 dashboard-period-cards">
@@ -2077,6 +2082,7 @@ export default async function Dashboard({searchParams}: {
         {/*<IncomeExpenseBreakdownChart totals={report.totals} periods={annualPeriods}/>*/}
         {/*</article>*/}
 
+        <div id="mensile" className="dashboard-monthly-section dashboard-anchor-section">
         <MonthlyProfitComparisonChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
 
         <div className="card dashboard-report-card dashboard-monthly-legacy-report">
@@ -2185,6 +2191,7 @@ export default async function Dashboard({searchParams}: {
                     </div>
                 </div>)}
             </div>
+        </div>
         </div>
 
         <div className="dashboard-report-charts">

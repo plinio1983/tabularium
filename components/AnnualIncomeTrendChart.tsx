@@ -63,7 +63,7 @@ export default function AnnualIncomeTrendChart({initialData}: { initialData: Inc
     const peak = peakIndex >= 0 ? data.points[peakIndex] : null;
     const labelEvery = interval === 'day' ? 30 : interval === 'week' ? 4 : 1;
 
-    return <section className="card annual-income-trend-card">
+    return <section id="incassi" className="card annual-income-trend-card dashboard-anchor-section">
         <div className="card-heading-row annual-income-trend-heading">
             <div>
                 <div>
