@@ -61,6 +61,7 @@ type Props = {
     paymentMethods: PaymentMethodOption[];
     salesChannels: IncomeEntityOption[];
     customers: CustomerOption[];
+    onSwitchToRecurring?: () => void;
 };
 
 const today = new Date().toISOString().slice(0, 10);
@@ -125,6 +126,7 @@ export default function IncomeForm({
                                        paymentMethods,
                                        salesChannels,
                                        customers,
+                                       onSwitchToRecurring,
                                    }: Props) {
     const cashBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.trim().toLowerCase() === "cassa");
     const primaryBank = banks.find(bank => bank.isPrimary);
@@ -333,11 +335,11 @@ export default function IncomeForm({
                         <strong>Incasso <br/>singolo</strong>
                         <small>Entrata occasionale</small>
                     </button>
-                    <button type="button" role="radio" aria-checked="false" disabled
-                            title="Gli incassi ricorrenti non sono ancora disponibili">
+                    <button type="button" role="radio" aria-checked="false" disabled={Boolean(initialIncome?.id) || !onSwitchToRecurring}
+                            onClick={onSwitchToRecurring}>
                         <span aria-hidden="true">↻</span>
                         <strong>Entrata <br/>ricorrente</strong>
-                        <small>Prossimamente</small>
+                        <small>Configura ricorrenza</small>
                     </button>
                     <button type="button" role="radio" aria-checked="false" disabled={Boolean(initialIncome?.id)}
                             onClick={() => window.location.assign("/incomes/cash-register")}>
@@ -354,12 +356,12 @@ export default function IncomeForm({
                     <small>Dati principali dell'incasso</small>
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
+                    <DateField className="expense-wizard-step expense-wizard-step-1" label="Data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/>
+
                     <SelectField className="expense-wizard-step expense-wizard-step-1" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({
                         value: option.id,
                         label: `${option.icon ?? "•"} ${option.name}`
                     }))}/>
-
-                    <DateField className="expense-wizard-step expense-wizard-step-1" label="Data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/>
 
                     <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId} onValueChange={setCustomerName}/>
 

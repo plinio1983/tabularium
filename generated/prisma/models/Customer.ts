@@ -294,6 +294,7 @@ export type CustomerWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   incomes?: Prisma.IncomeListRelationFilter
+  recurringIncomes?: Prisma.RecurringIncomeListRelationFilter
 }
 
 export type CustomerOrderByWithRelationInput = {
@@ -313,6 +314,7 @@ export type CustomerOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   incomes?: Prisma.IncomeOrderByRelationAggregateInput
+  recurringIncomes?: Prisma.RecurringIncomeOrderByRelationAggregateInput
 }
 
 export type CustomerWhereUniqueInput = Prisma.AtLeast<{
@@ -336,6 +338,7 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   incomes?: Prisma.IncomeListRelationFilter
+  recurringIncomes?: Prisma.RecurringIncomeListRelationFilter
 }, "id" | "workspaceId_systemRole">
 
 export type CustomerOrderByWithAggregationInput = {
@@ -395,6 +398,7 @@ export type CustomerCreateInput = {
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutCustomersInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutCustomerInput
+  recurringIncomes?: Prisma.RecurringIncomeCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateInput = {
@@ -413,6 +417,7 @@ export type CustomerUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutCustomerInput
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUpdateInput = {
@@ -430,6 +435,7 @@ export type CustomerUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutCustomersNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutCustomerNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateInput = {
@@ -448,6 +454,7 @@ export type CustomerUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutCustomerNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerCreateManyInput = {
@@ -626,6 +633,22 @@ export type NullableEnumCustomerSystemRoleFieldUpdateOperationsInput = {
   set?: $Enums.CustomerSystemRole | null
 }
 
+export type CustomerCreateNestedOneWithoutRecurringIncomesInput = {
+  create?: Prisma.XOR<Prisma.CustomerCreateWithoutRecurringIncomesInput, Prisma.CustomerUncheckedCreateWithoutRecurringIncomesInput>
+  connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutRecurringIncomesInput
+  connect?: Prisma.CustomerWhereUniqueInput
+}
+
+export type CustomerUpdateOneWithoutRecurringIncomesNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerCreateWithoutRecurringIncomesInput, Prisma.CustomerUncheckedCreateWithoutRecurringIncomesInput>
+  connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutRecurringIncomesInput
+  upsert?: Prisma.CustomerUpsertWithoutRecurringIncomesInput
+  disconnect?: Prisma.CustomerWhereInput | boolean
+  delete?: Prisma.CustomerWhereInput | boolean
+  connect?: Prisma.CustomerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerUpdateToOneWithWhereWithoutRecurringIncomesInput, Prisma.CustomerUpdateWithoutRecurringIncomesInput>, Prisma.CustomerUncheckedUpdateWithoutRecurringIncomesInput>
+}
+
 export type CustomerCreateNestedOneWithoutIncomesInput = {
   create?: Prisma.XOR<Prisma.CustomerCreateWithoutIncomesInput, Prisma.CustomerUncheckedCreateWithoutIncomesInput>
   connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutIncomesInput
@@ -656,6 +679,7 @@ export type CustomerCreateWithoutWorkspaceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   incomes?: Prisma.IncomeCreateNestedManyWithoutCustomerInput
+  recurringIncomes?: Prisma.RecurringIncomeCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateWithoutWorkspaceInput = {
@@ -673,6 +697,7 @@ export type CustomerUncheckedCreateWithoutWorkspaceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutCustomerInput
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerCreateOrConnectWithoutWorkspaceInput = {
@@ -721,6 +746,92 @@ export type CustomerScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
 }
 
+export type CustomerCreateWithoutRecurringIncomesInput = {
+  businessName: string
+  alias?: string | null
+  email?: string | null
+  vatNumber?: string | null
+  taxCodeSdi?: string | null
+  pec?: string | null
+  iban?: string | null
+  swift?: string | null
+  internalNotes?: string | null
+  systemRole?: $Enums.CustomerSystemRole | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutCustomersInput
+  incomes?: Prisma.IncomeCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerUncheckedCreateWithoutRecurringIncomesInput = {
+  id?: number
+  businessName: string
+  alias?: string | null
+  email?: string | null
+  vatNumber?: string | null
+  taxCodeSdi?: string | null
+  pec?: string | null
+  iban?: string | null
+  swift?: string | null
+  internalNotes?: string | null
+  systemRole?: $Enums.CustomerSystemRole | null
+  workspaceId: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerCreateOrConnectWithoutRecurringIncomesInput = {
+  where: Prisma.CustomerWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerCreateWithoutRecurringIncomesInput, Prisma.CustomerUncheckedCreateWithoutRecurringIncomesInput>
+}
+
+export type CustomerUpsertWithoutRecurringIncomesInput = {
+  update: Prisma.XOR<Prisma.CustomerUpdateWithoutRecurringIncomesInput, Prisma.CustomerUncheckedUpdateWithoutRecurringIncomesInput>
+  create: Prisma.XOR<Prisma.CustomerCreateWithoutRecurringIncomesInput, Prisma.CustomerUncheckedCreateWithoutRecurringIncomesInput>
+  where?: Prisma.CustomerWhereInput
+}
+
+export type CustomerUpdateToOneWithWhereWithoutRecurringIncomesInput = {
+  where?: Prisma.CustomerWhereInput
+  data: Prisma.XOR<Prisma.CustomerUpdateWithoutRecurringIncomesInput, Prisma.CustomerUncheckedUpdateWithoutRecurringIncomesInput>
+}
+
+export type CustomerUpdateWithoutRecurringIncomesInput = {
+  businessName?: Prisma.StringFieldUpdateOperationsInput | string
+  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vatNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxCodeSdi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  swift?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutCustomersNestedInput
+  incomes?: Prisma.IncomeUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerUncheckedUpdateWithoutRecurringIncomesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  businessName?: Prisma.StringFieldUpdateOperationsInput | string
+  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vatNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxCodeSdi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  swift?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
 export type CustomerCreateWithoutIncomesInput = {
   businessName: string
   alias?: string | null
@@ -735,6 +846,7 @@ export type CustomerCreateWithoutIncomesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutCustomersInput
+  recurringIncomes?: Prisma.RecurringIncomeCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateWithoutIncomesInput = {
@@ -752,6 +864,7 @@ export type CustomerUncheckedCreateWithoutIncomesInput = {
   workspaceId: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerCreateOrConnectWithoutIncomesInput = {
@@ -784,6 +897,7 @@ export type CustomerUpdateWithoutIncomesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutCustomersNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateWithoutIncomesInput = {
@@ -801,6 +915,7 @@ export type CustomerUncheckedUpdateWithoutIncomesInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerCreateManyWorkspaceInput = {
@@ -833,6 +948,7 @@ export type CustomerUpdateWithoutWorkspaceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   incomes?: Prisma.IncomeUpdateManyWithoutCustomerNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateWithoutWorkspaceInput = {
@@ -850,6 +966,7 @@ export type CustomerUncheckedUpdateWithoutWorkspaceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutCustomerNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -875,10 +992,12 @@ export type CustomerUncheckedUpdateManyWithoutWorkspaceInput = {
 
 export type CustomerCountOutputType = {
   incomes: number
+  recurringIncomes: number
 }
 
 export type CustomerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   incomes?: boolean | CustomerCountOutputTypeCountIncomesArgs
+  recurringIncomes?: boolean | CustomerCountOutputTypeCountRecurringIncomesArgs
 }
 
 /**
@@ -896,6 +1015,13 @@ export type CustomerCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
  */
 export type CustomerCountOutputTypeCountIncomesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.IncomeWhereInput
+}
+
+/**
+ * CustomerCountOutputType without action
+ */
+export type CustomerCountOutputTypeCountRecurringIncomesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurringIncomeWhereInput
 }
 
 
@@ -916,6 +1042,7 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   incomes?: boolean | Prisma.Customer$incomesArgs<ExtArgs>
+  recurringIncomes?: boolean | Prisma.Customer$recurringIncomesArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customer"]>
 
@@ -976,6 +1103,7 @@ export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   incomes?: boolean | Prisma.Customer$incomesArgs<ExtArgs>
+  recurringIncomes?: boolean | Prisma.Customer$recurringIncomesArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CustomerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -990,6 +1118,7 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     workspace: Prisma.$WorkspacePayload<ExtArgs>
     incomes: Prisma.$IncomePayload<ExtArgs>[]
+    recurringIncomes: Prisma.$RecurringIncomePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1402,6 +1531,7 @@ export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   incomes<T extends Prisma.Customer$incomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$incomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurringIncomes<T extends Prisma.Customer$recurringIncomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$recurringIncomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringIncomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1867,6 +1997,30 @@ export type Customer$incomesArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.IncomeScalarFieldEnum | Prisma.IncomeScalarFieldEnum[]
+}
+
+/**
+ * Customer.recurringIncomes
+ */
+export type Customer$recurringIncomesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringIncome
+   */
+  select?: Prisma.RecurringIncomeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringIncome
+   */
+  omit?: Prisma.RecurringIncomeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringIncomeInclude<ExtArgs> | null
+  where?: Prisma.RecurringIncomeWhereInput
+  orderBy?: Prisma.RecurringIncomeOrderByWithRelationInput | Prisma.RecurringIncomeOrderByWithRelationInput[]
+  cursor?: Prisma.RecurringIncomeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurringIncomeScalarFieldEnum | Prisma.RecurringIncomeScalarFieldEnum[]
 }
 
 /**

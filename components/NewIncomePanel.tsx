@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import IncomeForm from "@/components/IncomeForm";
+import IncomeCreationSwitcher from '@/components/IncomeCreationSwitcher';
 import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null };
@@ -9,8 +9,9 @@ type PaymentMethodOption = Option & { kind?: string; isIncomeDefault?: boolean }
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
 
-export default function NewIncomePanel({ initialOpen = false, showToolbar = true, banks, paymentMethods, salesChannels, customers, initialCustomerId }: {
+export default function NewIncomePanel({ initialOpen = false, initialType = 'single', showToolbar = true, banks, paymentMethods, salesChannels, customers, initialCustomerId }: {
   initialOpen?: boolean;
+  initialType?: 'single' | 'recurring';
   showToolbar?: boolean;
   banks: Option[];
   paymentMethods: PaymentMethodOption[];
@@ -19,6 +20,8 @@ export default function NewIncomePanel({ initialOpen = false, showToolbar = true
   initialCustomerId?: number;
 }) {
   const [isOpen, setIsOpen] = useState(initialOpen);
+  const [creationType, setCreationType] = useState<'single' | 'recurring'>(initialType);
+  const [creationKey, setCreationKey] = useState(0);
   const [returnAction, setReturnAction] = useState('/api/incomes');
 
   useEffect(() => {
@@ -35,6 +38,9 @@ export default function NewIncomePanel({ initialOpen = false, showToolbar = true
       if (!target?.closest('[data-income-new]')) return;
 
       event.preventDefault();
+      const trigger = target.closest<HTMLElement>('[data-income-new]');
+      setCreationType(trigger?.dataset.incomeNewType === 'recurring' ? 'recurring' : 'single');
+      setCreationKey(value => value + 1);
       setIsOpen(true);
     };
 
@@ -58,12 +64,12 @@ export default function NewIncomePanel({ initialOpen = false, showToolbar = true
         <div className="modal-card modal-card-wide expense-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
           <div className="modal-title">
             <div>
-              <h3>Nuovo incasso</h3>
-              <p className="muted">Inserisci un nuovo incasso.</p>
+              <h3>{creationType === 'recurring' ? 'Nuova ricorrente' : 'Nuovo incasso'}</h3>
+              <p className="muted">{creationType === 'recurring' ? 'Configura una nuova entrata ricorrente.' : 'Inserisci un nuovo incasso.'}</p>
             </div>
             <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
           </div>
-          <IncomeForm initialIncome={initialCustomerId ? { customerId: initialCustomerId } : undefined} action={returnAction} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} />
+          <IncomeCreationSwitcher key={creationKey} initialType={creationType} onTypeChange={setCreationType} initialIncome={initialCustomerId ? { customerId: initialCustomerId } : undefined} incomeAction={returnAction} recurringAction={returnAction.replace('/api/incomes', '/api/recurring-incomes')} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} />
         </div>
       </div> : null}
     </div>

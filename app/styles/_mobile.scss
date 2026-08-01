@@ -291,7 +291,12 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .recurring-expense-form .recurring-form-section-grid > *,
+  .recurring-expense-form .recurring-form-section-grid > * {
+    grid-column: 1 / -1 !important;
+    min-width: 0;
+    width: 100%;
+  }
+
   .recurring-expense-form .form-section-stack > *,
   .recurring-expense-form .span-2,
   .recurring-expense-form .span-3,
@@ -1152,9 +1157,10 @@
   .modal-card.modal-card-wide {
     width: calc(100vw);
     max-width: calc(100vw);
+    max-height: 100dvh;
     //width: calc(100vw - 20px);
     //max-width: calc(100vw - 20px);
-    max-height: calc(100dvh - 20px);
+    //max-height: calc(100dvh - 20px);
     //border-radius: 18px;
     padding: 12px;
   }
@@ -4157,13 +4163,25 @@
   }
 
   .cash-register-shell {
-    width: calc(100% + 20px);
+    width: calc(100vw - 12px);
+    max-width: calc(100vw - 12px);
     height: calc(100dvh - 20px);
     min-height: 0;
-    margin: -10px;
+    margin: 0 0 0 calc(50% - 50vw + 6px);
     padding: 9px;
     border: 0;
     border-radius: 0;
+  }
+
+  .cash-register-header,
+  .cash-register-header > div,
+  .cash-register-controls,
+  .cash-register-display,
+  .cash-register-vat,
+  .cash-register-keypad,
+  .cash-register-actions {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .cash-register-header > div {

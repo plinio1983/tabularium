@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import IncomeForm from '@/components/IncomeForm';
+import IncomeCreationSwitcher from '@/components/IncomeCreationSwitcher';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { clampDateToToday, clampPeriodToCurrentMonth } from '@/lib/copy-dates';
@@ -13,6 +13,7 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/incomes';
   const encodedReturnTo = encodeURIComponent(returnTo);
   const copyId = copyIdValue ? Number(copyIdValue) : null;
+  const requestedType = (Array.isArray(params.type) ? params.type[0] : params.type) === 'recurring' ? 'recurring' : 'single';
   const [copyIncome, banks, paymentMethods, salesChannels, customers] = await Promise.all([
     copyId ? prisma.income.findFirst({ where: { id: copyId, workspaceId: current.workspace.id, companyId: current.company.id } }) : null,
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
@@ -28,12 +29,12 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
     <div className="modal-card modal-card-wide modal-page-card income-wizard-page-card">
     <div className="toolbar-card modal-toolbar-card">
       <div>
-        <h2>{copyIncome ? `Copia incasso #${copyIncome.id}` : 'Nuovo incasso'}</h2>
-        <p className="muted">{copyIncome ? 'I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso.' : 'Inserisci un nuovo incasso.'}</p>
+        <h2>{copyIncome ? `Copia incasso #${copyIncome.id}` : requestedType === 'recurring' ? 'Nuova ricorrente' : 'Nuovo incasso'}</h2>
+        <p className="muted">{copyIncome ? 'I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso.' : requestedType === 'recurring' ? 'Configura una nuova entrata ricorrente.' : 'Inserisci un nuovo incasso.'}</p>
       </div>
       <Link className="btn btn-xs btn-default" href={returnTo}><span className="btn-icon">×</span> Annulla</Link>
     </div>
-    <IncomeForm
+    <IncomeCreationSwitcher
       initialIncome={copyIncome ? {
         customerId: copyIncome.customerId,
         salesChannelId: copyIncome.salesChannelId,
@@ -49,7 +50,9 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
         vatRate: copyIncome.vatRate.toString(),
         notes: copyIncome.notes,
       } : undefined}
-      action={`/api/incomes?returnTo=${encodedReturnTo}`}
+      incomeAction={`/api/incomes?returnTo=${encodedReturnTo}`}
+      recurringAction={`/api/recurring-incomes?returnTo=${encodedReturnTo}`}
+      initialType={copyIncome ? 'single' : requestedType}
       title={copyIncome ? 'Nuovo incasso da copia' : 'Nuovo incasso'}
       cancelHref={returnTo}
       submitLabel={copyIncome ? 'Crea incasso copiato' : 'Salva incasso'}

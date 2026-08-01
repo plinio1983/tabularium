@@ -1567,10 +1567,16 @@ button {
 .recurring-form-section.recurring-fiscal-section .recurring-form-section-grid,
 .recurring-form-section.recurring-payment-section .recurring-form-section-grid {
   display: flex;
+}
 
-  .app-form-field {
-    flex-grow: 1;
-  }
+.recurring-income-form .recurring-payment-section .recurring-form-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.recurring-income-form .recurring-accrual-toggle {
+  align-self: stretch;
+  min-width: 0;
 }
 
 .recurring-expense-form .supplier-picker > label,
@@ -5587,15 +5593,6 @@ a.expense-top-summary-item.is-invoice-waiting:hover {
   justify-content: flex-end;
 }
 
-.btn-primary {
-  background: var(--accent) !important;
-  color: #fff !important;
-  border-color: var(--accent) !important;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-
 .period-selector {
   display: flex;
   align-items: center;
@@ -8551,6 +8548,9 @@ html, body {
   background: var(--accent) !important;
   color: #fff !important;
   border: 1px solid var(--accent) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
 }
 
 .btn-primary:hover {
@@ -15989,7 +15989,7 @@ table .cell-description {
 
 .month-comparison-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 

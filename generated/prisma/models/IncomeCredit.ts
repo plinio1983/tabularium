@@ -49,6 +49,7 @@ export type IncomeCreditMinAggregateOutputType = {
   paymentMethodId: number | null
   bankId: number | null
   amount: runtime.Decimal | null
+  sourceKey: string | null
   createdAt: Date | null
 }
 
@@ -59,6 +60,7 @@ export type IncomeCreditMaxAggregateOutputType = {
   paymentMethodId: number | null
   bankId: number | null
   amount: runtime.Decimal | null
+  sourceKey: string | null
   createdAt: Date | null
 }
 
@@ -69,6 +71,7 @@ export type IncomeCreditCountAggregateOutputType = {
   paymentMethodId: number
   bankId: number
   amount: number
+  sourceKey: number
   createdAt: number
   _all: number
 }
@@ -97,6 +100,7 @@ export type IncomeCreditMinAggregateInputType = {
   paymentMethodId?: true
   bankId?: true
   amount?: true
+  sourceKey?: true
   createdAt?: true
 }
 
@@ -107,6 +111,7 @@ export type IncomeCreditMaxAggregateInputType = {
   paymentMethodId?: true
   bankId?: true
   amount?: true
+  sourceKey?: true
   createdAt?: true
 }
 
@@ -117,6 +122,7 @@ export type IncomeCreditCountAggregateInputType = {
   paymentMethodId?: true
   bankId?: true
   amount?: true
+  sourceKey?: true
   createdAt?: true
   _all?: true
 }
@@ -214,6 +220,7 @@ export type IncomeCreditGroupByOutputType = {
   paymentMethodId: number
   bankId: number
   amount: runtime.Decimal
+  sourceKey: string | null
   createdAt: Date
   _count: IncomeCreditCountAggregateOutputType | null
   _avg: IncomeCreditAvgAggregateOutputType | null
@@ -247,6 +254,7 @@ export type IncomeCreditWhereInput = {
   paymentMethodId?: Prisma.IntFilter<"IncomeCredit"> | number
   bankId?: Prisma.IntFilter<"IncomeCredit"> | number
   amount?: Prisma.DecimalFilter<"IncomeCredit"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.StringNullableFilter<"IncomeCredit"> | string | null
   createdAt?: Prisma.DateTimeFilter<"IncomeCredit"> | Date | string
   income?: Prisma.XOR<Prisma.IncomeScalarRelationFilter, Prisma.IncomeWhereInput>
   paymentMethod?: Prisma.XOR<Prisma.PaymentMethodScalarRelationFilter, Prisma.PaymentMethodWhereInput>
@@ -260,6 +268,7 @@ export type IncomeCreditOrderByWithRelationInput = {
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  sourceKey?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   income?: Prisma.IncomeOrderByWithRelationInput
   paymentMethod?: Prisma.PaymentMethodOrderByWithRelationInput
@@ -268,6 +277,7 @@ export type IncomeCreditOrderByWithRelationInput = {
 
 export type IncomeCreditWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  sourceKey?: string
   AND?: Prisma.IncomeCreditWhereInput | Prisma.IncomeCreditWhereInput[]
   OR?: Prisma.IncomeCreditWhereInput[]
   NOT?: Prisma.IncomeCreditWhereInput | Prisma.IncomeCreditWhereInput[]
@@ -280,7 +290,7 @@ export type IncomeCreditWhereUniqueInput = Prisma.AtLeast<{
   income?: Prisma.XOR<Prisma.IncomeScalarRelationFilter, Prisma.IncomeWhereInput>
   paymentMethod?: Prisma.XOR<Prisma.PaymentMethodScalarRelationFilter, Prisma.PaymentMethodWhereInput>
   bank?: Prisma.XOR<Prisma.BankScalarRelationFilter, Prisma.BankWhereInput>
-}, "id">
+}, "id" | "sourceKey">
 
 export type IncomeCreditOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -289,6 +299,7 @@ export type IncomeCreditOrderByWithAggregationInput = {
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  sourceKey?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.IncomeCreditCountOrderByAggregateInput
   _avg?: Prisma.IncomeCreditAvgOrderByAggregateInput
@@ -307,12 +318,14 @@ export type IncomeCreditScalarWhereWithAggregatesInput = {
   paymentMethodId?: Prisma.IntWithAggregatesFilter<"IncomeCredit"> | number
   bankId?: Prisma.IntWithAggregatesFilter<"IncomeCredit"> | number
   amount?: Prisma.DecimalWithAggregatesFilter<"IncomeCredit"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.StringNullableWithAggregatesFilter<"IncomeCredit"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"IncomeCredit"> | Date | string
 }
 
 export type IncomeCreditCreateInput = {
   creditDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
   income: Prisma.IncomeCreateNestedOneWithoutCreditsInput
   paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutIncomeCreditsInput
@@ -326,12 +339,14 @@ export type IncomeCreditUncheckedCreateInput = {
   paymentMethodId: number
   bankId: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
 }
 
 export type IncomeCreditUpdateInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   income?: Prisma.IncomeUpdateOneRequiredWithoutCreditsNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutIncomeCreditsNestedInput
@@ -345,6 +360,7 @@ export type IncomeCreditUncheckedUpdateInput = {
   paymentMethodId?: Prisma.IntFieldUpdateOperationsInput | number
   bankId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -355,12 +371,14 @@ export type IncomeCreditCreateManyInput = {
   paymentMethodId: number
   bankId: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
 }
 
 export type IncomeCreditUpdateManyMutationInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -371,6 +389,7 @@ export type IncomeCreditUncheckedUpdateManyInput = {
   paymentMethodId?: Prisma.IntFieldUpdateOperationsInput | number
   bankId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -391,6 +410,7 @@ export type IncomeCreditCountOrderByAggregateInput = {
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  sourceKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -409,6 +429,7 @@ export type IncomeCreditMaxOrderByAggregateInput = {
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  sourceKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -419,6 +440,7 @@ export type IncomeCreditMinOrderByAggregateInput = {
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  sourceKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -559,6 +581,7 @@ export type IncomeCreditUncheckedUpdateManyWithoutIncomeNestedInput = {
 export type IncomeCreditCreateWithoutBankInput = {
   creditDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
   income: Prisma.IncomeCreateNestedOneWithoutCreditsInput
   paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutIncomeCreditsInput
@@ -570,6 +593,7 @@ export type IncomeCreditUncheckedCreateWithoutBankInput = {
   creditDate: Date | string
   paymentMethodId: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
 }
 
@@ -609,12 +633,14 @@ export type IncomeCreditScalarWhereInput = {
   paymentMethodId?: Prisma.IntFilter<"IncomeCredit"> | number
   bankId?: Prisma.IntFilter<"IncomeCredit"> | number
   amount?: Prisma.DecimalFilter<"IncomeCredit"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.StringNullableFilter<"IncomeCredit"> | string | null
   createdAt?: Prisma.DateTimeFilter<"IncomeCredit"> | Date | string
 }
 
 export type IncomeCreditCreateWithoutPaymentMethodInput = {
   creditDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
   income: Prisma.IncomeCreateNestedOneWithoutCreditsInput
   bank: Prisma.BankCreateNestedOneWithoutIncomeCreditsInput
@@ -626,6 +652,7 @@ export type IncomeCreditUncheckedCreateWithoutPaymentMethodInput = {
   creditDate: Date | string
   bankId: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
 }
 
@@ -658,6 +685,7 @@ export type IncomeCreditUpdateManyWithWhereWithoutPaymentMethodInput = {
 export type IncomeCreditCreateWithoutIncomeInput = {
   creditDate: Date | string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
   paymentMethod: Prisma.PaymentMethodCreateNestedOneWithoutIncomeCreditsInput
   bank: Prisma.BankCreateNestedOneWithoutIncomeCreditsInput
@@ -669,6 +697,7 @@ export type IncomeCreditUncheckedCreateWithoutIncomeInput = {
   paymentMethodId: number
   bankId: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
 }
 
@@ -704,12 +733,14 @@ export type IncomeCreditCreateManyBankInput = {
   creditDate: Date | string
   paymentMethodId: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
 }
 
 export type IncomeCreditUpdateWithoutBankInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   income?: Prisma.IncomeUpdateOneRequiredWithoutCreditsNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutIncomeCreditsNestedInput
@@ -721,6 +752,7 @@ export type IncomeCreditUncheckedUpdateWithoutBankInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethodId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -730,6 +762,7 @@ export type IncomeCreditUncheckedUpdateManyWithoutBankInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethodId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -739,12 +772,14 @@ export type IncomeCreditCreateManyPaymentMethodInput = {
   creditDate: Date | string
   bankId: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
 }
 
 export type IncomeCreditUpdateWithoutPaymentMethodInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   income?: Prisma.IncomeUpdateOneRequiredWithoutCreditsNestedInput
   bank?: Prisma.BankUpdateOneRequiredWithoutIncomeCreditsNestedInput
@@ -756,6 +791,7 @@ export type IncomeCreditUncheckedUpdateWithoutPaymentMethodInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bankId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -765,6 +801,7 @@ export type IncomeCreditUncheckedUpdateManyWithoutPaymentMethodInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bankId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -774,12 +811,14 @@ export type IncomeCreditCreateManyIncomeInput = {
   paymentMethodId: number
   bankId: number
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: string | null
   createdAt?: Date | string
 }
 
 export type IncomeCreditUpdateWithoutIncomeInput = {
   creditDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.PaymentMethodUpdateOneRequiredWithoutIncomeCreditsNestedInput
   bank?: Prisma.BankUpdateOneRequiredWithoutIncomeCreditsNestedInput
@@ -791,6 +830,7 @@ export type IncomeCreditUncheckedUpdateWithoutIncomeInput = {
   paymentMethodId?: Prisma.IntFieldUpdateOperationsInput | number
   bankId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -800,6 +840,7 @@ export type IncomeCreditUncheckedUpdateManyWithoutIncomeInput = {
   paymentMethodId?: Prisma.IntFieldUpdateOperationsInput | number
   bankId?: Prisma.IntFieldUpdateOperationsInput | number
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sourceKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -812,6 +853,7 @@ export type IncomeCreditSelect<ExtArgs extends runtime.Types.Extensions.Internal
   paymentMethodId?: boolean
   bankId?: boolean
   amount?: boolean
+  sourceKey?: boolean
   createdAt?: boolean
   income?: boolean | Prisma.IncomeDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
@@ -825,6 +867,7 @@ export type IncomeCreditSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   paymentMethodId?: boolean
   bankId?: boolean
   amount?: boolean
+  sourceKey?: boolean
   createdAt?: boolean
   income?: boolean | Prisma.IncomeDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
@@ -838,6 +881,7 @@ export type IncomeCreditSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   paymentMethodId?: boolean
   bankId?: boolean
   amount?: boolean
+  sourceKey?: boolean
   createdAt?: boolean
   income?: boolean | Prisma.IncomeDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
@@ -851,10 +895,11 @@ export type IncomeCreditSelectScalar = {
   paymentMethodId?: boolean
   bankId?: boolean
   amount?: boolean
+  sourceKey?: boolean
   createdAt?: boolean
 }
 
-export type IncomeCreditOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "incomeId" | "creditDate" | "paymentMethodId" | "bankId" | "amount" | "createdAt", ExtArgs["result"]["incomeCredit"]>
+export type IncomeCreditOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "incomeId" | "creditDate" | "paymentMethodId" | "bankId" | "amount" | "sourceKey" | "createdAt", ExtArgs["result"]["incomeCredit"]>
 export type IncomeCreditInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   income?: boolean | Prisma.IncomeDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PaymentMethodDefaultArgs<ExtArgs>
@@ -885,6 +930,7 @@ export type $IncomeCreditPayload<ExtArgs extends runtime.Types.Extensions.Intern
     paymentMethodId: number
     bankId: number
     amount: runtime.Decimal
+    sourceKey: string | null
     createdAt: Date
   }, ExtArgs["result"]["incomeCredit"]>
   composites: {}
@@ -1318,6 +1364,7 @@ export interface IncomeCreditFieldRefs {
   readonly paymentMethodId: Prisma.FieldRef<"IncomeCredit", 'Int'>
   readonly bankId: Prisma.FieldRef<"IncomeCredit", 'Int'>
   readonly amount: Prisma.FieldRef<"IncomeCredit", 'Decimal'>
+  readonly sourceKey: Prisma.FieldRef<"IncomeCredit", 'String'>
   readonly createdAt: Prisma.FieldRef<"IncomeCredit", 'DateTime'>
 }
     

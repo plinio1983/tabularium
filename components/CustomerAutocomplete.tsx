@@ -22,7 +22,7 @@ const emptyCustomer = {
   internalNotes: ''
 };
 
-export default function CustomerAutocomplete({ customers, initialCustomerId, onValueChange }: { customers: Customer[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void }) {
+export default function CustomerAutocomplete({ customers, initialCustomerId, onValueChange, wizardStepClass = 'expense-wizard-step expense-wizard-step-3' }: { customers: Customer[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void; wizardStepClass?: string }) {
   const fallback = customers.find(customer => customer.id === initialCustomerId);
   const [selected, setSelected] = useState<Customer | undefined>(fallback);
   const [query, setQuery] = useState(fallback?.businessName ?? '');
@@ -99,7 +99,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
     setCreateData(data => ({ ...data, [field]: value }));
   }
 
-  return <div className="supplier-picker supplier-picker-wide full expense-wizard-step expense-wizard-step-3" ref={containerRef}>
+  return <div className={`supplier-picker supplier-picker-wide full ${wizardStepClass}`} ref={containerRef}>
     <input type="hidden" name="customerId" value={selected?.id ?? ''} />
     <label className="income-customer-field">
       <span className="app-form-field-label">

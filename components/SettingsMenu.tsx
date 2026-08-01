@@ -13,6 +13,7 @@ const mainMenuLinks = [
   { href: currentMonthReportHref, label: 'Report mese', icon: <MonthlyReportIcon /> },
   { href: () => '/incomes/cash-register', label: 'Registratore di cassa', icon: '🧮' },
   { href: () => '/recurring-expenses', label: 'Uscite ricorrenti', icon: '↻' },
+  { href: () => '/recurring-incomes', label: 'Entrate ricorrenti', icon: '↻' },
   { href: () => '/suppliers', label: 'Fornitori', icon: '◇' },
   { href: () => '/clients', label: 'Clienti', icon: '♙' },
   { href: () => '/settings/company', label: 'Dati azienda', icon: '🏢' },
