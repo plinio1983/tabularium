@@ -80,7 +80,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
   const [banks, paymentMethods, workspaceSettings, salesChannels, bankRules] = await Promise.all([
     prisma.bank.findMany({
       where: { workspaceId: current.workspace.id },
-      include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true, cashRegisterBankRules: true } } },
+      include: { _count: { select: { payments: true, recurringExpenses: true, incomeLegacyCredits: true, incomeCredits: true, cashRegisterBankRules: true } } },
       orderBy: { id: 'asc' }
     }),
     prisma.paymentMethod.findMany({
@@ -150,7 +150,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
       </div>
       <div className="expense-category-settings-list payment-banks-settings-list">
       {orderedBanks.length ? orderedBanks.map(bank => {
-        const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeCredits + bank._count.cashRegisterBankRules;
+        const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeLegacyCredits + bank._count.incomeCredits + bank._count.cashRegisterBankRules;
         return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Canale' : 'Banca'} primary={!bank.isFallback && current.company.primaryBankId === bank.id} canBePrimary={!bank.isFallback} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
       }) : <p className="muted">Nessuna banca configurata.</p>}
       </div>

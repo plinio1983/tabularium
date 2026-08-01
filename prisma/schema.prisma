@@ -60,24 +60,24 @@ enum IncomeType {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
-  passwordHash String?
-  googleId     String?   @unique
-  googleEmailVerified Boolean @default(false)
-  emailVerifiedAt DateTime?
-  name         String?
-  isActive     Boolean   @default(true)
-  isSystemAdmin Boolean  @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique
+  passwordHash        String?
+  googleId            String?   @unique
+  googleEmailVerified Boolean   @default(false)
+  emailVerifiedAt     DateTime?
+  name                String?
+  isActive            Boolean   @default(true)
+  isSystemAdmin       Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
-  ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
-  memberships     WorkspaceMember[]
-  sessions        AuthSession[]
-  auditLogs       AuditLog[]
+  ownedWorkspaces         Workspace[]              @relation("WorkspaceOwner")
+  memberships             WorkspaceMember[]
+  sessions                AuthSession[]
+  auditLogs               AuditLog[]
   emailVerificationTokens EmailVerificationToken[]
-  passwordResetTokens PasswordResetToken[]
+  passwordResetTokens     PasswordResetToken[]
 }
 
 model Workspace {
@@ -88,30 +88,30 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members            WorkspaceMember[]
-  sessions           AuthSession[]
-  companies          Company[]
-  expenseCategories  ExpenseCategory[]
-  incomeCategories   IncomeCategory[]
-  incomeSalesChannels IncomeSalesChannel[]
-  banks              Bank[]
-  paymentMethods     PaymentMethod[]
-  suppliers          Supplier[]
-  customers          Customer[]
-  recurringExpenses  RecurringExpense[]
-  expenses           Expense[]
-  monthlyRevenues    MonthlyRevenue[]
-  incomes            Income[]
-  auditLogs          AuditLog[]
-  cashRegisterBankRules CashRegisterBankRule[]
-  vatSettlementCategoryId Int?
-  vatSettlementCategory ExpenseCategory? @relation("VatSettlementCategory", fields: [vatSettlementCategoryId], references: [id], onDelete: Restrict)
-  cashRegisterIncomeCategoryId Int?
-  cashRegisterIncomeCategory IncomeCategory? @relation("CashRegisterIncomeCategory", fields: [cashRegisterIncomeCategoryId], references: [id], onDelete: Restrict)
-  cashRegisterSalesChannelId Int?
-  cashRegisterSalesChannel IncomeSalesChannel? @relation("CashRegisterSalesChannel", fields: [cashRegisterSalesChannelId], references: [id], onDelete: Restrict)
+  members                            WorkspaceMember[]
+  sessions                           AuthSession[]
+  companies                          Company[]
+  expenseCategories                  ExpenseCategory[]
+  incomeCategories                   IncomeCategory[]
+  incomeSalesChannels                IncomeSalesChannel[]
+  banks                              Bank[]
+  paymentMethods                     PaymentMethod[]
+  suppliers                          Supplier[]
+  customers                          Customer[]
+  recurringExpenses                  RecurringExpense[]
+  expenses                           Expense[]
+  monthlyRevenues                    MonthlyRevenue[]
+  incomes                            Income[]
+  auditLogs                          AuditLog[]
+  cashRegisterBankRules              CashRegisterBankRule[]
+  vatSettlementCategoryId            Int?
+  vatSettlementCategory              ExpenseCategory?       @relation("VatSettlementCategory", fields: [vatSettlementCategoryId], references: [id], onDelete: Restrict)
+  cashRegisterIncomeCategoryId       Int?
+  cashRegisterIncomeCategory         IncomeCategory?        @relation("CashRegisterIncomeCategory", fields: [cashRegisterIncomeCategoryId], references: [id], onDelete: Restrict)
+  cashRegisterSalesChannelId         Int?
+  cashRegisterSalesChannel           IncomeSalesChannel?    @relation("CashRegisterSalesChannel", fields: [cashRegisterSalesChannelId], references: [id], onDelete: Restrict)
   cashRegisterPrimaryPaymentMethodId Int?
-  cashRegisterPrimaryPaymentMethod PaymentMethod? @relation("CashRegisterPrimaryPaymentMethod", fields: [cashRegisterPrimaryPaymentMethodId], references: [id], onDelete: Restrict)
+  cashRegisterPrimaryPaymentMethod   PaymentMethod?         @relation("CashRegisterPrimaryPaymentMethod", fields: [cashRegisterPrimaryPaymentMethodId], references: [id], onDelete: Restrict)
 
   @@index([ownerId])
   @@index([vatSettlementCategoryId])
@@ -128,25 +128,25 @@ model WorkspaceMember {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
   @@index([userId])
 }
 
 model AuthSession {
-  id          Int       @id @default(autoincrement())
-  tokenHash   String    @unique
-  userId      Int
-  workspaceId Int?
+  id              Int      @id @default(autoincrement())
+  tokenHash       String   @unique
+  userId          Int
+  workspaceId     Int?
   activeCompanyId Int?
-  expiresAt   DateTime
-  createdAt   DateTime  @default(now())
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
 
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  activeCompany Company? @relation("ActiveCompanySession", fields: [activeCompanyId], references: [id], onDelete: SetNull)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace     Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  activeCompany Company?   @relation("ActiveCompanySession", fields: [activeCompanyId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([workspaceId])
@@ -212,7 +212,7 @@ model EmailOutbox {
 }
 
 model AuditLog {
-  id          BigInt    @id @default(autoincrement())
+  id          BigInt   @id @default(autoincrement())
   workspaceId Int
   userId      Int
   action      String
@@ -221,7 +221,7 @@ model AuditLog {
   metadata    Json?
   ipAddress   String?
   userAgent   String?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -232,28 +232,28 @@ model AuditLog {
 }
 
 model Company {
-  id        Int       @id @default(autoincrement())
-  code      String
-  name      String
-  legalName String?
-  vatNumber String?
-  taxCode String?
-  pec String?
-  sdiCode String?
-  address String?
-  isActive Boolean @default(true)
-  isDefault Boolean @default(false)
-  workspaceId Int
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  primaryBankId Int?
-  primaryBank Bank? @relation("CompanyPrimaryBank", fields: [primaryBankId], references: [id], onDelete: SetNull)
-  expenses  Expense[]
-  incomes Income[]
+  id                Int                @id @default(autoincrement())
+  code              String
+  name              String
+  legalName         String?
+  vatNumber         String?
+  taxCode           String?
+  pec               String?
+  sdiCode           String?
+  address           String?
+  isActive          Boolean            @default(true)
+  isDefault         Boolean            @default(false)
+  workspaceId       Int
+  workspace         Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  primaryBankId     Int?
+  primaryBank       Bank?              @relation("CompanyPrimaryBank", fields: [primaryBankId], references: [id], onDelete: SetNull)
+  expenses          Expense[]
+  incomes           Income[]
   recurringExpenses RecurringExpense[]
-  revenues  MonthlyRevenue[]
-  activeSessions AuthSession[] @relation("ActiveCompanySession")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  revenues          MonthlyRevenue[]
+  activeSessions    AuthSession[]      @relation("ActiveCompanySession")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -261,29 +261,29 @@ model Company {
 }
 
 model ExpenseCategory {
-  id        Int       @id @default(autoincrement())
-  code      String
-  name      String
-  icon      String?
-  workspaceId Int?
-  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  expenses  Expense[]
-  recurringExpenses RecurringExpense[]
-  vatSettlementForWorkspaces Workspace[] @relation("VatSettlementCategory")
-  defaultForSuppliers Supplier[] @relation("SupplierDefaultExpenseCategory")
+  id                         Int                @id @default(autoincrement())
+  code                       String
+  name                       String
+  icon                       String?
+  workspaceId                Int?
+  workspace                  Workspace?         @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  expenses                   Expense[]
+  recurringExpenses          RecurringExpense[]
+  vatSettlementForWorkspaces Workspace[]        @relation("VatSettlementCategory")
+  defaultForSuppliers        Supplier[]         @relation("SupplierDefaultExpenseCategory")
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
 }
 
 model IncomeCategory {
-  id          Int       @id @default(autoincrement())
-  code        String
-  name        String
-  icon        String?
-  workspaceId Int
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  incomes     Income[]
+  id                        Int         @id @default(autoincrement())
+  code                      String
+  name                      String
+  icon                      String?
+  workspaceId               Int
+  workspace                 Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  incomes                   Income[]
   cashRegisterForWorkspaces Workspace[] @relation("CashRegisterIncomeCategory")
 
   @@unique([workspaceId, code])
@@ -291,18 +291,18 @@ model IncomeCategory {
 }
 
 model IncomeSalesChannel {
-  id          Int       @id @default(autoincrement())
-  code        String
-  name        String
-  icon        String?
-  sortOrder   Int       @default(0)
-  isDefault   Boolean   @default(false)
-  isFallback  Boolean   @default(false)
-  workspaceId Int
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  incomes     Income[]
-  cashRegisterForWorkspaces Workspace[] @relation("CashRegisterSalesChannel")
-  cashRegisterBankRules CashRegisterBankRule[]
+  id                        Int                    @id @default(autoincrement())
+  code                      String
+  name                      String
+  icon                      String?
+  sortOrder                 Int                    @default(0)
+  isDefault                 Boolean                @default(false)
+  isFallback                Boolean                @default(false)
+  workspaceId               Int
+  workspace                 Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  incomes                   Income[]
+  cashRegisterForWorkspaces Workspace[]            @relation("CashRegisterSalesChannel")
+  cashRegisterBankRules     CashRegisterBankRule[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -310,42 +310,44 @@ model IncomeSalesChannel {
 }
 
 model Bank {
-  id        Int       @id @default(autoincrement())
-  name      String
-  icon      String?
-  isFallback Boolean @default(false)
-  workspaceId Int?
-  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  payments  ExpensePayment[]
-  recurringExpenses RecurringExpense[]
-  incomeCredits Income[]
-  cashRegisterPaymentMethods PaymentMethod[] @relation("CashRegisterDefaultBank")
-  cashRegisterBankRules CashRegisterBankRule[]
-  primaryForCompanies Company[] @relation("CompanyPrimaryBank")
+  id                         Int                    @id @default(autoincrement())
+  name                       String
+  icon                       String?
+  isFallback                 Boolean                @default(false)
+  workspaceId                Int?
+  workspace                  Workspace?             @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  payments                   ExpensePayment[]
+  recurringExpenses          RecurringExpense[]
+  incomeLegacyCredits        Income[]
+  incomeCredits              IncomeCredit[]
+  cashRegisterPaymentMethods PaymentMethod[]        @relation("CashRegisterDefaultBank")
+  cashRegisterBankRules      CashRegisterBankRule[]
+  primaryForCompanies        Company[]              @relation("CompanyPrimaryBank")
 
   @@unique([workspaceId, name])
   @@index([workspaceId])
 }
 
 model PaymentMethod {
-  id        Int       @id @default(autoincrement())
-  name      String
-  icon      String?
-  kind      String    @default("BOTH")
-  isFallback Boolean  @default(false)
-  isExpenseDefault Boolean @default(false)
-  isIncomeDefault Boolean @default(false)
-  systemRole PaymentMethodSystemRole?
-  workspaceId Int?
-  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  incomePayments Income[]
-  expensePayments ExpensePayment[]
-  recurringExpenses RecurringExpense[]
-  cashRegisterEnabled Boolean @default(false)
-  cashRegisterDefaultBankId Int?
-  cashRegisterDefaultBank Bank? @relation("CashRegisterDefaultBank", fields: [cashRegisterDefaultBankId], references: [id], onDelete: Restrict)
-  cashRegisterPrimaryForWorkspaces Workspace[] @relation("CashRegisterPrimaryPaymentMethod")
-  cashRegisterBankRules CashRegisterBankRule[]
+  id                               Int                      @id @default(autoincrement())
+  name                             String
+  icon                             String?
+  kind                             String                   @default("BOTH")
+  isFallback                       Boolean                  @default(false)
+  isExpenseDefault                 Boolean                  @default(false)
+  isIncomeDefault                  Boolean                  @default(false)
+  systemRole                       PaymentMethodSystemRole?
+  workspaceId                      Int?
+  workspace                        Workspace?               @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  incomePayments                   Income[]
+  incomeCredits                    IncomeCredit[]
+  expensePayments                  ExpensePayment[]
+  recurringExpenses                RecurringExpense[]
+  cashRegisterEnabled              Boolean                  @default(false)
+  cashRegisterDefaultBankId        Int?
+  cashRegisterDefaultBank          Bank?                    @relation("CashRegisterDefaultBank", fields: [cashRegisterDefaultBankId], references: [id], onDelete: Restrict)
+  cashRegisterPrimaryForWorkspaces Workspace[]              @relation("CashRegisterPrimaryPaymentMethod")
+  cashRegisterBankRules            CashRegisterBankRule[]
 
   @@unique([workspaceId, name])
   @@unique([workspaceId, systemRole])
@@ -375,35 +377,35 @@ model CashRegisterBankRule {
 }
 
 model Supplier {
-  id             Int       @id @default(autoincrement())
-  businessName   String
-  email          String?
-  vatNumber      String?
-  iban           String?
-  pec            String?
-  taxCodeSdi     String?
-  alias          String?
-  swift          String?
-  internalNotes  String?
-  systemRole     SupplierSystemRole?
-  workspaceId    Int?
-  workspace      Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  id                       Int                 @id @default(autoincrement())
+  businessName             String
+  email                    String?
+  vatNumber                String?
+  iban                     String?
+  pec                      String?
+  taxCodeSdi               String?
+  alias                    String?
+  swift                    String?
+  internalNotes            String?
+  systemRole               SupplierSystemRole?
+  workspaceId              Int?
+  workspace                Workspace?          @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   defaultExpenseCategoryId Int?
-  defaultExpenseCategory ExpenseCategory? @relation("SupplierDefaultExpenseCategory", fields: [defaultExpenseCategoryId], references: [id], onDelete: SetNull)
-  expenses       Expense[]
-  recurringExpenses RecurringExpense[]
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  defaultExpenseCategory   ExpenseCategory?    @relation("SupplierDefaultExpenseCategory", fields: [defaultExpenseCategoryId], references: [id], onDelete: SetNull)
+  expenses                 Expense[]
+  recurringExpenses        RecurringExpense[]
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
 
+  @@unique([workspaceId, systemRole])
   @@index([businessName])
   @@index([alias])
   @@index([workspaceId])
   @@index([defaultExpenseCategoryId])
-  @@unique([workspaceId, systemRole])
 }
 
 model Customer {
-  id            Int       @id @default(autoincrement())
+  id            Int                 @id @default(autoincrement())
   businessName  String
   alias         String?
   email         String?
@@ -415,50 +417,51 @@ model Customer {
   internalNotes String?
   systemRole    CustomerSystemRole?
   workspaceId   Int
-  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace     Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   incomes       Income[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 
+  @@unique([workspaceId, systemRole])
   @@index([businessName])
   @@index([alias])
   @@index([workspaceId])
-  @@unique([workspaceId, systemRole])
 }
 
 model RecurringExpense {
-  id                   Int       @id @default(autoincrement())
+  id                   Int              @id @default(autoincrement())
   workspaceId          Int?
-  workspace            Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  workspace            Workspace?       @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   companyId            Int
-  company              Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  company              Company          @relation(fields: [companyId], references: [id], onDelete: Restrict)
   startDate            DateTime
   cadence              String
   dueDay               Int?
   dueMonth             Int?
-  isAutomaticPayment   Boolean   @default(false)
-  billingPeriodMode    String    @default("SAME_MONTH")
+  isAutomaticPayment   Boolean          @default(false)
+  billingPeriodMode    String           @default("SAME_MONTH")
   billingMonth         Int?
   merchant             String
   supplierId           Int?
-  supplier             Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  supplier             Supplier?        @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   categoryId           Int?
   category             ExpenseCategory? @relation(fields: [categoryId], references: [id])
   description          String?
-  amount               Decimal   @db.Decimal(12, 2)
-  vatRate              Decimal   @db.Decimal(5, 2) @default(22)
-  isDeclared           Boolean   @default(true)
-  hasElectronicInvoice Boolean   @default(true)
+  amount               Decimal          @db.Decimal(12, 2)
+  vatRate              Decimal          @default(22) @db.Decimal(5, 2)
+  isDeclared           Boolean          @default(true)
+  hasElectronicInvoice Boolean          @default(true)
   paymentMethodId      Int?
-  paymentMethod        PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+  paymentMethod        PaymentMethod?   @relation(fields: [paymentMethodId], references: [id])
   bankId               Int?
-  bank                 Bank?     @relation(fields: [bankId], references: [id])
+  bank                 Bank?            @relation(fields: [bankId], references: [id])
   notes                String?
-  isActive             Boolean   @default(true)
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  isActive             Boolean          @default(true)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
 
-  generatedExpenses    Expense[]
+  generatedExpenses Expense[]
+
   @@index([workspaceId])
   @@index([workspaceId, companyId])
   @@index([startDate])
@@ -467,69 +470,68 @@ model RecurringExpense {
   @@index([paymentMethodId])
 }
 
-
 model Expense {
-  id                    Int       @id @default(autoincrement())
-  workspaceId           Int?
-  workspace             Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  receivedDate          DateTime?
-  merchant              String
-  supplierId            Int
-  supplier              Supplier  @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-  categoryId            Int?
-  category              ExpenseCategory? @relation(fields: [categoryId], references: [id])
-  description           String?
-  amount                Decimal   @db.Decimal(12, 2)
-  expenseType           ExpenseType @default(STANDARD)
-  paymentDate           DateTime?
-  dueDate               DateTime?
-  vatRate               Decimal   @db.Decimal(5, 2) @default(22)
-  isComplete            Boolean   @default(false)
-  isDeclared            Boolean   @default(true)
-  hasElectronicInvoice  Boolean   @default(true)
-  isRecurring          Boolean   @default(false)
-  isAutomaticPayment   Boolean   @default(false)
-  invoiceStatus         InvoiceStatus @default(IN_ATTESA)
-  companyId             Int
-  company               Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  month                 Int
-  year                  Int
-  notes                 String?
+  id                      Int              @id @default(autoincrement())
+  workspaceId             Int?
+  workspace               Workspace?       @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  receivedDate            DateTime?
+  merchant                String
+  supplierId              Int
+  supplier                Supplier         @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  categoryId              Int?
+  category                ExpenseCategory? @relation(fields: [categoryId], references: [id])
+  description             String?
+  amount                  Decimal          @db.Decimal(12, 2)
+  expenseType             ExpenseType      @default(STANDARD)
+  paymentDate             DateTime?
+  dueDate                 DateTime?
+  vatRate                 Decimal          @default(22) @db.Decimal(5, 2)
+  isComplete              Boolean          @default(false)
+  isDeclared              Boolean          @default(true)
+  hasElectronicInvoice    Boolean          @default(true)
+  isRecurring             Boolean          @default(false)
+  isAutomaticPayment      Boolean          @default(false)
+  invoiceStatus           InvoiceStatus    @default(IN_ATTESA)
+  companyId               Int
+  company                 Company          @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  month                   Int
+  year                    Int
+  notes                   String?
   counterExpenseRequestId String?
 
-  paymentStatus         PaymentStatus @default(DA_PAGARE)
-  paidAmount            Decimal   @db.Decimal(12, 2) @default(0)
-  invoiceDocumentPath   String?
+  paymentStatus       PaymentStatus @default(DA_PAGARE)
+  paidAmount          Decimal       @default(0) @db.Decimal(12, 2)
+  invoiceDocumentPath String?
 
-  payments              ExpensePayment[]
-  attachments           ExpenseAttachment[]
+  payments    ExpensePayment[]
+  attachments ExpenseAttachment[]
 
-  recurringExpenseId    Int?
-  recurringExpense      RecurringExpense? @relation(fields: [recurringExpenseId], references: [id], onDelete: SetNull)
+  recurringExpenseId        Int?
+  recurringExpense          RecurringExpense? @relation(fields: [recurringExpenseId], references: [id], onDelete: SetNull)
   recurringExpensePeriodKey String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime          @updatedAt
 
   @@unique([recurringExpenseId, recurringExpensePeriodKey])
+  @@unique([workspaceId, counterExpenseRequestId])
   @@index([workspaceId])
   @@index([workspaceId, companyId])
   @@index([year, month])
   @@index([merchant])
   @@index([expenseType])
-  @@unique([workspaceId, counterExpenseRequestId])
 }
 
 model ExpensePayment {
-  id          Int       @id @default(autoincrement())
-  expenseId   Int
-  expense     Expense   @relation(fields: [expenseId], references: [id], onDelete: Cascade)
-  paymentDate DateTime?
+  id              Int           @id @default(autoincrement())
+  expenseId       Int
+  expense         Expense       @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  paymentDate     DateTime?
   paymentMethodId Int
-  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
-  bankId      Int?
-  bank        Bank?     @relation(fields: [bankId], references: [id])
-  amount      Decimal   @db.Decimal(12, 2)
-  createdAt   DateTime  @default(now())
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  bankId          Int?
+  bank            Bank?         @relation(fields: [bankId], references: [id])
+  amount          Decimal       @db.Decimal(12, 2)
+  createdAt       DateTime      @default(now())
 
   @@index([expenseId])
   @@index([paymentDate])
@@ -537,76 +539,78 @@ model ExpensePayment {
 }
 
 model ExpenseAttachment {
-  id           Int       @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   expenseId    Int
-  expense      Expense   @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  expense      Expense  @relation(fields: [expenseId], references: [id], onDelete: Cascade)
   originalName String
   path         String
   mimeType     String?
   sizeBytes    Int?
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime @default(now())
 
   @@index([expenseId])
 }
 
 model MonthlyRevenue {
-  id              Int       @id @default(autoincrement())
+  id              Int        @id @default(autoincrement())
   workspaceId     Int?
   workspace       Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   companyId       Int
-  company         Company   @relation(fields: [companyId], references: [id])
+  company         Company    @relation(fields: [companyId], references: [id])
   month           Int
   year            Int
-  webAmount       Decimal   @db.Decimal(12, 2) @default(0)
-  shopAmount      Decimal   @db.Decimal(12, 2) @default(0)
-  noInvoiceAmount Decimal   @db.Decimal(12, 2) @default(0)
+  webAmount       Decimal    @default(0) @db.Decimal(12, 2)
+  shopAmount      Decimal    @default(0) @db.Decimal(12, 2)
+  noInvoiceAmount Decimal    @default(0) @db.Decimal(12, 2)
   totalOrders     Int?
-  inps            Decimal   @db.Decimal(12, 2) @default(0)
-  accountant      Decimal   @db.Decimal(12, 2) @default(0)
-  tari            Decimal   @db.Decimal(12, 2) @default(0)
-  taxRate         Decimal   @db.Decimal(5, 2) @default(28)
+  inps            Decimal    @default(0) @db.Decimal(12, 2)
+  accountant      Decimal    @default(0) @db.Decimal(12, 2)
+  tari            Decimal    @default(0) @db.Decimal(12, 2)
+  taxRate         Decimal    @default(28) @db.Decimal(5, 2)
   notes           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   @@unique([companyId, year, month])
   @@index([workspaceId])
   @@index([year, month])
 }
 
-
 model Income {
-  id              Int       @id @default(autoincrement())
-  workspaceId     Int?
-  workspace       Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
-  companyId       Int
-  company         Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  customerId      Int?
-  customer        Customer? @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  salesChannelId  Int
-  salesChannelRef IncomeSalesChannel @relation(fields: [salesChannelId], references: [id], onDelete: Restrict)
-  incomeCategoryId Int
-  incomeCategory  IncomeCategory @relation(fields: [incomeCategoryId], references: [id], onDelete: Restrict)
-  description     String?
-  amount          Decimal   @db.Decimal(12, 2)
-  paymentMethodId Int
-  paymentMethodRef PaymentMethod @relation(fields: [paymentMethodId], references: [id])
-  creditBankId    Int
-  creditBank      Bank     @relation(fields: [creditBankId], references: [id])
-  orderDate       DateTime?
-  creditDate      DateTime
-  isCredited      Boolean   @default(true)
-  billingMonth    Int       @default(1)
-  billingYear     Int       @default(2026)
-  isFiscal        Boolean   @default(true)
-  invoiceStatus   String?
-  vatRate         Decimal   @db.Decimal(5, 2) @default(22)
-  notes           String?
-  incomeType      IncomeType @default(STANDARD)
+  id                    Int                @id @default(autoincrement())
+  workspaceId           Int?
+  workspace             Workspace?         @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  companyId             Int
+  company               Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  customerId            Int?
+  customer              Customer?          @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  salesChannelId        Int
+  salesChannelRef       IncomeSalesChannel @relation(fields: [salesChannelId], references: [id], onDelete: Restrict)
+  incomeCategoryId      Int
+  incomeCategory        IncomeCategory     @relation(fields: [incomeCategoryId], references: [id], onDelete: Restrict)
+  description           String?
+  amount                Decimal            @db.Decimal(12, 2)
+  paymentMethodId       Int
+  paymentMethodRef      PaymentMethod      @relation(fields: [paymentMethodId], references: [id])
+  creditBankId          Int
+  creditBank            Bank               @relation(fields: [creditBankId], references: [id])
+  orderDate             DateTime?
+  creditDate            DateTime
+  expectedCreditDate    DateTime?
+  isCredited            Boolean            @default(true)
+  billingMonth          Int                @default(1)
+  billingYear           Int                @default(2026)
+  isFiscal              Boolean            @default(true)
+  invoiceStatus         String?
+  vatRate               Decimal            @default(22) @db.Decimal(5, 2)
+  notes                 String?
+  incomeType            IncomeType         @default(STANDARD)
   cashRegisterRequestId String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  credits               IncomeCredit[]
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
 
+  @@unique([workspaceId, cashRegisterRequestId])
   @@index([workspaceId])
   @@index([workspaceId, companyId])
   @@index([customerId])
@@ -619,5 +623,22 @@ model Income {
   @@index([paymentMethodId])
   @@index([creditBankId])
   @@index([incomeType])
-  @@unique([workspaceId, cashRegisterRequestId])
+}
+
+model IncomeCredit {
+  id              Int           @id @default(autoincrement())
+  incomeId        Int
+  income          Income        @relation(fields: [incomeId], references: [id], onDelete: Cascade)
+  creditDate      DateTime
+  paymentMethodId Int
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  bankId          Int
+  bank            Bank          @relation(fields: [bankId], references: [id], onDelete: Restrict)
+  amount          Decimal       @db.Decimal(12, 2)
+  createdAt       DateTime      @default(now())
+
+  @@index([incomeId])
+  @@index([creditDate])
+  @@index([paymentMethodId])
+  @@index([bankId])
 }

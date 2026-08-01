@@ -210,6 +210,7 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
     for (const legacyChannel of duplicateChannels) {
       await prisma.$transaction([
         prisma.expensePayment.updateMany({where: {bankId: legacyChannel.id}, data: {bankId: canonicalCashChannel.id}}),
+        prisma.incomeCredit.updateMany({where: {bankId: legacyChannel.id}, data: {bankId: canonicalCashChannel.id}}),
         prisma.recurringExpense.updateMany({where: {bankId: legacyChannel.id}, data: {bankId: canonicalCashChannel.id}}),
         prisma.income.updateMany({where: {creditBankId: legacyChannel.id}, data: {creditBankId: canonicalCashChannel.id}}),
         prisma.paymentMethod.updateMany({

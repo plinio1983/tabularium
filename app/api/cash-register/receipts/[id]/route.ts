@@ -65,7 +65,13 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
             billingMonth: period.month,
             salesChannelId: channel.id,
             paymentMethodId: method.id,
-            creditBankId
+            creditBankId,
+            isCredited: true,
+            expectedCreditDate: null,
+            credits: {
+                deleteMany: {},
+                create: {creditDate: date, paymentMethodId: method.id, bankId: creditBankId, amount: input.amount}
+            }
         }
     });
     await writeAuditLog({

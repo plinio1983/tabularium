@@ -26,6 +26,7 @@ export const incomeInvoiceStatusStyles: Record<string, { label: string; icon: st
 
 export const incomeCreditStatusStyles: Record<string, { label: string; icon: string; className: string }> = {
   ACCREDITATO: { label: 'Accreditato', icon: '✓', className: 'tone-yes' },
+  PARZIALE: { label: 'Accreditato parzialmente', icon: '◐', className: 'tone-partial' },
   DA_ACCREDITARE: { label: 'Da accreditare', icon: '⏳', className: 'tone-waiting' },
   SCADUTO: { label: 'Scaduto', icon: '⛔', className: 'tone-critical' }
 };

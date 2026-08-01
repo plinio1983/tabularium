@@ -13200,6 +13200,46 @@ button.bulk-direct-danger {
   font-size: 13px;
 }
 
+.income-credits-box .payment-summary-kicker,
+.income-credits-box .payment-summary-date span,
+.income-credits-box .payment-summary-meta span {
+  font-size: 13px;
+}
+
+.income-form .income-credits-box .payment-amount-field {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: inherit;
+}
+
+.income-form .income-credits-box .payment-amount-field .money-input {
+  width: 100%;
+}
+
+.income-form .income-credits-box .payment-amount-field .money-input > input {
+  width: 100%;
+  padding-left: 46px !important;
+  padding-right: 14px;
+  text-align: right;
+}
+
+.income-form .income-credits-box .payment-amount-field .money-input > span {
+  z-index: 2;
+  left: 14px;
+  width: 20px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.income-additional-credit-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .expense-form .payment-row {
   border: 1px solid #dbe3ee;
   border-radius: 18px;

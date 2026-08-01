@@ -99,7 +99,8 @@ export async function POST(request: Request) {
                 invoiceStatus: input.isFiscal ? 'EMESSA' : null,
                 vatRate,
                 incomeType: 'CASH_REGISTER',
-                cashRegisterRequestId: input.requestId
+                cashRegisterRequestId: input.requestId,
+                credits: {create: {creditDate: date, paymentMethodId: method.id, bankId: creditBankId, amount: input.amount}}
             },
             include: {paymentMethodRef: true}
         });

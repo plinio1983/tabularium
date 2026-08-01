@@ -1,6 +1,7 @@
 import { prisma } from './prisma';
 import { isExpenseInvoiceNotReceived } from './expense-invoice';
 import {expenseResidualAmount, isExpensePastDue} from './expense-calculations';
+import {incomeCreditSummary} from './income-credits';
 
 export function vatAmountFromGross(amount: number, vatRate: number) {
   if (!vatRate) return 0;
@@ -52,7 +53,8 @@ function incomePeriodWhereIncludingUncredited(periods: Array<{ year: number; mon
     ...(companyId ? {companyId} : {}),
     OR: [
       ...periods.map(({ year, month }) => ({ billingYear: year, billingMonth: month })),
-      ...periods.map(({ year, month }) => ({ isCredited: false, creditDate: monthDateRange(year, month) }))
+      ...periods.map(({ year, month }) => ({ isCredited: false, expectedCreditDate: monthDateRange(year, month) })),
+      ...periods.map(({ year, month }) => ({ isCredited: false, expectedCreditDate: null, creditDate: monthDateRange(year, month) }))
     ]
   };
 }
@@ -60,14 +62,14 @@ function incomePeriodWhereIncludingUncredited(periods: Array<{ year: number; mon
 function incomeMatchesPeriod(income: any, year: number, month: number) {
   if (Number(income.billingYear) === year && Number(income.billingMonth) === month) return true;
   if (income.isCredited) return false;
-  const creditDate = income.creditDate ? new Date(income.creditDate) : null;
+  const creditDate = income.expectedCreditDate ? new Date(income.expectedCreditDate) : income.creditDate ? new Date(income.creditDate) : null;
   return Boolean(creditDate && creditDate.getFullYear() === year && creditDate.getMonth() + 1 === month);
 }
 
 function incomeMatchesYear(income: any, year: number) {
   if (Number(income.billingYear) === year) return true;
   if (income.isCredited) return false;
-  const creditDate = income.creditDate ? new Date(income.creditDate) : null;
+  const creditDate = income.expectedCreditDate ? new Date(income.expectedCreditDate) : income.creditDate ? new Date(income.creditDate) : null;
   return Boolean(creditDate && creditDate.getFullYear() === year);
 }
 
@@ -123,7 +125,7 @@ function isExpenseOverdue(expense: any) {
 
 function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const incassoTotale = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
-  const nonAccreditato = incomes.reduce((sum, income) => income.isCredited ? sum : sum + Number(income.amount), 0);
+  const nonAccreditato = incomes.reduce((sum, income) => sum + incomeCreditSummary(income).residual, 0);
   const incassoFiscale = incomes.reduce((sum, income) => income.isFiscal ? sum + Number(income.amount) : sum, 0);
   const incassoNonFiscale = incassoTotale - incassoFiscale;
 
@@ -189,7 +191,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
 
 export async function getPeriodSummary(periods: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const [incomes, expenses] = await Promise.all([
-    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(periods, options.workspaceId, options.companyId) }),
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(periods, options.workspaceId, options.companyId), include: {credits: true} }),
     prisma.expense.findMany({ where: periodWhere(periods, options.workspaceId, options.companyId), include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
   ]);
 
@@ -210,11 +212,18 @@ export async function getOrderDatePeriodSummary(periods: Array<{ year: number; m
   const to = new Date(last.year, last.month, 1);
 
   const [incomes, expenses] = await Promise.all([
-    prisma.income.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), creditDate: { gte: from, lt: to } } }),
+    prisma.income.findMany({
+      where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {creditDate: {gte: from, lt: to}}} },
+      include: {credits: {where: {creditDate: {gte: from, lt: to}}}}
+    }),
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), receivedDate: { gte: from, lt: to } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
   ]);
 
-  return summarizeRecords(incomes, expenses);
+  return summarizeRecords(incomes.map(income => ({
+    ...income,
+    amount: income.credits.reduce((sum, credit) => sum + Number(credit.amount), 0),
+    isCredited: true,
+  })), expenses);
 }
 
 export async function getAccountingDashboardReport(
@@ -240,7 +249,7 @@ export async function getAccountingDashboardReport(
   const [currentFiscalMonth, currentFiscalQuarter, yearIncomes, yearExpenses] = await Promise.all([
     getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId }),
     getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId }),
-    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId, companyId), include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true } }),
+    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId, companyId), include: { incomeCategory: true, salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true, credits: true } }),
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), year: { in: reportYears } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true } })
   ]);
 
@@ -318,12 +327,20 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
     prisma.income.findMany({
       where: mode === 'fiscal'
         ? incomePeriodWhereIncludingUncredited([{ year, month }], workspaceId, companyId)
-        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), creditDate: dateRange },
-      include: { salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true, customer: true }
+        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {creditDate: dateRange}} },
+      include: {
+        salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true, customer: true,
+        credits: mode === 'fiscal' ? true : {where: {creditDate: dateRange}}
+      }
     })
   ]);
 
-  const summary = summarizeRecords(incomes, expenses, mode === 'fiscal' ? [{ year, month }] : undefined);
+  const summaryIncomes = mode === 'fiscal' ? incomes : incomes.map(income => ({
+    ...income,
+    amount: income.credits.reduce((sum, credit) => sum + Number(credit.amount), 0),
+    isCredited: true,
+  }));
+  const summary = summarizeRecords(summaryIncomes, expenses, mode === 'fiscal' ? [{ year, month }] : undefined);
   const taxRate = 30;
   const estimatedTax = Math.max(summary.utileFiscale, 0) * taxRate / 100;
 

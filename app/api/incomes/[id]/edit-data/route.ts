@@ -12,7 +12,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'ID incasso non valido' }, { status: 400 });
   }
 
-  const income = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id } });
+  const income = await prisma.income.findFirst({
+    where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id },
+    include: { credits: { orderBy: [{creditDate: 'asc'}, {id: 'asc'}] } }
+  });
 
   if (!income) {
     return NextResponse.json({ error: 'Incasso non trovato' }, { status: 404 });
@@ -29,7 +32,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       paymentMethodId: income.paymentMethodId,
       creditBankId: income.creditBankId,
       creditDate: income.creditDate,
+      expectedCreditDate: income.expectedCreditDate,
       isCredited: income.isCredited,
+      credits: income.credits.map(credit => ({
+        id: credit.id,
+        creditDate: credit.creditDate,
+        amount: credit.amount.toString(),
+        paymentMethodId: credit.paymentMethodId,
+        bankId: credit.bankId,
+      })),
       billingMonth: income.billingMonth,
       billingYear: income.billingYear,
       isFiscal: income.isFiscal,

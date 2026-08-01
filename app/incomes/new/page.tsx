@@ -54,7 +54,7 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
       cancelHref={returnTo}
       submitLabel={copyIncome ? 'Crea incasso copiato' : 'Salva incasso'}
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId }))}
-      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
+      paymentMethods={incomePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, isIncomeDefault: method.isIncomeDefault }))}
       salesChannels={salesChannels}
       customers={customers}
     />

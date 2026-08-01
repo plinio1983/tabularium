@@ -333,12 +333,19 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
           orderDate,
           creditDate,
           isCredited,
+          expectedCreditDate: isCredited ? null : creditDate,
           billingYear: billing.year,
           billingMonth: billing.month,
           isFiscal,
           invoiceStatus,
           vatRate,
-          notes: normalizeText(rowValue(item.row, ['Note', 'Annotazioni'])) || null
+          notes: normalizeText(rowValue(item.row, ['Note', 'Annotazioni'])) || null,
+          credits: isCredited ? {create: {
+            creditDate,
+            paymentMethodId: refs.paymentMethod.id,
+            bankId: refs.bank.id,
+            amount,
+          }} : undefined,
         }
       });
       result.imported++;

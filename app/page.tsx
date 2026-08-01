@@ -1803,9 +1803,12 @@ export default async function Dashboard({searchParams}: {
                 workspaceId: current.workspace.id,
                 companyId: current.company.id,
                 isCredited: false,
-                creditDate: {gte: scheduleFrom, lt: scheduleTo}
+                OR: [
+                    {expectedCreditDate: {gte: scheduleFrom, lt: scheduleTo}},
+                    {expectedCreditDate: null, creditDate: {gte: scheduleFrom, lt: scheduleTo}}
+                ]
             },
-            select: {amount: true, creditDate: true}
+            select: {amount: true, creditDate: true, expectedCreditDate: true, credits: {select: {amount: true}}}
         }),
         prisma.expense.findMany({
             where: {
@@ -1879,7 +1882,9 @@ export default async function Dashboard({searchParams}: {
         overdue: 0
     }));
     pendingIncomes.forEach(income => {
-        cashSchedule[income.creditDate.getMonth()].incoming += Number(income.amount);
+        const scheduledDate = income.expectedCreditDate ?? income.creditDate;
+        const credited = income.credits.reduce((sum, credit) => sum + Number(credit.amount), 0);
+        cashSchedule[scheduledDate.getMonth()].incoming += Math.max(0, Number(income.amount) - credited);
     });
     pendingExpenses.forEach(expense => {
         if (!expense.dueDate) return;

@@ -590,7 +590,8 @@ export default async function IncomesPage({searchParams}: {
                 paymentMethodRef: true,
                 creditBank: true,
                 salesChannelRef: true,
-                customer: true
+                customer: true,
+                credits: true
             },
             orderBy: [{creditDate: 'desc'}, {id: 'desc'}]
         }),
@@ -653,19 +654,21 @@ export default async function IncomesPage({searchParams}: {
         ? `/months/${reportMonth.year}/${reportMonth.month}?returnTo=${encodeURIComponent(listHref)}`
         : null;
 
+    const matchesCreditDate = (income: typeof incomes[number]) => !creditDateFromFilter && !creditDateToFilter
+        || income.credits.some(credit => matchesIsoDate(credit.creditDate, creditDateFromFilter, creditDateToFilter));
     const periodIncomes = incomes.filter(income => {
-        if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
+        if (!matchesCreditDate(income)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
         return true;
     });
 
     const filteredIncomes = periodIncomes.filter(income => {
-        if (!matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter)) return false;
+        if (!matchesCreditDate(income)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
         if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
         if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
-        if (paymentMethodFilter && income.paymentMethodRef.name !== paymentMethodFilter) return false;
-        if (creditChannelFilter && income.creditBank.name !== creditChannelFilter) return false;
+        if (paymentMethodFilter && !income.credits.some(credit => credit.paymentMethodId === incomePaymentMethods.find(method => method.name === paymentMethodFilter)?.id)) return false;
+        if (creditChannelFilter && !income.credits.some(credit => credit.bankId === orderedBanks.find(bank => bank.name === creditChannelFilter)?.id)) return false;
         if (customerQuickFilter && !normalize(income.customer?.businessName).includes(customerQuickFilter)) return false;
         if (fiscalFilter === 'yes' && !income.isFiscal) return false;
         if (fiscalFilter === 'no' && income.isFiscal) return false;
@@ -681,7 +684,8 @@ export default async function IncomesPage({searchParams}: {
         const vatRate = Number(income.vatRate.toString());
         const vatDebt = income.isFiscal ? vatAmountFromGross(amount, vatRate) : 0;
         acc.total += amount;
-        if (!income.isCredited) acc.uncredited += amount;
+        const credited = income.credits.reduce((sum, credit) => sum + Number(credit.amount), 0);
+        acc.uncredited += Math.max(0, amount - credited);
         acc.vatDebt += vatDebt;
         if (income.isFiscal) {
             acc.fiscal += amount;
@@ -1185,7 +1189,8 @@ export default async function IncomesPage({searchParams}: {
                     name: method.name,
                     icon: method.icon,
                     kind: method.kind,
-                    isFallback: method.isFallback
+                    isFallback: method.isFallback,
+                    isIncomeDefault: method.isIncomeDefault
                 }))}
                 salesChannels={salesChannels}
                 customers={customers}

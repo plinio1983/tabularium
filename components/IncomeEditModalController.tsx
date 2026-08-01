@@ -15,6 +15,13 @@ type EditIncome = {
   orderDate?: string | Date | null;
   creditDate?: string | Date | null;
   isCredited?: boolean;
+  credits?: Array<{
+    id?: number;
+    creditDate?: string | Date | null;
+    paymentMethodId?: number | null;
+    bankId?: number | null;
+    amount?: string | number | null;
+  }>;
   billingMonth?: number | null;
   billingYear?: number | null;
   isFiscal?: boolean;
@@ -24,7 +31,7 @@ type EditIncome = {
 };
 
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null };
-type PaymentMethodOption = Option & { kind?: string };
+type PaymentMethodOption = Option & { kind?: string; isIncomeDefault?: boolean };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
 type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
 
@@ -58,6 +65,8 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
           ...loadedIncome,
           orderDate: clampDateToToday(loadedIncome.orderDate ?? loadedIncome.creditDate),
           creditDate: clampDateToToday(loadedIncome.creditDate),
+          isCredited: false,
+          credits: [],
           billingMonth: billingPeriod.month,
           billingYear: billingPeriod.year,
         });

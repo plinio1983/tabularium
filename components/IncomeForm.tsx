@@ -19,12 +19,30 @@ type InitialIncome = {
     creditBankId?: number | null;
     creditDate?: string | Date | null;
     isCredited?: boolean;
+    credits?: InitialCredit[];
     billingMonth?: number | null;
     billingYear?: number | null;
     isFiscal?: boolean;
     invoiceStatus?: string | null;
     vatRate?: string | number | { toString(): string } | null;
     notes?: string | null;
+};
+
+type InitialCredit = {
+    id?: number;
+    creditDate?: string | Date | null;
+    paymentMethodId?: number | null;
+    bankId?: number | null;
+    amount?: string | number | { toString(): string } | null;
+};
+
+type CreditRow = {
+    key: number;
+    id?: number;
+    creditDate: string;
+    paymentMethodId: string;
+    bankId: string;
+    amount: string;
 };
 
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; isPrimary?: boolean };
@@ -92,6 +110,10 @@ function isCashMethod(method?: Option) {
     return method?.name.trim().toLowerCase() === "cash";
 }
 
+function isCreditComplete(credit: CreditRow) {
+    return Boolean(credit.creditDate && credit.paymentMethodId && credit.bankId && Number(credit.amount || 0) > 0);
+}
+
 export default function IncomeForm({
                                        initialIncome,
                                        action = "/api/incomes",
@@ -117,16 +139,31 @@ export default function IncomeForm({
     const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount).replace(".", ","));
     const [salesChannelId, setSalesChannelId] = useState(initialSalesChannelId);
     const [orderDate, setOrderDate] = useState(toDateInput(initialIncome?.orderDate) || today);
-    const [creditDate, setCreditDate] = useState(toDateInput(initialIncome?.creditDate) || today);
     const [billingPeriod, setBillingPeriod] = useState(toMonthInput(initialIncome));
     const [description, setDescription] = useState(initialIncome?.description ?? "");
     const [notes, setNotes] = useState(initialIncome?.notes ?? "");
     const [customerName, setCustomerName] = useState(
         customers.find(customer => customer.id === initialIncome?.customerId)?.businessName ?? "",
     );
-    const [paymentMethodId, setPaymentMethodId] = useState(initialPaymentMethodId);
-    const [creditBankId, setCreditBankId] = useState(initialCreditBankId);
-    const [isCredited, setIsCredited] = useState(initialIncome?.isCredited ?? true);
+    const [credits, setCredits] = useState<CreditRow[]>(() => {
+        if (initialIncome?.credits?.length) return initialIncome.credits.map((credit, index) => ({
+            key: credit.id ?? Date.now() + index,
+            id: credit.id,
+            creditDate: toDateInput(credit.creditDate) || today,
+            paymentMethodId: findOptionId(paymentMethods, credit.paymentMethodId) || initialPaymentMethodId,
+            bankId: findOptionId(banks, credit.bankId) || initialCreditBankId,
+            amount: normalizeMoney(credit.amount),
+        }));
+        if (initialIncome?.isCredited) return [{
+            key: initialIncome.id ?? Date.now(),
+            creditDate: toDateInput(initialIncome.creditDate) || today,
+            paymentMethodId: initialPaymentMethodId,
+            bankId: initialCreditBankId,
+            amount: normalizeMoney(initialIncome.amount),
+        }];
+        return [];
+    });
+    const [openCreditKey, setOpenCreditKey] = useState<number | null>(null);
     const [isFiscal, setIsFiscal] = useState(initialIncome?.isFiscal ?? true);
     const [invoiceStatus, setInvoiceStatus] = useState(initialIncome?.invoiceStatus ?? "NON_INVIATA");
     const [vatRate, setVatRate] = useState(normalizeMoney(initialIncome?.vatRate) || "22");
@@ -139,18 +176,68 @@ export default function IncomeForm({
     const activeVatRate = isFiscal ? Number(vatRate || 0) : 0;
     const netAmount = useMemo(() => activeVatRate > 0 ? amountValue / (1 + activeVatRate / 100) : amountValue, [amountValue, activeVatRate]);
 
-    const selectedPaymentMethod = paymentMethods.find(method => String(method.id) === paymentMethodId);
-    const cashPaymentSelected = isCashMethod(selectedPaymentMethod);
-    const previousCashSelection = useRef(cashPaymentSelected);
+    const creditedAmount = credits.reduce((sum, credit) => sum + Number(credit.amount || 0), 0);
+    const creditResidual = Math.max(0, amountValue - creditedAmount);
+    const isCredited = amountValue > 0 && creditedAmount >= amountValue - 0.005;
+    const creditStatusLabel = isCredited ? "Accreditato" : creditedAmount > 0 ? "Accreditato parzialmente" : "Da accreditare";
+    const canAddCredit = credits.every(isCreditComplete) && creditResidual > 0.005;
 
-    useEffect(() => {
-        if (cashPaymentSelected && cashBank && creditBankId !== String(cashBank.id)) {
-            setCreditBankId(String(cashBank.id));
-        } else if (!cashPaymentSelected && previousCashSelection.current && primaryBank) {
-            setCreditBankId(String(primaryBank.id));
-        }
-        previousCashSelection.current = cashPaymentSelected;
-    }, [cashPaymentSelected, cashBank, primaryBank, creditBankId]);
+    function updateCredit(index: number, patch: Partial<CreditRow>) {
+        setCredits(rows => rows.map((credit, rowIndex) => {
+            if (rowIndex !== index) return credit;
+            const next = {...credit, ...patch};
+            if ("paymentMethodId" in patch) {
+                const nextMethod = paymentMethods.find(method => String(method.id) === next.paymentMethodId);
+                const previousMethod = paymentMethods.find(method => String(method.id) === credit.paymentMethodId);
+                if (isCashMethod(nextMethod) && cashBank) next.bankId = String(cashBank.id);
+                else if (isCashMethod(previousMethod) && primaryBank) next.bankId = String(primaryBank.id);
+            }
+            return next;
+        }));
+    }
+
+    function creditAvailableAmount(index?: number) {
+        const otherCredits = credits.reduce((sum, credit, rowIndex) => rowIndex === index ? sum : sum + Number(credit.amount || 0), 0);
+        return Math.max(0, amountValue - otherCredits);
+    }
+
+    function addCredit() {
+        if (!canAddCredit && credits.length) return;
+        const key = Date.now();
+        const available = creditAvailableAmount();
+        setCredits(rows => [...rows, {
+            key,
+            creditDate: today,
+            paymentMethodId: initialPaymentMethodId,
+            bankId: initialCreditBankId,
+            amount: available > 0 ? available.toFixed(2) : "",
+        }]);
+        setOpenCreditKey(key);
+    }
+
+    function removeCredit(index: number) {
+        const credit = credits[index];
+        if (credit?.id && !window.confirm("Eliminare questo accredito?")) return;
+        setCredits(rows => rows.filter((_, rowIndex) => rowIndex !== index));
+        if (credit?.key === openCreditKey) setOpenCreditKey(null);
+    }
+
+    function setCreditPercentage(index: number, percentage: number) {
+        const value = creditAvailableAmount(index) * percentage / 100;
+        updateCredit(index, {amount: value > 0 ? value.toFixed(2) : ""});
+    }
+
+    function renderCreditHiddenInputs(credit: CreditRow) {
+        const method = paymentMethods.find(item => String(item.id) === credit.paymentMethodId);
+        const bankId = isCashMethod(method) && cashBank ? String(cashBank.id) : credit.bankId;
+        return <>
+            <input type="hidden" name="creditId[]" value={credit.id ?? ""}/>
+            <input type="hidden" name="creditDate[]" value={credit.creditDate}/>
+            <input type="hidden" name="creditPaymentMethodId[]" value={credit.paymentMethodId}/>
+            <input type="hidden" name="creditBankId[]" value={bankId}/>
+            <input type="hidden" name="creditAmount[]" value={credit.amount}/>
+        </>;
+    }
 
     function toggleFiscal(nextValue: boolean) {
         setIsFiscal(nextValue);
@@ -352,44 +439,91 @@ export default function IncomeForm({
 
             <details className="form-section full income-form-section income-payment-section expense-wizard-step expense-wizard-step-4" open>
                 <summary>
-                    <span>Pagamento</span>
-                    <small>Metodo, accredito e conto di destinazione</small>
+                    <span>Accrediti</span>
+                    <small>Importi, date e conti di destinazione</small>
                 </summary>
-                <div className="form-section-grid income-form-section-grid">
-
-                    <div className="app-form-field-label toggle-field-label switch-toggle-field income-switch-control income-form-section-credit">
-                        <div className="switch-toggle-field-label">
-                            <span className="app-form-field-icon">⇆</span>
-                            <span className="app-form-label">Accreditato</span>
+                <div className="form-section-stack">
+                    <section className="payments-box income-credits-box full">
+                        <div className="form-summary full">
+                            <div><span className="muted">Accreditato</span><strong>{formatEuro(creditedAmount)}</strong></div>
+                            <div><span className="muted">Residuo</span><strong className={creditResidual > 0 ? "text-critical" : "text-ok"}>{formatEuro(creditResidual)}</strong></div>
+                            <div><span className="muted">Stato</span><strong className={isCredited ? "text-ok" : creditedAmount > 0 ? "text-warning" : "text-critical"}>{creditStatusLabel}</strong></div>
+                            <button type="button" className="btn btn-sm btn-default"
+                                    onClick={() => credits.length ? setOpenCreditKey(credits[0].key) : addCredit()}>
+                                {credits.length ? "✎ Modifica accrediti" : "➕ Aggiungi accredito"}
+                            </button>
                         </div>
-                        <input type="hidden" name="isCredited" value="false"/>
-                        <label className="switch">
-                            <input
-                                type="checkbox"
-                                name="isCredited"
-                                value="true"
-                                checked={isCredited}
-                                onChange={(event) => setIsCredited(event.currentTarget.checked)}
-                            />
-                            <span className="slider"/>
-                            <small className="text-muted">{isCredited ? "Accreditato" : "Non accreditato"}</small>
-                        </label>
-                    </div>
 
-                    <DateField className="income-payment-field-wide" label="Data accredito" name="creditDate" value={creditDate} onChange={setCreditDate} required/>
+                        {credits.map((credit, index) => {
+                            const isOpen = openCreditKey === credit.key;
+                            const method = paymentMethods.find(item => String(item.id) === credit.paymentMethodId);
+                            const cashSelected = isCashMethod(method);
+                            const bankId = cashSelected && cashBank ? String(cashBank.id) : credit.bankId;
+                            const bank = banks.find(item => String(item.id) === bankId);
+                            if (!isOpen) return <div className="payment-row payment-summary-row" key={credit.key}>
+                                {renderCreditHiddenInputs(credit)}
+                                <div className="payment-summary-primary">
+                                    <span className="payment-summary-kicker">Accredito registrato</span>
+                                    <strong className="payment-summary-amount">{formatEuro(Number(credit.amount || 0))}</strong>
+                                </div>
+                                <div className="payment-summary-date"><span>Data accredito</span><strong>{credit.creditDate ? new Date(`${credit.creditDate}T12:00:00`).toLocaleDateString("it-IT") : "Non impostata"}</strong></div>
+                                <div className="payment-summary-meta">
+                                    <div><span>Metodo</span><strong>{method?.icon ?? "•"} {method?.name ?? "Non impostato"}</strong></div>
+                                    <div><span>Banca</span><strong>{bank?.icon ?? "•"} {bank?.name ?? "Non impostata"}</strong></div>
+                                </div>
+                                <div className="payment-row-actions">
+                                    <button type="button" className="btn btn-sm btn-default" onClick={() => setOpenCreditKey(credit.key)}>✎ Modifica</button>
+                                    <button type="button" className="btn btn-sm btn-danger remove-row" onClick={() => removeCredit(index)}>🗑️ Elimina</button>
+                                </div>
+                            </div>;
 
-                    <SelectField className="income-payment-field-wide" label="Metodo di accredito" icon="▣" name="paymentMethodId" value={paymentMethodId} onChange={setPaymentMethodId} required options={paymentMethods.map(method => ({
-                        value: method.id,
-                        label: `${method.icon ?? "•"} ${method.name}`
-                    }))}/>
+                            return <div className="payment-row" key={credit.key}>
+                                <input type="hidden" name="creditId[]" value={credit.id ?? ""}/>
+                                <DateField className="payment-date-field" label="Data accredito" name="creditDate[]" value={credit.creditDate} onChange={value => updateCredit(index, {creditDate: value})} required/>
+                                <label className="payment-amount-field">
+                                    <span className="app-form-field-label">
+                                        <span className="app-form-field-icon" aria-hidden="true">€</span>
+                                        <span>Importo accredito</span>
+                                    </span>
+                                    <MoneyInput required value={credit.amount} onValueChange={value => updateCredit(index, {amount: value.replace(',', '.')})}/>
+                                    <input type="hidden" name="creditAmount[]" value={credit.amount}/>
+                                    <span className="payment-amount-shortcuts" aria-label="Impostazione rapida importo accredito">
+                                        {[25, 50, 75, 100].map(percentage => <button type="button" key={percentage}
+                                            className={Math.abs(Number(credit.amount || 0) - creditAvailableAmount(index) * percentage / 100) < 0.005 ? "is-selected" : ""}
+                                            onClick={() => setCreditPercentage(index, percentage)}>{percentage}%</button>)}
+                                    </span>
+                                </label>
+                                <div className="payment-select-field">
+                                    <span className="payment-select-label"><i aria-hidden="true">▣</i> Metodo di accredito</span>
+                                    <div className="payment-select-control">
+                                        <select name="creditPaymentMethodId[]" value={credit.paymentMethodId} required onChange={event => updateCredit(index, {paymentMethodId: event.currentTarget.value})}>
+                                            <option value="">Seleziona metodo</option>
+                                            {paymentMethods.map(item => <option key={item.id} value={item.id}>{item.icon ?? "•"} {item.name}</option>)}
+                                        </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
+                                    </div>
+                                </div>
+                                <div className="payment-select-field">
+                                    <span className="payment-select-label"><i aria-hidden="true">▥</i> Banca di accredito</span>
+                                    {cashSelected && cashBank ? <input type="hidden" name="creditBankId[]" value={cashBank.id}/> : null}
+                                    <div className="payment-select-control">
+                                        <select name={cashSelected && cashBank ? undefined : "creditBankId[]"} value={bankId} disabled={cashSelected && Boolean(cashBank)} required onChange={event => updateCredit(index, {bankId: event.currentTarget.value})}>
+                                            <option value="">Seleziona banca</option>
+                                            {banks.map(item => <option key={item.id} value={item.id}>{item.icon ?? "•"} {item.name}</option>)}
+                                        </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
+                                    </div>
+                                </div>
+                                <div className="payment-edit-actions">
+                                    <button type="button" className="btn btn-sm btn-danger remove-row" onClick={() => removeCredit(index)}>🗑️ Rimuovi</button>
+                                    <button type="button" className="btn btn-sm btn-primary payment-collapse-action" disabled={!isCreditComplete({...credit, bankId})} onClick={() => setOpenCreditKey(null)}>✓ Ok</button>
+                                </div>
+                            </div>;
+                        })}
 
-                    <SelectField className="income-payment-field-wide" label="Canale accredito" icon="▥" name="creditBankId" value={cashPaymentSelected && cashBank ? String(cashBank.id) : creditBankId} onChange={setCreditBankId} disabled={cashPaymentSelected} required options={banks.map(bank => ({
-                        value: bank.id,
-                        label: `${bank.icon ?? "•"} ${bank.name}`
-                    }))}/>
-                    {cashPaymentSelected && cashBank ?
-                        <input type="hidden" name="creditBankId" value={cashBank.id}/> : null}
-
+                        {credits.length && canAddCredit ? <div className="income-additional-credit-action">
+                            <button type="button" className="btn btn-sm btn-default" onClick={addCredit}>➕ Aggiungi altro accredito</button>
+                        </div> : null}
+                        {credits.length && !canAddCredit && creditResidual > 0.005 ? <p className="inline-warning">Completa l’accredito aperto prima di aggiungerne un altro.</p> : null}
+                    </section>
                 </div>
             </details>
 
@@ -462,7 +596,7 @@ export default function IncomeForm({
                                 <i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span>
                             </div>
                             <div className="expense-review-item wide">
-                                <i aria-hidden="true">€</i><span>Accredito<strong>{paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "Metodo non indicato"} · {banks.find(bank => String(bank.id) === (cashPaymentSelected && cashBank ? String(cashBank.id) : creditBankId))?.name ?? "Canale non indicato"} · {isCredited ? "Accreditato" : "Da accreditare"}</strong></span>
+                                <i aria-hidden="true">€</i><span>Accrediti<strong>{formatEuro(creditedAmount)} · Residuo {formatEuro(creditResidual)} · {creditStatusLabel}</strong></span>
                             </div>
                         </div>
                     </section>

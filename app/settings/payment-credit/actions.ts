@@ -113,13 +113,14 @@ export async function deleteBankAction(formData: FormData) {
 
   const bank = await prisma.bank.findFirst({
     where: { id, workspaceId: current.workspace.id },
-    include: { _count: { select: { payments: true, recurringExpenses: true, incomeCredits: true, cashRegisterPaymentMethods: true, cashRegisterBankRules: true } } }
+    include: { _count: { select: { payments: true, recurringExpenses: true, incomeLegacyCredits: true, incomeCredits: true, cashRegisterPaymentMethods: true, cashRegisterBankRules: true } } }
   });
   if (!bank) settingsError('bank_not_found');
   if (bank.isFallback) settingsError('cash_bank_delete');
 
   const usageCount = bank._count.payments
     + bank._count.recurringExpenses
+    + bank._count.incomeLegacyCredits
     + bank._count.incomeCredits
     + bank._count.cashRegisterPaymentMethods
     + bank._count.cashRegisterBankRules;
@@ -241,14 +242,14 @@ export async function deletePaymentMethodAction(formData: FormData) {
 
   const method = await prisma.paymentMethod.findFirst({
     where: { id, workspaceId: current.workspace.id },
-    include: { _count: { select: { incomePayments: true, expensePayments: true, recurringExpenses: true, cashRegisterPrimaryForWorkspaces: true } } }
+    include: { _count: { select: { incomePayments: true, incomeCredits: true, expensePayments: true, recurringExpenses: true, cashRegisterPrimaryForWorkspaces: true } } }
   });
   if (!method) settingsError('method_not_found');
   if (method.isFallback) settingsError('fallback_delete');
   if (method.systemRole) settingsError('system_delete');
   if (method.cashRegisterEnabled || method._count.cashRegisterPrimaryForWorkspaces) settingsError('cash_register_method_delete');
 
-  const usageCount = method._count.incomePayments + method._count.expensePayments + method._count.recurringExpenses;
+  const usageCount = method._count.incomePayments + method._count.incomeCredits + method._count.expensePayments + method._count.recurringExpenses;
   if (usageCount > 0) redirect(`${settingsPath}?section=methods&error=in_use&usage=${usageCount}`);
 
   await prisma.paymentMethod.delete({ where: { id } });

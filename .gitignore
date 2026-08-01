@@ -10,6 +10,8 @@ backups/
 prisma/migrations
 !prisma/migrations/
 prisma/migrations/*
+!prisma/migrations/20260801120000_income_credits/
+!prisma/migrations/20260801120000_income_credits/migration.sql
 !prisma/migrations/20260728120000_multi_company_accounting/
 !prisma/migrations/20260728120000_multi_company_accounting/migration.sql
 !prisma/migrations/20260728183000_supplier_swift/

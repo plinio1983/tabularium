@@ -38,16 +38,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
   if (entity === 'incomes') {
     const records = await prisma.income.findMany({
       where: { id: { in: ids }, workspaceId, companyId },
-      include: { customer: true, salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true },
+      include: { customer: true, salesChannelRef: true, incomeCategory: true, paymentMethodRef: true, creditBank: true, credits: {include: {paymentMethod: true, bank: true}, orderBy: {creditDate: 'asc'}} },
       orderBy: [{ orderDate: 'desc' }, { id: 'desc' }]
     });
     const csv = createCsv(
-      ['ID', 'Data ordine', 'Data accredito', 'Periodo contabile', 'Cliente', 'Descrizione', 'Canale di vendita', 'Categoria', 'Importo', 'IVA %', 'Fiscale', 'Stato fattura', 'Accreditato', 'Metodo pagamento', 'Banca', 'Tipo', 'Note'],
+      ['ID', 'Data ordine', 'Data ultimo accredito', 'Periodo contabile', 'Cliente', 'Descrizione', 'Canale di vendita', 'Categoria', 'Importo', 'IVA %', 'Fiscale', 'Stato fattura', 'Accreditato', 'Totale accreditato', 'Residuo', 'Accrediti', 'Tipo', 'Note'],
       records.map(record => [
         record.id, record.orderDate, record.creditDate, `${record.billingYear}-${String(record.billingMonth).padStart(2, '0')}`,
         record.customer?.businessName, record.description, record.salesChannelRef.name, record.incomeCategory.name,
         decimal(record.amount), decimal(record.vatRate), record.isFiscal, record.invoiceStatus, record.isCredited,
-        record.paymentMethodRef.name, record.creditBank.name, record.incomeType, record.notes
+        record.credits.reduce((sum, credit) => sum + Number(credit.amount), 0),
+        Math.max(0, Number(record.amount) - record.credits.reduce((sum, credit) => sum + Number(credit.amount), 0)),
+        record.credits.map(credit => [credit.creditDate.toISOString().slice(0, 10), credit.paymentMethod.name, credit.bank.name, decimal(credit.amount)].join(' | ')).join(' ; '),
+        record.incomeType, record.notes
       ])
     );
     return csvDownload(csv, filename(entity));

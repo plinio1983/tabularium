@@ -12,6 +12,7 @@ import SortableTableController from '@/components/SortableTableController';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import SearchIcon from '@/components/SearchIcon';
+import {incomeCreditSummary} from '@/lib/income-credits';
 
 const input = (filters: Record<string, string | string[] | undefined>, key: string) => {
     const item = filters[key];
@@ -44,7 +45,7 @@ export default async function ClientsPage({searchParams}: {
     const currentYear = new Date().getFullYear();
     const customers = await prisma.customer.findMany({
         where: {workspaceId: current.workspace.id},
-        include: {incomes: {where: {companyId: current.company.id}}},
+        include: {incomes: {where: {companyId: current.company.id}, include: {credits: true}}},
         orderBy: {businessName: 'asc'}
     });
     const rows = customers.map(customer => {
@@ -53,7 +54,7 @@ export default async function ClientsPage({searchParams}: {
         return {
             customer,
             openCount: open.length,
-            openAmount: open.reduce((sum, income) => sum + Number(income.amount), 0),
+            openAmount: open.reduce((sum, income) => sum + incomeCreditSummary(income).residual, 0),
             annualCount: annual.length,
             annualAmount: annual.reduce((sum, income) => sum + Number(income.amount), 0)
         };

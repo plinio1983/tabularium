@@ -17,6 +17,7 @@ import {
     salesChannelTone
 } from '@/lib/income-ui';
 import {vatRateLabel, yesNoStyles} from "@/lib/expense-ui";
+import {incomeCreditSummary} from '@/lib/income-credits';
 
 function dateLabel(value?: Date | null) {
     if (!value) return '-';
@@ -53,12 +54,13 @@ function localDateKey(value: Date) {
     return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
 }
 
-function isIncomeCreditOverdue(income: { isCredited: boolean; creditDate: Date | null }) {
-    return !income.isCredited && Boolean(income.creditDate) && localDateKey(income.creditDate!) < localDateKey(new Date());
+function isIncomeCreditOverdue(income: { isCredited: boolean; expectedCreditDate: Date | null }) {
+    return !income.isCredited && Boolean(income.expectedCreditDate) && localDateKey(income.expectedCreditDate!) < localDateKey(new Date());
 }
 
-function incomeCreditStatus(income: { isCredited: boolean; creditDate: Date | null }) {
+function incomeCreditStatus(income: { isCredited: boolean; expectedCreditDate: Date | null; credited: number }) {
     if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
+    if (income.credited > 0) return incomeCreditStatusStyles.PARZIALE;
     return isIncomeCreditOverdue(income) ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
 }
 
@@ -87,6 +89,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 creditBank: true,
                 salesChannelRef: true,
                 customer: true
+                ,credits: {include: {paymentMethod: true, bank: true}, orderBy: [{creditDate: 'asc'}, {id: 'asc'}]}
             }
         }),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
@@ -99,6 +102,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
 
     const amount = Number(income.amount.toString());
+    const creditSummary = incomeCreditSummary(income);
     const vatRate = Number(income.vatRate.toString());
     const vatAmount = income.isFiscal ? vatAmountFromGross(amount, vatRate) : 0;
     const netAmount = amount - vatAmount;
@@ -109,7 +113,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const incomeCreditChannelName = income.creditBank.name;
     const salesTone = salesChannelTone(income.salesChannelRef.code);
     const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-    const creditStatus = incomeCreditStatus(income);
+    const creditStatus = incomeCreditStatus({...income, credited: creditSummary.credited});
     const detailToneClass = isIncomeCreditOverdue(income)
         ? 'income-row-overdue'
         : income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE'
@@ -137,7 +141,8 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 name: method.name,
                 icon: method.icon,
                 kind: method.kind,
-                isFallback: method.isFallback
+                isFallback: method.isFallback,
+                isIncomeDefault: method.isIncomeDefault
             }))}
             salesChannels={salesChannels}
             customers={customers}
@@ -214,8 +219,8 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         <strong>{invoiceStyle.icon} {invoiceStyle.label}</strong>
                     </div>
                 </section>
-                <div className="expense-detail-progress" aria-label={income.isCredited ? 'Accredito completato' : 'Accredito da completare'}>
-                    <span style={{width: income.isCredited ? '100%' : '0%'}}/>
+                <div className="expense-detail-progress" aria-label={`Accreditato ${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0).toFixed(0)}%`}>
+                    <span style={{width: `${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0)}%`}}/>
                 </div>
 
                 <section className="expense-detail-section">
@@ -241,12 +246,25 @@ export default async function IncomeDetailPage({params, searchParams}: {
                             <span>Canale</span><strong className={salesTone}>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</strong>
                         </div>
                         <div><span>Data ordine</span><strong>{dateLabel(income.orderDate ?? income.creditDate)}</strong></div>
-                        <div><span>Data accr.</span><strong>{dateLabel(income.creditDate)}</strong></div>
-                        <div>
-                            <span>Pagamento</span><strong>{income.paymentMethodRef?.icon ?? '  •  '} {incomePaymentMethodName}</strong>
-                        </div>
-                        <div><span>Canale</span><strong>{income.creditBank?.icon ?? '  •  '} {incomeCreditChannelName}</strong></div>
+                        <div><span>Accreditato</span><strong>{euro(creditSummary.credited)}</strong></div>
+                        <div><span>Residuo</span><strong>{euro(creditSummary.residual)}</strong></div>
                     </div>
+                </section>
+
+                <section className="expense-detail-section">
+                    <div className="expense-detail-section-heading">
+                        <div><h2>Accrediti</h2><p>Movimenti registrati per questo incasso.</p></div>
+                    </div>
+                    {income.credits.length ? <div className="expense-form expense-detail-payment-summary-list">
+                        {income.credits.map(credit => <article className="payment-row payment-summary-row" key={credit.id}>
+                            <div className="payment-summary-primary"><span className="payment-summary-kicker">Accredito effettuato</span><strong className="payment-summary-amount">{euro(Number(credit.amount))}</strong></div>
+                            <div className="payment-summary-date"><span>Data accredito</span><strong>{dateLabel(credit.creditDate)}</strong></div>
+                            <div className="payment-summary-meta">
+                                <div><span>Metodo</span><strong>{credit.paymentMethod.icon ?? '•'} {credit.paymentMethod.name}</strong></div>
+                                <div><span>Banca</span><strong>{credit.bank.icon ?? '•'} {credit.bank.name}</strong></div>
+                            </div>
+                        </article>)}
+                    </div> : <p className="muted">Nessun accredito registrato.</p>}
                 </section>
 
                 <section className="expense-detail-section">

@@ -10,6 +10,7 @@ import DetailBackButton from '@/components/DetailBackButton';
 import { badgeClass, incomeCreditStatusStyles } from '@/lib/income-ui';
 import { detailBackHref } from '@/lib/detail-navigation';
 import { prepareIncomeList } from '@/lib/income-list';
+import {incomeCreditSummary} from '@/lib/income-credits';
 
 function valueOrDash(value?: string | null) { return value?.trim() || '-'; }
 function CopyableField({ label, value, className = '' }: { label: string; value?: string | null; className?: string }) {
@@ -24,7 +25,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const backHref = detailBackHref(rawReturnTo, `/clients/${id}`, '/clients');
   const [customer, banks, paymentMethods, salesChannels, customers, incomeCategories] = await Promise.all([
-    prisma.customer.findFirst({ where: { id, workspaceId: current.workspace.id }, include: { incomes: { where: {companyId: current.company.id}, include: { salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true }, orderBy: { creditDate: 'desc' } } } }),
+    prisma.customer.findFirst({ where: { id, workspaceId: current.workspace.id }, include: { incomes: { where: {companyId: current.company.id}, include: { salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true, credits: true }, orderBy: { creditDate: 'desc' } } } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }), prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.incomeSalesChannel.findMany({ where: { workspaceId: current.workspace.id }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] }),
     prisma.customer.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' } }),
@@ -32,7 +33,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   ]);
   if (!customer) notFound();
   const uncredited = customer.incomes.filter(income => !income.isCredited);
-  const uncreditedTotal = uncredited.reduce((sum, income) => sum + Number(income.amount), 0);
+  const uncreditedTotal = uncredited.reduce((sum, income) => sum + incomeCreditSummary(income).residual, 0);
   const currentYear = new Date().getFullYear();
   const annualIncomes = customer.incomes.filter(income => income.billingYear === currentYear);
   const annualTotal = annualIncomes.reduce((sum, income) => sum + Number(income.amount), 0);

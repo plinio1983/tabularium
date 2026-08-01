@@ -108,11 +108,9 @@ function completedMonthCount(year: number, now = new Date()) {
 
 export async function getIncomeTrendData(year: number, interval: IncomeTrendInterval, workspaceId: number, companyId: number, completedOnly = false) {
   const throughMonth = completedOnly ? completedMonthCount(year) : 12;
-  const records = await prisma.income.findMany({
+  const records = await prisma.incomeCredit.findMany({
     where: {
-      workspaceId,
-      companyId,
-      isCredited: true,
+      income: {workspaceId, companyId},
       creditDate: {gte: new Date(year, 0, 1), lt: new Date(year, throughMonth, 1)}
     },
     select: {amount: true, creditDate: true}

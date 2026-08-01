@@ -22,6 +22,7 @@ type IncomeItem = {
     billingYear: number;
     orderDate: Date | null;
     creditDate: Date | null;
+    expectedCreditDate?: Date | null;
     amount: unknown;
     vatRate: unknown;
     description: string | null;
@@ -32,6 +33,7 @@ type IncomeItem = {
     customer?: { id: number; businessName: string } | null;
     paymentMethodRef: { name: string; icon?: string | null };
     creditBank: { name: string; icon?: string | null };
+    credits?: Array<{ amount: unknown }>;
 };
 
 function cashRegisterGroupHref(group: IncomeCashRegisterGroup) {
@@ -88,7 +90,9 @@ function localDateKey(value: Date) {
 
 function creditStatus(income: IncomeItem) {
     if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
-    const overdue = Boolean(income.creditDate) && localDateKey(income.creditDate!) < localDateKey(new Date());
+    if (income.credits?.some(credit => Number(credit.amount) > 0)) return incomeCreditStatusStyles.PARZIALE;
+    const expectedDate = income.expectedCreditDate;
+    const overdue = Boolean(expectedDate) && localDateKey(expectedDate!) < localDateKey(new Date());
     return overdue ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
 }
 
@@ -98,7 +102,7 @@ function fiscalBadge(value: boolean) {
 }
 
 type EntityOption = { id: number; code: string; name: string; icon?: string | null };
-type SimpleOption = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
+type SimpleOption = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; isIncomeDefault?: boolean };
 type CategoryOption = { id: number; name: string; icon?: string | null };
 
 export default function IncomesList({
