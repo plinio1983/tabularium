@@ -475,6 +475,7 @@ export default function ExpenseForm({
             : [],
     );
     const [openPaymentKey, setOpenPaymentKey] = useState<number | null>(() => initialOpenPaymentId ?? null);
+    const isPaymentOnlyMode = openNewPayment || initialOpenPaymentId !== undefined;
     const openPaymentRef = useRef<HTMLDivElement | null>(null);
     const attachmentsSectionRef = useRef<HTMLDetailsElement | null>(null);
     const [attachmentError, setAttachmentError] = useState("");
@@ -711,13 +712,13 @@ export default function ExpenseForm({
         const suggestedAmount = nextResidual > 0 ? nextResidual.toFixed(2) : "";
         setPayments((rows) => [
             ...rows,
-            {
+            normalizePaymentRow({
                 ...emptyPaymentRow(key),
                 paymentMethodId: defaultPaymentMethod ? String(defaultPaymentMethod.id) : "",
                 bankId: primaryBankIdValue,
                 amount: suggestedAmount,
                 amountTouched: Boolean(suggestedAmount),
-            },
+            }),
         ]);
         setOpenPaymentKey(key);
     }
@@ -749,10 +750,17 @@ export default function ExpenseForm({
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        if (window.matchMedia("(max-width: 900px)").matches && mobileStep < 6) {
-            event.preventDefault();
-            nextMobileStep();
-            return;
+        if (window.matchMedia("(max-width: 900px)").matches) {
+            if (isPaymentOnlyMode) {
+                if (!validateMobileStep()) {
+                    event.preventDefault();
+                    return;
+                }
+            } else if (mobileStep < 6) {
+                event.preventDefault();
+                nextMobileStep();
+                return;
+            }
         }
         if (!onSaved) return;
         event.preventDefault();
@@ -1535,14 +1543,14 @@ export default function ExpenseForm({
             </details>
 
             <MobileFormStickyActions
-                currentStep={mobileStep}
-                submitStep={6}
+                currentStep={isPaymentOnlyMode ? 1 : mobileStep}
+                submitStep={isPaymentOnlyMode ? 1 : 6}
                 onBack={previousMobileStep}
                 onNext={nextMobileStep}
                 onCancel={onCancel}
                 cancelHref={cancelHref ?? "/expenses"}
                 backLabel={mobileStep === 7 ? "Riepilogo" : "Indietro"}
-                submitLabel={submitLabel}
+                submitLabel={isPaymentOnlyMode ? "Salva pagamento" : submitLabel}
                 isSubmitting={isSubmitting}
                 submitDisabled={Boolean(attachmentError)}
                 error={submitError}

@@ -64,7 +64,8 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
     if (event.key === 'Escape') setOpen(false);
   }
 
-  return <label className="supplier-filter-label">Esercente
+  return <div className="supplier-filter-label app-form-field expense-filter-field">
+    <span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">◎</span>Esercente</span>
     <div className="supplier-picker filter-supplier-picker" ref={containerRef}>
       <input
         name="merchant"
@@ -94,5 +95,5 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
         </button>) : <div className="empty-supplier-result">Nessun fornitore trovato.</div>}
       </div>}
     </div>
-  </label>;
+  </div>;
 }

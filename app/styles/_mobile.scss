@@ -134,7 +134,7 @@
     grid-template-rows: 21px 24px;
     align-items: flex-end;
     gap: 3px;
-    text-align: right;
+    //text-align: right;
     border: 1px solid var(--line);
     //border-radius: 12px;
     padding: 0 6px;
@@ -164,10 +164,17 @@
     white-space: nowrap;
   }
 
-  .dashboard-monthly-mobile-badge {
+  .dashboard-monthly-mobile-percent {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    height: 22px;
+  }
+
+  .dashboard-monthly-mobile-badge {
+    display: flex;
+    align-items: center;
+    //justify-content: flex-end;
     height: 22px;
   }
 
@@ -326,6 +333,43 @@
   }
 }
 
+.hidden-sp-up {
+  @media (min-width: 577px) {
+    display: none !important;
+  }
+}
+
+.hidden-sp,
+.hidden-sp-down {
+  @media (max-width: 576px) {
+    display: none !important;
+  }
+}
+
+.hidden-sm-down {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+.hidden-sm-up {
+  @media (min-width: 769px) {
+    display: none !important;
+  }
+}
+
+.hidden-md-down {
+  @media (max-width: 900px) {
+    display: none !important;
+  }
+}
+
+.hidden-md-up {
+  @media (min-width: 901px) {
+    display: none !important;
+  }
+}
+
 @media (max-width: 576px) {
   .hidden-sp {
     display: none !important;
@@ -338,13 +382,13 @@
   }
 }
 
-@media (min-width: 761px) {
+@media (min-width: 769px) {
   .hidden-desktop {
     display: none !important;
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .hidden-mobile {
     display: none !important;
   }
@@ -4403,6 +4447,67 @@
   .app-quick-search-form {
     padding: 12px;
     border-radius: 12px;
+  }
+
+  .annual-income-trend-heading {
+    display: grid;
+    gap: 12px;
+  }
+
+  .annual-income-trend-controls {
+    display: grid;
+    justify-content: stretch;
+    width: 100%;
+  }
+
+  .annual-income-trend-controls .expense-trend-mode-toggle {
+    width: 100%;
+  }
+
+  .annual-income-trend-scope-switch {
+    width: 100%;
+  }
+
+  .annual-income-trend-controls .expense-trend-mode-button {
+    flex: 1 1 0;
+  }
+
+  .annual-income-trend-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .annual-income-trend-kpis > div {
+    padding: 10px;
+  }
+
+  .annual-income-trend-kpis strong {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+
+  .annual-income-trend-selection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .annual-income-trend-selection > .btn {
+    grid-column: 1 / -1;
+    min-height: 42px;
+  }
+
+  .fiscal-overview-bar-labels {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .fiscal-overview-bar-labels > span {
+    display: grid;
+    gap: 3px;
+  }
+
+  .fiscal-overview-bar-labels strong {
+    margin-left: 0;
+    font-size: 18px;
   }
 }
 

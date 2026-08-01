@@ -145,7 +145,7 @@ function MonthlyTrendCard({
   const nonFiscalIncomesHref = dateRangeLink('/incomes', state.year, state.month, { fiscal: 'no' });
   const overdueExpensesHref = dateRangeLink('/expenses', state.year, state.month, { paymentStatus: 'overdue' });
 
-  return <section className={`card dashboard-statement-panel monthly-trend-card ${loading ? 'is-loading' : ''}`}>
+  return <section className={`card dashboard-statement-panel monthly-trend-card hidden-mobile ${loading ? 'is-loading' : ''}`}>
     <div className="dashboard-statement-heading">
       <div>
         <h2>Andamento mensile</h2>
@@ -268,8 +268,11 @@ function FiscalSummaryCard({
   const invoicesNotReceivedHref = periodLink('/expenses', periods, { declared: 'yes', invoiceStatusMode: 'not_received' });
   const overdueExpensesHref = periodLink('/expenses', periods, { paymentStatus: 'overdue', declared: 'yes' });
   const reportPeriod = periods.length === 1 ? periods[0] : null;
-
-  return <section className={`card dashboard-statement-panel ${loading ? 'is-loading' : ''}`}>
+  let specialClass = null;
+  if(title === 'Mese fiscale') {
+     specialClass = 'hidden-mobile';
+  }
+  return <section className={`card dashboard-statement-panel ${specialClass} ${loading ? 'is-loading' : ''}`}>
     <div className="dashboard-statement-heading">
       <div>
         <h2>{title}</h2>

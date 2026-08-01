@@ -156,7 +156,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
           title={mode === "copy" ? "Nuova spesa da copia" : "Modifica spesa"}
           cancelHref={listHref}
           onCancel={() => setExpense(null)}
-          submitLabel={mode === "copy" ? "Crea spesa copiata" : "Salva modifiche"}
+          submitLabel={mode === "copy" ? "Crea spesa copiata" : mode === "payment" ? "Salva pagamento" : "Salva modifiche"}
           action={mode === "copy" ? `/api/expenses?returnTo=${encodeURIComponent(listHref)}` : `/api/expenses/${expense.id}?returnTo=${encodeURIComponent(listHref)}`}
           categories={categories}
           banks={banks}

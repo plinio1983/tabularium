@@ -14,6 +14,8 @@ import {requireWorkspace} from '@/lib/auth';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
+import {getIncomeTrendData} from '@/lib/income-trend';
+import AnnualIncomeTrendChart from '@/components/AnnualIncomeTrendChart';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
     if (!periods.length) return '-';
@@ -504,37 +506,55 @@ function groupedChartData(data: Array<{ name: string; code: string; total: numbe
     return [...visible, {name: 'Altre voci', code: 'ALTRO', total: remainder}];
 }
 
-function ExpenseCompositionChart({data, total}: {
+function ExpenseCompositionChart({data, total, incomeTotal}: {
     data: Array<{ name: string; code: string; total: number }>;
     total: number;
+    incomeTotal: number;
 }) {
     const groupedData = groupedChartData(data);
-    const maxValue = Math.max(...groupedData.map(item => item.total), 1);
+    const totalImpact = incomeTotal ? total / incomeTotal * 100 : 0;
+    const totalImpactTone = totalImpact > 100 ? 'is-critical' : totalImpact > 75 ? 'is-warning' : 'is-ok';
     return <section className="card dashboard-composition-card">
         <div className="card-heading-row">
             <div>
-                <h2>Composizione delle spese</h2>
-                <p className="muted">Categorie con maggiore incidenza sulle uscite annuali.</p>
+                <h2>Composizione e impatto delle spese</h2>
+                <p className="muted">Peso di ogni categoria sulle uscite e sugli incassi annuali.</p>
             </div>
-            <div className="dashboard-chart-main-total"><span>Spese totali</span><strong>{chartEuro(total)}</strong>
+        </div>
+        <div className={`dashboard-expense-impact-total ${totalImpactTone}`}>
+            <div className="dashboard-expense-impact-value">
+                <span>Impatto totale delle spese sugli incassi</span>
+                <strong>{totalImpact.toFixed(1)}%</strong>
             </div>
+            <div className="dashboard-expense-impact-amounts">
+                <div><span>Spese totali</span><strong>{chartEuro(total)}</strong></div>
+                <div><span>Incassi totali</span><strong>{chartEuro(incomeTotal)}</strong></div>
+            </div>
+            <div className="dashboard-expense-impact-track" aria-label={`Le spese rappresentano il ${totalImpact.toFixed(1)}% degli incassi`}>
+                <i style={{width: `${Math.min(Math.max(totalImpact, 0), 100)}%`}}/>
+            </div>
+            <p>Ogni €100 incassati, <strong>{chartEuro(totalImpact)}</strong> sono assorbiti dalle spese.</p>
         </div>
         {groupedData.length ? <div className="dashboard-composition-list">
             {groupedData.map((item, index) => {
                 const percentage = total ? item.total / total * 100 : 0;
+                const incomeImpact = incomeTotal ? item.total / incomeTotal * 100 : 0;
                 return <div className="dashboard-composition-row" key={`${item.code}-${item.name}`}>
                     <div className="dashboard-composition-label">
                         <span className="expense-impact-pie-dot" style={{background: dashboardChartColors[index % dashboardChartColors.length]}}/>
                         <strong>{item.name}</strong>
-                        <small>{percentage.toFixed(1)}%</small>
                     </div>
                     <div className="dashboard-composition-bar-wrap">
                         <i style={{
-                            width: `${item.total / maxValue * 100}%`,
+                            width: `${Math.min(Math.max(percentage, 0), 100)}%`,
                             background: dashboardChartColors[index % dashboardChartColors.length]
                         }}/>
                     </div>
-                    <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong>
+                    <div className="dashboard-composition-values">
+                        <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong>
+                        <span><small>Quota spese</small><strong>{percentage.toFixed(1)}%</strong></span>
+                        <span><small>Impatto incassi</small><strong>{incomeImpact.toFixed(1)}%</strong></span>
+                    </div>
                 </div>;
             })}
         </div> : <p className="muted">Nessuna spesa presente per l’anno selezionato.</p>}
@@ -546,7 +566,8 @@ function ProfitabilitySummaryCard({totals, year}: { totals: any; year: number })
     const items = [
         {label: 'Margine lordo', value: totals.utileLordo, color: '#2563eb'},
         {label: 'Utile netto', value: totals.utileNetto, color: '#0f766e'},
-        {label: 'Utile fiscale', value: totals.utileFiscale, color: '#7c3aed'}
+        {label: 'Utile fiscale', value: totals.utileFiscale, color: '#7c3aed'},
+        {label: 'Imponibile', value: totals.imponibileIncassi, color: '#b45309'}
     ];
     const ratio = (value: number) => income ? value / Math.abs(income) * 100 : 0;
     const negativeExtent = Math.max(...items.map(item => Math.max(-ratio(item.value), 0)), 0);
@@ -633,6 +654,7 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
             label: 'Entrate fiscali',
             value: fiscalIncome,
             percentage: fiscalIncomePercentage,
+            percentageOf: 'delle entrate',
             className: 'is-fiscal-income',
             href: periodLink('/incomes', periods, {fiscal: 'yes'})
         },
@@ -640,6 +662,7 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
             label: 'Entrate non fiscali',
             value: nonFiscalIncome,
             percentage: nonFiscalIncomePercentage,
+            percentageOf: 'delle entrate',
             className: `is-non-fiscal-income ${nonFiscalTone(nonFiscalIncomePercentage)}`,
             href: periodLink('/incomes', periods, {fiscal: 'no'})
         },
@@ -647,6 +670,7 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
             label: 'Spese fiscali',
             value: fiscalExpenses,
             percentage: fiscalExpensePercentage,
+            percentageOf: 'delle spese',
             className: 'is-fiscal-expense',
             href: periodLink('/expenses', periods, {declared: 'yes'})
         },
@@ -654,6 +678,7 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
             label: 'Spese non fiscali',
             value: nonFiscalExpenses,
             percentage: nonFiscalExpensePercentage,
+            percentageOf: 'delle spese',
             className: `is-non-fiscal-expense ${nonFiscalTone(nonFiscalExpensePercentage)}`,
             href: periodLink('/expenses', periods, {declared: 'no'})
         }
@@ -672,7 +697,10 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
                 <Link className={`fiscal-overview-metric ${item.className}`} href={item.href} key={item.label}>
                     <span>{item.label}</span>
                     <strong>{chartEuro(item.value)}</strong>
-                    <small>{item.percentage.toFixed(1)}% del totale</small>
+                    <div className="fiscal-overview-percentage">
+                        <strong>{item.percentage.toFixed(1)}%</strong>
+                        <span>{item.percentageOf}</span>
+                    </div>
                 </Link>)}
         </div>
         <div className="fiscal-overview-comparison">
@@ -686,8 +714,8 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
                     <i className="is-non-fiscal-income" style={{width: `${Math.min(Math.max(nonFiscalIncomePercentage, 0), 100)}%`}}/>
                 </div>
                 <div className="fiscal-overview-bar-labels">
-                    <span>Fiscali <strong>{fiscalIncomePercentage.toFixed(1)}%</strong></span>
-                    <span>Non fiscali <strong>{nonFiscalIncomePercentage.toFixed(1)}%</strong></span>
+                    <span className="is-fiscal-income">Fiscali <strong>{fiscalIncomePercentage.toFixed(1)}%</strong></span>
+                    <span className="is-non-fiscal-income">Non fiscali <strong>{nonFiscalIncomePercentage.toFixed(1)}%</strong></span>
                 </div>
             </div>
             <div className="fiscal-overview-comparison-row">
@@ -702,10 +730,14 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
                         <i className="is-other-expense" style={{width: `${Math.min(Math.max(otherExpensePercentage, 0), 100)}%`}}/> : null}
                 </div>
                 <div className="fiscal-overview-bar-labels">
-                    <span>Fiscali <strong>{fiscalExpensePercentage.toFixed(1)}%</strong></span>
-                    <span>Non fiscali <strong>{nonFiscalExpensePercentage.toFixed(1)}%</strong></span>
+                    <span className="is-fiscal-expense">Fiscali <strong>{fiscalExpensePercentage.toFixed(1)}%</strong></span>
+                    <span className="is-non-fiscal-expense">Non fiscali <strong>{nonFiscalExpensePercentage.toFixed(1)}%</strong></span>
                     {otherExpenses ?
-                        <span>Liquidazioni IVA/altre <strong>{otherExpensePercentage.toFixed(1)}%</strong></span> : null}
+                        <span className="is-other-expense">
+                            <span className="hidden-sp-up">Liquid. IVA/altre</span>
+                            <span className="hidden-sp">Liquidazioni IVA/altre</span>
+                            <strong>{otherExpensePercentage.toFixed(1)}%</strong>
+                        </span> : null}
                 </div>
             </div>
         </div>
@@ -1614,17 +1646,19 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
     const quarters = [0, 1, 2, 3].map(index => {
         const quarterMonths = months.filter(month => Math.floor((month.month - 1) / 3) === index);
         const generated = quarterMonths.reduce((sum, month) => sum + month.totals.ivaGenerataIncassi, 0);
-        const deductible = quarterMonths.reduce((sum, month) => sum + month.totals.ivaVersataSpese, 0);
-        return {index, generated, deductible, balance: generated - deductible};
+        const deductible = quarterMonths.reduce((sum, month) => sum + month.totals.ivaDetraibileSpese, 0);
+        const settled = quarterMonths.reduce((sum, month) => sum + month.totals.ivaSaldoVersato, 0);
+        return {index, generated, deductible, settled, balance: generated - deductible - settled};
     });
     let runningBalance = 0;
     const rows = quarters.map(quarter => ({...quarter, progressive: runningBalance += quarter.balance}));
     const generated = rows.reduce((sum, quarter) => sum + quarter.generated, 0);
     const deductible = rows.reduce((sum, quarter) => sum + quarter.deductible, 0);
-    const balance = generated - deductible;
+    const settled = rows.reduce((sum, quarter) => sum + quarter.settled, 0);
+    const balance = generated - deductible - settled;
     const fiscalIncome = months.reduce((sum, month) => sum + month.totals.incassoFiscale, 0);
     const effectiveRate = fiscalIncome ? generated / fiscalIncome * 100 : 0;
-    const maxValue = Math.max(...rows.flatMap(row => [row.generated, row.deductible]), 1);
+    const maxValue = Math.max(...rows.flatMap(row => [row.generated, row.deductible, row.settled]), 1);
 
     return <section className="card dashboard-insight-card vat-situation-card">
         <div className="card-heading-row">
@@ -1638,7 +1672,8 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
         </div>
         <div className="vat-kpi-grid">
             <div><span>IVA generata</span><strong>{chartEuro(generated)}</strong></div>
-            <div><span>IVA detraibile / liquidata</span><strong>{chartEuro(deductible)}</strong></div>
+            <div><span>IVA detraibile</span><strong>{chartEuro(deductible)}</strong></div>
+            <div><span>IVA già liquidata</span><strong>{chartEuro(settled)}</strong></div>
             <div className="is-primary"><span>Saldo IVA stimato</span><strong>{chartEuro(balance)}</strong></div>
             <div><span>Incidenza su incasso fiscale</span><strong>{effectiveRate.toFixed(1)}%</strong></div>
         </div>
@@ -1651,6 +1686,9 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
                     <i className="vat-deductible-column" style={{height: `${row.deductible / maxValue * 100}%`}}>
                         <span>{chartEuro(row.deductible)}</span>
                     </i>
+                    <i className="vat-settled-column" style={{height: `${row.settled / maxValue * 100}%`}}>
+                        <span>{chartEuro(row.settled)}</span>
+                    </i>
                 </div>
                 <strong>T{row.index + 1}</strong>
                 <small className={moneyTone(row.balance)}>Saldo {chartEuro(row.balance)}</small>
@@ -1658,7 +1696,8 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
         </div>
         <div className="dashboard-chart-legend vat-chart-legend">
             <span><i className="legend-vat-generated"/>IVA generata</span>
-            <span><i className="legend-vat-deductible"/>IVA detraibile / liquidata</span>
+            <span><i className="legend-vat-deductible"/>IVA detraibile</span>
+            <span><i className="legend-vat-settled"/>IVA già liquidata</span>
         </div>
         <details className="vat-detail">
             <summary>Mostra dettaglio trimestrale</summary>
@@ -1669,6 +1708,7 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
                         <th>Periodo</th>
                         <th>IVA generata</th>
                         <th className="text-wrap">Detraibile / liquidata</th>
+                        <th>Già liquidata</th>
                         <th>Saldo</th>
                         <th>Progressivo</th>
                     </tr>
@@ -1677,6 +1717,7 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
                         <td><strong>T{row.index + 1}</strong></td>
                         <td>{chartEuro(row.generated)}</td>
                         <td>{chartEuro(row.deductible)}</td>
+                        <td>{chartEuro(row.settled)}</td>
                         <td className={moneyTone(row.balance)}>{chartEuro(row.balance)}</td>
                         <td className={moneyTone(row.progressive)}>{chartEuro(row.progressive)}</td>
                     </tr>)}</tbody>
@@ -1791,8 +1832,9 @@ export default async function Dashboard({searchParams}: {
     const trendQuarterPeriods = fiscalQuarterMonthsByIndex(selectedTrendQuarter.year, selectedTrendQuarter.quarterIndex);
     const scheduleFrom = new Date(annualYear, 0, 1);
     const scheduleTo = new Date(annualYear + 1, 0, 1);
-    const [report, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers, pendingIncomes, pendingExpenses] = await Promise.all([
+    const [report, initialIncomeTrend, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers, pendingIncomes, pendingExpenses] = await Promise.all([
         getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id, current.company.id),
+        getIncomeTrendData(annualYear, 'month', current.workspace.id, current.company.id, true),
         getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id, current.company.id),
         getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id, current.company.id),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
@@ -1970,14 +2012,13 @@ export default async function Dashboard({searchParams}: {
                 <IncomeBreakdownChart title="Entrate per canale e categoria"
                                       description={`Distribuzione degli incassi per canale vendita e categoria nell’anno fiscale ${report.annualYear}.`}
                                       data={report.incomesBySalesChannel}/>
-                <ExpenseCategoryIncomeImpactChart data={report.expensesByCategory} incomeTotal={report.totals.incassoTotale}/>
-                <ExpenseCompositionChart data={report.expensesByCategory} total={report.totals.speseTotali}/>
+                <ExpenseCompositionChart data={report.expensesByCategory} total={report.totals.speseTotali} incomeTotal={report.totals.incassoTotale}/>
                 <ProfitabilitySummaryCard totals={report.totals} year={report.annualYear}/>
             </div>
         </div>
 
         <FiscalNonFiscalOverview totals={report.totals} year={report.annualYear} periods={annualPeriods}/>
-        <AnnualProfitOverview totals={report.totals} year={report.annualYear}/>
+        <AnnualIncomeTrendChart initialData={initialIncomeTrend}/>
 
         <div className="grid grid-2 dashboard-period-cards">
             <DashboardFiscalAjax
@@ -2147,7 +2188,7 @@ export default async function Dashboard({searchParams}: {
                             <span className="dashboard-label-short">{capitalizedMonthName(m.month).slice(0, 3)}</span>
                             <span className="dashboard-label">{capitalizedMonthName(m.month)}</span>
                         </Link>
-                        <div className="dashboard-monthly-mobile-badge">
+                        <div className="dashboard-monthly-mobile-badge dashboard-monthly-mobile-percent">
                             <MobilePercentCell value={m.totals.utileLordo} total={m.totals.incassoTotale}/>
                         </div>
                         <div><span className=""><MobileMoneyCell value={m.totals.utileNetto}/></span></div>
@@ -2192,7 +2233,6 @@ export default async function Dashboard({searchParams}: {
             <div className="dashboard-insights-grid">
                 <EconomicTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <MonthlyProfitComparisonChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                <ProfitabilityTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <CashScheduleChart items={cashSchedule} year={report.annualYear}/>
                 <VatSituationCard months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
             </div>

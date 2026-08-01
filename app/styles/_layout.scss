@@ -1416,6 +1416,65 @@ button {
   letter-spacing: .05em;
 }
 
+.expense-drawer-filters {
+  gap: 14px;
+  background: #f8fafc;
+}
+
+.expense-drawer-filters .filter-group {
+  gap: 14px;
+  padding: 15px;
+  border-color: #dfe5f2;
+  background: linear-gradient(135deg, rgba(245, 247, 255, .98), #fff);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+}
+
+.expense-drawer-filters .filter-group legend {
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: .035em;
+}
+
+.expense-drawer-filters .expense-filter-field {
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.expense-drawer-filters .expense-filter-field > input,
+.expense-drawer-filters .expense-filter-field > select,
+.expense-drawer-filters .expense-filter-field .filter-supplier-picker > input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.expense-drawer-filters .expense-filter-field:focus-within {
+  border-color: #c7d2fe;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, .08);
+}
+
+.expense-drawer-filters .expense-filter-field:focus-within > input,
+.expense-drawer-filters .expense-filter-field:focus-within > select,
+.expense-drawer-filters .expense-filter-field:focus-within .filter-supplier-picker > input {
+  border-color: var(--accent);
+  background: #fff;
+  outline: none;
+}
+
+.expense-drawer-filters .filter-drawer-actions {
+  margin: 2px -18px -18px;
+  padding: 16px 18px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+
 .income-drawer-filters .filter-group {
   display: grid;
   gap: 10px;
@@ -6965,9 +7024,118 @@ html, body {
   margin-top: 22px;
 }
 
+.dashboard-expense-impact-total {
+  display: grid;
+  grid-template-columns: minmax(230px, 1fr) auto;
+  gap: 14px 20px;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #bfdbfe;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #eff6ff, #fff);
+}
+
+.dashboard-expense-impact-value {
+  display: grid;
+  gap: 5px;
+}
+
+.dashboard-expense-impact-value > span,
+.dashboard-expense-impact-amounts span {
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.dashboard-expense-impact-value > strong {
+  color: #1d4ed8;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.dashboard-expense-impact-amounts {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dashboard-expense-impact-amounts > div {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+}
+
+.dashboard-expense-impact-amounts strong {
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.dashboard-expense-impact-track {
+  grid-column: 1 / -1;
+  height: 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dbeafe;
+}
+
+.dashboard-expense-impact-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+}
+
+.dashboard-expense-impact-total > p {
+  grid-column: 1 / -1;
+  margin: -4px 0 0;
+  color: #475569;
+  font-size: 12px;
+}
+
+.dashboard-expense-impact-total > p strong {
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.dashboard-expense-impact-total.is-warning {
+  border-color: #fcd34d;
+  background: linear-gradient(135deg, #fffbeb, #fff);
+}
+
+.dashboard-expense-impact-total.is-warning .dashboard-expense-impact-value > strong {
+  color: #b45309;
+}
+
+.dashboard-expense-impact-total.is-warning .dashboard-expense-impact-track {
+  background: #fef3c7;
+}
+
+.dashboard-expense-impact-total.is-warning .dashboard-expense-impact-track i {
+  background: #f59e0b;
+}
+
+.dashboard-expense-impact-total.is-critical {
+  border-color: #fecaca;
+  background: linear-gradient(135deg, #fff1f2, #fff);
+}
+
+.dashboard-expense-impact-total.is-critical .dashboard-expense-impact-value > strong {
+  color: #be123c;
+}
+
+.dashboard-expense-impact-total.is-critical .dashboard-expense-impact-track {
+  background: #ffe4e6;
+}
+
+.dashboard-expense-impact-total.is-critical .dashboard-expense-impact-track i {
+  background: #e11d48;
+}
+
 .dashboard-composition-row {
   display: grid;
-  grid-template-columns: minmax(120px, 229px) minmax(120px, 1.2fr) minmax(84px, auto);
+  grid-template-columns: minmax(120px, 180px) minmax(120px, 1fr) minmax(260px, auto);
   align-items: center;
   gap: 12px;
 }
@@ -6989,14 +7157,6 @@ html, body {
   white-space: nowrap;
 }
 
-.dashboard-composition-label small {
-  flex: 1 0 auto;
-  color: #64748b;
-  font-size: 10px;
-  font-weight: 850;
-  text-align: right;
-}
-
 .dashboard-composition-bar-wrap {
   height: 10px;
   overflow: hidden;
@@ -7011,10 +7171,36 @@ html, body {
   border-radius: inherit;
 }
 
-.dashboard-composition-row > strong {
-  font-size: 12px;
+.dashboard-composition-values {
+  display: grid;
+  grid-template-columns: minmax(86px, auto) repeat(2, minmax(82px, auto));
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-composition-values > strong {
+  color: #0f172a;
+  font-size: 13px;
   text-align: right;
   white-space: nowrap;
+}
+
+.dashboard-composition-values > span {
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.dashboard-composition-values small {
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.dashboard-composition-values span strong {
+  color: #0f172a;
+  font-size: 15px;
 }
 
 .profitability-summary-list {
@@ -7146,10 +7332,37 @@ html, body {
   white-space: nowrap;
 }
 
-.fiscal-overview-metric > small {
+.fiscal-overview-percentage {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.fiscal-overview-percentage strong {
+  color: #1d4ed8;
+  font-size: clamp(20px, 2vw, 27px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.fiscal-overview-percentage span {
   color: #64748b;
   font-size: 10px;
   font-weight: 800;
+  text-transform: uppercase;
+}
+
+.fiscal-overview-metric.is-non-fiscal-income .fiscal-overview-percentage strong {
+  color: #0f766e;
+}
+
+.fiscal-overview-metric.is-fiscal-expense .fiscal-overview-percentage strong {
+  color: #6d28d9;
+}
+
+.fiscal-overview-metric.is-non-fiscal-expense .fiscal-overview-percentage strong {
+  color: #b45309;
 }
 
 .fiscal-overview-metric.is-non-fiscal-income::before {
@@ -7280,13 +7493,38 @@ html, body {
 }
 
 .fiscal-overview-bar-labels {
-  color: #64748b;
-  font-size: 10px;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 750;
 }
 
 .fiscal-overview-bar-labels strong {
+  display: inline-block;
+  margin-left: 5px;
+  color: #0f172a;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.fiscal-overview-bar-labels .is-fiscal-income strong {
+  color: #1d4ed8;
+}
+
+.fiscal-overview-bar-labels .is-non-fiscal-income strong {
+  color: #0f766e;
+}
+
+.fiscal-overview-bar-labels .is-fiscal-expense strong {
+  color: #6d28d9;
+}
+
+.fiscal-overview-bar-labels .is-non-fiscal-expense strong {
+  color: #b45309;
+}
+
+.fiscal-overview-bar-labels .is-other-expense strong {
   color: #334155;
-  margin-left: 3px;
 }
 
 .fiscal-overview-balances {
@@ -7679,7 +7917,7 @@ html, body {
 
 .vat-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 8px;
   margin-top: 18px;
 }
@@ -7743,7 +7981,7 @@ html, body {
 
 .vat-quarter-bars i span {
   position: absolute;
-  bottom: calc(100% + 4px);
+  bottom: calc(100% + 8px);
   left: 50%;
   color: #64748b;
   font-size: 9px;
@@ -7762,6 +8000,11 @@ html, body {
 .vat-deductible-column,
 .legend-vat-deductible {
   background: #0d9488;
+}
+
+.vat-settled-column,
+.legend-vat-settled {
+  background: #f59e0b;
 }
 
 .vat-quarter-column > small {
@@ -10291,6 +10534,169 @@ button.bulk-direct-link {
   min-width: 44px;
   min-height: 42px;
   border-radius: 10px;
+}
+
+.annual-income-trend-card {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.annual-income-trend-heading {
+  align-items: flex-start;
+}
+
+.annual-income-trend-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.annual-income-trend-scope-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 38px;
+  padding: 5px 10px 5px 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f8fafc;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.annual-income-trend-scope-switch .switch {
+  flex: 0 0 auto;
+}
+
+.annual-income-trend-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.annual-income-trend-kpis > div,
+.annual-income-trend-selection > div {
+  display: grid;
+  gap: 5px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.annual-income-trend-kpis span,
+.annual-income-trend-selection span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.annual-income-trend-kpis strong,
+.annual-income-trend-selection strong {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.annual-income-trend-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fff, #f8fbff);
+  transition: opacity .2s ease;
+  -webkit-overflow-scrolling: touch;
+}
+
+.annual-income-trend-scroll.is-loading {
+  opacity: .55;
+  pointer-events: none;
+}
+
+.annual-income-trend-chart {
+  display: block;
+  min-width: 100%;
+  height: 310px;
+}
+
+.annual-income-trend-grid-line {
+  stroke: #dfe6ef;
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+}
+
+.annual-income-trend-axis-label,
+.annual-income-trend-date-label {
+  fill: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.annual-income-trend-area {
+  fill: rgba(37, 99, 235, .12);
+}
+
+.annual-income-trend-line {
+  fill: none;
+  stroke: #2563eb;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.annual-income-trend-point {
+  fill: #fff;
+  stroke: #94a3b8;
+  stroke-width: 2;
+  cursor: pointer;
+  outline: none;
+}
+
+.annual-income-trend-point.has-data {
+  fill: #2563eb;
+  stroke: #fff;
+}
+
+.annual-income-trend-point:hover,
+.annual-income-trend-point:focus,
+.annual-income-trend-point.is-selected {
+  fill: #0f766e;
+  stroke: #ccfbf1;
+  stroke-width: 3;
+}
+
+.annual-income-trend-selection {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) repeat(2, minmax(130px, .65fr)) auto;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.annual-income-trend-selection > .btn {
+  align-self: stretch;
+  min-height: 100%;
+}
+
+.annual-income-trend-selection.is-empty {
+  display: block;
+  padding: 12px 14px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+}
+
+.annual-income-trend-selection.is-empty p {
+  margin: 0;
+}
+
+.annual-income-trend-empty {
+  margin: -8px 0 0;
+  text-align: center;
 }
 
 /*.supplier-linked-expenses-table {*/
@@ -14639,13 +15045,36 @@ table .cell-description {
   }
 
   .dashboard-composition-row {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: 1fr;
     gap: 7px 10px;
   }
 
   .dashboard-composition-bar-wrap {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    grid-column: 1;
+  }
+
+  .dashboard-composition-values {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .dashboard-composition-values > strong,
+  .dashboard-composition-values > span {
+    text-align: left;
+  }
+
+  .dashboard-expense-impact-total {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
+
+  .dashboard-expense-impact-amounts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dashboard-expense-impact-amounts > div {
+    text-align: left;
   }
 
   .profitability-summary-values {
