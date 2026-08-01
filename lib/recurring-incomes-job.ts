@@ -33,7 +33,7 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
           workspaceId: definition.workspaceId, companyId: definition.companyId, customerId: definition.customerId,
           salesChannelId: definition.salesChannelId, incomeCategoryId: definition.incomeCategoryId,
           description: definition.description, amount: definition.amount, paymentMethodId, creditBankId: bankId,
-          orderDate: creditDate, creditDate, expectedCreditDate: creditDate, isCredited: false,
+          orderDate: creditDate, creditDate, dueDate: creditDate, isCredited: false,
           billingMonth: billing.month, billingYear: billing.year, isFiscal: definition.isFiscal,
           invoiceStatus: definition.isFiscal ? 'NON_INVIATA' : null, vatRate: definition.vatRate, notes: definition.notes,
           recurringIncomeId: definition.id, recurringIncomePeriodKey: key
@@ -51,7 +51,7 @@ export async function settleAutomaticRecurringCredits(todayInput = new Date()): 
   const result: AutomaticIncomeCreditJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
   const today = recurrenceStartOfDay(todayInput);
   const incomes = await prisma.income.findMany({
-    where: { isCredited: false, creditDate: { lte: today }, recurringIncome: { isAutomaticCredit: true } },
+    where: { isCredited: false, dueDate: { lte: today }, recurringIncome: { isAutomaticCredit: true } },
     include: { credits: true, recurringIncome: true }
   });
   for (const income of incomes) {
@@ -65,8 +65,8 @@ export async function settleAutomaticRecurringCredits(todayInput = new Date()): 
       const residual = Math.max(0, Number(income.amount) - credited);
       if (residual <= 0) { result.skipped++; continue; }
       await prisma.$transaction([
-        prisma.incomeCredit.create({ data: { incomeId: income.id, creditDate: income.creditDate, paymentMethodId: definition.paymentMethodId, bankId: definition.bankId, amount: residual, sourceKey } }),
-        prisma.income.update({ where: { id: income.id }, data: { isCredited: true, expectedCreditDate: null, paymentMethodId: definition.paymentMethodId, creditBankId: definition.bankId } })
+        prisma.incomeCredit.create({ data: { incomeId: income.id, creditDate: income.dueDate ?? income.creditDate, paymentMethodId: definition.paymentMethodId, bankId: definition.bankId, amount: residual, sourceKey } }),
+        prisma.income.update({ where: { id: income.id }, data: { isCredited: true, paymentMethodId: definition.paymentMethodId, creditBankId: definition.bankId } })
       ]);
       result.created++;
     } catch (error) {

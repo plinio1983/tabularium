@@ -39,6 +39,7 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
         customerId: copyIncome.customerId,
         salesChannelId: copyIncome.salesChannelId,
         orderDate: clampDateToToday(copyIncome.orderDate ?? copyIncome.creditDate),
+        dueDate: clampDateToToday(copyIncome.dueDate ?? copyIncome.orderDate ?? copyIncome.creditDate),
         amount: copyIncome.amount.toString(),
         paymentMethodId: copyIncome.paymentMethodId,
         creditBankId: copyIncome.creditBankId,

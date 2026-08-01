@@ -15,6 +15,7 @@ const IncomeSchema = z.object({
   customerId: z.coerce.number().int().positive(),
   salesChannelId: z.coerce.number().int().positive(),
   orderDate: z.string().min(1),
+  dueDate: z.string().min(1),
   description: z.string().optional().nullable(),
   amount: z.coerce.number().nonnegative(),
   paymentMethodId: z.coerce.number().int().positive().optional(),
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
   const latestCredit = [...credits].sort((a, b) => b.creditDate.localeCompare(a.creditDate))[0];
   const legacyMethod = methods.find(method => method.id === (firstCredit?.paymentMethodId ?? parsed.paymentMethodId)) ?? fallbackMethod;
   const legacyBank = banks.find(bank => bank.id === (firstCredit?.bankId ?? parsed.creditBankId)) ?? fallbackBank;
-  const legacyCreditDate = latestCredit?.creditDate ?? parsed.creditDate ?? parsed.orderDate;
+  const legacyCreditDate = latestCredit?.creditDate ?? parsed.creditDate ?? parsed.dueDate;
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
   const income = await prisma.income.create({
     data: {
@@ -104,7 +105,7 @@ export async function POST(request: Request) {
       creditBankId: legacyBank.id,
       orderDate: new Date(parsed.orderDate),
       creditDate: new Date(legacyCreditDate),
-      expectedCreditDate: credits.length ? null : new Date(legacyCreditDate),
+      dueDate: new Date(parsed.dueDate),
       isCredited: creditState.isCredited,
       billingYear,
       billingMonth,

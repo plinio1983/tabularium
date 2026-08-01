@@ -8,12 +8,13 @@ import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
 import MobileSortControl from '@/components/MobileSortControl';
 import IncomesList from '@/components/IncomesList';
 import {prepareIncomeList} from '@/lib/income-list';
-import {badgeClass, fiscalStyles, incomeCreditStatusStyles} from '@/lib/income-ui';
+import {badgeClass, fiscalStyles} from '@/lib/income-ui';
 import {requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 import SearchIcon from '@/components/SearchIcon';
+import {incomeCreditState} from '@/lib/income-status';
 
 const invoiceStatusOptions = [
     ['NON_INVIATA', 'Non inviata'],
@@ -395,15 +396,6 @@ function localDateKey(value: Date) {
     return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
 }
 
-function isIncomeCreditOverdue(income: { isCredited: boolean; creditDate: Date | null }) {
-    return !income.isCredited && Boolean(income.creditDate) && localDateKey(income.creditDate!) < localDateKey(new Date());
-}
-
-function incomeCreditStatus(income: { isCredited: boolean; creditDate: Date | null }) {
-    if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
-    return isIncomeCreditOverdue(income) ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
-}
-
 function fiscalBadge(value: boolean) {
     const item = value ? fiscalStyles.yes : fiscalStyles.no;
     const label = value ? '✓ DF' : '✕ NF';
@@ -625,6 +617,9 @@ export default async function IncomesPage({searchParams}: {
     const invoiceStatusFilter = inputDefault(filters, 'invoiceStatus');
     const invoiceStatusModeFilter = inputDefault(filters, 'invoiceStatusMode');
     const vatRateFilter = inputDefault(filters, 'vatRate');
+    const dueDateFromFilter = inputDefault(filters, 'dueDateFrom');
+    const dueDateToFilter = inputDefault(filters, 'dueDateTo');
+    const creditStatusFilter = inputDefault(filters, 'creditStatus');
     const totalsFilterHref = (extraFilters: Record<string, string>) => {
         const query = new URLSearchParams();
         if (useFiscalPeriodFilter) {
@@ -675,6 +670,8 @@ export default async function IncomesPage({searchParams}: {
         if (invoiceStatusFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
         if (invoiceStatusFilter && invoiceStatusFilter !== 'not_emitted' && income.invoiceStatus !== invoiceStatusFilter) return false;
         if (vatRateFilter && Number(income.vatRate.toString()) !== Number(vatRateFilter)) return false;
+        if (!matchesIsoDate(income.dueDate, dueDateFromFilter, dueDateToFilter)) return false;
+        if (creditStatusFilter && incomeCreditState(income) !== creditStatusFilter) return false;
         return true;
     });
 
@@ -766,7 +763,10 @@ export default async function IncomesPage({searchParams}: {
             label: 'Stato fattura',
             value: optionLabel(invoiceStatusOptions, invoiceStatusFilter || invoiceStatusModeFilter)
         },
-        vatRateFilter && {label: 'IVA', value: `${vatRateFilter}%`}
+        vatRateFilter && {label: 'IVA', value: `${vatRateFilter}%`},
+        dueDateFromFilter && {label: 'Scadenza da', value: formatDateInputLabel(dueDateFromFilter)},
+        dueDateToFilter && {label: 'Scadenza a', value: formatDateInputLabel(dueDateToFilter)},
+        creditStatusFilter && {label: 'Stato accredito', value: creditStatusFilter.replaceAll('_', ' ')}
     ].filter(Boolean) as Array<{ label: string; value: string }>;
 
     const mobileSort = inputDefault(filters, 'mobileSort') || incomeMobileSortOptions[0].value;

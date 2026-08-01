@@ -329,7 +329,7 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
           orderDate,
           creditDate,
           isCredited,
-          expectedCreditDate: isCredited ? null : creditDate,
+          dueDate: creditDate,
           billingYear: billing.year,
           billingMonth: billing.month,
           isFiscal,

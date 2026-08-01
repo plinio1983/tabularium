@@ -15,6 +15,7 @@ const IncomeSchema = z.object({
   customerId: z.coerce.number().int().positive(),
   salesChannelId: z.coerce.number().int().positive(),
   orderDate: z.string().min(1),
+  dueDate: z.string().min(1),
   description: z.string().optional().nullable(),
   amount: z.coerce.number().nonnegative(),
   paymentMethodId: z.coerce.number().int().positive().optional(),
@@ -72,7 +73,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const fallbackBank = banks.find(bank => bank.id === current.company.primaryBankId) ?? banks[0];
   const invalidCredit = credits.some(credit => !methods.some(method => method.id === credit.paymentMethodId) || !banks.some(bank => bank.id === credit.bankId));
   if (!fallbackMethod || !fallbackBank || invalidCredit || !salesChannel || !incomeCategory || !customer) return NextResponse.json({ error: 'Configurazione incasso non valida' }, { status: 400 });
-  const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id }, select: { id: true, creditDate: true, expectedCreditDate: true } });
+  const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id }, select: { id: true, creditDate: true, dueDate: true } });
   if (!existing) {
     return redirectToPath(appendFlash(returnTo || '/incomes', { error: 'not_found' }));
   }
@@ -80,7 +81,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const latestCredit = [...credits].sort((a, b) => b.creditDate.localeCompare(a.creditDate))[0];
   const legacyMethod = methods.find(method => method.id === (firstCredit?.paymentMethodId ?? parsed.paymentMethodId)) ?? fallbackMethod;
   const legacyBank = banks.find(bank => bank.id === (firstCredit?.bankId ?? parsed.creditBankId)) ?? fallbackBank;
-  const legacyCreditDate = latestCredit?.creditDate ?? parsed.creditDate ?? existing.expectedCreditDate?.toISOString().slice(0, 10) ?? parsed.orderDate;
+  const legacyCreditDate = latestCredit?.creditDate ?? parsed.creditDate ?? parsed.dueDate;
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
   await prisma.income.update({
     where: { id: incomeId },
@@ -94,7 +95,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       creditBankId: legacyBank.id,
       orderDate: new Date(parsed.orderDate),
       creditDate: new Date(legacyCreditDate),
-      expectedCreditDate: credits.length ? null : new Date(legacyCreditDate),
+      dueDate: new Date(parsed.dueDate),
       isCredited: creditState.isCredited,
       billingYear,
       billingMonth,

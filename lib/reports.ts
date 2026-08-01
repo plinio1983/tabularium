@@ -53,8 +53,7 @@ function incomePeriodWhereIncludingUncredited(periods: Array<{ year: number; mon
     ...(companyId ? {companyId} : {}),
     OR: [
       ...periods.map(({ year, month }) => ({ billingYear: year, billingMonth: month })),
-      ...periods.map(({ year, month }) => ({ isCredited: false, expectedCreditDate: monthDateRange(year, month) })),
-      ...periods.map(({ year, month }) => ({ isCredited: false, expectedCreditDate: null, creditDate: monthDateRange(year, month) }))
+      ...periods.map(({ year, month }) => ({ isCredited: false, dueDate: monthDateRange(year, month) }))
     ]
   };
 }
@@ -62,15 +61,15 @@ function incomePeriodWhereIncludingUncredited(periods: Array<{ year: number; mon
 function incomeMatchesPeriod(income: any, year: number, month: number) {
   if (Number(income.billingYear) === year && Number(income.billingMonth) === month) return true;
   if (income.isCredited) return false;
-  const creditDate = income.expectedCreditDate ? new Date(income.expectedCreditDate) : income.creditDate ? new Date(income.creditDate) : null;
-  return Boolean(creditDate && creditDate.getFullYear() === year && creditDate.getMonth() + 1 === month);
+  const dueDate = income.dueDate ? new Date(income.dueDate) : null;
+  return Boolean(dueDate && dueDate.getFullYear() === year && dueDate.getMonth() + 1 === month);
 }
 
 function incomeMatchesYear(income: any, year: number) {
   if (Number(income.billingYear) === year) return true;
   if (income.isCredited) return false;
-  const creditDate = income.expectedCreditDate ? new Date(income.expectedCreditDate) : income.creditDate ? new Date(income.creditDate) : null;
-  return Boolean(creditDate && creditDate.getFullYear() === year);
+  const dueDate = income.dueDate ? new Date(income.dueDate) : null;
+  return Boolean(dueDate && dueDate.getFullYear() === year);
 }
 
 function periodRecordKey(record: any, kind: 'income' | 'expense') {

@@ -262,6 +262,12 @@ export default function IncomeFiltersDrawer({
           </fieldset>
 
           <fieldset className="filter-group filter-group-order-date">
+            <legend>Scadenza</legend>
+            <label>Data scadenza da<input name="dueDateFrom" type="date" defaultValue={inputDefault(filters, "dueDateFrom")} /></label>
+            <label>Data scadenza a<input name="dueDateTo" type="date" defaultValue={inputDefault(filters, "dueDateTo")} /></label>
+          </fieldset>
+
+          <fieldset className="filter-group filter-group-order-date">
             <legend>Date accredito</legend>
             <label>Selezione rapida periodo<select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter} onChange={handleCreditDateQuickChange}>
               <option value="">Periodo personalizzato</option>
@@ -292,6 +298,14 @@ export default function IncomeFiltersDrawer({
             <option value="">Tutti</option>
             <option value="yes">Si</option>
             <option value="no">No</option>
+          </select></label>
+
+          <label>Stato accredito<select name="creditStatus" defaultValue={inputDefault(filters, "creditStatus")}>
+            <option value="">Tutti</option>
+            <option value="DA_ACCREDITARE">Da accreditare</option>
+            <option value="PARZIALE">Accreditato parzialmente</option>
+            <option value="SCADUTO">Scaduto</option>
+            <option value="ACCREDITATO">Accreditato</option>
           </select></label>
 
           <label>Stato fattura<select name="invoiceStatus" defaultValue={inputDefault(filters, "invoiceStatus") || inputDefault(filters, "invoiceStatusMode")}>

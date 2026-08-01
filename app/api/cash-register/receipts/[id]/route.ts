@@ -67,7 +67,7 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
             paymentMethodId: method.id,
             creditBankId,
             isCredited: true,
-            expectedCreditDate: null,
+            dueDate: null,
             credits: {
                 deleteMany: {},
                 create: {creditDate: date, paymentMethodId: method.id, bankId: creditBankId, amount: input.amount}

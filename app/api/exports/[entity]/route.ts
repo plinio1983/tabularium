@@ -42,9 +42,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
       orderBy: [{ orderDate: 'desc' }, { id: 'desc' }]
     });
     const csv = createCsv(
-      ['ID', 'Data ordine', 'Data ultimo accredito', 'Periodo contabile', 'Cliente', 'Descrizione', 'Canale di vendita', 'Importo', 'IVA %', 'Fiscale', 'Stato fattura', 'Accreditato', 'Totale accreditato', 'Residuo', 'Accrediti', 'Tipo', 'Note'],
+      ['ID', 'Data ordine', 'Data scadenza', 'Data ultimo accredito', 'Periodo contabile', 'Cliente', 'Descrizione', 'Canale di vendita', 'Importo', 'IVA %', 'Fiscale', 'Stato fattura', 'Accreditato', 'Totale accreditato', 'Residuo', 'Accrediti', 'Tipo', 'Note'],
       records.map(record => [
-        record.id, record.orderDate, record.creditDate, `${record.billingYear}-${String(record.billingMonth).padStart(2, '0')}`,
+        record.id, record.orderDate, record.dueDate, record.creditDate, `${record.billingYear}-${String(record.billingMonth).padStart(2, '0')}`,
         record.customer?.businessName, record.description, record.salesChannelRef.name,
         decimal(record.amount), decimal(record.vatRate), record.isFiscal, record.invoiceStatus, record.isCredited,
         record.credits.reduce((sum, credit) => sum + Number(credit.amount), 0),

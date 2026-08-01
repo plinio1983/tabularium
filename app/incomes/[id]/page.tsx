@@ -18,6 +18,7 @@ import {
 } from '@/lib/income-ui';
 import {vatRateLabel, yesNoStyles} from "@/lib/expense-ui";
 import {incomeCreditSummary} from '@/lib/income-credits';
+import {incomeCreditState, isIncomeOverdue} from '@/lib/income-status';
 
 function dateLabel(value?: Date | null) {
     if (!value) return '-';
@@ -49,20 +50,6 @@ function booleanBadgeSimple(value: boolean) {
     return `${item.icon} ${item.label}`;
 }
 
-
-function localDateKey(value: Date) {
-    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
-}
-
-function isIncomeCreditOverdue(income: { isCredited: boolean; expectedCreditDate: Date | null }) {
-    return !income.isCredited && Boolean(income.expectedCreditDate) && localDateKey(income.expectedCreditDate!) < localDateKey(new Date());
-}
-
-function incomeCreditStatus(income: { isCredited: boolean; expectedCreditDate: Date | null; credited: number }) {
-    if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
-    if (income.credited > 0) return incomeCreditStatusStyles.PARZIALE;
-    return isIncomeCreditOverdue(income) ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
-}
 
 function fiscalBadge(value: boolean) {
     const item = value ? yesNoStyles.yes : yesNoStyles.no;
@@ -113,8 +100,8 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const incomeCreditChannelName = income.creditBank.name;
     const salesTone = salesChannelTone(income.salesChannelRef.code);
     const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-    const creditStatus = incomeCreditStatus({...income, credited: creditSummary.credited});
-    const detailToneClass = isIncomeCreditOverdue(income)
+    const creditStatus = incomeCreditStatusStyles[incomeCreditState(income)];
+    const detailToneClass = isIncomeOverdue(income)
         ? 'income-row-overdue'
         : income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE'
             ? 'income-row-warning'
@@ -246,6 +233,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                             <span>Canale</span><strong className={salesTone}>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</strong>
                         </div>
                         <div><span>Data ordine</span><strong>{dateLabel(income.orderDate ?? income.creditDate)}</strong></div>
+                        <div><span>Data scadenza</span><strong>{dateLabel(income.dueDate)}</strong></div>
                         <div><span>Accreditato</span><strong>{euro(creditSummary.credited)}</strong></div>
                         <div><span>Residuo</span><strong>{euro(creditSummary.residual)}</strong></div>
                     </div>

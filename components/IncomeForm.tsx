@@ -7,12 +7,14 @@ import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currenc
 import {DateField, MonthField, SelectField} from "@/components/FormControls";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
+import {incomeCreditState} from '@/lib/income-status';
 
 type InitialIncome = {
     id?: number;
     customerId?: number | null;
     salesChannelId?: number;
     orderDate?: string | Date | null;
+    dueDate?: string | Date | null;
     description?: string | null;
     amount?: string | number | { toString(): string } | null;
     paymentMethodId?: number | null;
@@ -141,6 +143,7 @@ export default function IncomeForm({
     const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount).replace(".", ","));
     const [salesChannelId, setSalesChannelId] = useState(initialSalesChannelId);
     const [orderDate, setOrderDate] = useState(toDateInput(initialIncome?.orderDate) || today);
+    const [dueDate, setDueDate] = useState(toDateInput(initialIncome?.dueDate) || toDateInput(initialIncome?.orderDate) || today);
     const [billingPeriod, setBillingPeriod] = useState(toMonthInput(initialIncome));
     const [description, setDescription] = useState(initialIncome?.description ?? "");
     const [notes, setNotes] = useState(initialIncome?.notes ?? "");
@@ -180,8 +183,14 @@ export default function IncomeForm({
 
     const creditedAmount = credits.reduce((sum, credit) => sum + Number(credit.amount || 0), 0);
     const creditResidual = Math.max(0, amountValue - creditedAmount);
-    const isCredited = amountValue > 0 && creditedAmount >= amountValue - 0.005;
-    const creditStatusLabel = isCredited ? "Accreditato" : creditedAmount > 0 ? "Accreditato parzialmente" : "Da accreditare";
+    const creditState = incomeCreditState({amount: amountValue, credits, dueDate});
+    const isCredited = creditState === 'ACCREDITATO';
+    const creditStatusLabel = {
+        ACCREDITATO: 'Accreditato',
+        PARZIALE: 'Accreditato parzialmente',
+        DA_ACCREDITARE: 'Da accreditare',
+        SCADUTO: 'Scaduto'
+    }[creditState];
     const canAddCredit = openCreditKey === null && credits.every(isCreditComplete) && creditResidual > 0.005;
 
     function updateCredit(index: number, patch: Partial<CreditRow>) {
@@ -358,6 +367,8 @@ export default function IncomeForm({
                 <div className="form-section-grid income-form-section-grid">
                     <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/>
 
+                    <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data scadenza" name="dueDate" value={dueDate} onChange={setDueDate} required/>
+
                     <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({
                         value: option.id,
                         label: `${option.icon ?? "•"} ${option.name}`
@@ -449,7 +460,7 @@ export default function IncomeForm({
                         <div className="form-summary full">
                             <div><span className="muted">Accreditato</span><strong>{formatEuro(creditedAmount)}</strong></div>
                             <div><span className="muted">Residuo</span><strong className={creditResidual > 0 ? "text-critical" : "text-ok"}>{formatEuro(creditResidual)}</strong></div>
-                            <div><span className="muted">Stato</span><strong className={isCredited ? "text-ok" : creditedAmount > 0 ? "text-warning" : "text-critical"}>{creditStatusLabel}</strong></div>
+                            <div><span className="muted">Stato</span><strong className={isCredited ? "text-ok" : creditState === 'PARZIALE' ? "text-warning" : "text-critical"}>{creditStatusLabel}</strong></div>
                             <button type="button" className="btn btn-sm btn-default" disabled={!canAddCredit}
                                     onClick={addCredit}>
                                 ➕ Aggiungi accredito
@@ -581,6 +592,9 @@ export default function IncomeForm({
                             </div>
                             <div className="record-review-item">
                                 <i aria-hidden="true">◷</i><span>Data ordine<strong>{orderDate ? new Date(`${orderDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span>
+                            </div>
+                            <div className="record-review-item">
+                                <i aria-hidden="true">◷</i><span>Data scadenza<strong>{dueDate ? new Date(`${dueDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span>
                             </div>
                             <div className="record-review-item wide">
                                 <i aria-hidden="true">◎</i><span>Cliente<strong>{customerName || "Non indicato"}</strong></span>

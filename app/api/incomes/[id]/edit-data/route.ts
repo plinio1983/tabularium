@@ -32,7 +32,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       paymentMethodId: income.paymentMethodId,
       creditBankId: income.creditBankId,
       creditDate: income.creditDate,
-      expectedCreditDate: income.expectedCreditDate,
+      dueDate: income.dueDate,
       isCredited: income.isCredited,
       credits: income.credits.map(credit => ({
         id: credit.id,

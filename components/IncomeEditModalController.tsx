@@ -13,6 +13,7 @@ type EditIncome = {
   paymentMethodId?: number | null;
   creditBankId?: number | null;
   orderDate?: string | Date | null;
+  dueDate?: string | Date | null;
   creditDate?: string | Date | null;
   isCredited?: boolean;
   credits?: Array<{
@@ -64,6 +65,7 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
         setIncome({
           ...loadedIncome,
           orderDate: clampDateToToday(loadedIncome.orderDate ?? loadedIncome.creditDate),
+          dueDate: clampDateToToday(loadedIncome.dueDate ?? loadedIncome.orderDate ?? loadedIncome.creditDate),
           creditDate: clampDateToToday(loadedIncome.creditDate),
           isCredited: false,
           credits: [],

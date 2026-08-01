@@ -14,6 +14,7 @@ import {
     incomeInvoiceStatusStyles
 } from '@/lib/income-ui';
 import type {IncomeCashRegisterGroup} from '@/lib/income-list';
+import {incomeCreditState} from '@/lib/income-status';
 
 type IncomeItem = {
     id: number;
@@ -21,7 +22,7 @@ type IncomeItem = {
     billingYear: number;
     orderDate: Date | null;
     creditDate: Date | null;
-    expectedCreditDate?: Date | null;
+    dueDate?: Date | null;
     amount: unknown;
     vatRate: unknown;
     description: string | null;
@@ -83,16 +84,8 @@ function dateSortValue(value?: Date | null) {
     return value ? String(new Date(value).getTime()) : '';
 }
 
-function localDateKey(value: Date) {
-    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
-}
-
 function creditStatus(income: IncomeItem) {
-    if (income.isCredited) return incomeCreditStatusStyles.ACCREDITATO;
-    if (income.credits?.some(credit => Number(credit.amount) > 0)) return incomeCreditStatusStyles.PARZIALE;
-    const expectedDate = income.expectedCreditDate;
-    const overdue = Boolean(expectedDate) && localDateKey(expectedDate!) < localDateKey(new Date());
-    return overdue ? incomeCreditStatusStyles.SCADUTO : incomeCreditStatusStyles.DA_ACCREDITARE;
+    return incomeCreditStatusStyles[incomeCreditState(income)];
 }
 
 function fiscalBadge(value: boolean) {
@@ -234,7 +227,7 @@ export default function IncomesList({
                                         <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span> : ''}
                                 </div>
                                 <div className="right-side">
-                                    <span className="badge mobile-record-date text-pre">{mobileDateLabel(income.creditDate)}</span>
+                                    <span className="badge mobile-record-date text-pre">Scad. {mobileDateLabel(income.dueDate)}</span>
                                 </div>
                             </div>
                             <div className="mobile-record-title-row">
@@ -278,6 +271,7 @@ export default function IncomesList({
                     <th data-sort-key="vat" data-sort-type="number">IVA</th>
                     <th data-sort-key="credit-status">Accr.</th>
                     <th data-sort-key="invoice-status" className="text-center">Stato fatt.</th>
+                    <th data-sort-key="due-date" data-sort-type="date">Scadenza</th>
                     <th data-sort-key="credit-date" data-sort-type="date">Data accr.</th>
                     <th data-sort-key="payment-method">Metodo pag.</th>
                 </tr>
@@ -291,6 +285,7 @@ export default function IncomesList({
                                data-sort-billing-period={String(group.billingYear * 12 + group.billingMonth)}
                                data-sort-order-date={dateSortValue(group.latestCreditDate)}
                                data-sort-credit-date={dateSortValue(group.latestCreditDate)}
+                               data-sort-due-date=""
                                data-sort-sales-channel={group.salesChannel}
                                data-sort-customer="Registratore di cassa"
                                data-sort-fiscal={group.isFiscal ? '1' : '0'}
@@ -315,6 +310,7 @@ export default function IncomesList({
                         <td>{aggregateVatBadge(group)}</td>
                         <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span></td>
                         <td className="text-center"><span className="badge badge-color tone-muted">✕</span></td>
+                        <td>-</td>
                         <td>{dateLabel(group.latestCreditDate)}</td>
                         <td>{group.paymentMethodIcon ?? '  •  '} {group.paymentMethod}</td>
                     </tr>;
@@ -328,6 +324,7 @@ export default function IncomesList({
                                data-sort-billing-period={String(income.billingYear * 12 + income.billingMonth)}
                                data-sort-order-date={dateSortValue(income.orderDate ?? income.creditDate)}
                                data-sort-credit-date={dateSortValue(income.creditDate)}
+                               data-sort-due-date={dateSortValue(income.dueDate)}
                                data-sort-sales-channel={income.salesChannelRef.name} data-sort-customer={income.customer?.businessName ?? ''} data-sort-fiscal={income.isFiscal ? '1' : '0'}
                                data-sort-description={income.description ?? ''}
                                data-sort-amount={String(Number(income.amount))} data-sort-vat={String(Number(income.vatRate))}
@@ -349,12 +346,13 @@ export default function IncomesList({
                         <td><span className={badgeClass(status.className)}>{status.icon} {status.label}</span></td>
                         <td className="text-center">{income.isFiscal ?
                             <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : <span className="badge tone-muted">✕</span> }</td>
+                        <td>{dateLabel(income.dueDate)}</td>
                         <td>{dateLabel(income.creditDate)}</td>
                         <td>{income.paymentMethodRef?.icon ?? '  •  '} {paymentMethod}</td>
                     </tr>;
                 })}
                 {!incomes.length && !cashRegisterGroups.length ? <tr>
-                    <td colSpan={13}>{emptyMessage}</td>
+                    <td colSpan={14}>{emptyMessage}</td>
                 </tr> : null}</tbody>
             </table>
         </div>
