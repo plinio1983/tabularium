@@ -381,12 +381,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .recurring-record-form .recurring-form-section-grid > * {
-    grid-column: 1 / -1 !important;
-    min-width: 0;
-    width: 100%;
-  }
-
   .recurring-record-form .form-section-stack > *,
   .recurring-record-form .span-2,
   .recurring-record-form .span-3,
@@ -500,6 +494,12 @@
   .recurring-bulk-actions-bar .bulk-direct-actions {
     flex-grow: 1 !important;
     justify-content: flex-start;
+  }
+
+  .recurring-record-form .recurring-form-section-grid > * {
+    grid-column: 1 / -1 !important;
+    min-width: 0;
+    width: 100%;
   }
 }
 
@@ -3486,6 +3486,26 @@
     padding: 14px;
   }
 
+  .settings-hub-toolbar-actions {
+    width: 100%;
+  }
+
+  .settings-hub-toolbar-actions .active-company-switcher {
+    flex: 1 1 auto;
+  }
+
+  .settings-hub-toolbar-actions .active-company-switcher form,
+  .settings-hub-toolbar-actions .active-company-switcher label,
+  .settings-hub-toolbar-actions .active-company-switcher select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .settings-hub-toolbar-actions .btn {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
   .settings-main-link-arrow {
     font-size: 24px;
   }
@@ -4280,17 +4300,8 @@
     max-width: 100%;
   }
 
-  .cash-register-header > div {
-    display: grid;
-    gap: 0;
-  }
-
-  .cash-register-header .btn {
-    min-height: 34px;
-    padding: 5px 8px;
-    &.btn-close {
-      background: var(--bg);
-    }
+  .cash-register-header .btn.btn-close {
+    background: var(--bg);
   }
 
   .cash-register-controls {
@@ -4383,7 +4394,7 @@
   }
 
   .cash-register-trend-selection {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .cash-register-trend-selection > div:first-child {

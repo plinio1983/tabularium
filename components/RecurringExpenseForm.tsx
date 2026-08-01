@@ -31,6 +31,8 @@ type SupplierOption = {
 };
 type InitialRecurringExpense = {
     startDate?: string | Date | null;
+    endDate?: string | Date | null;
+    archivedAt?: string | Date | null;
     cadence?: string | null;
     dueDay?: number | null;
     dueMonth?: number | null;
@@ -393,6 +395,8 @@ export default function RecurringExpenseForm({
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
     const [vatRate, setVatRate] = useState(normalizeMoney(initialExpense?.vatRate) || "22");
     const [startDate, setStartDate] = useState(toDateInput(initialExpense?.startDate) || today);
+    const [hasEndDate, setHasEndDate] = useState(Boolean(initialExpense?.endDate));
+    const [endDate, setEndDate] = useState(toDateInput(initialExpense?.endDate));
     const [dueDay, setDueDay] = useState(String(initialExpense?.dueDay ?? 1));
     const [dueMonth, setDueMonth] = useState(String(initialExpense?.dueMonth ?? new Date().getMonth() + 1));
     const [categoryId, setCategoryId] = useState(String(initialExpense?.categoryId ?? ""));
@@ -577,6 +581,14 @@ export default function RecurringExpenseForm({
                             <input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required/>
                         </FormField>
                     )}
+                    <div className="app-form-field toggle-field switch-toggle-field app-form-wizard-step app-form-wizard-step-1">
+                        <div className="switch-toggle-field-label app-form-field-label">
+                            <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
+                        </div>
+                        <label className="switch"><input type="checkbox" checked={hasEndDate} onChange={event => setHasEndDate(event.currentTarget.checked)}/><span className="slider"/></label>
+                    </div>
+                    {hasEndDate ?
+                        <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data di fine" name="endDate" value={endDate} onChange={setEndDate} min={startDate} required/> : null}
                 </div>
             </details>
 
@@ -611,9 +623,9 @@ export default function RecurringExpenseForm({
                             <div className="toggle-field switch-toggle-field recurring-switch-control recurring-fiscal-switch">
                                 <div className="switch-toggle-field-label">
                                     <span className="app-form-field-icon">⇆</span>
-                                <label>Fiscale</label>
+                                    <label>Fiscale</label>
                                 </div>
-                                    <label className="switch">
+                                <label className="switch">
                                     <input type="checkbox" name="isDeclared" value="true" checked={isDeclared} onChange={event => {
                                         updateDeclared(event.currentTarget.checked);
                                         focusAmount();
@@ -757,6 +769,9 @@ export default function RecurringExpenseForm({
                         <div className="record-review-grid">
                             <div className="record-review-item">
                                 <i aria-hidden="true">◷</i><span>Data inizio<strong>{startDate ? new Date(`${startDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span>
+                            </div>
+                            <div className="record-review-item">
+                                <i aria-hidden="true">⌛</i><span>Data di fine<strong>{hasEndDate && endDate ? new Date(`${endDate}T12:00:00`).toLocaleDateString("it-IT") : "Senza scadenza"}</strong></span>
                             </div>
                             <div className="record-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({
                                 MONTHLY: "Ogni mese",

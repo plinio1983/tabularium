@@ -264,7 +264,7 @@ export default function ExpenseFiltersDrawer({
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="record-filters recurring-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        <form className="record-filters recurring-drawer-filters record-styled-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
             <FilterField label="Periodo fiscale rapido" icon="▦"><select id="billingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>

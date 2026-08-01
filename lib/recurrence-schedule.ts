@@ -1,5 +1,6 @@
 export type RecurrenceDefinition = {
   startDate: Date | string;
+  endDate?: Date | string | null;
   cadence: string;
   day?: number | null;
   month?: number | null;
@@ -23,7 +24,9 @@ function addMonths(year: number, month: number, delta: number) {
 }
 
 export function recurrenceDates(definition: RecurrenceDefinition, untilInput: Date) {
-  const until = recurrenceStartOfDay(untilInput);
+  const requestedUntil = recurrenceStartOfDay(untilInput);
+  const configuredEnd = definition.endDate ? recurrenceStartOfDay(definition.endDate) : null;
+  const until = configuredEnd && configuredEnd < requestedUntil ? configuredEnd : requestedUntil;
   const start = recurrenceStartOfDay(definition.startDate);
   if (start > until) return [];
   const dates: Date[] = [];

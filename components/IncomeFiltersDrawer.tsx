@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import FilterIcon from "@/components/FilterIcon";
@@ -62,6 +62,13 @@ const quickBillingPeriodOptions = [
 function inputDefault(filters: Record<string, string | string[] | undefined>, key: string) {
   const value = filters[key];
   return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+function FilterField({label, icon, children}: {label: string; icon: string; children: ReactNode}) {
+  return <div className="app-form-field record-filter-field">
+    <span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">{icon}</span>{label}</span>
+    {children}
+  </div>;
 }
 
 function monthInputValue(year: number, monthIndex: number) {
@@ -241,85 +248,84 @@ export default function IncomeFiltersDrawer({
 
   const drawer = mounted ? createPortal(
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel income-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri incassi" onMouseDown={(event) => event.stopPropagation()}>
+      <aside className="filter-drawer-panel record-filter-drawer-panel income-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri incassi" onMouseDown={(event) => event.stopPropagation()}>
         <div className="filter-drawer-header">
           <div>
             <h3>Filtri incassi</h3>
-            <p className="muted">Cerca per periodo, canale, metodo pagamento, fattura e IVA.</p>
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="record-filters recurring-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        <form className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
-            <label>Selezione rapida periodo<select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>
+            <FilterField label="Periodo fiscale rapido" icon="▦"><select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>
               <option value="">Periodo personalizzato</option>
               {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select></label>
-            <label>Periodo Fatt. da<input id="incomeBillingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} onChange={handleBillingPeriodInputChange} /></label>
-            <label>Periodo Fatt. a<input id="incomeBillingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} onChange={handleBillingPeriodInputChange} /></label>
+            </select></FilterField>
+            <FilterField label="Periodo fatturazione da" icon="◷"><input id="incomeBillingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
+            <FilterField label="Periodo fatturazione a" icon="◷"><input id="incomeBillingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
           </fieldset>
 
           <fieldset className="filter-group filter-group-order-date">
             <legend>Scadenza</legend>
-            <label>Data scadenza da<input name="dueDateFrom" type="date" defaultValue={inputDefault(filters, "dueDateFrom")} /></label>
-            <label>Data scadenza a<input name="dueDateTo" type="date" defaultValue={inputDefault(filters, "dueDateTo")} /></label>
+            <FilterField label="Data scadenza da" icon="◷"><input name="dueDateFrom" type="date" defaultValue={inputDefault(filters, "dueDateFrom")} /></FilterField>
+            <FilterField label="Data scadenza a" icon="◷"><input name="dueDateTo" type="date" defaultValue={inputDefault(filters, "dueDateTo")} /></FilterField>
           </fieldset>
 
           <fieldset className="filter-group filter-group-order-date">
             <legend>Date accredito</legend>
-            <label>Selezione rapida periodo<select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter} onChange={handleCreditDateQuickChange}>
+            <FilterField label="Selezione rapida data" icon="⌁"><select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter} onChange={handleCreditDateQuickChange}>
               <option value="">Periodo personalizzato</option>
               {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select></label>
-            <label>Data accredito da<input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} onChange={handleCreditDateInputChange} /></label>
-            <label>Data accredito a<input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} onChange={handleCreditDateInputChange} /></label>
+            </select></FilterField>
+            <FilterField label="Data accredito da" icon="◷"><input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} onChange={handleCreditDateInputChange} /></FilterField>
+            <FilterField label="Data accredito a" icon="◷"><input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} onChange={handleCreditDateInputChange} /></FilterField>
           </fieldset>
 
-          <label>Canale vendita<select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>
+          <FilterField label="Canale vendita" icon="◇"><select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>
             <option value="">Tutti</option>
             {salesChannels.map(value => <option key={value.id} value={value.name}>{value.icon ? `${value.icon} ` : ''}{value.name}</option>)}
-          </select></label>
+          </select></FilterField>
 
-          <label>Importo<input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></label>
+          <FilterField label="Importo" icon="€"><input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></FilterField>
 
-          <label>Metodo pagamento<select name="paymentMethod" defaultValue={inputDefault(filters, "paymentMethod")}>
+          <FilterField label="Metodo pagamento" icon="●"><select name="paymentMethod" defaultValue={inputDefault(filters, "paymentMethod")}>
             <option value="">Tutti</option>
             {paymentMethods.map(value => <option key={value.id} value={value.name}>{value.icon ?? '  •  '} {value.name}</option>)}
-          </select></label>
+          </select></FilterField>
 
-          <label>Canale accredito<select name="creditChannel" defaultValue={inputDefault(filters, "creditChannel")}>
+          <FilterField label="Canale accredito" icon="▣"><select name="creditChannel" defaultValue={inputDefault(filters, "creditChannel")}>
             <option value="">Tutti</option>
             {banks.map(value => <option key={value.id} value={value.name}>{value.name}</option>)}
-          </select></label>
+          </select></FilterField>
 
-          <label>Fiscale<select name="fiscal" defaultValue={inputDefault(filters, "fiscal")}>
+          <FilterField label="Fiscale" icon="%"><select name="fiscal" defaultValue={inputDefault(filters, "fiscal")}>
             <option value="">Tutti</option>
             <option value="yes">Si</option>
             <option value="no">No</option>
-          </select></label>
+          </select></FilterField>
 
-          <label>Stato accredito<select name="creditStatus" defaultValue={inputDefault(filters, "creditStatus")}>
+          <FilterField label="Stato accredito" icon="✓"><select name="creditStatus" defaultValue={inputDefault(filters, "creditStatus")}>
             <option value="">Tutti</option>
             <option value="DA_ACCREDITARE">Da accreditare</option>
             <option value="PARZIALE">Accreditato parzialmente</option>
             <option value="SCADUTO">Scaduto</option>
             <option value="ACCREDITATO">Accreditato</option>
-          </select></label>
+          </select></FilterField>
 
-          <label>Stato fattura<select name="invoiceStatus" defaultValue={inputDefault(filters, "invoiceStatus") || inputDefault(filters, "invoiceStatusMode")}>
+          <FilterField label="Stato fattura" icon="▤"><select name="invoiceStatus" defaultValue={inputDefault(filters, "invoiceStatus") || inputDefault(filters, "invoiceStatusMode")}>
             <option value="">Tutti</option>
             {invoiceStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select></label>
+          </select></FilterField>
 
-          <label>IVA<select name="vatRate" defaultValue={inputDefault(filters, "vatRate")}>
+          <FilterField label="IVA" icon="%"><select name="vatRate" defaultValue={inputDefault(filters, "vatRate")}>
             <option value="">Tutte</option>
             <option value="0">0%</option>
             <option value="4">4%</option>
             <option value="10">10%</option>
             <option value="22">22%</option>
-          </select></label>
+          </select></FilterField>
 
           <div className="filter-drawer-actions">
             <Link className="btn btn-md btn-default reset-button" href="/incomes" onClick={() => setOpen(false)}><span className="btn-icon">↺</span> Reset</Link>

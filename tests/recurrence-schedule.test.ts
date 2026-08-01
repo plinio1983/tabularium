@@ -22,3 +22,13 @@ test('calcola periodo successivo e chiave idempotente', () => {
   assert.deepEqual(period, { year: 2027, month: 1 });
   assert.equal(recurrencePeriodKey(period.year, period.month), '2027-01');
 });
+
+test('include la ricorrenza nella data finale ed esclude quelle successive', () => {
+  const dates = recurrenceDates({
+    startDate: new Date(2026, 0, 15),
+    endDate: new Date(2026, 2, 15),
+    cadence: 'MONTHLY',
+    day: 15
+  }, new Date(2026, 5, 30));
+  assert.deepEqual(dates.map(date => [date.getFullYear(), date.getMonth() + 1, date.getDate()]), [[2026,1,15],[2026,2,15],[2026,3,15]]);
+});

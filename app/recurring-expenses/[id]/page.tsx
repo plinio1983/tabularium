@@ -99,7 +99,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const vatStyle = vatStyles[vatKey(item.vatRate)] ?? vatStyles['22'];
   const generatedTotal = item.generatedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
   const merchant = item.supplier?.businessName || item.merchant;
-  const activeClass = item.isActive ? 'tone-yes' : 'tone-critical';
+  const activeClass = item.archivedAt ? 'tone-neutral' : item.isActive ? 'tone-yes' : 'tone-critical';
   const orderedCategories = orderExpenseCategories(categories);
   const orderedBanks = orderBanks(banks);
   const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
@@ -159,7 +159,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <div className="record-detail-title-block">
               <p className="record-detail-kicker">
                 <span>Spesa ricorrente #{item.id}</span>
-                <span className={badgeClass(activeClass)}>{item.isActive ? 'ON' : 'OFF'}</span>
+                <span className={badgeClass(activeClass)}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span>
               </p>
               <h1>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{merchant}</Link> : merchant}</h1>
               <div className="record-detail-meta-line">
@@ -176,7 +176,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             </div>
             <strong>{euro(item.amount.toString())}</strong>
             <div className="record-detail-badge-row">
-              <span className={badgeClass(activeClass)}>{item.isActive ? 'Regola attiva' : 'Regola disattivata'}</span>
+              <span className={badgeClass(activeClass)}>{item.archivedAt ? 'Regola archiviata' : item.isActive ? 'Regola attiva' : 'Regola disattivata'}</span>
               <span className="badge">{cadenceLabels[item.cadence] ?? item.cadence}</span>
             </div>
           </aside>
@@ -229,8 +229,12 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
               <strong>{dateLabel(item.startDate)}</strong>
             </div>
             <div>
+              <span>Data di fine</span>
+              <strong>{item.endDate ? dateLabel(item.endDate) : 'Senza scadenza'}</strong>
+            </div>
+            <div>
               <span>Stato</span>
-              <strong>{item.isActive ? '✓ Attiva' : '× Disattivata'}</strong>
+              <strong>{item.archivedAt ? '⌛ Archiviata' : item.isActive ? '✓ Attiva' : '× Disattivata'}</strong>
             </div>
             <div>
               <span>Detrazione</span>

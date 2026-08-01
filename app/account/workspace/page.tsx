@@ -38,7 +38,7 @@ export default async function WorkspaceAccountPage({ searchParams }: { searchPar
       <div className="workspace-profile-copy">
         <span className="workspace-profile-eyebrow">Workspace attivo</span>
         <h3>{current.workspace.name}</h3>
-          <span className="ml-0 badge workspace-role-badge hidden-sm hidden-desktop">{roleLabels[current.membership.role] ?? current.membership.role}</span>
+          <span className="ml-0 badge workspace-role-badge hidden-sm-up">{roleLabels[current.membership.role] ?? current.membership.role}</span>
           <p className="muted">{current.user.email}</p>
       </div>
         <span className="badge workspace-role-badge hidden-sp">{roleLabels[current.membership.role] ?? current.membership.role}</span>

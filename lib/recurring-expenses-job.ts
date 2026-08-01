@@ -58,12 +58,14 @@ function isCadenceDue(startDate: Date, dueYear: number, dueMonth: number, cadenc
 function calculateDueDates(recurringExpense: any, todayInput: Date) {
   const today = startOfDay(todayInput);
   const startDate = startOfDay(new Date(recurringExpense.startDate));
+  const endDate = recurringExpense.endDate ? startOfDay(new Date(recurringExpense.endDate)) : null;
+  const generationEnd = endDate && endDate < today ? endDate : today;
 
-  if (startDate > today) return [];
+  if (startDate > generationEnd) return [];
 
   const dueDates: Date[] = [];
   const cursorStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-  const cursorEnd = new Date(today.getFullYear(), today.getMonth(), 1);
+  const cursorEnd = new Date(generationEnd.getFullYear(), generationEnd.getMonth(), 1);
 
   for (
     let cursor = cursorStart;
@@ -82,7 +84,7 @@ function calculateDueDates(recurringExpense: any, todayInput: Date) {
     const dueDate = startOfDay(new Date(dueYear, dueMonth - 1, dueDay));
 
     if (dueDate < startDate) continue;
-    if (dueDate > today) continue;
+    if (dueDate > generationEnd) continue;
 
     dueDates.push(dueDate);
   }
@@ -129,10 +131,14 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
     result.checked += 1;
 
     try {
+      const errorsBefore = result.errors.length;
       const dueDates = calculateDueDates(recurringExpense, todayInput);
 
       if (!dueDates.length) {
         result.skipped += 1;
+        if (recurringExpense.endDate && startOfDay(todayInput) > startOfDay(new Date(recurringExpense.endDate))) {
+          await prisma.recurringExpense.update({where: {id: recurringExpense.id}, data: {isActive: false, archivedAt: startOfDay(todayInput)}});
+        }
         continue;
       }
 
@@ -187,6 +193,9 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
         });
 
         result.created += 1;
+      }
+      if (result.errors.length === errorsBefore && recurringExpense.endDate && startOfDay(todayInput) > startOfDay(new Date(recurringExpense.endDate))) {
+        await prisma.recurringExpense.update({where: {id: recurringExpense.id}, data: {isActive: false, archivedAt: startOfDay(todayInput)}});
       }
     } catch (error) {
       result.errors.push({

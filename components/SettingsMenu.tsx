@@ -10,6 +10,7 @@ function currentMonthReportHref() {
 }
 
 const mainMenuLinks = [
+  { href: () => '/', label: 'Home', icon: '⌂' },
   { href: currentMonthReportHref, label: 'Report mese', icon: <MonthlyReportIcon /> },
   { href: () => '/incomes/cash-register', label: 'Registratore di cassa', icon: '🧮' },
   { href: () => '/recurring-expenses', label: 'Uscite ricorrenti', icon: '↻' },

@@ -19,6 +19,8 @@ type SupplierOption = {
 type EditRecurringExpense = {
   id: number;
   startDate?: string | Date | null;
+  endDate?: string | Date | null;
+  archivedAt?: string | Date | null;
   cadence?: string | null;
   dueDay?: number | null;
   dueMonth?: number | null;

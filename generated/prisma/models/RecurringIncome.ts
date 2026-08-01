@@ -63,6 +63,8 @@ export type RecurringIncomeMinAggregateOutputType = {
   workspaceId: number | null
   companyId: number | null
   startDate: Date | null
+  endDate: Date | null
+  archivedAt: Date | null
   cadence: string | null
   creditDay: number | null
   creditMonth: number | null
@@ -89,6 +91,8 @@ export type RecurringIncomeMaxAggregateOutputType = {
   workspaceId: number | null
   companyId: number | null
   startDate: Date | null
+  endDate: Date | null
+  archivedAt: Date | null
   cadence: string | null
   creditDay: number | null
   creditMonth: number | null
@@ -115,6 +119,8 @@ export type RecurringIncomeCountAggregateOutputType = {
   workspaceId: number
   companyId: number
   startDate: number
+  endDate: number
+  archivedAt: number
   cadence: number
   creditDay: number
   creditMonth: number
@@ -175,6 +181,8 @@ export type RecurringIncomeMinAggregateInputType = {
   workspaceId?: true
   companyId?: true
   startDate?: true
+  endDate?: true
+  archivedAt?: true
   cadence?: true
   creditDay?: true
   creditMonth?: true
@@ -201,6 +209,8 @@ export type RecurringIncomeMaxAggregateInputType = {
   workspaceId?: true
   companyId?: true
   startDate?: true
+  endDate?: true
+  archivedAt?: true
   cadence?: true
   creditDay?: true
   creditMonth?: true
@@ -227,6 +237,8 @@ export type RecurringIncomeCountAggregateInputType = {
   workspaceId?: true
   companyId?: true
   startDate?: true
+  endDate?: true
+  archivedAt?: true
   cadence?: true
   creditDay?: true
   creditMonth?: true
@@ -340,6 +352,8 @@ export type RecurringIncomeGroupByOutputType = {
   workspaceId: number
   companyId: number
   startDate: Date
+  endDate: Date | null
+  archivedAt: Date | null
   cadence: string
   creditDay: number | null
   creditMonth: number | null
@@ -389,6 +403,8 @@ export type RecurringIncomeWhereInput = {
   workspaceId?: Prisma.IntFilter<"RecurringIncome"> | number
   companyId?: Prisma.IntFilter<"RecurringIncome"> | number
   startDate?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"RecurringIncome"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"RecurringIncome"> | Date | string | null
   cadence?: Prisma.StringFilter<"RecurringIncome"> | string
   creditDay?: Prisma.IntNullableFilter<"RecurringIncome"> | number | null
   creditMonth?: Prisma.IntNullableFilter<"RecurringIncome"> | number | null
@@ -423,6 +439,8 @@ export type RecurringIncomeOrderByWithRelationInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cadence?: Prisma.SortOrder
   creditDay?: Prisma.SortOrderInput | Prisma.SortOrder
   creditMonth?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -460,6 +478,8 @@ export type RecurringIncomeWhereUniqueInput = Prisma.AtLeast<{
   workspaceId?: Prisma.IntFilter<"RecurringIncome"> | number
   companyId?: Prisma.IntFilter<"RecurringIncome"> | number
   startDate?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"RecurringIncome"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"RecurringIncome"> | Date | string | null
   cadence?: Prisma.StringFilter<"RecurringIncome"> | string
   creditDay?: Prisma.IntNullableFilter<"RecurringIncome"> | number | null
   creditMonth?: Prisma.IntNullableFilter<"RecurringIncome"> | number | null
@@ -494,6 +514,8 @@ export type RecurringIncomeOrderByWithAggregationInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cadence?: Prisma.SortOrder
   creditDay?: Prisma.SortOrderInput | Prisma.SortOrder
   creditMonth?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -528,6 +550,8 @@ export type RecurringIncomeScalarWhereWithAggregatesInput = {
   workspaceId?: Prisma.IntWithAggregatesFilter<"RecurringIncome"> | number
   companyId?: Prisma.IntWithAggregatesFilter<"RecurringIncome"> | number
   startDate?: Prisma.DateTimeWithAggregatesFilter<"RecurringIncome"> | Date | string
+  endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"RecurringIncome"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"RecurringIncome"> | Date | string | null
   cadence?: Prisma.StringWithAggregatesFilter<"RecurringIncome"> | string
   creditDay?: Prisma.IntNullableWithAggregatesFilter<"RecurringIncome"> | number | null
   creditMonth?: Prisma.IntNullableWithAggregatesFilter<"RecurringIncome"> | number | null
@@ -551,6 +575,8 @@ export type RecurringIncomeScalarWhereWithAggregatesInput = {
 
 export type RecurringIncomeCreateInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -580,6 +606,8 @@ export type RecurringIncomeUncheckedCreateInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -604,6 +632,8 @@ export type RecurringIncomeUncheckedCreateInput = {
 
 export type RecurringIncomeUpdateInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -633,6 +663,8 @@ export type RecurringIncomeUncheckedUpdateInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -660,6 +692,8 @@ export type RecurringIncomeCreateManyInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -683,6 +717,8 @@ export type RecurringIncomeCreateManyInput = {
 
 export type RecurringIncomeUpdateManyMutationInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -704,6 +740,8 @@ export type RecurringIncomeUncheckedUpdateManyInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -740,6 +778,8 @@ export type RecurringIncomeCountOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   creditDay?: Prisma.SortOrder
   creditMonth?: Prisma.SortOrder
@@ -782,6 +822,8 @@ export type RecurringIncomeMaxOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   creditDay?: Prisma.SortOrder
   creditMonth?: Prisma.SortOrder
@@ -808,6 +850,8 @@ export type RecurringIncomeMinOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   creditDay?: Prisma.SortOrder
   creditMonth?: Prisma.SortOrder
@@ -1162,6 +1206,8 @@ export type RecurringIncomeUpdateOneWithoutGeneratedIncomesNestedInput = {
 
 export type RecurringIncomeCreateWithoutWorkspaceInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1189,6 +1235,8 @@ export type RecurringIncomeUncheckedCreateWithoutWorkspaceInput = {
   id?: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1245,6 +1293,8 @@ export type RecurringIncomeScalarWhereInput = {
   workspaceId?: Prisma.IntFilter<"RecurringIncome"> | number
   companyId?: Prisma.IntFilter<"RecurringIncome"> | number
   startDate?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"RecurringIncome"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"RecurringIncome"> | Date | string | null
   cadence?: Prisma.StringFilter<"RecurringIncome"> | string
   creditDay?: Prisma.IntNullableFilter<"RecurringIncome"> | number | null
   creditMonth?: Prisma.IntNullableFilter<"RecurringIncome"> | number | null
@@ -1268,6 +1318,8 @@ export type RecurringIncomeScalarWhereInput = {
 
 export type RecurringIncomeCreateWithoutCompanyInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1295,6 +1347,8 @@ export type RecurringIncomeUncheckedCreateWithoutCompanyInput = {
   id?: number
   workspaceId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1345,6 +1399,8 @@ export type RecurringIncomeUpdateManyWithWhereWithoutCompanyInput = {
 
 export type RecurringIncomeCreateWithoutIncomeCategoryInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1373,6 +1429,8 @@ export type RecurringIncomeUncheckedCreateWithoutIncomeCategoryInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1422,6 +1480,8 @@ export type RecurringIncomeUpdateManyWithWhereWithoutIncomeCategoryInput = {
 
 export type RecurringIncomeCreateWithoutSalesChannelInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1450,6 +1510,8 @@ export type RecurringIncomeUncheckedCreateWithoutSalesChannelInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1499,6 +1561,8 @@ export type RecurringIncomeUpdateManyWithWhereWithoutSalesChannelInput = {
 
 export type RecurringIncomeCreateWithoutBankInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1527,6 +1591,8 @@ export type RecurringIncomeUncheckedCreateWithoutBankInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1576,6 +1642,8 @@ export type RecurringIncomeUpdateManyWithWhereWithoutBankInput = {
 
 export type RecurringIncomeCreateWithoutPaymentMethodInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1604,6 +1672,8 @@ export type RecurringIncomeUncheckedCreateWithoutPaymentMethodInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1653,6 +1723,8 @@ export type RecurringIncomeUpdateManyWithWhereWithoutPaymentMethodInput = {
 
 export type RecurringIncomeCreateWithoutCustomerInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1681,6 +1753,8 @@ export type RecurringIncomeUncheckedCreateWithoutCustomerInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1730,6 +1804,8 @@ export type RecurringIncomeUpdateManyWithWhereWithoutCustomerInput = {
 
 export type RecurringIncomeCreateWithoutGeneratedIncomesInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1758,6 +1834,8 @@ export type RecurringIncomeUncheckedCreateWithoutGeneratedIncomesInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1797,6 +1875,8 @@ export type RecurringIncomeUpdateToOneWithWhereWithoutGeneratedIncomesInput = {
 
 export type RecurringIncomeUpdateWithoutGeneratedIncomesInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1825,6 +1905,8 @@ export type RecurringIncomeUncheckedUpdateWithoutGeneratedIncomesInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1850,6 +1932,8 @@ export type RecurringIncomeCreateManyWorkspaceInput = {
   id?: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1873,6 +1957,8 @@ export type RecurringIncomeCreateManyWorkspaceInput = {
 
 export type RecurringIncomeUpdateWithoutWorkspaceInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1900,6 +1986,8 @@ export type RecurringIncomeUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1926,6 +2014,8 @@ export type RecurringIncomeUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1951,6 +2041,8 @@ export type RecurringIncomeCreateManyCompanyInput = {
   id?: number
   workspaceId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -1974,6 +2066,8 @@ export type RecurringIncomeCreateManyCompanyInput = {
 
 export type RecurringIncomeUpdateWithoutCompanyInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2001,6 +2095,8 @@ export type RecurringIncomeUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2027,6 +2123,8 @@ export type RecurringIncomeUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2053,6 +2151,8 @@ export type RecurringIncomeCreateManyIncomeCategoryInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -2075,6 +2175,8 @@ export type RecurringIncomeCreateManyIncomeCategoryInput = {
 
 export type RecurringIncomeUpdateWithoutIncomeCategoryInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2103,6 +2205,8 @@ export type RecurringIncomeUncheckedUpdateWithoutIncomeCategoryInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2129,6 +2233,8 @@ export type RecurringIncomeUncheckedUpdateManyWithoutIncomeCategoryInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2154,6 +2260,8 @@ export type RecurringIncomeCreateManySalesChannelInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -2176,6 +2284,8 @@ export type RecurringIncomeCreateManySalesChannelInput = {
 
 export type RecurringIncomeUpdateWithoutSalesChannelInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2204,6 +2314,8 @@ export type RecurringIncomeUncheckedUpdateWithoutSalesChannelInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2230,6 +2342,8 @@ export type RecurringIncomeUncheckedUpdateManyWithoutSalesChannelInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2255,6 +2369,8 @@ export type RecurringIncomeCreateManyBankInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -2277,6 +2393,8 @@ export type RecurringIncomeCreateManyBankInput = {
 
 export type RecurringIncomeUpdateWithoutBankInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2305,6 +2423,8 @@ export type RecurringIncomeUncheckedUpdateWithoutBankInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2331,6 +2451,8 @@ export type RecurringIncomeUncheckedUpdateManyWithoutBankInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2356,6 +2478,8 @@ export type RecurringIncomeCreateManyPaymentMethodInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -2378,6 +2502,8 @@ export type RecurringIncomeCreateManyPaymentMethodInput = {
 
 export type RecurringIncomeUpdateWithoutPaymentMethodInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2406,6 +2532,8 @@ export type RecurringIncomeUncheckedUpdateWithoutPaymentMethodInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2432,6 +2560,8 @@ export type RecurringIncomeUncheckedUpdateManyWithoutPaymentMethodInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2457,6 +2587,8 @@ export type RecurringIncomeCreateManyCustomerInput = {
   workspaceId: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   creditDay?: number | null
   creditMonth?: number | null
@@ -2479,6 +2611,8 @@ export type RecurringIncomeCreateManyCustomerInput = {
 
 export type RecurringIncomeUpdateWithoutCustomerInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2507,6 +2641,8 @@ export type RecurringIncomeUncheckedUpdateWithoutCustomerInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2533,6 +2669,8 @@ export type RecurringIncomeUncheckedUpdateManyWithoutCustomerInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   creditDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creditMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2589,6 +2727,8 @@ export type RecurringIncomeSelect<ExtArgs extends runtime.Types.Extensions.Inter
   workspaceId?: boolean
   companyId?: boolean
   startDate?: boolean
+  endDate?: boolean
+  archivedAt?: boolean
   cadence?: boolean
   creditDay?: boolean
   creditMonth?: boolean
@@ -2624,6 +2764,8 @@ export type RecurringIncomeSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   workspaceId?: boolean
   companyId?: boolean
   startDate?: boolean
+  endDate?: boolean
+  archivedAt?: boolean
   cadence?: boolean
   creditDay?: boolean
   creditMonth?: boolean
@@ -2657,6 +2799,8 @@ export type RecurringIncomeSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   workspaceId?: boolean
   companyId?: boolean
   startDate?: boolean
+  endDate?: boolean
+  archivedAt?: boolean
   cadence?: boolean
   creditDay?: boolean
   creditMonth?: boolean
@@ -2690,6 +2834,8 @@ export type RecurringIncomeSelectScalar = {
   workspaceId?: boolean
   companyId?: boolean
   startDate?: boolean
+  endDate?: boolean
+  archivedAt?: boolean
   cadence?: boolean
   creditDay?: boolean
   creditMonth?: boolean
@@ -2711,7 +2857,7 @@ export type RecurringIncomeSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RecurringIncomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "startDate" | "cadence" | "creditDay" | "creditMonth" | "isAutomaticCredit" | "billingPeriodMode" | "billingMonth" | "customerId" | "salesChannelId" | "incomeCategoryId" | "description" | "amount" | "vatRate" | "isFiscal" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringIncome"]>
+export type RecurringIncomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "startDate" | "endDate" | "archivedAt" | "cadence" | "creditDay" | "creditMonth" | "isAutomaticCredit" | "billingPeriodMode" | "billingMonth" | "customerId" | "salesChannelId" | "incomeCategoryId" | "description" | "amount" | "vatRate" | "isFiscal" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringIncome"]>
 export type RecurringIncomeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -2759,6 +2905,8 @@ export type $RecurringIncomePayload<ExtArgs extends runtime.Types.Extensions.Int
     workspaceId: number
     companyId: number
     startDate: Date
+    endDate: Date | null
+    archivedAt: Date | null
     cadence: string
     creditDay: number | null
     creditMonth: number | null
@@ -3213,6 +3361,8 @@ export interface RecurringIncomeFieldRefs {
   readonly workspaceId: Prisma.FieldRef<"RecurringIncome", 'Int'>
   readonly companyId: Prisma.FieldRef<"RecurringIncome", 'Int'>
   readonly startDate: Prisma.FieldRef<"RecurringIncome", 'DateTime'>
+  readonly endDate: Prisma.FieldRef<"RecurringIncome", 'DateTime'>
+  readonly archivedAt: Prisma.FieldRef<"RecurringIncome", 'DateTime'>
   readonly cadence: Prisma.FieldRef<"RecurringIncome", 'String'>
   readonly creditDay: Prisma.FieldRef<"RecurringIncome", 'Int'>
   readonly creditMonth: Prisma.FieldRef<"RecurringIncome", 'Int'>

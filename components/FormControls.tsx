@@ -91,6 +91,7 @@ type DateFieldProps = {
   hint?: ReactNode;
   className?: string;
   required?: boolean;
+  min?: string;
   children?: ReactNode;
 };
 
@@ -105,7 +106,7 @@ function datePresentation(value: string) {
   };
 }
 
-export function DateField({ label, name, value, onChange, hint, className = '', required, children }: DateFieldProps) {
+export function DateField({ label, name, value, onChange, hint, className = '', required, min, children }: DateFieldProps) {
   const generatedId = useId();
   const id = `${name}-${generatedId.replaceAll(':', '')}`;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -121,6 +122,7 @@ export function DateField({ label, name, value, onChange, hint, className = '', 
         value={value}
         onChange={event => onChange(event.currentTarget.value)}
         required={required}
+        min={min}
       />
       <div className="app-date-presentation" aria-hidden="true">
         <strong>{presentation?.date ?? 'Seleziona una data'}</strong>

@@ -20,7 +20,9 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
       const bankId = definition.bankId ?? defaultBank?.id;
       if (!paymentMethodId || !bankId) throw new Error('Metodo di accredito o banca predefinita mancanti');
 
-      const dates = recurrenceDates({ startDate: definition.startDate, cadence: definition.cadence, day: definition.creditDay, month: definition.creditMonth }, todayInput);
+      const today = recurrenceStartOfDay(todayInput);
+      const endDate = definition.endDate ? recurrenceStartOfDay(definition.endDate) : null;
+      const dates = recurrenceDates({ startDate: definition.startDate, endDate: definition.endDate, cadence: definition.cadence, day: definition.creditDay, month: definition.creditMonth }, today);
       if (!dates.length) result.skipped++;
       for (const creditDate of dates) {
         const billing = recurrenceBillingPeriod(definition, creditDate);
@@ -39,6 +41,9 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
           recurringIncomeId: definition.id, recurringIncomePeriodKey: key
         } });
         result.created++;
+      }
+      if (endDate && today > endDate) {
+        await prisma.recurringIncome.update({where: {id: definition.id}, data: {isActive: false, archivedAt: today}});
       }
     } catch (error) {
       result.errors.push({ recurringIncomeId: definition.id, message: error instanceof Error ? error.message : String(error) });

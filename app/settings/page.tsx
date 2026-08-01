@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import {Suspense} from 'react';
 import DetailBackButton from '@/components/DetailBackButton';
+import ActiveCompanySwitcher from '@/components/ActiveCompanySwitcher';
 import {requireWorkspace} from '@/lib/auth';
 
 const settingsSections = [
@@ -50,7 +52,10 @@ export default async function SettingsPage() {
         <h2>Impostazioni</h2>
         <p className="muted">Gestisci account, workspace e configurazioni contabili.</p>
       </div>
-      <DetailBackButton href="/" />
+      <div className="settings-hub-toolbar-actions">
+        <Suspense fallback={null}><ActiveCompanySwitcher returnTo="/settings" /></Suspense>
+        <DetailBackButton href="/" />
+      </div>
     </div>
 
     <nav className="settings-category-hub settings-main-hub" aria-label="Sezioni impostazioni">

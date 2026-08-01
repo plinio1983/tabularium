@@ -5,7 +5,7 @@ import {usePathname} from 'next/navigation';
 
 type Company = {id: number; name: string};
 
-export default function ActiveCompanySwitcher() {
+export default function ActiveCompanySwitcher({returnTo = '/'}: {returnTo?: string}) {
     const pathname = usePathname() || '/';
     const [companies, setCompanies] = useState<Company[]>([]);
     const [activeCompanyId, setActiveCompanyId] = useState<number | null>(null);
@@ -25,7 +25,7 @@ export default function ActiveCompanySwitcher() {
     if (!active) return null;
     return <div className="active-company-switcher">
         {companies.length > 1 ? <form action="/api/companies/switch" method="post">
-            <input type="hidden" name="returnTo" value="/"/>
+            <input type="hidden" name="returnTo" value={returnTo}/>
             <label>
                 {/*<span className="active-company-label">Società</span>*/}
                 <select name="companyId" value={activeCompanyId ?? ''} aria-label="Società attiva"

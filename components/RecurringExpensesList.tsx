@@ -247,7 +247,7 @@ export default function RecurringExpensesList({
               const categoryClassName = categoryTone(item.category);
               const cadenceStyle = cadenceStyles[item.cadence] ?? { icon: '↻', className: 'tone-neutral' };
               const billingStyle = billingStyles[item.billingPeriodMode] ?? { icon: 'CAL', className: 'tone-neutral' };
-              const statusStyle = item.isActive ? { icon: '✓', label: 'Attiva', className: 'tone-yes' } : { icon: '×', label: 'Off', className: 'tone-critical' };
+              const statusStyle = item.archivedAt ? { icon: '⌛', label: 'Archiviata', className: 'tone-neutral' } : item.isActive ? { icon: '✓', label: 'Attiva', className: 'tone-yes' } : { icon: '×', label: 'Off', className: 'tone-critical' };
               return <tr className="clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}`} tabIndex={0} key={item.id}>
                 <td className="cell-center"><input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} /></td>
                 <td className="cell-left"><span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span></td>
@@ -282,7 +282,7 @@ export default function RecurringExpensesList({
             <article className={item.isActive ? "recurring-mobile-item recurring-mobile-item-active" : "recurring-mobile-item recurring-mobile-item-disabled"}>
             <div className="recurring-mobile-top">
               <div className="recurring-mobile-main-title">
-                <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.isActive ? 'ON' : 'OFF'}</span>
+                <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span>
                 <span className="badge tone-insurance">{cadence}</span>
                 <span className="badge">{dueLabel(item)}</span>
               </div>
@@ -306,7 +306,7 @@ export default function RecurringExpensesList({
 
             <div className="recurring-mobile-meta">
               <div><span>Periodo fatt.</span><strong>{billing}</strong></div>
-              <div className="recurring-mobile-meta-right"><span>Inizio</span><strong>{dateLabel(item.startDate)}</strong></div>
+              <div className="recurring-mobile-meta-right"><span>{item.endDate ? 'Periodo' : 'Inizio'}</span><strong>{dateLabel(item.startDate)}{item.endDate ? ` – ${dateLabel(item.endDate)}` : ''}</strong></div>
             </div>
           </article>
           </Link>

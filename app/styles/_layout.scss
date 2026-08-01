@@ -1404,7 +1404,7 @@ button {
   margin-top: 2px;
 }
 
-.expense-drawer-filters .filter-group {
+.record-styled-drawer-filters .filter-group {
   display: grid;
   gap: 10px;
   padding: 12px;
@@ -1413,7 +1413,7 @@ button {
   background: #fafbff;
 }
 
-.expense-drawer-filters .filter-group legend {
+.record-styled-drawer-filters .filter-group legend {
   padding: 0 6px;
   color: var(--muted);
   font-size: 12px;
@@ -1422,12 +1422,12 @@ button {
   letter-spacing: .05em;
 }
 
-.expense-drawer-filters {
+.record-styled-drawer-filters {
   gap: 14px;
   background: #f8fafc;
 }
 
-.expense-drawer-filters .filter-group {
+.record-styled-drawer-filters .filter-group {
   gap: 14px;
   padding: 15px;
   border-color: #dfe5f2;
@@ -1435,13 +1435,13 @@ button {
   box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
 }
 
-.expense-drawer-filters .filter-group legend {
+.record-styled-drawer-filters .filter-group legend {
   color: var(--text);
   font-size: 13px;
   letter-spacing: .035em;
 }
 
-.expense-drawer-filters .record-filter-field {
+.record-styled-drawer-filters .record-filter-field {
   gap: 8px;
   padding: 12px;
   border: 1px solid #e2e8f0;
@@ -1449,9 +1449,9 @@ button {
   background: #fff;
 }
 
-.expense-drawer-filters .record-filter-field > input,
-.expense-drawer-filters .record-filter-field > select,
-.expense-drawer-filters .record-filter-field .filter-entity-autocomplete > input {
+.record-styled-drawer-filters .record-filter-field > input,
+.record-styled-drawer-filters .record-filter-field > select,
+.record-styled-drawer-filters .record-filter-field .filter-entity-autocomplete > input {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
@@ -1462,42 +1462,24 @@ button {
   font-size: 14px;
 }
 
-.expense-drawer-filters .record-filter-field:focus-within {
+.record-styled-drawer-filters .record-filter-field:focus-within {
   border-color: #c7d2fe;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, .08);
 }
 
-.expense-drawer-filters .record-filter-field:focus-within > input,
-.expense-drawer-filters .record-filter-field:focus-within > select,
-.expense-drawer-filters .record-filter-field:focus-within .filter-entity-autocomplete > input {
+.record-styled-drawer-filters .record-filter-field:focus-within > input,
+.record-styled-drawer-filters .record-filter-field:focus-within > select,
+.record-styled-drawer-filters .record-filter-field:focus-within .filter-entity-autocomplete > input {
   border-color: var(--accent);
   background: #fff;
   outline: none;
 }
 
-.expense-drawer-filters .filter-drawer-actions {
+.record-styled-drawer-filters .filter-drawer-actions {
   margin: 2px -18px -18px;
   padding: 16px 18px calc(16px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   z-index: 10;
-}
-
-.income-drawer-filters .filter-group {
-  display: grid;
-  gap: 10px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: #fafbff;
-}
-
-.income-drawer-filters .filter-group legend {
-  padding: 0 6px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: .05em;
 }
 
 /* uscite ricorrenti: sezioni collassabili coerenti con ExpenseForm */
@@ -4495,7 +4477,6 @@ table th, table td {
 }
 
 .cash-register-header,
-.cash-register-header > div,
 .cash-register-controls,
 .cash-register-actions {
   display: flex;
@@ -4505,17 +4486,24 @@ table th, table td {
 .cash-register-header {
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 4px;
 }
 
 .cash-register-header h1 {
-  margin: 0;
+  margin: 0 0 6px 0;
   font-size: clamp(19px, 3vw, 28px);
 }
 
 .cash-register-header > div {
+  display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 0;
+  //gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cash-register-header .btn {
+  font-size: 15px;
 }
 
 .cash-register-header-actions {
@@ -13165,7 +13153,12 @@ button.bulk-direct-danger {
 
 .app-record-form .toggle-field {
   //align-items: center;
-  flex-grow: 1;
+  //flex-grow: 1;
+  min-height: 54px;
+  padding: 11px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  max-width: fit-content;
 }
 
 .app-record-form .payment-status-note {
@@ -15874,6 +15867,38 @@ table .cell-description {
 
 .settings-main-hub {
   justify-self: anchor-center;
+}
+
+.settings-hub-toolbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.settings-hub-toolbar-actions .active-company-switcher select {
+  min-height: 38px;
+  max-width: 240px;
+  padding: 7px 32px 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background-color: #fff;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.settings-hub-toolbar-actions .active-company-name {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .settings-main-link-copy {

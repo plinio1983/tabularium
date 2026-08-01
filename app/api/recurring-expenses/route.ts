@@ -11,6 +11,7 @@ const BooleanFromForm = z.preprocess((value) => value === true || value === 'tru
 
 const RecurringExpenseSchema = z.object({
   startDate: z.string().min(1),
+  endDate: z.string().optional().transform(value => value || null),
   cadence: z.enum(['MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
   dueDay: z.coerce.number().min(1).max(31).optional().nullable(),
   dueMonth: z.coerce.number().min(1).max(12).optional().nullable(),
@@ -28,6 +29,8 @@ const RecurringExpenseSchema = z.object({
   paymentMethodId: z.coerce.number().optional().nullable(),
   bankId: z.coerce.number().optional().nullable(),
   notes: z.string().optional()
+}).superRefine((data, context) => {
+  if (data.endDate && data.endDate < data.startDate) context.addIssue({code: 'custom', path: ['endDate'], message: 'La data di fine non può precedere la data iniziale'});
 });
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
@@ -81,6 +84,7 @@ export async function POST(request: Request) {
     workspaceId: current.workspace.id,
     companyId: current.company.id,
       startDate: new Date(data.startDate),
+      endDate: data.endDate ? new Date(data.endDate) : null,
       cadence: data.cadence,
       dueDay: data.dueDay || null,
       dueMonth: isYearly ? (data.dueMonth || null) : null,

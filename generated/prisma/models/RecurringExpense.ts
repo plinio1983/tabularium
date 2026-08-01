@@ -61,6 +61,8 @@ export type RecurringExpenseMinAggregateOutputType = {
   workspaceId: number | null
   companyId: number | null
   startDate: Date | null
+  endDate: Date | null
+  archivedAt: Date | null
   cadence: string | null
   dueDay: number | null
   dueMonth: number | null
@@ -88,6 +90,8 @@ export type RecurringExpenseMaxAggregateOutputType = {
   workspaceId: number | null
   companyId: number | null
   startDate: Date | null
+  endDate: Date | null
+  archivedAt: Date | null
   cadence: string | null
   dueDay: number | null
   dueMonth: number | null
@@ -115,6 +119,8 @@ export type RecurringExpenseCountAggregateOutputType = {
   workspaceId: number
   companyId: number
   startDate: number
+  endDate: number
+  archivedAt: number
   cadence: number
   dueDay: number
   dueMonth: number
@@ -174,6 +180,8 @@ export type RecurringExpenseMinAggregateInputType = {
   workspaceId?: true
   companyId?: true
   startDate?: true
+  endDate?: true
+  archivedAt?: true
   cadence?: true
   dueDay?: true
   dueMonth?: true
@@ -201,6 +209,8 @@ export type RecurringExpenseMaxAggregateInputType = {
   workspaceId?: true
   companyId?: true
   startDate?: true
+  endDate?: true
+  archivedAt?: true
   cadence?: true
   dueDay?: true
   dueMonth?: true
@@ -228,6 +238,8 @@ export type RecurringExpenseCountAggregateInputType = {
   workspaceId?: true
   companyId?: true
   startDate?: true
+  endDate?: true
+  archivedAt?: true
   cadence?: true
   dueDay?: true
   dueMonth?: true
@@ -342,6 +354,8 @@ export type RecurringExpenseGroupByOutputType = {
   workspaceId: number | null
   companyId: number
   startDate: Date
+  endDate: Date | null
+  archivedAt: Date | null
   cadence: string
   dueDay: number | null
   dueMonth: number | null
@@ -392,6 +406,8 @@ export type RecurringExpenseWhereInput = {
   workspaceId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   companyId?: Prisma.IntFilter<"RecurringExpense"> | number
   startDate?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"RecurringExpense"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"RecurringExpense"> | Date | string | null
   cadence?: Prisma.StringFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
@@ -426,6 +442,8 @@ export type RecurringExpenseOrderByWithRelationInput = {
   workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
   dueMonth?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -463,6 +481,8 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
   workspaceId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   companyId?: Prisma.IntFilter<"RecurringExpense"> | number
   startDate?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"RecurringExpense"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"RecurringExpense"> | Date | string | null
   cadence?: Prisma.StringFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
@@ -497,6 +517,8 @@ export type RecurringExpenseOrderByWithAggregationInput = {
   workspaceId?: Prisma.SortOrderInput | Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
   dueMonth?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -532,6 +554,8 @@ export type RecurringExpenseScalarWhereWithAggregatesInput = {
   workspaceId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   companyId?: Prisma.IntWithAggregatesFilter<"RecurringExpense"> | number
   startDate?: Prisma.DateTimeWithAggregatesFilter<"RecurringExpense"> | Date | string
+  endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"RecurringExpense"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"RecurringExpense"> | Date | string | null
   cadence?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
@@ -556,6 +580,8 @@ export type RecurringExpenseScalarWhereWithAggregatesInput = {
 
 export type RecurringExpenseCreateInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -586,6 +612,8 @@ export type RecurringExpenseUncheckedCreateInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -611,6 +639,8 @@ export type RecurringExpenseUncheckedCreateInput = {
 
 export type RecurringExpenseUpdateInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -641,6 +671,8 @@ export type RecurringExpenseUncheckedUpdateInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -669,6 +701,8 @@ export type RecurringExpenseCreateManyInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -693,6 +727,8 @@ export type RecurringExpenseCreateManyInput = {
 
 export type RecurringExpenseUpdateManyMutationInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -716,6 +752,8 @@ export type RecurringExpenseUncheckedUpdateManyInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -753,6 +791,8 @@ export type RecurringExpenseCountOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
@@ -795,6 +835,8 @@ export type RecurringExpenseMaxOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
@@ -822,6 +864,8 @@ export type RecurringExpenseMinOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   cadence?: Prisma.SortOrder
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
@@ -1142,6 +1186,8 @@ export type RecurringExpenseUpdateOneWithoutGeneratedExpensesNestedInput = {
 
 export type RecurringExpenseCreateWithoutWorkspaceInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1170,6 +1216,8 @@ export type RecurringExpenseUncheckedCreateWithoutWorkspaceInput = {
   id?: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1227,6 +1275,8 @@ export type RecurringExpenseScalarWhereInput = {
   workspaceId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   companyId?: Prisma.IntFilter<"RecurringExpense"> | number
   startDate?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"RecurringExpense"> | Date | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"RecurringExpense"> | Date | string | null
   cadence?: Prisma.StringFilter<"RecurringExpense"> | string
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
@@ -1251,6 +1301,8 @@ export type RecurringExpenseScalarWhereInput = {
 
 export type RecurringExpenseCreateWithoutCompanyInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1279,6 +1331,8 @@ export type RecurringExpenseUncheckedCreateWithoutCompanyInput = {
   id?: number
   workspaceId?: number | null
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1330,6 +1384,8 @@ export type RecurringExpenseUpdateManyWithWhereWithoutCompanyInput = {
 
 export type RecurringExpenseCreateWithoutCategoryInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1359,6 +1415,8 @@ export type RecurringExpenseUncheckedCreateWithoutCategoryInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1409,6 +1467,8 @@ export type RecurringExpenseUpdateManyWithWhereWithoutCategoryInput = {
 
 export type RecurringExpenseCreateWithoutBankInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1438,6 +1498,8 @@ export type RecurringExpenseUncheckedCreateWithoutBankInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1488,6 +1550,8 @@ export type RecurringExpenseUpdateManyWithWhereWithoutBankInput = {
 
 export type RecurringExpenseCreateWithoutPaymentMethodInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1517,6 +1581,8 @@ export type RecurringExpenseUncheckedCreateWithoutPaymentMethodInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1567,6 +1633,8 @@ export type RecurringExpenseUpdateManyWithWhereWithoutPaymentMethodInput = {
 
 export type RecurringExpenseCreateWithoutSupplierInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1596,6 +1664,8 @@ export type RecurringExpenseUncheckedCreateWithoutSupplierInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1646,6 +1716,8 @@ export type RecurringExpenseUpdateManyWithWhereWithoutSupplierInput = {
 
 export type RecurringExpenseCreateWithoutGeneratedExpensesInput = {
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1675,6 +1747,8 @@ export type RecurringExpenseUncheckedCreateWithoutGeneratedExpensesInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1715,6 +1789,8 @@ export type RecurringExpenseUpdateToOneWithWhereWithoutGeneratedExpensesInput = 
 
 export type RecurringExpenseUpdateWithoutGeneratedExpensesInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1744,6 +1820,8 @@ export type RecurringExpenseUncheckedUpdateWithoutGeneratedExpensesInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1770,6 +1848,8 @@ export type RecurringExpenseCreateManyWorkspaceInput = {
   id?: number
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1794,6 +1874,8 @@ export type RecurringExpenseCreateManyWorkspaceInput = {
 
 export type RecurringExpenseUpdateWithoutWorkspaceInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1822,6 +1904,8 @@ export type RecurringExpenseUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1849,6 +1933,8 @@ export type RecurringExpenseUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1875,6 +1961,8 @@ export type RecurringExpenseCreateManyCompanyInput = {
   id?: number
   workspaceId?: number | null
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -1899,6 +1987,8 @@ export type RecurringExpenseCreateManyCompanyInput = {
 
 export type RecurringExpenseUpdateWithoutCompanyInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1927,6 +2017,8 @@ export type RecurringExpenseUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1954,6 +2046,8 @@ export type RecurringExpenseUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1981,6 +2075,8 @@ export type RecurringExpenseCreateManyCategoryInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -2004,6 +2100,8 @@ export type RecurringExpenseCreateManyCategoryInput = {
 
 export type RecurringExpenseUpdateWithoutCategoryInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2033,6 +2131,8 @@ export type RecurringExpenseUncheckedUpdateWithoutCategoryInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2060,6 +2160,8 @@ export type RecurringExpenseUncheckedUpdateManyWithoutCategoryInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2086,6 +2188,8 @@ export type RecurringExpenseCreateManyBankInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -2109,6 +2213,8 @@ export type RecurringExpenseCreateManyBankInput = {
 
 export type RecurringExpenseUpdateWithoutBankInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2138,6 +2244,8 @@ export type RecurringExpenseUncheckedUpdateWithoutBankInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2165,6 +2273,8 @@ export type RecurringExpenseUncheckedUpdateManyWithoutBankInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2191,6 +2301,8 @@ export type RecurringExpenseCreateManyPaymentMethodInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -2214,6 +2326,8 @@ export type RecurringExpenseCreateManyPaymentMethodInput = {
 
 export type RecurringExpenseUpdateWithoutPaymentMethodInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2243,6 +2357,8 @@ export type RecurringExpenseUncheckedUpdateWithoutPaymentMethodInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2270,6 +2386,8 @@ export type RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2296,6 +2414,8 @@ export type RecurringExpenseCreateManySupplierInput = {
   workspaceId?: number | null
   companyId: number
   startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
   cadence: string
   dueDay?: number | null
   dueMonth?: number | null
@@ -2319,6 +2439,8 @@ export type RecurringExpenseCreateManySupplierInput = {
 
 export type RecurringExpenseUpdateWithoutSupplierInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2348,6 +2470,8 @@ export type RecurringExpenseUncheckedUpdateWithoutSupplierInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2375,6 +2499,8 @@ export type RecurringExpenseUncheckedUpdateManyWithoutSupplierInput = {
   workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cadence?: Prisma.StringFieldUpdateOperationsInput | string
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2432,6 +2558,8 @@ export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.Inte
   workspaceId?: boolean
   companyId?: boolean
   startDate?: boolean
+  endDate?: boolean
+  archivedAt?: boolean
   cadence?: boolean
   dueDay?: boolean
   dueMonth?: boolean
@@ -2467,6 +2595,8 @@ export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   workspaceId?: boolean
   companyId?: boolean
   startDate?: boolean
+  endDate?: boolean
+  archivedAt?: boolean
   cadence?: boolean
   dueDay?: boolean
   dueMonth?: boolean
@@ -2500,6 +2630,8 @@ export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   workspaceId?: boolean
   companyId?: boolean
   startDate?: boolean
+  endDate?: boolean
+  archivedAt?: boolean
   cadence?: boolean
   dueDay?: boolean
   dueMonth?: boolean
@@ -2533,6 +2665,8 @@ export type RecurringExpenseSelectScalar = {
   workspaceId?: boolean
   companyId?: boolean
   startDate?: boolean
+  endDate?: boolean
+  archivedAt?: boolean
   cadence?: boolean
   dueDay?: boolean
   dueMonth?: boolean
@@ -2555,7 +2689,7 @@ export type RecurringExpenseSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "startDate" | "cadence" | "dueDay" | "dueMonth" | "isAutomaticPayment" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
+export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "startDate" | "endDate" | "archivedAt" | "cadence" | "dueDay" | "dueMonth" | "isAutomaticPayment" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
 export type RecurringExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -2599,6 +2733,8 @@ export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.In
     workspaceId: number | null
     companyId: number
     startDate: Date
+    endDate: Date | null
+    archivedAt: Date | null
     cadence: string
     dueDay: number | null
     dueMonth: number | null
@@ -3053,6 +3189,8 @@ export interface RecurringExpenseFieldRefs {
   readonly workspaceId: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly companyId: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly startDate: Prisma.FieldRef<"RecurringExpense", 'DateTime'>
+  readonly endDate: Prisma.FieldRef<"RecurringExpense", 'DateTime'>
+  readonly archivedAt: Prisma.FieldRef<"RecurringExpense", 'DateTime'>
   readonly cadence: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly dueDay: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly dueMonth: Prisma.FieldRef<"RecurringExpense", 'Int'>

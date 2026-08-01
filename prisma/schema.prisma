@@ -442,6 +442,8 @@ model RecurringExpense {
   companyId            Int
   company              Company          @relation(fields: [companyId], references: [id], onDelete: Restrict)
   startDate            DateTime
+  endDate              DateTime?
+  archivedAt           DateTime?
   cadence              String
   dueDay               Int?
   dueMonth             Int?
@@ -472,6 +474,7 @@ model RecurringExpense {
   @@index([workspaceId])
   @@index([workspaceId, companyId])
   @@index([startDate])
+  @@index([endDate])
   @@index([supplierId])
   @@index([isActive])
   @@index([paymentMethodId])
@@ -484,6 +487,8 @@ model RecurringIncome {
   companyId            Int
   company              Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
   startDate            DateTime
+  endDate              DateTime?
+  archivedAt           DateTime?
   cadence              String
   creditDay            Int?
   creditMonth          Int?
@@ -513,6 +518,7 @@ model RecurringIncome {
   @@index([workspaceId])
   @@index([workspaceId, companyId])
   @@index([startDate])
+  @@index([endDate])
   @@index([customerId])
   @@index([isActive])
 }

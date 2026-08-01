@@ -831,8 +831,8 @@ export default async function IncomesPage({searchParams}: {
                 <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
             </div>
             <div className="toolbar-actions">
-                <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register">
-                    <span className="btn-icon" aria-hidden="true">🧮</span>Reg. di cassa
+                <Link className="btn btn-sm btn-secondary" href="/recurring-incomes">
+                    <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
                     <span className="btn-icon">+</span>Inserisci incasso
