@@ -1463,6 +1463,7 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
     const totalFiscalProfit = months.reduce((sum, month) => sum + month.totals.utileFiscale, 0);
     const monthlyRatio = (value: number, income: number) => income ? value / Math.abs(income) * 100 : 0;
     const ratios = months.flatMap(month => [
+        monthlyRatio(month.totals.utileLordo, month.totals.incassoTotale),
         monthlyRatio(month.totals.utileNetto, month.totals.incassoTotale),
         monthlyRatio(month.totals.utileFiscale, month.totals.incassoTotale)
     ]);
@@ -1493,8 +1494,8 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
     return <section className="card dashboard-insight-card monthly-profit-comparison-card">
         <div className="card-heading-row">
             <div>
-                <h2>Utile netto e fiscale per mese</h2>
-                <p className="muted">Confronto degli importi mensili nell’anno {year}.</p>
+                <h2>Andamento e report mensile</h2>
+                <p className="muted">Entrate, uscite, utile netto e fiscale con dettaglio per ogni mese del {year}.</p>
             </div>
             <div className="dashboard-chart-main-totals">
                 <div className="dashboard-chart-main-total">
@@ -1511,18 +1512,33 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
             {months.map(month => {
                 const netProfit = month.totals.utileNetto;
                 const fiscalProfit = month.totals.utileFiscale;
+                const grossProfit = month.totals.utileLordo;
                 const netPercentage = monthlyRatio(netProfit, month.totals.incassoTotale);
                 const fiscalPercentage = monthlyRatio(fiscalProfit, month.totals.incassoTotale);
+                const grossPercentage = monthlyRatio(grossProfit, month.totals.incassoTotale);
                 const isBest = bestMonth?.month === month.month && bestMonth?.year === month.year;
                 const isWorst = worstMonth?.month === month.month && worstMonth?.year === month.year && worstMonth !== bestMonth;
-                return <Link className={`monthly-profit-comparison-row ${isBest ? 'is-best' : ''} ${isWorst ? 'is-worst' : ''}`}
-                             href={monthReportLink(month.year, month.month)}
-                             key={`${month.year}-${month.month}`}>
+                return <div className={`monthly-profit-comparison-row ${isBest ? 'is-best' : ''} ${isWorst ? 'is-worst' : ''}`}
+                            key={`${month.year}-${month.month}`}>
                     <div className="monthly-profit-comparison-month">
-                        <strong>{capitalizedMonthName(month.month)}</strong>
+                        <Link href={monthReportLink(month.year, month.month)}>{capitalizedMonthName(month.month)}</Link>
                         {isBest ? <small>Migliore</small> : isWorst ? <small>Più debole</small> : null}
                     </div>
+                    <div className="monthly-performance-cashflow">
+                        <div><span>Entrate</span><strong>{chartEuro(month.totals.incassoTotale)}</strong></div>
+                        <div><span>Uscite</span><strong>{chartEuro(month.totals.speseTotali)}</strong></div>
+                    </div>
                     <div className="monthly-profit-comparison-series">
+                        <div>
+                            <span>Lordo</span>
+                            <div className={`monthly-profit-comparison-axis ${negativeExtent ? 'has-negative-values' : ''}`}
+                                 aria-label={`Margine lordo ${grossPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
+                                <i className={grossProfit < 0 ? 'is-negative' : 'is-gross'} style={barStyle(grossPercentage)}/>
+                                {negativeExtent ? <b style={{left: `${zeroPosition}%`}}/> : null}
+                            </div>
+                            <strong className={moneyTone(grossProfit)}>{chartEuro(grossProfit)}</strong>
+                            <em className={moneyTone(grossProfit)}>{grossPercentage.toFixed(1)}%</em>
+                        </div>
                         <div>
                             <span>Netto</span>
                             <div className={`monthly-profit-comparison-axis ${negativeExtent ? 'has-negative-values' : ''}`}
@@ -1544,7 +1560,17 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
                             <em className={moneyTone(fiscalProfit)}>{fiscalPercentage.toFixed(1)}%</em>
                         </div>
                     </div>
-                </Link>;
+                    <details className="monthly-performance-details">
+                        <summary>Mostra dettagli</summary>
+                        <div>
+                            <span>Entrate non fiscali <strong>{chartEuro(month.totals.incassoNonFiscale)}</strong></span>
+                            <span>Spese non fiscali <strong>{chartEuro(month.totals.usciteNonFiscali)}</strong></span>
+                            <span>Spese non saldate <strong>{chartEuro(month.totals.nonSaldato)}</strong></span>
+                            <span>Saldo IVA <strong className={moneyTone(month.totals.debitoIva)}>{chartEuro(month.totals.debitoIva)}</strong></span>
+                            <Link className="btn btn-sm btn-link" href={monthReportLink(month.year, month.month)}>Apri report mensile</Link>
+                        </div>
+                    </details>
+                </div>;
             })}
         </div> : <p className="muted">Nessun utile mensile disponibile per l’anno selezionato.</p>}
     </section>;
@@ -2121,7 +2147,9 @@ export default async function Dashboard({searchParams}: {
         {/*<IncomeExpenseBreakdownChart totals={report.totals} periods={annualPeriods}/>*/}
         {/*</article>*/}
 
-        <div className="card dashboard-report-card">
+        <MonthlyProfitComparisonChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
+
+        <div className="card dashboard-report-card dashboard-monthly-legacy-report">
             <div className="card-heading-row">
                 <div>
                     <h2>Report mensile {report.year}</h2>
@@ -2232,7 +2260,6 @@ export default async function Dashboard({searchParams}: {
         <div className="dashboard-report-charts">
             <div className="dashboard-insights-grid">
                 <EconomicTrendChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                <MonthlyProfitComparisonChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
                 <CashScheduleChart items={cashSchedule} year={report.annualYear}/>
                 <VatSituationCard months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
             </div>

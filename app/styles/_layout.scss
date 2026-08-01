@@ -1179,6 +1179,12 @@ button {
   position: relative;
 }
 
+@media (max-width: 1210px) {
+  .monthly-profit-comparison-list {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 @media (min-width: 900px) {
   .income-form .income-amount-control {
     min-width: 70%;
@@ -7696,6 +7702,12 @@ html, body {
   grid-column: 1 / -1;
 }
 
+// Conservato temporaneamente per poter ripristinare il report tabellare senza
+// doverne ricostruire markup e logica.
+.dashboard-monthly-legacy-report {
+  display: none;
+}
+
 .monthly-profit-comparison-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -7705,7 +7717,7 @@ html, body {
 
 .monthly-profit-comparison-row {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-columns: 80px minmax(150px, 0.7fr) minmax(280px, 1.5fr);
   gap: 12px;
   padding: 12px 8px;
   border-bottom: 1px solid var(--line);
@@ -7733,9 +7745,16 @@ html, body {
   gap: 3px;
 }
 
-.monthly-profit-comparison-month > strong {
-  color: #334155;
-  font-size: 12px;
+.monthly-profit-comparison-month > a {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.monthly-profit-comparison-month > a:hover {
+  color: var(--primary);
+  text-decoration: underline;
 }
 
 .monthly-profit-comparison-month > small {
@@ -7747,6 +7766,39 @@ html, body {
 
 .monthly-profit-comparison-row.is-worst .monthly-profit-comparison-month > small {
   color: #c2410c;
+}
+
+.monthly-performance-cashflow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-self: center;
+  gap: 8px;
+}
+
+.monthly-performance-cashflow > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 72%);
+}
+
+.monthly-performance-cashflow span {
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.monthly-performance-cashflow strong {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .monthly-profit-comparison-series {
@@ -7768,7 +7820,7 @@ html, body {
 }
 
 .monthly-profit-comparison-series strong {
-  font-size: 11px;
+  font-size: 13px;
   text-align: right;
   white-space: nowrap;
 }
@@ -7779,6 +7831,52 @@ html, body {
   font-weight: 900;
   text-align: right;
   white-space: nowrap;
+}
+
+.monthly-performance-details {
+  grid-column: 1 / -1;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 8px;
+}
+
+.monthly-performance-details > summary {
+  width: fit-content;
+  color: #334155;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.monthly-performance-details[open] > summary {
+  margin-bottom: 10px;
+}
+
+.monthly-performance-details > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  align-items: center;
+  gap: 8px;
+}
+
+.monthly-performance-details .btn {
+  //grid-column: 1 / -1;
+  min-width: 0;
+  justify-content: center;
+  overflow-wrap: anywhere;
+  //text-align: center;
+  white-space: normal;
+}
+
+.monthly-performance-details > div > span {
+  display: grid;
+  gap: 3px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.monthly-performance-details > div > span > strong {
+  color: #0f172a;
+  font-size: 11px;
 }
 
 .monthly-profit-comparison-axis {
@@ -7802,6 +7900,10 @@ html, body {
 
 .monthly-profit-comparison-axis > i.is-net {
   background: #0f766e;
+}
+
+.monthly-profit-comparison-axis > i.is-gross {
+  background: #2563eb;
 }
 
 .monthly-profit-comparison-axis > i.is-fiscal {
@@ -10631,7 +10733,11 @@ button.bulk-direct-link {
   stroke-dasharray: 4 5;
 }
 
-.annual-income-trend-axis-label,
+.annual-income-trend-axis-label {
+  font-size: 10px;
+  font-weight: 700;
+}
+
 .annual-income-trend-date-label {
   fill: #64748b;
   font-size: 10px;
@@ -14980,10 +15086,6 @@ table .cell-description {
     grid-template-columns: 1fr;
   }
 
-  .monthly-profit-comparison-list {
-    grid-template-columns: 1fr;
-  }
-
   .vat-kpi-grid {
     //grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -15109,6 +15211,19 @@ table .cell-description {
     flex-direction: row;
     align-items: baseline;
     justify-content: space-between;
+  }
+
+  .monthly-performance-cashflow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .monthly-performance-details > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .monthly-performance-details .btn {
+    grid-column: 1 / -1;
+    justify-content: center;
   }
 
   .monthly-profit-comparison-series > div {
