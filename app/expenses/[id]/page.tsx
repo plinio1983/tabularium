@@ -322,18 +322,19 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
 
         <section className="record-detail-section record-detail-section-actions">
-          <DeleteActionButton
-              action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
-              confirmMessage="Confermi la rimozione della spesa? L’operazione non può essere annullata."
-              className="btn btn-sm btn-danger">
-            🗑 <span className="--hidden-mobile"> Rimuovi</span>
-          </DeleteActionButton>
-          <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
-            <span className="--hidden-mobile"> Copia</span>
-          </button>
-          <Link className="btn btn-sm btn-default" href="#" data-expense-detail-edit-id={expense.id}>✎
-            <span className="--hidden-mobile"> Modifica</span>
-          </Link>
+          <details className="record-detail-actions-collapse">
+            <summary><span>Azioni sulla spesa</span><small>Rimuovi, copia o modifica</small></summary>
+            <div className="record-detail-actions-collapse-panel">
+              <DeleteActionButton
+                  action={`/api/expenses/${expense.id}?returnTo=${encodedReturnTo}`}
+                  confirmMessage="Confermi la rimozione della spesa? L’operazione non può essere annullata."
+                  className="btn btn-sm btn-danger">
+                🗑 Rimuovi
+              </DeleteActionButton>
+              <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
+              <Link className="btn btn-sm btn-default" href="#" data-expense-detail-edit-id={expense.id}>✎ Modifica</Link>
+            </div>
+          </details>
         </section>
 
       </article>

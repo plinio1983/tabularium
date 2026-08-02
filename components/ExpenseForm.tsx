@@ -828,7 +828,7 @@ export default function ExpenseForm({
                     <span>{mobileStep === 7
                         ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}`
                         : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}</span>
-                    <strong>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati e note"][mobileStep - 1]}</strong>
+                    <strong>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</strong>
                 </div>
                 <div className="app-form-wizard-progress" aria-label={mobileStep === 7 ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}` : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}>
                     <span style={{width: `${isVatSettlement ? Math.min(mobileStep === 6 ? 5 : mobileStep, 5) / 5 * 100 : Math.min(mobileStep, 6) / 6 * 100}%`}}/>
@@ -1514,15 +1514,25 @@ export default function ExpenseForm({
                 </div>
                 <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
                     <span className="btn-icon">＋</span>
-                    <span><strong>Allegati e note</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : notes ? "Note inserite" : "Aggiungi informazioni opzionali"}</small></span>
+                    <span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span>
                     <span aria-hidden="true">→</span>
                 </button>
+                <label className="card full expense-review-notes expense-review-notes-mobile">
+                    Note
+                    <textarea
+                        name="notes"
+                        rows={3}
+                        placeholder="Note interne opzionali"
+                        value={notes}
+                        onChange={event => setNotes(event.currentTarget.value)}
+                    />
+                </label>
             </section>
 
             <details ref={attachmentsSectionRef} className="form-section full app-form-wizard-step app-form-wizard-step-7" open={mobileStep === 7}>
                 <summary>
-                    <span>Allegati e note</span>
-                    <small>File, XML, P7M e note interne</small>
+                    <span>Allegati</span>
+                    <small>File, XML e P7M</small>
                 </summary>
                 <div className="form-section-stack">
 
@@ -1581,7 +1591,7 @@ export default function ExpenseForm({
                     {attachmentError && (
                         <p className="inline-warning full">{attachmentError}</p>
                     )}
-                    <label className="card full">
+                    <label className="card full expense-attachments-notes-desktop">
                         Note
                         <textarea
                             name="notes"

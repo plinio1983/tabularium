@@ -25,6 +25,23 @@ function sender() {
   return process.env.EMAIL_FROM || process.env.SMTP_USER || '';
 }
 
+export async function sendEmailNow(message: {
+  recipient: string;
+  subject: string;
+  textBody: string;
+  htmlBody: string;
+  attachments?: Array<{filename: string; content: Buffer; contentType?: string}>;
+}) {
+  await smtpTransport().sendMail({
+    from: sender(),
+    to: message.recipient,
+    subject: message.subject,
+    text: message.textBody,
+    html: message.htmlBody,
+    attachments: message.attachments
+  });
+}
+
 function retryDelay(attempts: number) {
   return Math.min(6 * 60 * 60 * 1000, Math.max(60_000, 2 ** attempts * 60_000));
 }

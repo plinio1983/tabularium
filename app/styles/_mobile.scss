@@ -48,6 +48,41 @@
 }
 
 @media (max-width: 760px) {
+  .bulk-attachments-modal-backdrop {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .bulk-attachments-modal {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    padding: calc(14px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+  }
+
+  .bulk-attachment-filter-group {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bulk-attachment-filter-group button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .bulk-attachments-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bulk-attachments-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: auto;
+  }
+
   .dashboard-anchor-section {
     scroll-margin-top: 76px;
   }
@@ -514,9 +549,9 @@
 
   .expense-trend-quick-date {
     flex-wrap: wrap;
-    gap: 4px;
     justify-content: space-between;
     margin-top: 12px;
+    width: 100%;
   }
 
   .expense-trend-quick-btn {
@@ -626,6 +661,28 @@
 
   .expense-detail-actions .btn {
     flex: 1 1 auto;
+  }
+
+  .record-detail-actions-collapse > summary {
+    align-items: flex-start;
+  }
+
+  .record-detail-actions-collapse > summary small {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .record-detail-actions-collapse-panel {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .record-detail-actions-collapse-panel .btn,
+  .record-detail-actions-collapse-panel form,
+  .record-detail-actions-collapse-panel form .btn {
+    width: 100%;
+    max-width: none;
+    justify-content: center;
   }
 
   .expense-detail-priority-grid {
@@ -1640,6 +1697,34 @@
   .expense-attachment-item .expense-attachment-type {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .invoice-attachments-modal-backdrop {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .invoice-attachments-modal {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 16px 14px calc(16px + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+  }
+
+  .invoice-attachments-modal-list {
+    max-height: calc(100dvh - 100px - env(safe-area-inset-bottom));
+  }
+
+  .invoice-attachments-modal-list a {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .invoice-attachments-modal-list a small {
+    grid-column: 2;
   }
 }
 
@@ -2711,6 +2796,15 @@
     //margin-bottom: 72px;
   }
 
+  .app-form-wizard .expense-review-notes-mobile {
+    display: grid;
+    gap: 8px;
+  }
+
+  .app-form-wizard .expense-attachments-notes-desktop {
+    display: none;
+  }
+
   .recurring-record-form .recurring-switch-control {
     //width: 100%;
   }
@@ -2874,7 +2968,7 @@
     box-shadow: none;
   }
 
-  .app-form-wizard .app-form-wizard-step-7 textarea {
+  .app-form-wizard .expense-review-notes textarea {
     min-height: 118px;
     border: 1px solid #cbd5e1;
     border-radius: 16px;
@@ -3143,6 +3237,10 @@
 }
 
 @media (max-width: 760px) {
+  .form-actions-row .btn-cancel {
+    order: 4;
+  }
+
   .bulk-copy-expenses-backdrop {
     padding: 0;
   }

@@ -100,6 +100,12 @@ function formatEuro(value: number) {
     return new Intl.NumberFormat("it-IT", {style: "currency", currency: "EUR"}).format(value || 0);
 }
 
+function formatDateInputLabel(value: string) {
+    if (!value) return "";
+    const [year, month, day] = value.split("-");
+    return year && month && day ? `${day}/${month}/${year}` : value;
+}
+
 function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyInput> & {
     inputRef?: React.RefObject<HTMLInputElement | null>
 }) {
@@ -198,7 +204,7 @@ export default function IncomeForm({
         DA_ACCREDITARE: 'Da accreditare',
         SCADUTO: 'Scaduto'
     }[creditState];
-    const canAddCredit = openCreditKey === null && credits.every(isCreditComplete) && creditResidual > 0.005;
+    const canAddCredit = !isCredited && openCreditKey === null && credits.every(isCreditComplete) && creditResidual > 0.005;
 
     function updateCredit(index: number, patch: Partial<CreditRow>) {
         setCredits(rows => rows.map((credit, rowIndex) => {
@@ -220,7 +226,7 @@ export default function IncomeForm({
     }
 
     function addCredit() {
-        if (!canAddCredit && credits.length) return;
+        if (!canAddCredit) return;
         const key = Date.now();
         const available = creditAvailableAmount();
         setCredits(rows => [...rows, {
@@ -492,7 +498,7 @@ export default function IncomeForm({
                                     <strong className="payment-summary-amount">{formatEuro(Number(credit.amount || 0))}</strong>
                                 </div>
                                 <div className="payment-summary-date">
-                                    <span>Data accredito</span><strong>{credit.creditDate ? new Date(`${credit.creditDate}T12:00:00`).toLocaleDateString("it-IT") : "Non impostata"}</strong>
+                                    <span>Data accredito</span><strong>{credit.creditDate ? formatDateInputLabel(credit.creditDate) : "Non impostata"}</strong>
                                 </div>
                                 <div className="payment-summary-meta">
                                     <div>

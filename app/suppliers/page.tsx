@@ -239,7 +239,7 @@ export default async function SuppliersPage({searchParams}: {
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
                     <span>Ricerca fornitore</span>
                 </label>
-                <div className="entity-quick-search-field app-quick-search-field">
+                <div className="entity-quick-search-field app-quick-search-field btn-group">
                     <input
                         id="supplierQuickSearch"
                         name="businessName"
@@ -248,7 +248,7 @@ export default async function SuppliersPage({searchParams}: {
                         placeholder="Nome o ragione sociale"
                         autoComplete="off"
                     />
-                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon/>
+                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca fornitore"><SearchIcon/>
                     </button>
                 </div>
             </form>

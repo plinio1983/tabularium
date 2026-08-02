@@ -950,17 +950,6 @@ export default async function IncomesPage({searchParams}: {
                         salesChannels={salesChannels}/>
                 </div>
             </div>
-            <form className="entity-quick-search app-quick-search-form" action="/incomes" method="get" role="search">
-                <label className="app-form-field-label" htmlFor="incomeCustomerQuickSearch">
-                    <span className="app-form-field-icon" aria-hidden="true">⌕</span>
-                    <span>Ricerca cliente</span>
-                </label>
-                <div className="entity-quick-search-field app-quick-search-field">
-                    <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca cliente"><SearchIcon/>
-                    </button>
-                </div>
-            </form>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">
                 <div>
@@ -972,6 +961,18 @@ export default async function IncomesPage({searchParams}: {
                 </div>
                 <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
             </div> : null}
+
+            <form className="entity-quick-search app-quick-search-form" action="/incomes" method="get" role="search">
+                <label className="app-form-field-label" htmlFor="incomeCustomerQuickSearch">
+                    <span className="app-form-field-icon" aria-hidden="true">⌕</span>
+                    <span>Ricerca cliente</span>
+                </label>
+                <div className="entity-quick-search-field app-quick-search-field btn-group">
+                    <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
+                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca cliente"><SearchIcon/>
+                    </button>
+                </div>
+            </form>
 
             <BulkSelectionController/>
 

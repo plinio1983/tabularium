@@ -287,6 +287,23 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         <strong className="displayed-notes">{income.notes ?? 'Nessuna nota inserita.'}</strong>
                     </div>
                 </section>
+
+                <section className="record-detail-section record-detail-section-actions">
+                    <details className="record-detail-actions-collapse">
+                        <summary><span>Azioni sull’incasso</span><small>Rimuovi, copia o modifica</small></summary>
+                        <div className="record-detail-actions-collapse-panel">
+                            <DeleteActionButton
+                                action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
+                                confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata."
+                                className="btn btn-sm btn-danger"
+                            >
+                                🗑 Rimuovi
+                            </DeleteActionButton>
+                            <button className="btn btn-sm btn-default" type="button" data-income-copy-id={income.id}>⧉ Copia</button>
+                            <Link className="btn btn-sm btn-default" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
+                        </div>
+                    </details>
+                </section>
             </article>
         </div>
     </div>;

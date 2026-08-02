@@ -228,7 +228,7 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
       </div>
     </label>}
     <section>
-    <div className="expense-trend-quick-date" role="group" aria-label="Scorciatoie periodo">
+    <div className="expense-trend-quick-date btn-group" role="group" aria-label="Scorciatoie periodo">
       {quickDateButtons.map((value) => {
         const target = quickButtonTarget(value);
         const label = quickButtonLabel(value);
