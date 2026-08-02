@@ -4,6 +4,14 @@ import { randomUUID } from 'node:crypto';
 
 export const maxExpenseAttachments = 5;
 export const maxExpenseAttachmentBytes = 10 * 1024 * 1024;
+export const expenseAttachmentTypes = ['INVOICE', 'DOCUMENT', 'PAYMENT_RECEIPT'] as const;
+export type ExpenseAttachmentTypeValue = typeof expenseAttachmentTypes[number];
+
+export function normalizeExpenseAttachmentType(value: unknown): ExpenseAttachmentTypeValue {
+  if (value === undefined || value === null || value === '') return 'DOCUMENT';
+  if (expenseAttachmentTypes.includes(value as ExpenseAttachmentTypeValue)) return value as ExpenseAttachmentTypeValue;
+  throw new AttachmentValidationError('Tipo allegato non valido');
+}
 
 const allowedExtensions = new Set(['.pdf', '.jpg', '.jpeg', '.png', '.webp', '.xml', '.p7m']);
 const allowedMimeTypes = new Set([
@@ -46,7 +54,7 @@ function safeDownloadName(name: string) {
   return path.basename(name).replace(/[\r\n"]/g, '_');
 }
 
-export async function saveExpenseAttachmentFiles(files: FormDataEntryValue[], existingCount = 0) {
+export async function saveExpenseAttachmentFiles(files: FormDataEntryValue[], existingCount = 0, types: FormDataEntryValue[] = []) {
   const remaining = Math.max(0, maxExpenseAttachments - existingCount);
   const candidates = files.filter((file): file is File => file instanceof File && file.size > 0).slice(0, remaining);
   if (!candidates.length) return [];
@@ -55,7 +63,7 @@ export async function saveExpenseAttachmentFiles(files: FormDataEntryValue[], ex
   await mkdir(destination, { recursive: true, mode: 0o750 });
 
   const saved = [];
-  for (const file of candidates) {
+  for (const [index, file] of candidates.entries()) {
     const extension = path.extname(file.name).toLowerCase();
     if (!allowedExtensions.has(extension)) throw new AttachmentValidationError(`Formato allegato non consentito: ${file.name}`);
     if (file.size > maxExpenseAttachmentBytes) throw new AttachmentValidationError(`Allegato troppo grande: ${file.name}`);
@@ -70,7 +78,8 @@ export async function saveExpenseAttachmentFiles(files: FormDataEntryValue[], ex
       originalName: safeDownloadName(file.name),
       path: `invoices/${filename}`,
       mimeType: file.type || null,
-      sizeBytes: file.size
+      sizeBytes: file.size,
+      type: normalizeExpenseAttachmentType(types[index])
     });
   }
   return saved;
@@ -92,4 +101,3 @@ export async function readExpenseAttachment(storedPath: string) {
     throw error;
   }
 }
-

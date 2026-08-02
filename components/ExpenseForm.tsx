@@ -72,7 +72,21 @@ type InitialExpense = {
     expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER";
     payments?: InitialPayment[];
     notes?: string | null;
+    attachments?: Array<{
+        id: number;
+        originalName: string;
+        sizeBytes?: number | null;
+        type: AttachmentType;
+    }>;
 };
+
+type AttachmentType = "INVOICE" | "DOCUMENT" | "PAYMENT_RECEIPT";
+
+const attachmentTypeOptions: Array<{value: AttachmentType; label: string; icon: string}> = [
+    {value: "INVOICE", label: "Fattura", icon: "▤"},
+    {value: "DOCUMENT", label: "Documento", icon: "📄"},
+    {value: "PAYMENT_RECEIPT", label: "Ricevuta pagamento", icon: "✓"},
+];
 
 type Props = {
     categories: Option[];
@@ -458,7 +472,12 @@ export default function ExpenseForm({
     );
     const [description, setDescription] = useState(initialExpense?.description ?? "");
     const [notes, setNotes] = useState(initialExpense?.notes ?? "");
-    const [attachmentCount, setAttachmentCount] = useState(0);
+    const [selectedAttachments, setSelectedAttachments] = useState<File[]>([]);
+    const [selectedAttachmentTypes, setSelectedAttachmentTypes] = useState<AttachmentType[]>([]);
+    const [existingAttachmentTypes, setExistingAttachmentTypes] = useState<Record<number, AttachmentType>>(
+        Object.fromEntries((initialExpense?.attachments ?? []).map(attachment => [attachment.id, attachment.type ?? "DOCUMENT"])),
+    );
+    const attachmentCount = (initialExpense?.attachments?.length ?? 0) + selectedAttachments.length;
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
     const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
@@ -1430,7 +1449,7 @@ export default function ExpenseForm({
                                             disabled={!isPaymentComplete(normalizePaymentRow(payment))}
                                             onClick={() => setOpenPaymentKey(null)}
                                         >
-                                            ✓ Ok
+                                            &nbsp;&nbsp;✓ Ok&nbsp;&nbsp;
                                         </button>
                                         {/*<button*/}
                                         {/*    type="button"*/}
@@ -1522,9 +1541,11 @@ export default function ExpenseForm({
                                 accept=".pdf,.jpg,.jpeg,.png,.webp,.xml,.p7m"
                                 multiple
                                 onChange={(e) => {
-                                    const count = e.target.files?.length ?? 0;
-                                    setAttachmentCount(count);
-                                    setAttachmentError(count > 5 ? "Puoi caricare massimo 5 allegati." : "");
+                                    const files = Array.from(e.target.files ?? []);
+                                    const total = (initialExpense?.attachments?.length ?? 0) + files.length;
+                                    setSelectedAttachments(files);
+                                    setSelectedAttachmentTypes(files.map(() => "DOCUMENT"));
+                                    setAttachmentError(total > 5 ? "Puoi caricare massimo 5 allegati complessivi." : "");
                                 }}
                             />
                             <div className="field-note attachments-note">
@@ -1533,6 +1554,29 @@ export default function ExpenseForm({
                             </div>
                         </div>
                     </label>
+
+                    {(initialExpense?.attachments ?? []).map(attachment => {
+                        const currentType = existingAttachmentTypes[attachment.id] ?? "DOCUMENT";
+                        return <div className="card attachment-type-item" key={`existing-attachment-${attachment.id}`}>
+                            <input type="hidden" name="existingAttachmentIds" value={attachment.id}/>
+                            <input type="hidden" name="existingAttachmentTypes" value={currentType}/>
+                            <div className="attachment-type-item-heading"><span aria-hidden="true">📎</span><strong>{attachment.originalName}</strong><small>{attachment.sizeBytes ? `${Math.round(attachment.sizeBytes / 1024)} KB` : "Allegato salvato"}</small></div>
+                            <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${attachment.originalName}`}>
+                                {attachmentTypeOptions.map(option => <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setExistingAttachmentTypes(current => ({...current, [attachment.id]: option.value}))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
+                            </div>
+                        </div>;
+                    })}
+
+                    {selectedAttachments.map((file, index) => {
+                        const currentType = selectedAttachmentTypes[index] ?? "DOCUMENT";
+                        return <div className="card attachment-type-item" key={`${file.name}-${file.size}-${index}`}>
+                            <input type="hidden" name="attachmentTypes" value={currentType}/>
+                            <div className="attachment-type-item-heading"><span aria-hidden="true">＋</span><strong>{file.name}</strong><small>{Math.max(1, Math.round(file.size / 1024))} KB</small></div>
+                            <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${file.name}`}>
+                                {attachmentTypeOptions.map(option => <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setSelectedAttachmentTypes(current => current.map((value, itemIndex) => itemIndex === index ? option.value : value))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
+                            </div>
+                        </div>;
+                    })}
 
                     {attachmentError && (
                         <p className="inline-warning full">{attachmentError}</p>

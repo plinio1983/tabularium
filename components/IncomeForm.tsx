@@ -49,7 +49,14 @@ type CreditRow = {
 
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; isPrimary?: boolean };
 type PaymentMethodOption = Option & { kind?: string; isIncomeDefault?: boolean };
-type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null; isDefault?: boolean; isFallback?: boolean };
+type IncomeEntityOption = {
+    id: number;
+    code: string;
+    name: string;
+    icon?: string | null;
+    isDefault?: boolean;
+    isFallback?: boolean
+};
 type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
 
 type Props = {
@@ -458,9 +465,14 @@ export default function IncomeForm({
                 <div className="form-section-stack">
                     <section className="payments-box income-credits-box full">
                         <div className="form-summary full">
-                            <div><span className="muted">Accreditato</span><strong>{formatEuro(creditedAmount)}</strong></div>
-                            <div><span className="muted">Residuo</span><strong className={creditResidual > 0 ? "text-critical" : "text-ok"}>{formatEuro(creditResidual)}</strong></div>
-                            <div><span className="muted">Stato</span><strong className={isCredited ? "text-ok" : creditState === 'PARZIALE' ? "text-warning" : "text-critical"}>{creditStatusLabel}</strong></div>
+                            <div><span className="muted">Accreditato</span><strong>{formatEuro(creditedAmount)}</strong>
+                            </div>
+                            <div>
+                                <span className="muted">Residuo</span><strong className={creditResidual > 0 ? "text-critical" : "text-ok"}>{formatEuro(creditResidual)}</strong>
+                            </div>
+                            <div>
+                                <span className="muted">Stato</span><strong className={isCredited ? "text-ok" : creditState === 'PARZIALE' ? "text-warning" : "text-critical"}>{creditStatusLabel}</strong>
+                            </div>
                             <button type="button" className="btn btn-sm btn-default" disabled={!canAddCredit}
                                     onClick={addCredit}>
                                 ➕ Aggiungi accredito
@@ -479,10 +491,16 @@ export default function IncomeForm({
                                     <span className="payment-summary-kicker">Accredito registrato</span>
                                     <strong className="payment-summary-amount">{formatEuro(Number(credit.amount || 0))}</strong>
                                 </div>
-                                <div className="payment-summary-date"><span>Data accredito</span><strong>{credit.creditDate ? new Date(`${credit.creditDate}T12:00:00`).toLocaleDateString("it-IT") : "Non impostata"}</strong></div>
+                                <div className="payment-summary-date">
+                                    <span>Data accredito</span><strong>{credit.creditDate ? new Date(`${credit.creditDate}T12:00:00`).toLocaleDateString("it-IT") : "Non impostata"}</strong>
+                                </div>
                                 <div className="payment-summary-meta">
-                                    <div><span>Metodo</span><strong>{method?.icon ?? "•"} {method?.name ?? "Non impostato"}</strong></div>
-                                    <div><span>Banca</span><strong>{bank?.icon ?? "•"} {bank?.name ?? "Non impostata"}</strong></div>
+                                    <div>
+                                        <span>Metodo</span><strong>{method?.icon ?? "•"} {method?.name ?? "Non impostato"}</strong>
+                                    </div>
+                                    <div>
+                                        <span>Banca</span><strong>{bank?.icon ?? "•"} {bank?.name ?? "Non impostata"}</strong>
+                                    </div>
                                 </div>
                                 <div className="payment-row-actions">
                                     <button type="button" className="btn btn-sm btn-default" onClick={() => setOpenCreditKey(credit.key)}>✎ Modifica</button>
@@ -502,8 +520,8 @@ export default function IncomeForm({
                                     <input type="hidden" name="creditAmount[]" value={credit.amount}/>
                                     <span className="payment-amount-shortcuts" aria-label="Impostazione rapida importo accredito">
                                         {[25, 50, 75, 100].map(percentage => <button type="button" key={percentage}
-                                            className={Math.abs(Number(credit.amount || 0) - creditAvailableAmount(index) * percentage / 100) < 0.005 ? "is-selected" : ""}
-                                            onClick={() => setCreditPercentage(index, percentage)}>{percentage}%</button>)}
+                                                                                     className={Math.abs(Number(credit.amount || 0) - creditAvailableAmount(index) * percentage / 100) < 0.005 ? "is-selected" : ""}
+                                                                                     onClick={() => setCreditPercentage(index, percentage)}>{percentage}%</button>)}
                                     </span>
                                 </label>
                                 <div className="payment-select-field">
@@ -511,28 +529,36 @@ export default function IncomeForm({
                                     <div className="payment-select-control">
                                         <select name="creditPaymentMethodId[]" value={credit.paymentMethodId} required onChange={event => updateCredit(index, {paymentMethodId: event.currentTarget.value})}>
                                             <option value="">Seleziona metodo</option>
-                                            {paymentMethods.map(item => <option key={item.id} value={item.id}>{item.icon ?? "•"} {item.name}</option>)}
+                                            {paymentMethods.map(item =>
+                                                <option key={item.id} value={item.id}>{item.icon ?? "•"} {item.name}</option>)}
                                         </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
                                     </div>
                                 </div>
                                 <div className="payment-select-field">
                                     <span className="payment-select-label"><i aria-hidden="true">▥</i> Banca di accredito</span>
-                                    {cashSelected && cashBank ? <input type="hidden" name="creditBankId[]" value={cashBank.id}/> : null}
+                                    {cashSelected && cashBank ?
+                                        <input type="hidden" name="creditBankId[]" value={cashBank.id}/> : null}
                                     <div className="payment-select-control">
                                         <select name={cashSelected && cashBank ? undefined : "creditBankId[]"} value={bankId} disabled={cashSelected && Boolean(cashBank)} required onChange={event => updateCredit(index, {bankId: event.currentTarget.value})}>
                                             <option value="">Seleziona banca</option>
-                                            {banks.map(item => <option key={item.id} value={item.id}>{item.icon ?? "•"} {item.name}</option>)}
+                                            {banks.map(item =>
+                                                <option key={item.id} value={item.id}>{item.icon ?? "•"} {item.name}</option>)}
                                         </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
                                     </div>
                                 </div>
                                 <div className="payment-edit-actions">
                                     <button type="button" className="btn btn-sm btn-danger remove-row" onClick={() => removeCredit(index)}>🗑️ Rimuovi</button>
-                                    <button type="button" className="btn btn-sm btn-primary payment-collapse-action" disabled={!isCreditComplete({...credit, bankId})} onClick={() => setOpenCreditKey(null)}>✓ Ok</button>
+                                    <button type="button" className="btn btn-sm btn-primary payment-collapse-action" disabled={!isCreditComplete({
+                                        ...credit,
+                                        bankId
+                                    })} onClick={() => setOpenCreditKey(null)}>&nbsp;&nbsp;✓ Ok&nbsp;&nbsp;
+                                    </button>
                                 </div>
                             </div>;
                         })}
 
-                        {credits.length && !canAddCredit && creditResidual > 0.005 ? <p className="inline-warning">Completa l’accredito aperto prima di aggiungerne un altro.</p> : null}
+                        {credits.length && !canAddCredit && creditResidual > 0.005 ?
+                            <p className="inline-warning">Completa l’accredito aperto prima di aggiungerne un altro.</p> : null}
                     </section>
                 </div>
             </details>

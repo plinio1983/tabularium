@@ -7,6 +7,7 @@ import { File } from 'node:buffer';
 import {
   AttachmentValidationError,
   maxExpenseAttachmentBytes,
+  normalizeExpenseAttachmentType,
   saveExpenseAttachmentFiles
 } from '../lib/attachments';
 
@@ -23,6 +24,21 @@ test('salva un PDF valido nell’area privata con nome non prevedibile', async (
     assert.match(saved.path, /^invoices\/[0-9a-f-]+\.pdf$/);
     assert.equal(saved.originalName, 'fattura.pdf');
     assert.equal((await readFile(path.join(directory, saved.path))).subarray(0, 5).toString(), '%PDF-');
+  } finally {
+    delete process.env.UPLOADS_DIR;
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('associa il tipo richiesto e usa Documento come default', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'tabularium-attachments-'));
+  process.env.UPLOADS_DIR = directory;
+  try {
+    const invoice = new File([Buffer.from('%PDF-1.7\ninvoice')], 'fattura.pdf', { type: 'application/pdf' });
+    const document = new File([Buffer.from('%PDF-1.7\ndocument')], 'documento.pdf', { type: 'application/pdf' });
+    const saved = await saveExpenseAttachmentFiles([asFormFile(invoice), asFormFile(document)], 0, ['INVOICE', '']);
+    assert.deepEqual(saved.map(item => item.type), ['INVOICE', 'DOCUMENT']);
+    assert.throws(() => normalizeExpenseAttachmentType('INVALID'), AttachmentValidationError);
   } finally {
     delete process.env.UPLOADS_DIR;
     await rm(directory, { recursive: true, force: true });

@@ -314,6 +314,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             {expense.attachments.map(attachment => <a className="expense-attachment-item" key={attachment.id} href={`/api/attachments/${attachment.id}`} target="_blank" rel="noreferrer">
               <span>📎</span>
               <strong>{attachment.originalName}</strong>
+              <span className={`expense-attachment-type expense-attachment-type-${attachment.type.toLowerCase().replace('_', '-')}`}>{attachment.type === 'INVOICE' ? 'Fattura' : attachment.type === 'PAYMENT_RECEIPT' ? 'Ricevuta pagamento' : 'Documento'}</span>
               <small>{attachment.sizeBytes ? `${Math.round(attachment.sizeBytes / 1024)} KB` : ''}</small>
             </a>)}
           </div> : <div className="record-empty-state">Nessun allegato caricato.</div>}

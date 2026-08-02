@@ -8542,10 +8542,29 @@ html, body {
   gap: 7px;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
   background: #1f49bf !important;
   border-color: #1f49bf !important;
 }
+
+.btn-main {
+  background: #08708b;
+  color: #fff;
+  border: 1px solid #08708b;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn-main:hover,
+.btn-main:focus,
+.btn-main:active {
+  background: #075b72;
+  border-color: #075b72;
+}
+
 
 .btn-neutral {
   background: #fff;
@@ -8656,6 +8675,40 @@ html, body {
   opacity: .45;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* Gruppo riutilizzabile di controlli adiacenti, equivalente al pattern
+   `.btn-group`: un solo profilo esterno e bordi interni condivisi. */
+.btn-group {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+}
+
+.btn-group > :is(button, .btn, a) {
+  position: relative;
+  margin-left: -1px;
+  border-radius: 0;
+}
+
+.btn-group > :is(button, .btn, a):first-child {
+  margin-left: 0;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.btn-group > :is(button, .btn, a):last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.btn-group > :is(button, .btn, a):only-child {
+  border-radius: 10px;
+}
+
+.btn-group > :is(button, .btn, a):is(:hover, :focus-visible, .is-selected, .btn-active) {
+  z-index: 1;
 }
 
 .form-actions-row {
@@ -11929,7 +11982,7 @@ button.bulk-direct-danger {
 
 .expense-attachment-item {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr) auto auto;
   gap: 10px;
   align-items: center;
   padding: 12px;
@@ -11939,7 +11992,7 @@ button.bulk-direct-danger {
   text-decoration: none;
 }
 
-.expense-attachment-item > span {
+.expense-attachment-item > span:first-child {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -11961,6 +12014,26 @@ button.bulk-direct-danger {
   color: var(--muted);
   font-size: 11px;
   font-weight: 800;
+}
+
+.expense-attachment-type {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1f3ea8;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.expense-attachment-type-payment-receipt {
+  background: #ecfdf3;
+  color: #19733b;
+}
+
+.expense-attachment-type-invoice {
+  background: #fff7ed;
+  color: #9a4d00;
 }
 
 .mobile-record-empty-state {
@@ -13362,6 +13435,12 @@ button.bulk-direct-danger {
 .app-record-form .attachment-row {
   align-items: center;
   gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: #fff;
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.045);
 }
 
 .app-record-form input[type="file"] {
@@ -13373,7 +13452,66 @@ button.bulk-direct-danger {
 
 .app-record-form .attachments-note {
   min-width: 130px;
-  text-align: center;
+  border: 0;
+  border-radius: 0;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.attachment-type-item {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  box-shadow: none;
+}
+
+.attachment-type-item-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.attachment-type-item-heading strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-type-item-heading small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.attachment-type-selector {
+  width: 100%;
+}
+
+.attachment-type-selector button {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  //min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid #dbe3ef;
+  border-radius: 0;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.attachment-type-selector button.is-selected {
+  border-color: #05586f;
+  background: #08708b;
+  //background: #1f3ea8;
+  color: #fff;
 }
 
 .app-record-form .form-sticky-summary {

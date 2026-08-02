@@ -5,7 +5,7 @@ import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
-import { AttachmentValidationError, saveExpenseAttachmentFiles } from '@/lib/attachments';
+import { AttachmentValidationError, normalizeExpenseAttachmentType, saveExpenseAttachmentFiles } from '@/lib/attachments';
 import { writeAuditLog } from '@/lib/audit';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
@@ -164,8 +164,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const nextIsRecurring = isVatSettlement ? false : (existing.isRecurring ? data.isRecurring : false);
 
   let attachments;
+  let attachmentUpdates: Array<{where: {id: number}; data: {type: ReturnType<typeof normalizeExpenseAttachmentType>}}> = [];
+  const existingAttachmentIds = formData.getAll('existingAttachmentIds').map(Number);
+  const existingAttachmentTypes = formData.getAll('existingAttachmentTypes');
+  const ownedAttachmentIds = new Set(existing.attachments.map(attachment => attachment.id));
+  if (existingAttachmentIds.some(id => !Number.isInteger(id) || !ownedAttachmentIds.has(id))) {
+    return redirectToPath(appendFlash(returnTo || `/expenses/${expenseId}`, { error: 'invalid_attachment' }));
+  }
   try {
-    attachments = await saveExpenseAttachmentFiles(formData.getAll('attachments'), existing.attachments.length);
+    attachmentUpdates = existingAttachmentIds.map((id, index) => ({
+      where: {id},
+      data: {type: normalizeExpenseAttachmentType(existingAttachmentTypes[index])}
+    }));
+    attachments = await saveExpenseAttachmentFiles(formData.getAll('attachments'), existing.attachments.length, formData.getAll('attachmentTypes'));
   } catch (error) {
     if (error instanceof AttachmentValidationError) {
       return redirectToPath(appendFlash(returnTo || `/expenses/${expenseId}`, { error: 'invalid_attachment' }));
@@ -205,7 +216,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           amount: payment.amount
         }))
       },
-      attachments: attachments.length ? { create: attachments } : undefined
+      attachments: attachments.length || attachmentUpdates.length ? { create: attachments, update: attachmentUpdates } : undefined
     }
   });
   await writeAuditLog({

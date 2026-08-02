@@ -14,7 +14,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   const expense = await prisma.expense.findFirst({
     where: { id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id },
-    include: { payments: { orderBy: { id: 'asc' } }, supplier: true }
+    include: { payments: { orderBy: { id: 'asc' } }, attachments: {orderBy: {id: 'asc'}}, supplier: true }
   });
 
   if (!expense) {
@@ -41,6 +41,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       isDeclared: expense.isDeclared,
       isRecurring: expense.isRecurring,
       notes: expense.notes,
+      attachments: expense.attachments.map(attachment => ({
+        id: attachment.id,
+        originalName: attachment.originalName,
+        sizeBytes: attachment.sizeBytes,
+        type: attachment.type
+      })),
       payments: expense.payments.map(payment => ({
         id: payment.id,
         paymentDate: payment.paymentDate,

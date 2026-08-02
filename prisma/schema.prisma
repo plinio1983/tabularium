@@ -40,6 +40,12 @@ enum ExpenseType {
   COUNTER
 }
 
+enum ExpenseAttachmentType {
+  INVOICE
+  DOCUMENT
+  PAYMENT_RECEIPT
+}
+
 enum SupplierSystemRole {
   VAT_SETTLEMENT
   COUNTER_MERCHANT
@@ -599,9 +605,11 @@ model ExpenseAttachment {
   path         String
   mimeType     String?
   sizeBytes    Int?
+  type         ExpenseAttachmentType @default(DOCUMENT)
   createdAt    DateTime @default(now())
 
   @@index([expenseId])
+  @@index([type])
 }
 
 model MonthlyRevenue {

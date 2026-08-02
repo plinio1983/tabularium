@@ -216,7 +216,7 @@ export default function RecurringExpensesList({
         <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
       </div>
       <div className="bulk-inner-container">
-        <button className="bulk-direct-link btn btn-md btn-secondary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
+        <button className="bulk-direct-link btn btn-sm btn-secondary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
           <span className="btn-icon">+</span>
           <span className="bulk-label">Spesa ricorrente</span>
         </button>

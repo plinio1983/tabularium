@@ -184,7 +184,7 @@ export async function POST(request: Request) {
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   let attachments;
   try {
-    attachments = formData ? await saveExpenseAttachmentFiles(formData.getAll('attachments')) : [];
+    attachments = formData ? await saveExpenseAttachmentFiles(formData.getAll('attachments'), 0, formData.getAll('attachmentTypes')) : [];
   } catch (error) {
     if (error instanceof AttachmentValidationError) {
       return isForm && !wantsJson

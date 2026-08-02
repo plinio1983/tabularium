@@ -420,6 +420,10 @@
   .recurring-filter-trigger-text {
     /*display: none;*/
   }
+
+  .expense-review-attachments-button {
+    max-width: 100%;
+  }
 }
 
 .hidden-sp-up {
@@ -1636,6 +1640,11 @@
   .expense-attachment-item small {
     grid-column: 2;
   }
+
+  .expense-attachment-item .expense-attachment-type {
+    grid-column: 2;
+    justify-self: start;
+  }
 }
 
 @media (max-width: 760px) {
@@ -2703,6 +2712,7 @@
   .app-form-wizard .expense-review-step {
     gap: 16px;
     padding: 0;
+    //margin-bottom: 72px;
   }
 
   .recurring-record-form .recurring-switch-control {
@@ -3060,6 +3070,18 @@
   .app-record-form .attachments-note {
     min-width: 0;
     text-align: left;
+  }
+
+  .attachment-type-selector {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .attachment-type-selector button {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .app-record-form .form-sticky-summary {
@@ -4160,7 +4182,7 @@
 
   .modal-card.modal-card-wide .income-form,
   .modal-card.modal-card-wide .app-record-form {
-    margin-bottom: 72px;
+    margin-bottom: 112px;
   }
 
   .card .app-record-form {

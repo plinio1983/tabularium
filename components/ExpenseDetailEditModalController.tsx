@@ -38,6 +38,12 @@ type EditExpense = {
   isRecurring?: boolean;
   expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER";
   notes?: string | null;
+  attachments?: Array<{
+    id: number;
+    originalName: string;
+    sizeBytes?: number | null;
+    type: "INVOICE" | "DOCUMENT" | "PAYMENT_RECEIPT";
+  }>;
   payments?: Array<{
     id?: number;
     paymentDate?: string | Date | null;
@@ -169,7 +175,7 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
           banks={banks}
           paymentMethods={paymentMethods}
           suppliers={suppliers}
-          initialExpense={expense}
+          initialExpense={mode === "copy" ? {...expense, attachments: []} : expense}
           initialMobileStep={mode === "payment" || mode === "payment-edit" ? 4 : mode === "attachments" ? 7 : 1}
           openNewPayment={mode === "payment"}
           initialOpenPaymentId={mode === "payment-edit" ? targetPaymentId ?? undefined : undefined}

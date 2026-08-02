@@ -18,6 +18,10 @@ prisma/migrations/*
 !prisma/migrations/20260801210000_consolidate_income_categories/migration.sql
 !prisma/migrations/20260801220000_income_due_date/
 !prisma/migrations/20260801220000_income_due_date/migration.sql
+!prisma/migrations/20260801183000_recurring_end_date/
+!prisma/migrations/20260801183000_recurring_end_date/migration.sql
+!prisma/migrations/20260802110000_expense_attachment_type/
+!prisma/migrations/20260802110000_expense_attachment_type/migration.sql
 !prisma/migrations/20260728120000_multi_company_accounting/
 !prisma/migrations/20260728120000_multi_company_accounting/migration.sql
 !prisma/migrations/20260728183000_supplier_swift/
