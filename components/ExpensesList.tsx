@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import BulkCopyExpensesModal from '@/components/BulkCopyExpensesModal';
 import BulkEditFieldsModal from '@/components/BulkEditFieldsModal';
 import BulkSelectionController from '@/components/BulkSelectionController';
@@ -209,7 +208,16 @@ export default function ExpensesList({
         {hasBulkControls ? <>
             <BulkSelectionController/>
             <BulkCopyExpensesModal formId={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`}/>
-            <BulkEditFieldsModal formId={formId} subject="spese"/>
+            <BulkEditFieldsModal
+                formId={formId}
+                subject="spese"
+                action={`/api/expenses/bulk?returnTo=${returnTo}`}
+                categories={categories.map(category => ({
+                    value: String(category.id),
+                    label: category.name,
+                    icon: category.icon
+                }))}
+            />
             <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar expense-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
                 <label className="bulk-select-all-inline">
                     <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese visibili"/>
@@ -234,17 +242,6 @@ export default function ExpensesList({
                             <span className="btn-icon">＋</span><span className="bulk-label">Inserisci pagamento</span>
                         </button>
                         <BulkExpenseAttachmentsModal formId={formId}/>
-                        <BulkChangeCategoryModal
-                            formId={formId}
-                            action={`/api/expenses/bulk?returnTo=${returnTo}`}
-                            fieldName="categoryId"
-                            hideTrigger
-                            categories={categories.map(category => ({
-                                value: String(category.id),
-                                label: category.name,
-                                icon: category.icon
-                            }))}
-                        />
                         <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
                                 name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
                             <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>

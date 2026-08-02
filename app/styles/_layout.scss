@@ -10476,7 +10476,7 @@ button.bulk-direct-link {
 
 .bulk-category-modal {
   width: min(520px, calc(100vw - 36px));
-  display: grid;
+  //display: grid;
   gap: 20px;
   padding: 16px;
   border: 1px solid var(--line);
@@ -10641,6 +10641,31 @@ body.bulk-attachments-modal-open {
 
 .bulk-edit-fields-modal {
   gap: 14px;
+  overflow: hidden;
+}
+
+.bulk-edit-step {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.bulk-edit-step-forward {
+  animation: bulk-edit-step-forward .22s ease-out both;
+}
+
+.bulk-edit-step-back {
+  animation: bulk-edit-step-back .22s ease-out both;
+}
+
+@keyframes bulk-edit-step-forward {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bulk-edit-step-back {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .bulk-edit-fields-list {
@@ -10695,6 +10720,8 @@ body.bulk-attachments-modal-open {
   width: min(760px, calc(100vw - 36px));
   max-height: calc(100dvh - 36px);
   overflow-y: auto;
+  display: grid;
+  justify-content: normal;
 }
 
 .bulk-copy-expenses-modal .modal-toolbar-card {
@@ -10706,6 +10733,10 @@ body.bulk-attachments-modal-open {
 
 .bulk-copy-expenses-form {
   gap: 16px;
+}
+
+.bulk-copy-expenses-modal .bulk-copy-expenses-form {
+  grid-template-columns: 1fr
 }
 
 .bulk-copy-expenses-form fieldset {
