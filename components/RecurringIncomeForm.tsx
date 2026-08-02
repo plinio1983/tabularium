@@ -8,6 +8,8 @@ import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currenc
 import {DateField, FormField, SelectField} from '@/components/FormControls';
 import CustomerAutocomplete from '@/components/CustomerAutocomplete';
 import DescriptionAutocomplete from '@/components/DescriptionAutocomplete';
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {dateInputInTimeZone, zonedCalendarParts} from '@/lib/company-time';
 
 type Option = { id: number; name: string };
 type Customer = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
@@ -38,6 +40,9 @@ export default function RecurringIncomeForm({
     initial?: Initial;
     editId?: number;
 }) {
+    const timeZone = useCompanyTimeZone();
+    const today = dateInputInTimeZone(timeZone);
+    const currentParts = zonedCalendarParts(new Date(), timeZone);
     const router = useRouter();
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
@@ -49,11 +54,11 @@ export default function RecurringIncomeForm({
     const [fiscal, setFiscal] = useState(initial?.isFiscal ?? true);
     const [vatRate, setVatRate] = useState(initial?.vatRate?.toString?.() ?? '22');
     const [amount, setAmount] = useState(formatCurrencyInput(initial?.amount?.toString?.() ?? ''));
-    const [startDate, setStartDate] = useState(initial?.startDate ? new Date(initial.startDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
+    const [startDate, setStartDate] = useState(initial?.startDate ? new Date(initial.startDate).toISOString().slice(0, 10) : today);
     const [hasEndDate, setHasEndDate] = useState(Boolean(initial?.endDate));
     const [endDate, setEndDate] = useState(initial?.endDate ? new Date(initial.endDate).toISOString().slice(0, 10) : '');
-    const [creditDay, setCreditDay] = useState(String(initial?.creditDay ?? new Date().getDate()));
-    const [creditMonth, setCreditMonth] = useState(String(initial?.creditMonth ?? new Date().getMonth() + 1));
+    const [creditDay, setCreditDay] = useState(String(initial?.creditDay ?? currentParts?.day ?? 1));
+    const [creditMonth, setCreditMonth] = useState(String(initial?.creditMonth ?? currentParts?.month ?? 1));
     const [channelId, setChannelId] = useState(String(initial?.salesChannelId ?? channels[0]?.id ?? ''));
     const [methodId, setMethodId] = useState(String(initial?.paymentMethodId ?? ''));
     const [bankId, setBankId] = useState(String(initial?.bankId ?? ''));

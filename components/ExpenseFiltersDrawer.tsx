@@ -4,6 +4,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import FilterIcon from "@/components/FilterIcon";
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {civilDateInTimeZone} from '@/lib/company-time';
 import SupplierFilterInput from "@/components/SupplierFilterInput";
 
 type CategoryOption = { id: number; code: string; name: string; icon?: string | null };
@@ -89,8 +91,7 @@ function dateInputValue(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-function quickBillingPeriodRange(value: string) {
-  const now = new Date();
+function quickBillingPeriodRange(value: string, now: Date) {
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
@@ -109,8 +110,7 @@ function quickBillingPeriodRange(value: string) {
   return null;
 }
 
-function quickOrderDateRange(value: string) {
-  const now = new Date();
+function quickOrderDateRange(value: string, now: Date) {
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
@@ -145,6 +145,8 @@ export default function ExpenseFiltersDrawer({
   billingPeriodFromFilter,
   billingPeriodToFilter,
 }: Props) {
+  const timeZone = useCompanyTimeZone();
+  const companyNow = civilDateInTimeZone(timeZone);
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -220,7 +222,7 @@ export default function ExpenseFiltersDrawer({
   function handleBillingQuickChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const form = event.currentTarget.form;
     if (!form) return;
-    const range = quickBillingPeriodRange(event.currentTarget.value);
+    const range = quickBillingPeriodRange(event.currentTarget.value, companyNow);
     if (!range) return;
     const from = form.elements.namedItem("billingPeriodFrom") as HTMLInputElement | null;
     const to = form.elements.namedItem("billingPeriodTo") as HTMLInputElement | null;
@@ -232,7 +234,7 @@ export default function ExpenseFiltersDrawer({
   function handleOrderDateQuickChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const form = event.currentTarget.form;
     if (!form) return;
-    const range = quickOrderDateRange(event.currentTarget.value);
+    const range = quickOrderDateRange(event.currentTarget.value, companyNow);
     if (!range) return;
     const from = form.elements.namedItem("orderDateFrom") as HTMLInputElement | null;
     const to = form.elements.namedItem("orderDateTo") as HTMLInputElement | null;

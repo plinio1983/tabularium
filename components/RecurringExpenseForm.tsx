@@ -4,6 +4,8 @@ import {type FormEvent, useEffect, useRef, useState} from "react";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {dateInputInTimeZone, zonedCalendarParts} from '@/lib/company-time';
 import SupplierCreateModal from "@/components/SupplierCreateModal";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
@@ -66,7 +68,6 @@ type Props = {
     onSwitchToVatSettlement?: () => void;
 };
 
-const today = new Date().toISOString().slice(0, 10);
 const cashChannel = "Cash";
 const cashBankName = "Cassa";
 const monthOptions = [
@@ -371,6 +372,9 @@ export default function RecurringExpenseForm({
                                                  onSwitchToSingle,
                                                  onSwitchToVatSettlement,
                                              }: Props) {
+    const timeZone = useCompanyTimeZone();
+    const today = dateInputInTimeZone(timeZone);
+    const currentMonth = zonedCalendarParts(new Date(), timeZone)?.month ?? 1;
     const initialPaymentMethodId = initialExpense?.paymentMethodId && paymentMethods.some(method => method.id === initialExpense.paymentMethodId)
         ? String(initialExpense.paymentMethodId)
         : "";
@@ -383,7 +387,7 @@ export default function RecurringExpenseForm({
         : initialExpense?.bankId?.toString() ?? banks.find(bank => bank.isPrimary)?.id.toString() ?? "";
     const [cadence, setCadence] = useState(initialExpense?.cadence ?? "MONTHLY");
     const [billingPeriodMode, setBillingPeriodMode] = useState(initialExpense?.billingPeriodMode ?? "SAME_MONTH");
-    const [billingMonth, setBillingMonth] = useState(String(initialExpense?.billingMonth ?? new Date().getMonth() + 1));
+    const [billingMonth, setBillingMonth] = useState(String(initialExpense?.billingMonth ?? currentMonth));
     const [isDeclared, setIsDeclared] = useState(initialExpense?.isDeclared ?? true);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(initialExpense?.hasElectronicInvoice ?? true);
     const [isAutomaticAccrual, setIsAutomaticAccrual] = useState(Boolean(initialExpense?.isAutomaticPayment));
@@ -398,7 +402,7 @@ export default function RecurringExpenseForm({
     const [hasEndDate, setHasEndDate] = useState(Boolean(initialExpense?.endDate));
     const [endDate, setEndDate] = useState(toDateInput(initialExpense?.endDate));
     const [dueDay, setDueDay] = useState(String(initialExpense?.dueDay ?? 1));
-    const [dueMonth, setDueMonth] = useState(String(initialExpense?.dueMonth ?? new Date().getMonth() + 1));
+    const [dueMonth, setDueMonth] = useState(String(initialExpense?.dueMonth ?? currentMonth));
     const [categoryId, setCategoryId] = useState(String(initialExpense?.categoryId ?? ""));
     const [supplierName, setSupplierName] = useState(
         suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.businessName ?? initialExpense?.merchant ?? "",

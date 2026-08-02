@@ -8,6 +8,8 @@ import {DateField, MonthField, SelectField} from "@/components/FormControls";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
 import {incomeCreditState} from '@/lib/income-status';
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {dateInputInTimeZone, monthInputInTimeZone} from '@/lib/company-time';
 
 type InitialIncome = {
     id?: number;
@@ -75,8 +77,6 @@ type Props = {
     openNewCredit?: boolean;
 };
 
-const today = new Date().toISOString().slice(0, 10);
-const currentMonth = new Date().toISOString().slice(0, 7);
 const vatRates = ["0", "4", "10", "22"];
 
 function toDateInput(value?: string | Date | null) {
@@ -86,16 +86,16 @@ function toDateInput(value?: string | Date | null) {
     return date.toISOString().slice(0, 10);
 }
 
-function addDaysToDateInput(value: string, days: number) {
+function addDaysToDateInput(value: string, days: number, fallbackToday: string) {
     const [year, month, day] = value.split("-").map(Number);
     const base = year && month && day
         ? new Date(Date.UTC(year, month - 1, day))
-        : new Date(`${today}T00:00:00Z`);
+        : new Date(`${fallbackToday}T00:00:00Z`);
     base.setUTCDate(base.getUTCDate() + days);
     return base.toISOString().slice(0, 10);
 }
 
-function toMonthInput(income?: InitialIncome) {
+function toMonthInput(income: InitialIncome | undefined, currentMonth: string) {
     if (income?.billingMonth && income?.billingYear) {
         return `${income.billingYear}-${String(income.billingMonth).padStart(2, "0")}`;
     }
@@ -156,6 +156,9 @@ export default function IncomeForm({
                                        initialMobileStep = 1,
                                        openNewCredit = false,
                                    }: Props) {
+    const timeZone = useCompanyTimeZone();
+    const today = dateInputInTimeZone(timeZone);
+    const currentMonth = monthInputInTimeZone(timeZone);
     const cashBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.trim().toLowerCase() === "cassa");
     const primaryBank = banks.find(bank => bank.isPrimary);
     const defaultBank = primaryBank ?? banks.find(bank => !bank.isFallback) ?? banks[0];
@@ -170,7 +173,7 @@ export default function IncomeForm({
     const [salesChannelId, setSalesChannelId] = useState(initialSalesChannelId);
     const [orderDate, setOrderDate] = useState(toDateInput(initialIncome?.orderDate) || today);
     const [dueDate, setDueDate] = useState(toDateInput(initialIncome?.dueDate) || toDateInput(initialIncome?.orderDate) || today);
-    const [billingPeriod, setBillingPeriod] = useState(toMonthInput(initialIncome));
+    const [billingPeriod, setBillingPeriod] = useState(toMonthInput(initialIncome, currentMonth));
     const [description, setDescription] = useState(initialIncome?.description ?? "");
     const [notes, setNotes] = useState(initialIncome?.notes ?? "");
     const [customerName, setCustomerName] = useState(
@@ -211,7 +214,7 @@ export default function IncomeForm({
 
     const creditedAmount = credits.reduce((sum, credit) => sum + Number(credit.amount || 0), 0);
     const creditResidual = Math.max(0, amountValue - creditedAmount);
-    const creditState = incomeCreditState({amount: amountValue, credits, dueDate});
+    const creditState = incomeCreditState({amount: amountValue, credits, dueDate}, new Date(), timeZone);
     const isCredited = creditState === 'ACCREDITATO';
     const creditStatusLabel = {
         ACCREDITATO: 'Accreditato',
@@ -419,7 +422,7 @@ export default function IncomeForm({
                     <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data scadenza" name="dueDate" value={dueDate} onChange={setDueDate} required>
                         <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
                             {[0, 7, 15, 30].map(days => {
-                                const value = addDaysToDateInput(orderDate, days);
+                                const value = addDaysToDateInput(orderDate, days, today);
                                 return <button type="button" key={days} className={dueDate === value ? "is-selected" : ""}
                                                aria-pressed={dueDate === value} onClick={() => setDueDate(value)}>
                                     {days === 0 ? "Stesso g" : `+${days} gg`}

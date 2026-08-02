@@ -11,6 +11,7 @@ import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModa
 import SortableTableController from '@/components/SortableTableController';
 import {euro, moneyTone} from '@/lib/money';
 import {dueStatusLabel} from '@/lib/due-status-label';
+import {DEFAULT_COMPANY_TIME_ZONE} from '@/lib/company-time';
 import {
     badgeClass,
     categoryLabel,
@@ -100,6 +101,7 @@ type Props = {
     paymentMethods?: Option[];
     suppliers?: SupplierOption[];
     linkRecurringExpensesToDefinition?: boolean;
+    timeZone?: string;
 };
 
 function dateLabel(value?: Date | null) {
@@ -195,7 +197,8 @@ export default function ExpensesList({
                                          banks = [],
                                          paymentMethods = [],
                                          suppliers = [],
-                                         linkRecurringExpensesToDefinition = false
+                                         linkRecurringExpensesToDefinition = false,
+                                         timeZone = DEFAULT_COMPANY_TIME_ZONE
                                      }: Props) {
     const mobileItems = mobileExpenses ?? sortExpensesByReceivedDateDesc(expenses);
     const hasBulkControls = selectable && categories.length > 0;
@@ -291,7 +294,7 @@ export default function ExpensesList({
                 const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
                 const categoryClassName = categoryTone(expense.category);
                 const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
-                const overdue = isExpensePastDue(expense);
+                const overdue = isExpensePastDue(expense, new Date(), timeZone);
                 const unpaid = isExpenseOpen(expense);
                 const paidAmount = Math.max(0, amount - expenseResidualAmount(expense));
                 const statusLabel = dueStatusLabel({
@@ -299,7 +302,8 @@ export default function ExpensesList({
                     isComplete: !unpaid,
                     isPartial: unpaid && paidAmount > 0.005,
                     completeLabel: paymentStatusStyles.COMPLETATO.label,
-                    pendingFallback: paymentStyle.label
+                    pendingFallback: paymentStyle.label,
+                    timeZone
                 });
                 const invoiceWaiting = expense.invoiceStatus === 'IN_ATTESA';
                 const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
@@ -397,7 +401,7 @@ export default function ExpensesList({
                     const categoryClassName = categoryTone(expense.category);
                     const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
                     const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
-                    const overdue = isExpensePastDue(expense);
+                    const overdue = isExpensePastDue(expense, new Date(), timeZone);
                     const paymentWaiting = residual > 0.005;
                     const paidAmount = Math.max(0, amount - residual);
                     const statusLabel = dueStatusLabel({
@@ -405,7 +409,8 @@ export default function ExpensesList({
                         isComplete: !paymentWaiting,
                         isPartial: paymentWaiting && paidAmount > 0.005,
                         completeLabel: paymentStatusStyles.COMPLETATO.label,
-                        pendingFallback: paymentStyle.label
+                        pendingFallback: paymentStyle.label,
+                        timeZone
                     });
                     const invoiceWaiting = expense.invoiceStatus === 'IN_ATTESA';
                     const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];

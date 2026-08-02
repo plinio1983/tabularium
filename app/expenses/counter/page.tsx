@@ -8,19 +8,9 @@ import {
   orderExpenseCategories,
   orderPaymentMethods
 } from '@/lib/workspace-defaults';
+import {dateInputInTimeZone} from '@/lib/company-time';
 
 export const dynamic = 'force-dynamic';
-
-function romeDateLocal(date: Date) {
-  const values = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Rome',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).formatToParts(date);
-  const part = (type: Intl.DateTimeFormatPartTypes) => values.find(value => value.type === type)?.value ?? '';
-  return `${part('year')}-${part('month')}-${part('day')}`;
-}
 
 export default async function CounterExpensePage() {
   const current = await requireWorkspace('/expenses/counter');
@@ -35,7 +25,7 @@ export default async function CounterExpensePage() {
   if (!categories.length || !methods.length) redirect('/settings/payment-credit');
 
   return <CounterExpenseRegister
-    initialDate={romeDateLocal(new Date())}
+    initialDate={dateInputInTimeZone(current.company.timeZone)}
     categories={orderExpenseCategories(categories).map(category => ({
       id: category.id,
       name: category.name,

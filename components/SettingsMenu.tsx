@@ -3,25 +3,28 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import MonthlyReportIcon from '@/components/MonthlyReportIcon';
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
-function currentMonthReportHref() {
-  const now = new Date();
-  return `/months/${now.getFullYear()}/${now.getMonth() + 1}?mode=overall&returnTo=${encodeURIComponent('/')}`;
+function currentMonthReportHref(timeZone: string) {
+  const current = yearMonthInTimeZone(timeZone);
+  return `/months/${current.year}/${current.month}?mode=overall&returnTo=${encodeURIComponent('/')}`;
 }
 
 const mainMenuLinks = [
-  { href: () => '/', label: 'Home', icon: '⌂' },
+  { href: (_timeZone: string) => '/', label: 'Home', icon: '⌂' },
   { href: currentMonthReportHref, label: 'Report mese', icon: <MonthlyReportIcon /> },
-  { href: () => '/incomes/cash-register', label: 'Registratore di cassa', icon: '🧮' },
-  { href: () => '/recurring-expenses', label: 'Uscite ricorrenti', icon: '↻' },
-  { href: () => '/recurring-incomes', label: 'Entrate ricorrenti', icon: '↻' },
-  { href: () => '/suppliers', label: 'Fornitori', icon: '◇' },
-  { href: () => '/clients', label: 'Clienti', icon: '♙' },
-  { href: () => '/settings/company', label: 'Dati azienda', icon: '🏢' },
-  { href: () => '/expenses/import', label: 'Importa dati', icon: '⬆' },
+  { href: (_timeZone: string) => '/incomes/cash-register', label: 'Registratore di cassa', icon: '🧮' },
+  { href: (_timeZone: string) => '/recurring-expenses', label: 'Uscite ricorrenti', icon: '↻' },
+  { href: (_timeZone: string) => '/recurring-incomes', label: 'Entrate ricorrenti', icon: '↻' },
+  { href: (_timeZone: string) => '/suppliers', label: 'Fornitori', icon: '◇' },
+  { href: (_timeZone: string) => '/clients', label: 'Clienti', icon: '♙' },
+  { href: (_timeZone: string) => '/settings/company', label: 'Dati azienda', icon: '🏢' },
+  { href: (_timeZone: string) => '/expenses/import', label: 'Importa dati', icon: '⬆' },
 ] as const;
 
 export default function SettingsMenu() {
+  const timeZone = useCompanyTimeZone();
   const [isOpen, setIsOpen] = useState(false);
 
   function closeMenu() {
@@ -71,7 +74,7 @@ export default function SettingsMenu() {
       </div>
       <nav className="settings-drawer-nav" aria-label="Menu principale laterale">
         {mainMenuLinks.map(link => link.href
-          ? <Link key={link.label} href={link.href()} onClick={closeMenu}>
+          ? <Link key={link.label} href={link.href(timeZone)} onClick={closeMenu}>
               <span className="settings-drawer-item-icon" aria-hidden="true">{link.icon}</span>
               <span>{link.label}</span>
             </Link>

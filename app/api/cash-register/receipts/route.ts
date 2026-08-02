@@ -6,6 +6,7 @@ import {ensureWorkspaceDefaults} from '@/lib/workspace-defaults';
 import {writeAuditLog} from '@/lib/audit';
 import {resolveCashRegisterBankId} from '@/lib/cash-register-bank';
 import {resolveDefaultIncomeCategory} from '@/lib/income-category';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const allowedVatRates = [0, 4, 10, 22];
 const ReceiptSchema = z.object({
@@ -17,18 +18,6 @@ const ReceiptSchema = z.object({
     paymentMethodId: z.coerce.number().int().positive(),
     requestId: z.string().uuid()
 });
-
-function romePeriod(date: Date) {
-    const parts = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Europe/Rome',
-        year: 'numeric',
-        month: 'numeric'
-    }).formatToParts(date);
-    return {
-        year: Number(parts.find(part => part.type === 'year')?.value),
-        month: Number(parts.find(part => part.type === 'month')?.value)
-    };
-}
 
 export async function POST(request: Request) {
     const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
@@ -70,7 +59,7 @@ export async function POST(request: Request) {
     if (!creditBankId) {
         return NextResponse.json({error: 'Configura la banca per questo metodo e canale di vendita'}, {status: 409});
     }
-    const period = romePeriod(date);
+    const period = yearMonthInTimeZone(current.company.timeZone, date);
 
     try {
         const receipt = await prisma.income.create({

@@ -5,6 +5,7 @@ import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { writeAuditLog } from '@/lib/audit';
 import {addExpenseDays, expenseDateDayOffset, expenseDateInRelativeMonth} from '@/lib/expense-bulk-copy';
+import {dateInputInTimeZone} from '@/lib/company-time';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
@@ -14,10 +15,8 @@ function safeReturnTo(request: Request) {
   return pathFromUrl(new URL(request.url).searchParams.get('returnTo'), '/expenses');
 }
 
-function todayAtMidnight() {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date;
+function todayAtMidnight(timeZone: string) {
+  return new Date(`${dateInputInTimeZone(timeZone)}T00:00:00.000Z`);
 }
 
 export async function POST(request: Request) {
@@ -64,8 +63,8 @@ export async function POST(request: Request) {
   }
 
   if (action === 'copy') {
-    const now = new Date();
-    const today = todayAtMidnight();
+    const now = todayAtMidnight(current.company.timeZone);
+    const today = now;
     const dateMode = String(formData.get('dateMode') || 'CURRENT_MONTH_SAME_DAY');
     const paymentMode = String(formData.get('paymentMode') || 'NONE');
     const validDateModes = ['ORIGINAL', 'CURRENT_MONTH_SAME_DAY', 'FROM_TODAY'];
@@ -136,8 +135,8 @@ export async function POST(request: Request) {
           isAutomaticPayment: false,
           invoiceStatus: expense.invoiceStatus,
           companyId: expense.companyId,
-          month: dateMode === 'ORIGINAL' ? expense.month : accountingDate.getMonth() + 1,
-          year: dateMode === 'ORIGINAL' ? expense.year : accountingDate.getFullYear(),
+          month: dateMode === 'ORIGINAL' ? expense.month : accountingDate.getUTCMonth() + 1,
+          year: dateMode === 'ORIGINAL' ? expense.year : accountingDate.getUTCFullYear(),
           notes: expense.notes,
           paymentStatus,
           paidAmount,
@@ -176,7 +175,7 @@ export async function POST(request: Request) {
   }
 
   if (action === 'payment_completed') {
-    const today = todayAtMidnight();
+    const today = todayAtMidnight(current.company.timeZone);
     const [expenses, fallbackMethod] = await Promise.all([
       prisma.expense.findMany({
         where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id },

@@ -12,6 +12,7 @@ import {
 import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
 import DashboardSectionNav from '@/components/DashboardSectionNav';
 import {requireWorkspace} from '@/lib/auth';
+import {calendarDayNumber, yearMonthInTimeZone} from '@/lib/company-time';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
@@ -1763,8 +1764,9 @@ export default async function Dashboard({searchParams}: {
     const current = await requireWorkspace('/');
     const params = (await searchParams) ?? {};
     const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
+    const currentPeriod = yearMonthInTimeZone(current.company.timeZone, now);
+    const currentYear = currentPeriod.year;
+    const currentMonth = currentPeriod.month;
     const currentQuarterIndex = Math.floor((currentMonth - 1) / 3);
     const trendMonthValue = Array.isArray(params.trendMonth) ? params.trendMonth[0] : params.trendMonth;
     const trendQuarterValue = Array.isArray(params.trendQuarter) ? params.trendQuarter[0] : params.trendQuarter;
@@ -1784,13 +1786,13 @@ export default async function Dashboard({searchParams}: {
     const selectedQuarter = {...rawSelectedQuarter, year: annualYear};
     const reportYear = annualYear;
     const trendQuarterPeriods = fiscalQuarterMonthsByIndex(selectedTrendQuarter.year, selectedTrendQuarter.quarterIndex);
-    const scheduleFrom = new Date(annualYear, 0, 1);
-    const scheduleTo = new Date(annualYear + 1, 0, 1);
+    const scheduleFrom = new Date(Date.UTC(annualYear, 0, 1));
+    const scheduleTo = new Date(Date.UTC(annualYear + 1, 0, 1));
     const [report, initialIncomeTrend, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers, pendingIncomes, pendingExpenses] = await Promise.all([
-        getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id, current.company.id),
-        getIncomeTrendData(annualYear, 'month', current.workspace.id, current.company.id, true),
-        getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id, current.company.id),
-        getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id, current.company.id),
+        getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id, current.company.id, current.company.timeZone),
+        getIncomeTrendData(annualYear, 'month', current.workspace.id, current.company.id, true, current.company.timeZone),
+        getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id, current.company.id, current.company.timeZone),
+        getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id, current.company.id, current.company.timeZone),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
@@ -1883,15 +1885,17 @@ export default async function Dashboard({searchParams}: {
         const scheduledDate = income.dueDate;
         if (!scheduledDate) return;
         const credited = income.credits.reduce((sum, credit) => sum + Number(credit.amount), 0);
-        cashSchedule[scheduledDate.getMonth()].incoming += Math.max(0, Number(income.amount) - credited);
+        cashSchedule[scheduledDate.getUTCMonth()].incoming += Math.max(0, Number(income.amount) - credited);
     });
     pendingExpenses.forEach(expense => {
         if (!expense.dueDate) return;
         const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount), 0);
         const residual = Math.max(Number(expense.amount) - paid, 0);
-        const item = cashSchedule[expense.dueDate.getMonth()];
+        const item = cashSchedule[expense.dueDate.getUTCMonth()];
         item.outgoing += residual;
-        if (expense.dueDate < now) item.overdue += residual;
+        const dueDay = calendarDayNumber(expense.dueDate, current.company.timeZone, true);
+        const todayDay = calendarDayNumber(now, current.company.timeZone);
+        if (dueDay !== null && todayDay !== null && dueDay < todayDay) item.overdue += residual;
     });
 
     return <div className="grid dashboard-grid">

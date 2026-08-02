@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {useState} from 'react';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import {euro} from '@/lib/money';
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 
 type Receipt = {
     id: number;
@@ -19,13 +20,14 @@ type Receipt = {
     paymentMethodIcon: string | null;
 };
 
-function receiptDate(value: string) {
+function receiptDate(value: string, timeZone: string) {
     const parts = new Intl.DateTimeFormat('it-IT', {
         day: '2-digit',
         month: 'short',
         hour: '2-digit',
         minute: '2-digit',
-        hourCycle: 'h23'
+        hourCycle: 'h23',
+        timeZone
     }).formatToParts(new Date(value));
     const part = (type: Intl.DateTimeFormatPartTypes) =>
         parts.find(item => item.type === type)?.value.replace('.', '') ?? '';
@@ -34,6 +36,7 @@ function receiptDate(value: string) {
 }
 
 export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]}) {
+    const timeZone = useCompanyTimeZone();
     const formId = 'cashRegisterReceiptBulkForm';
     const returnTo = encodeURIComponent('/incomes/cash-register/receipts');
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -118,7 +121,7 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
                 <div className="cash-register-receipt-content">
                     <div className="cash-register-receipt-date">
                         <small>#{receipt.id}</small>
-                        <strong>{receiptDate(receipt.creditDate)}</strong>
+                        <strong>{receiptDate(receipt.creditDate, timeZone)}</strong>
                     </div>
                     <div className="cash-register-receipt-channel">
                         <span>{receipt.salesChannelIcon ?? ''} {receipt.salesChannel}</span>

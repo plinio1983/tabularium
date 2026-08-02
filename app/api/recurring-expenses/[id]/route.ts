@@ -6,6 +6,7 @@ import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
 import { writeAuditLog } from '@/lib/audit';
+import {dateInputInTimeZone} from '@/lib/company-time';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -102,7 +103,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     data: {
       startDate: new Date(data.startDate),
       endDate: data.endDate ? new Date(data.endDate) : null,
-      archivedAt: data.endDate && data.endDate < new Date().toISOString().slice(0, 10) ? existing.archivedAt : null,
+      archivedAt: data.endDate && data.endDate < dateInputInTimeZone(current.company.timeZone) ? existing.archivedAt : null,
       cadence: data.cadence,
       dueDay: data.dueDay || null,
       dueMonth: isYearly ? (data.dueMonth || null) : null,

@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
 
 export type RecurringExpenseJobResult = {
   checked: number;
@@ -21,17 +22,17 @@ export type RecurringExpenseDailyJobResult = {
 
 function startOfDay(date: Date) {
   const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
+  copy.setUTCHours(0, 0, 0, 0);
   return copy;
 }
 
 function addMonths(year: number, month: number, delta: number) {
-  const date = new Date(year, month - 1 + delta, 1);
-  return { year: date.getFullYear(), month: date.getMonth() + 1 };
+  const date = new Date(Date.UTC(year, month - 1 + delta, 1));
+  return { year: date.getUTCFullYear(), month: date.getUTCMonth() + 1 };
 }
 
 function clampDay(year: number, month: number, day: number) {
-  const lastDay = new Date(year, month, 0).getDate();
+  const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
   return Math.min(Math.max(day, 1), lastDay);
 }
 
@@ -46,7 +47,7 @@ function cadenceMonths(cadence: string) {
 }
 
 function monthDiff(from: Date, toYear: number, toMonth: number) {
-  return (toYear - from.getFullYear()) * 12 + ((toMonth - 1) - from.getMonth());
+  return (toYear - from.getUTCFullYear()) * 12 + ((toMonth - 1) - from.getUTCMonth());
 }
 
 function isCadenceDue(startDate: Date, dueYear: number, dueMonth: number, cadence: string) {
@@ -64,24 +65,24 @@ function calculateDueDates(recurringExpense: any, todayInput: Date) {
   if (startDate > generationEnd) return [];
 
   const dueDates: Date[] = [];
-  const cursorStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-  const cursorEnd = new Date(generationEnd.getFullYear(), generationEnd.getMonth(), 1);
+  const cursorStart = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1));
+  const cursorEnd = new Date(Date.UTC(generationEnd.getUTCFullYear(), generationEnd.getUTCMonth(), 1));
 
   for (
     let cursor = cursorStart;
     cursor <= cursorEnd;
-    cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1)
+    cursor = new Date(Date.UTC(cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, 1))
   ) {
-    const cursorYear = cursor.getFullYear();
-    const cursorMonth = cursor.getMonth() + 1;
+    const cursorYear = cursor.getUTCFullYear();
+    const cursorMonth = cursor.getUTCMonth() + 1;
     const dueYear = cursorYear;
     const dueMonth = recurringExpense.dueMonth || cursorMonth;
 
     if (recurringExpense.dueMonth && dueMonth !== cursorMonth) continue;
     if (!isCadenceDue(startDate, dueYear, dueMonth, recurringExpense.cadence)) continue;
 
-    const dueDay = clampDay(dueYear, dueMonth, recurringExpense.dueDay || startDate.getDate());
-    const dueDate = startOfDay(new Date(dueYear, dueMonth - 1, dueDay));
+    const dueDay = clampDay(dueYear, dueMonth, recurringExpense.dueDay || startDate.getUTCDate());
+    const dueDate = startOfDay(new Date(Date.UTC(dueYear, dueMonth - 1, dueDay)));
 
     if (dueDate < startDate) continue;
     if (dueDate > generationEnd) continue;
@@ -94,8 +95,8 @@ function calculateDueDates(recurringExpense: any, todayInput: Date) {
 }
 
 function billingPeriodFromDueDate(recurringExpense: any, dueDate: Date) {
-  const dueYear = dueDate.getFullYear();
-  const dueMonth = dueDate.getMonth() + 1;
+  const dueYear = dueDate.getUTCFullYear();
+  const dueMonth = dueDate.getUTCMonth() + 1;
 
   if (recurringExpense.billingPeriodMode === 'NEXT_MONTH') {
     return addMonths(dueYear, dueMonth, 1);
@@ -123,7 +124,8 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
     where: { isActive: true },
     include: {
       supplier: true,
-      paymentMethod: true
+      paymentMethod: true,
+      company: true
     }
   });
 
@@ -132,12 +134,13 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
 
     try {
       const errorsBefore = result.errors.length;
-      const dueDates = calculateDueDates(recurringExpense, todayInput);
+      const companyToday = startOfDay(new Date(`${dateInputInTimeZone(recurringExpense.company.timeZone, todayInput)}T00:00:00Z`));
+      const dueDates = calculateDueDates(recurringExpense, companyToday);
 
       if (!dueDates.length) {
         result.skipped += 1;
-        if (recurringExpense.endDate && startOfDay(todayInput) > startOfDay(new Date(recurringExpense.endDate))) {
-          await prisma.recurringExpense.update({where: {id: recurringExpense.id}, data: {isActive: false, archivedAt: startOfDay(todayInput)}});
+        if (recurringExpense.endDate && companyToday > startOfDay(new Date(recurringExpense.endDate))) {
+          await prisma.recurringExpense.update({where: {id: recurringExpense.id}, data: {isActive: false, archivedAt: companyToday}});
         }
         continue;
       }
@@ -194,8 +197,8 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
 
         result.created += 1;
       }
-      if (result.errors.length === errorsBefore && recurringExpense.endDate && startOfDay(todayInput) > startOfDay(new Date(recurringExpense.endDate))) {
-        await prisma.recurringExpense.update({where: {id: recurringExpense.id}, data: {isActive: false, archivedAt: startOfDay(todayInput)}});
+      if (result.errors.length === errorsBefore && recurringExpense.endDate && companyToday > startOfDay(new Date(recurringExpense.endDate))) {
+        await prisma.recurringExpense.update({where: {id: recurringExpense.id}, data: {isActive: false, archivedAt: companyToday}});
       }
     } catch (error) {
       result.errors.push({
@@ -210,14 +213,10 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
 
 export async function settleAutomaticRecurringPayments(todayInput = new Date()): Promise<AutomaticRecurringPaymentJobResult> {
   const result: AutomaticRecurringPaymentJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
-  const today = startOfDay(todayInput);
-
   const expenses = await prisma.expense.findMany({
     where: {
       paymentStatus: { not: 'COMPLETATO' },
-      dueDate: {
-        lte: today
-      },
+      dueDate: {not: null},
       OR: [
         { isAutomaticPayment: true },
         { recurringExpense: { isAutomaticPayment: true } }
@@ -229,7 +228,8 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
         include: {
           paymentMethod: true
         }
-      }
+      },
+      company: true
     }
   });
 
@@ -237,6 +237,10 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
     result.checked += 1;
 
     try {
+      if (!expense.dueDate || calendarDateInput(expense.dueDate) > dateInputInTimeZone(expense.company.timeZone, todayInput)) {
+        result.skipped += 1;
+        continue;
+      }
       if (!expense.dueDate || !expense.recurringExpense) {
         result.skipped += 1;
         continue;

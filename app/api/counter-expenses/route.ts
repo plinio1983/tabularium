@@ -4,6 +4,7 @@ import {getWorkspaceApiAccess, workspaceOperationalRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {ensureWorkspaceDefaults} from '@/lib/workspace-defaults';
 import {writeAuditLog} from '@/lib/audit';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const allowedVatRates = [0, 4, 10, 22];
 const CounterExpenseSchema = z.object({
@@ -16,18 +17,6 @@ const CounterExpenseSchema = z.object({
   bankId: z.coerce.number().int().positive().nullable(),
   requestId: z.string().uuid()
 });
-
-function romePeriod(date: Date) {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Rome',
-    year: 'numeric',
-    month: 'numeric'
-  }).formatToParts(date);
-  return {
-    year: Number(parts.find(part => part.type === 'year')?.value),
-    month: Number(parts.find(part => part.type === 'month')?.value)
-  };
-}
 
 export async function POST(request: Request) {
   const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
@@ -71,7 +60,7 @@ export async function POST(request: Request) {
     bankId = bank.id;
   }
 
-  const period = romePeriod(paymentDate);
+  const period = yearMonthInTimeZone(current.company.timeZone, paymentDate);
   try {
     const expense = await prisma.expense.create({
       data: {

@@ -7,6 +7,7 @@ import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
 import { AttachmentValidationError, deleteExpenseAttachmentFile, normalizeExpenseAttachmentType, saveExpenseAttachmentFiles } from '@/lib/attachments';
 import { writeAuditLog } from '@/lib/audit';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -73,13 +74,12 @@ type PaymentInput = {
   amount: number;
 };
 
-function resolveBillingPeriod(billingPeriod?: string) {
+function resolveBillingPeriod(billingPeriod: string | undefined, timeZone: string) {
   if (billingPeriod) {
     const [year, month] = billingPeriod.split('-').map(Number);
     if (year && month) return { year, month };
   }
-  const now = new Date();
-  return { year: now.getFullYear(), month: now.getMonth() + 1 };
+  return yearMonthInTimeZone(timeZone);
 }
 
 function getAll(formData: FormData, key: string) {
@@ -136,7 +136,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const invoiceFields = isVatSettlement
     ? { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const }
     : normalizeInvoiceFields(data);
-  const { year, month } = resolveBillingPeriod(data.billingPeriod);
+  const { year, month } = resolveBillingPeriod(data.billingPeriod, current.company.timeZone);
   const payments = await resolvePaymentInputs(parsePayments(formData), current.workspace.id, isVatSettlement);
   let supplierRef;
   let configuredCategoryId: number | null = null;

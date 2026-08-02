@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Mese non valido' }, { status: 400 });
     }
 
-    const totals = await getOrderDateMonthSummary(year, month, current.workspace.id, current.company.id);
+    const totals = await getOrderDateMonthSummary(year, month, current.workspace.id, current.company.id, current.company.timeZone);
     return NextResponse.json({ year, month, totals });
   }
 
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     }
 
     const periods = fiscalQuarterMonthsByIndex(year, quarterIndex);
-    const totals = await getOrderDatePeriodSummary(periods, current.workspace.id, current.company.id);
+    const totals = await getOrderDatePeriodSummary(periods, current.workspace.id, current.company.id, current.company.timeZone);
     return NextResponse.json({ periods, totals });
   }
 

@@ -9,6 +9,7 @@ import { euro } from '@/lib/money';
 import { requireWorkspace } from '@/lib/auth';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { detailBackHref } from '@/lib/detail-navigation';
+import { calendarDayNumber } from '@/lib/company-time';
 import {
   badgeClass,
   categoryLabel,
@@ -89,11 +90,10 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const vatStyle = vatStylesNoText[vatKey(expense.vatRate)] ?? vatStyles['22'];
   const vatRate = Number(expense.vatRate.toString());
   const paidVat = isVatSettlement ? Math.min(amount, paid) : (vatRate ? Math.min(amount, paid) * (vatRate / (100 + vatRate)) : 0);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
   const dueDate = expense.dueDate ? new Date(expense.dueDate) : null;
-  dueDate?.setHours(0, 0, 0, 0);
-  const isOverdue = residual > 0 && dueDate !== null && dueDate < today;
+  const dueDay = dueDate ? calendarDayNumber(dueDate, current.company.timeZone, true) : null;
+  const todayDay = calendarDayNumber(new Date(), current.company.timeZone);
+  const isOverdue = residual > 0 && dueDay !== null && todayDay !== null && dueDay < todayDay;
   const paymentHeroLabel = isOverdue
     ? `${paymentStatusStyles.SCADUTO.icon} ${paymentStatusStyles.SCADUTO.label}`
     : `${paymentStyle.icon} ${paymentStyle.label}`;

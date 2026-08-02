@@ -8,6 +8,7 @@ import {prisma} from '@/lib/prisma';
 import {getMonthlyReport, getOrderDateMonthSummary, getPeriodSummary} from '@/lib/reports';
 import {monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import SearchIcon from '@/components/SearchIcon';
 import {prepareIncomeList} from '@/lib/income-list';
@@ -47,15 +48,15 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const rawComparisonMonth = Array.isArray(query.compareMonth) ? query.compareMonth[0] : query.compareMonth;
     const comparedPeriod = comparisonPeriod({year, month}, comparisonKind, rawComparisonMonth);
     const backHref = safeReturnTo(query.returnTo);
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1;
+    const currentPeriod = yearMonthInTimeZone(current.company.timeZone);
+    const currentYear = currentPeriod.year;
+    const currentMonth = currentPeriod.month;
     const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers] = await Promise.all([
-        getMonthlyReport(year, month, current.workspace.id, mode, current.company.id),
-        getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id),
+        getMonthlyReport(year, month, current.workspace.id, mode, current.company.id, current.company.timeZone),
+        getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id, current.company.timeZone),
         mode === 'fiscal'
-            ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id, companyId: current.company.id})
-            : getOrderDateMonthSummary(year, month, current.workspace.id, current.company.id),
+            ? getPeriodSummary([{year, month}], {workspaceId: current.workspace.id, companyId: current.company.id, timeZone: current.company.timeZone})
+            : getOrderDateMonthSummary(year, month, current.workspace.id, current.company.id, current.company.timeZone),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
@@ -265,6 +266,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             </form>
             {supplierQuickValue ? <div className="recurring-active-filters"><div><span className="recurring-active-filters-title">Filtri attivi</span><div className="recurring-active-filter-tags"><span className="badge"><strong>Fornitore:</strong> {supplierQuickValue}</span></div></div><Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href={`/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>× Reset</Link></div> : null}
             <ExpensesList
+                timeZone={current.company.timeZone}
                 expenses={filteredExpenses}
                 mobileExpenses={mobileExpenses}
                 returnTo={returnTo}
@@ -311,6 +313,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
             </summary>
             <div className="--card record-list-card"><IncomesList
+                timeZone={current.company.timeZone}
                 incomes={listedIncomes}
                 cashRegisterGroups={cashRegisterGroups}
                 returnTo={returnTo}

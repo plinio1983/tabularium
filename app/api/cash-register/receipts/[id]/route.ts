@@ -4,6 +4,7 @@ import {getWorkspaceApiAccess, workspaceOperationalRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {writeAuditLog} from '@/lib/audit';
 import {resolveCashRegisterBankId} from '@/lib/cash-register-bank';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const UpdateSchema = z.object({
     amount: z.coerce.number().positive(),
@@ -13,16 +14,6 @@ const UpdateSchema = z.object({
     salesChannelId: z.coerce.number().int().positive(),
     paymentMethodId: z.coerce.number().int().positive()
 });
-
-function romePeriod(date: Date) {
-    const values = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Europe/Rome', year: 'numeric', month: 'numeric'
-    }).formatToParts(date);
-    return {
-        year: Number(values.find(item => item.type === 'year')?.value),
-        month: Number(values.find(item => item.type === 'month')?.value)
-    };
-}
 
 export async function PATCH(request: Request, {params}: { params: Promise<{ id: string }> }) {
     const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
@@ -51,7 +42,7 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
     if (!creditBankId) {
         return NextResponse.json({error: 'Configura la banca per questo metodo e canale di vendita'}, {status: 409});
     }
-    const period = romePeriod(date);
+    const period = yearMonthInTimeZone(current.company.timeZone, date);
     const updated = await prisma.income.update({
         where: {id},
         data: {

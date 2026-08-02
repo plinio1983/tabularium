@@ -1,3 +1,5 @@
+import {calendarDateInput, dateInputInTimeZone, DEFAULT_COMPANY_TIME_ZONE} from '@/lib/company-time';
+
 export type ExpenseWithPayments = {
   amount: unknown;
   dueDate?: Date | null;
@@ -17,13 +19,9 @@ export function isExpenseOpen(expense: ExpenseWithPayments) {
   return expenseResidualAmount(expense) > 0;
 }
 
-export function isExpensePastDue(expense: ExpenseWithPayments, now = new Date()) {
+export function isExpensePastDue(expense: ExpenseWithPayments, now = new Date(), timeZone = DEFAULT_COMPANY_TIME_ZONE) {
   if (!expense.dueDate || expenseResidualAmount(expense) <= 0) return false;
-  const due = new Date(expense.dueDate);
-  const today = new Date(now);
-  due.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  return due < today;
+  return calendarDateInput(expense.dueDate) < dateInputInTimeZone(timeZone, now);
 }
 
 export function sortExpensesByReceivedDateDesc<T extends { id: number; receivedDate?: Date | null }>(expenses: T[]) {

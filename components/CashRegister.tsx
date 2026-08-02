@@ -3,6 +3,8 @@
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {zonedMidnightUtc} from '@/lib/company-time';
 
 type Method = {
     id: number;
@@ -41,6 +43,7 @@ export default function CashRegister({
     mode: 'create' | 'edit' | 'copy';
     initialReceipt: InitialReceipt | null;
 }) {
+    const timeZone = useCompanyTimeZone();
     const router = useRouter();
     const amountRef = useRef<HTMLInputElement>(null);
     const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
@@ -249,8 +252,7 @@ export default function CashRegister({
         setSending(true);
         setNotice(null);
         try {
-            const now = new Date();
-            const localDate = new Date(`${creditDate}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`);
+            const localDate = new Date(zonedMidnightUtc(creditDate, timeZone).getTime() + 12 * 60 * 60 * 1000);
             const editing = mode === 'edit' && initialReceipt;
             const response = await fetch(editing ? `/api/cash-register/receipts/${initialReceipt.id}` : '/api/cash-register/receipts', {
                 method: editing ? 'PATCH' : 'POST',

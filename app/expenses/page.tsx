@@ -9,6 +9,7 @@ import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
 import MobileSortControl from '@/components/MobileSortControl';
 import {requireWorkspace} from '@/lib/auth';
+import {calendarDateInput, civilDateInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
@@ -375,13 +376,11 @@ function toDateInputValue(date: Date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-function currentMonthStart() {
-    const now = new Date();
+function currentMonthStart(now: Date) {
     return toDateInputValue(new Date(now.getFullYear(), now.getMonth(), 1));
 }
 
-function currentMonthQuickValue() {
-    const now = new Date();
+function currentMonthQuickValue(now: Date) {
     return `month_${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
@@ -393,8 +392,7 @@ function fiscalQuarterRange(year: number, quarterIndex: number) {
     };
 }
 
-function getQuickDateRange(value: string, selectedYear?: string) {
-    const now = new Date();
+function getQuickDateRange(value: string, selectedYear: string | undefined, now: Date) {
     const parsedYear = Number(selectedYear);
     const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
     const month = now.getMonth();
@@ -493,8 +491,7 @@ function toMonthInputValue(year: number, monthIndexZeroBased: number) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function getQuickBillingPeriodRange(value: string, selectedYear?: string) {
-    const now = new Date();
+function getQuickBillingPeriodRange(value: string, selectedYear: string | undefined, now: Date) {
     const parsedYear = Number(selectedYear);
     const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
     const month = now.getMonth();
@@ -571,20 +568,17 @@ function matchesBillingPeriod(month: number, year: number, fromKey: number | nul
 }
 
 function matchesIsoDate(value: Date | null | undefined, from: string, to: string) {
-    const formatted = value ? localDateKey(value) : '';
+    const formatted = value ? calendarDateInput(value) : '';
     if (from && (!formatted || formatted < from)) return false;
     if (to && (!formatted || formatted > to)) return false;
     return true;
-}
-
-function localDateKey(value: Date) {
-    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
 }
 
 export default async function ExpensesPage({searchParams}: {
     searchParams?: Promise<Record<string, string | string[] | undefined>>
 }) {
     const current = await requireWorkspace('/expenses');
+    const companyNow = civilDateInTimeZone(current.company.timeZone);
     const rawFilters = (await searchParams) ?? {};
     const filters = stripFlashRecord(rawFilters);
     const currentQuery = new URLSearchParams();
@@ -605,13 +599,13 @@ export default async function ExpensesPage({searchParams}: {
     const useOrderDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useOrderDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomOrderDateFilter = useOrderDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo'));
-    const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasOrderDateFilter ? currentMonthQuickValue() : '')) : '';
+    const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasOrderDateFilter ? currentMonthQuickValue(companyNow) : '')) : '';
     const dateQuickSelectorValue = hasCustomOrderDateFilter ? 'custom' : quickDateFilter;
-    const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter) : null;
-    const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom') || (!hasAnyFilter ? currentMonthStart() : '')) : '';
+    const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
+    const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom') || (!hasAnyFilter ? currentMonthStart(companyNow) : '')) : '';
     const orderDateToDefault = useOrderDateFilter ? (quickDateRange?.to || inputDefault(filters, 'orderDateTo')) : '';
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
-    const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
+    const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
 
     const [expenses, categories, banks, paymentMethods, suppliers] = await Promise.all([
         prisma.expense.findMany({
@@ -733,7 +727,7 @@ export default async function ExpensesPage({searchParams}: {
         if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
         if (!amountMatchesFilter(amount, amountFilterValue)) return false;
         if (paymentStatusFilter === 'not_complete' && expense.paymentStatus === 'COMPLETATO') return false;
-        if (paymentStatusFilter === 'overdue' && !isExpensePastDue(expense)) return false;
+        if (paymentStatusFilter === 'overdue' && !isExpensePastDue(expense, new Date(), current.company.timeZone)) return false;
         if (paymentStatusFilter && !['not_complete', 'overdue'].includes(paymentStatusFilter) && expense.paymentStatus !== paymentStatusFilter) return false;
         if (residualFilter === 'open' && residual <= 0) return false;
         if (residualFilter === 'closed' && residual > 0) return false;
@@ -755,13 +749,13 @@ export default async function ExpensesPage({searchParams}: {
         const vatRate = Number(expense.vatRate.toString());
         const paid = Math.min(amount, expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0));
         const residualAmount = Math.max(0, amount - paid);
-        const overdueResidualAmount = isExpensePastDue(expense) ? residualAmount : 0;
+        const overdueResidualAmount = isExpensePastDue(expense, new Date(), current.company.timeZone) ? residualAmount : 0;
 
         acc.total += amount;
         acc.paidVat += expense.expenseType === 'VAT_SETTLEMENT' ? paid : (expense.isDeclared ? vatAmountFromGross(paid, vatRate) : 0);
         acc.toPay += residualAmount;
         acc.overdue += overdueResidualAmount;
-        if (isExpensePastDue(expense)) acc.overdueCount += 1;
+        if (isExpensePastDue(expense, new Date(), current.company.timeZone)) acc.overdueCount += 1;
         if (expense.isDeclared) {
             acc.declared += amount;
             if (isExpenseInvoiceNotReceived(expense)) acc.invoicesNotReceived += 1;
@@ -1335,6 +1329,7 @@ export default async function ExpensesPage({searchParams}: {
             <MobileSortControl action="/expenses" currentValue={mobileSort} options={expenseMobileSortOptions} searchParams={filters}/>
 
             <ExpensesList
+                timeZone={current.company.timeZone}
                 expenses={filteredExpenses}
                 mobileExpenses={mobileSortedExpenses}
                 returnTo={returnTo}

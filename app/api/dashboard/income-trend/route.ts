@@ -15,5 +15,5 @@ export async function GET(request: Request) {
     return NextResponse.json({error: 'Anno non valido'}, {status: 400});
   }
 
-  return NextResponse.json(await getIncomeTrendData(year, interval, current.workspace.id, current.company.id, completedOnly));
+  return NextResponse.json(await getIncomeTrendData(year, interval, current.workspace.id, current.company.id, completedOnly, current.company.timeZone));
 }

@@ -15,6 +15,7 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const errors: Record<string, string> = {
     invalid: 'Inserisci almeno il nome della società.',
+    invalid_timezone: 'Seleziona un fuso orario valido.',
     duplicate: 'Il codice è già utilizzato nel workspace.',
     last_active: 'Deve rimanere almeno una società attiva.',
     not_found: 'Società non trovata.'

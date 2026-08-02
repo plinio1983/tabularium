@@ -12,6 +12,7 @@ import {requireWorkspace} from '@/lib/auth';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 import SearchIcon from '@/components/SearchIcon';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const supplierMobileSortOptions = [
     {value: 'businessName_asc', label: 'Ragione sociale (A-Z)'},
@@ -63,7 +64,7 @@ export default async function SuppliersPage({searchParams}: {
     const current = await requireWorkspace('/suppliers');
     const rawFilters = (await searchParams) ?? {};
     const filters = stripFlashRecord(rawFilters);
-    const currentYear = new Date().getFullYear();
+    const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
     const currentQuery = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
         if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));

@@ -3,6 +3,7 @@
 import {redirect} from 'next/navigation';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspaceRole, workspaceManagementRoles} from '@/lib/auth';
+import {isValidTimeZone} from '@/lib/company-time';
 
 function text(formData: FormData, key: string) {
     return String(formData.get(key) ?? '').trim();
@@ -18,6 +19,8 @@ export async function saveCompanyAction(formData: FormData) {
     const id = Number(formData.get('id')) || null;
     const name = text(formData, 'name');
     if (!name) redirect('/settings/company-settings?error=invalid');
+    const timeZone = text(formData, 'timeZone');
+    if (!isValidTimeZone(timeZone)) redirect('/settings/company-settings?error=invalid_timezone');
     const baseCode = companyCode(text(formData, 'code') || name);
     const duplicate = await prisma.company.findFirst({
         where: {workspaceId: current.workspace.id, code: baseCode, ...(id ? {id: {not: id}} : {})}
@@ -31,7 +34,8 @@ export async function saveCompanyAction(formData: FormData) {
         taxCode: text(formData, 'taxCode') || null,
         pec: text(formData, 'pec') || null,
         sdiCode: text(formData, 'sdiCode') || null,
-        address: text(formData, 'address') || null
+        address: text(formData, 'address') || null,
+        timeZone
     };
     if (id) {
         const existing = await prisma.company.findFirst({where: {id, workspaceId: current.workspace.id}});

@@ -292,6 +292,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
 
           <div className="recurring-generated-expenses-list">
             <ExpensesList
+                timeZone={current.company.timeZone}
               expenses={item.generatedExpenses}
               returnTo={encodedRecurringDetailHref}
               showSupplierColumn={false}

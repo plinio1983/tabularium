@@ -1,0 +1,2 @@
+ALTER TABLE "Company"
+ADD COLUMN "timeZone" TEXT NOT NULL DEFAULT 'Europe/Rome';

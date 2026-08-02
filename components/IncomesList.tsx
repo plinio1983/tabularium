@@ -16,6 +16,7 @@ import {
 import type {IncomeCashRegisterGroup} from '@/lib/income-list';
 import {incomeCreditedAmount, incomeCreditState} from '@/lib/income-status';
 import {dueStatusLabel} from '@/lib/due-status-label';
+import {DEFAULT_COMPANY_TIME_ZONE} from '@/lib/company-time';
 
 type IncomeItem = {
     id: number;
@@ -87,8 +88,8 @@ function dateSortValue(value?: Date | null) {
     return value ? String(new Date(value).getTime()) : '';
 }
 
-function creditStatus(income: IncomeItem) {
-    return incomeCreditStatusStyles[incomeCreditState(income)];
+function creditStatus(income: IncomeItem, timeZone: string) {
+    return incomeCreditStatusStyles[incomeCreditState(income, new Date(), timeZone)];
 }
 
 function fiscalBadge(value: boolean) {
@@ -110,6 +111,7 @@ export default function IncomesList({
                                         customers,
                                         initialCustomerId,
                                         initialOpen = false,
+                                        timeZone = DEFAULT_COMPANY_TIME_ZONE,
                                         emptyMessage = 'Nessun incasso trovato.'
                                     }: {
     incomes: IncomeItem[];
@@ -122,6 +124,7 @@ export default function IncomesList({
     customers: Array<{ id: number; businessName: string; alias?: string | null; systemRole?: string | null }>;
     initialCustomerId?: number;
     initialOpen?: boolean;
+    timeZone?: string;
     emptyMessage?: string;
 }) {
     const mobileIncomes = suppliedMobileIncomes ?? [...incomes].sort((a, b) => (b.creditDate?.getTime() ?? 0) - (a.creditDate?.getTime() ?? 0) || b.id - a.id);
@@ -214,15 +217,16 @@ export default function IncomesList({
             {mobileIncomes.map(income => {
                 const paymentMethod = income.paymentMethodRef.name;
                 const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-                const status = creditStatus(income);
-                const creditState = incomeCreditState(income);
+                const status = creditStatus(income, timeZone);
+                const creditState = incomeCreditState(income, new Date(), timeZone);
                 const creditedAmount = incomeCreditedAmount(income);
                 const statusLabel = dueStatusLabel({
                     dueDate: income.dueDate,
                     isComplete: creditState === 'ACCREDITATO',
                     isPartial: creditState !== 'ACCREDITATO' && creditedAmount > 0.005,
                     completeLabel: incomeCreditStatusStyles.ACCREDITATO.label,
-                    pendingFallback: status.label
+                    pendingFallback: status.label,
+                    timeZone
                 });
                 const vatStyle = vatStyles[String(Number(income.vatRate))] ?? vatStyles['0'];
                 const amount = Number(income.amount);
@@ -329,15 +333,16 @@ export default function IncomesList({
                     </tr>;
                 })}
                 {incomes.map(income => {
-                    const status = creditStatus(income);
-                    const creditState = incomeCreditState(income);
+                    const status = creditStatus(income, timeZone);
+                    const creditState = incomeCreditState(income, new Date(), timeZone);
                     const creditedAmount = incomeCreditedAmount(income);
                     const statusLabel = dueStatusLabel({
                         dueDate: income.dueDate,
                         isComplete: creditState === 'ACCREDITATO',
                         isPartial: creditState !== 'ACCREDITATO' && creditedAmount > 0.005,
                         completeLabel: incomeCreditStatusStyles.ACCREDITATO.label,
-                        pendingFallback: status.label
+                        pendingFallback: status.label,
+                        timeZone
                     });
                     const invoice = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
                     const rowClass = ['clickable-desktop-row', status === incomeCreditStatusStyles.SCADUTO ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');

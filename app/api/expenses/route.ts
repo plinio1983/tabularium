@@ -7,6 +7,7 @@ import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
 import { AttachmentValidationError, saveExpenseAttachmentFiles } from '@/lib/attachments';
 import { writeAuditLog } from '@/lib/audit';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -51,16 +52,16 @@ type PaymentInput = {
   amount: number;
 };
 
-function resolveBillingPeriod(data: z.infer<typeof ExpenseSchema>) {
+function resolveBillingPeriod(data: z.infer<typeof ExpenseSchema>, timeZone: string) {
   if (data.billingPeriod) {
     const [periodYear, month] = data.billingPeriod.split('-').map(Number);
     const year = data.year ?? periodYear;
     if (year && month) return { year, month };
   }
-  const now = new Date();
+  const now = yearMonthInTimeZone(timeZone);
   return {
-    year: data.year ?? now.getFullYear(),
-    month: data.month ?? now.getMonth() + 1
+    year: data.year ?? now.year,
+    month: data.month ?? now.month
   };
 }
 
@@ -158,7 +159,7 @@ export async function POST(request: Request) {
   const invoiceFields = isVatSettlement
     ? { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const }
     : normalizeInvoiceFields(data);
-  const { year, month } = resolveBillingPeriod(data);
+  const { year, month } = resolveBillingPeriod(data, current.company.timeZone);
   const payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id, isVatSettlement);
   let supplierRef;
   let configuredCategoryId: number | null = null;

@@ -100,7 +100,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const incomeCreditChannelName = income.creditBank.name;
     const salesTone = salesChannelTone(income.salesChannelRef.code);
     const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-    const creditStatus = incomeCreditStatusStyles[incomeCreditState(income)];
+    const creditStatus = incomeCreditStatusStyles[incomeCreditState(income, new Date(), current.company.timeZone)];
     const detailToneClass = isIncomeOverdue(income)
         ? 'income-row-overdue'
         : income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE'

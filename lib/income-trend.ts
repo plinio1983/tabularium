@@ -1,4 +1,5 @@
 import {prisma} from '@/lib/prisma';
+import {DEFAULT_COMPANY_TIME_ZONE, zonedCalendarParts, zonedMidnightUtc, yearMonthInTimeZone} from '@/lib/company-time';
 
 export type IncomeTrendInterval = 'day' | 'week' | 'month';
 
@@ -24,38 +25,38 @@ type IncomeTrendRecord = {amount: unknown; creditDate: Date};
 const monthLabels = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 
 function isoDate(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
 }
 
 function dayLabel(date: Date) {
-  return `${String(date.getDate()).padStart(2, '0')} ${monthLabels[date.getMonth()]}`;
+  return `${String(date.getUTCDate()).padStart(2, '0')} ${monthLabels[date.getUTCMonth()]}`;
 }
 
 function bucketStart(date: Date, year: number, interval: IncomeTrendInterval) {
-  if (interval === 'month') return new Date(year, date.getMonth(), 1);
+  if (interval === 'month') return new Date(Date.UTC(year, date.getUTCMonth(), 1));
   if (interval === 'week') {
-    const monday = new Date(year, date.getMonth(), date.getDate() - ((date.getDay() + 6) % 7));
-    return monday.getFullYear() < year ? new Date(year, 0, 1) : monday;
+    const monday = new Date(Date.UTC(year, date.getUTCMonth(), date.getUTCDate() - ((date.getUTCDay() + 6) % 7)));
+    return monday.getUTCFullYear() < year ? new Date(Date.UTC(year, 0, 1)) : monday;
   }
-  return new Date(year, date.getMonth(), date.getDate());
+  return new Date(Date.UTC(year, date.getUTCMonth(), date.getUTCDate()));
 }
 
 function createBuckets(year: number, interval: IncomeTrendInterval, throughMonth = 12) {
-  const start = new Date(year, 0, 1);
-  const end = new Date(year, Math.max(0, Math.min(12, throughMonth)), 1);
+  const start = new Date(Date.UTC(year, 0, 1));
+  const end = new Date(Date.UTC(year, Math.max(0, Math.min(12, throughMonth)), 1));
   const buckets: Array<{from: Date; to: Date}> = [];
   let cursor = new Date(start);
 
   while (cursor < end) {
     const from = new Date(cursor);
     let next: Date;
-    if (interval === 'month') next = new Date(year, cursor.getMonth() + 1, 1);
+    if (interval === 'month') next = new Date(Date.UTC(year, cursor.getUTCMonth() + 1, 1));
     else if (interval === 'week') {
       next = new Date(cursor);
-      next.setDate(next.getDate() + (cursor.getDay() === 1 ? 7 : (8 - cursor.getDay()) % 7 || 7));
+      next.setUTCDate(next.getUTCDate() + (cursor.getUTCDay() === 1 ? 7 : (8 - cursor.getUTCDay()) % 7 || 7));
     } else {
       next = new Date(cursor);
-      next.setDate(next.getDate() + 1);
+      next.setUTCDate(next.getUTCDate() + 1);
     }
     buckets.push({from, to: next > end ? end : next});
     cursor = next;
@@ -63,11 +64,12 @@ function createBuckets(year: number, interval: IncomeTrendInterval, throughMonth
   return buckets;
 }
 
-export function aggregateIncomeTrend(records: IncomeTrendRecord[], year: number, interval: IncomeTrendInterval, throughMonth = 12): IncomeTrendData {
+export function aggregateIncomeTrend(records: IncomeTrendRecord[], year: number, interval: IncomeTrendInterval, throughMonth = 12, timeZone = DEFAULT_COMPANY_TIME_ZONE): IncomeTrendData {
   const totals = new Map<string, {value: number; count: number}>();
   for (const record of records) {
-    const date = new Date(record.creditDate);
-    if (date.getFullYear() !== year) continue;
+    const parts = zonedCalendarParts(record.creditDate, timeZone);
+    if (!parts || parts.year !== year) continue;
+    const date = new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
     const key = isoDate(bucketStart(date, year, interval));
     const current = totals.get(key) ?? {value: 0, count: 0};
     current.value += Number(record.amount);
@@ -82,12 +84,12 @@ export function aggregateIncomeTrend(records: IncomeTrendRecord[], year: number,
     cumulative += current.value;
     count += current.count;
     const inclusiveTo = new Date(to);
-    inclusiveTo.setDate(inclusiveTo.getDate() - 1);
+    inclusiveTo.setUTCDate(inclusiveTo.getUTCDate() - 1);
     return {
       from: isoDate(from),
       to: isoDate(inclusiveTo),
       label: interval === 'month'
-        ? monthLabels[from.getMonth()]
+        ? monthLabels[from.getUTCMonth()]
         : interval === 'week'
           ? `${dayLabel(from)} – ${dayLabel(inclusiveTo)}`
           : dayLabel(from),
@@ -100,20 +102,23 @@ export function aggregateIncomeTrend(records: IncomeTrendRecord[], year: number,
   return {year, interval, total: cumulative, count, points};
 }
 
-function completedMonthCount(year: number, now = new Date()) {
-  if (year < now.getFullYear()) return 12;
-  if (year > now.getFullYear()) return 0;
-  return now.getMonth();
+function completedMonthCount(year: number, timeZone: string, now = new Date()) {
+  const current = yearMonthInTimeZone(timeZone, now);
+  if (year < current.year) return 12;
+  if (year > current.year) return 0;
+  return current.month - 1;
 }
 
-export async function getIncomeTrendData(year: number, interval: IncomeTrendInterval, workspaceId: number, companyId: number, completedOnly = false) {
-  const throughMonth = completedOnly ? completedMonthCount(year) : 12;
+export async function getIncomeTrendData(year: number, interval: IncomeTrendInterval, workspaceId: number, companyId: number, completedOnly = false, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
+  const throughMonth = completedOnly ? completedMonthCount(year, timeZone) : 12;
+  const end = new Date(Date.UTC(year, throughMonth, 1));
+  const endInput = `${end.getUTCFullYear()}-${String(end.getUTCMonth() + 1).padStart(2, '0')}-01`;
   const records = await prisma.incomeCredit.findMany({
     where: {
       income: {workspaceId, companyId},
-      creditDate: {gte: new Date(year, 0, 1), lt: new Date(year, throughMonth, 1)}
+      creditDate: {gte: zonedMidnightUtc(`${year}-01-01`, timeZone), lt: zonedMidnightUtc(endInput, timeZone)}
     },
     select: {amount: true, creditDate: true}
   });
-  return aggregateIncomeTrend(records, year, interval, throughMonth);
+  return aggregateIncomeTrend(records, year, interval, throughMonth, timeZone);
 }

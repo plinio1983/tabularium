@@ -3,6 +3,8 @@
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {zonedMidnightUtc} from '@/lib/company-time';
 
 type Category = {id: number; name: string; icon: string | null};
 type Method = {id: number; name: string; icon: string | null; systemRole: string | null};
@@ -25,6 +27,7 @@ export default function CounterExpenseRegister({
   methods: Method[];
   banks: Bank[];
 }) {
+  const timeZone = useCompanyTimeZone();
   const router = useRouter();
   const amountRef = useRef<HTMLInputElement>(null);
   const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
@@ -209,8 +212,7 @@ export default function CounterExpenseRegister({
     setSending(true);
     setNotice(null);
     try {
-      const now = new Date();
-      const localDate = new Date(`${paymentDate}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`);
+      const localDate = new Date(zonedMidnightUtc(paymentDate, timeZone).getTime() + 12 * 60 * 60 * 1000);
       const response = await fetch('/api/counter-expenses', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},

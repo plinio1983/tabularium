@@ -11,6 +11,7 @@ import { badgeClass, incomeCreditStatusStyles } from '@/lib/income-ui';
 import { detailBackHref } from '@/lib/detail-navigation';
 import { prepareIncomeList } from '@/lib/income-list';
 import {incomeCreditSummary} from '@/lib/income-credits';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 function valueOrDash(value?: string | null) { return value?.trim() || '-'; }
 function CopyableField({ label, value, className = '' }: { label: string; value?: string | null; className?: string }) {
@@ -33,7 +34,7 @@ export default async function ClientDetailPage({ params, searchParams }: { param
   if (!customer) notFound();
   const uncredited = customer.incomes.filter(income => !income.isCredited);
   const uncreditedTotal = uncredited.reduce((sum, income) => sum + incomeCreditSummary(income).residual, 0);
-  const currentYear = new Date().getFullYear();
+  const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
   const annualIncomes = customer.incomes.filter(income => income.billingYear === currentYear);
   const annualTotal = annualIncomes.reduce((sum, income) => sum + Number(income.amount), 0);
   const returnTo = encodeURIComponent(`/clients/${customer.id}`);
@@ -52,6 +53,6 @@ export default async function ClientDetailPage({ params, searchParams }: { param
         <CopyableField label="Ragione sociale" value={customer.businessName} /><CopyableField label="Referente" value={customer.alias} /><CopyableField label="Email" value={customer.email} /><CopyableField label="P.IVA / C.F." value={customer.vatNumber} /><CopyableField label="Cod. SDI" value={customer.taxCodeSdi} /><CopyableField label="PEC" value={customer.pec} /><CopyableField label="IBAN" value={customer.iban} /><CopyableField label="Swift" value={customer.swift} /><CopyableField label="Note interne" value={customer.internalNotes} className="span-2" />
       </div></details>
     </article></div>
-    <div className="card record-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p></div></div><IncomesList incomes={listedIncomes} cashRegisterGroups={cashRegisterGroups} returnTo={returnTo} banks={orderBanks(banks).map(bank => ({...bank, isPrimary: bank.id === current.company.primaryBankId}))} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} emptyMessage="Nessun incasso collegato a questo cliente." /></div>
+    <div className="card record-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p></div></div><IncomesList timeZone={current.company.timeZone} incomes={listedIncomes} cashRegisterGroups={cashRegisterGroups} returnTo={returnTo} banks={orderBanks(banks).map(bank => ({...bank, isPrimary: bank.id === current.company.primaryBankId}))} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} emptyMessage="Nessun incasso collegato a questo cliente." /></div>
   </div>;
 }

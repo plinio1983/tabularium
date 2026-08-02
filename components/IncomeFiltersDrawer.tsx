@@ -4,6 +4,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import FilterIcon from "@/components/FilterIcon";
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {civilDateInTimeZone} from '@/lib/company-time';
 
 type Props = {
   filters: Record<string, string | string[] | undefined>;
@@ -80,8 +82,7 @@ function dateInputValue(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-function quickBillingPeriodRange(value: string) {
-  const now = new Date();
+function quickBillingPeriodRange(value: string, now: Date) {
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
@@ -104,8 +105,7 @@ function quickBillingPeriodRange(value: string) {
   return null;
 }
 
-function quickCreditDateRange(value: string) {
-  const now = new Date();
+function quickCreditDateRange(value: string, now: Date) {
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
@@ -138,6 +138,8 @@ export default function IncomeFiltersDrawer({
   banks,
   paymentMethods, salesChannels,
 }: Props) {
+  const timeZone = useCompanyTimeZone();
+  const companyNow = civilDateInTimeZone(timeZone);
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -213,7 +215,7 @@ export default function IncomeFiltersDrawer({
   function handleBillingQuickChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const form = event.currentTarget.form;
     if (!form) return;
-    const range = quickBillingPeriodRange(event.currentTarget.value);
+    const range = quickBillingPeriodRange(event.currentTarget.value, companyNow);
     if (!range) return;
     const from = form.elements.namedItem("billingPeriodFrom") as HTMLInputElement | null;
     const to = form.elements.namedItem("billingPeriodTo") as HTMLInputElement | null;
@@ -225,7 +227,7 @@ export default function IncomeFiltersDrawer({
   function handleCreditDateQuickChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const form = event.currentTarget.form;
     if (!form) return;
-    const range = quickCreditDateRange(event.currentTarget.value);
+    const range = quickCreditDateRange(event.currentTarget.value, companyNow);
     if (!range) return;
     const from = form.elements.namedItem("creditDateFrom") as HTMLInputElement | null;
     const to = form.elements.namedItem("creditDateTo") as HTMLInputElement | null;

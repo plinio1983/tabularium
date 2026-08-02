@@ -10,6 +10,7 @@ import IncomesList from '@/components/IncomesList';
 import {prepareIncomeList} from '@/lib/income-list';
 import {badgeClass, fiscalStyles} from '@/lib/income-ui';
 import {requireWorkspace} from '@/lib/auth';
+import {calendarDateInput, civilDateInTimeZone, dateInputInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
@@ -213,8 +214,7 @@ function toDateInputValue(date: Date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-function currentMonthQuickValue() {
-    const now = new Date();
+function currentMonthQuickValue(now: Date) {
     return `month_${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
@@ -226,8 +226,7 @@ function fiscalQuarterRange(year: number, quarterIndex: number) {
     };
 }
 
-function getQuickDateRange(value: string, selectedYear?: string) {
-    const now = new Date();
+function getQuickDateRange(value: string, selectedYear: string | undefined, now: Date) {
     const parsedYear = Number(selectedYear);
     const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
     const month = now.getMonth();
@@ -296,8 +295,7 @@ function toMonthInputValue(year: number, monthIndexZeroBased: number) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function getQuickBillingPeriodRange(value: string, selectedYear?: string) {
-    const now = new Date();
+function getQuickBillingPeriodRange(value: string, selectedYear: string | undefined, now: Date) {
     const parsedYear = Number(selectedYear);
     const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
     const month = now.getMonth();
@@ -385,15 +383,11 @@ function matchesBillingPeriod(month: number, year: number, fromKey: number | nul
     return true;
 }
 
-function matchesIsoDate(value: Date | null | undefined, from: string, to: string) {
-    const formatted = value ? localDateKey(value) : '';
+function matchesIsoDate(value: Date | null | undefined, from: string, to: string, timeZone: string, civilDate = false) {
+    const formatted = value ? (civilDate ? calendarDateInput(value) : dateInputInTimeZone(timeZone, value)) : '';
     if (from && (!formatted || formatted < from)) return false;
     if (to && (!formatted || formatted > to)) return false;
     return true;
-}
-
-function localDateKey(value: Date) {
-    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
 }
 
 function fiscalBadge(value: boolean) {
@@ -547,6 +541,7 @@ export default async function IncomesPage({searchParams}: {
     searchParams?: Promise<Record<string, string | string[] | undefined>>
 }) {
     const current = await requireWorkspace('/incomes');
+    const companyNow = civilDateInTimeZone(current.company.timeZone);
     const rawFilters = (await searchParams) ?? {};
     const filters = stripFlashRecord(rawFilters);
     const currentQuery = new URLSearchParams();
@@ -567,13 +562,13 @@ export default async function IncomesPage({searchParams}: {
     const useCreditDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
-    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasCreditDateFilter ? currentMonthQuickValue() : '')) : '';
+    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasCreditDateFilter ? currentMonthQuickValue(companyNow) : '')) : '';
     const dateQuickSelectorValue = hasCustomCreditDateFilter ? 'custom' : quickDateFilter;
-    const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter) : null;
+    const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
     const creditDateFromDefault = useCreditDateFilter ? (quickDateRange?.from || inputDefault(filters, 'creditDateFrom')) : '';
     const creditDateToDefault = useCreditDateFilter ? (quickDateRange?.to || inputDefault(filters, 'creditDateTo')) : '';
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
-    const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter) : null;
+    const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
 
     const [incomes, expensesForVat, banks, paymentMethods, salesChannels, customers] = await Promise.all([
         prisma.income.findMany({
@@ -649,7 +644,7 @@ export default async function IncomesPage({searchParams}: {
         : null;
 
     const matchesCreditDate = (income: typeof incomes[number]) => !creditDateFromFilter && !creditDateToFilter
-        || income.credits.some(credit => matchesIsoDate(credit.creditDate, creditDateFromFilter, creditDateToFilter));
+        || income.credits.some(credit => matchesIsoDate(credit.creditDate, creditDateFromFilter, creditDateToFilter, current.company.timeZone));
     const periodIncomes = incomes.filter(income => {
         if (!matchesCreditDate(income)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
@@ -670,8 +665,8 @@ export default async function IncomesPage({searchParams}: {
         if (invoiceStatusFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
         if (invoiceStatusFilter && invoiceStatusFilter !== 'not_emitted' && income.invoiceStatus !== invoiceStatusFilter) return false;
         if (vatRateFilter && Number(income.vatRate.toString()) !== Number(vatRateFilter)) return false;
-        if (!matchesIsoDate(income.dueDate, dueDateFromFilter, dueDateToFilter)) return false;
-        if (creditStatusFilter && incomeCreditState(income) !== creditStatusFilter) return false;
+        if (!matchesIsoDate(income.dueDate, dueDateFromFilter, dueDateToFilter, current.company.timeZone, true)) return false;
+        if (creditStatusFilter && incomeCreditState(income, new Date(), current.company.timeZone) !== creditStatusFilter) return false;
         return true;
     });
 
@@ -1174,6 +1169,7 @@ export default async function IncomesPage({searchParams}: {
             <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
             <IncomesList
+                timeZone={current.company.timeZone}
                 incomes={standardFilteredIncomes}
                 mobileIncomes={mobileSortedIncomes}
                 cashRegisterGroups={cashRegisterGroups}

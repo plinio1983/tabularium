@@ -13,6 +13,7 @@ import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import SearchIcon from '@/components/SearchIcon';
 import {incomeCreditSummary} from '@/lib/income-credits';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const input = (filters: Record<string, string | string[] | undefined>, key: string) => {
     const item = filters[key];
@@ -42,7 +43,7 @@ export default async function ClientsPage({searchParams}: {
     stripFlashSearchParams(query);
     const listHref = `/clients${query.size ? `?${query}` : ''}`;
     const returnTo = encodeURIComponent(listHref);
-    const currentYear = new Date().getFullYear();
+    const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
     const customers = await prisma.customer.findMany({
         where: {workspaceId: current.workspace.id},
         include: {incomes: {where: {companyId: current.company.id}, include: {credits: true}}},

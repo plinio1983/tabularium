@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { recurrenceBillingPeriod, recurrenceDates, recurrencePeriodKey, recurrenceStartOfDay } from '@/lib/recurrence-schedule';
+import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
 
 type JobError = { recurringIncomeId: number; message: string };
 export type RecurringIncomeJobResult = { checked: number; created: number; skipped: number; errors: JobError[] };
@@ -7,7 +8,7 @@ export type AutomaticIncomeCreditJobResult = { checked: number; created: number;
 
 export async function generateRecurringIncomes(todayInput = new Date()): Promise<RecurringIncomeJobResult> {
   const result: RecurringIncomeJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
-  const definitions = await prisma.recurringIncome.findMany({ where: { isActive: true } });
+  const definitions = await prisma.recurringIncome.findMany({ where: { isActive: true }, include: {company: true} });
 
   for (const definition of definitions) {
     result.checked++;
@@ -20,7 +21,7 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
       const bankId = definition.bankId ?? defaultBank?.id;
       if (!paymentMethodId || !bankId) throw new Error('Metodo di accredito o banca predefinita mancanti');
 
-      const today = recurrenceStartOfDay(todayInput);
+      const today = recurrenceStartOfDay(dateInputInTimeZone(definition.company.timeZone, todayInput));
       const endDate = definition.endDate ? recurrenceStartOfDay(definition.endDate) : null;
       const dates = recurrenceDates({ startDate: definition.startDate, endDate: definition.endDate, cadence: definition.cadence, day: definition.creditDay, month: definition.creditMonth }, today);
       if (!dates.length) result.skipped++;
@@ -28,7 +29,7 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
         const billing = recurrenceBillingPeriod(definition, creditDate);
         // La chiave identifica l'occorrenza, non il mese contabile: più
         // occorrenze possono legittimamente confluire nello stesso periodo.
-        const key = recurrencePeriodKey(creditDate.getFullYear(), creditDate.getMonth() + 1);
+        const key = recurrencePeriodKey(creditDate.getUTCFullYear(), creditDate.getUTCMonth() + 1);
         const existing = await prisma.income.findFirst({ where: { recurringIncomeId: definition.id, recurringIncomePeriodKey: key } });
         if (existing) { result.skipped++; continue; }
         await prisma.income.create({ data: {
@@ -54,14 +55,14 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
 
 export async function settleAutomaticRecurringCredits(todayInput = new Date()): Promise<AutomaticIncomeCreditJobResult> {
   const result: AutomaticIncomeCreditJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
-  const today = recurrenceStartOfDay(todayInput);
   const incomes = await prisma.income.findMany({
-    where: { isCredited: false, dueDate: { lte: today }, recurringIncome: { isAutomaticCredit: true } },
-    include: { credits: true, recurringIncome: true }
+    where: { isCredited: false, dueDate: {not: null}, recurringIncome: { isAutomaticCredit: true } },
+    include: { credits: true, recurringIncome: true, company: true }
   });
   for (const income of incomes) {
     result.checked++;
     try {
+      if (!income.dueDate || calendarDateInput(income.dueDate) > dateInputInTimeZone(income.company.timeZone, todayInput)) { result.skipped++; continue; }
       const definition = income.recurringIncome;
       if (!definition?.paymentMethodId || !definition.bankId) throw new Error('Metodo di accredito automatico o banca mancanti');
       const sourceKey = `recurring-income:${income.id}:automatic`;

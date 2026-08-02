@@ -4,6 +4,8 @@ import { Suspense } from 'react';
 import ShellChrome from '@/components/ShellChrome';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import NavigationProgress from '@/components/NavigationProgress';
+import {CompanyTimeZoneProvider} from '@/components/CompanyTimeZoneProvider';
+import {getCurrentSession} from '@/lib/auth';
 
 export const metadata: Metadata = {
   title: 'Tabularium',
@@ -22,8 +24,10 @@ export const viewport: Viewport = {
   themeColor: '#0b2f66'
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const current = await getCurrentSession();
   return <html lang="it"><body><main className="shell">
+    <CompanyTimeZoneProvider timeZone={current?.company?.timeZone}>
     <Suspense fallback={null}><NavigationProgress /></Suspense>
     <ShellChrome slot="header" />
     <ClickableDesktopRows />
@@ -54,5 +58,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     ` }} />
     {children}{/* dms-root-suspense-boundary */}
     <ShellChrome slot="footer" />
+    </CompanyTimeZoneProvider>
   </main></body></html>;
 }

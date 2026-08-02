@@ -4,6 +4,8 @@ import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {dateInputInTimeZone, monthInputInTimeZone} from '@/lib/company-time';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import SupplierCreateModal from "@/components/SupplierCreateModal";
@@ -114,18 +116,11 @@ function toDateInput(value?: string | Date | null) {
     return date.toISOString().slice(0, 10);
 }
 
-const today = new Date().toISOString().slice(0, 10);
-
-function datePlusDays(days: number) {
-    const now = new Date();
-    const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + days));
-    return date.toISOString().slice(0, 10);
-}
-
-function addDaysToDateInput(value: string, days: number) {
+function addDaysToDateInput(value: string, days: number, fallbackToday: string) {
     const [year, month, day] = value.split("-").map(Number);
-    if (!year || !month || !day) return datePlusDays(days);
-    const date = new Date(Date.UTC(year, month - 1, day + days));
+    if (!year || !month || !day) value = fallbackToday;
+    const [baseYear, baseMonth, baseDay] = value.split("-").map(Number);
+    const date = new Date(Date.UTC(baseYear, baseMonth - 1, baseDay + days));
     return date.toISOString().slice(0, 10);
 }
 
@@ -141,7 +136,6 @@ export function lastDayOfMonthInput(value: string) {
     return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
-const currentBillingPeriod = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
 const cashChannel = "Cash";
 const cashBankName = "Cassa";
 
@@ -163,7 +157,7 @@ function formatDateInputLabel(value: string) {
     return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
-function emptyPaymentRow(key: number): PaymentRow {
+function emptyPaymentRow(key: number, today: string): PaymentRow {
     return {
         key,
         paymentDate: today,
@@ -439,6 +433,9 @@ export default function ExpenseForm({
                                         initialOpenPaymentId,
                                         focusAttachments = false,
                                     }: Props) {
+    const timeZone = useCompanyTimeZone();
+    const today = dateInputInTimeZone(timeZone);
+    const currentBillingPeriod = monthInputInTimeZone(timeZone);
     const [isVatSettlement, setIsVatSettlement] = useState(initialExpense?.expenseType === "VAT_SETTLEMENT");
     const vatSettlementCategory = categories.find(category => category.isVatSettlementDefault);
     const vatSettlementSupplier = suppliers.find(supplier => supplier.systemRole === "VAT_SETTLEMENT");
@@ -513,7 +510,7 @@ export default function ExpenseForm({
             ? toDateInput(initialExpense.dueDate)
             : initialExpense?.id
                 ? ""
-                : addDaysToDateInput(initialOrderDate, 7),
+                : addDaysToDateInput(initialOrderDate, 7, today),
     );
     useEffect(() => {
         if (!isVatSettlement || !dueDate || orderDate === dueDate) return;
@@ -735,7 +732,7 @@ export default function ExpenseForm({
         setPayments((rows) => [
             ...rows,
             normalizePaymentRow({
-                ...emptyPaymentRow(key),
+                ...emptyPaymentRow(key, today),
                 paymentMethodId: defaultPaymentMethod ? String(defaultPaymentMethod.id) : "",
                 bankId: primaryBankIdValue,
                 amount: suggestedAmount,
@@ -970,7 +967,7 @@ export default function ExpenseForm({
                             if (nextOrderMonth && (!billingPeriod || billingPeriod < nextOrderMonth)) {
                                 setBillingPeriod(nextOrderMonth);
                             }
-                            setDueDate(addDaysToDateInput(nextOrderDate, 7));
+                            setDueDate(addDaysToDateInput(nextOrderDate, 7, today));
                         }}
                         required
                     />}
@@ -987,7 +984,7 @@ export default function ExpenseForm({
                     >
                         <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
                             {[0, 7, 15, 30].map(days => {
-                                const value = addDaysToDateInput(isVatSettlement ? today : orderDate, days);
+                                const value = addDaysToDateInput(isVatSettlement ? today : orderDate, days, today);
                                 return <button
                                     type="button"
                                     key={days}

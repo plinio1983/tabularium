@@ -8,6 +8,7 @@ import {buildDailyReceiptTrend, buildDailyReceiptTrendRange} from '@/lib/cash-re
 import {Prisma} from '@/generated/prisma/client';
 import CashRegisterReceiptFiltersDrawer from '@/components/CashRegisterReceiptFiltersDrawer';
 import SelectedButtonGroupScroller from '@/components/SelectedButtonGroupScroller';
+import {addCalendarDays, monthInputInTimeZone, yearMonthInTimeZone, zonedMidnightUtc} from '@/lib/company-time';
 
 function value(params: Record<string, string | string[] | undefined>, key: string) {
     const item = params[key];
@@ -20,24 +21,6 @@ function dateInput(value: string) {
     return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value ? '' : value;
 }
 
-function romeMidnightUtc(value: string) {
-    const [year, month, day] = value.split('-').map(Number);
-    const candidate = new Date(Date.UTC(year, month - 1, day));
-    const parts = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Europe/Rome', year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
-    }).formatToParts(candidate);
-    const part = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find(item => item.type === type)?.value ?? 0);
-    const representedAsUtc = Date.UTC(part('year'), part('month') - 1, part('day'), part('hour'), part('minute'), part('second'));
-    return new Date(candidate.getTime() - (representedAsUtc - candidate.getTime()));
-}
-
-function nextDateInput(value: string) {
-    const date = new Date(`${value}T00:00:00Z`);
-    date.setUTCDate(date.getUTCDate() + 1);
-    return date.toISOString().slice(0, 10);
-}
-
 export const dynamic = 'force-dynamic';
 
 export default async function CashRegisterReceiptsPage({searchParams}: {
@@ -45,7 +28,9 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
 }) {
     const current = await requireWorkspace('/incomes/cash-register/receipts');
     const params = (await searchParams) ?? {};
-    const month = value(params, 'month') || new Date().toISOString().slice(0, 7);
+    const timeZone = current.company.timeZone;
+    const currentPeriod = yearMonthInTimeZone(timeZone);
+    const month = value(params, 'month') || monthInputInTimeZone(timeZone);
     const methodId = Number(value(params, 'paymentMethodId')) || null;
     const channelId = Number(value(params, 'salesChannelId')) || null;
     const fiscal = value(params, 'fiscal');
@@ -57,8 +42,8 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const dateTo = firstDate && secondDate && firstDate > secondDate ? firstDate : secondDate;
     const hasCustomDateRange = Boolean(dateFrom && dateTo);
     const match = month.match(/^(\d{4})-(\d{2})$/);
-    const billingYear = match ? Number(match[1]) : new Date().getFullYear();
-    const billingMonth = match ? Number(match[2]) : new Date().getMonth() + 1;
+    const billingYear = match ? Number(match[1]) : currentPeriod.year;
+    const billingMonth = match ? Number(match[2]) : currentPeriod.month;
     const methodFilter = methodId ? Prisma.sql`AND "paymentMethodId" = ${methodId}` : Prisma.empty;
     const channelFilter = channelId ? Prisma.sql`AND "salesChannelId" = ${channelId}` : Prisma.empty;
     const fiscalFilter = fiscal === 'yes'
@@ -67,11 +52,11 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             ? Prisma.sql`AND "isFiscal" = false`
             : Prisma.empty;
     const periodSqlFilter = hasCustomDateRange
-        ? Prisma.sql`AND (("creditDate" AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')::date BETWEEN ${dateFrom}::date AND ${dateTo}::date`
+        ? Prisma.sql`AND (("creditDate" AT TIME ZONE 'UTC') AT TIME ZONE ${timeZone})::date BETWEEN ${dateFrom}::date AND ${dateTo}::date`
         : Prisma.sql`AND "billingYear" = ${billingYear} AND "billingMonth" = ${billingMonth}`;
     const creditDateFilter = hasCustomDateRange ? {
-        gte: romeMidnightUtc(dateFrom),
-        lt: romeMidnightUtc(nextDateInput(dateTo)),
+        gte: zonedMidnightUtc(dateFrom, timeZone),
+        lt: zonedMidnightUtc(addCalendarDays(dateTo, 1), timeZone),
     } : undefined;
 
     const [receipts, methods, channels, dailyAggregates] = await Promise.all([
@@ -95,7 +80,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
         prisma.$queryRaw<Array<{day: string; count: number; total: string}>>(Prisma.sql`
             SELECT
-                to_char((("creditDate" AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')::date, 'YYYY-MM-DD') AS day,
+                to_char((("creditDate" AT TIME ZONE 'UTC') AT TIME ZONE ${timeZone})::date, 'YYYY-MM-DD') AS day,
                 count(*)::int AS count,
                 coalesce(sum(amount), 0)::text AS total
             FROM "Income"

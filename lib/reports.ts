@@ -2,6 +2,7 @@ import { prisma } from './prisma';
 import { isExpenseInvoiceNotReceived } from './expense-invoice';
 import {expenseResidualAmount, isExpensePastDue} from './expense-calculations';
 import {incomeCreditSummary} from './income-credits';
+import {DEFAULT_COMPANY_TIME_ZONE, zonedMidnightUtc, yearMonthInTimeZone} from './company-time';
 
 export function vatAmountFromGross(amount: number, vatRate: number) {
   if (!vatRate) return 0;
@@ -42,8 +43,16 @@ function incomePeriodWhere(periods: Array<{ year: number; month: number }>, work
 
 function monthDateRange(year: number, month: number) {
   return {
-    gte: new Date(year, month - 1, 1),
-    lt: new Date(year, month, 1)
+    gte: new Date(Date.UTC(year, month - 1, 1)),
+    lt: new Date(Date.UTC(year, month, 1))
+  };
+}
+
+function monthInstantRange(year: number, month: number, timeZone: string) {
+  const next = new Date(Date.UTC(year, month, 1));
+  return {
+    gte: zonedMidnightUtc(`${year}-${String(month).padStart(2, '0')}-01`, timeZone),
+    lt: zonedMidnightUtc(`${next.getUTCFullYear()}-${String(next.getUTCMonth() + 1).padStart(2, '0')}-01`, timeZone)
   };
 }
 
@@ -62,14 +71,14 @@ function incomeMatchesPeriod(income: any, year: number, month: number) {
   if (Number(income.billingYear) === year && Number(income.billingMonth) === month) return true;
   if (income.isCredited) return false;
   const dueDate = income.dueDate ? new Date(income.dueDate) : null;
-  return Boolean(dueDate && dueDate.getFullYear() === year && dueDate.getMonth() + 1 === month);
+  return Boolean(dueDate && dueDate.getUTCFullYear() === year && dueDate.getUTCMonth() + 1 === month);
 }
 
 function incomeMatchesYear(income: any, year: number) {
   if (Number(income.billingYear) === year) return true;
   if (income.isCredited) return false;
   const dueDate = income.dueDate ? new Date(income.dueDate) : null;
-  return Boolean(dueDate && dueDate.getFullYear() === year);
+  return Boolean(dueDate && dueDate.getUTCFullYear() === year);
 }
 
 function periodRecordKey(record: any, kind: 'income' | 'expense') {
@@ -82,6 +91,7 @@ type SummaryOptions = {
   declaredExpensesOnlyForOpenTotals?: boolean;
   workspaceId?: number;
   companyId?: number;
+  timeZone?: string;
 };
 
 function computeVatBalance(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>) {
@@ -135,10 +145,10 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
   const openTotalExpenses = options.declaredExpensesOnlyForOpenTotals ? expenses.filter(expense => expense.isDeclared) : expenses;
   const nonSaldato = openTotalExpenses.reduce((sum, expense) => sum + expenseResidualAmount(expense), 0);
   const fattureScadute = openTotalExpenses.reduce((sum, expense) => {
-    if (!isExpensePastDue(expense)) return sum;
+    if (!isExpensePastDue(expense, new Date(), options.timeZone)) return sum;
     return sum + expenseResidualAmount(expense);
   }, 0);
-  const fattureScaduteCount = openTotalExpenses.reduce((sum, expense) => isExpensePastDue(expense) ? sum + 1 : sum, 0);
+  const fattureScaduteCount = openTotalExpenses.reduce((sum, expense) => isExpensePastDue(expense, new Date(), options.timeZone) ? sum + 1 : sum, 0);
 
   const vatBalance = computeVatBalance(incomes, expenses, periods);
   const ivaGenerataIncassi = vatBalance.generated;
@@ -197,23 +207,25 @@ export async function getPeriodSummary(periods: Array<{ year: number; month: num
   return summarizeRecords(incomes, expenses, periods, options);
 }
 
-export async function getOrderDateMonthSummary(year: number, month: number, workspaceId?: number, companyId?: number) {
-  return getOrderDatePeriodSummary([{ year, month }], workspaceId, companyId);
+export async function getOrderDateMonthSummary(year: number, month: number, workspaceId?: number, companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
+  return getOrderDatePeriodSummary([{ year, month }], workspaceId, companyId, timeZone);
 }
 
-export async function getOrderDatePeriodSummary(periods: Array<{ year: number; month: number }>, workspaceId?: number, companyId?: number) {
+export async function getOrderDatePeriodSummary(periods: Array<{ year: number; month: number }>, workspaceId?: number, companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
   const orderedPeriods = [...periods].sort((a, b) => periodKey(a.year, a.month) - periodKey(b.year, b.month));
   const first = orderedPeriods[0];
   const last = orderedPeriods[orderedPeriods.length - 1];
   if (!first || !last) return summarizeRecords([], []);
 
-  const from = new Date(first.year, first.month - 1, 1);
-  const to = new Date(last.year, last.month, 1);
+  const from = new Date(Date.UTC(first.year, first.month - 1, 1));
+  const to = new Date(Date.UTC(last.year, last.month, 1));
+  const instantFrom = monthInstantRange(first.year, first.month, timeZone).gte;
+  const instantTo = monthInstantRange(last.year, last.month, timeZone).lt;
 
   const [incomes, expenses] = await Promise.all([
     prisma.income.findMany({
-      where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {creditDate: {gte: from, lt: to}}} },
-      include: {credits: {where: {creditDate: {gte: from, lt: to}}}}
+      where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {creditDate: {gte: instantFrom, lt: instantTo}}} },
+      include: {credits: {where: {creditDate: {gte: instantFrom, lt: instantTo}}}}
     }),
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), receivedDate: { gte: from, lt: to } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
   ]);
@@ -232,10 +244,12 @@ export async function getAccountingDashboardReport(
   selectedQuarter?: { year: number; quarterIndex: number },
   annualYear = reportYear,
   workspaceId?: number,
-  companyId?: number
+  companyId?: number,
+  timeZone = DEFAULT_COMPANY_TIME_ZONE
 ) {
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
+  const currentPeriod = yearMonthInTimeZone(timeZone, now);
+  const currentYear = currentPeriod.year;
+  const currentMonth = currentPeriod.month;
   const fiscalMonthPeriods = [selectedMonth ?? { year: currentYear, month: currentMonth }];
   const fiscalQuarterPeriods = selectedQuarter
     ? fiscalQuarterMonthsByIndex(selectedQuarter.year, selectedQuarter.quarterIndex)
@@ -246,8 +260,8 @@ export async function getAccountingDashboardReport(
   const reportPeriods = reportYears.flatMap(year => Array.from({ length: 12 }, (_, index) => ({ year, month: index + 1 })));
 
   const [currentFiscalMonth, currentFiscalQuarter, yearIncomes, yearExpenses] = await Promise.all([
-    getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId }),
-    getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId }),
+    getPeriodSummary(fiscalMonthPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId, timeZone }),
+    getPeriodSummary(fiscalQuarterPeriods, { declaredExpensesOnlyForOpenTotals: true, workspaceId, companyId, timeZone }),
     prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(reportPeriods, workspaceId, companyId), include: { salesChannelRef: true, customer: true, paymentMethodRef: true, creditBank: true, credits: true } }),
     prisma.expense.findMany({ where: { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), year: { in: reportYears } }, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true } })
   ]);
@@ -257,12 +271,12 @@ export async function getAccountingDashboardReport(
     const monthKey = periodKey(reportYear, month);
     const incomes = yearIncomes.filter(income => incomeMatchesPeriod(income, reportYear, month));
     const expenses = yearExpenses.filter(expense => periodKey(expense.year, expense.month) === monthKey);
-    return { year: reportYear, month, totals: summarizeRecords(incomes, expenses, [{ year: reportYear, month }]) };
+    return { year: reportYear, month, totals: summarizeRecords(incomes, expenses, [{ year: reportYear, month }], {timeZone}) };
   });
 
   const yearlyIncomes = yearIncomes.filter(income => incomeMatchesYear(income, annualYear));
   const yearlyExpenses = yearExpenses.filter(expense => expense.year === annualYear);
-  const totals = summarizeRecords(yearlyIncomes, yearlyExpenses, Array.from({ length: 12 }, (_, index) => ({ year: annualYear, month: index + 1 })));
+  const totals = summarizeRecords(yearlyIncomes, yearlyExpenses, Array.from({ length: 12 }, (_, index) => ({ year: annualYear, month: index + 1 })), {timeZone});
 
   const reportYearExpenses = yearExpenses.filter(expense => expense.year === reportYear);
   const categoryTotalsMap = new Map<string, { name: string; code: string; total: number }>();
@@ -312,8 +326,9 @@ export async function getAccountingDashboardReport(
   };
 }
 
-export async function getMonthlyReport(year: number, month: number, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal', companyId?: number) {
+export async function getMonthlyReport(year: number, month: number, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal', companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
   const dateRange = monthDateRange(year, month);
+  const instantRange = monthInstantRange(year, month, timeZone);
   const [expenses, incomes] = await Promise.all([
     prisma.expense.findMany({
       where: mode === 'fiscal'
@@ -325,10 +340,10 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
     prisma.income.findMany({
       where: mode === 'fiscal'
         ? incomePeriodWhereIncludingUncredited([{ year, month }], workspaceId, companyId)
-        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {creditDate: dateRange}} },
+        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {creditDate: instantRange}} },
       include: {
         salesChannelRef: true, paymentMethodRef: true, creditBank: true, customer: true,
-        credits: mode === 'fiscal' ? true : {where: {creditDate: dateRange}}
+        credits: mode === 'fiscal' ? true : {where: {creditDate: instantRange}}
       }
     })
   ]);
@@ -338,7 +353,7 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
     amount: income.credits.reduce((sum, credit) => sum + Number(credit.amount), 0),
     isCredited: true,
   }));
-  const summary = summarizeRecords(summaryIncomes, expenses, mode === 'fiscal' ? [{ year, month }] : undefined);
+  const summary = summarizeRecords(summaryIncomes, expenses, mode === 'fiscal' ? [{ year, month }] : undefined, {timeZone});
   const taxRate = 30;
   const estimatedTax = Math.max(summary.utileFiscale, 0) * taxRate / 100;
 
@@ -366,8 +381,8 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
   };
 }
 
-export async function getYearReport(year: number, workspaceId?: number, companyId?: number) {
-  const months = await Promise.all(Array.from({ length: 12 }, (_, i) => getMonthlyReport(year, i + 1, workspaceId, 'fiscal', companyId)));
+export async function getYearReport(year: number, workspaceId?: number, companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
+  const months = await Promise.all(Array.from({ length: 12 }, (_, i) => getMonthlyReport(year, i + 1, workspaceId, 'fiscal', companyId, timeZone)));
   const totals = months.reduce((acc, m) => {
     for (const [k, v] of Object.entries(m.totals)) acc[k] = (acc[k] ?? 0) + Number(v);
     return acc;

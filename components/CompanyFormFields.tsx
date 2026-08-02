@@ -1,4 +1,5 @@
 import type {ReactNode} from "react";
+import {DEFAULT_COMPANY_TIME_ZONE, supportedCompanyTimeZones} from "@/lib/company-time";
 
 type CompanyValues = {
     name?: string | null;
@@ -9,6 +10,7 @@ type CompanyValues = {
     pec?: string | null;
     sdiCode?: string | null;
     address?: string | null;
+    timeZone?: string | null;
 };
 
 function Field({idPrefix, name, label, icon, className = "", children}: {
@@ -29,6 +31,7 @@ function Field({idPrefix, name, label, icon, className = "", children}: {
 }
 
 export default function CompanyFormFields({company, idPrefix = "company", autoFocus = false}: {company?: CompanyValues; idPrefix?: string; autoFocus?: boolean}) {
+    const timeZones = supportedCompanyTimeZones();
     return <>
         <details className="form-section full entity-form-section company-form-section" open>
             <summary>
@@ -44,6 +47,20 @@ export default function CompanyFormFields({company, idPrefix = "company", autoFo
                 </Field>
                 <Field idPrefix={idPrefix} name="legalName" label="Ragione sociale" icon="◉" className="span-2">
                     <input id={`${idPrefix}-legalName`} name="legalName" defaultValue={company?.legalName ?? ""} placeholder="Es. Azienda S.r.l." autoComplete="organization" maxLength={160}/>
+                </Field>
+            </div>
+        </details>
+
+        <details className="form-section full entity-form-section company-form-section" open>
+            <summary>
+                <span><span className="entity-form-section-icon" aria-hidden="true">◷</span>Localizzazione</span>
+                <small>Fuso utilizzato per date operative, scadenze, report e ricorrenze</small>
+            </summary>
+            <div className="form-section-grid entity-form-section-grid">
+                <Field idPrefix={idPrefix} name="timeZone" label="Fuso orario" icon="◷" className="span-2">
+                    <select id={`${idPrefix}-timeZone`} name="timeZone" defaultValue={company?.timeZone ?? DEFAULT_COMPANY_TIME_ZONE} required>
+                        {timeZones.map(timeZone => <option value={timeZone} key={timeZone}>{timeZone}</option>)}
+                    </select>
                 </Field>
             </div>
         </details>

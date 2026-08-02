@@ -11,6 +11,7 @@ import SupplierEditModalController from '@/components/SupplierEditModalControlle
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 function valueOrDash(value?: string | null) {
   return value && value.trim() ? value : '-';
@@ -57,7 +58,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const amountToPay = openExpenses.reduce((sum, item) => sum + item.residual, 0);
   const supplierDetailHref = `/suppliers/${supplier.id}`;
   const encodedSupplierDetailHref = encodeURIComponent(supplierDetailHref);
-  const currentYear = new Date().getFullYear();
+  const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
   const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
@@ -218,6 +219,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       </div>
 
       <ExpensesList
+        timeZone={current.company.timeZone}
         expenses={supplier.expenses}
         returnTo={encodedSupplierDetailHref}
         showSupplierColumn={false}

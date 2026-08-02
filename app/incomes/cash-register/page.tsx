@@ -3,19 +3,9 @@ import CashRegister from '@/components/CashRegister';
 import {requireWorkspace} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {ensureWorkspaceDefaults, orderPaymentMethods} from '@/lib/workspace-defaults';
+import {dateInputInTimeZone} from '@/lib/company-time';
 
 export const dynamic = 'force-dynamic';
-
-function romeDateLocal(date: Date) {
-    const values = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Europe/Rome',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }).formatToParts(date);
-    const part = (type: Intl.DateTimeFormatPartTypes) => values.find(value => value.type === type)?.value ?? '';
-    return `${part('year')}-${part('month')}-${part('day')}`;
-}
 
 function paramValue(params: Record<string, string | string[] | undefined>, key: string) {
     const value = params[key];
@@ -69,7 +59,7 @@ export default async function CashRegisterPage({searchParams}: {
         }))}
         defaultChannelId={workspace.cashRegisterSalesChannelId}
         primaryMethodId={workspace.cashRegisterPrimaryPaymentMethodId}
-        initialDate={romeDateLocal(sourceReceipt?.creditDate ?? new Date())}
+        initialDate={dateInputInTimeZone(current.company.timeZone, sourceReceipt?.creditDate ?? new Date())}
         mode={editId ? 'edit' : copyId ? 'copy' : 'create'}
         initialReceipt={sourceReceipt ? {
             id: sourceReceipt.id,

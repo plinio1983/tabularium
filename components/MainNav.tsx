@@ -4,6 +4,8 @@ import Link from 'next/link';
 import {useEffect, useState, Suspense} from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import MonthlyReportIcon from '@/components/MonthlyReportIcon';
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const persistedFilterKeys: Record<string, string> = {
   '/expenses': 'dmsAccounting.expenses.filters',
@@ -58,8 +60,9 @@ function MainNavContent() {
   const pathname = usePathname() || '/';
   const searchParams = useSearchParams();
   const [savedFilters, setSavedFilters] = useState<Record<string, string>>({});
-  const now = new Date();
-  const currentMonthHref = `/months/${now.getFullYear()}/${now.getMonth() + 1}?mode=overall&returnTo=${encodeURIComponent('/')}`;
+  const timeZone = useCompanyTimeZone();
+  const currentPeriod = yearMonthInTimeZone(timeZone);
+  const currentMonthHref = `/months/${currentPeriod.year}/${currentPeriod.month}?mode=overall&returnTo=${encodeURIComponent('/')}`;
   const navigationLinks = [
       { href: '/', label: 'Dashboard', shortLabel: 'Home', icon: '⌂', match: (pathname: string) => pathname === '/' },
       { href: '/expenses', label: 'Spese', shortLabel: 'Spese', icon: '−', match: (pathname: string) => pathname.startsWith('/expenses') },

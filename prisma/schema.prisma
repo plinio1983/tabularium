@@ -248,6 +248,7 @@ model Company {
   pec               String?
   sdiCode           String?
   address           String?
+  timeZone          String             @default("Europe/Rome")
   isActive          Boolean            @default(true)
   isDefault         Boolean            @default(false)
   workspaceId       Int
