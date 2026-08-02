@@ -5,7 +5,7 @@ import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/supplier-reference';
-import { AttachmentValidationError, normalizeExpenseAttachmentType, saveExpenseAttachmentFiles } from '@/lib/attachments';
+import { AttachmentValidationError, deleteExpenseAttachmentFile, normalizeExpenseAttachmentType, saveExpenseAttachmentFiles } from '@/lib/attachments';
 import { writeAuditLog } from '@/lib/audit';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
@@ -171,12 +171,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (existingAttachmentIds.some(id => !Number.isInteger(id) || !ownedAttachmentIds.has(id))) {
     return redirectToPath(appendFlash(returnTo || `/expenses/${expenseId}`, { error: 'invalid_attachment' }));
   }
+  const attachmentIdsToDelete = existing.attachments
+    .filter(attachment => !existingAttachmentIds.includes(attachment.id))
+    .map(attachment => attachment.id);
+  const attachmentsToDelete = existing.attachments.filter(attachment => attachmentIdsToDelete.includes(attachment.id));
   try {
     attachmentUpdates = existingAttachmentIds.map((id, index) => ({
       where: {id},
       data: {type: normalizeExpenseAttachmentType(existingAttachmentTypes[index])}
     }));
-    attachments = await saveExpenseAttachmentFiles(formData.getAll('attachments'), existing.attachments.length, formData.getAll('attachmentTypes'));
+    attachments = await saveExpenseAttachmentFiles(formData.getAll('attachments'), existingAttachmentIds.length, formData.getAll('attachmentTypes'));
   } catch (error) {
     if (error instanceof AttachmentValidationError) {
       return redirectToPath(appendFlash(returnTo || `/expenses/${expenseId}`, { error: 'invalid_attachment' }));
@@ -203,7 +207,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       isComplete: data.paymentStatus === 'COMPLETATO',
       paymentStatus: data.paymentStatus,
       paidAmount,
-      invoiceDocumentPath: existing.invoiceDocumentPath ?? attachments[0]?.path ?? null,
+      invoiceDocumentPath: attachmentsToDelete.some(attachment => attachment.path === existing.invoiceDocumentPath)
+        ? existing.attachments.find(attachment => !attachmentIdsToDelete.includes(attachment.id))?.path ?? attachments[0]?.path ?? null
+        : existing.invoiceDocumentPath ?? attachments[0]?.path ?? null,
       notes: data.notes || null,
       month,
       year,
@@ -216,9 +222,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           amount: payment.amount
         }))
       },
-      attachments: attachments.length || attachmentUpdates.length ? { create: attachments, update: attachmentUpdates } : undefined
+      attachments: attachments.length || attachmentUpdates.length || attachmentIdsToDelete.length ? {
+        create: attachments,
+        update: attachmentUpdates,
+        deleteMany: attachmentIdsToDelete.length ? {id: {in: attachmentIdsToDelete}} : undefined
+      } : undefined
     }
   });
+  await Promise.allSettled(attachmentsToDelete.map(attachment => deleteExpenseAttachmentFile(attachment.path)));
   await writeAuditLog({
     workspaceId: current.workspace.id,
     userId: current.user.id,

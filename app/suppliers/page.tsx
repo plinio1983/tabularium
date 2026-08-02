@@ -384,33 +384,32 @@ export default async function SuppliersPage({searchParams}: {
 
             <BulkSelectionController/>
 
-            <form id="supplierBulkForm" action={`/api/suppliers/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
+            <form id="supplierBulkForm" action={`/api/suppliers/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar party-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
                 <label className="bulk-select-all-inline">
                     <input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm"
                            aria-label="Seleziona tutti i fornitori visibili"/>
                 </label>
-                <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="supplierBulkForm">
+                <div className="bulk-action-buttons btn-group">
+                  <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="supplierBulkForm">
                     <summary className="bulk-action-trigger">
-                        <span className="btn-icon">⚙</span>
-                        <span className="bulk-label">
-              <span className="floating-bulk-label">Bulk </span>Actions
-            </span>
+                        <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
                                 formAction="/api/exports/suppliers" formMethod="post" data-confirm-label="Esporta CSV">
                             <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
                         </button>
-                        <button className="btn btn-sm btn-danger" type="submit" name="bulkAction" value="delete">
-                            <span className="btn-icon">🗑</span><span className="bulk-label">Elimina selezionati</span>
+                        <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
+                            <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
                         </button>
                     </div>
-                </details>
-                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-copy-base="/suppliers/new?copyId=" data-return-to={returnTo}>
+                  </details>
+                  <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-copy-base="/suppliers/new?copyId=" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
                     <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
                         <span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
+                  </div>
                 </div>
                 <div className="bulk-inner-container">
                     <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">

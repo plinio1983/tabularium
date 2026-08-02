@@ -1422,6 +1422,17 @@ button {
   letter-spacing: .05em;
 }
 
+.record-styled-drawer-filters .cash-register-receipt-period-filter-group {
+  flex-wrap: wrap;
+}
+
+.record-styled-drawer-filters .filter-group-hint {
+  flex: 0 0 100%;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .record-styled-drawer-filters {
   gap: 14px;
   background: #f8fafc;
@@ -3921,7 +3932,7 @@ table th, table td {
   display: none;
 }
 
-.app-record-form .expense-due-date-shortcuts,
+.app-record-form .app-due-date-shortcuts,
 .app-record-form .payment-amount-shortcuts {
   display: flex;
   flex-wrap: wrap;
@@ -3929,7 +3940,7 @@ table th, table td {
   margin-top: 2px;
 }
 
-.app-record-form .expense-due-date-shortcuts button,
+.app-record-form .app-due-date-shortcuts button,
 .app-record-form .payment-amount-shortcuts button,
 .app-record-form .app-vat-rate-buttons button {
   min-height: 32px;
@@ -3951,7 +3962,7 @@ table th, table td {
   flex-grow: 1;
 }
 
-.app-record-form .expense-due-date-shortcuts button.is-selected,
+.app-record-form .app-due-date-shortcuts button.is-selected,
 .app-record-form .payment-amount-shortcuts button.is-selected,
 .app-record-form .app-vat-rate-buttons button.is-selected {
   border-color: var(--accent);
@@ -4000,7 +4011,7 @@ table th, table td {
 
 .modal-title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
@@ -5146,10 +5157,28 @@ table th, table td {
   font-size: 14px;
 }
 
-.cash-register-receipt-filters {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(140px, 1fr)) auto;
-  gap: 8px;
+.cash-register-receipt-period-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cash-register-receipt-month-group {
+  flex: 1 1 auto;
+}
+
+.cash-register-receipt-month-group > .btn {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.cash-register-receipt-filter-trigger {
+  flex: 0 0 auto;
+}
+
+.cash-register-receipt-filter-trigger > .btn {
+  height: 100%;
 }
 
 .cash-register-trend-card {
@@ -9719,6 +9748,12 @@ html, body {
   text-overflow: ellipsis;
 }
 
+.compact-incomes-table .income-table-payment-icon {
+  display: inline-flex;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
 .compact-incomes-table .cell-left {
   text-align: left;
 }
@@ -13907,6 +13942,10 @@ body.invoice-attachments-modal-open {
   box-shadow: none;
 }
 
+.attachment-type-item .attachment-remove-button {
+  justify-self: end;
+}
+
 .attachment-type-item-heading {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -14023,6 +14062,10 @@ body.invoice-attachments-modal-open {
 
 .app-record-form .payment-collapse-action {
   display: none;
+}
+
+.income-form .payment-collapse-action {
+  display: inline-flex;
 }
 
 @media (max-width: 900px) {

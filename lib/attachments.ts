@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 
 export const maxExpenseAttachments = 5;
@@ -99,5 +99,21 @@ export async function readExpenseAttachment(storedPath: string) {
       return readFile(path.join(process.cwd(), 'public', storedPath));
     }
     throw error;
+  }
+}
+
+export async function deleteExpenseAttachmentFile(storedPath: string) {
+  const relativePath = storedPath.replace(/^\/?uploads\//, '').replace(/^\/+/, '');
+  if (!relativePath || relativePath.includes('..') || path.isAbsolute(relativePath)) {
+    throw new AttachmentValidationError('Percorso allegato non valido');
+  }
+
+  const target = storedPath.startsWith('/uploads/')
+    ? path.join(process.cwd(), 'public', storedPath)
+    : path.join(uploadsRoot(), relativePath);
+  try {
+    await unlink(target);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   }
 }

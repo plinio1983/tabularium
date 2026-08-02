@@ -10,6 +10,7 @@ import ExpenseInvoiceAttachmentsLink from '@/components/ExpenseInvoiceAttachment
 import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
 import SortableTableController from '@/components/SortableTableController';
 import {euro, moneyTone} from '@/lib/money';
+import {dueStatusLabel} from '@/lib/due-status-label';
 import {
     badgeClass,
     categoryLabel,
@@ -292,6 +293,14 @@ export default function ExpensesList({
                 const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
                 const overdue = isExpensePastDue(expense);
                 const unpaid = isExpenseOpen(expense);
+                const paidAmount = Math.max(0, amount - expenseResidualAmount(expense));
+                const statusLabel = dueStatusLabel({
+                    dueDate: expense.dueDate,
+                    isComplete: !unpaid,
+                    isPartial: unpaid && paidAmount > 0.005,
+                    completeLabel: paymentStatusStyles.COMPLETATO.label,
+                    pendingFallback: paymentStyle.label
+                });
                 const invoiceWaiting = expense.invoiceStatus === 'IN_ATTESA';
                 const statusStyle = overdue ? paymentStatusStyles.SCADUTO : paymentStyle;
                 let recordAddClass = '';
@@ -343,7 +352,7 @@ export default function ExpensesList({
                                         <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}
                                 </div>
                                 <div>
-                                    <span className={badgeClass(statusStyle.className)}> {statusStyle.label}</span>
+                                    <span className={badgeClass(statusStyle.className)}> {statusLabel}</span>
                                 </div>
                             </div>
                         </div>
@@ -389,7 +398,15 @@ export default function ExpensesList({
                     const paymentStyle = paymentStatusStyles[expense.paymentStatus] ?? paymentStatusStyles.DA_PAGARE;
                     const invoiceStyle = invoiceStatusStyles[expense.invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA;
                     const overdue = isExpensePastDue(expense);
-                    const paymentWaiting = expense.paymentStatus !== 'COMPLETATO' || residual > 0;
+                    const paymentWaiting = residual > 0.005;
+                    const paidAmount = Math.max(0, amount - residual);
+                    const statusLabel = dueStatusLabel({
+                        dueDate: expense.dueDate,
+                        isComplete: !paymentWaiting,
+                        isPartial: paymentWaiting && paidAmount > 0.005,
+                        completeLabel: paymentStatusStyles.COMPLETATO.label,
+                        pendingFallback: paymentStyle.label
+                    });
                     const invoiceWaiting = expense.invoiceStatus === 'IN_ATTESA';
                     const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
                     const detailHref = expenseDetailHref(expense, returnTo, linkRecurringExpensesToDefinition);
@@ -410,7 +427,7 @@ export default function ExpensesList({
                         data-sort-amount={String(amount)}
                         data-sort-vat={isVatSettlement ? String(amount) : String(Number(expense.vatRate))}
                         data-sort-description={expense.description ?? ''}
-                        data-sort-payment-state={overdue ? paymentStatusStyles.SCADUTO.label : paymentStyle.label}
+                        data-sort-payment-state={statusLabel}
                         data-sort-invoice-state={invoiceStyle.label}
                         data-sort-ebill={expense.hasElectronicInvoice ? '1' : '0'}
                         data-sort-residual={String(residual)}
@@ -436,8 +453,8 @@ export default function ExpensesList({
                             <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
                         <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
                         <td className="cell-payment-state">{overdue ?
-                            <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {paymentStatusStyles.SCADUTO.label}</span> :
-                            <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {paymentStyle.label}</span>}</td>
+                            <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {statusLabel}</span> :
+                            <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {statusLabel}</span>}</td>
                         <td className="cell-invoice-state">{isVatSettlement ?
                             <span className="badge color-badge">✕</span> :
                             <span className="expense-invoice-indicator"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/></span>}</td>

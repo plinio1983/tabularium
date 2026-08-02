@@ -474,12 +474,15 @@ export default function ExpenseForm({
     const [notes, setNotes] = useState(initialExpense?.notes ?? "");
     const [selectedAttachments, setSelectedAttachments] = useState<File[]>([]);
     const [selectedAttachmentTypes, setSelectedAttachmentTypes] = useState<AttachmentType[]>([]);
+    const [removedAttachmentIds, setRemovedAttachmentIds] = useState<number[]>([]);
     const [existingAttachmentTypes, setExistingAttachmentTypes] = useState<Record<number, AttachmentType>>(
         Object.fromEntries((initialExpense?.attachments ?? []).map(attachment => [attachment.id, attachment.type ?? "DOCUMENT"])),
     );
-    const attachmentCount = (initialExpense?.attachments?.length ?? 0) + selectedAttachments.length;
+    const retainedAttachmentCount = (initialExpense?.attachments?.length ?? 0) - removedAttachmentIds.length;
+    const attachmentCount = retainedAttachmentCount + selectedAttachments.length;
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
+    const attachmentsInputRef = useRef<HTMLInputElement>(null);
     const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
     const didOpenNewPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
@@ -755,6 +758,23 @@ export default function ExpenseForm({
         if (payment?.key === openPaymentKey) setOpenPaymentKey(null);
     }
 
+    function removeSelectedAttachment(index: number) {
+        const nextFiles = selectedAttachments.filter((_, itemIndex) => itemIndex !== index);
+        const transfer = new DataTransfer();
+        nextFiles.forEach(file => transfer.items.add(file));
+        if (attachmentsInputRef.current) attachmentsInputRef.current.files = transfer.files;
+        setSelectedAttachments(nextFiles);
+        setSelectedAttachmentTypes(current => current.filter((_, itemIndex) => itemIndex !== index));
+        setAttachmentError(retainedAttachmentCount + nextFiles.length > 5 ? "Puoi caricare massimo 5 allegati complessivi." : "");
+    }
+
+    function removeExistingAttachment(id: number) {
+        const nextRemovedIds = [...removedAttachmentIds, id];
+        const nextRetainedCount = (initialExpense?.attachments?.length ?? 0) - nextRemovedIds.length;
+        setRemovedAttachmentIds(nextRemovedIds);
+        setAttachmentError(nextRetainedCount + selectedAttachments.length > 5 ? "Puoi caricare massimo 5 allegati complessivi." : "");
+    }
+
     function renderPaymentHiddenInputs(payment: PaymentRow) {
         const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
         return (
@@ -965,7 +985,7 @@ export default function ExpenseForm({
                             if (isVatSettlement) setOrderDate(value);
                         }}
                     >
-                        <span className="expense-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
+                        <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
                             {[0, 7, 15, 30].map(days => {
                                 const value = addDaysToDateInput(isVatSettlement ? today : orderDate, days);
                                 return <button
@@ -1546,13 +1566,14 @@ export default function ExpenseForm({
                         </div>
                         <div className="flex attachment-row">
                             <input
+                                ref={attachmentsInputRef}
                                 type="file"
                                 name="attachments"
                                 accept=".pdf,.jpg,.jpeg,.png,.webp,.xml,.p7m"
                                 multiple
                                 onChange={(e) => {
                                     const files = Array.from(e.target.files ?? []);
-                                    const total = (initialExpense?.attachments?.length ?? 0) + files.length;
+                                    const total = retainedAttachmentCount + files.length;
                                     setSelectedAttachments(files);
                                     setSelectedAttachmentTypes(files.map(() => "DOCUMENT"));
                                     setAttachmentError(total > 5 ? "Puoi caricare massimo 5 allegati complessivi." : "");
@@ -1565,7 +1586,7 @@ export default function ExpenseForm({
                         </div>
                     </label>
 
-                    {(initialExpense?.attachments ?? []).map(attachment => {
+                    {(initialExpense?.attachments ?? []).filter(attachment => !removedAttachmentIds.includes(attachment.id)).map(attachment => {
                         const currentType = existingAttachmentTypes[attachment.id] ?? "DOCUMENT";
                         return <div className="card attachment-type-item" key={`existing-attachment-${attachment.id}`}>
                             <input type="hidden" name="existingAttachmentIds" value={attachment.id}/>
@@ -1574,6 +1595,7 @@ export default function ExpenseForm({
                             <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${attachment.originalName}`}>
                                 {attachmentTypeOptions.map(option => <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setExistingAttachmentTypes(current => ({...current, [attachment.id]: option.value}))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
                             </div>
+                            <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeExistingAttachment(attachment.id)}>🗑 Elimina</button>
                         </div>;
                     })}
 
@@ -1585,6 +1607,7 @@ export default function ExpenseForm({
                             <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${file.name}`}>
                                 {attachmentTypeOptions.map(option => <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setSelectedAttachmentTypes(current => current.map((value, itemIndex) => itemIndex === index ? option.value : value))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
                             </div>
+                            <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeSelectedAttachment(index)}>🗑 Elimina</button>
                         </div>;
                     })}
 

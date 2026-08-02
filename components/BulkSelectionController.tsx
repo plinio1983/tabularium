@@ -35,6 +35,9 @@ function syncDirectActionGroup(group: HTMLElement) {
   const payment = document.querySelector<HTMLButtonElement>(
     `[data-bulk-menu][data-bulk-form="${formId}"] [data-bulk-add-payment]`,
   );
+  const credit = document.querySelector<HTMLButtonElement>(
+    `[data-bulk-menu][data-bulk-form="${formId}"] [data-bulk-add-credit]`,
+  );
   const singleEnabled = selected === 1;
   const anyEnabled = selected > 0;
 
@@ -80,6 +83,13 @@ function syncDirectActionGroup(group: HTMLElement) {
     payment.disabled = selected === 0;
     if (singleEnabled) payment.setAttribute("data-expense-payment-id", firstId);
     else payment.removeAttribute("data-expense-payment-id");
+  }
+
+  if (credit) {
+    const creditEnabled = singleEnabled && selectedInputs[0]?.dataset.creditComplete !== "true";
+    credit.disabled = !creditEnabled;
+    if (creditEnabled) credit.setAttribute("data-income-credit-id", firstId);
+    else credit.removeAttribute("data-income-credit-id");
   }
 
   if (del) del.disabled = !anyEnabled;

@@ -71,6 +71,8 @@ type Props = {
     salesChannels: IncomeEntityOption[];
     customers: CustomerOption[];
     onSwitchToRecurring?: () => void;
+    initialMobileStep?: number;
+    openNewCredit?: boolean;
 };
 
 const today = new Date().toISOString().slice(0, 10);
@@ -82,6 +84,15 @@ function toDateInput(value?: string | Date | null) {
     const date = value instanceof Date ? value : new Date(value);
     if (Number.isNaN(date.getTime())) return "";
     return date.toISOString().slice(0, 10);
+}
+
+function addDaysToDateInput(value: string, days: number) {
+    const [year, month, day] = value.split("-").map(Number);
+    const base = year && month && day
+        ? new Date(Date.UTC(year, month - 1, day))
+        : new Date(`${today}T00:00:00Z`);
+    base.setUTCDate(base.getUTCDate() + days);
+    return base.toISOString().slice(0, 10);
 }
 
 function toMonthInput(income?: InitialIncome) {
@@ -142,6 +153,8 @@ export default function IncomeForm({
                                        salesChannels,
                                        customers,
                                        onSwitchToRecurring,
+                                       initialMobileStep = 1,
+                                       openNewCredit = false,
                                    }: Props) {
     const cashBank = banks.find(bank => bank.isFallback) ?? banks.find(bank => bank.name.trim().toLowerCase() === "cassa");
     const primaryBank = banks.find(bank => bank.isPrimary);
@@ -185,9 +198,11 @@ export default function IncomeForm({
     const [isFiscal, setIsFiscal] = useState(initialIncome?.isFiscal ?? true);
     const [invoiceStatus, setInvoiceStatus] = useState(initialIncome?.invoiceStatus ?? "NON_INVIATA");
     const [vatRate, setVatRate] = useState(normalizeMoney(initialIncome?.vatRate) || "22");
-    const [mobileStep, setMobileStep] = useState(1);
+    const [mobileStep, setMobileStep] = useState(() => Math.max(1, Math.min(6, initialMobileStep)));
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
+    const openCreditRef = useRef<HTMLDivElement | null>(null);
+    const didOpenNewCredit = useRef(false);
     const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
     const normalizedAmount = amount.replace(",", ".");
     const amountValue = Number(normalizedAmount || 0);
@@ -205,6 +220,7 @@ export default function IncomeForm({
         SCADUTO: 'Scaduto'
     }[creditState];
     const canAddCredit = !isCredited && openCreditKey === null && credits.every(isCreditComplete) && creditResidual > 0.005;
+    const isCreditOnlyMode = openNewCredit;
 
     function updateCredit(index: number, patch: Partial<CreditRow>) {
         setCredits(rows => rows.map((credit, rowIndex) => {
@@ -238,6 +254,22 @@ export default function IncomeForm({
         }]);
         setOpenCreditKey(key);
     }
+
+    useEffect(() => {
+        if (!openNewCredit || didOpenNewCredit.current) return;
+        didOpenNewCredit.current = true;
+        addCredit();
+    }, [openNewCredit]);
+
+    useEffect(() => {
+        if (!openCreditKey) return;
+        window.requestAnimationFrame(() => {
+            openCreditRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        });
+    }, [openCreditKey]);
 
     function removeCredit(index: number) {
         const credit = credits[index];
@@ -330,9 +362,13 @@ export default function IncomeForm({
     }
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        if (window.matchMedia("(max-width: 900px)").matches && mobileStep < 6) {
-            event.preventDefault();
-            nextMobileStep();
+        if (window.matchMedia("(max-width: 900px)").matches) {
+            if (isCreditOnlyMode) {
+                if (!credits.every(isCreditComplete)) event.preventDefault();
+            } else if (mobileStep < 6) {
+                event.preventDefault();
+                nextMobileStep();
+            }
         }
     }
 
@@ -380,7 +416,17 @@ export default function IncomeForm({
                 <div className="form-section-grid income-form-section-grid">
                     <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/>
 
-                    <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data scadenza" name="dueDate" value={dueDate} onChange={setDueDate} required/>
+                    <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data scadenza" name="dueDate" value={dueDate} onChange={setDueDate} required>
+                        <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
+                            {[0, 7, 15, 30].map(days => {
+                                const value = addDaysToDateInput(orderDate, days);
+                                return <button type="button" key={days} className={dueDate === value ? "is-selected" : ""}
+                                               aria-pressed={dueDate === value} onClick={() => setDueDate(value)}>
+                                    {days === 0 ? "Stesso g" : `+${days} gg`}
+                                </button>;
+                            })}
+                        </span>
+                    </DateField>
 
                     <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({
                         value: option.id,
@@ -514,7 +560,7 @@ export default function IncomeForm({
                                 </div>
                             </div>;
 
-                            return <div className="payment-row" key={credit.key}>
+                            return <div className="payment-row" key={credit.key} ref={openCreditRef}>
                                 <input type="hidden" name="creditId[]" value={credit.id ?? ""}/>
                                 <DateField className="payment-date-field" label="Data accredito" name="creditDate[]" value={credit.creditDate} onChange={value => updateCredit(index, {creditDate: value})} required/>
                                 <label className="payment-amount-field">
@@ -653,13 +699,13 @@ export default function IncomeForm({
             </details>
 
             <MobileFormStickyActions
-                currentStep={mobileStep}
-                submitStep={6}
+                currentStep={isCreditOnlyMode ? 1 : mobileStep}
+                submitStep={isCreditOnlyMode ? 1 : 6}
                 onBack={() => goToMobileStep(mobileStep - 1)}
                 onNext={nextMobileStep}
                 onCancel={onCancel}
                 cancelHref={cancelHref ?? "/incomes"}
-                submitLabel={submitLabel}
+                submitLabel={isCreditOnlyMode ? "Salva accredito" : submitLabel}
             />
 
             <div className="actions-row full form-actions-row form-sticky-actions">

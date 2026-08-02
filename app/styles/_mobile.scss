@@ -2241,7 +2241,7 @@
     justify-content: center;
   }
 
-  .app-form-wizard .expense-due-date-shortcuts {
+  .app-form-wizard .app-due-date-shortcuts {
     display: flex;
     gap: 7px;
     margin-top: 2px;
@@ -2540,13 +2540,13 @@
     transform: translateY(-50%);
   }
 
-  .app-form-wizard .expense-due-date-shortcuts {
+  .app-form-wizard .app-due-date-shortcuts {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
   }
 
-  .app-form-wizard .expense-due-date-shortcuts button {
+  .app-form-wizard .app-due-date-shortcuts button {
     min-width: 0;
     min-height: 38px;
     padding-inline: 5px;
@@ -2608,7 +2608,7 @@
     box-shadow: inset 3px 0 0 var(--accent);
   }
 
-  .expense-due-date-shortcuts button,
+  .app-due-date-shortcuts button,
   .app-vat-rate-buttons button {
     min-height: 34px;
     padding: 6px 10px;
@@ -2620,7 +2620,7 @@
     font-weight: 850;
   }
 
-  .expense-due-date-shortcuts button.is-selected,
+  .app-due-date-shortcuts button.is-selected,
   .app-vat-rate-buttons button.is-selected {
     border-color: var(--accent);
     background: var(--accent);
@@ -4497,8 +4497,26 @@
     min-width: 0;
   }
 
-  .cash-register-receipt-filters {
-    grid-template-columns: 1fr 1fr;
+  .cash-register-receipt-period-nav {
+    align-items: stretch;
+  }
+
+  .cash-register-receipt-month-group {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cash-register-receipt-month-group > .btn {
+    flex: 0 0 auto;
+    min-width: 58px;
+  }
+
+  .cash-register-receipt-filter-trigger {
+    flex: 0 0 auto;
   }
 
   .cash-register-trend-card {
@@ -4559,10 +4577,6 @@
 
   .cash-register-receipt-amount {
     align-self: center;
-  }
-
-  .cash-register-receipt-filters button {
-    grid-column: 1 / -1;
   }
 
   .app-form-modal .app-record-form .form-sticky-actions {

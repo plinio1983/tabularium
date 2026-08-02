@@ -52,7 +52,8 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
         <form id={formId}
               action={`/api/cash-register/receipts/bulk?returnTo=${returnTo}`}
               method="post"
-              className="bulk-actions-bar confirm-bulk-form"
+              className="bulk-actions-bar grouped-bulk-actions-bar cash-register-receipt-bulk-actions-bar confirm-bulk-form"
+              data-bulk-button-group="true"
               data-bulk-subject="scontrini">
             <label className="bulk-select-all-inline cash-register-select-all">
                 <input type="checkbox" className="bulk-select-all" data-bulk-target={formId}
@@ -60,7 +61,18 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
                        onChange={event => setSelectedIds(event.currentTarget.checked ? receipts.map(receipt => receipt.id) : [])}
                        aria-label="Seleziona tutti gli scontrini visibili"/>
             </label>
-            <div className="bulk-direct-actions"
+            <div className="bulk-action-buttons btn-group">
+              <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
+                <summary className="bulk-action-trigger">
+                    <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
+                </summary>
+                <div className="bulk-action-menu-panel">
+                    <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
+                        <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                    </button>
+                </div>
+              </details>
+              <div className="bulk-direct-actions"
                  data-bulk-direct-actions
                  data-bulk-form={formId}
                  data-edit-base="/incomes/cash-register?editId="
@@ -78,10 +90,11 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
                    aria-disabled={singleId ? "false" : "true"}>
                     <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
                 </a>
-                <button type="submit" className="bulk-direct-link bulk-direct-danger"
+                <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp"
                         name="bulkAction" value="delete" data-bulk-delete disabled={!anySelected}>
                     <span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span>
                 </button>
+              </div>
             </div>
             <div className="bulk-inner-container">
                 <Link className="bulk-direct-link btn btn-md btn-primary"

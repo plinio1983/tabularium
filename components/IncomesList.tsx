@@ -14,7 +14,8 @@ import {
     incomeInvoiceStatusStyles
 } from '@/lib/income-ui';
 import type {IncomeCashRegisterGroup} from '@/lib/income-list';
-import {incomeCreditState} from '@/lib/income-status';
+import {incomeCreditedAmount, incomeCreditState} from '@/lib/income-status';
+import {dueStatusLabel} from '@/lib/due-status-label';
 
 type IncomeItem = {
     id: number;
@@ -63,21 +64,23 @@ function aggregateVatBadge(group: IncomeCashRegisterGroup) {
         : <span className={badgeClass('tone-neutral')}>Mista</span>;
 }
 
-function dateLabel(value?: Date | null) {
-    return value ? new Intl.DateTimeFormat('it-IT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        timeZone: 'UTC'
-    }).format(value) : '-';
-}
-
 function mobileDateLabel(value?: Date | null) {
     return value ? new Intl.DateTimeFormat('it-IT', {
         day: 'numeric',
         month: 'short',
         timeZone: 'UTC'
     }).format(value).replace('.', '') : '-';
+}
+
+function compactDateTableLabel(value?: Date | null) {
+    if (!value) return '-';
+    return new Intl.DateTimeFormat('it-IT', {
+        day: '2-digit',
+        month: 'short',
+        timeZone: 'UTC'
+    }).format(value)
+        .replaceAll('.', '')
+        .replace(/\b([a-zàèéìòù])/gu, character => character.toUpperCase());
 }
 
 function dateSortValue(value?: Date | null) {
@@ -145,6 +148,9 @@ export default function IncomesList({
                     </button>
                     <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
                         <span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
+                    <button className="btn btn-sm btn-default" type="button" data-bulk-add-credit>
+                        <span className="btn-icon">＋</span><span className="bulk-label">Inserisci accredito</span>
+                    </button>
                     <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
                             name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
                         <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
@@ -209,12 +215,21 @@ export default function IncomesList({
                 const paymentMethod = income.paymentMethodRef.name;
                 const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
                 const status = creditStatus(income);
+                const creditState = incomeCreditState(income);
+                const creditedAmount = incomeCreditedAmount(income);
+                const statusLabel = dueStatusLabel({
+                    dueDate: income.dueDate,
+                    isComplete: creditState === 'ACCREDITATO',
+                    isPartial: creditState !== 'ACCREDITATO' && creditedAmount > 0.005,
+                    completeLabel: incomeCreditStatusStyles.ACCREDITATO.label,
+                    pendingFallback: status.label
+                });
                 const vatStyle = vatStyles[String(Number(income.vatRate))] ?? vatStyles['0'];
                 const amount = Number(income.amount);
                 const recordClass = ['income-mobile-item', 'mobile-record-item', status === incomeCreditStatusStyles.SCADUTO ? 'mobile-record-item-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
                 return <div className={recordClass} key={`mobile-income-${income.id}`}>
                     <div className="mobile-record-select">
-                        <input form={formId} type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`}/>
+                        <input form={formId} type="checkbox" name="ids" value={income.id} data-credit-complete={creditState === 'ACCREDITATO' ? "true" : "false"} aria-label={`Seleziona incasso ${income.id}`}/>
                     </div>
                     <Link className="mobile-record-link income-mobile-link" href={`/incomes/${income.id}?returnTo=${returnTo}`}>
                         <div className="mobile-record-main">
@@ -247,7 +262,7 @@ export default function IncomesList({
                             <div className="mobile-record-title-row income-mobile-status-row">
                                 <span className={badgeClass(vatStyle.className)}>IVA &nbsp; {Number(income.vatRate)}%</span>
                                 <small className="text-pre text-muted">{formatPeriod(income.billingMonth, income.billingYear)}</small>
-                                <span title={status.label} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {status.label}</span>
+                                <span title={statusLabel} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {statusLabel}</span>
                             </div>
                         </div>
                     </Link>
@@ -273,9 +288,7 @@ export default function IncomesList({
                     <th data-sort-key="vat" data-sort-type="number">IVA</th>
                     <th data-sort-key="credit-status">Accr.</th>
                     <th data-sort-key="invoice-status" className="text-center">Stato fatt.</th>
-                    <th data-sort-key="due-date" data-sort-type="date">Scadenza</th>
                     <th data-sort-key="credit-date" data-sort-type="date">Data accr.</th>
-                    <th data-sort-key="payment-method">Metodo pag.</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -287,7 +300,6 @@ export default function IncomesList({
                                data-sort-billing-period={String(group.billingYear * 12 + group.billingMonth)}
                                data-sort-order-date={dateSortValue(group.latestCreditDate)}
                                data-sort-credit-date={dateSortValue(group.latestCreditDate)}
-                               data-sort-due-date=""
                                data-sort-sales-channel={group.salesChannel}
                                data-sort-customer="Registratore di cassa"
                                data-sort-fiscal={group.isFiscal ? '1' : '0'}
@@ -296,65 +308,69 @@ export default function IncomesList({
                                data-sort-vat={aggregateVatLabel(group)}
                                data-sort-credit-status={credited.label}
                                data-sort-invoice-status=""
-                               data-sort-payment-method={group.paymentMethod}
                                tabIndex={0}
                                key={`cash-${group.key}`}>
                         <td className="cell-option">
                             <input type="checkbox" disabled aria-label="I cumulativi degli scontrini non sono selezionabili"/>
                         </td>
                         <td>{formatPeriod(group.billingMonth, group.billingYear)}</td>
-                        <td>{dateLabel(group.latestCreditDate)}</td>
+                        <td>{compactDateTableLabel(group.latestCreditDate)}</td>
                         <td>{group.salesChannelIcon ?? '  •  '} {group.salesChannel}</td>
                         <td>🧾 Registratore di cassa</td>
                         <td>{fiscalBadge(group.isFiscal)}</td>
-                        <td><strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong></td>
+                        <td><strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong>
+                            <span className="income-table-payment-icon" title={group.paymentMethod} aria-label={`Metodo di pagamento: ${group.paymentMethod}`}>{group.paymentMethodIcon ?? '•'}</span>
+                        </td>
                         <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
                         <td>{aggregateVatBadge(group)}</td>
                         <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span></td>
                         <td className="text-center"><span className="badge badge-color tone-muted">✕</span></td>
-                        <td><span className="badge color-badge tone-muted">-</span></td>
-                        <td>{dateLabel(group.latestCreditDate)}</td>
-                        <td>{group.paymentMethodIcon ?? '  •  '} {group.paymentMethod}</td>
+                        <td>{compactDateTableLabel(group.latestCreditDate)}</td>
                     </tr>;
                 })}
                 {incomes.map(income => {
                     const status = creditStatus(income);
+                    const creditState = incomeCreditState(income);
+                    const creditedAmount = incomeCreditedAmount(income);
+                    const statusLabel = dueStatusLabel({
+                        dueDate: income.dueDate,
+                        isComplete: creditState === 'ACCREDITATO',
+                        isPartial: creditState !== 'ACCREDITATO' && creditedAmount > 0.005,
+                        completeLabel: incomeCreditStatusStyles.ACCREDITATO.label,
+                        pendingFallback: status.label
+                    });
                     const invoice = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-                    const paymentMethod = income.paymentMethodRef.name;
                     const rowClass = ['clickable-desktop-row', status === incomeCreditStatusStyles.SCADUTO ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
                     return <tr className={rowClass} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} data-sort-row
                                data-sort-billing-period={String(income.billingYear * 12 + income.billingMonth)}
                                data-sort-order-date={dateSortValue(income.orderDate ?? income.creditDate)}
                                data-sort-credit-date={dateSortValue(income.creditDate)}
-                               data-sort-due-date={dateSortValue(income.dueDate)}
                                data-sort-sales-channel={income.salesChannelRef.name} data-sort-customer={income.customer?.businessName ?? ''} data-sort-fiscal={income.isFiscal ? '1' : '0'}
                                data-sort-description={income.description ?? ''}
                                data-sort-amount={String(Number(income.amount))} data-sort-vat={String(Number(income.vatRate))}
-                               data-sort-payment-method={paymentMethod}
-                               data-sort-credit-status={status.label} data-sort-invoice-status={invoice.label} tabIndex={0} key={income.id}>
+                               data-sort-credit-status={statusLabel} data-sort-invoice-status={invoice.label} tabIndex={0} key={income.id}>
                         <td className="cell-option">
-                            <input form={formId} type="checkbox" name="ids" value={income.id} aria-label={`Seleziona incasso ${income.id}`}/>
+                            <input form={formId} type="checkbox" name="ids" value={income.id} data-credit-complete={creditState === 'ACCREDITATO' ? "true" : "false"} aria-label={`Seleziona incasso ${income.id}`}/>
                         </td>
                         <td>{formatPeriod(income.billingMonth, income.billingYear)}</td>
-                        <td>{dateLabel(income.orderDate ?? income.creditDate)}</td>
+                        <td>{compactDateTableLabel(income.orderDate ?? income.creditDate)}</td>
                         <td>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</td>
                         <td>{income.customer ?
                             <Link href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td>
                         <td>{fiscalBadge(income.isFiscal)}</td>
                         <td><strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
+                            <span className="income-table-payment-icon" title={income.paymentMethodRef.name} aria-label={`Metodo di pagamento: ${income.paymentMethodRef.name}`}>{income.paymentMethodRef.icon ?? '•'}</span>
                         </td>
                         <td>{income.description ?? '-'}</td>
                         <td>{vatBadge(income.vatRate)}</td>
-                        <td><span className={badgeClass(status.className)}>{status.icon} {status.label}</span></td>
+                        <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
                         <td className="text-center">{income.isFiscal ?
                             <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : <span className="badge tone-muted">✕</span> }</td>
-                        <td>{dateLabel(income.dueDate)}</td>
-                        <td>{dateLabel(income.creditDate)}</td>
-                        <td>{income.paymentMethodRef?.icon ?? '  •  '} {paymentMethod}</td>
+                        <td>{compactDateTableLabel(income.creditDate)}</td>
                     </tr>;
                 })}
                 {!incomes.length && !cashRegisterGroups.length ? <tr>
-                    <td colSpan={14}>{emptyMessage}</td>
+                    <td colSpan={12}>{emptyMessage}</td>
                 </tr> : null}</tbody>
             </table>
         </div>
