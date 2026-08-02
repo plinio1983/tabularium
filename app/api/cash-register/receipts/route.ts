@@ -15,6 +15,7 @@ const ReceiptSchema = z.object({
     vatRate: z.coerce.number(),
     creditDate: z.string().datetime(),
     salesChannelId: z.coerce.number().int().positive(),
+    description: z.string().trim().max(200).optional(),
     paymentMethodId: z.coerce.number().int().positive(),
     requestId: z.string().uuid()
 });
@@ -69,7 +70,7 @@ export async function POST(request: Request) {
                 customerId: customer.id,
                 salesChannelId: channel.id,
                 incomeCategoryId: category.id,
-                description: 'Incasso da banco',
+                description: input.description || 'Incasso da banco',
                 amount: input.amount,
                 paymentMethodId: method.id,
                 creditBankId,
@@ -93,7 +94,7 @@ export async function POST(request: Request) {
             action: 'CREATE',
             entityType: 'CashRegisterReceipt',
             entityId: receipt.id,
-            metadata: {amount: input.amount, isFiscal: input.isFiscal, requestId: input.requestId},
+            metadata: {amount: input.amount, isFiscal: input.isFiscal, requestId: input.requestId, description: input.description || null},
             request
         });
         return NextResponse.json({receipt}, {status: 201});

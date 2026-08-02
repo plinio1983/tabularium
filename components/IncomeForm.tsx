@@ -669,13 +669,10 @@ export default function IncomeForm({
                         </div>
                         <div className="record-review-grid">
                             <div className="record-review-item">
-                                <i aria-hidden="true">▣</i><span>Canale di vendita<strong>{salesChannels.find(channel => String(channel.id) === salesChannelId)?.name ?? "Non indicato"}</strong></span>
+                                <i aria-hidden="true">◷</i><span>Data ordine<strong>{formatDateInputLabel(orderDate) || "Non indicata"}</strong></span>
                             </div>
                             <div className="record-review-item">
-                                <i aria-hidden="true">◷</i><span>Data ordine<strong>{orderDate ? new Date(`${orderDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span>
-                            </div>
-                            <div className="record-review-item">
-                                <i aria-hidden="true">◷</i><span>Data scadenza<strong>{dueDate ? new Date(`${dueDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span>
+                                <i aria-hidden="true">◷</i><span>Scadenza<strong>{formatDateInputLabel(dueDate) || "Non indicata"}</strong></span>
                             </div>
                             <div className="record-review-item wide">
                                 <i aria-hidden="true">◎</i><span>Cliente<strong>{customerName || "Non indicato"}</strong></span>
@@ -683,18 +680,27 @@ export default function IncomeForm({
                             <div className="record-review-item wide">
                                 <i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span>
                             </div>
-                            <div className="record-review-item">
-                                <i aria-hidden="true">▤</i><span>Fiscale / IVA<strong>{isFiscal ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span>
+                            <div className="record-review-item wide">
+                                <i aria-hidden="true">▣</i><span>Canale di vendita<strong>{salesChannels.find(channel => String(channel.id) === salesChannelId)?.name ?? "Non indicato"}</strong></span>
                             </div>
                             <div className="record-review-item">
                                 <i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span>
                             </div>
+                            <div className="record-review-item">
+                                <i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isFiscal ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span>
+                            </div>
                             <div className="record-review-item wide">
-                                <i aria-hidden="true">€</i><span>Accrediti<strong>{formatEuro(creditedAmount)} · Residuo {formatEuro(creditResidual)} · {creditStatusLabel}</strong></span>
+                                <i aria-hidden="true">▤</i><span>Stato fattura<strong>{!isFiscal ? "Non prevista" : invoiceStatus === "EMESSA" ? "Emessa" : invoiceStatus === "PARZIALE" ? "Fatturata parzialmente" : "Non inviata"}</strong></span>
+                            </div>
+                            <div className="record-review-item">
+                                <i aria-hidden="true">€</i><span>Accrediti<strong>{credits.length ? `${credits.length} · ${formatEuro(creditedAmount)}` : "Nessun accredito"}</strong></span>
+                            </div>
+                            <div className="record-review-item">
+                                <i aria-hidden="true">=</i><span>Residuo<strong className={creditResidual > 0 ? "text-critical" : "text-ok"}>{formatEuro(creditResidual)}</strong></span>
                             </div>
                         </div>
                     </section>
-                    <label className="full">
+                    <label className="card full expense-review-notes income-review-notes">
                         Note
                         <textarea name="notes" rows={3} value={notes} onChange={event => setNotes(event.currentTarget.value)} placeholder="Note interne opzionali"/>
                     </label>

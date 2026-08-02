@@ -67,7 +67,8 @@ export default async function CashRegisterPage({searchParams}: {
             isFiscal: sourceReceipt.isFiscal,
             vatRate: Number(sourceReceipt.vatRate),
             salesChannelId: sourceReceipt.salesChannelId,
-            paymentMethodId: sourceReceipt.paymentMethodId
+            paymentMethodId: sourceReceipt.paymentMethodId,
+            description: sourceReceipt.description
         } : null}
     />;
 }

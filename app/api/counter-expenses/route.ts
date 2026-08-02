@@ -13,6 +13,7 @@ const CounterExpenseSchema = z.object({
   vatRate: z.coerce.number(),
   paymentDate: z.string().datetime(),
   categoryId: z.coerce.number().int().positive(),
+  description: z.string().trim().max(200).optional(),
   paymentMethodId: z.coerce.number().int().positive(),
   bankId: z.coerce.number().int().positive().nullable(),
   requestId: z.string().uuid()
@@ -72,7 +73,7 @@ export async function POST(request: Request) {
         merchant: supplier.businessName,
         supplierId: supplier.id,
         categoryId: category.id,
-        description: 'Spesa da banco',
+        description: input.description || 'Spesa da banco',
         amount: input.amount,
         expenseType: 'COUNTER',
         vatRate,
@@ -103,7 +104,7 @@ export async function POST(request: Request) {
       action: 'CREATE',
       entityType: 'CounterExpense',
       entityId: expense.id,
-      metadata: {amount: input.amount, paymentMethodId: method.id, bankId, requestId: input.requestId},
+      metadata: {amount: input.amount, paymentMethodId: method.id, bankId, requestId: input.requestId, description: input.description || null},
       request
     });
     return NextResponse.json({expense}, {status: 201});

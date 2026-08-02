@@ -30,6 +30,7 @@ export default function CounterExpenseRegister({
   const timeZone = useCompanyTimeZone();
   const router = useRouter();
   const amountRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLInputElement>(null);
   const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
   const methodRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const bankRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -41,6 +42,7 @@ export default function CounterExpenseRegister({
   const [vatRate, setVatRate] = useState(0);
   const [lastVatRate, setLastVatRate] = useState(22);
   const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
   const [methodIndex, setMethodIndex] = useState(0);
@@ -125,6 +127,13 @@ export default function CounterExpenseRegister({
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
+      if (event.target === descriptionRef.current) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          focusAmount();
+        }
+        return;
+      }
       if (modalOpen) {
         if (event.key === 'Escape') {
           event.preventDefault();
@@ -201,6 +210,7 @@ export default function CounterExpenseRegister({
     modalOpen,
     orderedBanks,
     paymentDate,
+    description,
     requestId,
     selectedMethod,
     sending,
@@ -222,6 +232,7 @@ export default function CounterExpenseRegister({
           vatRate: isDeductible ? vatRate : 0,
           paymentDate: localDate.toISOString(),
           categoryId: Number(categoryId),
+          description,
           paymentMethodId: selectedMethod.id,
           bankId,
           requestId
@@ -232,6 +243,7 @@ export default function CounterExpenseRegister({
       setModalOpen(false);
       setSelectedMethodId(null);
       setAmount('');
+      setDescription('');
       setRequestId(crypto.randomUUID());
       setNotice({tone: 'ok', text: `Spesa registrata · ${selectedMethod.icon ?? ''} ${selectedMethod.name}`});
       router.refresh();
@@ -269,6 +281,19 @@ export default function CounterExpenseRegister({
           <option value={category.id} key={category.id}>{category.icon ?? ''} {category.name}</option>)}
       </select>
     </section>
+
+    <label className="cash-register-description">
+      <span aria-hidden="true">≡</span>
+      <input ref={descriptionRef} value={description} maxLength={200}
+             placeholder="Spesa da banco" aria-label="Descrizione della spesa"
+             onChange={event => setDescription(event.currentTarget.value)}
+             onKeyDown={event => {
+               if (event.key !== 'Enter') return;
+               event.preventDefault();
+               event.stopPropagation();
+               focusAmount();
+             }}/>
+    </label>
 
     <section className="cash-register-display">
       <span>€</span>
@@ -356,6 +381,10 @@ export default function CounterExpenseRegister({
                 <i aria-hidden="true">◇</i>
                 <span>Categoria<strong>{selectedCategory?.icon} {selectedCategory?.name}</strong></span>
               </div>
+              {description.trim() ? <div className="record-review-item wide">
+                <i aria-hidden="true">≡</i>
+                <span>Descrizione<strong>{description.trim()}</strong></span>
+              </div> : null}
               <div className="record-review-item wide">
                 <i aria-hidden="true">€</i>
                 <span>Metodo di pagamento<strong>{selectedMethod.icon} {selectedMethod.name}</strong></span>

@@ -12,6 +12,7 @@ const UpdateSchema = z.object({
     vatRate: z.coerce.number(),
     creditDate: z.string().datetime(),
     salesChannelId: z.coerce.number().int().positive(),
+    description: z.string().trim().max(200).optional(),
     paymentMethodId: z.coerce.number().int().positive()
 });
 
@@ -47,6 +48,7 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
         where: {id},
         data: {
             amount: input.amount,
+            description: input.description || 'Incasso da banco',
             isFiscal: input.isFiscal,
             vatRate,
             invoiceStatus: input.isFiscal ? 'EMESSA' : null,
@@ -68,7 +70,7 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
     await writeAuditLog({
         workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE',
         entityType: 'CashRegisterReceipt', entityId: id,
-        metadata: {amount: input.amount, isFiscal: input.isFiscal}, request
+        metadata: {amount: input.amount, isFiscal: input.isFiscal, description: input.description || null}, request
     });
     return NextResponse.json({receipt: updated});
 }

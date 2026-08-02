@@ -20,6 +20,7 @@ type InitialReceipt = {
     vatRate: number;
     salesChannelId: number;
     paymentMethodId: number;
+    description: string | null;
 };
 
 function newRequestId() {
@@ -46,11 +47,13 @@ export default function CashRegister({
     const timeZone = useCompanyTimeZone();
     const router = useRouter();
     const amountRef = useRef<HTMLInputElement>(null);
+    const descriptionRef = useRef<HTMLInputElement>(null);
     const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
     const keyboardMethodRefs = useRef<Array<HTMLButtonElement | null>>([]);
     const keyboardCancelRef = useRef<HTMLButtonElement>(null);
     const keyboardSubmitRef = useRef<HTMLButtonElement>(null);
     const [amount, setAmount] = useState(initialReceipt ? String(initialReceipt.amount).replace('.', ',') : '');
+    const [description, setDescription] = useState(initialReceipt?.description === 'Incasso da banco' ? '' : initialReceipt?.description ?? '');
     const [isFiscal, setIsFiscal] = useState(initialReceipt?.isFiscal ?? true);
     const [vatRate, setVatRate] = useState(initialReceipt?.vatRate ?? 22);
     const [lastFiscalVatRate, setLastFiscalVatRate] = useState(initialReceipt?.vatRate || 22);
@@ -133,6 +136,13 @@ export default function CashRegister({
     useEffect(() => {
         if (!requestId) setRequestId(newRequestId());
         const onKey = (event: KeyboardEvent) => {
+            if (event.target === descriptionRef.current) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    focusAmount();
+                }
+                return;
+            }
             if (keyboardMethodOpen) {
                 if (selectedMethod) {
                     if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) {
@@ -195,7 +205,7 @@ export default function CashRegister({
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, [requestId, selectedMethodId, amount, isFiscal, vatRate, creditDate, salesChannelId, sending, keyboardMethodOpen, keyboardMethodIndex, keyboardConfirmationIndex, orderedMethods, hasValidAmount]);
+    }, [requestId, selectedMethodId, amount, description, isFiscal, vatRate, creditDate, salesChannelId, sending, keyboardMethodOpen, keyboardMethodIndex, keyboardConfirmationIndex, orderedMethods, hasValidAmount]);
 
     function appendKey(key: string) {
         if (confirmationLocked) return;
@@ -263,6 +273,7 @@ export default function CashRegister({
                     vatRate: isFiscal ? vatRate : 0,
                     creditDate: localDate.toISOString(),
                     salesChannelId: Number(salesChannelId),
+                    description,
                     paymentMethodId: paymentMethod.id,
                     ...(!editing ? {requestId} : {})
                 })
@@ -276,6 +287,7 @@ export default function CashRegister({
             }
             setNotice({tone: 'ok', text: `Incasso registrato · ${paymentMethod.icon ?? ''} ${paymentMethod.name}`});
             setAmount('');
+            setDescription('');
             setSelectedMethodId(null);
             setKeyboardMethodOpen(false);
             setRequestId(newRequestId());
@@ -347,6 +359,20 @@ export default function CashRegister({
                     <option value={channel.id} key={channel.id}>{channel.icon ?? ''} {channel.name}</option>)}
             </select>
         </section>
+
+        <label className="cash-register-description">
+            <span aria-hidden="true">≡</span>
+            <input ref={descriptionRef} value={description} maxLength={200}
+                   placeholder="Incasso da banco" aria-label="Descrizione dell’incasso"
+                   disabled={confirmationLocked}
+                   onChange={event => setDescription(event.currentTarget.value)}
+                   onKeyDown={event => {
+                       if (event.key !== 'Enter') return;
+                       event.preventDefault();
+                       event.stopPropagation();
+                       focusAmount();
+                   }}/>
+        </label>
 
         <section className="cash-register-display">
             <span>€</span>

@@ -4463,7 +4463,7 @@ table th, table td {
 
 .cash-register-shell {
   display: grid;
-  grid-template-rows: auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto;
+  grid-template-rows: auto auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto;
   gap: clamp(6px, 1.2vh, 12px);
   width: min(100%, 900px);
   height: calc(100dvh - 105px);
@@ -4477,15 +4477,15 @@ table th, table td {
 }
 
 .cash-register-shell.is-editing {
-  grid-template-rows: auto auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto;
+  grid-template-rows: auto auto auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto;
 }
 
 .cash-register-shell.has-notice {
-  grid-template-rows: auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto auto;
+  grid-template-rows: auto auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto auto;
 }
 
 .cash-register-shell.is-editing.has-notice {
-  grid-template-rows: auto auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto auto;
+  grid-template-rows: auto auto auto auto minmax(62px, .65fr) auto minmax(210px, 1.8fr) auto auto;
 }
 
 .cash-register-header,
@@ -4580,6 +4580,48 @@ table th, table td {
   border-color: var(--accent);
   outline: 0;
   box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+}
+
+.cash-register-description {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #dbe3ee;
+  border-radius: 13px;
+  background: #f8fafc;
+  color: var(--accent);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, .035);
+}
+
+.cash-register-description input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cash-register-description input::placeholder {
+  color: #94a3b8;
+  font-weight: 650;
+}
+
+.cash-register-description:focus-within {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, .11);
+}
+
+.cash-register-description:has(input:disabled) {
+  opacity: .55;
 }
 
 .cash-register-fiscal-switch {
