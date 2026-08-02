@@ -1622,10 +1622,10 @@
   .record-detail-section-heading {
     align-items: flex-start;
     gap: 4px;
+    flex-wrap: wrap;
   }
 
   .record-detail-section-heading-actions {
-    //width: 100%;
     justify-content: space-between;
   }
 
@@ -1635,10 +1635,6 @@
 
   .expense-attachment-item {
     grid-template-columns: 34px minmax(0, 1fr);
-  }
-
-  .expense-attachment-item small {
-    grid-column: 2;
   }
 
   .expense-attachment-item .expense-attachment-type {
