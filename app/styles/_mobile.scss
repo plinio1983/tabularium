@@ -2136,7 +2136,7 @@
     margin-inline: 0;
 
     &.app-form-wizard-step-5 {
-      row-gap: 16px;
+      //row-gap: 16px;
     }
   }
 
@@ -5221,11 +5221,13 @@
     height: auto;
     min-height: 0;
     max-height: min(72dvh, 560px);
-    margin: 0;
+    margin: 0 0 -15px 0;
     padding: 0;
     grid-template-rows: auto auto minmax(0, 1fr);
     border: 1px solid rgba(226, 232, 240, .95);
     border-radius: 20px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     overflow: hidden;
     transform: translateY(var(--bulk-sheet-offset, 0));
     transition: transform .18s ease;

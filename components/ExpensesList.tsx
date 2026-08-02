@@ -217,6 +217,8 @@ export default function ExpensesList({
                     label: category.name,
                     icon: category.icon
                 }))}
+                suppliers={suppliers}
+                supplierEligibleIds={expenses.filter(expense => expense.expenseType === 'STANDARD').map(expense => expense.id)}
             />
             <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar expense-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
                 <label className="bulk-select-all-inline">

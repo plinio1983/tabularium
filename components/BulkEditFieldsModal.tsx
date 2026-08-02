@@ -1,7 +1,11 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {type ReactNode, useEffect, useState} from "react";
 import {createPortal} from "react-dom";
+import {addCalendarDays, dateInputInTimeZone} from "@/lib/company-time";
+import {useCompanyTimeZone} from "@/components/CompanyTimeZoneProvider";
+import {DateField, MonthField, SelectField} from "@/components/FormControls";
+import SupplierAutocomplete, {type SupplierAutocompleteOption} from "@/components/SupplierAutocomplete";
 
 type Props = {
   formId: string;
@@ -9,9 +13,11 @@ type Props = {
   action?: string;
   categoryFieldName?: string;
   categories?: Array<{value: string; label: string; icon?: string | null}>;
+  suppliers?: SupplierAutocompleteOption[];
+  supplierEligibleIds?: number[];
 };
 
-type Step = "choice" | "category";
+type Step = "choice" | "category" | "dates" | "supplier" | "accounting";
 
 function selectedIdsForForm(formId: string) {
   return Array.from(document.querySelectorAll<HTMLInputElement>(
@@ -19,17 +25,44 @@ function selectedIdsForForm(formId: string) {
   )).map(input => input.value);
 }
 
-export default function BulkEditFieldsModal({formId, subject, action, categoryFieldName = "categoryId", categories = []}: Props) {
+function AccountingField({title, hint, active, name, onActiveChange, children}: {title: string; hint: string; active: boolean; name: string; onActiveChange: (value: boolean) => void; children: ReactNode}) {
+  return <section className={`bulk-edit-date-card bulk-edit-accounting-card${active ? " is-active" : ""}`}>
+    <div className="bulk-edit-date-card-heading"><div><strong>{title}</strong><small>{hint}</small></div><label className="switch" aria-label={`Modifica ${title}`}><input type="checkbox" name={name} checked={active} onChange={event => onActiveChange(event.currentTarget.checked)}/><span className="slider"/></label></div>
+    {active ? <div className="bulk-edit-accounting-control">{children}</div> : null}
+  </section>;
+}
+
+export default function BulkEditFieldsModal({formId, subject, action, categoryFieldName = "categoryId", categories = [], suppliers = [], supplierEligibleIds = []}: Props) {
+  const timeZone = useCompanyTimeZone();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [step, setStep] = useState<Step>("choice");
   const [direction, setDirection] = useState<"forward" | "back">("forward");
+  const [updateOrderDate, setUpdateOrderDate] = useState(false);
+  const [updateDueDate, setUpdateDueDate] = useState(false);
+  const [orderDate, setOrderDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
+  const [updateFiscal, setUpdateFiscal] = useState(false);
+  const [fiscalValue, setFiscalValue] = useState(true);
+  const [updateVatRate, setUpdateVatRate] = useState(false);
+  const [vatRate, setVatRate] = useState("22");
+  const [updateBillingPeriod, setUpdateBillingPeriod] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState("");
+  const [updateElectronicInvoice, setUpdateElectronicInvoice] = useState(false);
+  const [electronicInvoice, setElectronicInvoice] = useState(true);
+  const [updateInvoiceStatus, setUpdateInvoiceStatus] = useState(false);
+  const [invoiceStatus, setInvoiceStatus] = useState("IN_ATTESA");
   const hasCategoryStep = Boolean(action && categories.length);
+  const hasDatesStep = Boolean(action && subject === "spese");
+  const supplierEligibleIdSet = new Set(supplierEligibleIds.map(String));
+  const supplierSelectionEligible = selectedIds.length > 0 && selectedIds.every(id => supplierEligibleIdSet.has(id));
+  const selectedDatesInvalid = updateOrderDate && updateDueDate && Boolean(orderDate && dueDate && dueDate < orderDate);
   const fields = [
-    {label: "Data ordine e scadenza", icon: "📅", enabled: false},
+    {label: "Data ordine e scadenza", icon: "📅", enabled: hasDatesStep, step: "dates" as const},
     {label: "Categoria", icon: "🏷", enabled: hasCategoryStep, step: "category" as const},
-    {label: "Esercente", icon: "🏪", enabled: false},
-    {label: "Informazioni fiscali e contabili", icon: "🧾", enabled: false},
+    {label: "Esercente", icon: "🏪", enabled: Boolean(action && subject === "spese" && suppliers.length && supplierSelectionEligible), step: "supplier" as const, status: supplierSelectionEligible ? undefined : "Solo spese standard"},
+    {label: "Informazioni fiscali e contabili", icon: "🧾", enabled: supplierSelectionEligible, step: "accounting" as const, status: supplierSelectionEligible ? undefined : "Solo spese standard"},
   ];
 
   useEffect(() => {
@@ -41,6 +74,21 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
       setSelectedIds(ids);
       setStep("choice");
       setDirection("forward");
+      setUpdateOrderDate(false);
+      setUpdateDueDate(false);
+      setOrderDate("");
+      setDueDate("");
+      setSelectedSupplierId(null);
+      setUpdateFiscal(false);
+      setFiscalValue(true);
+      setUpdateVatRate(false);
+      setVatRate("22");
+      setUpdateBillingPeriod(false);
+      setBillingPeriod("");
+      setUpdateElectronicInvoice(false);
+      setElectronicInvoice(true);
+      setUpdateInvoiceStatus(false);
+      setInvoiceStatus("IN_ATTESA");
       setIsOpen(true);
     };
     document.addEventListener("bulk-edit-request", onRequest);
@@ -57,6 +105,21 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
     setStep("category");
   }
 
+  function selectDates() {
+    setDirection("forward");
+    setStep("dates");
+  }
+
+  function selectSupplier() {
+    setDirection("forward");
+    setStep("supplier");
+  }
+
+  function selectAccounting() {
+    setDirection("forward");
+    setStep("accounting");
+  }
+
   function goBack() {
     setDirection("back");
     setStep("choice");
@@ -68,49 +131,120 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
     <div className="app-form-modal-backdrop bulk-category-modal-backdrop" role="presentation" onMouseDown={event => {
       if (event.target === event.currentTarget) closeModal();
     }}>
-      <div className="app-form-modal bulk-category-modal bulk-edit-fields-modal" role="dialog" aria-modal="true" aria-labelledby={`${formId}-bulk-edit-title`}>
+      <div className="bulk-category-modal bulk-edit-fields-modal" role="dialog" aria-modal="true" aria-labelledby={`${formId}-bulk-edit-title`}>
         <div className="modal-toolbar-card toolbar-card">
           <div>
-            <h2 id={`${formId}-bulk-edit-title`}>{step === "choice" ? `Modifica ${subject}` : "Modifica categoria"}</h2>
+            <h2 id={`${formId}-bulk-edit-title`}>{step === "choice" ? `Modifica ${subject}` : step === "category" ? "Modifica categoria" : step === "dates" ? "Modifica date" : step === "supplier" ? "Modifica esercente" : "Informazioni fiscali e contabili"}</h2>
             <p className="muted">Record selezionati: <strong>{selectedIds.length}</strong></p>
           </div>
         </div>
         <div key={step} className={`bulk-edit-step bulk-edit-step-${direction}`}>
-          {step === "choice" ? <>
+          {step === "choice" ? <div className="bulk-edit-form bulk-edit-choice-form">
             <div className="bulk-edit-fields-list">
               {fields.map(field => <button
                 key={field.label}
                 type="button"
                 className={`bulk-edit-field-button${field.enabled ? "" : " is-disabled"}`}
                 disabled={!field.enabled}
-                onClick={field.step === "category" && field.enabled ? selectCategory : undefined}
+                onClick={field.step === "category" && field.enabled ? selectCategory : field.step === "dates" && field.enabled ? selectDates : field.step === "supplier" && field.enabled ? selectSupplier : field.step === "accounting" && field.enabled ? selectAccounting : undefined}
               >
                 <span className="bulk-edit-field-icon" aria-hidden="true">{field.icon}</span>
                 <span>{field.label}</span>
-                <span className="bulk-edit-field-status">{field.enabled ? "›" : "Prossimamente"}</span>
+                <span className="bulk-edit-field-status">{field.enabled ? "›" : field.status ?? "Prossimamente"}</span>
               </button>)}
               <div className="bulk-edit-accounting-fields muted">
                 Fiscale, aliquota IVA, periodo contabile, fattura elettronica e stato fattura
               </div>
             </div>
-            <div className="actions-row form-actions-row">
-              <button type="button" className="btn btn-sm btn-default" onClick={closeModal}>× Annulla</button>
+            <div className="bulk-edit-actions">
+              <button type="button" className="btn btn-md btn-default" onClick={closeModal}><span className="btn-icon">✕</span> Annulla</button>
             </div>
-          </> : <form action={action} method="post" className="form bulk-category-modal-form">
+          </div> : step === "category" ? <form action={action} method="post" className="bulk-edit-form bulk-edit-category-form">
             <input type="hidden" name="bulkAction" value="change_category" />
             {selectedIds.map(id => <input key={id} type="hidden" name="ids" value={id} />)}
-            <label>Categoria
-              <select name={categoryFieldName} required defaultValue="">
-                <option value="" disabled>Seleziona categoria</option>
-                {categories.map(category => <option key={category.value} value={category.value}>
-                  {category.icon ? `${category.icon} ${category.label}` : category.label}
-                </option>)}
-              </select>
-            </label>
-            <div className="actions-row form-actions-row">
-              <button type="button" className="btn btn-sm btn-default" onClick={goBack}>‹ Indietro</button>
-              <button type="submit" className="btn btn-md btn-primary">Salva</button>
+            <div className="bulk-edit-category-content">
+              <label><span><span className="app-form-label-icon" aria-hidden="true">🏷</span> Categoria</span>
+                <select name={categoryFieldName} required defaultValue="">
+                  <option value="" disabled>Seleziona categoria</option>
+                  {categories.map(category => <option key={category.value} value={category.value}>
+                    {category.icon ? `${category.icon} ${category.label}` : category.label}
+                  </option>)}
+                </select>
+              </label>
             </div>
+            <div className="bulk-edit-actions">
+              <button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
+              <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">✓</span> Conferma</button>
+            </div>
+          </form> : step === "dates" ? <form action={action} method="post" className="bulk-edit-form bulk-edit-dates-form">
+            <input type="hidden" name="bulkAction" value="change_dates" />
+            {selectedIds.map(id => <input key={id} type="hidden" name="ids" value={id} />)}
+            <div className="bulk-edit-dates-content">
+              <section className={`bulk-edit-date-card${updateOrderDate ? " is-active" : ""}`}>
+                <div className="bulk-edit-date-card-heading">
+                  <div><strong>Data ordine</strong><small>Assegna la stessa data ordine ai record selezionati</small></div>
+                  <label className="switch" aria-label="Modifica data ordine"><input type="checkbox" name="updateOrderDate" checked={updateOrderDate} onChange={event => setUpdateOrderDate(event.currentTarget.checked)}/><span className="slider"/></label>
+                </div>
+                {updateOrderDate ? <div className="app-form-wizard bulk-edit-date-control-scope"><DateField label="Nuova data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/></div> : null}
+              </section>
+              <section className={`bulk-edit-date-card${updateDueDate ? " is-active" : ""}`}>
+                <div className="bulk-edit-date-card-heading">
+                  <div><strong>Data scadenza</strong><small>La scadenza non può essere rimossa</small></div>
+                  <label className="switch" aria-label="Modifica data scadenza"><input type="checkbox" name="updateDueDate" checked={updateDueDate} onChange={event => setUpdateDueDate(event.currentTarget.checked)}/><span className="slider"/></label>
+                </div>
+                {updateDueDate ? <div className="app-form-wizard bulk-edit-date-control-scope"><DateField label="Nuova data scadenza" name="dueDate" value={dueDate} onChange={setDueDate} required>
+                  <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">{[0, 7, 15, 30].map(days => {
+                    const base = updateOrderDate && orderDate ? orderDate : dateInputInTimeZone(timeZone);
+                    const value = addCalendarDays(base, days);
+                    return <button type="button" key={days} className={dueDate === value ? "is-selected" : ""} onClick={() => setDueDate(value)}>{days === 0 ? "Stesso g" : `+${days} gg`}</button>;
+                  })}</span>
+                </DateField></div> : null}
+              </section>
+              {!updateOrderDate && !updateDueDate ? <p className="muted bulk-edit-dates-hint">Attiva almeno una data da modificare.</p> : null}
+              {selectedDatesInvalid ? <p className="inline-form-error bulk-edit-dates-hint">La scadenza non può precedere la data ordine.</p> : null}
+            </div>
+            <div className="bulk-edit-actions">
+              <button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
+              <button type="submit" className="btn btn-md btn-primary" disabled={(!updateOrderDate && !updateDueDate) || (updateOrderDate && !orderDate) || (updateDueDate && !dueDate) || selectedDatesInvalid}><span className="btn-icon">✓</span> Conferma</button>
+            </div>
+          </form> : step === "supplier" ? <form action={action} method="post" className="bulk-edit-form bulk-edit-supplier-form">
+            <input type="hidden" name="bulkAction" value="change_supplier" />
+            {selectedIds.map(id => <input key={id} type="hidden" name="ids" value={id} />)}
+            <div className="bulk-edit-supplier-content app-form-wizard">
+              <SupplierAutocomplete
+                suppliers={suppliers.filter(supplier => !supplier.systemRole)}
+                categories={categories.map(category => ({id: Number(category.value), name: category.label, icon: category.icon}))}
+                onSupplierSelected={supplier => setSelectedSupplierId(supplier?.id ?? null)}
+                wizardStep={false}
+              />
+              <p className="muted">La categoria delle spese rimarrà invariata.</p>
+            </div>
+            <div className="bulk-edit-actions">
+              <button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
+              <button type="submit" className="btn btn-md btn-primary" disabled={!selectedSupplierId}><span className="btn-icon">✓</span> Conferma</button>
+            </div>
+          </form> : <form action={action} method="post" className="bulk-edit-form bulk-edit-accounting-form">
+            <input type="hidden" name="bulkAction" value="change_accounting" />
+            {selectedIds.map(id => <input key={id} type="hidden" name="ids" value={id} />)}
+            <div className="bulk-edit-accounting-content">
+              <AccountingField title="Natura della spesa" hint="Fiscale o non fiscale" active={updateFiscal} name="updateFiscal" onActiveChange={setUpdateFiscal}>
+                <input type="hidden" name="fiscalValue" value={fiscalValue ? "true" : "false"}/>
+                <div className="btn-group bulk-edit-segmented-control"><button type="button" className={`btn btn-md ${fiscalValue ? "btn-primary" : "btn-default"}`} onClick={() => setFiscalValue(true)}>Fiscale</button><button type="button" className={`btn btn-md ${!fiscalValue ? "btn-primary" : "btn-default"}`} onClick={() => {setFiscalValue(false); setVatRate("0"); setElectronicInvoice(false); setInvoiceStatus("NON_PREVISTA");}}>Non fiscale</button></div>
+              </AccountingField>
+              <AccountingField title="Aliquota IVA" hint="Aliquota applicata all’importo" active={updateVatRate} name="updateVatRate" onActiveChange={setUpdateVatRate}>
+                <input type="hidden" name="vatRate" value={vatRate}/><div className="app-vat-rate-buttons bulk-edit-vat-buttons">{["0", "4", "10", "22"].map(rate => <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} onClick={() => setVatRate(rate)}>{rate}%</button>)}</div>
+              </AccountingField>
+              <AccountingField title="Periodo contabile" hint="Mese utilizzato nei report" active={updateBillingPeriod} name="updateBillingPeriod" onActiveChange={setUpdateBillingPeriod}>
+                <div className="app-form-wizard bulk-edit-date-control-scope"><MonthField label="Nuovo periodo contabile" name="billingPeriod" value={billingPeriod} onChange={setBillingPeriod} required/></div>
+              </AccountingField>
+              <AccountingField title="Tipo di fattura" hint="Documento PDF o fattura elettronica" active={updateElectronicInvoice} name="updateElectronicInvoice" onActiveChange={setUpdateElectronicInvoice}>
+                <input type="hidden" name="electronicInvoice" value={electronicInvoice ? "true" : "false"}/><div className="btn-group bulk-edit-segmented-control"><button type="button" className={`btn btn-md ${!electronicInvoice ? "btn-primary" : "btn-default"}`} onClick={() => setElectronicInvoice(false)}>PDF</button><button type="button" className={`btn btn-md ${electronicInvoice ? "btn-primary" : "btn-default"}`} onClick={() => {setElectronicInvoice(true); if (invoiceStatus === "NON_PREVISTA") setInvoiceStatus("IN_ATTESA");}}>Elettronica</button></div>
+              </AccountingField>
+              <AccountingField title="Stato fattura" hint="Stato del documento fiscale" active={updateInvoiceStatus} name="updateInvoiceStatus" onActiveChange={setUpdateInvoiceStatus}>
+                <SelectField label="Nuovo stato fattura" name="invoiceStatus" value={invoiceStatus} onChange={setInvoiceStatus} options={[{value: "NON_PREVISTA", label: "Non prevista", disabled: updateElectronicInvoice && electronicInvoice}, {value: "IN_ATTESA", label: "⏳ In attesa"}, {value: "PARZIALE", label: "◐ Fatturato parzialmente"}, {value: "RICEVUTA", label: "✅ Emessa"}, {value: "CONTESTAZIONE", label: "⚠️ Contestazione"}]}/>
+              </AccountingField>
+            </div>
+            <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!(updateFiscal || updateVatRate || updateBillingPeriod || updateElectronicInvoice || updateInvoiceStatus) || (updateBillingPeriod && !billingPeriod)}><span className="btn-icon">✓</span> Conferma</button></div>
           </form>}
           </div>
       </div>

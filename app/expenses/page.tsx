@@ -698,6 +698,11 @@ export default async function ExpensesPage({searchParams}: {
         },
         errorMessages: {
             invalid: 'Controlla i campi della spesa.',
+            invalid_bulk_dates: 'Modifica non eseguita: controlla data ordine e scadenza dei record selezionati.',
+            invalid_bulk_supplier: 'Seleziona un esercente valido.',
+            invalid_bulk_supplier_records: 'L’esercente può essere modificato in blocco soltanto per le spese standard.',
+            invalid_bulk_accounting: 'Modifica non eseguita: controlla le informazioni fiscali e contabili selezionate.',
+            invalid_bulk_accounting_records: 'Le informazioni fiscali e contabili possono essere modificate in blocco soltanto per le spese standard.',
             invalid_attachment: 'Allegato non valido. Usa PDF, JPG, PNG, WebP, XML o P7M fino a 10 MB.',
             supplier_not_found: 'Fornitore non trovato. Aggiungilo prima con il pulsante Nuovo nel campo Esercente, poi salva la spesa.',
             not_found: 'Spesa non trovata.',
@@ -1169,78 +1174,6 @@ export default async function ExpensesPage({searchParams}: {
         })();
         document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });
         document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui record selezionati?'; if (!confirm(message)) event.preventDefault(); } });
-        (() => {
-          const syncBulkMenus = () => {
-            document.querySelectorAll('[data-bulk-menu]').forEach(menu => {
-              const formId = menu.getAttribute('data-bulk-form');
-              const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
-              menu.classList.toggle('bulk-action-menu-disabled', selected === 0);
-              if (selected === 0) menu.removeAttribute('open');
-            });
-            document.querySelectorAll('[data-bulk-direct-actions]').forEach(group => {
-              const formId = group.getAttribute('data-bulk-form');
-              const selectedInputs = formId ? Array.from(document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked')) : [];
-              const selected = selectedInputs.length;
-              const firstId = selectedInputs[0] ? selectedInputs[0].value : '';
-              const returnTo = group.getAttribute('data-return-to') || '';
-              const edit = group.querySelector('[data-bulk-edit]');
-              const copy = group.querySelector('[data-bulk-copy]');
-              const del = group.querySelector('[data-bulk-delete]');
-              const payment = document.querySelector('[data-bulk-menu][data-bulk-form="' + formId + '"] [data-bulk-add-payment]');
-              const singleEnabled = selected === 1;
-              const anyEnabled = selected > 0;
-              if (edit) {
-                edit.classList.toggle('is-disabled', !singleEnabled);
-                edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                edit.href = '#';
-                if (singleEnabled) edit.setAttribute('data-expense-edit-id', firstId);
-                else edit.removeAttribute('data-expense-edit-id');
-                if (singleEnabled) edit.setAttribute('data-expense-edit-id', firstId);
-                else edit.removeAttribute('data-expense-edit-id');
-              }
-              if (copy) {
-                copy.classList.toggle('is-disabled', !singleEnabled);
-                copy.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                copy.href = '#';
-                if (singleEnabled) copy.setAttribute('data-expense-copy-id', firstId);
-                else copy.removeAttribute('data-expense-copy-id');
-              }
-              if (payment) {
-                payment.disabled = !singleEnabled;
-                if (singleEnabled) payment.setAttribute('data-expense-payment-id', firstId);
-                else payment.removeAttribute('data-expense-payment-id');
-              }
-              if (del) del.disabled = !anyEnabled;
-            });
-          };
-          document.addEventListener('change', function(event) {
-            const target = event.target;
-            if (target && target.classList && target.classList.contains('bulk-select-all')) {
-              const formId = target.getAttribute('data-bulk-target');
-              if (!formId) return;
-              document.querySelectorAll('input[form="' + formId + '"][name="ids"]').forEach(input => { input.checked = target.checked; });
-            }
-            if (target && target.matches && (target.matches('input[name="ids"]') || target.classList.contains('bulk-select-all'))) syncBulkMenus();
-          });
-          document.addEventListener('click', function(event) {
-            document.querySelectorAll('[data-bulk-menu][open]').forEach(menu => {
-              if (!menu.contains(event.target)) menu.removeAttribute('open');
-            });
-          });
-          document.addEventListener('click', function(event) {
-            const link = event.target.closest && event.target.closest('.bulk-direct-link.is-disabled');
-            if (link) event.preventDefault();
-          });
-          document.addEventListener('toggle', function(event) {
-            const menu = event.target;
-            if (menu && menu.matches && menu.matches('[data-bulk-menu][open]')) {
-              const formId = menu.getAttribute('data-bulk-form');
-              const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
-              if (!selected) menu.removeAttribute('open');
-            }
-          }, true);
-          syncBulkMenus();
-        })();
         (() => {
           const quick = document.getElementById('billingPeriodQuick');
           const from = document.getElementById('billingPeriodFrom');
