@@ -92,12 +92,12 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
                 </a>
                 <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp"
                         name="bulkAction" value="delete" data-bulk-delete disabled={!anySelected}>
-                    <span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span>
+                    <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span>
                 </button>
               </div>
             </div>
             <div className="bulk-inner-container">
-                <Link className="bulk-direct-link btn btn-md btn-primary"
+                <Link className="bulk-direct-link bulk-add-link btn btn-md btn-primary"
                       href="/incomes/cash-register"
                       data-bulk-new
                       data-floating-label="Scontrino"

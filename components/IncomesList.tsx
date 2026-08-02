@@ -161,11 +161,11 @@ export default function IncomesList({
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
                 <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
-                    <span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
+                    <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span></button>
               </div>
             </div>
             <div className="bulk-inner-container">
-                <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
+                <button className="bulk-direct-link bulk-add-link  btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
                     <span className="btn-icon">+</span><span className="bulk-label">Incasso</span></button>
             </div>
         </form>

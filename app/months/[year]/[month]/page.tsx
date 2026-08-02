@@ -258,9 +258,9 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <input type="hidden" name="mode" value={mode}/>
                 <input type="hidden" name="returnTo" value={backHref}/>
                 <label htmlFor="monthExpenseSupplierQuickSearch">Ricerca rapida</label>
-                <div className="entity-quick-search-field">
+                <div className="entity-quick-search-field input-group">
                     <input id="monthExpenseSupplierQuickSearch" name="supplierQuick" defaultValue={supplierQuickValue} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-primary" type="submit" aria-label="Cerca fornitore"><SearchIcon /></button>
+                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca fornitore"><SearchIcon /></button>
                 </div>
             </form>
             {supplierQuickValue ? <div className="recurring-active-filters"><div><span className="recurring-active-filters-title">Filtri attivi</span><div className="recurring-active-filter-tags"><span className="badge"><strong>Fornitore:</strong> {supplierQuickValue}</span></div></div><Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href={`/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>× Reset</Link></div> : null}

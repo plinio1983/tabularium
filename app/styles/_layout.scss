@@ -5346,12 +5346,6 @@ table th, table td {
   }
 }
 
-.cash-register-receipt-list-card .cash-register-select-all {
-  display: inline-flex;
-  align-items: center;
-  flex: 0 0 auto;
-}
-
 .cash-register-receipt-content {
   display: grid;
   grid-template-columns: minmax(140px, .8fr) minmax(190px, 1fr) minmax(150px, .8fr) minmax(100px, auto);
@@ -8631,13 +8625,14 @@ html, body {
 .btn-secondary {
   background: #f1f0ff;
   color: #5746b8;
-  border-color: #ded9ff;
+  border-color: #d7d4ff;
 
   &:hover,
   &:active,
   &:focus {
     background: #e6e1ff;
-    border-color: #c4cce2;
+    //border-color: #c4cce2;
+    border-color: #ded9ff;
   }
 }
 

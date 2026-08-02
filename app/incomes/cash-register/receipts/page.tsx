@@ -7,6 +7,7 @@ import CashRegisterReceiptTrendChart from '@/components/CashRegisterReceiptTrend
 import {buildDailyReceiptTrend, buildDailyReceiptTrendRange} from '@/lib/cash-register-trend';
 import {Prisma} from '@/generated/prisma/client';
 import CashRegisterReceiptFiltersDrawer from '@/components/CashRegisterReceiptFiltersDrawer';
+import SelectedButtonGroupScroller from '@/components/SelectedButtonGroupScroller';
 
 function value(params: Record<string, string | string[] | undefined>, key: string) {
     const item = params[key];
@@ -143,14 +144,14 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         <div className="toolbar-card">
             <div><h2>Scontrini registratore</h2><p className="muted">{receiptCount} movimenti · {total.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'})}</p></div>
             <div className="toolbar-actions">
-                <Link className="btn btn-md btn-default" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
+                <Link className="btn btn-sm btn-default" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
                 <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register">🧮 Reg. di cassa</Link>
             </div>
         </div>
         <nav className="cash-register-receipt-period-nav" aria-label={`Mesi del ${billingYear}`}>
-            <div className="btn-group cash-register-receipt-month-group">
+            <SelectedButtonGroupScroller className="btn-group cash-register-receipt-month-group">
                 {monthLinks.map(item => <Link key={item.label} className={`btn btn-sm ${item.selected ? 'btn-primary is-selected' : 'btn-default'}`} aria-current={item.selected ? 'page' : undefined} href={item.href}>{item.label}</Link>)}
-            </div>
+            </SelectedButtonGroupScroller>
             <div className="cash-register-receipt-filter-trigger">
                 <CashRegisterReceiptFiltersDrawer month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>
             </div>

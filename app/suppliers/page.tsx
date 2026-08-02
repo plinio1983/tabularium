@@ -408,11 +408,13 @@ export default async function SuppliersPage({searchParams}: {
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
                     <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
-                        <span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
+                        <span className="btn-icon icon-small">🗑</span>
+                        <span className="bulk-label">Elimina</span>
+                    </button>
                   </div>
                 </div>
                 <div className="bulk-inner-container">
-                    <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">
+                    <button className="bulk-direct-link btn btn-md btn-primary bulk-add-link " type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">
                         <span className="btn-icon">+</span>
                         <span className="bulk-label">Fornitore</span>
                     </button>
