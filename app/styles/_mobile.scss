@@ -5124,3 +5124,68 @@
     display: none !important;
   }
 }
+
+/* Tutti i dialoghi occupano l'intera viewport sui dispositivi mobili. */
+@media (max-width: 760px) {
+  body:has(.modal-backdrop),
+  body:has(.app-form-modal-backdrop),
+  body:has(.bulk-action-modal-backdrop),
+  body:has(.cash-register-method-backdrop),
+  body:has(.filter-drawer-backdrop.is-open) {
+    overflow: hidden;
+  }
+
+  .modal-backdrop,
+  .app-form-modal-backdrop,
+  .bulk-action-modal-backdrop,
+  .cash-register-method-backdrop,
+  .filter-drawer-backdrop {
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 0 !important;
+    align-items: stretch;
+    justify-content: stretch;
+    overflow: hidden;
+  }
+
+  .modal-backdrop > .modal-card,
+  .app-form-modal-backdrop > .app-form-modal,
+  .bulk-action-modal-backdrop > .bulk-action-modal,
+  .cash-register-method-backdrop > .cash-register-method-modal,
+  .filter-drawer-backdrop > .filter-drawer-panel {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding-top: max(14px, env(safe-area-inset-top));
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .filter-drawer-backdrop > .filter-drawer-panel {
+    transform: translateX(100%);
+  }
+
+  .filter-drawer-backdrop.is-open > .filter-drawer-panel {
+    transform: translateX(0);
+  }
+
+  .bulk-action-modal-backdrop > .bulk-action-modal {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .cash-register-method-backdrop > .cash-register-method-modal {
+    align-content: start;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}

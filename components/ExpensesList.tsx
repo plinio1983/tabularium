@@ -234,6 +234,7 @@ export default function ExpensesList({
                             formId={formId}
                             action={`/api/expenses/bulk?returnTo=${returnTo}`}
                             fieldName="categoryId"
+                            hideTrigger
                             categories={categories.map(category => ({
                                 value: String(category.id),
                                 label: category.name,
