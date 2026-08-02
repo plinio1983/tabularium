@@ -563,7 +563,7 @@
 
 @media (max-width: 576px) {
   .filter-drawer-panel {
-    width: min(100vw, 420px);
+    width: min(420px, calc(100vw - 24px));
   }
 
   .filter-drawer-header,
@@ -1467,10 +1467,14 @@
   }
 
   .bulk-direct-link {
-    width: 38px;
+    width: 46px;
     min-width: 38px;
-    height: 38px;
+    //height: 38px;
     min-height: 38px;
+  }
+
+  .bulk-direct-link.bulk-add-link {
+    width: 38px;
   }
 
   .payment-row .payment-row-actions {
@@ -1536,9 +1540,13 @@
   .floating-bulk-actions-inner .floating-bulk-button {
     height: 38px;
     min-height: 38px;
-    width: 38px;
+    width: 46px;
     min-width: 38px;
     padding: 0;
+  }
+
+  .floating-bulk-actions-inner .floating-bulk-new {
+    width: 38px;
   }
 
   .floating-bulk-actions-inner .floating-bulk-select-all-inline {
@@ -4201,12 +4209,14 @@
     font-size: 16px;
   }
 
-  .bulk-direct-link .btn-icon {
-    font-size: 20px;
-  }
-
+  .bulk-direct-link .btn-icon,
   .floating-bulk-actions-inner .btn-icon {
-    font-size: 20px;
+    font-size: 30px;
+    font-weight: 400;
+
+    &.icon-small {
+      font-size: 22px;
+    }
   }
 }
 
@@ -5125,7 +5135,7 @@
   }
 }
 
-/* Tutti i dialoghi occupano l'intera viewport sui dispositivi mobili. */
+/* Solo le finestre modali centrate occupano l'intera viewport mobile. */
 @media (max-width: 760px) {
   body:has(.modal-backdrop),
   body:has(.app-form-modal-backdrop),
@@ -5136,10 +5146,7 @@
   }
 
   .modal-backdrop,
-  .app-form-modal-backdrop,
-  .bulk-action-modal-backdrop,
-  .cash-register-method-backdrop,
-  .filter-drawer-backdrop {
+  .app-form-modal-backdrop {
     inset: 0;
     width: 100vw;
     height: 100dvh;
@@ -5151,10 +5158,7 @@
   }
 
   .modal-backdrop > .modal-card,
-  .app-form-modal-backdrop > .app-form-modal,
-  .bulk-action-modal-backdrop > .bulk-action-modal,
-  .cash-register-method-backdrop > .cash-register-method-modal,
-  .filter-drawer-backdrop > .filter-drawer-panel {
+  .app-form-modal-backdrop > .app-form-modal {
     width: 100vw;
     max-width: 100vw;
     height: 100dvh;
@@ -5171,21 +5175,107 @@
     overscroll-behavior: contain;
   }
 
-  .filter-drawer-backdrop > .filter-drawer-panel {
-    transform: translateX(100%);
-  }
+}
 
-  .filter-drawer-backdrop.is-open > .filter-drawer-panel {
-    transform: translateX(0);
+@media (max-width: 768px) {
+  .floating-bulk-button-group > .floating-bulk-copy {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .expense-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:nth-last-child(2) {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+}
+
+/* Il menu delle azioni bulk resta un bottom sheet compatto. */
+@media (max-width: 760px) {
+  .bulk-action-modal-backdrop {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px 16px max(16px, env(safe-area-inset-bottom)) !important;
+    background: rgba(15, 23, 42, .42);
+    animation: bulk-action-backdrop-enter .2s ease both;
   }
 
   .bulk-action-modal-backdrop > .bulk-action-modal {
-    grid-template-rows: auto minmax(0, 1fr);
+    width: min(420px, 100%);
+    max-width: 420px;
+    height: auto;
+    min-height: 0;
+    max-height: min(72dvh, 560px);
+    margin: 0;
+    padding: 0;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    border: 1px solid rgba(226, 232, 240, .95);
+    border-radius: 20px;
+    overflow: hidden;
+    transform: translateY(var(--bulk-sheet-offset, 0));
+    transition: transform .18s ease;
+    animation: bulk-action-sheet-enter .24s cubic-bezier(.2, .75, .25, 1) both;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .28);
   }
 
-  .cash-register-method-backdrop > .cash-register-method-modal {
-    align-content: start;
-    padding-right: 16px;
-    padding-left: 16px;
+  .bulk-action-modal-backdrop > .bulk-action-modal.is-dragging,
+  .bulk-action-modal-backdrop > .bulk-action-modal.has-entered {
+    animation: none;
+  }
+
+  .bulk-action-modal-backdrop > .bulk-action-modal.is-dragging {
+    transition: none;
+  }
+
+  .bulk-action-modal-backdrop.is-closing {
+    background: rgba(15, 23, 42, 0);
+    transition: background .18s ease;
+  }
+
+  .bulk-action-modal-drag-handle {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    height: 26px;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .bulk-action-modal-drag-handle::after {
+    content: "";
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 44px;
+    height: 5px;
+    border-radius: 999px;
+    background: #cbd5e1;
+    transform: translateX(-50%);
+  }
+
+  .bulk-action-modal.is-dragging .bulk-action-modal-drag-handle {
+    cursor: grabbing;
+  }
+
+  .bulk-action-modal-header {
+    padding-top: 6px;
+  }
+
+  .bulk-action-modal-actions {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+  }
+
+  @keyframes bulk-action-sheet-enter {
+    from { transform: translateY(calc(100% + 24px)); }
+    to { transform: translateY(0); }
+  }
+
+  @keyframes bulk-action-backdrop-enter {
+    from { background: rgba(15, 23, 42, 0); }
+    to { background: rgba(15, 23, 42, .42); }
   }
 }

@@ -2024,7 +2024,7 @@ body.drawer-open {
 }
 
 .filter-drawer-panel {
-  //width: min(440px, calc(100vw - 28px));
+  width: min(440px, calc(100vw - 28px));
   height: 100%;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -9942,6 +9942,10 @@ html, body {
   cursor: pointer;
 }
 
+.bulk-select-all {
+  margin: 4px 0;
+}
+
 .compact-incomes-table col.income-col-select {
   width: 30px;
 }
@@ -9986,7 +9990,7 @@ html, body {
   list-style: none;
   cursor: pointer;
   user-select: none;
-  height: 30px;
+  height: 38px;
 }
 
 .bulk-action-menu > summary::-webkit-details-marker {
@@ -10309,6 +10313,39 @@ select:disabled {
   overflow: visible;
 }
 
+.expense-bulk-actions-bar .bulk-action-buttons {
+  flex: 0 0 auto;
+  align-items: stretch;
+  white-space: nowrap;
+}
+
+.expense-bulk-actions-bar .bulk-action-buttons .bulk-direct-actions {
+  gap: 0;
+}
+
+.expense-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu > summary,
+.expense-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link {
+  position: relative;
+  margin-left: -1px;
+  border-radius: 0;
+}
+
+.expense-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu:first-child > summary {
+  margin-left: 0;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.expense-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.expense-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu > summary:is(:hover, :focus-visible),
+.expense-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:is(:hover, :focus-visible) {
+  z-index: 1;
+}
+
 .bulk-inner-container {
   text-align: right;
   flex-grow: 1;
@@ -10319,8 +10356,8 @@ select:disabled {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  height: 30px;
-  min-height: 30px;
+  //height: 30px;
+  min-height: 38px;
   padding: 0 13px;
   border-style: solid;
   border-width: 1px;
@@ -11347,9 +11384,9 @@ body.bulk-attachments-modal-open {
   border: 0 !important;
 }
 
-.bulk-action-trigger {
-  color: var(--text) !important;
-}
+//.bulk-action-trigger {
+//  color: var(--text) !important;
+//}
 
 .bulk-action-trigger::after {
   margin-left: 2px !important;
@@ -11551,6 +11588,32 @@ button.bulk-direct-danger {
   overflow: visible;
 }
 
+.floating-bulk-button-group {
+  flex: 0 0 auto;
+}
+
+.floating-bulk-button-group > .floating-bulk-menu-wrap > .floating-bulk-button,
+.floating-bulk-button-group > .floating-bulk-button {
+  position: relative;
+  margin-left: -1px;
+  border-radius: 0;
+}
+
+.floating-bulk-button-group > .floating-bulk-menu-wrap:first-child > .floating-bulk-button {
+  margin-left: 0;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.floating-bulk-button-group > .floating-bulk-button:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.floating-bulk-button-group > :is(.floating-bulk-menu-wrap, .floating-bulk-button):is(:hover, :focus-within) {
+  z-index: 1;
+}
+
 .floating-bulk-button {
   height: 30px;
   display: inline-flex;
@@ -11670,6 +11733,10 @@ button.bulk-direct-danger {
 
 .bulk-action-modal .bulk-action-modal-actions button {
   min-width: 100%;
+}
+
+.bulk-action-modal-drag-handle {
+  display: none;
 }
 
 .bulk-action-modal-header {
@@ -12859,10 +12926,21 @@ body.invoice-attachments-modal-open {
 
 .mobile-record-item {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 30px minmax(0, 1fr);
   gap: 2px;
   padding: 8px 0;
   border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 390px) {
+  .mobile-record-item {
+    grid-template-columns: 26px minmax(0, 1fr);
+    margin: 0 -9px;
+  }
+
+  .record-list-card > .bulk-actions-bar {
+    margin: 0 0 0 -12px !important;
+  }
 }
 
 .mobile-record-item:last-child {

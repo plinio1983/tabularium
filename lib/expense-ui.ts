@@ -87,3 +87,8 @@ export function formatPeriod(month: number, year: number) {
   const normalized = monthName.charAt(0).toUpperCase() + monthName.slice(1).replace('.', '');
   return `${normalized} ${year}`;
 }
+export function formatMonthPeriod(month: number) {
+    const monthName = new Intl.DateTimeFormat('it-IT', { month: 'short' }).format(new Date(1970, month - 1, 1));
+    const normalized = monthName.charAt(0).toUpperCase() + monthName.slice(1).replace('.', '');
+    return `${normalized}`;
+}

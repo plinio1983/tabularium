@@ -13,7 +13,7 @@ import {euro, moneyTone} from '@/lib/money';
 import {
     badgeClass,
     categoryLabel,
-    categoryTone,
+    categoryTone, formatMonthPeriod,
     formatPeriod,
     invoiceStatusStyles,
     paymentStatusStyles,
@@ -206,16 +206,16 @@ export default function ExpensesList({
             <BulkSelectionController/>
             <BulkCopyExpensesModal formId={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`}/>
             <BulkEditFieldsModal formId={formId} subject="spese"/>
-            <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
+            <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar expense-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
                 <label className="bulk-select-all-inline">
                     <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese visibili"/>
                 </label>
-                <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
+                <div className="bulk-action-buttons btn-group">
+                  <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
                     <summary className="bulk-action-trigger">
                         <span className="btn-icon hidden-mobile">⚙</span>
-                        <span className="bulk-label">
-                <span className="floating-bulk-label">Bulk </span>Actions
-            </span>
+                        <span className="hidden-sm-up">Actions</span>
+                        <span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
@@ -246,25 +246,28 @@ export default function ExpensesList({
                             <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
                         </button>
                     </div>
-                </details>
-                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true"
+                  </details>
+                  <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true"
                      data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-edit-trigger-attr="data-expense-edit-id" data-copy-trigger-attr="data-expense-copy-id" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
-                        <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
+                        <span className="btn-icon">✎</span>
+                        <span className="hidden-sm-down">Modifica</span>
                     </a>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
-                        <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
+                        <span className="btn-icon">⧉</span>
+                        <span className="hidden-sm-down">Copia</span>
                     </a>
                     <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete"
                             data-bulk-delete data-confirm-label="Elimina" disabled>
-                        <span className="btn-icon">🗑</span>
-                        <span className="bulk-label">Elimina</span>
+                        <span className="btn-icon icon-small">🗑</span>
+                        <span className="hidden-sm-down">Elimina</span>
                     </button>
+                  </div>
                 </div>
                 <div className="bulk-inner-container">
-                    <ExpenseNewTriggerButton className="bulk-direct-link btn btn-md btn-primary" floatingLabel="Aggiungi spesa">
+                    <ExpenseNewTriggerButton className="bulk-direct-link bulk-add-link btn btn-md btn-primary" floatingLabel="Aggiungi spesa">
                         <span className="btn-icon">+</span>
-                        <span className="bulk-label">Spesa</span>
+                        <span className="hidden-sm-down">Spesa</span>
                     </ExpenseNewTriggerButton>
                 </div>
             </form>
@@ -313,7 +316,8 @@ export default function ExpensesList({
                                     {expense.category ?
                                         <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : null}
                                     {!isVatSettlement ? fiscalBadgeMobile(expense.isDeclared) : null}
-                                    <span className="mobile-record-date">{formatPeriod(expense.month, expense.year)}</span>
+                                    <span className="mobile-record-date hidden-sp-up">{formatMonthPeriod(expense.month)}</span>
+                                    <span className="mobile-record-date date-long hidden-sp-down">{formatPeriod(expense.month, expense.year)}</span>
                                 </div>
                                 <div className="mobile-record-meta-right">
                                     {!isVatSettlement && expense.isDeclared ?

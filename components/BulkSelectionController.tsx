@@ -85,7 +85,7 @@ function syncDirectActionGroup(group: HTMLElement) {
   if (del) del.disabled = !anyEnabled;
 }
 
-function buildFloatingButton(original: HTMLElement, label: string, icon: string, className = "") {
+function buildFloatingButton(original: HTMLElement, label: string, icon: string, className = "", iconClassName = "") {
   const button = document.createElement("button");
   button.type = "button";
   button.className = `floating-bulk-button ${className}`.trim();
@@ -93,7 +93,7 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   sicon.textContent = icon;
   const slabel = document.createElement("span");
   slabel.textContent = label;
-  sicon.className = "btn-icon";
+  sicon.className = `btn-icon ${iconClassName}`;
   slabel.className = "floating-bulk-label";
   button.appendChild(sicon);
   button.appendChild(slabel);
@@ -183,6 +183,11 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
   modal.setAttribute("aria-modal", "true");
   modal.setAttribute("aria-label", "Azioni bulk");
 
+  const dragHandle = document.createElement("div");
+  dragHandle.className = "bulk-action-modal-drag-handle";
+  dragHandle.setAttribute("aria-hidden", "true");
+  modal.appendChild(dragHandle);
+
   const header = document.createElement("div");
   header.className = "bulk-action-modal-header";
 
@@ -225,6 +230,54 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
     if (event.target === backdrop) closeBulkActionModal();
   });
 
+  let dragStartY = 0;
+  let dragStartedAt = 0;
+  let dragOffset = 0;
+  let dragging = false;
+
+  const resetDrag = () => {
+    dragging = false;
+    dragOffset = 0;
+    modal.classList.remove("is-dragging");
+    modal.style.removeProperty("--bulk-sheet-offset");
+  };
+
+  dragHandle.addEventListener("pointerdown", (event) => {
+    dragging = true;
+    dragStartY = event.clientY;
+    dragStartedAt = performance.now();
+    dragOffset = 0;
+    modal.classList.add("has-entered");
+    modal.classList.add("is-dragging");
+    dragHandle.setPointerCapture(event.pointerId);
+  });
+
+  dragHandle.addEventListener("pointermove", (event) => {
+    if (!dragging) return;
+    dragOffset = Math.max(0, event.clientY - dragStartY);
+    modal.style.setProperty("--bulk-sheet-offset", `${dragOffset}px`);
+  });
+
+  const finishDrag = (event: PointerEvent) => {
+    if (!dragging) return;
+    const elapsed = Math.max(1, performance.now() - dragStartedAt);
+    const velocity = dragOffset / elapsed;
+    dragging = false;
+    modal.classList.remove("is-dragging");
+    if (dragOffset >= 90 || (dragOffset >= 42 && velocity >= .45)) {
+      modal.style.setProperty("--bulk-sheet-offset", "100dvh");
+      backdrop.classList.add("is-closing");
+      window.setTimeout(closeBulkActionModal, 180);
+    } else {
+      modal.style.removeProperty("--bulk-sheet-offset");
+    }
+    if (dragHandle.hasPointerCapture(event.pointerId)) dragHandle.releasePointerCapture(event.pointerId);
+  };
+
+  dragHandle.addEventListener("pointerup", finishDrag);
+  dragHandle.addEventListener("pointercancel", resetDrag);
+  modal.addEventListener("animationend", () => modal.classList.add("has-entered"), {once: true});
+
   document.body.appendChild(backdrop);
   document.body.classList.add("bulk-action-modal-open");
   close.focus();
@@ -241,6 +294,13 @@ function makeFloatingBar(sourceBar: HTMLElement) {
 
   const selectAll = sourceBar.querySelector<HTMLInputElement>(".bulk-select-all-inline .bulk-select-all");
   if (selectAll) inner.appendChild(buildFloatingSelectAll(selectAll));
+
+  const useButtonGroup = sourceBar.dataset.bulkButtonGroup === "true";
+  const actionTarget = useButtonGroup ? document.createElement("div") : inner;
+  if (useButtonGroup) {
+    actionTarget.className = "floating-bulk-button-group btn-group";
+    inner.appendChild(actionTarget);
+  }
 
   const sourceMenu = sourceBar.querySelector<HTMLElement>("[data-bulk-menu]");
   const sourcePanel = sourceMenu?.querySelector<HTMLElement>(".bulk-action-menu-panel");
@@ -300,7 +360,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
 
     menuWrap.appendChild(trigger);
     menuWrap.appendChild(panel);
-    inner.appendChild(menuWrap);
+    actionTarget.appendChild(menuWrap);
   }
 
   const edit = sourceBar.querySelector<HTMLElement>("[data-bulk-edit]");
@@ -308,9 +368,9 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   const del = sourceBar.querySelector<HTMLElement>("[data-bulk-delete]");
   const newItem = sourceBar.querySelector<HTMLElement>("[data-bulk-new], [data-expense-new]");
 
-  if (edit) inner.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
-  if (copy) inner.appendChild(buildFloatingButton(copy, "Copia", "⧉", "floating-bulk-copy"));
-  if (del) inner.appendChild(buildFloatingButton(del, "Elimina", "🗑", "floating-bulk-delete hidden-mobile"));
+  if (edit) actionTarget.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
+  if (copy) actionTarget.appendChild(buildFloatingButton(copy, "Copia", "⧉", "floating-bulk-copy"));
+  if (del) actionTarget.appendChild(buildFloatingButton(del, "Elimina", "🗑", "floating-bulk-delete hidden-sp", "icon-small"));
   if (newItem) {
     const newItemWrap = document.createElement("div");
     const label = newItem.getAttribute("data-floating-label") ?? "Aggiungi spesa";
