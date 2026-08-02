@@ -29,6 +29,7 @@ type EditIncome = {
   invoiceStatus?: string | null;
   vatRate?: string | number | null;
   notes?: string | null;
+  attachments?: Array<{id: number; originalName: string; sizeBytes?: number | null; type?: "INVOICE" | "DOCUMENT" | "PAYMENT_RECEIPT" | null}>;
 };
 
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null };
@@ -46,11 +47,11 @@ type Props = {
 
 export default function IncomeEditModalController({ returnTo, banks, paymentMethods, salesChannels, customers }: Props) {
   const [income, setIncome] = useState<EditIncome | null>(null);
-  const [mode, setMode] = useState<"edit" | "copy" | "credit">("edit");
+  const [mode, setMode] = useState<"edit" | "copy" | "credit" | "attachments">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
 
-  async function openIncome(id: number, nextMode: "edit" | "copy" | "credit" = "edit") {
+  async function openIncome(id: number, nextMode: "edit" | "copy" | "credit" | "attachments" = "edit") {
     setError("");
     setMode(nextMode);
     setLoadingId(id);
@@ -76,6 +77,7 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
           credits: [],
           billingMonth: billingPeriod.month,
           billingYear: billingPeriod.year,
+          attachments: [],
         });
       } else {
         setIncome(loadedIncome);
@@ -93,11 +95,12 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
       const editTrigger = target?.closest<HTMLElement>("[data-income-edit-id]");
       const copyTrigger = target?.closest<HTMLElement>("[data-income-copy-id]");
       const creditTrigger = target?.closest<HTMLElement>("[data-income-credit-id], [data-bulk-add-credit]");
-      const trigger = editTrigger ?? copyTrigger ?? creditTrigger;
+      const attachmentsTrigger = target?.closest<HTMLElement>("[data-income-attachments-id]");
+      const trigger = editTrigger ?? copyTrigger ?? creditTrigger ?? attachmentsTrigger;
       if (!trigger) return;
 
-      const nextMode = copyTrigger ? "copy" : creditTrigger ? "credit" : "edit";
-      let id = Number(copyTrigger ? copyTrigger.dataset.incomeCopyId : creditTrigger ? creditTrigger.dataset.incomeCreditId : editTrigger?.dataset.incomeEditId);
+      const nextMode = copyTrigger ? "copy" : creditTrigger ? "credit" : attachmentsTrigger ? "attachments" : "edit";
+      let id = Number(copyTrigger ? copyTrigger.dataset.incomeCopyId : creditTrigger ? creditTrigger.dataset.incomeCreditId : attachmentsTrigger ? attachmentsTrigger.dataset.incomeAttachmentsId : editTrigger?.dataset.incomeEditId);
       if (!Number.isInteger(id) || id <= 0) {
         const selected = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="ids"]:checked'))
           .map(input => Number(input.value)).filter(value => Number.isInteger(value) && value > 0);
@@ -126,12 +129,12 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
     {loadingId ? <div className="inline-modal-loading">Caricamento incasso #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : mode === "credit" ? `Inserisci accredito per l’incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
+    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : mode === "credit" ? `Inserisci accredito per l’incasso ${income.id}` : mode === "attachments" ? `Modifica allegati dell’incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
       <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
-            <h3>{mode === "copy" ? `Copia incasso #${income.id}` : mode === "credit" ? `Nuovo accredito · incasso #${income.id}` : `Modifica incasso #${income.id}`}</h3>
-            <p className="muted">{mode === "copy" ? "I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso." : mode === "credit" ? "Registra un nuovo accredito per questo incasso." : "Aggiorna l'incasso."}</p>
+            <h3>{mode === "copy" ? `Copia incasso #${income.id}` : mode === "credit" ? `Nuovo accredito · incasso #${income.id}` : mode === "attachments" ? `Modifica allegati · incasso #${income.id}` : `Modifica incasso #${income.id}`}</h3>
+            <p className="muted">{mode === "copy" ? "I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso." : mode === "credit" ? "Registra un nuovo accredito per questo incasso." : mode === "attachments" ? "Aggiungi, classifica o rimuovi gli allegati dell’incasso." : "Aggiorna l'incasso."}</p>
           </div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIncome(null)}>×</button>
         </div>
@@ -146,8 +149,9 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
           paymentMethods={paymentMethods}
           salesChannels={salesChannels}
           customers={customers}
-          initialMobileStep={mode === "credit" ? 4 : 1}
+          initialMobileStep={mode === "credit" ? 4 : mode === "attachments" ? 7 : 1}
           openNewCredit={mode === "credit"}
+          focusAttachments={mode === "attachments"}
         />
       </div>
     </div> : null}

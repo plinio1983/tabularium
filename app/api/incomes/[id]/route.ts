@@ -8,6 +8,7 @@ import { ensureWorkspaceDefaults } from '@/lib/workspace-defaults';
 import { writeAuditLog } from '@/lib/audit';
 import { parseIncomeCredits, validateIncomeCredits } from '@/lib/income-credits';
 import {resolveDefaultIncomeCategory} from '@/lib/income-category';
+import {AttachmentValidationError, deleteExpenseAttachmentFile, normalizeExpenseAttachmentType, saveExpenseAttachmentFiles} from '@/lib/attachments';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -43,7 +44,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const returnTo = pathFromUrl(rawReturnTo, `/incomes/${incomeId}`);
 
   if (action === 'delete') {
+    const storedAttachments = await prisma.incomeAttachment.findMany({where: {incomeId, income: {workspaceId: current.workspace.id, companyId: current.company.id}}, select: {path: true}});
     const deleted = await prisma.income.deleteMany({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id } });
+    if (deleted.count) await Promise.allSettled(storedAttachments.map(attachment => deleteExpenseAttachmentFile(attachment.path)));
     if (deleted.count) await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
       entityType: 'Income', entityId: incomeId, request
@@ -73,7 +76,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const fallbackBank = banks.find(bank => bank.id === current.company.primaryBankId) ?? banks[0];
   const invalidCredit = credits.some(credit => !methods.some(method => method.id === credit.paymentMethodId) || !banks.some(bank => bank.id === credit.bankId));
   if (!fallbackMethod || !fallbackBank || invalidCredit || !salesChannel || !incomeCategory || !customer) return NextResponse.json({ error: 'Configurazione incasso non valida' }, { status: 400 });
-  const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id }, select: { id: true, creditDate: true, dueDate: true } });
+  const existing = await prisma.income.findFirst({ where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id }, include: {attachments: true} });
   if (!existing) {
     return redirectToPath(appendFlash(returnTo || '/incomes', { error: 'not_found' }));
   }
@@ -83,6 +86,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const legacyBank = banks.find(bank => bank.id === (firstCredit?.bankId ?? parsed.creditBankId)) ?? fallbackBank;
   const legacyCreditDate = latestCredit?.creditDate ?? parsed.creditDate ?? parsed.dueDate;
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
+  const existingAttachmentIds = formData.getAll('existingAttachmentIds').map(Number);
+  const ownedAttachmentIds = new Set(existing.attachments.map(attachment => attachment.id));
+  if (existingAttachmentIds.some(id => !Number.isInteger(id) || !ownedAttachmentIds.has(id))) {
+    return redirectToPath(appendFlash(returnTo || `/incomes/${incomeId}`, {error: 'invalid_attachment'}));
+  }
+  const attachmentIdsToDelete = existing.attachments.filter(attachment => !existingAttachmentIds.includes(attachment.id)).map(attachment => attachment.id);
+  const attachmentsToDelete = existing.attachments.filter(attachment => attachmentIdsToDelete.includes(attachment.id));
+  let attachments;
+  let attachmentUpdates: Array<{where: {id: number}; data: {type: ReturnType<typeof normalizeExpenseAttachmentType>}}> = [];
+  try {
+    attachmentUpdates = existingAttachmentIds.map((id, index) => ({where: {id}, data: {type: normalizeExpenseAttachmentType(formData.getAll('existingAttachmentTypes')[index])}}));
+    attachments = await saveExpenseAttachmentFiles(formData.getAll('attachments'), existingAttachmentIds.length, formData.getAll('attachmentTypes'));
+  } catch (error) {
+    if (error instanceof AttachmentValidationError) return redirectToPath(appendFlash(returnTo || `/incomes/${incomeId}`, {error: 'invalid_attachment'}));
+    throw error;
+  }
   await prisma.income.update({
     where: { id: incomeId },
     data: {
@@ -112,8 +131,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           amount: credit.amount,
         })),
       },
+      attachments: attachments.length || attachmentUpdates.length || attachmentIdsToDelete.length ? {
+        create: attachments,
+        update: attachmentUpdates,
+        deleteMany: attachmentIdsToDelete.length ? {id: {in: attachmentIdsToDelete}} : undefined
+      } : undefined,
     }
   });
+  await Promise.allSettled(attachmentsToDelete.map(attachment => deleteExpenseAttachmentFile(attachment.path)));
   await writeAuditLog({
     workspaceId: current.workspace.id,
     userId: current.user.id,

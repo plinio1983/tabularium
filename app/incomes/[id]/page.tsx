@@ -75,8 +75,9 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 paymentMethodRef: true,
                 creditBank: true,
                 salesChannelRef: true,
-                customer: true
-                ,credits: {include: {paymentMethod: true, bank: true}, orderBy: [{creditDate: 'asc'}, {id: 'asc'}]}
+                customer: true,
+                credits: {include: {paymentMethod: true, bank: true}, orderBy: [{creditDate: 'asc'}, {id: 'asc'}]},
+                attachments: {orderBy: {id: 'asc'}}
             }
         }),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
@@ -114,6 +115,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
         },
         errorMessages: {
             invalid: 'Controlla i campi dell’incasso.',
+            invalid_attachment: 'Allegato non valido. Usa PDF, JPG, PNG, WebP, XML o P7M fino a 10 MB.',
             not_found: 'Incasso non trovato.',
             in_use: 'L’incasso è collegato ad altri movimenti.'
         }
@@ -209,6 +211,19 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 <div className="record-detail-progress" aria-label={`Accreditato ${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0).toFixed(0)}%`}>
                     <span style={{width: `${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0)}%`}}/>
                 </div>
+
+                <section className="record-detail-section">
+                    <div className="record-detail-section-heading">
+                        <div><h2>Allegati</h2><p>Fatture, documenti e ricevute collegati all’incasso.</p></div>
+                        <button className="btn btn-sm btn-default" type="button" data-income-attachments-id={income.id}>✎ Gestisci</button>
+                    </div>
+                    {income.attachments.length ? <div className="expense-attachment-panel">
+                        {income.attachments.map(attachment => <a className="expense-attachment-item" href={`/api/income-attachments/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id}>
+                            <span className="expense-attachment-icon">{attachment.type === 'INVOICE' ? '▤' : attachment.type === 'PAYMENT_RECEIPT' ? '€' : '📄'}</span>
+                            <span><strong>{attachment.originalName}</strong><small>{attachment.type === 'INVOICE' ? 'Fattura' : attachment.type === 'PAYMENT_RECEIPT' ? 'Ricevuta accredito' : 'Documento'} · {attachment.sizeBytes ? `${Math.max(1, Math.round(attachment.sizeBytes / 1024))} KB` : 'Apri allegato'}</small></span>
+                        </a>)}
+                    </div> : <p className="muted">Nessun allegato inserito.</p>}
+                </section>
 
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">

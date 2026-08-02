@@ -8,6 +8,7 @@ import { ensureWorkspaceDefaults } from '@/lib/workspace-defaults';
 import { writeAuditLog } from '@/lib/audit';
 import { parseIncomeCredits, validateIncomeCredits } from '@/lib/income-credits';
 import {resolveDefaultIncomeCategory} from '@/lib/income-category';
+import {AttachmentValidationError, saveExpenseAttachmentFiles} from '@/lib/attachments';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
@@ -92,6 +93,15 @@ export async function POST(request: Request) {
   const legacyBank = banks.find(bank => bank.id === (firstCredit?.bankId ?? parsed.creditBankId)) ?? fallbackBank;
   const legacyCreditDate = latestCredit?.creditDate ?? parsed.creditDate ?? parsed.dueDate;
   const [billingYear, billingMonth] = parsed.billingPeriod.split('-').map(Number);
+  let attachments;
+  try {
+    attachments = formData ? await saveExpenseAttachmentFiles(formData.getAll('attachments'), 0, formData.getAll('attachmentTypes')) : [];
+  } catch (error) {
+    if (error instanceof AttachmentValidationError) {
+      return isForm ? redirectToPath(appendFlash(redirectAfterFormSave(request, '/incomes'), {error: 'invalid_attachment'})) : NextResponse.json({error: error.message}, {status: 400});
+    }
+    throw error;
+  }
   const income = await prisma.income.create({
     data: {
       workspaceId: current.workspace.id,
@@ -119,6 +129,7 @@ export async function POST(request: Request) {
         bankId: credit.bankId,
         amount: credit.amount,
       }))} : undefined,
+      attachments: attachments.length ? {create: attachments} : undefined,
     }
   });
   await writeAuditLog({

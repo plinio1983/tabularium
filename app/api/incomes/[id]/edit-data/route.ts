@@ -14,7 +14,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   const income = await prisma.income.findFirst({
     where: { id: incomeId, workspaceId: current.workspace.id, companyId: current.company.id },
-    include: { credits: { orderBy: [{creditDate: 'asc'}, {id: 'asc'}] } }
+    include: { credits: { orderBy: [{creditDate: 'asc'}, {id: 'asc'}] }, attachments: {orderBy: {id: 'asc'}} }
   });
 
   if (!income) {
@@ -46,7 +46,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       isFiscal: income.isFiscal,
       invoiceStatus: income.invoiceStatus,
       vatRate: income.vatRate.toString(),
-      notes: income.notes
+      notes: income.notes,
+      attachments: income.attachments.map(attachment => ({id: attachment.id, originalName: attachment.originalName, sizeBytes: attachment.sizeBytes, type: attachment.type}))
     }
   });
 }

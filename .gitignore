@@ -23,6 +23,8 @@ prisma/migrations/*
 !prisma/migrations/20260802110000_expense_attachment_type/
 !prisma/migrations/20260802110000_expense_attachment_type/migration.sql
 !prisma/migrations/20260802150000_company_time_zone/
+!prisma/migrations/20260802180000_income_attachments/
+!prisma/migrations/20260802180000_income_attachments/migration.sql
 !prisma/migrations/20260802150000_company_time_zone/migration.sql
 !prisma/migrations/20260728120000_multi_company_accounting/
 !prisma/migrations/20260728120000_multi_company_accounting/migration.sql

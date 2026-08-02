@@ -9,7 +9,7 @@ type InvoiceAttachment = {
   sizeBytes?: number | null;
 };
 
-export default function ExpenseInvoiceAttachmentsLink({attachments}: {attachments?: InvoiceAttachment[]}) {
+export default function ExpenseInvoiceAttachmentsLink({attachments, endpointBase = '/api/attachments'}: {attachments?: InvoiceAttachment[]; endpointBase?: string}) {
   const invoices = attachments ?? [];
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -34,7 +34,7 @@ export default function ExpenseInvoiceAttachmentsLink({attachments}: {attachment
     event.preventDefault();
     event.stopPropagation();
     if (invoices.length === 1) {
-      window.open(`/api/attachments/${invoices[0].id}`, '_blank', 'noopener,noreferrer');
+      window.open(`${endpointBase}/${invoices[0].id}`, '_blank', 'noopener,noreferrer');
       return;
     }
     setOpen(true);
@@ -48,7 +48,7 @@ export default function ExpenseInvoiceAttachmentsLink({attachments}: {attachment
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)} aria-label="Chiudi">×</button>
         </div>
         <div className="invoice-attachments-modal-list">
-          {invoices.map(attachment => <a href={`/api/attachments/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id} onClick={() => setOpen(false)}>
+          {invoices.map(attachment => <a href={`${endpointBase}/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id} onClick={() => setOpen(false)}>
             <span aria-hidden="true">📎</span>
             <strong>{attachment.originalName}</strong>
             <small>{attachment.sizeBytes ? `${Math.max(1, Math.round(attachment.sizeBytes / 1024))} KB` : 'Apri documento'}</small>

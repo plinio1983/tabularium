@@ -22,7 +22,7 @@ function formatBytes(value: number) {
   return `${Math.max(1, Math.round(value / 1024))} KB`;
 }
 
-export default function BulkExpenseAttachmentsModal({formId}: {formId: string}) {
+export default function BulkExpenseAttachmentsModal({formId, endpoint = '/api/expenses/attachments/archive', subject = 'spese'}: {formId: string; endpoint?: string; subject?: 'spese' | 'incassi'}) {
   const [open, setOpen] = useState(false);
   const [ids, setIds] = useState<number[]>([]);
   const [filter, setFilter] = useState<Filter>('ALL');
@@ -47,7 +47,7 @@ export default function BulkExpenseAttachmentsModal({formId}: {formId: string}) 
     const controller = new AbortController();
     setBusy('SUMMARY');
     setError('');
-    fetch('/api/expenses/attachments/archive', {
+    fetch(endpoint, {
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ids, filter, action: 'SUMMARY'}), signal: controller.signal
     }).then(async response => {
@@ -59,7 +59,7 @@ export default function BulkExpenseAttachmentsModal({formId}: {formId: string}) 
       setSummary(null); setError(cause instanceof Error ? cause.message : 'Verifica non riuscita');
     }).finally(() => setBusy(current => current === 'SUMMARY' ? null : current));
     return () => controller.abort();
-  }, [open, ids, filter]);
+  }, [open, ids, filter, endpoint]);
 
   useEffect(() => {
     if (!open) return;
@@ -72,7 +72,7 @@ export default function BulkExpenseAttachmentsModal({formId}: {formId: string}) 
   async function archive(action: 'DOWNLOAD' | 'SHARE') {
     setBusy(action); setError(''); setNotice('');
     try {
-      const response = await fetch('/api/expenses/attachments/archive', {
+      const response = await fetch(endpoint, {
         method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ids, filter, action})
       });
       if (!response.ok) {
@@ -80,10 +80,10 @@ export default function BulkExpenseAttachmentsModal({formId}: {formId: string}) 
         throw new Error(body?.error ?? 'Operazione non riuscita');
       }
       const blob = await response.blob();
-      const filename = `allegati-spese-${new Date().toISOString().slice(0, 10)}.zip`;
+      const filename = `allegati-${subject}-${new Date().toISOString().slice(0, 10)}.zip`;
       const file = new File([blob], filename, {type: 'application/zip'});
       if (action === 'SHARE' && navigator.share && (!navigator.canShare || navigator.canShare({files: [file]}))) {
-        await navigator.share({title: 'Allegati spese', text: 'Allegati delle spese selezionate', files: [file]});
+        await navigator.share({title: `Allegati ${subject}`, text: `Allegati degli elementi selezionati`, files: [file]});
         setNotice('Archivio condiviso.');
       } else {
         const url = URL.createObjectURL(blob);
@@ -101,7 +101,7 @@ export default function BulkExpenseAttachmentsModal({formId}: {formId: string}) 
     if (!email.trim()) { setError('Inserisci l’indirizzo email del destinatario.'); return; }
     setBusy('EMAIL'); setError(''); setNotice('');
     try {
-      const response = await fetch('/api/expenses/attachments/archive', {
+      const response = await fetch(endpoint, {
         method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ids, filter, action: 'EMAIL', email: email.trim()})
       });
@@ -117,18 +117,18 @@ export default function BulkExpenseAttachmentsModal({formId}: {formId: string}) 
     <div className="app-form-modal-backdrop bulk-attachments-modal-backdrop" role="presentation" onMouseDown={event => event.target === event.currentTarget && setOpen(false)}>
       <section className="app-form-modal bulk-attachments-modal" role="dialog" aria-modal="true" aria-labelledby={`${formId}-attachments-title`}>
         <div className="modal-title bulk-attachments-modal-header">
-          <div><h2 id={`${formId}-attachments-title`}>Scarica allegati</h2><p className="muted">Scegli quali documenti includere per le {ids.length} spese selezionate.</p></div>
+          <div><h2 id={`${formId}-attachments-title`}>Scarica allegati</h2><p className="muted">Scegli quali documenti includere per i {ids.length} record selezionati.</p></div>
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)} aria-label="Chiudi">×</button>
         </div>
 
         <div className="btn-group bulk-attachment-filter-group" role="group" aria-label="Tipo allegati">
-          {filters.map(option => <button type="button" className={filter === option.value ? 'is-selected' : ''} aria-pressed={filter === option.value} key={option.value} onClick={() => {setFilter(option.value);setNotice('');}}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
+          {filters.map(option => <button type="button" className={filter === option.value ? 'is-selected' : ''} aria-pressed={filter === option.value} key={option.value} onClick={() => {setFilter(option.value);setNotice('');}}><span aria-hidden="true">{option.icon}</span>{subject === 'incassi' && option.value === 'PAYMENTS' ? 'Solo accrediti' : option.label}</button>)}
         </div>
 
         <div className="bulk-attachments-summary" aria-live="polite">
           {busy === 'SUMMARY' ? <p>Verifica degli allegati…</p> : summary ? <>
-            <div><span>Spese selezionate</span><strong>{summary.selectedExpenses}</strong></div>
-            <div><span>Spese con allegati</span><strong>{summary.matchedExpenses}</strong></div>
+            <div><span>Record selezionati</span><strong>{summary.selectedExpenses}</strong></div>
+            <div><span>Con allegati</span><strong>{summary.matchedExpenses}</strong></div>
             <div><span>Documenti</span><strong>{summary.attachmentCount}</strong></div>
             <div><span>Dimensione</span><strong>{summary.totalBytes ? formatBytes(summary.totalBytes) : '—'}</strong></div>
           </> : null}

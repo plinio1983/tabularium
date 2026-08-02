@@ -578,7 +578,8 @@ export default async function IncomesPage({searchParams}: {
                 creditBank: true,
                 salesChannelRef: true,
                 customer: true,
-                credits: true
+                credits: true,
+                attachments: true
             },
             orderBy: [{creditDate: 'desc'}, {id: 'desc'}]
         }),
@@ -710,6 +711,7 @@ export default async function IncomesPage({searchParams}: {
             invalid_bulk_sales_channel: 'Seleziona un canale di vendita valido. La modifica è disponibile soltanto per gli incassi standard.',
             invalid_bulk_accounting: 'Modifica non eseguita: controlla le informazioni fiscali e contabili selezionate.',
             invalid_bulk_records: 'La modifica bulk è disponibile soltanto per gli incassi standard.',
+            invalid_attachment: 'Allegato non valido. Usa PDF, JPG, PNG, WebP, XML o P7M fino a 10 MB.',
             not_found: 'Incasso non trovato.',
             in_use: 'L’incasso è collegato ad altri movimenti.'
         }

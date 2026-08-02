@@ -40,7 +40,7 @@ enum ExpenseType {
   COUNTER
 }
 
-enum ExpenseAttachmentType {
+enum AttachmentType {
   INVOICE
   DOCUMENT
   PAYMENT_RECEIPT
@@ -606,7 +606,7 @@ model ExpenseAttachment {
   path         String
   mimeType     String?
   sizeBytes    Int?
-  type         ExpenseAttachmentType @default(DOCUMENT)
+  type         AttachmentType @default(DOCUMENT)
   createdAt    DateTime @default(now())
 
   @@index([expenseId])
@@ -669,6 +669,7 @@ model Income {
   incomeType            IncomeType         @default(STANDARD)
   cashRegisterRequestId String?
   credits               IncomeCredit[]
+  attachments           IncomeAttachment[]
   recurringIncomeId     Int?
   recurringIncome       RecurringIncome? @relation(fields: [recurringIncomeId], references: [id], onDelete: SetNull)
   recurringIncomePeriodKey String?
@@ -709,4 +710,19 @@ model IncomeCredit {
   @@index([creditDate])
   @@index([paymentMethodId])
   @@index([bankId])
+}
+
+model IncomeAttachment {
+  id           Int            @id @default(autoincrement())
+  incomeId     Int
+  income       Income         @relation(fields: [incomeId], references: [id], onDelete: Cascade)
+  originalName String
+  path         String
+  mimeType     String?
+  sizeBytes    Int?
+  type         AttachmentType @default(DOCUMENT)
+  createdAt    DateTime       @default(now())
+
+  @@index([incomeId])
+  @@index([type])
 }

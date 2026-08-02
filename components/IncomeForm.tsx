@@ -1,6 +1,6 @@
 "use client";
 
-import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
+import {type FormEvent, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import CustomerAutocomplete from '@/components/CustomerAutocomplete';
 import {CurrencyInput} from "@/components/CurrencyInput";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
@@ -10,6 +10,7 @@ import MobileFormStickyActions from "@/components/MobileFormStickyActions";
 import {incomeCreditState} from '@/lib/income-status';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {dateInputInTimeZone, monthInputInTimeZone} from '@/lib/company-time';
+import AttachmentFormSection, {type FormAttachment} from '@/components/AttachmentFormSection';
 
 type InitialIncome = {
     id?: number;
@@ -30,6 +31,7 @@ type InitialIncome = {
     invoiceStatus?: string | null;
     vatRate?: string | number | { toString(): string } | null;
     notes?: string | null;
+    attachments?: FormAttachment[];
 };
 
 type InitialCredit = {
@@ -75,6 +77,7 @@ type Props = {
     onSwitchToRecurring?: () => void;
     initialMobileStep?: number;
     openNewCredit?: boolean;
+    focusAttachments?: boolean;
 };
 
 const vatRates = ["0", "4", "10", "22"];
@@ -155,6 +158,7 @@ export default function IncomeForm({
                                        onSwitchToRecurring,
                                        initialMobileStep = 1,
                                        openNewCredit = false,
+                                       focusAttachments = false,
                                    }: Props) {
     const timeZone = useCompanyTimeZone();
     const today = dateInputInTimeZone(timeZone);
@@ -201,7 +205,9 @@ export default function IncomeForm({
     const [isFiscal, setIsFiscal] = useState(initialIncome?.isFiscal ?? true);
     const [invoiceStatus, setInvoiceStatus] = useState(initialIncome?.invoiceStatus ?? "NON_INVIATA");
     const [vatRate, setVatRate] = useState(normalizeMoney(initialIncome?.vatRate) || "22");
-    const [mobileStep, setMobileStep] = useState(() => Math.max(1, Math.min(6, initialMobileStep)));
+    const [mobileStep, setMobileStep] = useState(() => Math.max(1, Math.min(7, initialMobileStep)));
+    const [attachmentCount, setAttachmentCount] = useState(initialIncome?.attachments?.length ?? 0);
+    const [attachmentError, setAttachmentError] = useState("");
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
     const openCreditRef = useRef<HTMLDivElement | null>(null);
@@ -224,6 +230,10 @@ export default function IncomeForm({
     }[creditState];
     const canAddCredit = !isCredited && openCreditKey === null && credits.every(isCreditComplete) && creditResidual > 0.005;
     const isCreditOnlyMode = openNewCredit;
+    const updateAttachmentState = useCallback((count: number, error: string) => {
+        setAttachmentCount(count);
+        setAttachmentError(error);
+    }, []);
 
     function updateCredit(index: number, patch: Partial<CreditRow>) {
         setCredits(rows => rows.map((credit, rowIndex) => {
@@ -356,7 +366,7 @@ export default function IncomeForm({
     }
 
     function goToMobileStep(step: number) {
-        setMobileStep(Math.max(1, Math.min(6, step)));
+        setMobileStep(Math.max(1, Math.min(7, step)));
         window.requestAnimationFrame(() => formRef.current?.scrollIntoView({behavior: "smooth", block: "start"}));
     }
 
@@ -368,7 +378,7 @@ export default function IncomeForm({
         if (window.matchMedia("(max-width: 900px)").matches) {
             if (isCreditOnlyMode) {
                 if (!credits.every(isCreditComplete)) event.preventDefault();
-            } else if (mobileStep < 6) {
+            } else if (mobileStep < 7) {
                 event.preventDefault();
                 nextMobileStep();
             }
@@ -376,14 +386,14 @@ export default function IncomeForm({
     }
 
     return (
-        <form ref={formRef} className={`card form income-form app-record-form app-form-wizard income-mobile-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit}>
+        <form ref={formRef} className={`card form income-form app-record-form app-form-wizard income-mobile-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
             <div className="app-form-wizard-header full">
                 <div className="app-form-wizard-heading">
-                    <span>Passaggio {mobileStep} di 6</span>
-                    <strong>{["Vendita", "Importo", "Cliente", "Accredito", "Fattura", "Riepilogo"][mobileStep - 1]}</strong>
+                    <span>Passaggio {mobileStep} di 7</span>
+                    <strong>{["Vendita", "Importo", "Cliente", "Accredito", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</strong>
                 </div>
-                <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
-                    <span style={{width: `${mobileStep / 6 * 100}%`}}/>
+                <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep} di 7`}>
+                    <span style={{width: `${mobileStep / 7 * 100}%`}}/>
                 </div>
             </div>
             {/*<h2 className="full">{title}</h2>*/}
@@ -700,6 +710,9 @@ export default function IncomeForm({
                             </div>
                         </div>
                     </section>
+                    <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
+                        <span className="btn-icon">＋</span><span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span><span aria-hidden="true">→</span>
+                    </button>
                     <label className="card full expense-review-notes income-review-notes">
                         Note
                         <textarea name="notes" rows={3} value={notes} onChange={event => setNotes(event.currentTarget.value)} placeholder="Note interne opzionali"/>
@@ -707,14 +720,18 @@ export default function IncomeForm({
                 </div>
             </details>
 
+            <AttachmentFormSection initialAttachments={initialIncome?.attachments} onStateChange={updateAttachmentState} focusOnMount={focusAttachments}/>
+
             <MobileFormStickyActions
                 currentStep={isCreditOnlyMode ? 1 : mobileStep}
-                submitStep={isCreditOnlyMode ? 1 : 6}
+                submitStep={isCreditOnlyMode ? 1 : 7}
                 onBack={() => goToMobileStep(mobileStep - 1)}
                 onNext={nextMobileStep}
                 onCancel={onCancel}
                 cancelHref={cancelHref ?? "/incomes"}
                 submitLabel={isCreditOnlyMode ? "Salva accredito" : submitLabel}
+                submitDisabled={Boolean(attachmentError)}
+                error={attachmentError}
             />
 
             <div className="actions-row full form-actions-row form-sticky-actions">

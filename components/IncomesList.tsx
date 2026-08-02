@@ -17,6 +17,8 @@ import type {IncomeCashRegisterGroup} from '@/lib/income-list';
 import {incomeCreditedAmount, incomeCreditState} from '@/lib/income-status';
 import {dueStatusLabel} from '@/lib/due-status-label';
 import {DEFAULT_COMPANY_TIME_ZONE} from '@/lib/company-time';
+import ExpenseInvoiceAttachmentsLink from '@/components/ExpenseInvoiceAttachmentsLink';
+import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
 
 type IncomeItem = {
     id: number;
@@ -36,7 +38,12 @@ type IncomeItem = {
     paymentMethodRef: { name: string; icon?: string | null };
     creditBank: { name: string; icon?: string | null };
     credits?: Array<{ amount: unknown }>;
+    attachments?: Array<{id: number; originalName: string; sizeBytes?: number | null; type: string}>;
 };
+
+function invoiceAttachments(income: IncomeItem) {
+    return income.attachments?.filter(attachment => attachment.type === 'INVOICE') ?? [];
+}
 
 function cashRegisterGroupHref(group: IncomeCashRegisterGroup) {
     const month = `${group.billingYear}-${String(group.billingMonth).padStart(2, '0')}`;
@@ -161,6 +168,7 @@ export default function IncomesList({
                     <button className="btn btn-sm btn-default" type="button" data-bulk-add-credit>
                         <span className="btn-icon">＋</span><span className="bulk-label">Inserisci accredito</span>
                     </button>
+                    <BulkExpenseAttachmentsModal formId={formId} endpoint="/api/incomes/attachments/archive" subject="incassi"/>
                     <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
                             name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
                         <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
@@ -252,7 +260,7 @@ export default function IncomesList({
                                         {/*{formatPeriod(income.billingMonth, income.billingYear)}*/}
                                     </span>
                                     {income.isFiscal ?
-                                        <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span> : ''}
+                                        <span className="expense-invoice-indicator"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/></span> : ''}
                                 </div>
                                 <div className="right-side">
                                     <span className="badge mobile-record-date text-pre">Scad. {mobileDateLabel(income.dueDate)}</span>
@@ -377,7 +385,7 @@ export default function IncomesList({
                         <td>{vatBadge(income.vatRate)}</td>
                         <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
                         <td className="text-center">{income.isFiscal ?
-                            <span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span> : <span className="badge tone-muted">✕</span> }</td>
+                            <span className="expense-invoice-indicator"><span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/></span> : <span className="badge tone-muted">✕</span> }</td>
                         <td>{compactDateTableLabel(income.creditDate)}</td>
                     </tr>;
                 })}
