@@ -206,7 +206,7 @@ export default function ExpensesList({
             <BulkSelectionController/>
             <BulkCopyExpensesModal formId={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`}/>
             <BulkEditFieldsModal formId={formId} subject="spese"/>
-            <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar expense-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
+            <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar expense-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
                 <label className="bulk-select-all-inline">
                     <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese visibili"/>
                 </label>

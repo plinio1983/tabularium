@@ -450,7 +450,7 @@
   }
 
   .filter-drawer-panel {
-    width: min(697px, calc(100vw - 28px));
+    width: min(646px, calc(100vw - 28px));
     height: 100%;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);

@@ -563,7 +563,7 @@
 
 @media (max-width: 576px) {
   .filter-drawer-panel {
-    width: min(420px, calc(100vw - 24px));
+    width: min(646px, calc(100vw - 24px));
   }
 
   .filter-drawer-header,
@@ -5185,7 +5185,7 @@
 }
 
 @media (max-width: 576px) {
-  .expense-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:nth-last-child(2) {
+  .grouped-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:nth-last-child(2) {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }

@@ -131,11 +131,12 @@ export default function IncomesList({
         <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
         <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers}/>
         <BulkEditFieldsModal formId={formId} subject="incassi"/>
-        <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar confirm-bulk-form">
+        <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar income-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi visibili"/></label>
-            <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
+            <div className="bulk-action-buttons btn-group">
+              <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
                 <summary className="bulk-action-trigger">
-                    <span className="btn-icon">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
+                    <span className="btn-icon hidden-mobile">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
                 </summary>
                 <div className="bulk-action-menu-panel">
                     <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
@@ -149,12 +150,13 @@ export default function IncomesList({
                         <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
                     </button>
                 </div>
-            </details>
-            <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
+              </details>
+              <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
                 <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
                     <span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
+              </div>
             </div>
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
@@ -310,7 +312,7 @@ export default function IncomesList({
                         <td>{aggregateVatBadge(group)}</td>
                         <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span></td>
                         <td className="text-center"><span className="badge badge-color tone-muted">✕</span></td>
-                        <td>-</td>
+                        <td><span className="badge color-badge tone-muted">-</span></td>
                         <td>{dateLabel(group.latestCreditDate)}</td>
                         <td>{group.paymentMethodIcon ?? '  •  '} {group.paymentMethod}</td>
                     </tr>;

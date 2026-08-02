@@ -2009,7 +2009,8 @@ body.drawer-open {
 .filter-drawer-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1200;
+  //z-index: 1200;
+  z-index: 999999;
   display: flex;
   justify-content: flex-end;
   background: rgba(15, 23, 42, .38);
@@ -2024,7 +2025,7 @@ body.drawer-open {
 }
 
 .filter-drawer-panel {
-  width: min(440px, calc(100vw - 28px));
+  width: min(646px, calc(100vw - 28px));
   height: 100%;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -10313,36 +10314,36 @@ select:disabled {
   overflow: visible;
 }
 
-.expense-bulk-actions-bar .bulk-action-buttons {
+.grouped-bulk-actions-bar .bulk-action-buttons {
   flex: 0 0 auto;
   align-items: stretch;
   white-space: nowrap;
 }
 
-.expense-bulk-actions-bar .bulk-action-buttons .bulk-direct-actions {
+.grouped-bulk-actions-bar .bulk-action-buttons .bulk-direct-actions {
   gap: 0;
 }
 
-.expense-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu > summary,
-.expense-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link {
+.grouped-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu > summary,
+.grouped-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link {
   position: relative;
   margin-left: -1px;
   border-radius: 0;
 }
 
-.expense-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu:first-child > summary {
+.grouped-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu:first-child > summary {
   margin-left: 0;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
 
-.expense-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:last-child {
+.grouped-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:last-child {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
 }
 
-.expense-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu > summary:is(:hover, :focus-visible),
-.expense-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:is(:hover, :focus-visible) {
+.grouped-bulk-actions-bar .bulk-action-buttons > .bulk-action-menu > summary:is(:hover, :focus-visible),
+.grouped-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:is(:hover, :focus-visible) {
   z-index: 1;
 }
 
