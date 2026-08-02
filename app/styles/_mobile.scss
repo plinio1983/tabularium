@@ -1460,8 +1460,9 @@
     align-items: flex-end;
     gap: 8px;
     flex: 0 0 auto;
-    min-height: 38px;
-    padding: 0px 0 2px 7px;
+    //min-height: 42px;
+    //padding: 0px 0 2px 7px;
+    padding: 0;
     margin: 0;
   }
 }
@@ -1479,13 +1480,13 @@
 
   .bulk-direct-link {
     width: 46px;
-    min-width: 38px;
+    min-width: 42px;
     //height: 38px;
-    min-height: 38px;
+    min-height: 42px;
   }
 
   .bulk-direct-link.bulk-add-link {
-    width: 38px;
+    width: 42px;
   }
 
   .payment-row .payment-row-actions {
@@ -1545,7 +1546,7 @@
 @media (max-width: 760px) {
 
   .bulk-action-menu > summary {
-    height: 38px;
+    height: 42px;
   }
 
   .floating-bulk-actions-inner .floating-bulk-button {
@@ -1935,10 +1936,6 @@
   .income-mobile-list {
     display: grid;
     margin-top: 12px;
-
-    .income-mobile-item.mobile-record-item {
-      margin-left: -9px;
-    }
   }
 
   .income-mobile-item {
@@ -4391,6 +4388,10 @@
     grid-template-columns: auto minmax(0, 1fr);
     gap: 10px;
     padding: 11px;
+  }
+
+  .income-mobile-list .income-mobile-item.mobile-record-item {
+    margin-left: -9px;
   }
 }
 

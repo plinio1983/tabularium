@@ -705,6 +705,11 @@ export default async function IncomesPage({searchParams}: {
         },
         errorMessages: {
             invalid: 'Controlla i campi dell’incasso.',
+            invalid_bulk_dates: 'Modifica non eseguita: controlla data ordine e scadenza degli incassi selezionati.',
+            invalid_bulk_customer: 'Seleziona un cliente valido. La modifica è disponibile soltanto per gli incassi standard.',
+            invalid_bulk_sales_channel: 'Seleziona un canale di vendita valido. La modifica è disponibile soltanto per gli incassi standard.',
+            invalid_bulk_accounting: 'Modifica non eseguita: controlla le informazioni fiscali e contabili selezionate.',
+            invalid_bulk_records: 'La modifica bulk è disponibile soltanto per gli incassi standard.',
             not_found: 'Incasso non trovato.',
             in_use: 'L’incasso è collegato ad altri movimenti.'
         }

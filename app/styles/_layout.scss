@@ -10648,8 +10648,8 @@ body.bulk-attachments-modal-open {
   display: flex;
   flex-direction: column;
   gap: 0;
-  height: min(560px, calc(100dvh - 36px));
-  min-height: min(560px, calc(100dvh - 36px));
+  height: min(640px, calc(100dvh - 36px));
+  min-height: min(640px, calc(100dvh - 36px));
   max-height: calc(100dvh - 36px);
   padding: 0;
   overflow: hidden;
@@ -10658,11 +10658,64 @@ body.bulk-attachments-modal-open {
 .bulk-edit-fields-modal .modal-toolbar-card {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin: 0;
   padding: 18px;
   border-bottom: 1px solid #dbe3ee;
   border-radius: 0;
   background: rgba(255, 255, 255, .98);
+}
+
+.bulk-edit-toolbar-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.bulk-edit-toolbar-kicker {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.bulk-edit-close-button {
+  flex: 0 0 40px;
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color .16s ease, background .16s ease, color .16s ease, transform .16s ease;
+}
+
+.bulk-edit-close-button:hover {
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: #be123c;
+  transform: translateY(-1px);
+}
+
+.bulk-edit-close-button:focus-visible {
+  outline: 3px solid rgba(79, 70, 229, .18);
+  outline-offset: 2px;
 }
 
 .bulk-edit-fields-modal .modal-toolbar-card h2 {
@@ -10752,11 +10805,33 @@ body.bulk-attachments-modal-open {
   overscroll-behavior: contain;
 }
 
+.bulk-edit-choice-intro {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 13px 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #eff6ff, #f8fafc);
+}
+
+.bulk-edit-choice-intro strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.bulk-edit-choice-intro span {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .bulk-edit-field-button {
   width: 100%;
-  min-height: 58px;
+  min-height: 72px;
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) auto;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
@@ -10773,6 +10848,25 @@ body.bulk-attachments-modal-open {
   cursor: pointer;
 }
 
+.bulk-edit-field-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.bulk-edit-field-copy strong {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.bulk-edit-field-copy small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
 .bulk-edit-field-button:not(:disabled):hover {
   border-color: var(--primary);
   background: var(--primary-soft);
@@ -10786,15 +10880,15 @@ body.bulk-attachments-modal-open {
 }
 
 .bulk-edit-field-icon {
-  width: 28px;
-  height: 28px;
+  width: 38px;
+  height: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9px;
-  background: #eef2ff;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #eef2ff, #e0e7ff);
   color: var(--accent);
-  font-size: 14px;
+  font-size: 17px;
   text-align: center;
 }
 
@@ -10802,12 +10896,6 @@ body.bulk-attachments-modal-open {
   color: var(--muted);
   font-size: 13px;
   font-weight: 750;
-}
-
-.bulk-edit-accounting-fields {
-  margin: -3px 12px 2px 50px;
-  font-size: .78rem;
-  line-height: 1.35;
 }
 
 .bulk-edit-category-content {
@@ -10915,6 +11003,48 @@ body.bulk-attachments-modal-open {
   width: 100%;
 }
 
+.bulk-edit-fields-modal .entity-autocomplete > label {
+  gap: 9px;
+}
+
+.bulk-edit-fields-modal .entity-autocomplete-input-row,
+.bulk-edit-fields-modal .entity-autocomplete-input-row input {
+  width: 100%;
+  min-width: 0;
+}
+
+.bulk-edit-fields-modal .entity-autocomplete-input-row input,
+.bulk-edit-fields-modal .app-select-control select {
+  min-height: 54px;
+  padding: 11px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 750;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+
+.bulk-edit-fields-modal .app-select-control select {
+  width: 100%;
+  appearance: none;
+  padding-right: 44px;
+}
+
+.bulk-edit-fields-modal .entity-autocomplete-input-row input:focus,
+.bulk-edit-fields-modal .app-select-control:focus-within select {
+  border-color: var(--accent);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, .12), 0 7px 18px rgba(15, 23, 42, .07);
+}
+
+.bulk-edit-fields-modal .entity-autocomplete-input-row input::placeholder {
+  color: #94a3b8;
+  font-weight: 650;
+}
+
 .bulk-edit-supplier-content > p {
   margin: 2px 0 0;
   font-size: 13px;
@@ -10972,6 +11102,10 @@ body.bulk-attachments-modal-open {
 }
 
 .bulk-edit-accounting-control .app-form-field {
+  width: 100%;
+}
+
+.bulk-edit-accounting-control .app-select-control {
   width: 100%;
 }
 

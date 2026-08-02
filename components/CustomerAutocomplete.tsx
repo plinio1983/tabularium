@@ -22,7 +22,7 @@ const emptyCustomer = {
   internalNotes: ''
 };
 
-export default function CustomerAutocomplete({ customers, initialCustomerId, onValueChange, wizardStepClass = 'app-form-wizard-step app-form-wizard-step-3' }: { customers: Customer[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void; wizardStepClass?: string }) {
+export default function CustomerAutocomplete({ customers, initialCustomerId, onValueChange, onCustomerSelected, wizardStepClass = 'app-form-wizard-step app-form-wizard-step-3', allowCreate = true }: { customers: Customer[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void; onCustomerSelected?: (customer: Customer | null) => void; wizardStepClass?: string; allowCreate?: boolean }) {
   const fallback = customers.find(customer => customer.id === initialCustomerId);
   const [selected, setSelected] = useState<Customer | undefined>(fallback);
   const [query, setQuery] = useState(fallback?.businessName ?? '');
@@ -55,6 +55,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
     setSelected(customer);
     setQuery(customer.businessName);
     onValueChange?.(customer.businessName);
+    onCustomerSelected?.(customer);
     setOpen(false);
   }
 
@@ -105,7 +106,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
       <span className="app-form-field-label">
         <span className="app-form-field-icon" aria-hidden="true">◎</span>
         <span>Cliente</span>
-          <span className="flex flex-grow justify-end mr-22">
+          {allowCreate ? <span className="flex flex-grow justify-end mr-22">
               <button
                   type="button"
                   className="btn btn-sm btn-link inline-link-button"
@@ -118,7 +119,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
               >
           ＋ Nuovo
         </button>
-          </span>
+          </span> : null}
       </span>
       <div className="entity-autocomplete-input-row">
         <input
@@ -131,6 +132,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
           onChange={event => {
             setQuery(event.currentTarget.value);
             setSelected(undefined);
+            onCustomerSelected?.(null);
             onValueChange?.(event.currentTarget.value);
             setOpen(true);
           }}

@@ -431,12 +431,12 @@ export default function IncomeForm({
                         </span>
                     </DateField>
 
-                    <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({
+                    <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId} onValueChange={setCustomerName}/>
+
+                    <SelectField className="app-form-wizard-step app-form-wizard-step-3" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({
                         value: option.id,
                         label: `${option.icon ?? "•"} ${option.name}`
                     }))}/>
-
-                    <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId} onValueChange={setCustomerName}/>
 
                     <DescriptionAutocomplete endpoint="/api/income-descriptions" label="Descrizione"
                                              placeholder="Descrizione dell'incasso"

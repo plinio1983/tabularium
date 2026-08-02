@@ -136,7 +136,14 @@ export default function IncomesList({
         <SortableTableController/>
         <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
         <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers}/>
-        <BulkEditFieldsModal formId={formId} subject="incassi"/>
+        <BulkEditFieldsModal
+            formId={formId}
+            subject="incassi"
+            action={`/api/incomes/bulk?returnTo=${returnTo}`}
+            customers={customers}
+            salesChannels={salesChannels}
+            editableIds={incomes.map(income => income.id)}
+        />
         <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar income-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi visibili"/></label>
             <div className="bulk-action-buttons btn-group">
