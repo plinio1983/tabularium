@@ -122,7 +122,10 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
                     </div>
                     <div className="cash-register-receipt-channel">
                         <span>{receipt.salesChannelIcon ?? ''} {receipt.salesChannel}</span>
-                        <small>{receipt.isFiscal ? `Fiscale · IVA ${receipt.vatRate}%` : 'Non fiscale'}</small>
+                        <small>
+                            <span>{receipt.isFiscal ? `✓ Fiscale · ` : '✕ Non fiscale '}</span>
+                            <strong>{receipt.isFiscal ? ` IVA ${receipt.vatRate}%` : ''}</strong>
+                        </small>
                     </div>
                     <div className="cash-register-receipt-method">
                         <span>{receipt.paymentMethodIcon ?? ''} {receipt.paymentMethod}</span>
