@@ -6,7 +6,7 @@ import NewIncomePanel from '@/components/NewIncomePanel';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import BulkEditFieldsModal from '@/components/BulkEditFieldsModal';
 import {euro, moneyTone} from '@/lib/money';
-import {formatMonthPeriod, formatPeriod, vatStyles} from '@/lib/expense-ui';
+import {formatMonthPeriod, formatPeriod, invoiceStatusStyles, vatStyles, yesNoStyles} from '@/lib/expense-ui';
 import {badgeClass, fiscalStyles, incomeCreditStatusStyles, incomeInvoiceStatusStyles} from '@/lib/income-ui';
 import type {IncomeCashRegisterGroup} from '@/lib/income-list';
 import {incomeCreditedAmount, incomeCreditState} from '@/lib/income-status';
@@ -27,7 +27,7 @@ type IncomeItem = {
     description: string | null;
     isFiscal: boolean;
     isCredited: boolean;
-    invoiceStatus: string | null;
+    invoiceStatus: string | undefined;
     salesChannelRef: { code: string; name: string; icon?: string | null };
     customer?: { id: number; businessName: string } | null;
     paymentMethodRef: { name: string; icon?: string | null };
@@ -97,6 +97,25 @@ function creditStatus(income: IncomeItem, timeZone: string) {
 function fiscalBadge(value: boolean) {
     const style = value ? fiscalStyles.yes : fiscalStyles.no;
     return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ Fis' : '✕ NF'}</span>;
+}
+
+function MobileInvoiceBadge(value: boolean, invoiceStatus?: string) {
+    const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.NON_INVIATA) : yesNoStyles.yes;
+    let label = !value ? 'PDF' : '@Fatt';
+    let state = '✕ ';
+    if (invoiceStatus === 'NON_INVIATA') {
+        state = '⏳ ';
+        label = 'Inviare';
+    }
+    if (invoiceStatus === 'EMESSA') {
+        state = '✓ ';
+    }
+    if (invoiceStatus === 'NON_PREVISTA') {
+        state = '✕ ';
+        label = 'NP';
+    }
+
+    return <span className={badgeClass(style.className)}>{state}{label}</span>;
 }
 
 type EntityOption = { id: number; code: string; name: string; icon?: string | null };
@@ -204,11 +223,12 @@ export default function IncomesList({
                             <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
                                     <span className="badge income-badge-compact">🧾 Scontrini</span>
-                                    <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ NF'}</span>
+
                                     {/*<span className="text-pre text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
                                 </div>
                                 <div className="right-side">
-                                    <strong className="mobile-record-date text-pre">{mobileDateLabel(group.latestCreditDate)}</strong>
+                                    <span className="list-payment-icon">{group.paymentMethodIcon ?? '  •  '}</span>
+                                    <strong className="ml-12 mobile-record-date text-pre">{mobileDateLabel(group.latestCreditDate)}</strong>
                                 </div>
                             </div>
                             <div className="mobile-record-title-row">
@@ -217,12 +237,12 @@ export default function IncomesList({
                                     <div className="mobile-record-subtitle">{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</div>
                                 </div>
                                 <div className="right-side">
-                                    <span>{group.paymentMethodIcon ?? '  •  '}</span>
                                     <span className={moneyTone(group.amount)}>{euro(group.amount)}</span>
                                 </div>
                             </div>
                             <div className="mobile-record-title-row income-mobile-status-row">
-                                <span className={badgeClass(vatStyle.className)}>IVA &nbsp;{Number(group.vatRates)}%</span>
+                                <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ NF'}</span>
+                                <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>
                                 {/*<span className="badge">IVA &nbsp;{aggregateVatLabel(group)}</span>*/}
                                 <small className="text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</small>
                                 <span className={badgeClass(incomeCreditStatusStyles.ACCREDITATO.className)}>
@@ -262,14 +282,16 @@ export default function IncomesList({
 
                                     {income.isFiscal ?
                                         <span className="expense-invoice-indicator">
-                                            <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+
+                                            <span className="expense-invoice-indicator">{MobileInvoiceBadge(true, income.invoiceStatus)}</span>
+                                            {/*<span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>*/}
                                             <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/>
                                         </span> : ''}
                                 </div>
 
                                 <div className="right-side">
-                                    <span className="list-payment-icon">{income.paymentMethodRef?.icon ?? '  •  '}</span>&nbsp;&nbsp;&nbsp;
-                                    <span className="mobile-record-date text-pre">{mobileDateLabel(income.orderDate)}</span>
+                                    <span className="list-payment-icon">{income.paymentMethodRef?.icon ?? '  •  '}</span>
+                                    <span className="ml-12 mobile-record-date text-pre">{mobileDateLabel(income.orderDate)}</span>
                                 </div>
 
                             </div>

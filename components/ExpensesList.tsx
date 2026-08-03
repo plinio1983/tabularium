@@ -344,9 +344,10 @@ export default function ExpensesList({
                                         <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(expense.vatRate)}%</span>}
                                 </div>
                                 <div className="mobile-record-meta-right">
+                                    {/*-- Icona pagamento -->*/}
+                                    <span>{expensePaymentIcon(expense)}</span>
                                     {/*-- Data ordine -->*/}
-                                    <span>{expensePaymentIcon(expense)}</span> &nbsp;
-                                    <span className="ml-6 mobile-record-date">{mobileDateLabel(expense.receivedDate)}</span>
+                                    <span className="ml-12 mobile-record-date">{mobileDateLabel(expense.receivedDate)}</span>
                                 </div>
                             </div>
                             <div className="mobile-record-title-row">
