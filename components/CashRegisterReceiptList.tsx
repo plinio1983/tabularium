@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {useState} from 'react';
+import type {ReactNode} from 'react';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import {euro} from '@/lib/money';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
@@ -35,7 +36,7 @@ function receiptDate(value: string, timeZone: string) {
     return `${part('day')} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${part('hour')}:${part('minute')}`;
 }
 
-export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]}) {
+export default function CashRegisterReceiptList({receipts, filtersTrigger}: {receipts: Receipt[]; filtersTrigger?: ReactNode}) {
     const timeZone = useCompanyTimeZone();
     const formId = 'cashRegisterReceiptBulkForm';
     const returnTo = encodeURIComponent('/incomes/cash-register/receipts');
@@ -51,6 +52,10 @@ export default function CashRegisterReceiptList({receipts}: {receipts: Receipt[]
     }
 
     return <div className="card record-list-card cash-register-receipt-list-card">
+        <div className="list-heading recurring-list-heading">
+            <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
+            {filtersTrigger}
+        </div>
         <BulkSelectionController/>
         <form id={formId}
               action={`/api/cash-register/receipts/bulk?returnTo=${returnTo}`}

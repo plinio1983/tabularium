@@ -1479,7 +1479,7 @@
   }
 
   .bulk-direct-link {
-    width: 46px;
+    width: 66px;
     min-width: 42px;
     //height: 38px;
     min-height: 42px;
@@ -1552,8 +1552,8 @@
   .floating-bulk-actions-inner .floating-bulk-button {
     height: 38px;
     min-height: 38px;
-    width: 46px;
-    min-width: 38px;
+    width: 66px;
+    min-width: 42px;
     padding: 0;
   }
 
@@ -4953,10 +4953,6 @@
     @media (max-width: 576px) {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
-  }
-
-  .app-form-wizard-current-6.income-mobile-wizard .income-notes-section > .income-form-section-stack {
-    padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
   }
 
   .recurring-form-wizard .recurring-form-section {

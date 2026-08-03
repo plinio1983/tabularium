@@ -177,7 +177,7 @@ export default function RecurringIncomeForm({
                         value: index + 1,
                         label
                     }))}/> : null}
-                <div className="app-form-field toggle-field switch-toggle-field">
+                <div className="app-form-field toggle-field switch-toggle-field switch-inline">
                     <div className="switch-toggle-field-label app-form-field-label">
                         <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
                     </div>
@@ -200,20 +200,20 @@ export default function RecurringIncomeForm({
             </div>
         </details>
 
-        <details className="form-section full recurring-form-section income-form-section recurring-document-section recurring-amount-section income-amount-section recurring-income-step-3 app-form-wizard-step app-form-wizard-step-3" open>
+        <details className="form-section full recurring-form-section income-form-section recurring-document-section income-amount-section recurring-income-step-3 app-form-wizard-step app-form-wizard-step-3" open>
             <summary><span>Importo e IVA</span><small>Fiscalità, importo e aliquota IVA</small></summary>
             <div className="form-section-grid recurring-form-section-grid">
-                <div className="amount-vat-row full income-amount-vat-row income-wizard-amount">
-                    <div className="income-wizard-amount-entry">
-                        <div className="app-form-field-label toggle-field switch-toggle-field income-switch-control income-fiscal-switch">
+                <div className="amount-vat-row full recurring-wizard-amount">
+                    <div className="recurring-wizard-amount-entry full">
+                        <div className="toggle-field switch-toggle-field recurring-switch-control recurring-fiscal-switch">
                             <div className="switch-toggle-field-label gap-4">
                                 <span className="app-form-field-icon">⇆</span><span className="app-form-label">Entrata fiscale</span>
                             </div>
                             <input type="hidden" name="isFiscal" value="false"/><label className="switch"><input type="checkbox" name="isFiscal" value="true" checked={fiscal} onChange={event => setFiscal(event.currentTarget.checked)}/><span className="slider"/></label>
                         </div>
-                        <div className="income-amount-control">
-                            <label className="income-amount-field"><span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">€</span><span>Importo IVA inclusa</span></span>
-                                <div className="income-amount-row">
+                        <div className="recurring-amount-control flex-grow">
+                            <label className="recurring-wizard-amount-field"><span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">€</span><span>Importo IVA inclusa</span></span>
+                                <div>
                                     <div className="money-input">
                                         <span>€</span><CurrencyInput ref={amountRef} value={amount} onValueChange={value => {
                                         amountRef.current?.setCustomValidity('');
@@ -222,10 +222,12 @@ export default function RecurringIncomeForm({
                                     <input type="hidden" name="amount" value={amount.replace(/\./g, '').replace(',', '.')}/>
                                 </div>
                             </label>
-                            <div className="app-vat-rate-buttons income-vat-buttons align-center" aria-label="Aliquota IVA">{['0', '4', '10', '22'].map(value =>
+                            <div className="app-vat-rate-buttons recurring-vat-buttons-desktop" aria-label="Aliquota IVA">{['0', '4', '10', '22'].map(value =>
                                 <button type="button" key={value} className={vatRate === value ? 'is-selected' : ''} disabled={!fiscal} onClick={() => setVatRate(value)}>{value}%</button>)}</div>
                         </div>
                     </div>
+                    <div className="app-vat-rate-buttons recurring-vat-buttons-mobile" aria-label="Aliquota IVA">{['0', '4', '10', '22'].map(value =>
+                        <button type="button" key={value} className={vatRate === value ? 'is-selected' : ''} disabled={!fiscal} onMouseDown={event => event.preventDefault()} onClick={() => setVatRate(value)}>{value}%</button>)}</div>
                     <input type="hidden" name="vatRate" value={fiscal ? vatRate : '0'}/>
                     <div className="app-amount-keypad full" aria-label="Tastiera numerica">{['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'backspace'].map(key =>
                         <button type="button" key={key} aria-label={key === 'backspace' ? 'Cancella ultima cifra' : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === 'backspace' ? '⌫' : key}</button>)}</div>
@@ -263,15 +265,13 @@ export default function RecurringIncomeForm({
             </div>
         </details>
 
-        <details className="form-section full recurring-form-section recurring-notes-section recurring-income-step-5 app-form-wizard-step app-form-wizard-step-5" open={step === 5}>
-            <summary><span>Riepilogo e note</span><small>Controllo finale e note interne</small></summary>
-            <div className="form-section-stack income-form-section-stack">
-                <section className="recurring-review-summary income-review-summary" aria-label="Riepilogo entrata ricorrente">
-                    <div className="record-review-heading">
-                        <div><span className="record-review-kicker">Controlla prima di salvare</span>
-                            <h3>Riepilogo dell’entrata ricorrente</h3></div>
-                        <strong>{formatEuro(amountValue)}</strong></div>
-                    <div className="record-review-grid">
+        <section className="expense-review-step full recurring-income-step-5 app-form-wizard-step app-form-wizard-step-5" aria-label="Riepilogo entrata ricorrente">
+            <div className="record-review-heading">
+                <div><span className="record-review-kicker">Controlla prima di salvare</span>
+                    <h3>Riepilogo dell’entrata ricorrente</h3></div>
+                <strong>{formatEuro(amountValue)}</strong>
+            </div>
+            <div className="record-review-grid">
                         <div className="record-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({
                             MONTHLY: 'Ogni mese',
                             EVERY_2_MONTHS: 'Ogni 2 mesi',
@@ -301,14 +301,16 @@ export default function RecurringIncomeForm({
                         <div className="record-review-item wide">
                             <i aria-hidden="true">€</i><span>Accredito<strong>{automatic ? `${methods.find(method => String(method.id) === methodId)?.name ?? 'Metodo non indicato'} · ${banks.find(bank => String(bank.id) === bankId)?.name ?? 'Banca non indicata'}` : 'Manuale'}</strong></span>
                         </div>
-                    </div>
-                </section>
-                <label className="full"><span className="app-form-field-label">Note</span><textarea name="notes" rows={3} defaultValue={initial?.notes ?? ''}/></label>{editId ?
-                <div className="toggle-field switch-toggle-field">
-                    <div className="switch-toggle-field-label"><label>Regola attiva</label></div>
-                    <label className="switch"><input type="checkbox" name="isActive" defaultChecked={initial?.isActive ?? true}/><span className="slider"/></label>
-                </div> : null}</div>
-        </details>
+            </div>
+            <label className="card full expense-review-notes expense-review-notes-mobile">
+                Note
+                <textarea name="notes" rows={3} defaultValue={initial?.notes ?? ''}/>
+            </label>
+            {editId ? <div className="toggle-field switch-toggle-field">
+                <div className="switch-toggle-field-label"><label>Regola attiva</label></div>
+                <label className="switch"><input type="checkbox" name="isActive" defaultChecked={initial?.isActive ?? true}/><span className="slider"/></label>
+            </div> : null}
+        </section>
 
         <MobileFormStickyActions currentStep={step} submitStep={5} onBack={() => setStep(value => Math.max(1, value - 1))} onNext={goNext} onCancel={onCancel} cancelHref={cancelHref} submitLabel="Salva entrata" isSubmitting={submitting} error={error}/>
         <div className="actions-row full form-actions-row form-sticky-actions">{error ?

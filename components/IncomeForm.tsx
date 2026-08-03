@@ -378,7 +378,7 @@ export default function IncomeForm({
         if (window.matchMedia("(max-width: 900px)").matches) {
             if (isCreditOnlyMode) {
                 if (!credits.every(isCreditComplete)) event.preventDefault();
-            } else if (mobileStep < 7) {
+            } else if (mobileStep < 6) {
                 event.preventDefault();
                 nextMobileStep();
             }
@@ -665,19 +665,13 @@ export default function IncomeForm({
                 </div>
             </details>
 
-            <details className="form-section full income-form-section income-notes-section app-form-wizard-step app-form-wizard-step-6" open={mobileStep === 6}>
-                <summary>
-                    <span>Riepilogo e note</span>
-                    <small>Controllo finale e note interne</small>
-                </summary>
-                <div className="form-section-stack income-form-section-stack">
-                    <section className="recurring-review-summary income-review-summary" aria-label="Riepilogo incasso">
-                        <div className="record-review-heading">
-                            <div><span className="record-review-kicker">Controlla prima di salvare</span>
-                                <h3>Riepilogo dell’incasso</h3></div>
-                            <strong>{formatEuro(amountValue)}</strong>
-                        </div>
-                        <div className="record-review-grid">
+            <section className="expense-review-step full app-form-wizard-step app-form-wizard-step-6" aria-label="Riepilogo incasso">
+                <div className="record-review-heading">
+                    <div><span className="record-review-kicker">Controlla prima di salvare</span>
+                        <h3>Riepilogo dell’incasso</h3></div>
+                    <strong>{formatEuro(amountValue)}</strong>
+                </div>
+                <div className="record-review-grid">
                             <div className="record-review-item">
                                 <i aria-hidden="true">◷</i><span>Data ordine<strong>{formatDateInputLabel(orderDate) || "Non indicata"}</strong></span>
                             </div>
@@ -708,23 +702,21 @@ export default function IncomeForm({
                             <div className="record-review-item">
                                 <i aria-hidden="true">=</i><span>Residuo<strong className={creditResidual > 0 ? "text-critical" : "text-ok"}>{formatEuro(creditResidual)}</strong></span>
                             </div>
-                        </div>
-                    </section>
-                    <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
-                        <span className="btn-icon">＋</span><span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span><span aria-hidden="true">→</span>
-                    </button>
-                    <label className="card full expense-review-notes income-review-notes">
-                        Note
-                        <textarea name="notes" rows={3} value={notes} onChange={event => setNotes(event.currentTarget.value)} placeholder="Note interne opzionali"/>
-                    </label>
                 </div>
-            </details>
+                <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
+                    <span className="btn-icon">＋</span><span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span><span aria-hidden="true">→</span>
+                </button>
+                <label className="card full expense-review-notes expense-review-notes-mobile">
+                    Note
+                    <textarea name="notes" rows={3} value={notes} onChange={event => setNotes(event.currentTarget.value)} placeholder="Note interne opzionali"/>
+                </label>
+            </section>
 
             <AttachmentFormSection initialAttachments={initialIncome?.attachments} onStateChange={updateAttachmentState} focusOnMount={focusAttachments}/>
 
             <MobileFormStickyActions
                 currentStep={isCreditOnlyMode ? 1 : mobileStep}
-                submitStep={isCreditOnlyMode ? 1 : 7}
+                submitStep={isCreditOnlyMode ? 1 : 6}
                 onBack={() => goToMobileStep(mobileStep - 1)}
                 onNext={nextMobileStep}
                 onCancel={onCancel}
@@ -732,6 +724,7 @@ export default function IncomeForm({
                 submitLabel={isCreditOnlyMode ? "Salva accredito" : submitLabel}
                 submitDisabled={Boolean(attachmentError)}
                 error={attachmentError}
+                backLabel={mobileStep === 7 ? "Riepilogo" : "Indietro"}
             />
 
             <div className="actions-row full form-actions-row form-sticky-actions">

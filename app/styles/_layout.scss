@@ -1141,6 +1141,17 @@ button {
   display: flex !important;
 }
 
+.toggle-field,
+.switch-toggle-field {
+
+  &.switch-inline {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 100% !important;
+  }
+}
+
 .income-form .fiscal-toggle,
 .income-form-section-credit,
 .income-form-section-invoice-issued {
@@ -1846,6 +1857,11 @@ button {
 
 .recurring-mobile-item-shell .recurring-mobile-item-link {
   min-width: 0;
+}
+
+.recurring-income-mobile-item-shell {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 12px;
 }
 
 .expense-trend-selectors {
@@ -10444,7 +10460,7 @@ select:disabled {
 }
 
 button.bulk-direct-link {
-  max-width: max-content;
+  //max-width: max-content;
 }
 
 .bulk-direct-link.is-disabled,

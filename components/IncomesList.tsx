@@ -27,7 +27,7 @@ type IncomeItem = {
     description: string | null;
     isFiscal: boolean;
     isCredited: boolean;
-    invoiceStatus: string | undefined;
+    invoiceStatus: string | null;
     salesChannelRef: { code: string; name: string; icon?: string | null };
     customer?: { id: number; businessName: string } | null;
     paymentMethodRef: { name: string; icon?: string | null };
@@ -99,7 +99,7 @@ function fiscalBadge(value: boolean) {
     return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ Fis' : '✕ NF'}</span>;
 }
 
-function MobileInvoiceBadge(value: boolean, invoiceStatus?: string) {
+function MobileInvoiceBadge(value: boolean, invoiceStatus?: string | null) {
     const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.NON_INVIATA) : yesNoStyles.yes;
     let label = !value ? 'PDF' : '@Fatt';
     let state = '✕ ';
@@ -278,7 +278,7 @@ export default function IncomesList({
                         <div className="mobile-record-main">
                             <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
-                                    <span className="badge">{income.salesChannelRef.name}</span>
+                                    <span className="badge">{income.salesChannelRef.icon ?? '•'} {income.salesChannelRef.name}</span>
 
                                     {income.isFiscal ?
                                         <span className="expense-invoice-indicator">

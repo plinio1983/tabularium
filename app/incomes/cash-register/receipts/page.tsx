@@ -137,9 +137,6 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             <SelectedButtonGroupScroller className="btn-group cash-register-receipt-month-group">
                 {monthLinks.map(item => <Link key={item.label} className={`btn btn-sm ${item.selected ? 'btn-primary is-selected' : 'btn-default'}`} aria-current={item.selected ? 'page' : undefined} href={item.href}>{item.label}</Link>)}
             </SelectedButtonGroupScroller>
-            <div className="cash-register-receipt-filter-trigger">
-                <CashRegisterReceiptFiltersDrawer month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>
-            </div>
         </nav>
         <div className="recurring-active-filters">
             <div>
@@ -151,6 +148,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         </div>
         <CashRegisterReceiptTrendChart points={trend}/>
         <CashRegisterReceiptList
+            filtersTrigger={<CashRegisterReceiptFiltersDrawer month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}
             receipts={receipts.map(receipt => ({
                 id: receipt.id,
                 amount: Number(receipt.amount),
