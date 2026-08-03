@@ -4004,6 +4004,7 @@ table th, table td {
   justify-content: center;
   padding: 18px;
   background: rgba(10, 18, 38, .42);
+  animation: app-modal-backdrop-enter 180ms ease-out both;
 }
 
 /* A form opened from another modal must escape the parent's stacking context. */
@@ -4023,6 +4024,81 @@ table th, table td {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  animation: app-modal-panel-enter 220ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes app-modal-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes app-modal-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes app-modal-panel-enter-mobile {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.app-form-modal-backdrop,
+.bulk-category-modal-backdrop,
+.bulk-attachments-modal-backdrop,
+.cash-register-method-backdrop,
+.bulk-action-modal-backdrop {
+  animation: app-modal-backdrop-enter 180ms ease-out both;
+}
+
+.app-form-modal-backdrop > .app-form-modal,
+.bulk-category-modal,
+.bulk-attachments-modal,
+.cash-register-method-modal,
+.counter-expense-payment-modal,
+.bulk-action-modal {
+  animation: app-modal-panel-enter 220ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@media (max-width: 760px) {
+  .modal-card,
+  .app-form-modal-backdrop > .app-form-modal,
+  .bulk-category-modal,
+  .bulk-attachments-modal,
+  .cash-register-method-modal,
+  .counter-expense-payment-modal,
+  .bulk-action-modal {
+    animation-name: app-modal-panel-enter-mobile;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .modal-card,
+  .app-form-modal-backdrop,
+  .bulk-category-modal-backdrop,
+  .bulk-attachments-modal-backdrop,
+  .cash-register-method-backdrop,
+  .bulk-action-modal-backdrop,
+  .app-form-modal-backdrop > .app-form-modal,
+  .bulk-category-modal,
+  .bulk-attachments-modal,
+  .cash-register-method-modal,
+  .counter-expense-payment-modal,
+  .bulk-action-modal {
+    animation: none;
+  }
 }
 
 .modal-title {
