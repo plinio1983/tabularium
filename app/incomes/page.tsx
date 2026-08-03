@@ -392,7 +392,7 @@ function matchesIsoDate(value: Date | null | undefined, from: string, to: string
 
 function fiscalBadge(value: boolean) {
     const item = value ? fiscalStyles.yes : fiscalStyles.no;
-    const label = value ? '✓ DF' : '✕ NF';
+    const label = value ? '✓ Fis' : '✕ NF';
     return <span className={`${badgeClass(item.className)} income-badge-compact`}>{label}</span>;
 }
 

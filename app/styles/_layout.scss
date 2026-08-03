@@ -13471,15 +13471,18 @@ body.invoice-attachments-modal-open {
   border-bottom: 1px solid var(--line);
 }
 
+.list-payment-icon {
+  font-size: 14px;
+}
+
 @media (max-width: 390px) {
   .mobile-record-item {
     grid-template-columns: 26px minmax(0, 1fr);
-    margin: 0 -9px;
   }
 
-  .record-list-card > .bulk-actions-bar {
-    margin: 0 0 0 -12px !important;
-  }
+  //.record-list-card > .bulk-actions-bar {
+  //  margin: 0 0 0 -12px !important;
+  //}
 }
 
 .mobile-record-item:last-child {

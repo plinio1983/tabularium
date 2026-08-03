@@ -6,13 +6,8 @@ import NewIncomePanel from '@/components/NewIncomePanel';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import BulkEditFieldsModal from '@/components/BulkEditFieldsModal';
 import {euro, moneyTone} from '@/lib/money';
-import {formatPeriod, vatStyles} from '@/lib/expense-ui';
-import {
-    badgeClass,
-    fiscalStyles,
-    incomeCreditStatusStyles,
-    incomeInvoiceStatusStyles
-} from '@/lib/income-ui';
+import {formatMonthPeriod, formatPeriod, vatStyles} from '@/lib/expense-ui';
+import {badgeClass, fiscalStyles, incomeCreditStatusStyles, incomeInvoiceStatusStyles} from '@/lib/income-ui';
 import type {IncomeCashRegisterGroup} from '@/lib/income-list';
 import {incomeCreditedAmount, incomeCreditState} from '@/lib/income-status';
 import {dueStatusLabel} from '@/lib/due-status-label';
@@ -38,7 +33,7 @@ type IncomeItem = {
     paymentMethodRef: { name: string; icon?: string | null };
     creditBank: { name: string; icon?: string | null };
     credits?: Array<{ amount: unknown }>;
-    attachments?: Array<{id: number; originalName: string; sizeBytes?: number | null; type: string}>;
+    attachments?: Array<{ id: number; originalName: string; sizeBytes?: number | null; type: string }>;
 };
 
 function invoiceAttachments(income: IncomeItem) {
@@ -101,11 +96,18 @@ function creditStatus(income: IncomeItem, timeZone: string) {
 
 function fiscalBadge(value: boolean) {
     const style = value ? fiscalStyles.yes : fiscalStyles.no;
-    return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ DF' : '✕ NF'}</span>;
+    return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ Fis' : '✕ NF'}</span>;
 }
 
 type EntityOption = { id: number; code: string; name: string; icon?: string | null };
-type SimpleOption = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string; isIncomeDefault?: boolean };
+type SimpleOption = {
+    id: number;
+    name: string;
+    icon?: string | null;
+    isFallback?: boolean | null;
+    kind?: string;
+    isIncomeDefault?: boolean
+};
 
 export default function IncomesList({
                                         incomes,
@@ -154,33 +156,35 @@ export default function IncomesList({
         <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar income-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi visibili"/></label>
             <div className="bulk-action-buttons btn-group">
-              <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
-                <summary className="bulk-action-trigger">
-                    <span className="btn-icon hidden-mobile">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
-                </summary>
-                <div className="bulk-action-menu-panel">
-                    <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
-                            formAction="/api/exports/incomes" formMethod="post" data-confirm-label="Esporta CSV">
-                        <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
-                    </button>
-                    <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
-                        <span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span></button>
-                    <button className="btn btn-sm btn-default" type="button" data-bulk-add-credit>
-                        <span className="btn-icon">＋</span><span className="bulk-label">Inserisci accredito</span>
-                    </button>
-                    <BulkExpenseAttachmentsModal formId={formId} endpoint="/api/incomes/attachments/archive" subject="incassi"/>
-                    <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
-                            name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
-                        <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
+                    <summary className="bulk-action-trigger">
+                        <span className="btn-icon hidden-mobile">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
+                    </summary>
+                    <div className="bulk-action-menu-panel">
+                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                                formAction="/api/exports/incomes" formMethod="post" data-confirm-label="Esporta CSV">
+                            <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+                        </button>
+                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
+                            <span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span>
+                        </button>
+                        <button className="btn btn-sm btn-default" type="button" data-bulk-add-credit>
+                            <span className="btn-icon">＋</span><span className="bulk-label">Inserisci accredito</span>
+                        </button>
+                        <BulkExpenseAttachmentsModal formId={formId} endpoint="/api/incomes/attachments/archive" subject="incassi"/>
+                        <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
+                                name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
+                            <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                        </button>
+                    </div>
+                </details>
+                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
+                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
+                        <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span>
                     </button>
                 </div>
-              </details>
-              <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
-                <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
-                <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
-                <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
-                    <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span></button>
-              </div>
             </div>
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link bulk-add-link  btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
@@ -200,7 +204,7 @@ export default function IncomesList({
                             <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
                                     <span className="badge income-badge-compact">🧾 Scontrini</span>
-                                    <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ DF' : '✕ NF'}</span>
+                                    <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ NF'}</span>
                                     {/*<span className="text-pre text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
                                 </div>
                                 <div className="right-side">
@@ -255,16 +259,19 @@ export default function IncomesList({
                             <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
                                     <span className="badge">{income.salesChannelRef.name}</span>
-                                    {fiscalBadge(income.isFiscal)}
-                                    <span className="text-muted">
-                                        {/*{formatPeriod(income.billingMonth, income.billingYear)}*/}
-                                    </span>
+
                                     {income.isFiscal ?
-                                        <span className="expense-invoice-indicator"><span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/></span> : ''}
+                                        <span className="expense-invoice-indicator">
+                                            <span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+                                            <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/>
+                                        </span> : ''}
                                 </div>
+
                                 <div className="right-side">
-                                    <span className="badge mobile-record-date text-pre">Scad. {mobileDateLabel(income.dueDate)}</span>
+                                    <span className="list-payment-icon">{income.paymentMethodRef?.icon ?? '  •  '}</span>&nbsp;&nbsp;&nbsp;
+                                    <span className="mobile-record-date text-pre">{mobileDateLabel(income.orderDate)}</span>
                                 </div>
+
                             </div>
                             <div className="mobile-record-title-row">
                                 <div className="left-side flex-grow pl-6">
@@ -272,22 +279,24 @@ export default function IncomesList({
                                     <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>
                                 </div>
                                 <div className="right-side">
-                                    <span>{income.paymentMethodRef?.icon ?? '  •  '}</span><span className={moneyTone(amount)}>{euro(amount)}</span>
+                                    <span className={moneyTone(amount)}>{euro(amount)}</span>
                                 </div>
                             </div>
-                            {/*<div className="mobile-record-title-row">*/}
-                            {/*    <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>*/}
-                            {/*</div>*/}
                             <div className="mobile-record-title-row income-mobile-status-row">
-                                <span className={badgeClass(vatStyle.className)}>IVA &nbsp; {Number(income.vatRate)}%</span>
-                                <small className="text-pre text-muted">{formatPeriod(income.billingMonth, income.billingYear)}</small>
+                                {fiscalBadge(income.isFiscal)}
+                                <span className="text-muted">
+                                        <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(income.vatRate)}%</span>
+                                    </span>
+                                <small className="text-pre text-muted hidden-sp-up">• &nbsp;{formatMonthPeriod(income.billingMonth)}</small>
+                                <small className="text-pre text-muted hidden-sp-down">• &nbsp;{formatPeriod(income.billingMonth, income.billingYear)}</small>
                                 <span title={statusLabel} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {statusLabel}</span>
                             </div>
                         </div>
                     </Link>
                 </div>;
             })}
-            {!incomes.length && !cashRegisterGroups.length ? <div className="record-empty-state">{emptyMessage}</div> : null}
+            {!incomes.length && !cashRegisterGroups.length ?
+                <div className="record-empty-state">{emptyMessage}</div> : null}
         </div>
 
         <div className="table-scroll incomes-table-scroll">
@@ -342,7 +351,8 @@ export default function IncomesList({
                         </td>
                         <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
                         <td>{aggregateVatBadge(group)}</td>
-                        <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span></td>
+                        <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span>
+                        </td>
                         <td className="text-center"><span className="badge badge-color tone-muted">✕</span></td>
                         <td>{compactDateTableLabel(group.latestCreditDate)}</td>
                     </tr>;
@@ -385,7 +395,8 @@ export default function IncomesList({
                         <td>{vatBadge(income.vatRate)}</td>
                         <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
                         <td className="text-center">{income.isFiscal ?
-                            <span className="expense-invoice-indicator"><span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/></span> : <span className="badge tone-muted">✕</span> }</td>
+                            <span className="expense-invoice-indicator"><span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/></span> :
+                            <span className="badge tone-muted">✕</span>}</td>
                         <td>{compactDateTableLabel(income.creditDate)}</td>
                     </tr>;
                 })}

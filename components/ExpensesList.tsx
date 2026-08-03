@@ -14,7 +14,8 @@ import {DEFAULT_COMPANY_TIME_ZONE} from '@/lib/company-time';
 import {
     badgeClass,
     categoryLabel,
-    categoryTone, formatMonthPeriod,
+    categoryTone,
+    formatMonthPeriod,
     formatPeriod,
     invoiceStatusStyles,
     paymentStatusStyles,
@@ -125,17 +126,17 @@ function mobileDateLabel(value?: Date | null) {
 }
 
 function fiscalBadgeMobile(value: boolean) {
-    const item = value ? {className: ''} : yesNoStyles.no;
-    const label = value ? '✓ DF' : '✕ NF';
+    const item = value ? {className: ''} : invoiceStatusStyles.NON_PREVISTA;
+    const label = value ? '✓ Fis' : '✕ NF';
     return <span className={badgeClass(item.className)}>{label}</span>;
 }
 
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
     const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-    let label = !value ? 'PDF' : 'eBill';
+    let label = !value ? 'PDF' : '@Fatt';
     let state = invoiceStatus;
     if (invoiceStatus === 'IN_ATTESA') {
-        state = '✕ ';
+        state = '⏳ ';
     }
     if (invoiceStatus === 'RICEVUTA') {
         state = '✓ ';
@@ -225,47 +226,47 @@ export default function ExpensesList({
                     <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese visibili"/>
                 </label>
                 <div className="bulk-action-buttons btn-group">
-                  <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
-                    <summary className="bulk-action-trigger">
-                        <span className="btn-icon hidden-mobile">⚙</span>
-                        <span className="hidden-sm-up">Actions</span>
-                        <span className="hidden-sm-down">Bulk actions</span>
-                    </summary>
-                    <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
-                                formAction="/api/exports/expenses" formMethod="post" data-confirm-label="Esporta CSV">
-                            <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
-                        </button>
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
-                            <span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span>
-                        </button>
-                        {/*<button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>*/}
-                        <button className="btn btn-sm btn-default" type="button" data-bulk-add-payment>
-                            <span className="btn-icon">＋</span><span className="bulk-label">Inserisci pagamento</span>
-                        </button>
-                        <BulkExpenseAttachmentsModal formId={formId}/>
-                        <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
-                                name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
-                            <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                    <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
+                        <summary className="bulk-action-trigger">
+                            <span className="btn-icon hidden-mobile">⚙</span>
+                            <span className="hidden-sm-up">Actions</span>
+                            <span className="hidden-sm-down">Bulk actions</span>
+                        </summary>
+                        <div className="bulk-action-menu-panel">
+                            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                                    formAction="/api/exports/expenses" formMethod="post" data-confirm-label="Esporta CSV">
+                                <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+                            </button>
+                            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
+                                <span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span>
+                            </button>
+                            {/*<button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>*/}
+                            <button className="btn btn-sm btn-default" type="button" data-bulk-add-payment>
+                                <span className="btn-icon">＋</span><span className="bulk-label">Inserisci pagamento</span>
+                            </button>
+                            <BulkExpenseAttachmentsModal formId={formId}/>
+                            <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
+                                    name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
+                                <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                            </button>
+                        </div>
+                    </details>
+                    <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true"
+                         data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-edit-trigger-attr="data-expense-edit-id" data-copy-trigger-attr="data-expense-copy-id" data-return-to={returnTo}>
+                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
+                            <span className="btn-icon">✎</span>
+                            <span className="hidden-sm-down">Modifica</span>
+                        </a>
+                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
+                            <span className="btn-icon">⧉</span>
+                            <span className="hidden-sm-down">Copia</span>
+                        </a>
+                        <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete"
+                                data-bulk-delete data-confirm-label="Elimina" disabled>
+                            <span className="btn-icon icon-small">🗑</span>
+                            <span className="hidden-sm-down">Elimina</span>
                         </button>
                     </div>
-                  </details>
-                  <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true"
-                     data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-edit-trigger-attr="data-expense-edit-id" data-copy-trigger-attr="data-expense-copy-id" data-return-to={returnTo}>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
-                        <span className="btn-icon">✎</span>
-                        <span className="hidden-sm-down">Modifica</span>
-                    </a>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
-                        <span className="btn-icon">⧉</span>
-                        <span className="hidden-sm-down">Copia</span>
-                    </a>
-                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete"
-                            data-bulk-delete data-confirm-label="Elimina" disabled>
-                        <span className="btn-icon icon-small">🗑</span>
-                        <span className="hidden-sm-down">Elimina</span>
-                    </button>
-                  </div>
                 </div>
                 <div className="bulk-inner-container">
                     <ExpenseNewTriggerButton className="bulk-direct-link bulk-add-link btn btn-md btn-primary" floatingLabel="Aggiungi spesa">
@@ -325,34 +326,55 @@ export default function ExpensesList({
                         <div className="mobile-record-main">
                             <div className="mobile-record-meta">
                                 <div className="mobile-record-meta-left">
-                                    {expense.category ?
-                                        <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : null}
+                                    {/*-- Fiscal Badge -->*/}
                                     {!isVatSettlement ? fiscalBadgeMobile(expense.isDeclared) : null}
-                                    <span className="mobile-record-date hidden-sp-up">{formatMonthPeriod(expense.month)}</span>
-                                    <span className="mobile-record-date date-long hidden-sp-down">{formatPeriod(expense.month, expense.year)}</span>
-                                </div>
-                                <div className="mobile-record-meta-right">
+
+                                    {/*-- Fatttura -->*/}
                                     {!isVatSettlement && expense.isDeclared ?
                                         <span className="expense-invoice-indicator">{electronicInvoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}
-                                            <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/></span> : null}
-                                    <span className="ml-6 mobile-record-date">{mobileDateLabel(expense.dueDate)}</span>
+                                            <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/>
+                                        </span> : null}
+
+                                    {/*-- Periodo fiscale -->*/}
+                                    <span className="mobile-record-date hidden-sp-up">• &nbsp;{formatMonthPeriod(expense.month)}</span>
+                                    <span className="mobile-record-date date-long hidden-sp-down">• &nbsp;{formatPeriod(expense.month, expense.year)}</span>
+
+                                    {/*-- Aliquota IVA -->*/}
+                                    {isVatSettlement ? <span className="badge tone-neutral">100%</span> :
+                                        <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(expense.vatRate)}%</span>}
+                                </div>
+                                <div className="mobile-record-meta-right">
+                                    {/*-- Data ordine -->*/}
+                                    <span>{expensePaymentIcon(expense)}</span> &nbsp;
+                                    <span className="ml-6 mobile-record-date">{mobileDateLabel(expense.receivedDate)}</span>
                                 </div>
                             </div>
                             <div className="mobile-record-title-row">
-                                <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : expense.isRecurring ? 'R' : 'S'}</span>
+
+                                {/*-- Ricorrente/Singola/IVA -->*/}
+                                <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>
+                                    {isVatSettlement ? 'IVA' : expense.isRecurring ? 'R' : 'S'}
+                                </span>
                                 <div className="mobile-record-title-left">
+                                    {/*-- Descrizione -->*/}
                                     <strong>{showSupplierColumn ? supplierName : (expense.description || 'Spesa senza descrizione')}</strong>
                                 </div>
                                 <div className="mobile-record-title-right">
-                                    <span className={moneyTone(amount)}>{expensePaymentIcon(expense)} &nbsp;{euro(expense.amount as string | number)}</span>
+                                    {/*-- Importo -->*/}
+                                    <span className={moneyTone(amount)}>
+                                        {euro(expense.amount as string | number)}
+                                    </span>
                                 </div>
                             </div>
                             <div className="mobile-record-subtitle">
                                 <div className="mobile-record-subtitle-left">
+                                    {/*-- Categoria -->*/}
+                                    {expense.category ?
+                                        <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : null}
+
+                                    {/*-- Descrizione / Fornitore -->*/}
                                     {showSupplierColumn ?
                                         <span className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'}</span> : supplierName}
-                                    {isVatSettlement ? <span className="badge tone-neutral">100%</span> :
-                                        <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}
                                 </div>
                                 <div>
                                     <span className={badgeClass(statusStyle.className)}> {statusLabel}</span>
