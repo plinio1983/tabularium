@@ -1491,7 +1491,7 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            <section className="expense-review-step full app-form-wizard-step app-form-wizard-step-6" aria-label="Riepilogo spesa">
+            <section className="expense-review-step record-review-step full app-form-wizard-step app-form-wizard-step-6" aria-label="Riepilogo spesa">
                 <div className="record-review-heading">
                     <div>
                         <span className="record-review-kicker">Controlla prima di salvare</span>

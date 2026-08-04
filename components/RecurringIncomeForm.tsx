@@ -265,7 +265,7 @@ export default function RecurringIncomeForm({
             </div>
         </details>
 
-        <section className="expense-review-step full recurring-income-step-5 app-form-wizard-step app-form-wizard-step-5" aria-label="Riepilogo entrata ricorrente">
+        <section className="expense-review-step record-review-step full recurring-income-step-5 app-form-wizard-step app-form-wizard-step-5" aria-label="Riepilogo entrata ricorrente">
             <div className="record-review-heading">
                 <div><span className="record-review-kicker">Controlla prima di salvare</span>
                     <h3>Riepilogo dell’entrata ricorrente</h3></div>

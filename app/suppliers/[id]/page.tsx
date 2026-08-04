@@ -12,6 +12,7 @@ import DeleteActionButton from '@/components/DeleteActionButton';
 import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import {yearMonthInTimeZone} from '@/lib/company-time';
+import CopyValueButton from '@/components/CopyValueButton';
 
 function valueOrDash(value?: string | null) {
   return value && value.trim() ? value : '-';
@@ -22,7 +23,7 @@ function CopyableField({ label, value, className }: { label: string; value?: str
   return <div className={`${className} copyable-detail-field`}>
     <span>{label}</span>
     <strong className={label === 'Note interne' ? 'displayed-notes' : undefined}>{displayValue}</strong>
-    <button type="button" className="copy-value-button" data-copy={displayValue === '-' ? '' : displayValue} title="Copia valore">⧉</button>
+    <CopyValueButton value={displayValue === '-' ? '' : displayValue}/>
   </div>;
 }
 
@@ -97,16 +98,6 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       initialExpense={{ supplierId: supplier.id, merchant: supplier.businessName }}
       showToolbar={false}
     />
-    <script dangerouslySetInnerHTML={{ __html: `
-      document.addEventListener('click', async function(event) {
-        const button = event.target.closest('[data-copy]');
-        if (!button) return;
-        const value = button.getAttribute('data-copy') || '';
-        if (!value) return;
-        try { await navigator.clipboard.writeText(value); button.textContent = '✓'; setTimeout(() => button.textContent = '⧉', 900); } catch (e) { alert('Impossibile copiare il valore.'); }
-      });
-    ` }} />
-
     <div className="record-detail-shell">
       <article className="record-detail-document party-detail-document">
         <div className="record-detail-action-row">

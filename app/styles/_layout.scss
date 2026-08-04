@@ -1303,6 +1303,8 @@ button {
 }
 
 .entity-styled-form {
+  width: min(1040px, 100%);
+  margin-inline: auto;
   padding: 0;
   border: 0;
   box-shadow: none;
@@ -1315,7 +1317,7 @@ button {
 }
 
 .entity-form-section-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .entity-form-actions {
@@ -1355,8 +1357,8 @@ button {
 }
 
 .modal-card.modal-card-wide.entity-form-modal-card {
-  width: min(1280px, calc(100vw - 36px));
-  max-width: calc(100vw - 36px);
+  width: min(1080px, calc(100vw - 36px));
+  max-width: min(1080px, calc(100vw - 36px));
 
   @media (max-width: 760px) {
     .app-record-form .form-actions-row {
@@ -4039,7 +4041,7 @@ table th, table td {
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
@@ -4050,7 +4052,7 @@ table th, table td {
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
@@ -11657,9 +11659,9 @@ body.bulk-attachments-modal-open {
   font-weight: 800;
 }
 
-//.app-quick-search-field {
-//  gap: 8px;
-//}
+.app-quick-search-field {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+}
 
 //.app-quick-search-field input {
 //  min-height: 42px;
@@ -14659,7 +14661,7 @@ body.invoice-attachments-modal-open {
 }
 
 .app-record-form .payment-collapse-action {
-  display: none;
+  display: inline-flex;
 }
 
 .income-form .payment-collapse-action {

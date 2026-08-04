@@ -39,7 +39,7 @@ export const vatStylesNoText: Record<string, { label: string; className: string 
 };
 
 export const invoiceStatusStyles: Record<string, { label: string; icon: string; className: string }> = {
-  NON_PREVISTA: { label: 'NP', icon: '✕', className: 'tone-muted' },
+  NON_PREVISTA: { label: '', icon: '✕', className: 'tone-muted' },
   IN_ATTESA: { label: 'Attesa', icon: '⏳', className: 'tone-waiting' },
   NON_INVIATA: { label: 'Inviare', icon: '⏳', className: 'tone-waiting' },
   INVIATA_SDI: { label: 'Emessa', icon: '✅', className: 'tone-received' },

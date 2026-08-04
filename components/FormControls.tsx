@@ -154,13 +154,13 @@ export function MonthField({ label, name, value, onChange, hint, className = '',
     : 'Seleziona il periodo';
 
   return <FormField label={label} icon="▦" hint={hint} className={`app-date-field app-month-field ${className}`.trim()} htmlFor={id}>
-    <div className="app-date-control">
+    <div className="app-date-control app-month-picker-control">
       <input ref={inputRef} id={id} type="month" name={name} value={value} onChange={event => onChange(event.currentTarget.value)} required={required}/>
       <div className="app-date-presentation" aria-hidden="true">
         <strong>{presentation}</strong>
-        <span>Periodo contabile</span>
+        <span>Seleziona mese e anno</span>
       </div>
-      <button type="button" className="app-date-picker-button" aria-label={`Apri selettore per ${label}`} onClick={() => {
+      <button type="button" className="app-date-picker-button" aria-label={`Apri datepicker mese e anno per ${label}`} onClick={() => {
         inputRef.current?.focus();
         inputRef.current?.showPicker?.();
       }}>▦</button>

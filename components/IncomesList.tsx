@@ -140,6 +140,7 @@ export default function IncomesList({
                                         initialCustomerId,
                                         initialOpen = false,
                                         timeZone = DEFAULT_COMPANY_TIME_ZONE,
+                                        hideCustomer = false,
                                         emptyMessage = 'Nessun incasso trovato.'
                                     }: {
     incomes: IncomeItem[];
@@ -153,6 +154,7 @@ export default function IncomesList({
     initialCustomerId?: number;
     initialOpen?: boolean;
     timeZone?: string;
+    hideCustomer?: boolean;
     emptyMessage?: string;
 }) {
     const mobileIncomes = suppliedMobileIncomes ?? [...incomes].sort((a, b) => (b.creditDate?.getTime() ?? 0) - (a.creditDate?.getTime() ?? 0) || b.id - a.id);
@@ -297,8 +299,8 @@ export default function IncomesList({
                             </div>
                             <div className="mobile-record-title-row">
                                 <div className="left-side flex-grow pl-6">
-                                    <span>{income.customer?.businessName}</span>
-                                    <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div>
+                                    <span>{hideCustomer ? (income.description || 'Incasso senza descrizione') : income.customer?.businessName}</span>
+                                    {!hideCustomer ? <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div> : null}
                                 </div>
                                 <div className="right-side">
                                     <span className={moneyTone(amount)}>{euro(amount)}</span>
@@ -331,7 +333,7 @@ export default function IncomesList({
                     <th data-sort-key="billing-period" data-sort-type="number">Periodo fatt.</th>
                     <th data-sort-key="order-date" data-sort-type="date">Data ordine</th>
                     <th data-sort-key="sales-channel">Canale vendita</th>
-                    <th data-sort-key="customer">Cliente</th>
+                    {!hideCustomer ? <th data-sort-key="customer">Cliente</th> : null}
                     <th data-sort-key="fiscal">Fisc.</th>
                     <th data-sort-key="amount" data-sort-type="number">Importo</th>
                     <th data-sort-key="description">Descrizione</th>
@@ -366,7 +368,7 @@ export default function IncomesList({
                         <td>{formatPeriod(group.billingMonth, group.billingYear)}</td>
                         <td>{compactDateTableLabel(group.latestCreditDate)}</td>
                         <td>{group.salesChannelIcon ?? '  •  '} {group.salesChannel}</td>
-                        <td>🧾 Registratore di cassa</td>
+                        {!hideCustomer ? <td>🧾 Registratore di cassa</td> : null}
                         <td>{fiscalBadge(group.isFiscal)}</td>
                         <td><strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong>
                             <span className="income-table-payment-icon" title={group.paymentMethod} aria-label={`Metodo di pagamento: ${group.paymentMethod}`}>{group.paymentMethodIcon ?? '•'}</span>
@@ -407,8 +409,8 @@ export default function IncomesList({
                         <td>{formatPeriod(income.billingMonth, income.billingYear)}</td>
                         <td>{compactDateTableLabel(income.orderDate ?? income.creditDate)}</td>
                         <td>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</td>
-                        <td>{income.customer ?
-                            <Link href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td>
+                        {!hideCustomer ? <td>{income.customer ?
+                            <Link href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td> : null}
                         <td>{fiscalBadge(income.isFiscal)}</td>
                         <td><strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
                             <span className="income-table-payment-icon" title={income.paymentMethodRef.name} aria-label={`Metodo di pagamento: ${income.paymentMethodRef.name}`}>{income.paymentMethodRef.icon ?? '•'}</span>
@@ -423,7 +425,7 @@ export default function IncomesList({
                     </tr>;
                 })}
                 {!incomes.length && !cashRegisterGroups.length ? <tr>
-                    <td colSpan={12}>{emptyMessage}</td>
+                    <td colSpan={hideCustomer ? 11 : 12}>{emptyMessage}</td>
                 </tr> : null}</tbody>
             </table>
         </div>

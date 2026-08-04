@@ -665,7 +665,7 @@ export default function IncomeForm({
                 </div>
             </details>
 
-            <section className="expense-review-step full app-form-wizard-step app-form-wizard-step-6" aria-label="Riepilogo incasso">
+            <section className="expense-review-step record-review-step full app-form-wizard-step app-form-wizard-step-6" aria-label="Riepilogo incasso">
                 <div className="record-review-heading">
                     <div><span className="record-review-kicker">Controlla prima di salvare</span>
                         <h3>Riepilogo dell’incasso</h3></div>

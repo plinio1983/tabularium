@@ -12,11 +12,12 @@ import { detailBackHref } from '@/lib/detail-navigation';
 import { prepareIncomeList } from '@/lib/income-list';
 import {incomeCreditSummary} from '@/lib/income-credits';
 import {yearMonthInTimeZone} from '@/lib/company-time';
+import CopyValueButton from '@/components/CopyValueButton';
 
 function valueOrDash(value?: string | null) { return value?.trim() || '-'; }
 function CopyableField({ label, value, className = '' }: { label: string; value?: string | null; className?: string }) {
   const display = valueOrDash(value);
-  return <div className={`${className} copyable-detail-field`}><span>{label}</span><strong className={label === 'Note interne' ? 'displayed-notes' : undefined}>{display}</strong><button type="button" className="copy-value-button" data-copy={display === '-' ? '' : display} title="Copia valore">⧉</button></div>;
+  return <div className={`${className} copyable-detail-field`}><span>{label}</span><strong className={label === 'Note interne' ? 'displayed-notes' : undefined}>{display}</strong><CopyValueButton value={display === '-' ? '' : display}/></div>;
 }
 
 export default async function ClientDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
@@ -42,7 +43,6 @@ export default async function ClientDetailPage({ params, searchParams }: { param
 
   return <div className="grid record-detail-page party-detail-page">
     <ClientEditModalController />
-    <script dangerouslySetInnerHTML={{ __html: `document.addEventListener('click',async function(event){const button=event.target.closest('[data-copy]');if(!button)return;const value=button.getAttribute('data-copy')||'';if(!value)return;try{await navigator.clipboard.writeText(value);button.textContent='✓';setTimeout(()=>button.textContent='⧉',900)}catch(e){alert('Impossibile copiare il valore.')}});` }} />
     <div className="record-detail-shell"><article className="record-detail-document party-detail-document">
       <div className="record-detail-action-row"><div className="left-side"><DetailBackButton href={backHref} /></div>{!customer.systemRole ? <div className="right-side"><button className="btn btn-sm btn-default" type="button" data-client-edit-id={customer.id}>✎ Modifica</button><DeleteActionButton action={`/api/clients/${customer.id}`} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton></div> : <span className="badge">Cliente di sistema</span>}</div>
       <section className="record-detail-hero"><div><div className="record-detail-title-block"><p className="record-detail-kicker">Cliente #{customer.id}</p><h1>{customer.businessName}</h1><div className="record-detail-meta-line"><span>{valueOrDash(customer.alias)}</span><span className="badge">{customer.incomes.length} incassi collegati</span></div></div></div>
@@ -53,6 +53,6 @@ export default async function ClientDetailPage({ params, searchParams }: { param
         <CopyableField label="Ragione sociale" value={customer.businessName} /><CopyableField label="Referente" value={customer.alias} /><CopyableField label="Email" value={customer.email} /><CopyableField label="P.IVA / C.F." value={customer.vatNumber} /><CopyableField label="Cod. SDI" value={customer.taxCodeSdi} /><CopyableField label="PEC" value={customer.pec} /><CopyableField label="IBAN" value={customer.iban} /><CopyableField label="Swift" value={customer.swift} /><CopyableField label="Note interne" value={customer.internalNotes} className="span-2" />
       </div></details>
     </article></div>
-    <div className="card record-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p></div></div><IncomesList timeZone={current.company.timeZone} incomes={listedIncomes} cashRegisterGroups={cashRegisterGroups} returnTo={returnTo} banks={orderBanks(banks).map(bank => ({...bank, isPrimary: bank.id === current.company.primaryBankId}))} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} emptyMessage="Nessun incasso collegato a questo cliente." /></div>
+    <div className="card record-list-card"><div className="list-heading"><div><h2>Incassi collegati</h2><p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p></div></div><IncomesList timeZone={current.company.timeZone} incomes={listedIncomes} cashRegisterGroups={cashRegisterGroups} returnTo={returnTo} banks={orderBanks(banks).map(bank => ({...bank, isPrimary: bank.id === current.company.primaryBankId}))} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} hideCustomer emptyMessage="Nessun incasso collegato a questo cliente." /></div>
   </div>;
 }

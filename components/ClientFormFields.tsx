@@ -44,7 +44,7 @@ export default function ClientFormFields({ customer }: { customer?: Customer }) 
         <Field name="iban" label="IBAN" icon="▥">
           <input id="client-iban" name="iban" defaultValue={customer?.iban ?? ''} placeholder="IT60 X054 2811 1010 0000 0123 456" autoComplete="off" maxLength={64}/>
         </Field>
-        <Field name="swift" label="Swift / BIC" icon="⇄">
+        <Field name="swift" label="Swift / BIC" icon="⇄" className="span-2">
           <input id="client-swift" name="swift" defaultValue={customer?.swift ?? ''} placeholder="Es. BCITITMM" autoComplete="off" maxLength={16}/>
         </Field>
       </div>
