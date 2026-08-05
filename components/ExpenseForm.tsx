@@ -1107,24 +1107,25 @@ export default function ExpenseForm({
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
 
                                     </label>
-
-                                {!isVatSettlement ?
-                                    <div className="app-vat-rate-buttons" aria-label="Aliquota IVA">
-                                        <label>Aliquota IVA </label>
-                                        {["0", "4", "10", "22"].map(rate => <button
-                                            type="button"
-                                            key={rate}
-                                            className={vatRate === rate ? "is-selected" : ""}
-                                            disabled={!isDeclared}
-                                            onMouseDown={event => event.preventDefault()}
-                                            onClick={() => {
-                                                setVatRate(rate);
-                                                focusAmount();
-                                            }}
-                                        >{rate}%</button>)}
-                                    </div> : null}
                             </div>
                         </div>
+
+                        {!isVatSettlement ?
+                            <div className="app-vat-rate-buttons" aria-label="Aliquota IVA">
+                                <label>Aliquota IVA </label>
+                                {["0", "4", "10", "22"].map(rate => <button
+                                    type="button"
+                                    key={rate}
+                                    className={vatRate === rate ? "is-selected" : ""}
+                                    disabled={!isDeclared}
+                                    onMouseDown={event => event.preventDefault()}
+                                    onClick={() => {
+                                        setVatRate(rate);
+                                        focusAmount();
+                                    }}
+                                >{rate}%</button>)}
+                            </div> : null}
+
                         {!isVatSettlement ?
                             <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/> : null}
                         <div className="app-amount-keypad full" aria-label="Tastiera numerica">

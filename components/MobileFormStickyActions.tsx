@@ -1,6 +1,7 @@
 "use client";
 
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
+import {createPortal} from "react-dom";
 
 type Props = {
     currentStep: number;
@@ -31,14 +32,16 @@ export default function MobileFormStickyActions({
                                                     submitDisabled = false,
                                                     error,
                                                 }: Props) {
-    const rootRef = useRef<HTMLDivElement>(null);
+    const anchorRef = useRef<HTMLSpanElement>(null);
+    const [mounted, setMounted] = useState(false);
     const showBack = currentStep > 1;
     const showSubmit = currentStep >= submitStep;
 
+    useEffect(() => setMounted(true), []);
+
     useEffect(() => {
-        const root = rootRef.current;
-        const form = root?.closest("form");
-        if (!root || !form || showSubmit) return;
+        const form = anchorRef.current?.closest("form");
+        if (!form || showSubmit) return;
 
         const inputs = Array.from(form.querySelectorAll<HTMLInputElement>("input:not([type='hidden']):not([type='file'])"));
         const previousHints = inputs.map(input => input.getAttribute("enterkeyhint"));
@@ -46,7 +49,6 @@ export default function MobileFormStickyActions({
 
         function handleEnter(event: KeyboardEvent) {
             if (event.key !== "Enter" || event.defaultPrevented || event.isComposing || event.repeat) return;
-            if (getComputedStyle(root!).display === "none") return;
             const target = event.target;
             if (!(target instanceof HTMLElement) || !form!.contains(target)) return;
             if (target.closest("textarea, select, button, a")) return;
@@ -71,7 +73,7 @@ export default function MobileFormStickyActions({
         };
     }, [currentStep, onNext, showSubmit]);
 
-    return <div ref={rootRef} className="app-form-wizard-actions mobile-form-sticky-actions full">
+    const actions = <div className="mobile-form-sticky-actions">
         {error ? <p className="inline-warning full">{error}</p> : null}
         <div className="app-form-wizard-actions-row mobile-form-sticky-actions-row">
             {showBack ? (
@@ -89,8 +91,9 @@ export default function MobileFormStickyActions({
             )}
 
             {showSubmit ? (
-                <button className="btn btn-md btn-primary" type="submit"
-                        disabled={isSubmitting || submitDisabled}>
+                <button className="btn btn-md btn-primary" type="button"
+                        disabled={isSubmitting || submitDisabled}
+                        onClick={() => anchorRef.current?.closest("form")?.requestSubmit()}>
                     <span className="btn-icon">✓</span> {isSubmitting ? submittingLabel : submitLabel}
                 </button>
             ) : (
@@ -104,4 +107,9 @@ export default function MobileFormStickyActions({
             )}
         </div>
     </div>;
+
+    return <>
+        <span ref={anchorRef} className="mobile-form-sticky-actions-anchor" aria-hidden="true"/>
+        {mounted ? createPortal(actions, document.body) : null}
+    </>;
 }

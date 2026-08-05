@@ -207,7 +207,7 @@ export default function RecurringIncomeForm({
                     <div className="recurring-wizard-amount-entry full">
                         <div className="toggle-field switch-toggle-field recurring-switch-control recurring-fiscal-switch">
                             <div className="switch-toggle-field-label gap-4">
-                                <span className="app-form-field-icon">⇆</span><span className="app-form-label">Entrata fiscale</span>
+                                <span className="app-form-field-icon">⇆</span><span className="app-form-label">Fiscale</span>
                             </div>
                             <input type="hidden" name="isFiscal" value="false"/><label className="switch"><input type="checkbox" name="isFiscal" value="true" checked={fiscal} onChange={event => setFiscal(event.currentTarget.checked)}/><span className="slider"/></label>
                         </div>

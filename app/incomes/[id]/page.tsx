@@ -30,6 +30,19 @@ function dateLabel(value?: Date | null) {
     return formatted.replace(/\b([a-zàèéìòù])/, match => match.toUpperCase());
 }
 
+function compactDateLabel(value?: Date | null) {
+    if (!value) return '-';
+    const parts = new Intl.DateTimeFormat('it-IT', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC'
+    }).formatToParts(value);
+    const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value ?? '';
+    const month = part('month').replace('.', '');
+    return `${part('day')} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${part('year')}`;
+}
+
 function vatAmountFromGross(amount: number, vatRate: number) {
     if (!vatRate) return 0;
     return amount * (vatRate / (100 + vatRate));
@@ -261,7 +274,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     {income.credits.length ? <div className="app-record-form record-detail-payment-summary-list">
                         {income.credits.map(credit => <article className="payment-row payment-summary-row" key={credit.id}>
                             <div className="payment-summary-primary"><span className="payment-summary-kicker">Accredito effettuato</span><strong className="payment-summary-amount">{euro(Number(credit.amount))}</strong></div>
-                            <div className="payment-summary-date"><span>Data accredito</span><strong>{dateLabel(credit.creditDate)}</strong></div>
+                            <div className="payment-summary-date"><span>Data accredito</span><strong>{compactDateLabel(credit.creditDate)}</strong></div>
                             <div className="payment-summary-meta">
                                 <div><span>Metodo</span><strong>{credit.paymentMethod.icon ?? '•'} {credit.paymentMethod.name}</strong></div>
                                 <div><span>Banca</span><strong>{credit.bank.icon ?? '•'} {credit.bank.name}</strong></div>
