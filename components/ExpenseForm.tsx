@@ -1062,7 +1062,7 @@ export default function ExpenseForm({
                     <div className="amount-vat-row full app-form-wizard-step app-form-wizard-step-2">
                         <div className="expense-wizard-amount-entry">
                             {!isVatSettlement ?
-                                <div className="toggle-field switch-toggle-field expense-fiscal-desktop-control">
+                                <div className="switch-toggle-field expense-fiscal-desktop-control">
                                     <div className="switch-toggle-field-label">
                                         <span className="app-form-field-icon">⇆</span>
                                         <label>Fiscale</label>
@@ -1079,7 +1079,7 @@ export default function ExpenseForm({
                                         <span className="text-muted">{isDeclared ? 'Fiscale' : 'Non fiscale'}</span>
                                     </label>
                                 </div> : null}
-                            {!isVatSettlement ? <label className="app-form-wizard-mobile-switch">
+                            {!isVatSettlement ? <label className="app-form-wizard-mobile-switch switch-toggle-field">
                                 <span>Fiscale</span>
                                 <span className="switch">
                                     <input
@@ -1093,7 +1093,7 @@ export default function ExpenseForm({
                             </label> : null}
                             <div className="expense-amount-control">
 
-                                    <label className="expense-wizard-amount-field switch-toggle-field">
+                                    <label className="expense-wizard-amount-field">
                                         <div className="switch-toggle-field-label">
                                             <span className="app-form-field-icon">€</span>
                                             <span>{!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}</span>
@@ -1149,7 +1149,7 @@ export default function ExpenseForm({
                         <small>IVA, detrazione e fattura elettronica</small>
                     </summary>
                     <div className="form-section-grid">
-                        <div className="toggle-field switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
+                        <div className="switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
                             <div className="switch-toggle-field-label">
                                 <span className="app-form-field-icon">⇆</span>
                                 <label>Fattura elettronica</label>
@@ -1183,7 +1183,7 @@ export default function ExpenseForm({
                         />
                     </div>
                     <div className="form-section-grid pt-0">
-                        <div className="toggle-field switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
+                        <div className="switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
                             <div className="switch-toggle-field-label">
                                 <span className="app-form-field-icon">⇆</span>
                                 <label>Fattura emessa</label>
@@ -1208,7 +1208,7 @@ export default function ExpenseForm({
 
                         <div className="expense-invoice-step-row app-form-wizard-step app-form-wizard-step-5">
                             <div className="expense-invoice-switches">
-                                <label className="app-form-wizard-mobile-switch app-form-field-label">
+                                <label className="app-form-wizard-mobile-switch switch-toggle-field app-form-field-label">
                                     <span className="app-form-label">Fattura elettronica</span>
                                     <span className="switch">
                                     <input
@@ -1225,7 +1225,7 @@ export default function ExpenseForm({
                                     <span className="text-muted">{hasElectronicInvoice ? 'Elettronica' : 'PDF'}</span>
                                 </span>
                                 </label>
-                                <label className="app-form-wizard-mobile-switch expense-invoice-emitted-switch app-form-field-label">
+                                <label className="app-form-wizard-mobile-switch switch-toggle-field expense-invoice-emitted-switch app-form-field-label">
                                     <span>Fattura emessa</span>
                                     <span className="switch">
                                     <input

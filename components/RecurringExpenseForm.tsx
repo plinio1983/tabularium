@@ -585,7 +585,7 @@ export default function RecurringExpenseForm({
                             <input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required/>
                         </FormField>
                     )}
-                    <div className="app-form-field toggle-field switch-toggle-field app-form-wizard-step app-form-wizard-step-1">
+                    <div className="app-form-field switch-toggle-field app-form-wizard-step app-form-wizard-step-1">
                         <div className="switch-toggle-field-label app-form-field-label">
                             <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
                         </div>
@@ -624,7 +624,7 @@ export default function RecurringExpenseForm({
                 <div className="form-section-grid recurring-form-section-grid">
                     <div className="amount-vat-row app-form-wizard-step app-form-wizard-step-2 recurring-wizard-amount">
                         <div className="recurring-wizard-amount-entry full">
-                            <div className="toggle-field switch-toggle-field recurring-switch-control recurring-fiscal-switch">
+                            <div className="switch-toggle-field recurring-switch-control recurring-fiscal-switch">
                                 <div className="switch-toggle-field-label">
                                     <span className="app-form-field-icon">⇆</span>
                                     <label>Fiscale</label>
@@ -671,7 +671,7 @@ export default function RecurringExpenseForm({
                     <small>Fattura elettronica e periodo fatturazione</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
-                    <div className="toggle-field switch-toggle-field recurring-switch-control recurring-invoice-switch">
+                    <div className="switch-toggle-field recurring-switch-control recurring-invoice-switch">
                         <div className="switch-toggle-field-label">
                             <span className="app-form-field-icon">⇆</span>
                             <label>Fattura elettronica</label>
@@ -710,7 +710,7 @@ export default function RecurringExpenseForm({
                     <small>Automazione, canale e banca</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
-                    <div className="toggle-field switch-toggle-field recurring-switch-control recurring-accrual-toggle">
+                    <div className="switch-toggle-field recurring-switch-control recurring-accrual-toggle">
                         <div className="switch-toggle-field-label">
                             <span className="app-form-field-icon">⇆</span>
                             <label> Pagamento automatico</label>

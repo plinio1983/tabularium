@@ -105,32 +105,32 @@
     min-width: 205px;
   }
 
-  .app-form-wizard .expense-fiscal-desktop-control,
-  .app-form-wizard .expense-invoice-desktop-control,
-  .recurring-record-form .recurring-switch-control,
-  .income-form .income-switch-control {
-    display: flex !important;
-    //min-width: 156px;
-    min-height: 91px;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 10px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 15px;
-    background: linear-gradient(145deg, #fff, #f8fafc);
-    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
-    max-width: fit-content;
-  }
+  //.app-form-wizard .expense-fiscal-desktop-control,
+  //.app-form-wizard .expense-invoice-desktop-control,
+  //.recurring-record-form .recurring-switch-control,
+  //.income-form .income-switch-control {
+  //  display: flex !important;
+  //  //min-width: 156px;
+  //  min-height: 91px;
+  //  flex-direction: column;
+  //  align-items: stretch;
+  //  justify-content: space-between;
+  //  gap: 8px;
+  //  padding: 10px 14px;
+  //  border: 1px solid #cbd5e1;
+  //  border-radius: 15px;
+  //  background: linear-gradient(145deg, #fff, #f8fafc);
+  //  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+  //  max-width: fit-content;
+  //}
 
-  .income-form .income-switch-control {
-    min-height: 91px;
-  }
+  //.income-form .income-switch-control {
+  //  min-height: 91px;
+  //}
 
-  .recurring-record-form .recurring-switch-control {
-    max-height: 91px;
-  }
+  //.recurring-record-form .recurring-switch-control {
+  //  max-height: 91px;
+  //}
 
   .app-form-wizard .expense-fiscal-desktop-control > span,
   .app-form-wizard .expense-invoice-desktop-control > span,
@@ -141,13 +141,13 @@
     font-weight: 850;
   }
 
-  .app-form-wizard .expense-fiscal-desktop-control .switch,
-  .app-form-wizard .expense-invoice-desktop-control .switch,
-  .recurring-record-form .recurring-switch-control .switch,
-  .income-form .income-switch-control .switch {
-    //align-self: flex-end;
-    //min-height: 46px;
-  }
+  //.app-form-wizard .expense-fiscal-desktop-control .switch,
+  //.app-form-wizard .expense-invoice-desktop-control .switch,
+  //.recurring-record-form .recurring-switch-control .switch,
+  //.income-form .income-switch-control .switch {
+  //  align-self: flex-end;
+  //  min-height: 46px;
+  //}
 
   .single-expense-form .expense-wizard-amount-field {
     min-width: 0;
@@ -189,10 +189,10 @@
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  .income-form .income-fiscal-switch {
-    min-width: max-content;
-    max-height: max-content;
-  }
+  //.income-form .income-fiscal-switch {
+  //  min-width: max-content;
+  //  max-height: max-content;
+  //}
 
   .income-form .income-wizard-amount-entry {
     display: flex;

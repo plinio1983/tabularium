@@ -116,7 +116,7 @@ export default function PaymentCreditEditRow({
             </div>
             <span className="payment-credit-display-icon expense-category-settings-icon" aria-label={icon ? `Icona ${icon}` : 'Nessuna icona'}>{icon ?? '  •  '}</span>
             <span className="payment-credit-display-kind hidden-mobile">{kindLabel}</span>
-            {kind ? null : <form action={updateAction} className="payment-credit-primary-switch-form">
+            {kind ? null : <form action={updateAction} className="payment-credit-primary-switch-form switch-toggle-field switch-clean switch-inline">
                 <input type="hidden" name="id" value={id}/>
                 <input type="hidden" name="name" value={name}/>
                 <input type="hidden" name="icon" value={icon ?? ''}/>
@@ -155,7 +155,7 @@ export default function PaymentCreditEditRow({
                 <option value="">Nessuna</option>
                 {iconOptions.map(option => <option key={option} value={option}>{option}</option>)}
             </select></label>
-            {!kind ? <div className="payment-credit-primary-field">
+            {!kind ? <div className="payment-credit-primary-field switch-toggle-field">
                 <span>Principale</span>
                 <label className="switch" aria-label={`Imposta ${name} come banca principale`}>
                     <input type="checkbox" name="primary" defaultChecked={primary} disabled={!canBePrimary}/>
@@ -169,14 +169,14 @@ export default function PaymentCreditEditRow({
             </select></label> : null}
             {kind ? <fieldset className="payment-credit-default-fields">
                 <legend>Predefinito nei form</legend>
-                <div className="payment-credit-default-switch-row">
+                <div className="payment-credit-default-switch-row switch-toggle-field switch-inline wide">
                     <div><strong>Spese</strong><span>Preseleziona questo metodo nei nuovi pagamenti.</span></div>
                     <label className="switch" aria-label="Metodo predefinito per le spese">
                         <input type="checkbox" name="isExpenseDefault" defaultChecked={isExpenseDefault}/>
                         <span className="slider"/>
                     </label>
                 </div>
-                <div className="payment-credit-default-switch-row">
+                <div className="payment-credit-default-switch-row switch-toggle-field switch-inline wide">
                     <div><strong>Incassi</strong><span>Preseleziona questo metodo nei nuovi accrediti.</span></div>
                     <label className="switch" aria-label="Metodo predefinito per gli incassi">
                         <input type="checkbox" name="isIncomeDefault" defaultChecked={isIncomeDefault}/>
@@ -192,7 +192,7 @@ export default function PaymentCreditEditRow({
                         ? 'Questo metodo è sempre associato al canale di accredito Cassa.'
                         : 'Decidi se questo metodo può essere scelto durante una vendita da banco.'}</span>
                 </div>
-                <div className="cash-register-setting-row">
+                <div className="cash-register-setting-row switch-toggle-field switch-inline wide">
                     <div>
                         <strong>Disponibile nel registratore</strong>
                         <span>{cashRegisterEnabled ? 'Il metodo compare tra le opzioni di pagamento.' : 'Il metodo non compare nel registratore.'}</span>
@@ -214,7 +214,7 @@ export default function PaymentCreditEditRow({
                                 <option value={bank.id} key={bank.id}>{bank.icon ?? ''} {bank.name}</option>)}
                         </select>
                     </label>
-                    <div className="cash-register-setting-row">
+                    <div className="cash-register-setting-row switch-toggle-field switch-inline wide">
                         <div>
                             <strong>Pagamento rapido</strong>
                             <span>Mostra questo metodo come pulsante diretto insieme a Cash.</span>

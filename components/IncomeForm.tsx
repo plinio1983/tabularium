@@ -478,7 +478,7 @@ export default function IncomeForm({
                 <div className="form-section-grid income-form-section-grid">
                     <div className="amount-vat-row full income-amount-vat-row app-form-wizard-step app-form-wizard-step-2 income-wizard-amount">
                         <div className="income-wizard-amount-entry">
-                            <div className="app-form-field-label toggle-field switch-toggle-field income-switch-control income-fiscal-switch">
+                            <div className="app-form-field-label switch-toggle-field income-switch-control income-fiscal-switch">
                                 <div className="switch-toggle-field-label gap-4">
                                     <span className="app-form-field-icon">⇆</span>
                                     <span className="app-form-label">Fiscale</span>
@@ -655,13 +655,12 @@ export default function IncomeForm({
                 </summary>
                 <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
                     <MonthField label="Periodo contabile" name="billingPeriod" value={billingPeriod} onChange={setBillingPeriod} required/>
-                    <div className="app-form-field-label toggle-field switch-toggle-field income-switch-control income-form-section-invoice-issued">
+                    <div className="app-form-field-label switch-toggle-field income-switch-control income-form-section-invoice-issued">
 
                         <div className="switch-toggle-field-label">
                             <span className="app-form-field-icon">⇆</span>
                             <span className="app-form-label">Fattura emessa</span>
                         </div>
-                        {/*<label className="app-form-label">Fattura emessa</label>*/}
                         <label className="switch">
                             <input
                                 type="checkbox"
@@ -673,7 +672,7 @@ export default function IncomeForm({
                         </label>
                     </div>
                     {/*<div className="toggle-field-wrap">*/}
-                    <div>
+                    <div className="flex-grow">
                         <SelectField label="Stato fattura" icon="▤" name="invoiceStatus" value={invoiceStatus} disabled={!isFiscal} onChange={setInvoiceStatus} options={[
                             {value: "NON_INVIATA", label: "Non inviata"},
                             {value: "PARZIALE", label: "Fatturato parzialmente"},

@@ -48,19 +48,19 @@ export default function PaymentCreditCreatePanel({ action, type, iconOptions }: 
         <option value="EXPENSE">Spese</option>
       </select></label>
       <fieldset className="payment-credit-default-fields"><legend>Predefinito nei form</legend>
-        <div className="payment-credit-default-switch-row">
+        <div className="payment-credit-default-switch-row switch-toggle-field switch-inline wide">
           <div><strong>Spese</strong><span>Preseleziona nei nuovi pagamenti.</span></div>
           <label className="switch" aria-label="Metodo predefinito per le spese">
             <input type="checkbox" name="isExpenseDefault"/><span className="slider"/>
           </label>
         </div>
-        <div className="payment-credit-default-switch-row">
+        <div className="payment-credit-default-switch-row switch-toggle-field switch-inline wide">
           <div><strong>Incassi</strong><span>Preseleziona nei nuovi accrediti.</span></div>
           <label className="switch" aria-label="Metodo predefinito per gli incassi">
             <input type="checkbox" name="isIncomeDefault"/><span className="slider"/>
           </label>
         </div>
-      </fieldset></> : <div className="payment-credit-primary-field">
+      </fieldset></> : <div className="payment-credit-primary-field switch-toggle-field">
         <span>Principale</span>
         <label className="switch" aria-label="Imposta come banca principale">
           <input type="checkbox" name="primary" />

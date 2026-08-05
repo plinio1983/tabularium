@@ -31,7 +31,7 @@ function selectedIdsForForm(formId: string) {
 
 function AccountingField({title, hint, active, name, onActiveChange, children}: {title: string; hint: string; active: boolean; name: string; onActiveChange: (value: boolean) => void; children: ReactNode}) {
   return <section className={`bulk-edit-date-card bulk-edit-accounting-card${active ? " is-active" : ""}`}>
-    <div className="bulk-edit-date-card-heading"><div><strong>{title}</strong><small>{hint}</small></div><label className="switch" aria-label={`Modifica ${title}`}><input type="checkbox" name={name} checked={active} onChange={event => onActiveChange(event.currentTarget.checked)}/><span className="slider"/></label></div>
+    <div className="bulk-edit-date-card-heading"><div><strong>{title}</strong><small>{hint}</small></div><div className="switch-toggle-field switch-clean switch-inline"><label className="switch" aria-label={`Modifica ${title}`}><input type="checkbox" name={name} checked={active} onChange={event => onActiveChange(event.currentTarget.checked)}/><span className="slider"/></label></div></div>
     {active ? <div className="bulk-edit-accounting-control">{children}</div> : null}
   </section>;
 }
@@ -214,14 +214,14 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
               <section className={`bulk-edit-date-card${updateOrderDate ? " is-active" : ""}`}>
                 <div className="bulk-edit-date-card-heading">
                   <div><strong>Data ordine</strong><small>Assegna la stessa data ordine ai record selezionati</small></div>
-                  <label className="switch" aria-label="Modifica data ordine"><input type="checkbox" name="updateOrderDate" checked={updateOrderDate} onChange={event => setUpdateOrderDate(event.currentTarget.checked)}/><span className="slider"/></label>
+                  <div className="switch-toggle-field switch-clean switch-inline"><label className="switch" aria-label="Modifica data ordine"><input type="checkbox" name="updateOrderDate" checked={updateOrderDate} onChange={event => setUpdateOrderDate(event.currentTarget.checked)}/><span className="slider"/></label></div>
                 </div>
                 {updateOrderDate ? <div className="app-form-wizard bulk-edit-date-control-scope"><DateField label="Nuova data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/></div> : null}
               </section>
               <section className={`bulk-edit-date-card${updateDueDate ? " is-active" : ""}`}>
                 <div className="bulk-edit-date-card-heading">
                   <div><strong>Data scadenza</strong><small>La scadenza non può essere rimossa</small></div>
-                  <label className="switch" aria-label="Modifica data scadenza"><input type="checkbox" name="updateDueDate" checked={updateDueDate} onChange={event => setUpdateDueDate(event.currentTarget.checked)}/><span className="slider"/></label>
+                  <div className="switch-toggle-field switch-clean switch-inline"><label className="switch" aria-label="Modifica data scadenza"><input type="checkbox" name="updateDueDate" checked={updateDueDate} onChange={event => setUpdateDueDate(event.currentTarget.checked)}/><span className="slider"/></label></div>
                 </div>
                 {updateDueDate ? <div className="app-form-wizard bulk-edit-date-control-scope"><DateField label="Nuova data scadenza" name="dueDate" value={dueDate} onChange={setDueDate} required>
                   <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">{[0, 7, 15, 30].map(days => {

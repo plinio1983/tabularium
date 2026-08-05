@@ -72,7 +72,7 @@ export default function AnnualIncomeTrendChart({initialData}: { initialData: Inc
                 </div>
             </div>
             <div className="annual-income-trend-controls">
-                <label className="annual-income-trend-scope-switch">
+                <label className="switch-toggle-field switch-clean switch-inline wide annual-income-trend-scope-switch">
                     <span>Complessivo</span>
                     <span className="switch">
                         <input type="checkbox" checked={comprehensive} disabled={loading} onChange={event => void loadTrend(interval, event.currentTarget.checked)}/>

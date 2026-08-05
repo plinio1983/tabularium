@@ -177,7 +177,7 @@ export default function RecurringIncomeForm({
                         value: index + 1,
                         label
                     }))}/> : null}
-                <div className="app-form-field toggle-field switch-toggle-field switch-inline">
+                <div className="switch-toggle-field switch-inline wide">
                     <div className="switch-toggle-field-label app-form-field-label">
                         <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
                     </div>
@@ -205,7 +205,7 @@ export default function RecurringIncomeForm({
             <div className="form-section-grid recurring-form-section-grid">
                 <div className="amount-vat-row full recurring-wizard-amount">
                     <div className="recurring-wizard-amount-entry full">
-                        <div className="toggle-field switch-toggle-field recurring-switch-control recurring-fiscal-switch">
+                        <div className="switch-toggle-field recurring-switch-control recurring-fiscal-switch">
                             <div className="switch-toggle-field-label gap-4">
                                 <span className="app-form-field-icon">⇆</span><span className="app-form-label">Fiscale</span>
                             </div>
@@ -248,7 +248,7 @@ export default function RecurringIncomeForm({
                         label: 'Seleziona mese',
                         disabled: true
                     }, ...monthOptions.map((label, index) => ({value: index + 1, label}))]}/> : null}
-                <div className="app-form-field toggle-field switch-toggle-field recurring-accrual-toggle">
+                <div className="app-form-field switch-toggle-field recurring-accrual-toggle">
                     <div className="switch-toggle-field-label">
                         <span className="app-form-field-icon">⇆</span><span className="app-form-label">Accredito automatico</span>
                     </div>
@@ -306,7 +306,7 @@ export default function RecurringIncomeForm({
                 Note
                 <textarea name="notes" rows={3} defaultValue={initial?.notes ?? ''}/>
             </label>
-            {editId ? <div className="toggle-field switch-toggle-field">
+            {editId ? <div className="switch-toggle-field">
                 <div className="switch-toggle-field-label"><label>Regola attiva</label></div>
                 <label className="switch"><input type="checkbox" name="isActive" defaultChecked={initial?.isActive ?? true}/><span className="slider"/></label>
             </div> : null}

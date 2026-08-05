@@ -30,7 +30,7 @@ export default async function SystemUsersPage() {
       <label>Email<input name="email" type="email" required /></label>
       <label>Password temporanea<input name="password" type="password" minLength={10} required /></label>
       <label>Nome workspace<input name="workspaceName" placeholder="Workspace utente" /></label>
-      <label className="toggle-field switch-toggle-field">
+      <label className="switch-toggle-field">
         <span>System admin</span>
         <span className="switch">
           <input name="isSystemAdmin" type="checkbox" />

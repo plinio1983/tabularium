@@ -1141,17 +1141,6 @@ button {
   display: flex !important;
 }
 
-.toggle-field,
-.switch-toggle-field {
-
-  &.switch-inline {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    max-width: 100% !important;
-  }
-}
-
 .income-form .fiscal-toggle,
 .income-form-section-credit,
 .income-form-section-invoice-issued {
@@ -2475,20 +2464,66 @@ body.drawer-open {
   column-gap: 36px;
 }
 
-.switch {
-  display: flex !important;
-  grid-template-columns: none !important;
-  align-items: center;
-  gap: 10px;
-  color: var(--text) !important;
-  ///min-height: 40px;
+.switch-toggle-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch !important;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  min-width: max-content;
+  max-width: max-content;
+  min-height: 91px;
+  max-height: 91px;
+  font-weight: 800;
+  background: linear-gradient(145deg, #fff, #f8fafc);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
 }
 
-.switch input {
+.switch-toggle-field.switch-clean {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  min-width: 0;
+  min-height: 88px;
+  max-height: none;
+  justify-content: stretch;
+}
+
+.switch-toggle-field.switch-inline {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  max-width: max-content;
+  justify-content: space-between;
+  min-height: max-content;
+}
+
+.switch-toggle-field.wide {
+  //flex-grow: 1;
+  max-width: 100%;
+  flex: 1 1 auto;
+  //width: 100%;
+}
+
+.switch-toggle-field .switch {
+  display: flex !important;
+  flex: 0 0 auto;
+  grid-template-columns: none !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  color: var(--text) !important;
+}
+
+.switch-toggle-field .switch input {
   display: none;
 }
 
-.slider {
+.switch-toggle-field .switch .slider {
   position: relative;
   width: 54px;
   height: 30px;
@@ -2498,7 +2533,7 @@ body.drawer-open {
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06);
 }
 
-.slider:before {
+.switch-toggle-field .switch .slider:before {
   content: "";
   position: absolute;
   width: 24px;
@@ -2511,12 +2546,32 @@ body.drawer-open {
   transition: .18s ease;
 }
 
-.switch input:checked + .slider {
+.switch-toggle-field .switch input:checked + .slider {
   background: var(--accent);
 }
 
-.switch input:checked + .slider:before {
+.switch-toggle-field .switch input:checked + .slider:before {
   transform: translateX(24px);
+}
+
+.switch-toggle-field .switch-group {
+  display: flex;
+  align-items: center;
+  gap: 63px;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.switch-toggle-field > span {
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.switch-toggle-field .switch-toggle-field-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 
@@ -5223,25 +5278,9 @@ table th, table td {
   line-height: 1.4;
 }
 
-.cash-register-setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 70px;
-  padding: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #fff;
-}
-
 .cash-register-setting-row > div {
   display: grid;
   gap: 4px;
-}
-
-.cash-register-setting-row .switch {
-  flex: 0 0 auto;
 }
 
 .cash-register-setting-row .switch > span:last-child {
@@ -8950,42 +8989,10 @@ html, body {
   flex: 0 0 auto;
 }
 
-.switch-toggle-field {
-  align-content: center;
-  padding-top: 1px;
-
-  .switch-group {
-    display: flex;
-    align-items: center;
-    gap: 63px;
-    justify-content: space-around;
-    width: 100%;
-  }
-}
-
-.switch-toggle-field > span {
-  min-height: 18px;
-  display: flex;
-  align-items: center;
-}
-
-.switch-toggle-field .switch-toggle-field-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .expense-type-switch-in-form.switch-toggle-field .switch {
   @media (max-width: 576px) {
     flex-direction: column;
   }
-}
-
-.switch-toggle-field .switch {
-  display: flex;
-  //min-height: 42px;
-  align-items: center;
-  justify-content: flex-start;
 }
 
 .income-form .fiscal-toggle-field {
@@ -10570,12 +10577,12 @@ button.bulk-direct-link {
 }
 
 
-.switch input:disabled + .slider {
+.switch-toggle-field .switch input:disabled + .slider {
   background: #e5e7eb;
   opacity: .72;
 }
 
-.switch input:disabled ~ span:last-child {
+.switch-toggle-field .switch input:disabled ~ span:last-child {
   color: var(--muted);
 }
 
@@ -11689,25 +11696,6 @@ body.bulk-attachments-modal-open {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-}
-
-.annual-income-trend-scope-switch {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  min-height: 38px;
-  padding: 5px 10px 5px 13px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #f8fafc;
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.annual-income-trend-scope-switch .switch {
-  flex: 0 0 auto;
 }
 
 .annual-income-trend-kpis {
@@ -14285,15 +14273,15 @@ body.invoice-attachments-modal-open {
   padding: 12px 14px;
 }
 
-.app-record-form .toggle-field {
-  //align-items: center;
-  //flex-grow: 1;
-  min-height: 54px;
-  padding: 11px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 16px;
-  max-width: fit-content;
-}
+//.app-record-form .toggle-field {
+//  //align-items: center;
+//  //flex-grow: 1;
+//  min-height: 54px;
+//  padding: 11px 14px;
+//  border: 1px solid #cbd5e1;
+//  border-radius: 16px;
+//  max-width: fit-content;
+//}
 
 .app-record-form .payment-status-note {
   display: grid;
@@ -15931,26 +15919,11 @@ table .cell-description {
   display: none;
 }
 
-.payment-credit-primary-field {
-  display: grid;
-  gap: 5px;
-  align-content: end;
-}
-
-.payment-credit-primary-field .switch {
-  min-height: 42px;
-}
-
 .payment-credit-primary-field > span {
   color: var(--muted);
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
-}
-
-.payment-credit-primary-field .switch,
-.payment-credit-expanded-form .payment-credit-primary-field .switch {
-  display: inline-block;
 }
 
 .payment-credit-display-name {
@@ -16087,16 +16060,6 @@ table .cell-description {
   text-transform: uppercase;
 }
 
-.payment-credit-default-switch-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #fff;
-}
-
 .payment-credit-default-switch-row > div {
   display: grid;
   gap: 2px;
@@ -16109,13 +16072,6 @@ table .cell-description {
 .payment-credit-default-switch-row > div span {
   color: var(--muted);
   font-size: 12px;
-}
-
-.payment-credit-default-switch-row .switch,
-.payment-credit-expanded-form .payment-credit-default-switch-row .switch {
-  display: inline-block;
-  flex: 0 0 auto;
-  min-height: 26px;
 }
 
 .payment-credit-create-form {
