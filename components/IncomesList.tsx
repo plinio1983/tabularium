@@ -14,6 +14,7 @@ import {dueStatusLabel} from '@/lib/due-status-label';
 import {DEFAULT_COMPANY_TIME_ZONE} from '@/lib/company-time';
 import ExpenseInvoiceAttachmentsLink from '@/components/ExpenseInvoiceAttachmentsLink';
 import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
+import BulkCopyIncomesModal from '@/components/BulkCopyIncomesModal';
 
 type IncomeItem = {
     id: number;
@@ -166,6 +167,7 @@ export default function IncomesList({
         <SortableTableController/>
         <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
         <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers}/>
+        <BulkCopyIncomesModal formId={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`}/>
         <BulkEditFieldsModal
             formId={formId}
             subject="incassi"

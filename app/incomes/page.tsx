@@ -702,7 +702,8 @@ export default async function IncomesPage({searchParams}: {
             updated: 'Incasso aggiornato.',
             deleted: 'Incasso rimosso.',
             bulk_updated: 'Incassi aggiornati.',
-            bulk_deleted: 'Incassi rimossi.'
+            bulk_deleted: 'Incassi rimossi.',
+            bulk_copied: 'Incassi copiati.'
         },
         errorMessages: {
             invalid: 'Controlla i campi dell’incasso.',
@@ -711,6 +712,7 @@ export default async function IncomesPage({searchParams}: {
             invalid_bulk_sales_channel: 'Seleziona un canale di vendita valido. La modifica è disponibile soltanto per gli incassi standard.',
             invalid_bulk_accounting: 'Modifica non eseguita: controlla le informazioni fiscali e contabili selezionate.',
             invalid_bulk_records: 'La modifica bulk è disponibile soltanto per gli incassi standard.',
+            invalid_bulk_copy_options: 'Copia non eseguita: controlla le opzioni per date e accrediti.',
             invalid_attachment: 'Allegato non valido. Usa PDF, JPG, PNG, WebP, XML o P7M fino a 10 MB.',
             not_found: 'Incasso non trovato.',
             in_use: 'L’incasso è collegato ad altri movimenti.'
@@ -1107,11 +1109,12 @@ export default async function IncomesPage({searchParams}: {
                         else edit.removeAttribute('data-income-edit-id');
                       }
                       if (copy) {
-                        copy.classList.toggle('is-disabled', !singleEnabled);
-                        copy.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
+                        copy.classList.toggle('is-disabled', !anyEnabled);
+                        copy.setAttribute('aria-disabled', anyEnabled ? 'false' : 'true');
                         copy.href = '#';
                         if (singleEnabled) copy.setAttribute('data-income-copy-id', firstId);
                         else copy.removeAttribute('data-income-copy-id');
+                        copy.dataset.bulkCopyMode = selected > 1 ? 'bulk' : 'single';
                       }
                       if (del) del.disabled = !anyEnabled;
                     });

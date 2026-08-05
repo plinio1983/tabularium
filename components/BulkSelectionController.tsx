@@ -520,7 +520,8 @@ export default function BulkSelectionController() {
         const formId = group?.getAttribute("data-bulk-form") ?? "";
         if (!formId) return;
         event.preventDefault();
-        document.dispatchEvent(new CustomEvent("expense-bulk-copy-request", {
+        const eventName = formId === "incomeBulkForm" ? "income-bulk-copy-request" : "expense-bulk-copy-request";
+        document.dispatchEvent(new CustomEvent(eventName, {
           detail: {formId},
         }));
         return;

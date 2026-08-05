@@ -4,7 +4,9 @@ import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { writeAuditLog } from '@/lib/audit';
-import {calendarDateInput} from '@/lib/company-time';
+import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
+import {addExpenseDays, expenseDateDayOffset, expenseDateInRelativeMonth} from '@/lib/expense-bulk-copy';
+import {copiedIncomeCreditDate, copiedIncomeIsCredited, type IncomeCreditCopyMode} from '@/lib/income-bulk-copy';
 
 function selectedIds(formData: FormData) {
   return formData.getAll('ids').map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0);
@@ -23,6 +25,10 @@ function civilDate(value: FormDataEntryValue | null) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input)) return null;
   const date = new Date(`${input}T00:00:00.000Z`);
   return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== input ? null : date;
+}
+
+function todayAtMidnight(timeZone: string) {
+  return new Date(`${dateInputInTimeZone(timeZone)}T00:00:00.000Z`);
 }
 
 export async function POST(request: Request) {
@@ -152,6 +158,79 @@ export async function POST(request: Request) {
       entityType: 'Income', metadata: { ids, deleted: deleted.count }, request
     });
     return redirectToPath(appendFlash(redirectTo, { saved: 'bulk_deleted' }));
+  }
+
+  if (action === 'copy') {
+    const now = todayAtMidnight(current.company.timeZone);
+    const dateMode = String(formData.get('dateMode') || 'CURRENT_MONTH_SAME_DAY');
+    const creditMode = String(formData.get('creditMode') || 'NONE');
+    const validDateModes = ['ORIGINAL', 'CURRENT_MONTH_SAME_DAY', 'FROM_TODAY'];
+    const validCreditModes = ['NONE', 'ORIGINAL', 'TODAY', 'RELATIVE_TO_ORDER'];
+    if (!validDateModes.includes(dateMode) || !validCreditModes.includes(creditMode)) {
+      return redirectToPath(appendFlash(redirectTo, {error: 'invalid_bulk_copy_options'}));
+    }
+    const incomes = await prisma.income.findMany({
+      where: {id: {in: ids}, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'STANDARD'},
+      include: {credits: {orderBy: {id: 'asc'}}},
+      orderBy: {id: 'asc'}
+    });
+    if (incomes.length !== new Set(ids).size) {
+      return redirectToPath(appendFlash(redirectTo, {error: 'invalid_bulk_records'}));
+    }
+
+    await prisma.$transaction(incomes.map(income => {
+      let orderDate: Date | null;
+      let dueDate: Date | null;
+      if (dateMode === 'ORIGINAL') {
+        orderDate = income.orderDate ? new Date(income.orderDate) : null;
+        dueDate = income.dueDate ? new Date(income.dueDate) : null;
+      } else if (dateMode === 'FROM_TODAY') {
+        orderDate = now;
+        const dueOffset = expenseDateDayOffset(income.orderDate, income.dueDate);
+        dueDate = dueOffset === null ? null : addExpenseDays(orderDate, dueOffset);
+      } else {
+        orderDate = expenseDateInRelativeMonth(income.orderDate, income.orderDate, now) ?? now;
+        dueDate = expenseDateInRelativeMonth(income.dueDate, income.orderDate, now);
+      }
+
+      const copiedCredits = creditMode === 'NONE' ? [] : income.credits.map(credit => {
+        const creditDate = copiedIncomeCreditDate(creditMode as IncomeCreditCopyMode, income.orderDate, orderDate, credit.creditDate, now);
+        return {creditDate, paymentMethodId: credit.paymentMethodId, bankId: credit.bankId, amount: credit.amount};
+      });
+      const isCredited = copiedIncomeIsCredited(Number(income.amount), copiedCredits.map(credit => Number(credit.amount)));
+      const latestCredit = [...copiedCredits].sort((a, b) => b.creditDate.getTime() - a.creditDate.getTime())[0];
+      const firstCredit = copiedCredits[0];
+      const accountingDate = orderDate ?? now;
+
+      return prisma.income.create({data: {
+        workspaceId: income.workspaceId,
+        companyId: income.companyId,
+        customerId: income.customerId,
+        salesChannelId: income.salesChannelId,
+        incomeCategoryId: income.incomeCategoryId,
+        description: income.description,
+        amount: income.amount,
+        paymentMethodId: firstCredit?.paymentMethodId ?? income.paymentMethodId,
+        creditBankId: firstCredit?.bankId ?? income.creditBankId,
+        orderDate,
+        dueDate,
+        creditDate: latestCredit?.creditDate ?? dueDate ?? orderDate ?? now,
+        isCredited,
+        billingMonth: dateMode === 'ORIGINAL' ? income.billingMonth : accountingDate.getUTCMonth() + 1,
+        billingYear: dateMode === 'ORIGINAL' ? income.billingYear : accountingDate.getUTCFullYear(),
+        isFiscal: income.isFiscal,
+        invoiceStatus: income.invoiceStatus,
+        vatRate: income.vatRate,
+        notes: income.notes,
+        incomeType: 'STANDARD',
+        cashRegisterRequestId: null,
+        recurringIncomeId: null,
+        recurringIncomePeriodKey: null,
+        credits: copiedCredits.length ? {create: copiedCredits} : undefined
+      }});
+    }));
+    await writeAuditLog({workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_CREATE', entityType: 'Income', metadata: {sourceIds: ids, operation: action, created: incomes.length, dateMode, creditMode}, request});
+    return redirectToPath(appendFlash(redirectTo, {saved: 'bulk_copied'}));
   }
 
   if (action === 'invoice_emitted') {

@@ -505,23 +505,30 @@ export default function IncomeForm({
                                     <strong>{formatEuro(netAmount)}</strong>
                                 </div>
                                 <label className="income-amount-field">
-                                    <div>Importo <span className="hidden-sp">IVA inclusa</span></div>
+                                    <div className="app-form-field-label">
+                                        <span className="app-form-field-icon">€</span>
+                                        <label className="app-form-label">
+                                            <span className="hidden-sm-down">Importo IVA inclusa</span>
+                                            <span className="hidden-sm-up">Importo</span>
+                                        </label>
+                                    </div>
+                                    {/*<div>Importo <span className="hidden-sp">IVA inclusa</span></div>*/}
                                     <div className="income-amount-row">
                                         <MoneyInput inputRef={amountRef} required value={amount} onValueChange={handleAmountChange}/>
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
                                     </div>
                                 </label>
-                                <div className="app-vat-rate-buttons income-vat-buttons align-center" aria-label="Aliquota IVA">
-                                    <div className="hidden-sp">
-                                        <label className="ml-12">IVA</label>
-                                    </div>
-                                    {vatRates.map(value =>
-                                        <button type="button" key={value} className={vatRate === value ? "is-selected" : ""} disabled={!isFiscal} onMouseDown={event => event.preventDefault()} onClick={() => {
-                                            setVatRate(value);
-                                            focusAmount();
-                                        }}>{value}%</button>)}
-                                </div>
                             </div>
+                        </div>
+                        <div className="app-vat-rate-buttons income-vat-buttons align-center" aria-label="Aliquota IVA">
+                            <div className="hidden-sp">
+                                <label className="ml-12">IVA</label>
+                            </div>
+                            {vatRates.map(value =>
+                                <button type="button" key={value} className={vatRate === value ? "is-selected" : ""} disabled={!isFiscal} onMouseDown={event => event.preventDefault()} onClick={() => {
+                                    setVatRate(value);
+                                    focusAmount();
+                                }}>{value}%</button>)}
                         </div>
 
                         <input type="hidden" name="vatRate" value={isFiscal ? vatRate : "0"}/>
