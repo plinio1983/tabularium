@@ -655,7 +655,7 @@ export default function IncomeForm({
                 </summary>
                 <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
                     <MonthField label="Periodo contabile" name="billingPeriod" value={billingPeriod} onChange={setBillingPeriod} required/>
-                    <div className="app-form-field-label switch-toggle-field income-switch-control income-form-section-invoice-issued">
+                    <div className="app-form-field-label switch-toggle-field">
 
                         <div className="switch-toggle-field-label">
                             <span className="app-form-field-icon">⇆</span>

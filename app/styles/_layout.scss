@@ -1141,16 +1141,16 @@ button {
   display: flex !important;
 }
 
-.income-form .fiscal-toggle,
-.income-form-section-credit,
-.income-form-section-invoice-issued {
-  display: grid;
-  gap: 8px;
-
-  @media (min-width: 768px) {
-    padding: 0 18px;
-  }
-}
+//.income-form .fiscal-toggle,
+//.income-form-section-credit,
+//.income-form-section-invoice-issued {
+//  display: grid;
+//  gap: 8px;
+//
+//  @media (min-width: 768px) {
+//    padding: 0 18px;
+//  }
+//}
 
 .income-form .income-form-section-stack {
   display: grid;
@@ -2482,6 +2482,11 @@ body.drawer-open {
   box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
 }
 
+.switch-toggle-field.wide {
+  flex: 1 1 auto;
+  max-width: 100%;
+}
+
 .switch-toggle-field.switch-clean {
   padding: 0;
   border: 0;
@@ -2502,13 +2507,6 @@ body.drawer-open {
   min-height: max-content;
 }
 
-.switch-toggle-field.wide {
-  //flex-grow: 1;
-  max-width: 100%;
-  flex: 1 1 auto;
-  //width: 100%;
-}
-
 .switch-toggle-field .switch {
   display: flex !important;
   flex: 0 0 auto;
@@ -2517,6 +2515,14 @@ body.drawer-open {
   justify-content: flex-start;
   gap: 10px;
   color: var(--text) !important;
+}
+
+.switch-toggle-field.switch-clean .switch {
+  translate: 0 50%;
+}
+
+.switch-toggle-field.switch-inline.switch-clean .switch {
+  translate: none;
 }
 
 .switch-toggle-field .switch input {
