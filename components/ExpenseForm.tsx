@@ -631,7 +631,7 @@ export default function ExpenseForm({
     }
 
     function validateMobileStep() {
-        if (mobileStep === 2 && amountValue <= 0) {
+        if (mobileStep === 2 && (!Number.isFinite(amountValue) || amountValue <= 0)) {
             amountRef.current?.setCustomValidity("Inserisci un importo maggiore di zero.");
             amountRef.current?.reportValidity();
             amountRef.current?.focus();
@@ -845,7 +845,10 @@ export default function ExpenseForm({
                     <span>{mobileStep === 7
                         ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}`
                         : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}</span>
-                    <strong>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</strong>
+                    <strong>
+                        {mobileStep === 2 ? <span className="app-form-field-icon" aria-hidden="true">€</span> : null}
+                        <span>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</span>
+                    </strong>
                 </div>
                 <div className="app-form-wizard-progress" aria-label={mobileStep === 7 ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}` : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}>
                     <span style={{width: `${isVatSettlement ? Math.min(mobileStep === 6 ? 5 : mobileStep, 5) / 5 * 100 : Math.min(mobileStep, 6) / 6 * 100}%`}}/>
@@ -1635,6 +1638,7 @@ export default function ExpenseForm({
                 backLabel={mobileStep === 7 ? "Riepilogo" : "Indietro"}
                 submitLabel={isPaymentOnlyMode ? "Salva pagamento" : submitLabel}
                 isSubmitting={isSubmitting}
+                nextDisabled={mobileStep === 2 && (!Number.isFinite(amountValue) || amountValue <= 0)}
                 submitDisabled={Boolean(attachmentError)}
                 error={submitError}
             />

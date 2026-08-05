@@ -416,6 +416,7 @@ export default function RecurringExpenseForm({
     const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
     const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
     const normalizedAmount = amount.replace(",", ".");
+    const amountValue = Number(normalizedAmount || 0);
 
     useEffect(() => {
         if (!isDeclared) {
@@ -437,10 +438,12 @@ export default function RecurringExpenseForm({
 
     function handleAmountChange(value: string) {
         setAmount(formatCurrencyInput(value));
+        amountRef.current?.setCustomValidity("");
     }
 
     function appendAmountKey(key: string) {
         setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
+        amountRef.current?.setCustomValidity("");
         focusAmount();
     }
 
@@ -453,6 +456,12 @@ export default function RecurringExpenseForm({
     }, [mobileStep]);
 
     function validateMobileStep() {
+        if (mobileStep === 2 && (!Number.isFinite(amountValue) || amountValue <= 0)) {
+            amountRef.current?.setCustomValidity("Inserisci un importo maggiore di zero.");
+            amountRef.current?.reportValidity();
+            amountRef.current?.focus();
+            return false;
+        }
         const elements = Array.from(formRef.current?.querySelectorAll<HTMLElement>(`.app-form-wizard-step-${mobileStep}`) ?? []);
         const fields = elements.flatMap(element =>
             Array.from(element.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("input, select, textarea")),
@@ -516,7 +525,10 @@ export default function RecurringExpenseForm({
             <div className="app-form-wizard-header full">
                 <div className="app-form-wizard-heading">
                     <span>Passaggio {mobileStep} di 6</span>
-                    <strong>{["Ricorrenza", "Importo", "Dettagli", "Fatturazione", "Pagamento", "Note"][mobileStep - 1]}</strong>
+                    <strong>
+                        {mobileStep === 2 ? <span className="app-form-field-icon" aria-hidden="true">€</span> : null}
+                        <span>{["Ricorrenza", "Importo", "Dettagli", "Fatturazione", "Pagamento", "Note"][mobileStep - 1]}</span>
+                    </strong>
                 </div>
                 <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
                     <span style={{width: `${mobileStep / 6 * 100}%`}}/>
@@ -819,6 +831,7 @@ export default function RecurringExpenseForm({
                 cancelHref={cancelHref}
                 submitLabel="Salva spesa"
                 isSubmitting={isSubmitting}
+                nextDisabled={mobileStep === 2 && (!Number.isFinite(amountValue) || amountValue <= 0)}
                 error={submitError}
             />
 

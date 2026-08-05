@@ -14,6 +14,7 @@ type Props = {
     submitLabel: string;
     submittingLabel?: string;
     isSubmitting?: boolean;
+    nextDisabled?: boolean;
     submitDisabled?: boolean;
     error?: string | null;
 };
@@ -29,6 +30,7 @@ export default function MobileFormStickyActions({
                                                     submitLabel,
                                                     submittingLabel = "Salvataggio...",
                                                     isSubmitting = false,
+                                                    nextDisabled = false,
                                                     submitDisabled = false,
                                                     error,
                                                 }: Props) {
@@ -97,7 +99,7 @@ export default function MobileFormStickyActions({
                     <span className="btn-icon">✓</span> {isSubmitting ? submittingLabel : submitLabel}
                 </button>
             ) : (
-                <button className="btn btn-md btn-primary" type="button" onClick={event => {
+                <button className="btn btn-md btn-primary" type="button" disabled={nextDisabled} onClick={event => {
                     event.preventDefault();
                     event.stopPropagation();
                     onNext();

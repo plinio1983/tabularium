@@ -2484,7 +2484,7 @@ body.drawer-open {
 
 .switch-toggle-field.wide {
   flex: 1 1 auto;
-  max-width: 100%;
+  max-width: 100% !important;
 }
 
 .switch-toggle-field.switch-clean {
@@ -2500,11 +2500,12 @@ body.drawer-open {
 
 .switch-toggle-field.switch-inline {
   display: flex;
-  align-items: center;
-  flex-direction: row;
+  align-items: center !important;
+  flex-direction: row !important;
   max-width: max-content;
   justify-content: space-between;
-  min-height: max-content;
+  min-height: 54px;
+  //min-height: max-content;
 }
 
 .switch-toggle-field .switch {

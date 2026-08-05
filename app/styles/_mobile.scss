@@ -2119,10 +2119,6 @@
     display: none !important;
     width: 100%;
     margin-inline: 0;
-
-    &.app-form-wizard-step-5 {
-      //row-gap: 16px;
-    }
   }
 
   .app-form-wizard-current-1 .app-form-wizard-step-1,
@@ -2135,6 +2131,7 @@
     display: flex !important;
     flex-direction: column;
     align-items: stretch;
+    row-gap: 9px;
   }
 
   .app-form-wizard .app-form-wizard-split-section {
@@ -2199,13 +2196,6 @@
     gap: 18px;
   }
 
-  .app-form-wizard .app-form-wizard-step-1,
-  .app-form-wizard .app-form-wizard-step-2,
-  .app-form-wizard .app-form-wizard-step-3,
-  .app-form-wizard .app-form-wizard-step-5 {
-    row-gap: 9px;
-  }
-
   .app-form-wizard-actions-row {
     display: flex;
     gap: 10px;
@@ -2244,6 +2234,12 @@
     border-radius: 9px;
     background: linear-gradient(145deg, #eef2ff, #e0e7ff);
     box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
+  }
+
+  .app-form-wizard-heading > strong {
+    display: flex;
+    align-items: center;
+    gap: 7px;
   }
 
   .app-form-wizard .app-select-control select,
@@ -2759,10 +2755,6 @@
     display: none;
   }
 
-  .recurring-record-form .recurring-switch-control {
-    //width: 100%;
-  }
-
   .recurring-record-form .recurring-form-section-grid .recurring-accrual-toggle,
   .recurring-record-form .recurring-fiscal-section .recurring-form-section-grid .app-form-field {
     width: 100%;
@@ -2772,13 +2764,13 @@
     width: 100%;
   }
 
-  .app-form-wizard .expense-fiscal-desktop-control > span,
-  .app-form-wizard .expense-invoice-desktop-control > span,
-  .recurring-record-form .recurring-switch-control > span {
-    color: #334155;
-    font-size: 13px;
-    font-weight: 850;
-  }
+  //.app-form-wizard .expense-fiscal-desktop-control > span,
+  //.app-form-wizard .expense-invoice-desktop-control > span,
+  //.recurring-record-form .recurring-switch-control > span {
+  //  color: #334155;
+  //  font-size: 13px;
+  //  font-weight: 850;
+  //}
 
   .record-review-heading {
     display: flex;
