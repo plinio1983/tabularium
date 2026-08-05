@@ -4059,6 +4059,9 @@
     flex-direction: column;
     font-weight: 400;
     flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .mobile-record-meta .mobile-record-meta-left {

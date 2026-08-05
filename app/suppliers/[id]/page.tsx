@@ -145,7 +145,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
                 {openExpenses.length} ordini aperti
               </span>
               <span className="badge supplier-default-category-badge">
-                Categoria: {supplier.defaultExpenseCategory
+                {supplier.defaultExpenseCategory
                   ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
                   : 'Non impostata'}
               </span>
