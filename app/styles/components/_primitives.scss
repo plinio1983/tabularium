@@ -1,0 +1,214 @@
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 10px 28px rgba(20, 30, 60, .05);
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kpi-label {
+  color: var(--muted);
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.kpi-value {
+  margin-top: 8px;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  color: #47506a;
+  background: #fafbff;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #2649b8;
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.form label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  font: inherit;
+}
+
+.displayed-notes {
+  white-space: pre-wrap;
+  font-size: 15px !important;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.navigation-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  height: 3px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+.navigation-progress span {
+  display: block;
+  width: 18%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #6f5df6);
+  box-shadow: 0 0 14px rgba(87, 70, 184, .38);
+  transform-origin: left center;
+  transition: width .65s cubic-bezier(.22, .61, .36, 1);
+}
+
+.navigation-progress.is-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.navigation-progress.is-active span {
+  width: 78%;
+}
+
+.navigation-progress.is-finishing span {
+  width: 100%;
+  transition-duration: .18s;
+}
+
+.navigation-pending-control {
+  position: relative;
+  opacity: .72;
+  cursor: progress !important;
+}
+
+.navigation-pending-control::after {
+  content: "";
+  display: inline-block;
+  width: .82em;
+  height: .82em;
+  margin-left: .45em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -.12em;
+  animation: navigation-pending-spin .7s linear infinite;
+}
+
+/* When a button already has an icon, reuse that slot for the loader. */
+.navigation-pending-control:has(.btn-icon, .nav-link-icon, .mobile-bottom-nav-icon)::after {
+  display: none;
+}
+
+.navigation-pending-control .btn-icon {
+  display: inline-flex !important;
+  flex: 0 0 .82rem !important;
+  width: .82rem;
+  min-width: .82rem;
+  height: .82rem;
+  overflow: visible;
+  font-size: 0 !important;
+}
+
+.navigation-pending-control .btn-icon > * {
+  display: none !important;
+}
+
+.navigation-pending-control .btn-icon::after {
+  content: "";
+  box-sizing: border-box;
+  display: block;
+  width: .82rem;
+  height: .82rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: navigation-pending-spin .7s linear infinite;
+}
+
+.navigation-pending-control .nav-link-icon {
+  font-size: 0 !important;
+}
+
+.navigation-pending-control .nav-link-icon::after {
+  content: "";
+  box-sizing: border-box;
+  display: block;
+  width: .82rem;
+  height: .82rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: navigation-pending-spin .7s linear infinite;
+}
+
+@keyframes navigation-pending-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+

@@ -301,7 +301,7 @@ function SupplierAutocomplete({
     }
 
     return (
-        <div className="entity-autocomplete entity-autocomplete-wide app-form-wizard-step app-form-wizard-step-3" ref={containerRef}>
+        <div className="app-form-field entity-autocomplete entity-autocomplete-wide app-form-wizard-step app-form-wizard-step-3" ref={containerRef}>
             <input type="hidden" name="supplierId" value={selected?.id ?? ""}/>
             <input
                 type="hidden"
@@ -318,7 +318,7 @@ function SupplierAutocomplete({
                     <span className="flex flex-grow justify-end">
                         <button
                             type="button"
-                            className="btn btn-sm btn-link inline-link-button mr-22"
+                            className="btn btn-sm btn-link mr-22"
                             onClick={() => setShowCreate(true)}
                         >
                         ＋ Nuovo
@@ -534,6 +534,8 @@ export default function ExpenseForm({
 
     const normalizedAmount = amount.replace(",", ".");
     const amountValue = Number(normalizedAmount || 0);
+    const activeVatRate = isDeclared ? Number(vatRate || 0) : 0;
+    const netAmount = activeVatRate > 0 ? amountValue / (1 + activeVatRate / 100) : amountValue;
     const paidAmountValue = payments.reduce(
         (sum, row) => sum + Number(row.amount || 0),
         0,
@@ -1082,7 +1084,7 @@ export default function ExpenseForm({
                                         <span className="text-muted">{isDeclared ? 'Fiscale' : 'Non fiscale'}</span>
                                     </label>
                                 </div> : null}
-                            {!isVatSettlement ? <label className="app-form-wizard-mobile-switch switch-toggle-field">
+                            {!isVatSettlement ? <label className="app-form-wizard-mobile-switch switch-toggle-field expense-fiscal-mobile-control">
                                 <span>Fiscale</span>
                                 <span className="switch">
                                     <input
@@ -1095,9 +1097,11 @@ export default function ExpenseForm({
                                 {/*<span className="text-muted">{isDeclared ? 'Detrazione' : 'Non fiscale'}</span>*/}
                             </label> : null}
                             <div className="expense-amount-control">
-
+                                    {!isVatSettlement ? <div className="expense-amount-vat-excluded" aria-live="polite">
+                                        <strong>{formatEuro(netAmount)}</strong>
+                                    </div> : null}
                                     <label className="expense-wizard-amount-field">
-                                        <div className="switch-toggle-field-label">
+                                        <div className="app-form-field-label switch-toggle-field-label">
                                             <span className="app-form-field-icon">€</span>
                                             <span>{!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}</span>
                                         </div>
@@ -1110,11 +1114,25 @@ export default function ExpenseForm({
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
 
                                     </label>
+                                    {!isVatSettlement ?
+                                        <div className="app-vat-rate-buttons vat-buttons-desktop" aria-label="Aliquota IVA">
+                                            {["0", "4", "10", "22"].map(rate => <button
+                                                type="button"
+                                                key={rate}
+                                                className={vatRate === rate ? "is-selected" : ""}
+                                                disabled={!isDeclared}
+                                                onMouseDown={event => event.preventDefault()}
+                                                onClick={() => {
+                                                    setVatRate(rate);
+                                                    focusAmount();
+                                                }}
+                                            >{rate}%</button>)}
+                                        </div> : null}
                             </div>
                         </div>
 
                         {!isVatSettlement ?
-                            <div className="app-vat-rate-buttons" aria-label="Aliquota IVA">
+                            <div className="app-vat-rate-buttons vat-buttons-mobile" aria-label="Aliquota IVA">
                                 <label>Aliquota IVA </label>
                                 {["0", "4", "10", "22"].map(rate => <button
                                     type="button"
@@ -1153,7 +1171,7 @@ export default function ExpenseForm({
                     </summary>
                     <div className="form-section-grid">
                         <div className="switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
-                            <div className="switch-toggle-field-label">
+                            <div className="switch-toggle-field-label app-form-field-label">
                                 <span className="app-form-field-icon">⇆</span>
                                 <label>Fattura elettronica</label>
                             </div>
@@ -1187,7 +1205,7 @@ export default function ExpenseForm({
                     </div>
                     <div className="form-section-grid pt-0">
                         <div className="switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
-                            <div className="switch-toggle-field-label">
+                            <div className="switch-toggle-field-label app-form-field-label">
                                 <span className="app-form-field-icon">⇆</span>
                                 <label>Fattura emessa</label>
                             </div>
@@ -1210,10 +1228,10 @@ export default function ExpenseForm({
                         </div>
 
                         <div className="expense-invoice-step-row app-form-wizard-step app-form-wizard-step-5">
-                            <div className="expense-invoice-switches">
-                                <label className="app-form-wizard-mobile-switch switch-toggle-field app-form-field-label">
-                                    <span className="app-form-label">Fattura elettronica</span>
-                                    <span className="switch">
+
+                            <label className="app-form-wizard-mobile-switch app-form-field-label switch-toggle-field switch-inline wide">
+                                <span className="app-form-label">Fattura elettronica</span>
+                                <span className="switch">
                                     <input
                                         type="checkbox"
                                         checked={hasElectronicInvoice}
@@ -1224,13 +1242,17 @@ export default function ExpenseForm({
                                             if (checked) updateDeclared(true);
                                         }}
                                     />
+                                    <small className="text-muted">{hasElectronicInvoice ? 'Elettronica' : 'PDF'}</small>
                                     <span className="slider"/>
-                                    <span className="text-muted">{hasElectronicInvoice ? 'Elettronica' : 'PDF'}</span>
-                                </span>
-                                </label>
-                                <label className="app-form-wizard-mobile-switch switch-toggle-field expense-invoice-emitted-switch app-form-field-label">
+                                    </span>
+                            </label>
+
+                            <label className="mt-12 app-form-wizard-mobile-switch switch-toggle-field switch-inline wide expense-invoice-emitted-switch">
+                                <div className="app-form-field-label">
+                                    <span className="app-form-field-icon" aria-hidden="true">??</span>
                                     <span>Fattura emessa</span>
-                                    <span className="switch">
+                                </div>
+                                <span className="switch">
                                     <input
                                         type="checkbox"
                                         checked={isDeclared && invoiceStatus === "RICEVUTA"}
@@ -1243,11 +1265,11 @@ export default function ExpenseForm({
                                             }
                                         }}
                                     />
+                                    <small className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? 'Ricevuta' : invoiceStatus === "PARZIALE" ? "Parziale" : 'Non ricevuta'}</small>
                                     <span className="slider"/>
-                                    <span className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? 'Ricevuta' : invoiceStatus === "PARZIALE" ? "Parziale" : 'Non ricevuta'}</span>
                                 </span>
-                                </label>
-                            </div>
+                            </label>
+
                             <div className="expense-invoice-status-field">
                                 <SelectField
                                     label="Stato fattura"
@@ -1387,9 +1409,8 @@ export default function ExpenseForm({
                                         onChange={(value) => updatePayment(index, {paymentDate: value})}
                                     />
                                     <label className="payment-amount-field">
-                                        <div className="switch-toggle-field-label">
+                                        <div className="switch-toggle-field-label app-form-field-label">
                                             <span className="app-form-field-icon">€</span>
-                                            &nbsp;&nbsp;&nbsp;
                                             <span>Importo pagamento</span>
                                         </div>
 

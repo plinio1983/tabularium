@@ -177,7 +177,7 @@ export default function RecurringIncomeForm({
                         value: index + 1,
                         label
                     }))}/> : null}
-                <div className="switch-toggle-field switch-inline wide">
+                <div className="switch-toggle-field switch-inline wide push-down">
                     <div className="switch-toggle-field-label app-form-field-label">
                         <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
                     </div>
@@ -206,7 +206,7 @@ export default function RecurringIncomeForm({
                 <div className="amount-vat-row full recurring-wizard-amount">
                     <div className="recurring-wizard-amount-entry full">
                         <div className="switch-toggle-field recurring-switch-control recurring-fiscal-switch">
-                            <div className="switch-toggle-field-label gap-4">
+                            <div className="switch-toggle-field-label app-form-field-label">
                                 <span className="app-form-field-icon">⇆</span><span className="app-form-label">Fiscale</span>
                             </div>
                             <input type="hidden" name="isFiscal" value="false"/><label className="switch"><input type="checkbox" name="isFiscal" value="true" checked={fiscal} onChange={event => setFiscal(event.currentTarget.checked)}/><span className="slider"/></label>
@@ -222,11 +222,11 @@ export default function RecurringIncomeForm({
                                     <input type="hidden" name="amount" value={amount.replace(/\./g, '').replace(',', '.')}/>
                                 </div>
                             </label>
-                            <div className="app-vat-rate-buttons recurring-vat-buttons-desktop" aria-label="Aliquota IVA">{['0', '4', '10', '22'].map(value =>
+                            <div className="app-vat-rate-buttons recurring-vat-buttons-desktop vat-buttons-desktop" aria-label="Aliquota IVA">{['0', '4', '10', '22'].map(value =>
                                 <button type="button" key={value} className={vatRate === value ? 'is-selected' : ''} disabled={!fiscal} onClick={() => setVatRate(value)}>{value}%</button>)}</div>
                         </div>
                     </div>
-                    <div className="app-vat-rate-buttons recurring-vat-buttons-mobile" aria-label="Aliquota IVA">{['0', '4', '10', '22'].map(value =>
+                    <div className="app-vat-rate-buttons recurring-vat-buttons-mobile vat-buttons-mobile" aria-label="Aliquota IVA">{['0', '4', '10', '22'].map(value =>
                         <button type="button" key={value} className={vatRate === value ? 'is-selected' : ''} disabled={!fiscal} onMouseDown={event => event.preventDefault()} onClick={() => setVatRate(value)}>{value}%</button>)}</div>
                     <input type="hidden" name="vatRate" value={fiscal ? vatRate : '0'}/>
                     <div className="app-amount-keypad full" aria-label="Tastiera numerica">{['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'backspace'].map(key =>
@@ -248,8 +248,8 @@ export default function RecurringIncomeForm({
                         label: 'Seleziona mese',
                         disabled: true
                     }, ...monthOptions.map((label, index) => ({value: index + 1, label}))]}/> : null}
-                <div className="app-form-field switch-toggle-field recurring-accrual-toggle">
-                    <div className="switch-toggle-field-label">
+                <div className="app-form-field switch-toggle-field recurring-accrual-toggle switch-inline wide push-down">
+                    <div className="switch-toggle-field-label app-form-field-label">
                         <span className="app-form-field-icon">⇆</span><span className="app-form-label">Accredito automatico</span>
                     </div>
                     <label className="switch"><input type="checkbox" name="isAutomaticCredit" checked={automatic} onChange={e => setAutomatic(e.target.checked)}/><span className="slider"/></label>

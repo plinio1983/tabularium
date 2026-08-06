@@ -1,0 +1,749 @@
+/* incassi: sezioni collassabili coerenti con ExpenseForm */
+.income-form.income-form,
+.income-form.app-record-form {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.income-form .income-form-section {
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  overflow: visible;
+}
+
+.income-form .income-form-section > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-weight: 900;
+}
+
+.income-form .income-form-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.income-form .income-form-section > summary::after {
+  content: "⌄";
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.income-form .income-form-section[open] > summary {
+  border-bottom: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+}
+
+.income-form .income-form-section[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.income-form .income-form-section > summary small {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.income-form .income-form-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px;
+}
+
+.flex-grid {
+  display: flex !important;
+}
+
+//.income-form .fiscal-toggle,
+//.income-form-section-credit,
+//.income-form-section-invoice-issued {
+//  display: grid;
+//  gap: 8px;
+//
+//  @media (min-width: 768px) {
+//    padding: 0 18px;
+//  }
+//}
+
+.income-form .income-form-section-stack {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.income-form .income-amount-vat-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.income-form .income-wizard-amount-entry {
+  display: grid;
+  grid-template-columns: minmax(156px, .42fr) minmax(260px, 1fr);
+  align-items: stretch;
+  gap: 14px;
+  min-width: 0;
+}
+
+.income-form .income-amount-control {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  position: relative;
+}
+
+@media (max-width: 1210px) {
+  .monthly-profit-comparison-list {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (min-width: 900px) {
+  .income-form .income-amount-control {
+    min-width: 70%;
+  }
+
+  .income-form .income-fiscal-section .income-form-section-grid {
+    display: flex;
+    flex-wrap: wrap;
+
+    > div {
+      flex: 1 1 auto;
+    }
+
+    .app-form-field {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+  }
+}
+
+.income-form .income-payment-section .income-form-section-grid {
+  display: flex;
+  flex-wrap: wrap;
+
+  .app-form-field {
+    flex: 1 1 49%;
+    min-width: 0;
+  }
+}
+
+.income-form .income-amount-vat-excluded {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.income-form .income-amount-vat-excluded strong {
+  color: #217a36;
+  font-size: 15px;
+}
+
+.income-form .income-net-amount-summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.income-form .income-amount-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.income-form .money-input {
+  width: auto;
+  flex: 1 1 auto;
+}
+
+.income-form .net-amount-inline {
+  min-width: 150px;
+  width: auto;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 1px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fafbff;
+}
+
+.income-form .net-amount-inline span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.income-form .income-tax-note strong {
+  color: var(--text);
+  font-size: 17px;
+}
+
+.income-form .form-actions-row {
+  justify-content: flex-end;
+}
+
+.income-form .income-customer-field {
+  gap: 9px;
+}
+
+.income-form .income-vat-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.entity-styled-form {
+  width: min(1040px, 100%);
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  gap: 14px;
+}
+
+.entity-styled-form.card {
+  padding: 0;
+}
+
+.entity-form-section-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.entity-form-actions {
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #dbe3ee;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .96);
+  box-sizing: border-box;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .08);
+}
+
+.entity-form-actions .btn {
+  min-width: 150px;
+}
+
+.entity-form-section-icon {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.entity-form-page-card {
+  gap: 16px;
+  width: min(1280px, 100%);
+  max-width: 1280px;
+}
+
+.modal-card.modal-card-wide.entity-form-modal-card {
+  width: min(1080px, calc(100vw - 36px));
+  max-width: min(1080px, calc(100vw - 36px));
+
+  @media (max-width: 760px) {
+    .app-record-form .form-actions-row {
+      width: 100%;
+    }
+  }
+
+  .entity-form.app-record-form {
+    margin-bottom: 0;
+  }
+}
+
+.entity-form-page-card > .modal-title {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.party-detail-collapsible > summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.party-detail-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+
+.party-detail-collapsible-toggle {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 900;
+  transition: transform .18s ease;
+}
+
+.party-detail-collapsible[open] .party-detail-collapsible-toggle {
+  transform: rotate(180deg);
+}
+
+.entity-styled-form .entity-form-section {
+  border-color: #dfe5f2;
+}
+
+.entity-styled-form .entity-form-section > summary {
+  background: linear-gradient(135deg, rgba(245, 247, 255, .96), rgba(255, 255, 255, .98));
+}
+
+.modal-card .entity-styled-form {
+  margin-top: 2px;
+}
+
+.record-styled-drawer-filters .filter-group {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fafbff;
+}
+
+.record-styled-drawer-filters .filter-group legend {
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.record-styled-drawer-filters .cash-register-receipt-period-filter-group {
+  flex-wrap: wrap;
+}
+
+.record-styled-drawer-filters .filter-group-hint {
+  flex: 0 0 100%;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.record-styled-drawer-filters {
+  gap: 14px;
+  background: #f8fafc;
+}
+
+.record-styled-drawer-filters .filter-group {
+  gap: 14px;
+  padding: 15px;
+  border-color: #dfe5f2;
+  background: linear-gradient(135deg, rgba(245, 247, 255, .98), #fff);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+}
+
+.record-styled-drawer-filters .filter-group legend {
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: .035em;
+}
+
+.record-styled-drawer-filters .record-filter-field {
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.record-styled-drawer-filters .record-filter-field > input,
+.record-styled-drawer-filters .record-filter-field > select,
+.record-styled-drawer-filters .record-filter-field .filter-entity-autocomplete > input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.record-styled-drawer-filters .record-filter-field:focus-within {
+  border-color: #c7d2fe;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, .08);
+}
+
+.record-styled-drawer-filters .record-filter-field:focus-within > input,
+.record-styled-drawer-filters .record-filter-field:focus-within > select,
+.record-styled-drawer-filters .record-filter-field:focus-within .filter-entity-autocomplete > input {
+  border-color: var(--accent);
+  background: #fff;
+  outline: none;
+}
+
+.record-styled-drawer-filters .filter-drawer-actions {
+  margin: 2px -18px -18px;
+  padding: 16px 18px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  z-index: 10;
+}
+
+/* uscite ricorrenti: sezioni collassabili coerenti con ExpenseForm */
+.recurring-record-form .recurring-form-section {
+  position: relative;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  overflow: visible;
+}
+
+.recurring-record-form .recurring-form-section:focus-within {
+  z-index: 60;
+}
+
+.recurring-record-form .recurring-form-section > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-weight: 900;
+}
+
+.recurring-record-form .recurring-form-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.recurring-record-form .recurring-form-section > summary::after {
+  content: "⌄";
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.recurring-record-form .recurring-form-section[open] > summary {
+  border-bottom: 1px solid var(--line);
+  border-radius: 16px 16px 0 0;
+}
+
+.recurring-record-form .recurring-form-section[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.recurring-record-form .recurring-form-section > summary small {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.recurring-record-form .recurring-form-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.recurring-record-form .recurring-form-section-grid > label,
+.recurring-record-form .recurring-form-section-grid > .entity-autocomplete,
+.recurring-record-form .recurring-form-section-grid > .product-suggestion-picker {
+  align-self: flex-start;
+  width: 100%;
+  min-width: 0;
+}
+
+.recurring-form-section.recurring-fiscal-section .recurring-form-section-grid {
+  @media(min-width: 900px) {
+    display: flex;
+  }
+}
+
+.recurring-income-form .recurring-payment-section .recurring-form-section-grid {
+  @media(max-width: 900px) {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+//.recurring-income-form .recurring-accrual-toggle {
+//  align-self: stretch;
+//  min-width: 0;
+//}
+
+.recurring-record-form .entity-autocomplete > label,
+.recurring-record-form .product-suggestion-picker {
+  color: #334155;
+  font-weight: 850;
+}
+
+.recurring-record-form .entity-autocomplete-input-row {
+  align-items: stretch;
+}
+
+.recurring-record-form .recurring-wizard-amount {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 10px;
+  min-width: 0;
+}
+
+.recurring-record-form .recurring-wizard-amount-entry {
+  display: flex;
+  //grid-template-columns: minmax(156px, .42fr) minmax(260px, 1fr);
+  align-items: stretch;
+  gap: 14px;
+  min-width: 0;
+}
+
+.recurring-record-form .recurring-amount-control {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.recurring-record-form .app-vat-rate-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.recurring-record-form .app-vat-rate-buttons button {
+  min-width: 64px;
+}
+
+.recurring-record-form .recurring-vat-buttons-mobile {
+  display: none;
+}
+
+.recurring-record-form .form-section-stack {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.recurring-review-summary {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  padding: 18px;
+  border: 1px solid #dfe5ef;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fff, #f8fafc);
+}
+
+.recurring-review-summary .record-review-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.recurring-review-summary .record-review-heading h3 {
+  margin: 3px 0 0;
+}
+
+.recurring-review-summary .record-review-heading > strong {
+  color: var(--accent);
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+.recurring-review-summary .record-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.recurring-review-summary .record-review-item {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.recurring-review-summary .record-review-item.wide {
+  grid-column: 1 / -1;
+}
+
+.recurring-review-summary .record-review-item > i {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 11px;
+  background: #eef2ff;
+  color: var(--accent);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.recurring-review-summary .record-review-item > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.recurring-review-summary .record-review-item strong {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.recurring-record-form .form-actions-row {
+  justify-content: flex-end;
+}
+
+.recurring-bulk-actions-bar .bulk-inner-container {
+  flex-grow: 1;
+  text-align: right;
+}
+
+.recurring-expenses-card {
+
+  .recurring-bulk-actions-bar {
+    margin: 0 0 12px 0 !important;
+    padding: 0 !important;
+  }
+
+  .recurring-bulk-actions-bar .bulk-direct-actions .bulk-direct-link {
+    color: var(--accent);
+    background: #fff;
+    border-color: #b7bccc;
+  }
+
+  .recurring-bulk-actions-bar .bulk-direct-actions .bulk-direct-danger {
+    color: #b42318;
+    background: #fff;
+    border-color: #fecdd3;
+  }
+
+  .floating-bulk-button {
+    color: #f1f0ff;
+    background: #5746b8;
+    border-color: #ded9ff;
+  }
+}
+
+.recurring-bulk-actions-bar .bulk-direct-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end;
+  margin-right: 12px;
+}
+
+.recurring-active-filters {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #dbe3ff;
+  border-radius: 16px;
+  background: #fafbff;
+}
+
+.recurring-active-filters-title {
+  display: block;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.recurring-active-filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.recurring-active-filters-reset {
+  white-space: nowrap;
+  position: absolute;
+  right: 36px;
+}
+
+
+.recurring-expense-row-with-select {
+  grid-template-columns: 34px repeat(7, minmax(0, 1fr));
+  align-items: center;
+}
+
+.recurring-expense-select,
+.recurring-mobile-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recurring-expense-select input,
+.recurring-mobile-select input {
+  width: 22px;
+  height: 22px;
+}
+
+.recurring-mobile-item-shell:hover,
+.recurring-mobile-item-shell:focus-visible .recurring-mobile-item-shell {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(20, 30, 60, .10);
+  border-color: #b8c7ff;
+}
+
+.recurring-mobile-item-shell {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 6px;
+  padding: 12px 12px 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(20, 30, 60, .05);
+  align-items: center;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+.recurring-mobile-item-shell .recurring-mobile-item-link {
+  min-width: 0;
+}
+
+.recurring-income-mobile-item-shell {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 12px;
+}

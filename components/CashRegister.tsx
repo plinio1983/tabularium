@@ -23,6 +23,10 @@ type InitialReceipt = {
     description: string | null;
 };
 
+function euro(value: number) {
+    return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR'}).format(value);
+}
+
 function newRequestId() {
     return crypto.randomUUID();
 }
@@ -85,7 +89,16 @@ export default function CashRegister({
     const confirmationLocked = Boolean(selectedMethod && mode === 'create');
     const numericAmount = Number(amount.replace(',', '.'));
     const hasValidAmount = Number.isFinite(numericAmount) && numericAmount > 0;
+    const netAmount = isFiscal && vatRate > 0
+        ? numericAmount / (1 + vatRate / 100)
+        : numericAmount;
     const formattedAmount = useMemo(() => formatCurrencyInput(amount), [amount]);
+    const amountDigitCount = amount.replace(/\D/g, '').length;
+    const amountSizeClass = amountDigitCount > 8
+        ? 'is-very-long'
+        : amountDigitCount > 5
+            ? 'is-long'
+            : undefined;
     const methodIsAvailable = (method: Method) => isFiscal || method.id === cashMethod?.id;
 
     function moveKeyboardMethod(direction: 1 | -1) {
@@ -374,10 +387,16 @@ export default function CashRegister({
                    }}/>
         </label>
 
-        <section className="cash-register-display">
-            <span>€</span>
-            <input ref={amountRef} aria-label="Importo incasso" value={formattedAmount} readOnly
-                   disabled={confirmationLocked} inputMode="none"/>
+        <section className="cash-register-display cash-register-display-with-net">
+            <small className="cash-register-net-amount" aria-live="polite">
+                <span>IVA esclusa</span>
+                <strong>{euro(Number.isFinite(netAmount) ? netAmount : 0)}</strong>
+            </small>
+            <div className="cash-register-display-amount">
+                <span>€</span>
+                <input ref={amountRef} className={amountSizeClass} aria-label="Importo incasso" value={formattedAmount} readOnly
+                       disabled={confirmationLocked} inputMode="none"/>
+            </div>
         </section>
 
         <section className="cash-register-vat" aria-label="Aliquota IVA">

@@ -98,7 +98,7 @@ export default function SupplierAutocomplete({
     <div className="app-form-field entity-autocomplete-field">
       <label className="app-form-field-label" htmlFor={inputId}>
         <span className="app-form-field-icon" aria-hidden="true">◎</span><span>Esercente</span>
-        {allowCreate ? <span className="flex flex-grow justify-end"><button type="button" className="btn btn-sm btn-link inline-link-button mr-22" onClick={() => setShowCreate(true)}>＋ Nuovo</button></span> : null}
+        {allowCreate ? <span className="flex flex-grow justify-end"><button type="button" className="btn btn-sm btn-link mr-22" onClick={() => setShowCreate(true)}>＋ Nuovo</button></span> : null}
       </label>
     </div>
     <div className="entity-autocomplete-input-row"><div className={`app-autocomplete-control ${selected ? "has-selection" : ""}`}>

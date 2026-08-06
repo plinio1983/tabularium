@@ -478,7 +478,7 @@ export default function IncomeForm({
                 <div className="form-section-grid income-form-section-grid">
                     <div className="amount-vat-row full income-amount-vat-row app-form-wizard-step app-form-wizard-step-2 income-wizard-amount">
                         <div className="income-wizard-amount-entry">
-                            <div className="app-form-field-label switch-toggle-field income-switch-control income-fiscal-switch">
+                            <div className="app-form-field-label income-switch-control income-fiscal-switch switch-toggle-field ">
                                 <div className="switch-toggle-field-label gap-4">
                                     <span className="app-form-field-icon">⇆</span>
                                     <span className="app-form-label">Fiscale</span>
@@ -518,9 +518,17 @@ export default function IncomeForm({
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
                                     </div>
                                 </label>
+                                <div className="app-vat-rate-buttons income-vat-buttons vat-buttons-desktop" aria-label="Aliquota IVA">
+                                    {vatRates.map(value =>
+                                        <button type="button" key={value} className={vatRate === value ? "is-selected" : ""} disabled={!isFiscal} onMouseDown={event => event.preventDefault()} onClick={() => {
+                                            setVatRate(value);
+                                            focusAmount();
+                                        }}>{value}%</button>)}
+                                </div>
                             </div>
                         </div>
-                        <div className="app-vat-rate-buttons income-vat-buttons align-center" aria-label="Aliquota IVA">
+
+                        <div className="app-vat-rate-buttons income-vat-buttons vat-buttons-mobile align-center" aria-label="Aliquota IVA">
                             <div className="hidden-sp">
                                 <label className="ml-12">IVA</label>
                             </div>
@@ -537,7 +545,6 @@ export default function IncomeForm({
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key =>
                                 <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
                         </div>
-
                     </div>
                 </div>
             </details>
@@ -655,9 +662,8 @@ export default function IncomeForm({
                 </summary>
                 <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
                     <MonthField label="Periodo contabile" name="billingPeriod" value={billingPeriod} onChange={setBillingPeriod} required/>
-                    <div className="app-form-field-label switch-toggle-field">
-
-                        <div className="switch-toggle-field-label">
+                    <div className="app-form-field-label switch-toggle-field hidden-md-down">
+                        <div className="switch-toggle-field-label app-form-field-label">
                             <span className="app-form-field-icon">⇆</span>
                             <span className="app-form-label">Fattura emessa</span>
                         </div>
@@ -669,6 +675,21 @@ export default function IncomeForm({
                             />
                             <span className="slider"/>
                             <small className="text-muted">{isFiscal && invoiceStatus === "EMESSA" ? "Emessa" : invoiceStatus === "PARZIALE" ? "Parziale" : "Non inviata"}</small>
+                        </label>
+                    </div>
+                    <div className="app-form-field-label switch-toggle-field switch-inline wide hidden-md-up">
+                        <div className="switch-toggle-field-label app-form-field-label">
+                            <span className="app-form-field-icon">⇆</span>
+                            <span className="app-form-label">Fattura emessa</span>
+                        </div>
+                        <label className="switch">
+                            <small className="text-muted">{isFiscal && invoiceStatus === "EMESSA" ? "Emessa" : invoiceStatus === "PARZIALE" ? "Parziale" : "Non inviata"}</small>
+                            <input
+                                type="checkbox"
+                                checked={isFiscal && invoiceStatus === "EMESSA"}
+                                onChange={(event) => toggleInvoiceIssued(event.currentTarget.checked)}
+                            />
+                            <span className="slider"/>
                         </label>
                     </div>
                     {/*<div className="toggle-field-wrap">*/}

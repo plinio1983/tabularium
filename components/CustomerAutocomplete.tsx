@@ -109,7 +109,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
           {allowCreate ? <span className="flex flex-grow justify-end mr-22">
               <button
                   type="button"
-                  className="btn btn-sm btn-link inline-link-button"
+                  className="btn btn-sm btn-link"
                   onClick={() => {
                       setCreateData({ ...emptyCustomer });
                       setCreateError('');

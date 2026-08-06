@@ -1,0 +1,22 @@
+// Manifest della cascata globale.
+//
+// L'ordine e intenzionale: i moduli responsive chiudono la cascata e possono
+// specializzare componenti e feature senza aumentare artificialmente la
+// specificita dei selettori.
+@use 'foundation/base';
+@use 'layout/shell';
+@use 'components/primitives';
+@use 'components/fiscal-switches';
+@use 'features/forms';
+@use 'features/records';
+@use 'components/wizard';
+@use 'features/operations';
+@use 'features/analytics';
+@use 'features/workflows';
+@use 'features/record-details';
+@use 'components/record-forms';
+@use 'features/administration';
+@use 'responsive/mobile';
+@use 'responsive/desktop';
+@use 'features/counter-expense';
+@use 'features/recurring-expense-form';

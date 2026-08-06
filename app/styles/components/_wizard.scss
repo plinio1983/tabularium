@@ -1,0 +1,614 @@
+.app-form-wizard-header,
+.app-form-wizard-actions,
+.app-amount-keypad,
+.app-vat-rate-buttons,
+.entry-type-choice,
+.expense-review-step {
+  display: none;
+}
+
+.app-record-form .app-due-date-shortcuts,
+.app-record-form .payment-amount-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.app-record-form .app-due-date-shortcuts button,
+.app-record-form .payment-amount-shortcuts button,
+.app-record-form .app-vat-rate-buttons button {
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+  min-width: 64px;
+
+  &:disabled {
+    color: var(--muted);
+  }
+}
+
+.app-record-form .payment-amount-shortcuts button {
+  flex-grow: 1;
+}
+
+.app-record-form .app-due-date-shortcuts button.is-selected,
+.app-record-form .payment-amount-shortcuts button.is-selected,
+.app-record-form .app-vat-rate-buttons button.is-selected {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+//.app-record-form .app-form-wizard-mobile-switch {
+//  display: none;
+//}
+
+.entity-autocomplete-empty {
+  padding: 12px;
+  color: var(--muted);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(10, 18, 38, .42);
+  animation: app-modal-backdrop-enter 180ms ease-out both;
+}
+
+/* A form opened from another modal must escape the parent's stacking context. */
+.nested-form-modal {
+  z-index: 10100;
+}
+
+.modal-card {
+  width: min(720px, 96vw);
+  max-height: 92vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  padding: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: app-modal-panel-enter 220ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes app-modal-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes app-modal-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes app-modal-panel-enter-mobile {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.app-form-modal-backdrop,
+.bulk-category-modal-backdrop,
+.bulk-attachments-modal-backdrop,
+.cash-register-method-backdrop,
+.bulk-action-modal-backdrop {
+  animation: app-modal-backdrop-enter 180ms ease-out both;
+}
+
+.app-form-modal-backdrop > .app-form-modal,
+.bulk-category-modal,
+.bulk-attachments-modal,
+.cash-register-method-modal,
+.counter-expense-payment-modal,
+.bulk-action-modal {
+  animation: app-modal-panel-enter 220ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@media (max-width: 760px) {
+  .modal-card,
+  .app-form-modal-backdrop > .app-form-modal,
+  .bulk-category-modal,
+  .bulk-attachments-modal,
+  .cash-register-method-modal,
+  .counter-expense-payment-modal,
+  .bulk-action-modal {
+    animation-name: app-modal-panel-enter-mobile;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .modal-card,
+  .app-form-modal-backdrop,
+  .bulk-category-modal-backdrop,
+  .bulk-attachments-modal-backdrop,
+  .cash-register-method-backdrop,
+  .bulk-action-modal-backdrop,
+  .app-form-modal-backdrop > .app-form-modal,
+  .bulk-category-modal,
+  .bulk-attachments-modal,
+  .cash-register-method-modal,
+  .counter-expense-payment-modal,
+  .bulk-action-modal {
+    animation: none;
+  }
+}
+
+.modal-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-title h3 {
+  margin: 0;
+}
+
+.modal-title button {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 8px 10px;
+}
+
+.modal-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.modal-form-grid label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+
+.inline-warning {
+  font-weight: 500;
+}
+
+.totals-row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.product-suggestion-picker {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  overflow: visible;
+  z-index: 20;
+}
+
+.product-suggestion-picker:focus-within {
+  z-index: 120;
+}
+
+.suggestion-results {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 130;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .16);
+  max-height: 240px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.suggestion-results button {
+  width: 100%;
+  justify-content: flex-start;
+  flex-grow: 1;
+  display: flex;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 0;
+  color: var(--text);
+  background: #fff;
+  border: 0;
+  border-bottom: 1px solid #edf0f6;
+  font-weight: 700;
+}
+
+.suggestion-results button.active, .suggestion-results button:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.new-supplier-panel .no-margin {
+  margin-bottom: 0;
+}
+
+.inline-create-form {
+  margin-top: 14px;
+}
+
+.suppliers-table th, .suppliers-table td {
+  vertical-align: middle;
+}
+
+.suppliers-table td {
+  white-space: nowrap
+}
+
+.compact-expenses-table form, .suppliers-table form {
+  margin: 0;
+}
+
+.compact-expenses-table button.icon-action, .suppliers-table button.icon-action {
+  padding: 6px 7px;
+  min-width: 30px;
+}
+
+.income-form {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  .fiscal-toggle {
+    flex-grow: 0;
+  }
+}
+
+.income-form small {
+  margin-top: 4px;
+  display: block;
+}
+
+.new-income-panel .no-margin {
+  margin-bottom: 0;
+}
+
+.income-totals-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.compact-incomes-table {
+  min-width: 980px;
+}
+
+.compact-incomes-table th, .compact-incomes-table td {
+  vertical-align: middle;
+}
+
+
+.toolbar-card-wrap {
+  flex-wrap: wrap;
+}
+
+.income-create-card {
+  flex: 0 0 100%;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.income-create-card .income-form {
+  box-shadow: none;
+}
+
+.switch-button {
+  width: 86px;
+  min-height: 38px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #fff1f1;
+  color: #a82020;
+  border: 1px solid #ffd1d1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.switch-button.on {
+  background: #eaf8ef;
+  color: #19733b;
+  border-color: #cdeed8;
+  justify-content: flex-end;
+}
+
+.switch-button .switch-knob {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, .20);
+  flex: 0 0 28px;
+}
+
+.switch-button strong {
+  font-size: 12px;
+  min-width: 22px;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  line-height: 1;
+}
+
+
+.icon-action {
+  font-size: 15px;
+  min-width: 31px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI Symbol", sans-serif;
+}
+
+.income-totals-row {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.compact-incomes-table {
+  min-width: 1120px;
+}
+
+.copyable-detail-field {
+  position: relative;
+  padding-right: 37px !important;
+}
+
+.copy-value-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--accent);
+  border: 1px solid #cfd7ff;
+  font-size: 15px;
+}
+
+.supplier-detail-grid .copyable-detail-field .copy-value-button {
+  border: none;
+  background: transparent;
+  font-size: 26px;
+}
+
+.supplier-detail-grid .copyable-detail-field {
+  min-height: 76px;
+}
+
+.party-detail-document .copyable-detail-field {
+  min-height: 72px;
+}
+
+.party-detail-document .copy-value-button {
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+}
+
+.party-detail-page {
+
+}
+
+.party-detail-page .record-detail-amount-panel-header {
+  padding: 0;
+}
+
+.party-detail-page .record-detail-title-block {
+  display: grid;
+  gap: 12px;
+}
+
+.party-detail-page .record-detail-badge-row {
+  margin-top: 0;
+}
+
+.party-detail-page .record-detail-kicker {
+  margin: 0;
+  height: 18px;
+}
+
+.party-detail-page .record-detail-meta-line {
+  margin-top: 0;
+}
+
+.party-detail-page .record-detail-amount-panel {
+  padding: 0;
+}
+
+.party-detail-page .party-detail-info-strip {
+  grid-template-columns: 1fr;
+}
+
+
+.switch-with-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fiscal-toggle-field .switch-button {
+  width: 58px;
+  min-width: 58px;
+}
+
+.switch-state {
+  font-size: 13px;
+  font-weight: 800;
+  min-width: 22px;
+}
+
+.switch-state-on {
+  color: #19733b;
+}
+
+.switch-state-off {
+  color: #a82020;
+}
+
+.total-placeholder {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.dashboard-period-cards {
+  align-items: stretch;
+}
+
+.fiscal-summary-card {
+  display: grid;
+  gap: 16px;
+}
+
+.card-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+
+  @media (min-width: 1024px) {
+    display: flex;
+    align-items: center;
+
+    > div:first-child {
+      flex-grow: 1;
+    }
+  }
+
+  p {
+    margin-top: 0;
+  }
+
+  h2 {
+    margin-bottom: 6px;
+  }
+}
+
+.summary-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.summary-metric {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: #fbfcff;
+  display: grid;
+  gap: 4px;
+}
+
+.summary-metric span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+.summary-metric strong {
+  font-size: 17px;
+}
+
+.record-top-summary {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px 0 4px;
+  border-top: 1px solid var(--line);
+}
+
+.record-top-summary h2 {
+  font-size: 18px;
+}
+
+.record-top-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.record-top-summary-item {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  padding: 14px 16px;
+  border-right: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.record-top-summary-item:nth-child(3n) {
+  border-right: 0;
+}
+
+.record-top-summary-item:nth-child(-n + 3) {
+  border-bottom: 1px solid var(--line);
+}
+
+.record-top-summary-item > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.record-top-summary-item > strong {
+  overflow: hidden;
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-top-summary-item.is-primary > strong {
+  color: var(--primary);
+}
+
+.record-top-summary-item.is-warning {
+  background: linear-gradient(90deg, rgba(255, 248, 223, .82), transparent 72%);
+}
+
+.record-top-summary-item.is-critical {
+  background: linear-gradient(90deg, rgba(255, 241, 241, .9), transparent 72%);
+}
+
+.record-top-summary-item.is-invoice-waiting {
+  background: linear-gradient(90deg, #eff6ff 0%, rgba(255, 255, 255, .2) 72%);
+}

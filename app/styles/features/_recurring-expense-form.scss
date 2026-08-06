@@ -1,0 +1,55 @@
+.recurring-expense-form .recurring-fiscal-switch {
+  @media (min-width: 900px) {
+    min-width: 154px;
+  }
+}
+
+.recurring-expense-form .recurring-fiscal-switch > .switch {
+  display: flex !important;
+}
+
+.recurring-expense-form .recurring-expense-amount-vat-excluded {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 18px;
+  margin-left: auto;
+  color: #217a36;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-right: 14px;
+}
+
+@media (max-width: 900px) {
+  .recurring-expense-form .app-vat-rate-buttons.vat-buttons-desktop {
+    display: none !important;
+  }
+
+  .recurring-expense-form .app-vat-rate-buttons.vat-buttons-mobile {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    width: 100%;
+  }
+}
+
+@media (min-width: 901px) {
+  .recurring-expense-form .app-vat-rate-buttons.vat-buttons-desktop {
+    display: flex !important;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .recurring-expense-form .app-vat-rate-buttons.vat-buttons-desktop button {
+    width: auto;
+    min-width: 64px;
+  }
+
+  .recurring-expense-form .app-vat-rate-buttons.vat-buttons-mobile {
+    display: none !important;
+  }
+}

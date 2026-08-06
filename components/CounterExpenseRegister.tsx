@@ -54,7 +54,16 @@ export default function CounterExpenseRegister({
 
   const numericAmount = Number(amount.replace(',', '.'));
   const hasValidAmount = Number.isFinite(numericAmount) && numericAmount > 0;
+  const netAmount = isDeductible && vatRate > 0
+    ? numericAmount / (1 + vatRate / 100)
+    : numericAmount;
   const formattedAmount = useMemo(() => formatCurrencyInput(amount), [amount]);
+  const amountDigitCount = amount.replace(/\D/g, '').length;
+  const amountSizeClass = amountDigitCount > 8
+    ? 'is-very-long'
+    : amountDigitCount > 5
+      ? 'is-long'
+      : undefined;
   const selectedMethod = methods.find(method => method.id === selectedMethodId) ?? null;
   const isCash = selectedMethod?.systemRole === 'CASH';
   const selectedCategory = categories.find(category => category.id === Number(categoryId)) ?? null;
@@ -268,11 +277,14 @@ export default function CounterExpenseRegister({
     </header>
 
     <section className="cash-register-controls counter-expense-controls" aria-label="Dati della spesa">
-      <label className="cash-register-fiscal-switch">
-        <input type="checkbox" checked={isDeductible}
-               onChange={event => toggleDeduction(event.currentTarget.checked)}/>
-        <span>Detrazione</span>
-      </label>
+      <div className="cash-register-fiscal-switch counter-expense-fiscal-switch switch-toggle-field">
+        <span>Fiscale</span>
+        <label className="switch" aria-label="Spesa fiscale">
+          <input type="checkbox" checked={isDeductible}
+                 onChange={event => toggleDeduction(event.currentTarget.checked)}/>
+          <span className="slider"/>
+        </label>
+      </div>
       <input aria-label="Data pagamento" type="date" value={paymentDate}
              onChange={event => setPaymentDate(event.currentTarget.value)}/>
       <select aria-label="Categoria" value={categoryId}
@@ -295,9 +307,15 @@ export default function CounterExpenseRegister({
              }}/>
     </label>
 
-    <section className="cash-register-display">
-      <span>€</span>
-      <input ref={amountRef} aria-label="Importo spesa" value={formattedAmount} readOnly inputMode="none"/>
+    <section className="cash-register-display cash-register-display-with-net">
+      <small className="cash-register-net-amount" aria-live="polite">
+        <span>IVA esclusa</span>
+        <strong>{euro(Number.isFinite(netAmount) ? netAmount : 0)}</strong>
+      </small>
+      <div className="cash-register-display-amount">
+        <span>€</span>
+        <input ref={amountRef} className={amountSizeClass} aria-label="Importo spesa" value={formattedAmount} readOnly inputMode="none"/>
+      </div>
     </section>
 
     <section className="cash-register-vat" aria-label="Aliquota IVA">
@@ -313,7 +331,7 @@ export default function CounterExpenseRegister({
                 }}>{rate}%</button>)}
     </section>
 
-    <section className="cash-register-keypad" aria-label="Tastiera numerica">
+    <section className="cash-register-keypad counter-expense-keypad" aria-label="Tastiera numerica">
       {['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'backspace'].map(key =>
         <button type="button" key={key} onClick={() => appendKey(key)}
                 aria-label={key === 'backspace' ? 'Cancella ultima cifra' : key}>

@@ -30,7 +30,7 @@ export function SupplierFormField({ label, icon, hint, className = '', htmlFor, 
     </label>
       <button
           type="button"
-          className="btn btn-sm btn-link inline-link-button"
+          className="btn btn-sm btn-link"
           onClick={onCreate}
       >
           ＋ Nuovo

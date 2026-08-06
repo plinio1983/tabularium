@@ -1,0 +1,29 @@
+// Visibilita dei controlli fiscali nei form contabili.
+// Lo switch della spesa singola ha markup distinto per mobile e desktop;
+// gli altri form condividono lo stesso controllo a tutte le risoluzioni.
+
+.single-expense-form .expense-fiscal-desktop-control {
+  min-width: 164px;
+}
+
+.income-form .income-fiscal-switch > .switch,
+.recurring-record-form .recurring-fiscal-switch > .switch,
+.single-expense-form .expense-fiscal-desktop-control > .switch {
+  display: flex !important;
+}
+
+@media (max-width: 900px) {
+  .single-expense-form .expense-fiscal-desktop-control {
+    display: none !important;
+  }
+
+  .single-expense-form .expense-fiscal-mobile-control {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .single-expense-form .expense-fiscal-mobile-control {
+    display: none !important;
+  }
+}

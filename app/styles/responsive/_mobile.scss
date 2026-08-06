@@ -535,9 +535,9 @@
   }
 
   .recurring-record-form .recurring-form-section-grid > * {
-    grid-column: 1 / -1 !important;
-    min-width: 0;
-    width: 100%;
+    //grid-column: 1 / -1 !important;
+    //min-width: 0;
+    //width: 100%;
   }
 }
 
@@ -1424,7 +1424,6 @@
 
   .app-record-form .form-section-grid {
     padding: 12px 0;
-    gap: 13px;
   }
 }
 
@@ -2032,6 +2031,21 @@
 }
 
 @media (max-width: 900px) {
+  .single-expense-form .expense-amount-vat-excluded {
+    display: none;
+  }
+
+  .app-form-wizard .app-vat-rate-buttons.vat-buttons-desktop {
+    display: none !important;
+  }
+
+  .app-form-wizard .app-vat-rate-buttons.vat-buttons-mobile {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    width: 100%;
+  }
+
   .app-wizard-modal {
     padding: 0;
     overflow: hidden;
@@ -2048,10 +2062,6 @@
     gap: 0;
     border-radius: 0;
     overflow-y: auto;
-  }
-
-  .app-record-form {
-    gap: 12px;
   }
 
   .app-form-wizard {
@@ -2171,7 +2181,6 @@
     width: 100%;
     margin: 0;
     //padding: 0;
-    gap: 22px;
   }
 
   .app-form-wizard .app-form-wizard-step-4,
@@ -2189,11 +2198,6 @@
   .app-form-wizard > details.app-form-wizard-step > .form-section-stack {
     padding: 0;
     background: transparent;
-  }
-
-  .app-form-wizard .payments-box,
-  .app-form-wizard .payment-row {
-    gap: 18px;
   }
 
   .app-form-wizard-actions-row {
@@ -2215,10 +2219,6 @@
     display: flex;
     gap: 7px;
     margin-top: 2px;
-  }
-
-  .app-form-wizard .app-form-field {
-    gap: 9px;
   }
 
   .app-form-wizard .app-form-field-label {
@@ -2308,13 +2308,11 @@
   }
 
   .app-form-wizard .payment-date-field {
-    gap: 7px;
     color: #334155;
     font-weight: 850;
   }
 
   .app-form-wizard .payment-select-field {
-    gap: 9px;
     color: #334155;
     font-weight: 900;
   }
@@ -2523,7 +2521,7 @@
   }
 
   .app-form-wizard .app-due-date-shortcuts button {
-    min-width: 0;
+    //min-width: 0;
     min-height: 38px;
     padding-inline: 5px;
     border-radius: 12px;
@@ -2533,13 +2531,6 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px;
-  }
-
-  .app-form-wizard .entity-autocomplete-input-row .inline-link-button {
-    min-height: 54px;
-    border-radius: 16px;
-    font-size: 13px;
-    font-weight: 900;
   }
 
   .app-form-wizard .app-autocomplete-control.has-selection input {
@@ -2646,6 +2637,10 @@
     display: none !important;
   }
 
+  //.app-form-wizard .app-form-wizard-mobile-switch {
+  //  display: flex;
+  //}
+
   .app-form-wizard .app-form-wizard-fiscal-section .toggle-field-wrap {
     display: none;
   }
@@ -2663,6 +2658,11 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+
+    @media (max-width: 900px) {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
 
     >div {
       flex: 1 1 auto;
@@ -2691,7 +2691,8 @@
   .expense-invoice-switches {
     display: grid;
     gap: 8px;
-    grid-template-columns: repeat(2, 1fr);
+    //grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 
   .expense-invoice-switches .app-form-wizard-mobile-switch {
@@ -2859,16 +2860,6 @@
   .recurring-record-form .recurring-fiscal-switch {
     min-height: 103px;
   }
-  .recurring-record-form .recurring-invoice-switch,
-  .recurring-record-form .recurring-accrual-toggle {
-    min-height: 78px;
-    max-width: max-content;
-    min-width: max-content;
-  }
-
-  .recurring-record-form .recurring-invoice-switch {
-    width: 100%;
-  }
 
   .recurring-wizard-amount-field {
     flex: 1 1 auto;
@@ -2963,6 +2954,10 @@
     gap: 7px;
   }
 
+  .recurring-expense-type-choice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .entry-type-choice-grid button {
     display: grid;
     min-width: 0;
@@ -3022,7 +3017,6 @@
 
   .app-record-form .form-section-stack {
     padding: 12px;
-    gap: 13px;
   }
 
   .app-record-form .toggle-field-wrap {
@@ -3243,6 +3237,7 @@
 
   .account-styled-form .app-form-field input {
     min-height: 54px;
+    height: 54px;
     border-radius: 16px;
     font-size: 16px;
   }
@@ -3334,6 +3329,7 @@
 
   .workspace-edit-form .app-form-field input {
     min-height: 54px;
+    height: 54px;
     border-radius: 16px;
     font-size: 16px;
   }
@@ -4007,6 +4003,7 @@
 
   .cash-register-routing-table select {
     min-height: 54px;
+    height: 54px;
     padding: 11px 42px 11px 13px;
     border: 1px solid #cbd5e1;
     border-radius: 16px;
@@ -4878,8 +4875,8 @@
 
   .recurring-form-wizard .recurring-form-section > .recurring-form-section-grid,
   .recurring-form-wizard .recurring-form-section > .form-section-stack {
-    display: flex;
-    flex-direction: column;
+    //display: flex;
+    //flex-direction: column;
     width: 100%;
     margin: 0;
     padding: 0;
@@ -5001,6 +4998,7 @@
 
   .month-comparison-period-field .app-date-control input {
     min-height: 54px;
+    height: 54px;
     border-radius: 16px;
     font-size: 16px;
   }

@@ -32,6 +32,7 @@ type SupplierOption = {
     internalNotes?: string | null;
 };
 type InitialRecurringExpense = {
+    id?: number | null;
     startDate?: string | Date | null;
     endDate?: string | Date | null;
     archivedAt?: string | Date | null;
@@ -183,7 +184,7 @@ function SupplierAutocomplete({
     }
 
     return (
-        <div className="entity-autocomplete entity-autocomplete-wide app-form-wizard-step app-form-wizard-step-3" ref={containerRef}>
+        <div className="entity-autocomplete entity-autocomplete-wide" ref={containerRef}>
             <input type="hidden" name="supplierId" value={selected?.id ?? ""}/>
             <input type="hidden" name="merchant" value={selected?.businessName ?? query}/>
             <label className="recurring-supplier-field">
@@ -208,7 +209,7 @@ function SupplierAutocomplete({
                     />
                     <button
                         type="button"
-                        className="btn btn-sm btn-link inline-link-button"
+                        className="ml-6 btn btn-sm btn-link"
                         onClick={() => setShowCreate(true)}
                     >
                         ＋ Nuovo
@@ -372,6 +373,7 @@ export default function RecurringExpenseForm({
                                                  onSwitchToSingle,
                                                  onSwitchToVatSettlement,
                                              }: Props) {
+    const isExistingExpense = Boolean(initialExpense?.id);
     const timeZone = useCompanyTimeZone();
     const today = dateInputInTimeZone(timeZone);
     const currentMonth = zonedCalendarParts(new Date(), timeZone)?.month ?? 1;
@@ -417,6 +419,8 @@ export default function RecurringExpenseForm({
     const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
     const normalizedAmount = amount.replace(",", ".");
     const amountValue = Number(normalizedAmount || 0);
+    const activeVatRate = isDeclared ? Number(vatRate || 0) : 0;
+    const netAmount = activeVatRate > 0 ? amountValue / (1 + activeVatRate / 100) : amountValue;
 
     useEffect(() => {
         if (!isDeclared) {
@@ -521,7 +525,7 @@ export default function RecurringExpenseForm({
     }
 
     return (
-        <form ref={formRef} className={`card form app-record-form recurring-record-form app-form-wizard recurring-form-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
+        <form ref={formRef} className={`card form app-record-form recurring-record-form recurring-expense-form app-form-wizard recurring-form-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
             <div className="app-form-wizard-header full">
                 <div className="app-form-wizard-heading">
                     <span>Passaggio {mobileStep} di 6</span>
@@ -537,11 +541,16 @@ export default function RecurringExpenseForm({
 
             <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
                 <span className="entry-type-choice-title">Tipo di spesa</span>
-                <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
+                <div className="entry-type-choice-grid recurring-expense-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
                     <button type="button" role="radio" aria-checked={false} disabled={!onSwitchToSingle} onClick={onSwitchToSingle}>
                         <span aria-hidden="true">●</span>
                         <strong>Singola</strong>
                         <small>Spesa occasionale</small>
+                    </button>
+                    <button type="button" disabled={isExistingExpense} onClick={() => window.location.assign("/expenses/counter")}>
+                        <span aria-hidden="true">🛍️</span>
+                        <strong>Da banco</strong>
+                        <small>Acquisto già pagato</small>
                     </button>
                     <button type="button" className="is-selected" role="radio" aria-checked>
                         <span aria-hidden="true">↻</span>
@@ -597,7 +606,7 @@ export default function RecurringExpenseForm({
                             <input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required/>
                         </FormField>
                     )}
-                    <div className="app-form-field switch-toggle-field app-form-wizard-step app-form-wizard-step-1">
+                    <div className="app-form-field app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide push-down">
                         <div className="switch-toggle-field-label app-form-field-label">
                             <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
                         </div>
@@ -608,7 +617,7 @@ export default function RecurringExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full recurring-form-section recurring-document-section recurring-details-section" open>
+            <details className="form-section full recurring-form-section recurring-document-section recurring-details-section app-form-wizard-step app-form-wizard-step-3" open>
                 <summary>
                     <span>Fornitore e dettagli</span>
                     <small>Fornitore, categoria e descrizione della spesa</small>
@@ -616,7 +625,7 @@ export default function RecurringExpenseForm({
                 <div className="form-section-grid recurring-form-section-grid">
                     <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} categories={categories}/>
 
-                    <SelectField className="app-form-wizard-step app-form-wizard-step-3" label="Categoria" icon="◇" name="categoryId" required value={categoryId} onChange={setCategoryId} options={[
+                    <SelectField label="Categoria" icon="◇" name="categoryId" required value={categoryId} onChange={setCategoryId} options={[
                         {value: "", label: "Seleziona categoria", disabled: true},
                         ...categories.map(category => ({
                             value: category.id,
@@ -637,9 +646,9 @@ export default function RecurringExpenseForm({
                     <div className="amount-vat-row app-form-wizard-step app-form-wizard-step-2 recurring-wizard-amount">
                         <div className="recurring-wizard-amount-entry full">
                             <div className="switch-toggle-field recurring-switch-control recurring-fiscal-switch">
-                                <div className="switch-toggle-field-label">
+                                <div className="app-form-field-label switch-toggle-field-label">
                                     <span className="app-form-field-icon">⇆</span>
-                                    <label>Fiscale</label>
+                                    <span>Fiscale</span>
                                 </div>
                                 <label className="switch">
                                     <input type="checkbox" name="isDeclared" value="true" checked={isDeclared} onChange={event => {
@@ -647,12 +656,25 @@ export default function RecurringExpenseForm({
                                         focusAmount();
                                     }}/>
                                     <span className="slider"/>
-                                    {/*<span className="text-muted ml-12 hidden-mobile">{isDeclared ? "Fiscale" : "Non Dichiarato"}</span>*/}
+                                    <small className="text-muted hidden-md-down">{isDeclared ? "Fiscale" : "Non Fiscale"}</small>
                                 </label>
                             </div>
                             <div className="recurring-amount-control flex-grow">
-                                <label className="recurring-wizard-amount-field">Costo IVA inclusa<MoneyInput inputRef={amountRef} value={amount} onValueChange={handleAmountChange} required/><input type="hidden" name="amount" value={normalizedAmount}/></label>
-                                <div className="app-vat-rate-buttons recurring-vat-buttons-desktop" aria-label="Selezione rapida IVA">
+                                <label className="recurring-wizard-amount-field">
+                                    <div className="app-form-field-label switch-toggle-field-label">
+                                        <span className="app-form-field-icon">€</span>
+                                        <span>Costo IVA inclusa</span>
+                                        <span className="recurring-expense-amount-vat-excluded" aria-live="polite">
+                                            <strong>€ {netAmount.toLocaleString("it-IT", {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                            })}</strong>
+                                        </span>
+                                    </div>
+                                    <MoneyInput inputRef={amountRef} value={amount} onValueChange={handleAmountChange} required/>
+                                    <input type="hidden" name="amount" value={normalizedAmount}/>
+                                </label>
+                                <div className="app-vat-rate-buttons recurring-vat-buttons-desktop vat-buttons-desktop" aria-label="Selezione rapida IVA">
                                     {["0", "4", "10", "22"].map(rate =>
                                         <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onMouseDown={event => event.preventDefault()} onClick={() => {
                                             setVatRate(rate);
@@ -661,7 +683,7 @@ export default function RecurringExpenseForm({
                                 </div>
                             </div>
                         </div>
-                        <div className="app-vat-rate-buttons recurring-vat-buttons-mobile" aria-label="Selezione rapida IVA">
+                        <div className="app-vat-rate-buttons recurring-vat-buttons-mobile vat-buttons-mobile" aria-label="Selezione rapida IVA">
                             {["0", "4", "10", "22"].map(rate =>
                                 <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onMouseDown={event => event.preventDefault()} onClick={() => {
                                     setVatRate(rate);
@@ -682,11 +704,12 @@ export default function RecurringExpenseForm({
                     <span>Fatturazione</span>
                     <small>Fattura elettronica e periodo fatturazione</small>
                 </summary>
+
                 <div className="form-section-grid recurring-form-section-grid">
-                    <div className="switch-toggle-field recurring-switch-control recurring-invoice-switch">
-                        <div className="switch-toggle-field-label">
+                    <div className="switch-toggle-field recurring-switch-control recurring-invoice-switch hidden-md-down">
+                        <div className="app-form-field-label switch-toggle-field-label">
                             <span className="app-form-field-icon">⇆</span>
-                            <label>Fattura elettronica</label>
+                            <span>Fattura elettronica</span>
                         </div>
                         <label className="switch">
                             <input
@@ -698,11 +721,30 @@ export default function RecurringExpenseForm({
                                 onChange={(e) => setHasElectronicInvoice(e.currentTarget.checked)}
                             />
                             <span className="slider"/>
-                            <span className="text-muted ml-12">{hasElectronicInvoice ? "Elettronica" : "PDF"}</span>
+                            <small className="text-muted">{hasElectronicInvoice ? "Elettronica" : "PDF"}</small>
                         </label>
                     </div>
 
-                    <SelectField label="Periodo fatturazione" icon="▦" name="billingPeriodMode" value={billingPeriodMode} disabled={!isDeclared} onChange={setBillingPeriodMode} options={[
+                    <div className="switch-toggle-field switch-inline wide push-down recurring-switch-control recurring-invoice-switch hidden-md-up">
+                        <div className="app-form-field-label switch-toggle-field-label">
+                            <span className="app-form-field-icon">⇆</span>
+                            <span>Fatt. elettronica</span>
+                        </div>
+                        <label className="switch">
+                            <input
+                                type="checkbox"
+                                name="hasElectronicInvoice"
+                                value="true"
+                                checked={hasElectronicInvoice}
+                                disabled={!isDeclared}
+                                onChange={(e) => setHasElectronicInvoice(e.currentTarget.checked)}
+                            />
+                            <span className="slider"/>
+                            {/*<small className="text-muted ml-12">{hasElectronicInvoice ? "Elettronica" : "PDF"}</small>*/}
+                        </label>
+                    </div>
+
+                    <SelectField label="Periodo fatturazione" className="flex-grow" icon="▦" name="billingPeriodMode" value={billingPeriodMode} disabled={!isDeclared} onChange={setBillingPeriodMode} options={[
                         {value: "SAME_MONTH", label: "Stesso mese"},
                         {value: "NEXT_MONTH", label: "Mese successivo"},
                         {value: "CUSTOM_MONTH", label: "Imposta mese"},
@@ -722,10 +764,10 @@ export default function RecurringExpenseForm({
                     <small>Automazione, canale e banca</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
-                    <div className="switch-toggle-field recurring-switch-control recurring-accrual-toggle">
-                        <div className="switch-toggle-field-label">
+                    <div className="switch-toggle-field recurring-switch-control recurring-accrual-toggle hidden-md-down">
+                        <div className="app-form-field-label switch-toggle-field-label">
                             <span className="app-form-field-icon">⇆</span>
-                            <label> Pagamento automatico</label>
+                            <span>Pagam. autom.</span>
                             <input type="hidden" name="isAutomaticPayment" value={isAutomaticAccrual ? "true" : "false"}/>
                         </div>
                         <label className="switch">
@@ -735,11 +777,28 @@ export default function RecurringExpenseForm({
                                 onChange={(event) => setIsAutomaticAccrual(event.currentTarget.checked)}
                             />
                             <span className="slider"/>
-                            <span className="text-muted ml-12">{isAutomaticAccrual ? "Automatico" : "Manuale"}</span>
+                            <small className="text-muted">{isAutomaticAccrual ? "Automatico" : "Manuale"}</small>
                         </label>
                     </div>
 
-                    <SelectField label="Canale di pagamento" icon="▣" name="paymentMethodId" value={paymentMethodId} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}
+                    <div className="switch-toggle-field switch-inline wide recurring-switch-control recurring-accrual-toggle hidden-md-up full">
+                        <div className="app-form-field-label switch-toggle-field-label">
+                            <span className="app-form-field-icon">⇆</span>
+                            <span>Pag. automatico</span>
+                            <input type="hidden" name="isAutomaticPayment" value={isAutomaticAccrual ? "true" : "false"}/>
+                        </div>
+                        <label className="switch">
+                            <small className="text-muted">{isAutomaticAccrual ? "Automatico" : "Manuale"}</small>
+                            <input
+                                type="checkbox"
+                                checked={isAutomaticAccrual}
+                                onChange={(event) => setIsAutomaticAccrual(event.currentTarget.checked)}
+                            />
+                            <span className="slider"/>
+                        </label>
+                    </div>
+
+                    <SelectField label="Canale di pagamento" className="flex-grow" icon="▣" name="paymentMethodId" value={paymentMethodId} disabled={!isAutomaticAccrual} required={isAutomaticAccrual}
                                  onChange={(nextPaymentMethodId) => {
                                      const nextPaymentMethodName = paymentMethods.find(method => String(method.id) === nextPaymentMethodId)?.name ?? "";
                                      setPaymentMethodId(nextPaymentMethodId);
@@ -758,7 +817,7 @@ export default function RecurringExpenseForm({
                                  }))]}
                     />
                     {cashBankLocked ? <input type="hidden" name="bankId" value={cashBankIdValue}/> : null}
-                    <SelectField label="Banca" icon="▥" name="bankId" value={cashBankLocked ? cashBankIdValue : bankId} disabled={!isAutomaticAccrual || cashBankLocked} required={isAutomaticAccrual && !cashBankLocked} onChange={setBankId}
+                    <SelectField label="Banca" className="flex-grow" icon="▥" name="bankId" value={cashBankLocked ? cashBankIdValue : bankId} disabled={!isAutomaticAccrual || cashBankLocked} required={isAutomaticAccrual && !cashBankLocked} onChange={setBankId}
                                  options={[{value: "", label: "Seleziona banca"}, ...banks.map(bank => ({
                                      value: bank.id,
                                      label: `${bank.icon ?? '•'} ${bank.name}`
