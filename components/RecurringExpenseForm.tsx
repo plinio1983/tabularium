@@ -525,7 +525,7 @@ export default function RecurringExpenseForm({
     }
 
     return (
-        <form ref={formRef} className={`card form app-record-form recurring-record-form recurring-expense-form app-form-wizard recurring-form-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
+        <form ref={formRef} className={`form app-record-form recurring-record-form recurring-expense-form app-form-wizard recurring-form-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
             <div className="app-form-wizard-header full">
                 <div className="app-form-wizard-heading">
                     <span>Passaggio {mobileStep} di 6</span>
