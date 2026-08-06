@@ -15,7 +15,7 @@ const categoryTones: Record<string, string> = {
 export const paymentStatusStyles: Record<string, { label: string; icon: string; className: string }> = {
   DA_PAGARE: { label: 'Non pagato', icon: '⏳', className: 'tone-waiting' },
   COMPLETATO: { label: 'Completato', icon: '✅', className: 'tone-paid' },
-  PAGATO_PARZIALMENTE: { label: 'Parzialmente', icon: '🟡', className: 'tone-partial' },
+  PAGATO_PARZIALMENTE: { label: 'Parziale', icon: '🟡', className: 'tone-partial' },
   SCADUTO: { label: 'SCADUTO', icon: '⛔', className: 'tone-critical' }
 };
 

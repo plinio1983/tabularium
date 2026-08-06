@@ -1173,7 +1173,7 @@ export default function ExpenseForm({
                         <div className="switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
                             <div className="switch-toggle-field-label app-form-field-label">
                                 <span className="app-form-field-icon">⇆</span>
-                                <label>Fattura elettronica</label>
+                                <span>Fattura elettronica</span>
                             </div>
                             <label className="switch">
                                 <input
@@ -1230,8 +1230,12 @@ export default function ExpenseForm({
                         <div className="expense-invoice-step-row app-form-wizard-step app-form-wizard-step-5">
 
                             <label className="app-form-wizard-mobile-switch app-form-field-label switch-toggle-field switch-inline wide">
-                                <span className="app-form-label">Fattura elettronica</span>
+                                <div className="app-form-field-label">
+                                    <span className="app-form-field-icon" aria-hidden="true">⇆</span>
+                                    <span>Fattura elettronica</span>
+                                </div>
                                 <span className="switch">
+                                    <small className="text-muted">{hasElectronicInvoice ? 'Elettronica' : 'PDF'}</small>
                                     <input
                                         type="checkbox"
                                         checked={hasElectronicInvoice}
@@ -1242,17 +1246,17 @@ export default function ExpenseForm({
                                             if (checked) updateDeclared(true);
                                         }}
                                     />
-                                    <small className="text-muted">{hasElectronicInvoice ? 'Elettronica' : 'PDF'}</small>
                                     <span className="slider"/>
                                     </span>
                             </label>
 
                             <label className="mt-12 app-form-wizard-mobile-switch switch-toggle-field switch-inline wide expense-invoice-emitted-switch">
                                 <div className="app-form-field-label">
-                                    <span className="app-form-field-icon" aria-hidden="true">??</span>
+                                    <span className="app-form-field-icon" aria-hidden="true">⇆</span>
                                     <span>Fattura emessa</span>
                                 </div>
                                 <span className="switch">
+                                    <small className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? 'Ricevuta' : invoiceStatus === "PARZIALE" ? "Parziale" : 'Non ricevuta'}</small>
                                     <input
                                         type="checkbox"
                                         checked={isDeclared && invoiceStatus === "RICEVUTA"}
@@ -1265,7 +1269,6 @@ export default function ExpenseForm({
                                             }
                                         }}
                                     />
-                                    <small className="text-muted">{isDeclared && invoiceStatus === "RICEVUTA" ? 'Ricevuta' : invoiceStatus === "PARZIALE" ? "Parziale" : 'Non ricevuta'}</small>
                                     <span className="slider"/>
                                 </span>
                             </label>

@@ -145,6 +145,10 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
         state = '✕ ';
         label = 'NP';
     }
+    if (invoiceStatus === 'PARZIALE') {
+        state = '⏳ ';
+        label += ' [Par]'
+    }
 
     return <span className={badgeClass(style.className)}>{state}{label}</span>;
 }
@@ -331,7 +335,8 @@ export default function ExpensesList({
 
                                     {/*-- Fatttura -->*/}
                                     {!isVatSettlement && expense.isDeclared ?
-                                        <span className="expense-invoice-indicator">{electronicInvoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}
+                                        <span className="expense-invoice-indicator">
+                                            {electronicInvoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}
                                             <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/>
                                         </span> : null}
 
