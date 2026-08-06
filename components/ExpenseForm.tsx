@@ -1085,7 +1085,10 @@ export default function ExpenseForm({
                                     </label>
                                 </div> : null}
                             {!isVatSettlement ? <label className="app-form-wizard-mobile-switch switch-toggle-field expense-fiscal-mobile-control">
-                                <span>Fiscale</span>
+                                <div className="app-form-field-label">
+                                    <span className="app-form-field-icon" aria-hidden="true">⇆</span>
+                                    <span>Fiscale</span>
+                                </div>
                                 <span className="switch">
                                     <input
                                         type="checkbox"

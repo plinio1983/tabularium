@@ -230,14 +230,14 @@
 }
 
 .app-record-form label {
-  display: grid;
-  align-content: start;
-  gap: 8px;
-  min-width: 0;
-  color: #334155;
-  font-size: 13px;
-  font-weight: 850;
-  z-index: 1;
+  //display: grid;
+  //align-content: start;
+  //gap: 8px;
+  //min-width: 0;
+  //color: #334155;
+  //font-size: 13px;
+  //font-weight: 850;
+  //z-index: 1;
 
   @media (max-width: 576px) {
     //grid-column: 1 / -1;

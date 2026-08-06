@@ -2021,6 +2021,7 @@ table th, table td {
   font-weight: 600;
 }
 
+.form .switch-toggle-field,
 .switch-toggle-field {
   display: flex;
   flex-direction: column;
@@ -2039,12 +2040,14 @@ table th, table td {
   box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
 }
 
+.form .switch-toggle-field.wide,
 .switch-toggle-field.wide {
   flex: 1 1 auto;
   max-width: 100% !important;
   width: 100%;
 }
 
+.form .switch-toggle-field.switch-clean,
 .switch-toggle-field.switch-clean {
   padding: 0;
   border: 0;
@@ -2056,6 +2059,7 @@ table th, table td {
   justify-content: stretch;
 }
 
+.form .switch-toggle-field.switch-inline,
 .switch-toggle-field.switch-inline {
   display: flex;
   align-items: center !important;
@@ -2066,6 +2070,7 @@ table th, table td {
   gap: 16px;
 }
 
+.form .switch-toggle-field.switch-inline.push-down,
 .switch-toggle-field.switch-inline.push-down {
   translate: 0 59%;
 
