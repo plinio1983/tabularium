@@ -4087,6 +4087,13 @@
   }
 }
 
+@media (max-width: 690px) {
+  .filter-group.filter-group-order-date,
+  .filter-group.filter-group-fiscal {
+    display: inherit;
+  }
+}
+
 @media (max-width: 576px) {
   .categories-settings-card {
     grid-template-columns: 1fr;
@@ -4144,11 +4151,6 @@
 
   .grid-4, .grid-2, .form {
     grid-template-columns: 1fr;
-  }
-
-  .filter-group.filter-group-order-date,
-  .filter-group.filter-group-fiscal {
-    display: inherit;
   }
 
   .modal-card.modal-card-wide .income-form,
