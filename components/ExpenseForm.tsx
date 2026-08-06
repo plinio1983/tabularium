@@ -103,6 +103,7 @@ type Props = {
     onSaved?: () => void;
     cancelHref?: string;
     onSwitchToRecurring?: () => void;
+    onExpenseTypeChange?: (type: "single" | "vat") => void;
     initialMobileStep?: number;
     openNewPayment?: boolean;
     initialOpenPaymentId?: number;
@@ -428,6 +429,7 @@ export default function ExpenseForm({
                                         onSaved,
                                         cancelHref,
                                         onSwitchToRecurring,
+                                        onExpenseTypeChange,
                                         initialMobileStep = 1,
                                         openNewPayment = false,
                                         initialOpenPaymentId,
@@ -883,6 +885,7 @@ export default function ExpenseForm({
                         onClick={() => {
                             setIsRecurring(false);
                             setIsVatSettlement(false);
+                            onExpenseTypeChange?.("single");
                         }}
                     >
                         <span aria-hidden="true">●</span>
@@ -923,6 +926,7 @@ export default function ExpenseForm({
                         onClick={() => {
                             setIsRecurring(false);
                             setIsVatSettlement(true);
+                            onExpenseTypeChange?.("vat");
                         }}
                     >
                         <span aria-hidden="true">IVA</span>

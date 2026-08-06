@@ -12,6 +12,13 @@ type Props = {
   searchParams: Record<string, string | string[] | undefined>;
 };
 
+function optionLabel(option: MobileSortOption) {
+  const label = option.label.replace(/^[↑↓]\s*/, '');
+  if (option.value.endsWith('_asc')) return `↑ ${label}`;
+  if (option.value.endsWith('_desc')) return `↓ ${label}`;
+  return label;
+}
+
 export default function MobileSortControl({ action, currentValue, options, searchParams }: Props) {
   const selectedValue = options.some(option => option.value === currentValue) ? currentValue : options[0]?.value ?? '';
   const hiddenParams = Object.entries(searchParams).flatMap(([key, value]) => {
@@ -24,7 +31,7 @@ export default function MobileSortControl({ action, currentValue, options, searc
     {hiddenParams.map(([key, value], index) => <input type="hidden" name={key} value={value} key={`${key}-${index}`} />)}
     <label htmlFor={`${action.replace('/', '') || 'list'}MobileSort`}>Ordina per</label>
     <select id={`${action.replace('/', '') || 'list'}MobileSort`} name="mobileSort" defaultValue={selectedValue} aria-label="Ordina lista mobile" onChange={event => event.currentTarget.form?.requestSubmit()}>
-      {options.map(option => <option value={option.value} key={option.value}>{option.label}</option>)}
+      {options.map(option => <option value={option.value} key={option.value}>{optionLabel(option)}</option>)}
     </select>
   </form>;
 }

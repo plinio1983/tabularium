@@ -16,6 +16,7 @@ type Customer = { id: number; businessName: string; alias?: string | null; syste
 type Initial = Record<string, any>;
 const labels = ['Ricorrenza', 'Dettagli', 'Importo', 'Accredito', 'Riepilogo'];
 const monthOptions = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+const dayOptions = Array.from({length: 30}, (_, index) => ({value: index + 1, label: String(index + 1)}));
 
 export default function RecurringIncomeForm({
                                                 action,
@@ -57,7 +58,7 @@ export default function RecurringIncomeForm({
     const [startDate, setStartDate] = useState(initial?.startDate ? new Date(initial.startDate).toISOString().slice(0, 10) : today);
     const [hasEndDate, setHasEndDate] = useState(Boolean(initial?.endDate));
     const [endDate, setEndDate] = useState(initial?.endDate ? new Date(initial.endDate).toISOString().slice(0, 10) : '');
-    const [creditDay, setCreditDay] = useState(String(initial?.creditDay ?? currentParts?.day ?? 1));
+    const [creditDay, setCreditDay] = useState(String(Math.min(30, initial?.creditDay ?? currentParts?.day ?? 1)));
     const [creditMonth, setCreditMonth] = useState(String(initial?.creditMonth ?? currentParts?.month ?? 1));
     const [channelId, setChannelId] = useState(String(initial?.salesChannelId ?? channels[0]?.id ?? ''));
     const [methodId, setMethodId] = useState(String(initial?.paymentMethodId ?? ''));
@@ -171,7 +172,7 @@ export default function RecurringIncomeForm({
                     value: 'YEARLY',
                     label: 'Annuale'
                 }, {value: 'EVERY_2_YEARS', label: 'Ogni 2 anni'}]}/>
-                <FormField label="Giorno accredito" icon="№"><input type="number" name="creditDay" min="1" max="31" value={creditDay} onChange={event => setCreditDay(event.currentTarget.value)} required/></FormField>
+                <SelectField label="Giorno accredito" icon="№" name="creditDay" value={creditDay} onChange={setCreditDay} required options={dayOptions}/>
                 {['YEARLY', 'EVERY_2_YEARS'].includes(cadence) ?
                     <SelectField label="Mese accredito" icon="▦" name="creditMonth" value={creditMonth} onChange={setCreditMonth} required options={monthOptions.map((label, index) => ({
                         value: index + 1,

@@ -507,10 +507,10 @@ export default function IncomeForm({
                                 <label className="income-amount-field">
                                     <div className="app-form-field-label">
                                         <span className="app-form-field-icon">€</span>
-                                        <label className="app-form-label">
+                                        <span className="app-form-label">
                                             <span className="hidden-sm-down">Importo IVA inclusa</span>
                                             <span className="hidden-sm-up">Importo</span>
-                                        </label>
+                                        </span>
                                     </div>
                                     {/*<div>Importo <span className="hidden-sp">IVA inclusa</span></div>*/}
                                     <div className="income-amount-row">

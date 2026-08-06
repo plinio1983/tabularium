@@ -2866,16 +2866,6 @@
     min-width: 0;
   }
 
-  .recurring-review-summary {
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  .recurring-review-summary .record-review-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .expense-review-attachments-button {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;

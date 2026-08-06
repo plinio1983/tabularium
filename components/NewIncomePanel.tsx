@@ -23,6 +23,9 @@ export default function NewIncomePanel({ initialOpen = false, initialType = 'sin
   const [creationType, setCreationType] = useState<'single' | 'recurring'>(initialType);
   const [creationKey, setCreationKey] = useState(0);
   const [returnAction, setReturnAction] = useState('/api/incomes');
+  const modalCopy = creationType === 'recurring'
+    ? { title: 'Nuovo incasso ricorrente', description: 'Configura un nuovo incasso ricorrente.' }
+    : { title: 'Nuovo incasso singolo', description: 'Inserisci un nuovo incasso singolo.' };
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -60,12 +63,12 @@ export default function NewIncomePanel({ initialOpen = false, initialType = 'sin
         </button>
       </div> : null}
 
-      {isOpen ? <div className="modal-backdrop app-form-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label="Inserisci incasso" onMouseDown={() => setIsOpen(false)}>
+      {isOpen ? <div className="modal-backdrop app-form-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={modalCopy.title} onMouseDown={() => setIsOpen(false)}>
         <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
           <div className="modal-title">
             <div>
-              <h3>{creationType === 'recurring' ? 'Nuova ricorrente' : 'Nuovo incasso'}</h3>
-              <p className="muted">{creationType === 'recurring' ? 'Configura una nuova entrata ricorrente.' : 'Inserisci un nuovo incasso.'}</p>
+              <h3>{modalCopy.title}</h3>
+              <p className="muted">{modalCopy.description}</p>
             </div>
             <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
           </div>

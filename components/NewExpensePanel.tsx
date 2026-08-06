@@ -55,6 +55,13 @@ export default function NewExpensePanel({
     const [isOpen, setIsOpen] = useState(initialOpen);
     const [returnAction, setReturnAction] = useState('/api/expenses');
     const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
+    const [creationType, setCreationType] = useState<'single' | 'recurring' | 'vat'>('single');
+
+    const modalCopy = creationType === 'recurring'
+        ? {title: 'Nuova spesa ricorrente', description: 'Configura una nuova spesa ricorrente.'}
+        : creationType === 'vat'
+            ? {title: 'Nuovo saldo IVA', description: 'Inserisci un nuovo versamento IVA.'}
+            : {title: 'Nuova spesa singola', description: 'Inserisci una nuova spesa singola.'};
 
     useEffect(() => {
         const url = new URL(window.location.href);
@@ -109,14 +116,15 @@ export default function NewExpensePanel({
                 <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
                     <div className="modal-title">
                         <div>
-                            <h3>Nuova spesa</h3>
-                            <p className="muted">Inserisci una nuova spesa singola o ricorrente.</p>
+                            <h3>{modalCopy.title}</h3>
+                            <p className="muted">{modalCopy.description}</p>
                         </div>
                         <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
                     </div>
                     <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods}
                                              suppliers={suppliers} initialExpense={initialExpense} expenseAction={returnAction}
-                                             recurringAction={recurringAction} onCancel={() => setIsOpen(false)} onSaved={handleSaved}/>
+                                             recurringAction={recurringAction} onTypeChange={setCreationType}
+                                             onCancel={() => setIsOpen(false)} onSaved={handleSaved}/>
                 </div>
             </div> : null}
     </div>;

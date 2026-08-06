@@ -403,7 +403,7 @@ export default function RecurringExpenseForm({
     const [startDate, setStartDate] = useState(toDateInput(initialExpense?.startDate) || today);
     const [hasEndDate, setHasEndDate] = useState(Boolean(initialExpense?.endDate));
     const [endDate, setEndDate] = useState(toDateInput(initialExpense?.endDate));
-    const [dueDay, setDueDay] = useState(String(initialExpense?.dueDay ?? 1));
+    const [dueDay, setDueDay] = useState(String(Math.min(30, initialExpense?.dueDay ?? 1)));
     const [dueMonth, setDueMonth] = useState(String(initialExpense?.dueMonth ?? currentMonth));
     const [categoryId, setCategoryId] = useState(String(initialExpense?.categoryId ?? ""));
     const [supplierName, setSupplierName] = useState(
@@ -593,18 +593,20 @@ export default function RecurringExpenseForm({
 
                     {isYearly ? (
                         <>
-                            <FormField className="app-form-wizard-step app-form-wizard-step-1" label="Giorno scadenza" icon="№">
-                                <input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required/>
-                            </FormField>
+                            <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Giorno scadenza" icon="№" name="dueDay" value={dueDay} onChange={setDueDay} required options={Array.from({length: 30}, (_, index) => ({
+                                value: index + 1,
+                                label: String(index + 1)
+                            }))}/>
                             <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Mese scadenza" icon="▦" name="dueMonth" value={dueMonth} onChange={setDueMonth} required options={monthOptions.map(([value, label]) => ({
                                 value,
                                 label
                             }))}/>
                         </>
                     ) : (
-                        <FormField className="app-form-wizard-step app-form-wizard-step-1" label="Giorno del mese" icon="№">
-                            <input type="number" name="dueDay" min="1" max="31" value={dueDay} onChange={event => setDueDay(event.currentTarget.value)} required/>
-                        </FormField>
+                        <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Giorno del mese" icon="№" name="dueDay" value={dueDay} onChange={setDueDay} required options={Array.from({length: 30}, (_, index) => ({
+                            value: index + 1,
+                            label: String(index + 1)
+                        }))}/>
                     )}
                     <div className="app-form-field app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide push-down">
                         <div className="switch-toggle-field-label app-form-field-label">
@@ -832,7 +834,7 @@ export default function RecurringExpenseForm({
                     <small>Note interne opzionali</small>
                 </summary>
                 <div className="form-section-stack">
-                    <section className="recurring-review-summary" aria-label="Riepilogo spesa ricorrente">
+                    <section className="recurring-review-summary record-review-step" aria-label="Riepilogo spesa ricorrente">
                         <div className="record-review-heading">
                             <div><span className="record-review-kicker">Controlla prima di salvare</span>
                                 <h3>Riepilogo della ricorrenza</h3></div>
