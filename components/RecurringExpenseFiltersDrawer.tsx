@@ -51,8 +51,8 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
   }, [open]);
 
   return <>
-    <button className="btn btn-sm btn-default recurring-filter-trigger" type="button" onClick={() => setOpen(true)}>
-      <span className="btn-icon"><FilterIcon /></span> <span className="recurring-filter-trigger-text">Filtri</span>
+    <button className="btn btn-sm btn-default app-filter-trigger" type="button" onClick={() => setOpen(true)}>
+      <span className="btn-icon"><FilterIcon /></span> <span className="app-filter-trigger-text">Filtri</span>
     </button>
 
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>

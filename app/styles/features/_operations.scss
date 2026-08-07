@@ -721,13 +721,45 @@
 
 .cash-register-receipt-period-nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
   gap: 10px;
   min-width: 0;
 }
 
+.cash-register-receipt-month-scroller {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.button-group-scroller {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.button-group-scroll-control {
+  display: none;
+  flex: 0 0 28px;
+  width: 28px;
+  min-width: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+}
+
 .cash-register-receipt-month-group {
   flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cash-register-receipt-period-nav > .year-navigation-select {
+  align-self: center;
 }
 
 .cash-register-receipt-month-group > .btn {
@@ -1310,5 +1342,3 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 .dashboard-monthly-mobile {
   display: none;
 }
-
-

@@ -19,7 +19,8 @@ export async function GET(_request: Request, {params}: { params: Promise<{ id: s
       taxCodeSdi: true,
       swift: true,
       internalNotes: true,
-      defaultExpenseCategoryId: true
+      defaultExpenseCategoryId: true,
+      defaultVatRate: true
     }
   });
   if (!supplier) return NextResponse.json({error: 'Fornitore non trovato'}, {status: 404});

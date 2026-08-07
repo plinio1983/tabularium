@@ -9,6 +9,10 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
   const current = await requireWorkspace('/expenses/new');
   const params = (await searchParams) ?? {};
   const copyIdValue = Array.isArray(params.copyId) ? params.copyId[0] : params.copyId;
+  const requestedTypeValue = Array.isArray(params.type) ? params.type[0] : params.type;
+  const requestedType = requestedTypeValue === 'recurring' || requestedTypeValue === 'vat' || requestedTypeValue === 'tax'
+    ? requestedTypeValue
+    : 'single';
   const rawReturnTo = Array.isArray(params.returnTo) ? params.returnTo[0] : params.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/expenses';
   const encodedReturnTo = encodeURIComponent(returnTo);
@@ -40,9 +44,11 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
-      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, systemRole: s.systemRole }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null, systemRole: s.systemRole }))}
       expenseAction={`/api/expenses?returnTo=${encodedReturnTo}`}
       recurringAction={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}
+      initialType={copyExpense ? (copyExpense.expenseType === 'VAT_SETTLEMENT' ? 'vat' : copyExpense.expenseType === 'TAX_CONTRIBUTION' ? 'tax' : 'single') : requestedType}
+      skipTypeStep={Boolean(copyExpense || requestedTypeValue)}
       title={copyExpense ? 'Nuova spesa da copia' : 'Nuova spesa'}
       cancelHref={returnTo}
       submitLabel={copyExpense ? 'Salve spesa copiata' : 'Salva spesa'}

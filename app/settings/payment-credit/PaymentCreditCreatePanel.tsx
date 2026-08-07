@@ -36,7 +36,7 @@ export default function PaymentCreditCreatePanel({ action, type, iconOptions }: 
       </span>
       <span className="category-create-toggle-symbol" aria-hidden="true">{isOpen ? '−' : '+'}</span>
     </button>
-    {isOpen ? <form action={action} className="form app-record-form category-create-form expense-category-create-form payment-credit-create-form">
+    {isOpen ? <form action={action} className="form app-record-form category-create-form settings-entity-create-form payment-credit-create-form">
       <label className="app-form-field"><span className="app-form-field-label">{isBank ? 'Nome banca o canale' : 'Nome metodo'}</span><input name="name" maxLength={80} required /></label>
       <label className="app-form-field"><span className="app-form-field-label">Icona</span><select name="icon" defaultValue="">
         <option value="">Nessuna</option>

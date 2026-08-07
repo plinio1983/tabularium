@@ -1,4 +1,5 @@
 import type {ReactNode} from 'react';
+import {supplierDefaultVatRates} from '@/lib/supplier-defaults';
 
 type CategoryOption = {id: number; name: string; icon?: string | null};
 
@@ -13,6 +14,7 @@ type SupplierValues = {
   swift?: string | null;
   internalNotes?: string | null;
   defaultExpenseCategoryId?: number | null;
+  defaultVatRate?: string | number | {toString(): string} | null;
 };
 
 function Field({name, label, icon, className = '', children}: {
@@ -73,6 +75,15 @@ export default function SupplierFormFields({supplier, categories}: {
               {categories.map(category => <option key={category.id} value={category.id}>
                 {category.icon ? `${category.icon} ${category.name}` : category.name}
               </option>)}
+            </select>
+            <span className="app-select-caret" aria-hidden="true">⌄</span>
+          </div>
+        </Field>
+        <Field name="defaultVatRate" label="Aliquota IVA predefinita" icon="%">
+          <div className="app-select-control">
+            <select id="supplier-defaultVatRate" name="defaultVatRate" defaultValue={supplier?.defaultVatRate?.toString() ?? ''}>
+              <option value="">Nessuna aliquota</option>
+              {supplierDefaultVatRates.map(rate => <option key={rate} value={rate}>{rate}%</option>)}
             </select>
             <span className="app-select-caret" aria-hidden="true">⌄</span>
           </div>

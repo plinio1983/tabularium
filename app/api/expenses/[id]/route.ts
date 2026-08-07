@@ -19,9 +19,10 @@ const ExpenseSchema = z.object({
   categoryId: z.coerce.number().optional().nullable(),
   description: z.string().min(1),
   amount: z.coerce.number().nonnegative(),
-  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT']).default('STANDARD'),
+  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT', 'TAX_CONTRIBUTION']).default('STANDARD'),
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
+  affectsFiscalProfit: BooleanFromForm.default(false),
   isRecurring: BooleanFromForm.default(false),
   hasElectronicInvoice: BooleanFromForm.default(false),
   invoiceStatus: z.enum(['NON_PREVISTA', 'IN_ATTESA', 'INVIATA_SDI', 'CONTESTAZIONE', 'PARZIALE', 'RICEVUTA']).default('IN_ATTESA'),
@@ -118,7 +119,30 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const action = String(raw._action || 'update');
   const returnTo = new URL(request.url).searchParams.get('returnTo');
   if (action === 'delete') {
-    const deleted = await prisma.expense.deleteMany({ where: { id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id } });
+    const expense = await prisma.expense.findFirst({
+      where: {id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id},
+      select: {recurringExpenseId: true, recurringExpensePeriodKey: true}
+    });
+    const deleted = expense
+      ? await prisma.$transaction(async tx => {
+          if (expense.recurringExpenseId && expense.recurringExpensePeriodKey) {
+            await tx.recurringExpenseExclusion.upsert({
+              where: {
+                recurringExpenseId_periodKey: {
+                  recurringExpenseId: expense.recurringExpenseId,
+                  periodKey: expense.recurringExpensePeriodKey
+                }
+              },
+              create: {
+                recurringExpenseId: expense.recurringExpenseId,
+                periodKey: expense.recurringExpensePeriodKey
+              },
+              update: {}
+            });
+          }
+          return tx.expense.deleteMany({where: {id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id}});
+        })
+      : {count: 0};
     if (deleted.count) await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
       entityType: 'Expense', entityId: expenseId, request
@@ -133,7 +157,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return redirectToPath(appendFlash(target, { error: 'not_found' }));
   }
   const isVatSettlement = existing.expenseType === 'VAT_SETTLEMENT';
-  const invoiceFields = isVatSettlement
+  const isTaxContribution = existing.expenseType === 'TAX_CONTRIBUTION';
+  const invoiceFields = isVatSettlement || isTaxContribution
     ? { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const }
     : normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data.billingPeriod, current.company.timeZone);
@@ -201,6 +226,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
       vatRate: isVatSettlement || !invoiceFields.isDeclared ? 0 : data.vatRate,
       isDeclared: invoiceFields.isDeclared,
+      affectsFiscalProfit: isTaxContribution ? data.affectsFiscalProfit : false,
       isRecurring: nextIsRecurring,
       hasElectronicInvoice: invoiceFields.hasElectronicInvoice,
       invoiceStatus: invoiceFields.invoiceStatus,

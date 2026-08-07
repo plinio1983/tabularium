@@ -19,6 +19,7 @@ export type CreatedSupplier = {
     internalNotes?: string | null;
     systemRole?: string | null;
     defaultExpenseCategoryId?: number | null;
+    defaultVatRate?: string | number | null;
 };
 
 type Props = {

@@ -1927,6 +1927,7 @@ export default async function Dashboard({searchParams}: {
                 taxCodeSdi: s.taxCodeSdi,
                 internalNotes: s.internalNotes,
                 defaultExpenseCategoryId: s.defaultExpenseCategoryId,
+                defaultVatRate: s.defaultVatRate?.toString() ?? null,
                 systemRole: s.systemRole
             }))}
             showToolbar={false}

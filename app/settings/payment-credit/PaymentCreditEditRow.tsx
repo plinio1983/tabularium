@@ -94,8 +94,8 @@ export default function PaymentCreditEditRow({
     }
 
     return <div className={`payment-credit-row-shell ${kind ? 'payment-credit-method-row-shell' : 'payment-credit-bank-row-shell'}`}>
-        <div className={`payment-credit-display-row expense-category-settings-item ${kind ? 'payment-credit-method-display-row' : 'payment-credit-bank-display-row'}`}>
-            <div className="payment-credit-display-name-wrap expense-category-settings-copy">
+        <div className={`payment-credit-display-row settings-entity-item ${kind ? 'payment-credit-method-display-row' : 'payment-credit-bank-display-row'}`}>
+            <div className="payment-credit-display-name-wrap settings-entity-copy">
                 <strong className="payment-credit-display-name">
                     {name}&nbsp;&nbsp;
                     {protectedFromDelete ? <span className="badge tone-neutral">Sistema</span> : null}
@@ -114,7 +114,7 @@ export default function PaymentCreditEditRow({
                     {primary ? <span className="badge">Principale</span> : null}
                 </div> : null}
             </div>
-            <span className="payment-credit-display-icon expense-category-settings-icon" aria-label={icon ? `Icona ${icon}` : 'Nessuna icona'}>{icon ?? '  •  '}</span>
+            <span className="payment-credit-display-icon settings-entity-icon" aria-label={icon ? `Icona ${icon}` : 'Nessuna icona'}>{icon ?? '  •  '}</span>
             <span className="payment-credit-display-kind hidden-mobile">{kindLabel}</span>
             {kind ? null : <form action={updateAction} className="payment-credit-primary-switch-form switch-toggle-field switch-clean switch-inline">
                 <input type="hidden" name="id" value={id}/>
@@ -133,7 +133,7 @@ export default function PaymentCreditEditRow({
                 </label>
             </form>}
             <span className="payment-credit-display-usage"><strong>{usageCount}</strong> {usageCount === 1 ? '' : ''}</span>
-            <div className="payment-credit-display-actions expense-category-settings-actions">
+            <div className="payment-credit-display-actions settings-entity-actions">
                 {protectedFromDelete
                     ? null
                     : <form action={deleteAction}>

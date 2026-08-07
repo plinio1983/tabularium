@@ -136,6 +136,10 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
       const errorsBefore = result.errors.length;
       const companyToday = startOfDay(new Date(`${dateInputInTimeZone(recurringExpense.company.timeZone, todayInput)}T00:00:00Z`));
       const dueDates = calculateDueDates(recurringExpense, companyToday);
+      const excludedPeriodKeys = new Set((await prisma.recurringExpenseExclusion.findMany({
+        where: {recurringExpenseId: recurringExpense.id},
+        select: {periodKey: true}
+      })).map(exclusion => exclusion.periodKey));
 
       if (!dueDates.length) {
         result.skipped += 1;
@@ -154,6 +158,11 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
 
         const billingPeriod = billingPeriodFromDueDate(recurringExpense, dueDate);
         const recurringExpensePeriodKey = periodKey(billingPeriod.year, billingPeriod.month);
+
+        if (excludedPeriodKeys.has(recurringExpensePeriodKey)) {
+          result.skipped += 1;
+          continue;
+        }
 
         const existing = await prisma.expense.findFirst({
           where: {

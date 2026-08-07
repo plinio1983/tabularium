@@ -5,6 +5,7 @@ import { getWorkspaceApiAccess, getWorkspaceContext, workspaceOperationalRoles }
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { writeAuditLog } from '@/lib/audit';
+import {isSupplierDefaultVatRate} from '@/lib/supplier-defaults';
 
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -16,7 +17,8 @@ const SupplierSchema = z.object({
   alias: z.string().trim().optional().transform(value => value || null),
   swift: z.string().trim().optional().transform(value => value || null),
   internalNotes: z.string().trim().optional().transform(value => value || null),
-  defaultExpenseCategoryId: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().int().positive().nullable())
+  defaultExpenseCategoryId: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().int().positive().nullable()),
+  defaultVatRate: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().refine(isSupplierDefaultVatRate, 'Aliquota IVA non valida').nullable())
 });
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {

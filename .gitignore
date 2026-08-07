@@ -26,6 +26,12 @@ prisma/migrations/*
 !prisma/migrations/20260802180000_income_attachments/
 !prisma/migrations/20260802180000_income_attachments/migration.sql
 !prisma/migrations/20260802150000_company_time_zone/migration.sql
+!prisma/migrations/20260807100000_tax_contribution_expense/
+!prisma/migrations/20260807100000_tax_contribution_expense/migration.sql
+!prisma/migrations/20260807130000_recurring_expense_exclusions/
+!prisma/migrations/20260807130000_recurring_expense_exclusions/migration.sql
+!prisma/migrations/20260807160000_supplier_default_vat_rate/
+!prisma/migrations/20260807160000_supplier_default_vat_rate/migration.sql
 !prisma/migrations/20260728120000_multi_company_accounting/
 !prisma/migrations/20260728120000_multi_company_accounting/migration.sql
 !prisma/migrations/20260728183000_supplier_swift/

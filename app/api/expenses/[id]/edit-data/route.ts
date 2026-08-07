@@ -39,6 +39,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       hasElectronicInvoice: expense.hasElectronicInvoice,
       invoiceStatus: expense.invoiceStatus,
       isDeclared: expense.isDeclared,
+      affectsFiscalProfit: expense.affectsFiscalProfit,
       isRecurring: expense.isRecurring,
       notes: expense.notes,
       attachments: expense.attachments.map(attachment => ({

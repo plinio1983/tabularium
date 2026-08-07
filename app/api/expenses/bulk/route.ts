@@ -250,7 +250,25 @@ export async function POST(request: Request) {
   }
 
   if (action === 'delete') {
-    const deleted = await prisma.expense.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id, companyId: current.company.id } });
+    const expenses = await prisma.expense.findMany({
+      where: {id: {in: ids}, workspaceId: current.workspace.id, companyId: current.company.id},
+      select: {recurringExpenseId: true, recurringExpensePeriodKey: true}
+    });
+    const exclusions = expenses.flatMap(expense =>
+      expense.recurringExpenseId && expense.recurringExpensePeriodKey
+        ? [{recurringExpenseId: expense.recurringExpenseId, periodKey: expense.recurringExpensePeriodKey}]
+        : []
+    );
+    const deleted = await prisma.$transaction(async tx => {
+      for (const exclusion of exclusions) {
+        await tx.recurringExpenseExclusion.upsert({
+          where: {recurringExpenseId_periodKey: exclusion},
+          create: exclusion,
+          update: {}
+        });
+      }
+      return tx.expense.deleteMany({where: {id: {in: ids}, workspaceId: current.workspace.id, companyId: current.company.id}});
+    });
     await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_DELETE',
       entityType: 'Expense', metadata: { ids, deleted: deleted.count }, request

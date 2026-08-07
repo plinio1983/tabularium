@@ -26,7 +26,7 @@ export default function CategoryCreatePanel({ action, iconOptions }: Props) {
       </span>
       <span className="category-create-toggle-state" aria-hidden="true">{isOpen ? '−' : '+'}</span>
     </button>
-    {isOpen ? <form action={action} className="form app-record-form category-create-form expense-category-create-form">
+    {isOpen ? <form action={action} className="form app-record-form category-create-form settings-entity-create-form">
       <div className="app-form-field span-2">
         <label className="app-form-field-label" htmlFor="new-expense-category-name">
           <span className="app-form-field-icon" aria-hidden="true">✎</span>

@@ -216,7 +216,7 @@ export default function RecurringIncomeForm({
                             <label className="recurring-wizard-amount-field"><span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">€</span><span>Importo IVA inclusa</span></span>
                                 <div>
                                     <div className="money-input">
-                                        <span>€</span><CurrencyInput ref={amountRef} value={amount} onValueChange={value => {
+                                        <span>€</span><CurrencyInput ref={amountRef} value={amount} suppressSoftKeyboard onValueChange={value => {
                                         amountRef.current?.setCustomValidity('');
                                         setAmount(value);
                                     }} required aria-label="Importo entrata ricorrente"/></div>

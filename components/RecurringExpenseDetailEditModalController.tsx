@@ -14,6 +14,8 @@ type SupplierOption = {
   pec?: string | null;
   taxCodeSdi?: string | null;
   internalNotes?: string | null;
+  defaultExpenseCategoryId?: number | null;
+  defaultVatRate?: string | number | null;
 };
 
 type EditRecurringExpense = {
@@ -107,6 +109,7 @@ export default function RecurringExpenseDetailEditModalController({ categories, 
           paymentMethods={paymentMethods}
           suppliers={suppliers}
           action={`/api/recurring-expenses/${expense.id}?returnTo=${encodeURIComponent(returnTo)}`}
+          mobileStepOffset={1}
           initialExpense={expense}
           onCancel={() => setExpense(null)}
         />

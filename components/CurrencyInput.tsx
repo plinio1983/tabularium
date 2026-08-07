@@ -1,11 +1,12 @@
 'use client';
 
-import { forwardRef, type InputHTMLAttributes, type KeyboardEvent, useRef } from "react";
+import { forwardRef, type InputHTMLAttributes, type KeyboardEvent, type PointerEvent, useRef } from "react";
 import { applyCurrencyInputKeyWithState, formatCurrencyInput } from "@/lib/currency-input";
 
 type CurrencyInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "value" | "defaultValue" | "onChange"> & {
   value: string | number;
   onValueChange: (value: string) => void;
+  suppressSoftKeyboard?: boolean;
 };
 
 function moveCaretToEnd(input: HTMLInputElement) {
@@ -16,7 +17,7 @@ function moveCaretToEnd(input: HTMLInputElement) {
 }
 
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(function CurrencyInput(
-  { value, onValueChange, onKeyDown, onFocus, onClick, onPaste, ...props },
+  { value, onValueChange, suppressSoftKeyboard = false, onKeyDown, onFocus, onClick, onPaste, onPointerDown, ...props },
   ref,
 ) {
   const keyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
@@ -36,11 +37,18 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
     moveCaretToEnd(event.currentTarget);
   }
 
+  function handlePointerDown(event: PointerEvent<HTMLInputElement>) {
+    onPointerDown?.(event);
+    if (!event.defaultPrevented && suppressSoftKeyboard && event.pointerType === "touch") {
+      event.preventDefault();
+    }
+  }
+
   return <input
     {...props}
     ref={ref}
     type="text"
-    inputMode="decimal"
+    inputMode={suppressSoftKeyboard ? "none" : "decimal"}
     value={formatCurrencyInput(value)}
     onChange={event => {
       keyStateRef.current.separatorDigits = null;
@@ -49,9 +57,14 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
     }}
     onKeyDown={handleKeyDown}
     onFocus={event => {
+      if (suppressSoftKeyboard && window.matchMedia("(max-width: 900px)").matches) {
+        event.currentTarget.blur();
+        return;
+      }
       onFocus?.(event);
       moveCaretToEnd(event.currentTarget);
     }}
+    onPointerDown={handlePointerDown}
     onClick={event => {
       onClick?.(event);
       moveCaretToEnd(event.currentTarget);

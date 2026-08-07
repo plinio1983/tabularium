@@ -132,6 +132,11 @@ function isExpenseOverdue(expense: any) {
   return expenseResidualAmount(expense) > 0;
 }
 
+export function expenseAffectsFiscalProfit(expense: {expenseType?: unknown; isDeclared?: boolean; affectsFiscalProfit?: boolean}) {
+  return expense.expenseType !== 'VAT_SETTLEMENT'
+    && (expense.isDeclared || expense.affectsFiscalProfit);
+}
+
 function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
   const incassoTotale = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
   const nonAccreditato = incomes.reduce((sum, income) => sum + incomeCreditSummary(income).residual, 0);
@@ -139,10 +144,10 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
   const incassoNonFiscale = incassoTotale - incassoFiscale;
 
   const speseTotali = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
-  const speseInDetrazione = expenses.reduce((sum, expense) => expense.expenseType !== 'VAT_SETTLEMENT' && expense.isDeclared ? sum + Number(expense.amount) : sum, 0);
-  const usciteNonFiscali = expenses.reduce((sum, expense) => expense.expenseType !== 'VAT_SETTLEMENT' && !expense.isDeclared ? sum + Number(expense.amount) : sum, 0);
+  const speseInDetrazione = expenses.reduce((sum, expense) => expenseAffectsFiscalProfit(expense) ? sum + Number(expense.amount) : sum, 0);
+  const usciteNonFiscali = expenses.reduce((sum, expense) => expense.expenseType !== 'VAT_SETTLEMENT' && !expenseAffectsFiscalProfit(expense) ? sum + Number(expense.amount) : sum, 0);
   const usciteFiscali = speseInDetrazione;
-  const openTotalExpenses = options.declaredExpensesOnlyForOpenTotals ? expenses.filter(expense => expense.isDeclared) : expenses;
+  const openTotalExpenses = options.declaredExpensesOnlyForOpenTotals ? expenses.filter(expenseAffectsFiscalProfit) : expenses;
   const nonSaldato = openTotalExpenses.reduce((sum, expense) => sum + expenseResidualAmount(expense), 0);
   const fattureScadute = openTotalExpenses.reduce((sum, expense) => {
     if (!isExpensePastDue(expense, new Date(), options.timeZone)) return sum;

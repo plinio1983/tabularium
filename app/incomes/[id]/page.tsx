@@ -230,9 +230,9 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         <div><h2>Allegati</h2><p>Fatture, documenti e ricevute collegati all’incasso.</p></div>
                         <button className="btn btn-sm btn-default" type="button" data-income-attachments-id={income.id}>✎ Gestisci</button>
                     </div>
-                    {income.attachments.length ? <div className="expense-attachment-panel">
-                        {income.attachments.map(attachment => <a className="expense-attachment-item" href={`/api/income-attachments/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id}>
-                            <span className="expense-attachment-icon">{attachment.type === 'INVOICE' ? '▤' : attachment.type === 'PAYMENT_RECEIPT' ? '€' : '📄'}</span>
+                    {income.attachments.length ? <div className="record-attachment-panel">
+                        {income.attachments.map(attachment => <a className="record-attachment-item" href={`/api/income-attachments/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id}>
+                            <span className="record-attachment-icon">{attachment.type === 'INVOICE' ? '▤' : attachment.type === 'PAYMENT_RECEIPT' ? '€' : '📄'}</span>
                             <span><strong>{attachment.originalName}</strong><small>{attachment.type === 'INVOICE' ? 'Fattura' : attachment.type === 'PAYMENT_RECEIPT' ? 'Ricevuta accredito' : 'Documento'} · {attachment.sizeBytes ? `${Math.max(1, Math.round(attachment.sizeBytes / 1024))} KB` : 'Apri allegato'}</small></span>
                         </a>)}
                     </div> : <p className="muted">Nessun allegato inserito.</p>}

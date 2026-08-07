@@ -17,11 +17,13 @@ type SupplierOption = {
   internalNotes?: string | null;
   systemRole?: string | null;
   defaultExpenseCategoryId?: number | null;
+  defaultVatRate?: string | number | null;
 };
 
 type EditExpense = {
   id: number;
-  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER";
+  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION";
+  affectsFiscalProfit?: boolean;
   receivedDate?: string | Date | null;
   dueDate?: string | Date | null;
   supplierId?: number | null;
@@ -164,6 +166,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
           suppliers={suppliers}
           initialExpense={expense}
           initialMobileStep={mode === "payment" ? 4 : 1}
+          mobileStepOffset={1}
           openNewPayment={mode === "payment"}
         />
       </div>

@@ -9,6 +9,7 @@ import {dateInputInTimeZone, zonedCalendarParts} from '@/lib/company-time';
 import SupplierCreateModal from "@/components/SupplierCreateModal";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
+import {resolveSupplierDefaultVatRate} from '@/lib/supplier-defaults';
 
 type Option = {
     id: number;
@@ -30,6 +31,8 @@ type SupplierOption = {
     taxCodeSdi?: string | null;
     swift?: string | null;
     internalNotes?: string | null;
+    defaultExpenseCategoryId?: number | null;
+    defaultVatRate?: string | number | {toString(): string} | null;
 };
 type InitialRecurringExpense = {
     id?: number | null;
@@ -67,6 +70,9 @@ type Props = {
     cancelHref?: string;
     onSwitchToSingle?: () => void;
     onSwitchToVatSettlement?: () => void;
+    onSwitchToTaxContribution?: () => void;
+    mobileStepOffset?: number;
+    onBackToType?: () => void;
 };
 
 const cashChannel = "Cash";
@@ -117,12 +123,14 @@ function SupplierAutocomplete({
                                   initialSupplierId,
                                   initialMerchant,
                                   onValueChange,
+                                  onSupplierSelected,
                                   categories = [],
                               }: {
     suppliers?: SupplierOption[];
     initialSupplierId?: number | null;
     initialMerchant?: string | null;
     onValueChange?: (value: string) => void;
+    onSupplierSelected?: (supplier: SupplierOption) => void;
     categories?: Option[];
 }) {
     const initial = suppliers.find((supplier) => supplier.id === initialSupplierId) ?? null;
@@ -163,6 +171,7 @@ function SupplierAutocomplete({
         setSelected(supplier);
         setQuery(supplier.businessName);
         onValueChange?.(supplier.businessName);
+        onSupplierSelected?.(supplier);
         setIsOpen(false);
     }
 
@@ -372,6 +381,9 @@ export default function RecurringExpenseForm({
                                                  cancelHref,
                                                  onSwitchToSingle,
                                                  onSwitchToVatSettlement,
+                                                 onSwitchToTaxContribution,
+                                                 mobileStepOffset = 0,
+                                                 onBackToType,
                                              }: Props) {
     const isExistingExpense = Boolean(initialExpense?.id);
     const timeZone = useCompanyTimeZone();
@@ -398,14 +410,21 @@ export default function RecurringExpenseForm({
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [mobileStep, setMobileStep] = useState(1);
+    const initialSupplier = suppliers.find(supplier => supplier.id === initialExpense?.supplierId);
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
-    const [vatRate, setVatRate] = useState(normalizeMoney(initialExpense?.vatRate) || "22");
+    const [vatRate, setVatRate] = useState(
+        initialExpense?.vatRate != null
+            ? normalizeMoney(initialExpense.vatRate)
+            : initialSupplier?.defaultVatRate != null
+                ? normalizeMoney(initialSupplier.defaultVatRate)
+                : "22",
+    );
     const [startDate, setStartDate] = useState(toDateInput(initialExpense?.startDate) || today);
     const [hasEndDate, setHasEndDate] = useState(Boolean(initialExpense?.endDate));
     const [endDate, setEndDate] = useState(toDateInput(initialExpense?.endDate));
     const [dueDay, setDueDay] = useState(String(Math.min(30, initialExpense?.dueDay ?? 1)));
     const [dueMonth, setDueMonth] = useState(String(initialExpense?.dueMonth ?? currentMonth));
-    const [categoryId, setCategoryId] = useState(String(initialExpense?.categoryId ?? ""));
+    const [categoryId, setCategoryId] = useState(String(initialExpense?.categoryId ?? initialSupplier?.defaultExpenseCategoryId ?? ""));
     const [supplierName, setSupplierName] = useState(
         suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.businessName ?? initialExpense?.merchant ?? "",
     );
@@ -414,6 +433,7 @@ export default function RecurringExpenseForm({
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
     const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
+    const vatRateTouchedRef = useRef(false);
     const selectedPaymentMethodName = paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "";
     const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
     const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
@@ -525,17 +545,17 @@ export default function RecurringExpenseForm({
     }
 
     return (
-        <form ref={formRef} className={`form app-record-form recurring-record-form recurring-expense-form app-form-wizard recurring-form-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
+        <form ref={formRef} className={`form app-record-form recurring-record-form recurring-expense-form app-form-wizard recurring-form-wizard app-form-wizard-current-${mobileStep} ${mobileStepOffset ? "expense-type-step-external" : ""}`} action={action} method="post" onSubmit={handleSubmit} data-in-place-submit={onSaved ? "true" : undefined}>
             <div className="app-form-wizard-header full">
                 <div className="app-form-wizard-heading">
-                    <span>Passaggio {mobileStep} di 6</span>
+                    <span>Passaggio {mobileStep + mobileStepOffset} di {6 + mobileStepOffset}</span>
                     <strong>
                         {mobileStep === 2 ? <span className="app-form-field-icon" aria-hidden="true">€</span> : null}
                         <span>{["Ricorrenza", "Importo", "Dettagli", "Fatturazione", "Pagamento", "Note"][mobileStep - 1]}</span>
                     </strong>
                 </div>
-                <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep} di 6`}>
-                    <span style={{width: `${mobileStep / 6 * 100}%`}}/>
+                <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep + mobileStepOffset} di ${6 + mobileStepOffset}`}>
+                    <span style={{width: `${(mobileStep + mobileStepOffset) / (6 + mobileStepOffset) * 100}%`}}/>
                 </div>
             </div>
 
@@ -561,6 +581,11 @@ export default function RecurringExpenseForm({
                         <span aria-hidden="true">IVA</span>
                         <strong>Saldo IVA</strong>
                         <small>Versamento IVA</small>
+                    </button>
+                    <button type="button" role="radio" aria-checked={false} disabled={!onSwitchToTaxContribution} onClick={onSwitchToTaxContribution}>
+                        <span aria-hidden="true">F24</span>
+                        <strong>Imposte</strong>
+                        <small>Imposte e contributi non IVA</small>
                     </button>
                 </div>
             </div>
@@ -625,7 +650,19 @@ export default function RecurringExpenseForm({
                     <small>Fornitore, categoria e descrizione della spesa</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
-                    <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} categories={categories}/>
+                    <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} categories={categories} onSupplierSelected={supplier => {
+                        if (supplier.defaultExpenseCategoryId && categories.some(category => category.id === supplier.defaultExpenseCategoryId)) {
+                            setCategoryId(String(supplier.defaultExpenseCategoryId));
+                        }
+                        if (!vatRateTouchedRef.current && isDeclared && supplier.defaultVatRate != null) {
+                            setVatRate(current => resolveSupplierDefaultVatRate({
+                                currentVatRate: current,
+                                supplierDefaultVatRate: supplier.defaultVatRate,
+                                vatRateTouched: vatRateTouchedRef.current,
+                                isFiscal: isDeclared,
+                            }));
+                        }
+                    }}/>
 
                     <SelectField label="Categoria" icon="◇" name="categoryId" required value={categoryId} onChange={setCategoryId} options={[
                         {value: "", label: "Seleziona categoria", disabled: true},
@@ -673,12 +710,13 @@ export default function RecurringExpenseForm({
                                             })}</strong>
                                         </span>
                                     </div>
-                                    <MoneyInput inputRef={amountRef} value={amount} onValueChange={handleAmountChange} required/>
+                                    <MoneyInput inputRef={amountRef} value={amount} onValueChange={handleAmountChange} required suppressSoftKeyboard/>
                                     <input type="hidden" name="amount" value={normalizedAmount}/>
                                 </label>
                                 <div className="app-vat-rate-buttons recurring-vat-buttons-desktop vat-buttons-desktop" aria-label="Selezione rapida IVA">
                                     {["0", "4", "10", "22"].map(rate =>
                                         <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onMouseDown={event => event.preventDefault()} onClick={() => {
+                                            vatRateTouchedRef.current = true;
                                             setVatRate(rate);
                                             focusAmount();
                                         }}>{rate}%</button>)}
@@ -688,6 +726,7 @@ export default function RecurringExpenseForm({
                         <div className="app-vat-rate-buttons recurring-vat-buttons-mobile vat-buttons-mobile" aria-label="Selezione rapida IVA">
                             {["0", "4", "10", "22"].map(rate =>
                                 <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onMouseDown={event => event.preventDefault()} onClick={() => {
+                                    vatRateTouchedRef.current = true;
                                     setVatRate(rate);
                                     focusAmount();
                                 }}>{rate}%</button>)}
@@ -884,9 +923,9 @@ export default function RecurringExpenseForm({
             </details>
 
             <MobileFormStickyActions
-                currentStep={mobileStep}
-                submitStep={6}
-                onBack={() => goToMobileStep(mobileStep - 1)}
+                currentStep={mobileStep + (onBackToType ? mobileStepOffset : 0)}
+                submitStep={6 + (onBackToType ? mobileStepOffset : 0)}
+                onBack={() => mobileStep === 1 && onBackToType ? onBackToType() : goToMobileStep(mobileStep - 1)}
                 onNext={nextMobileStep}
                 onCancel={onCancel}
                 cancelHref={cancelHref}

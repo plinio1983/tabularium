@@ -82,6 +82,8 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
   const amount = Number(expense.amount.toString());
   const isVatSettlement = expense.expenseType === 'VAT_SETTLEMENT';
+  const isTaxContribution = expense.expenseType === 'TAX_CONTRIBUTION';
+  const isNoVatExpense = isVatSettlement || isTaxContribution;
   const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
   const residual = Math.max(0, amount - paid);
   const categoryClassName = categoryTone(expense.category);
@@ -118,7 +120,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
-      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, systemRole: s.systemRole }))}
+      suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null, systemRole: s.systemRole }))}
       returnTo={currentDetailReturnTo}
     />
     <ActionFeedbackBanner
@@ -149,7 +151,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <div className="record-detail-title-block">
               <p className="record-detail-kicker">
                 <span>Spesa #{expense.id}</span>
-                <span className={isVatSettlement ? 'badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : expense.isRecurring ? 'R' : 'S'}</span>
+                <span className={isVatSettlement ? 'badge vat-settlement-expense-badge' : isTaxContribution ? 'badge tone-neutral' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : isTaxContribution ? 'Imposte - non IVA' : expense.isRecurring ? 'R' : 'S'}</span>
               </p>
               <div className="expense-detail-title">
                   <strong>{expense.description}</strong>
@@ -164,15 +166,15 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
           <aside className="record-detail-amount-panel">
             <div className="record-detail-amount-panel-header-row">
-              <span className="record-detail-amount-panel-header">{isVatSettlement ? 'Importo interamente IVA' : 'IVA inclusa'} </span>
-              {!isVatSettlement ? <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span> : null}
+              <span className="record-detail-amount-panel-header">{isVatSettlement ? 'Importo interamente IVA' : isTaxContribution ? 'Importo versamento' : 'IVA inclusa'} </span>
+              {!isNoVatExpense ? <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span> : null}
             </div>
             <strong>{euro(expense.amount.toString())}</strong>
             <div className="record-detail-badge-row">
               <span className={badgeClass(isOverdue ? paymentStatusStyles.SCADUTO.className : paymentStyle.className)}>
                 {paymentHeroLabel}
               </span>
-              {!isVatSettlement ? <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span> : null}
+              {!isNoVatExpense ? <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span> : null}
             </div>
           </aside>
         </section>
@@ -205,7 +207,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <span>Scadenza</span>
             <strong>{dateLabel(expense.dueDate)}</strong>
           </div>
-          {!isVatSettlement ? <div>
+          {!isNoVatExpense ? <div>
             <span>Stato fattura</span>
             <strong>{invoiceStyle.icon} {invoiceStyle.label}</strong>
           </div> : null}
@@ -213,13 +215,17 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <span>Periodo contabile</span>
             <strong>{formatPeriod(expense.month, expense.year)}</strong>
           </div>
-          {!isVatSettlement ? <div>
+          {!isNoVatExpense ? <div>
             <span>Fiscale</span>
             <strong>{fiscalLabel(expense.isDeclared)}</strong>
           </div> : null}
+          {isTaxContribution ? <div>
+            <span>Utile fiscale</span>
+            <strong>{expense.affectsFiscalProfit ? 'Incide' : 'Non incide'}</strong>
+          </div> : null}
           <div>
             <span>IVA</span>
-            <strong>{isVatSettlement ? euro(paidVat) : vatStyle.label}</strong>
+            <strong>{isVatSettlement ? euro(paidVat) : isTaxContribution ? 'Non applicabile' : vatStyle.label}</strong>
           </div>
           <div>
             <span>Fornitore</span>
@@ -310,11 +316,11 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
               </button>
             </div>
           </div>
-          {expense.attachments.length ? <div className="expense-attachment-panel">
-            {expense.attachments.map(attachment => <a className="expense-attachment-item" key={attachment.id} href={`/api/attachments/${attachment.id}`} target="_blank" rel="noreferrer">
+          {expense.attachments.length ? <div className="record-attachment-panel">
+            {expense.attachments.map(attachment => <a className="record-attachment-item" key={attachment.id} href={`/api/attachments/${attachment.id}`} target="_blank" rel="noreferrer">
               <span>📎</span>
               <strong>{attachment.originalName}</strong>
-              <span className={`expense-attachment-type expense-attachment-type-${attachment.type.toLowerCase().replace('_', '-')}`}>{attachment.type === 'INVOICE' ? 'Fattura' : attachment.type === 'PAYMENT_RECEIPT' ? 'Ricevuta pagamento' : 'Documento'}</span>
+              <span className={`record-attachment-type record-attachment-type-${attachment.type.toLowerCase().replace('_', '-')}`}>{attachment.type === 'INVOICE' ? 'Fattura' : attachment.type === 'PAYMENT_RECEIPT' ? 'Ricevuta pagamento' : 'Documento'}</span>
               <small>{attachment.sizeBytes ? `${Math.round(attachment.sizeBytes / 1024)} KB` : ''}</small>
             </a>)}
           </div> : <div className="record-empty-state">Nessun allegato caricato.</div>}

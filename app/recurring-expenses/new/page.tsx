@@ -32,8 +32,9 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
         categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
         paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
-        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias }))}
+        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null }))}
         action={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}
+        mobileStepOffset={1}
         cancelHref={returnTo}
       />
     </div>

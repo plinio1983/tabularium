@@ -38,7 +38,8 @@ type ExpenseListItem = {
     month: number;
     year: number;
     isRecurring: boolean;
-    expenseType?: 'STANDARD' | 'VAT_SETTLEMENT' | 'COUNTER';
+    expenseType?: 'STANDARD' | 'VAT_SETTLEMENT' | 'COUNTER' | 'TAX_CONTRIBUTION';
+    affectsFiscalProfit?: boolean;
     recurringExpenseId?: number | null;
     isDeclared: boolean;
     hasElectronicInvoice: boolean;
@@ -85,6 +86,7 @@ type SupplierOption = {
     internalNotes?: string | null;
     systemRole?: string | null;
     defaultExpenseCategoryId?: number | null;
+    defaultVatRate?: string | number | null;
 };
 
 type Props = {
@@ -293,6 +295,8 @@ export default function ExpensesList({
         <div className="mobile-record-list" aria-label={mobileLabel}>
             {mobileItems.map(expense => {
                 const isVatSettlement = expense.expenseType === 'VAT_SETTLEMENT';
+                const isTaxContribution = expense.expenseType === 'TAX_CONTRIBUTION';
+                const isNoVatExpense = isVatSettlement || isTaxContribution;
                 const amount = Number(expense.amount);
                 const supplierName = expenseSupplierName(expense);
                 const vatStyle = vatStyles[vatKey(expense.vatRate)] ?? vatStyles['22'];
@@ -331,10 +335,10 @@ export default function ExpensesList({
                             <div className="mobile-record-meta">
                                 <div className="mobile-record-meta-left">
                                     {/*-- Fiscal Badge -->*/}
-                                    {!isVatSettlement ? fiscalBadgeMobile(expense.isDeclared) : null}
+                                    {!isNoVatExpense ? fiscalBadgeMobile(expense.isDeclared) : isTaxContribution ? <span className="badge tone-neutral">Non IVA</span> : null}
 
                                     {/*-- Fatttura -->*/}
-                                    {!isVatSettlement && expense.isDeclared ?
+                                    {!isNoVatExpense && expense.isDeclared ?
                                         <span className="expense-invoice-indicator">
                                             {electronicInvoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}
                                             <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/>
@@ -345,7 +349,7 @@ export default function ExpensesList({
                                     <span className="mobile-record-date date-long hidden-sp-down">• &nbsp;{formatPeriod(expense.month, expense.year)}</span>
 
                                     {/*-- Aliquota IVA -->*/}
-                                    {isVatSettlement ? <span className="badge tone-neutral">100%</span> :
+                                    {isVatSettlement ? <span className="badge tone-neutral">100%</span> : isTaxContribution ? <span className="badge tone-neutral">N/A</span> :
                                         <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(expense.vatRate)}%</span>}
                                 </div>
                                 <div className="mobile-record-meta-right">
@@ -358,8 +362,8 @@ export default function ExpensesList({
                             <div className="mobile-record-title-row">
 
                                 {/*-- Ricorrente/Singola/IVA -->*/}
-                                <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>
-                                    {isVatSettlement ? 'IVA' : expense.isRecurring ? 'R' : 'S'}
+                                <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>
+                                    {isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : expense.isRecurring ? 'R' : 'S'}
                                 </span>
                                 <div className="mobile-record-title-left">
                                     {/*-- Descrizione -->*/}
@@ -422,6 +426,8 @@ export default function ExpensesList({
                 <tbody>
                 {expenses.map(expense => {
                     const isVatSettlement = expense.expenseType === 'VAT_SETTLEMENT';
+                    const isTaxContribution = expense.expenseType === 'TAX_CONTRIBUTION';
+                    const isNoVatExpense = isVatSettlement || isTaxContribution;
                     const amount = Number(expense.amount);
                     const supplierName = expenseSupplierName(expense);
                     const residual = expenseResidualAmount(expense);
@@ -453,7 +459,7 @@ export default function ExpensesList({
                         data-sort-row
                         data-sort-order-date={dateSortValue(expense.receivedDate)}
                         data-sort-billing-period={String(Number(expense.year) * 12 + Number(expense.month))}
-                        data-sort-type={isVatSettlement ? 'IVA' : expense.isRecurring ? 'R' : 'S'}
+                        data-sort-type={isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : expense.isRecurring ? 'R' : 'S'}
                         data-sort-category={`${expense.category?.code ?? ''} ${expense.category?.name ?? ''}`}
                         data-sort-supplier={supplierName}
                         data-sort-amount={String(amount)}
@@ -471,7 +477,7 @@ export default function ExpensesList({
                         <td className="cell-order-date">{dateLabel(expense.receivedDate)}</td>
                         <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>
                         <td className="cell-type">
-                            <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : expense.isRecurring ? 'R' : 'S'}</span>
+                            <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : expense.isRecurring ? 'R' : 'S'}</span>
                         </td>
                         <td className="cell-category">{expense.category ?
                             <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
@@ -481,16 +487,16 @@ export default function ExpensesList({
                         <td className="cell-amount">
                             <strong className={moneyTone(amount)}>{euro(expense.amount as string | number)} &nbsp; {expensePaymentIcon(expense)}</strong>
                         </td>
-                        <td className="cell-vat">{isVatSettlement ? <span className="badge tone-neutral">100%</span> :
+                        <td className="cell-vat">{isVatSettlement ? <span className="badge tone-neutral">100%</span> : isTaxContribution ? <span className="badge tone-neutral">N/A</span> :
                             <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
                         <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
                         <td className="cell-payment-state">{overdue ?
                             <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {statusLabel}</span> :
                             <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {statusLabel}</span>}</td>
-                        <td className="cell-invoice-state">{isVatSettlement ?
+                        <td className="cell-invoice-state">{isNoVatExpense ?
                             <span className="badge color-badge">✕</span> :
                             <span className="expense-invoice-indicator"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/></span>}</td>
-                        <td className="cell-ebilling">{isVatSettlement ?
+                        <td className="cell-ebilling">{isNoVatExpense ?
                             <span className="badge color-badge tone-no">✕</span> : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
                         <td className="cell-residual">
                             <strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>

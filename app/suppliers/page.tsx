@@ -495,7 +495,7 @@ export default async function SuppliersPage({searchParams}: {
                                                    annualPurchasedAmount
                                                }) => {
                         return <tr
-                            className="clickable-desktop-row"
+                            className={amountToPay > 0 ? "clickable-desktop-row supplier-row-attention" : "clickable-desktop-row"}
                             data-row-href={`/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`}
                             data-sort-row
                             data-sort-business-name={supplier.businessName}

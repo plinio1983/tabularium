@@ -40,21 +40,21 @@ export default function ExpenseCategoryList({categories, iconOptions, updateActi
   }, [editing]);
 
   return <>
-    <section className="card expense-category-list-card" aria-label="Categorie di spesa">
-      <div className="expense-category-list-heading">
+    <section className="card settings-entity-list-card" aria-label="Categorie di spesa">
+      <div className="settings-entity-list-heading">
         <div>
           <h3>Categorie configurate</h3>
           <p className="muted">{categories.length} {categories.length === 1 ? 'categoria' : 'categorie'}</p>
         </div>
       </div>
-      {categories.length ? <div className="expense-category-settings-list">
-        {categories.map(category => <article className="expense-category-settings-item" key={category.id}>
-          <span className="expense-category-settings-icon" aria-hidden="true">{category.icon || '•'}</span>
-          <div className="expense-category-settings-copy">
+      {categories.length ? <div className="settings-entity-list">
+        {categories.map(category => <article className="settings-entity-item" key={category.id}>
+          <span className="settings-entity-icon" aria-hidden="true">{category.icon || '•'}</span>
+          <div className="settings-entity-copy">
             <strong>{category.name}</strong>
             <span><b>{category.code}</b> · {category.usageCount} {category.usageCount === 1 ? 'movimento' : 'movimenti'}</span>
           </div>
-          <div className="expense-category-settings-actions">
+          <div className="settings-entity-actions">
             <CategoryDeleteForm id={category.id} name={category.name} action={deleteAction}/>
             <button className="btn btn-xs btn-primary" type="button" onClick={() => setEditing(category)}>
               <span className="btn-icon" aria-hidden="true">✎</span> Modifica

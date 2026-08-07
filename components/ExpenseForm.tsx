@@ -10,6 +10,7 @@ import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currenc
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import SupplierCreateModal from "@/components/SupplierCreateModal";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
+import {resolveSupplierDefaultVatRate} from '@/lib/supplier-defaults';
 
 type Option = {
     id: number;
@@ -35,6 +36,7 @@ type SupplierOption = {
     internalNotes?: string | null;
     systemRole?: string | null;
     defaultExpenseCategoryId?: number | null;
+    defaultVatRate?: string | number | {toString(): string} | null;
 };
 type PaymentRow = {
     key: number;
@@ -71,7 +73,8 @@ type InitialExpense = {
     invoiceStatus?: string | null;
     isDeclared?: boolean;
     isRecurring?: boolean;
-    expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER";
+    expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION";
+    affectsFiscalProfit?: boolean;
     payments?: InitialPayment[];
     notes?: string | null;
     attachments?: Array<{
@@ -103,8 +106,10 @@ type Props = {
     onSaved?: () => void;
     cancelHref?: string;
     onSwitchToRecurring?: () => void;
-    onExpenseTypeChange?: (type: "single" | "vat") => void;
+    onExpenseTypeChange?: (type: "single" | "vat" | "tax") => void;
     initialMobileStep?: number;
+    mobileStepOffset?: number;
+    onBackToType?: () => void;
     openNewPayment?: boolean;
     initialOpenPaymentId?: number;
     focusAttachments?: boolean;
@@ -221,6 +226,7 @@ function SupplierAutocomplete({
                                   onSupplierSelected,
                                   onSupplierValueChange,
                                   categories = [],
+                                  label = "Esercente",
                               }: {
     suppliers?: SupplierOption[];
     initialSupplierId?: number | null;
@@ -228,6 +234,7 @@ function SupplierAutocomplete({
     onSupplierSelected?: (supplier: SupplierOption) => void;
     onSupplierValueChange?: (value: string) => void;
     categories?: Option[];
+    label?: string;
 }) {
     const initial =
         suppliers.find((supplier) => supplier.id === initialSupplierId) ?? null;
@@ -315,7 +322,7 @@ function SupplierAutocomplete({
             <div className="app-form-field entity-autocomplete-field">
                 <label className="app-form-field-label">
                     <span className="app-form-field-icon" aria-hidden="true">◎</span>
-                    <span>Esercente</span>
+                    <span>{label}</span>
                     <span className="flex flex-grow justify-end">
                         <button
                             type="button"
@@ -431,6 +438,8 @@ export default function ExpenseForm({
                                         onSwitchToRecurring,
                                         onExpenseTypeChange,
                                         initialMobileStep = 1,
+                                        mobileStepOffset = 0,
+                                        onBackToType,
                                         openNewPayment = false,
                                         initialOpenPaymentId,
                                         focusAttachments = false,
@@ -439,6 +448,8 @@ export default function ExpenseForm({
     const today = dateInputInTimeZone(timeZone);
     const currentBillingPeriod = monthInputInTimeZone(timeZone);
     const [isVatSettlement, setIsVatSettlement] = useState(initialExpense?.expenseType === "VAT_SETTLEMENT");
+    const [isTaxContribution, setIsTaxContribution] = useState(initialExpense?.expenseType === "TAX_CONTRIBUTION");
+    const isNoVatExpense = isVatSettlement || isTaxContribution;
     const vatSettlementCategory = categories.find(category => category.isVatSettlementDefault);
     const vatSettlementSupplier = suppliers.find(supplier => supplier.systemRole === "VAT_SETTLEMENT");
     const availablePaymentMethods = isVatSettlement
@@ -453,14 +464,21 @@ export default function ExpenseForm({
     const normalizePaymentRow = (row: PaymentRow): PaymentRow =>
         isCashChannel(methodName(row.paymentMethodId)) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
-    const initialSupplierDefaultCategoryId = suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.defaultExpenseCategoryId;
+    const initialSupplier = suppliers.find(supplier => supplier.id === initialExpense?.supplierId);
+    const initialSupplierDefaultCategoryId = initialSupplier?.defaultExpenseCategoryId;
     const [categoryId, setCategoryId] = useState(() => String(
         initialExpense?.categoryId
         ?? (initialExpense?.id ? null : initialSupplierDefaultCategoryId)
         ?? categories[0]?.id
         ?? "",
     ));
-    const [vatRate, setVatRate] = useState(normalizeMoney(initialExpense?.vatRate) || "22");
+    const [vatRate, setVatRate] = useState(
+        initialExpense?.vatRate != null
+            ? normalizeMoney(initialExpense.vatRate)
+            : initialSupplier?.defaultVatRate != null
+                ? normalizeMoney(initialSupplier.defaultVatRate)
+                : "22",
+    );
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [mobileStep, setMobileStep] = useState(() => Math.max(1, Math.min(7, initialMobileStep)));
@@ -483,12 +501,16 @@ export default function ExpenseForm({
     const amountRef = useRef<HTMLInputElement>(null);
     const attachmentsInputRef = useRef<HTMLInputElement>(null);
     const amountKeyStateRef = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
+    const vatRateTouchedRef = useRef(false);
     const didOpenNewPayment = useRef(false);
     const [hasElectronicInvoice, setHasElectronicInvoice] = useState(
         initialExpense?.hasElectronicInvoice ?? true,
     );
     const [isDeclared, setIsDeclared] = useState(
-        initialExpense?.isDeclared ?? true,
+        isNoVatExpense ? false : initialExpense?.isDeclared ?? true,
+    );
+    const [affectsFiscalProfit, setAffectsFiscalProfit] = useState(
+        initialExpense?.affectsFiscalProfit ?? isTaxContribution,
     );
     const [payments, setPayments] = useState<PaymentRow[]>(
         initialExpense?.payments?.length
@@ -661,11 +683,15 @@ export default function ExpenseForm({
 
     function nextMobileStep() {
         if (!validateMobileStep()) return;
-        goToMobileStep(isVatSettlement && mobileStep === 4 ? 6 : mobileStep + 1);
+        goToMobileStep(isNoVatExpense && mobileStep === 4 ? 6 : mobileStep + 1);
     }
 
     function previousMobileStep() {
-        goToMobileStep(isVatSettlement && mobileStep === 6 ? 4 : mobileStep - 1);
+        if (mobileStep === 1 && onBackToType) {
+            onBackToType();
+            return;
+        }
+        goToMobileStep(isNoVatExpense && mobileStep === 6 ? 4 : mobileStep - 1);
     }
 
     function updatePayment(index: number, patch: Partial<PaymentRow>) {
@@ -837,7 +863,7 @@ export default function ExpenseForm({
     return (
         <form
             ref={formRef}
-            className={`form app-record-form single-expense-form app-form-wizard app-form-wizard-current-${mobileStep}`}
+            className={`form app-record-form single-expense-form app-form-wizard app-form-wizard-current-${mobileStep} ${mobileStepOffset ? "expense-type-step-external" : ""}`}
             action={action}
             method="post"
             encType="multipart/form-data"
@@ -847,15 +873,15 @@ export default function ExpenseForm({
             <div className="app-form-wizard-header full">
                 <div className="app-form-wizard-heading">
                     <span>{mobileStep === 7
-                        ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}`
-                        : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}</span>
+                        ? `Passaggio ${isNoVatExpense ? 5 + mobileStepOffset : 6 + mobileStepOffset}bis`
+                        : `Passaggio ${(isNoVatExpense && mobileStep === 6 ? 5 : mobileStep) + mobileStepOffset} di ${(isNoVatExpense ? 5 : 6) + mobileStepOffset}`}</span>
                     <strong>
                         {mobileStep === 2 ? <span className="app-form-field-icon" aria-hidden="true">€</span> : null}
                         <span>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</span>
                     </strong>
                 </div>
-                <div className="app-form-wizard-progress" aria-label={mobileStep === 7 ? `Passaggio ${isVatSettlement ? "5bis" : "6bis"}` : `Passaggio ${isVatSettlement && mobileStep === 6 ? 5 : mobileStep} di ${isVatSettlement ? 5 : 6}`}>
-                    <span style={{width: `${isVatSettlement ? Math.min(mobileStep === 6 ? 5 : mobileStep, 5) / 5 * 100 : Math.min(mobileStep, 6) / 6 * 100}%`}}/>
+                <div className="app-form-wizard-progress" aria-label={mobileStep === 7 ? `Allegati` : `Passaggio ${(isNoVatExpense && mobileStep === 6 ? 5 : mobileStep) + mobileStepOffset} di ${(isNoVatExpense ? 5 : 6) + mobileStepOffset}`}>
+                    <span style={{width: `${isNoVatExpense ? Math.min((mobileStep === 6 ? 5 : mobileStep) + mobileStepOffset, 5 + mobileStepOffset) / (5 + mobileStepOffset) * 100 : Math.min(mobileStep + mobileStepOffset, 6 + mobileStepOffset) / (6 + mobileStepOffset) * 100}%`}}/>
                 </div>
             </div>
             {/*<h2 className="full">{title}</h2>*/}
@@ -874,17 +900,18 @@ export default function ExpenseForm({
             <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
                 <span className="entry-type-choice-title">Tipo di spesa</span>
                 <input type="hidden" name="isRecurring" value={isRecurring ? "true" : "false"}/>
-                <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : "STANDARD"}/>
+                <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : isTaxContribution ? "TAX_CONTRIBUTION" : "STANDARD"}/>
                 <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
                     <button
                         type="button"
-                        className={!isRecurring && !isVatSettlement ? "is-selected" : ""}
+                        className={!isRecurring && !isNoVatExpense ? "is-selected" : ""}
                         role="radio"
-                        aria-checked={!isRecurring && !isVatSettlement}
+                        aria-checked={!isRecurring && !isNoVatExpense}
                         disabled={!canEditExpenseType}
                         onClick={() => {
                             setIsRecurring(false);
                             setIsVatSettlement(false);
+                            setIsTaxContribution(false);
                             onExpenseTypeChange?.("single");
                         }}
                     >
@@ -909,6 +936,7 @@ export default function ExpenseForm({
                         disabled={isExistingExpense || !onSwitchToRecurring}
                         onClick={() => {
                             setIsVatSettlement(false);
+                            setIsTaxContribution(false);
                             setIsRecurring(true);
                             onSwitchToRecurring?.();
                         }}
@@ -926,12 +954,35 @@ export default function ExpenseForm({
                         onClick={() => {
                             setIsRecurring(false);
                             setIsVatSettlement(true);
+                            setIsTaxContribution(false);
                             onExpenseTypeChange?.("vat");
                         }}
                     >
                         <span aria-hidden="true">IVA</span>
                         <strong>Saldo IVA</strong>
                         <small>Versamento IVA</small>
+                    </button>
+                    <button
+                        type="button"
+                        className={isTaxContribution ? "is-selected" : ""}
+                        role="radio"
+                        aria-checked={isTaxContribution}
+                        disabled={!canEditExpenseType}
+                        onClick={() => {
+                            setIsRecurring(false);
+                            setIsVatSettlement(false);
+                            setIsTaxContribution(true);
+                            setIsDeclared(false);
+                            setVatRate("0");
+                            setHasElectronicInvoice(false);
+                            setInvoiceStatus("NON_PREVISTA");
+                            setAffectsFiscalProfit(true);
+                            onExpenseTypeChange?.("tax");
+                        }}
+                    >
+                        <span aria-hidden="true">F24</span>
+                        <strong>Imposte</strong>
+                        <small>Imposte e contributi non IVA</small>
                     </button>
                 </div>
             </div>
@@ -963,6 +1014,15 @@ export default function ExpenseForm({
                         }}
                         required
                         // hint="La scadenza viene impostata all’ultimo giorno del mese."
+                    /> : null}
+
+                    {isTaxContribution ? <MonthField
+                        className="app-form-wizard-step app-form-wizard-step-1"
+                        label="Periodo di competenza"
+                        name="billingPeriod"
+                        value={billingPeriod}
+                        onChange={setBillingPeriod}
+                        required
                     /> : null}
 
                     {isVatSettlement ? <input type="hidden" name="receivedDate" value={dueDate}/> : <DateField
@@ -1022,6 +1082,7 @@ export default function ExpenseForm({
                         <input type="hidden" name="supplierId" value={vatSettlementSupplier?.id ?? ""}/>
                         <input type="hidden" name="merchant" value={vatSettlementSupplier?.businessName ?? ""}/>
                     </label> : <SupplierAutocomplete
+                        label={isTaxContribution ? "Ente beneficiario" : "Esercente"}
                         suppliers={suppliers.filter(supplier => !supplier.systemRole)}
                         categories={categories}
                         initialSupplierId={initialExpense?.supplierId ?? null}
@@ -1030,6 +1091,15 @@ export default function ExpenseForm({
                         onSupplierSelected={(supplier) => {
                             if (supplier.defaultExpenseCategoryId && categories.some(category => category.id === supplier.defaultExpenseCategoryId)) {
                                 setCategoryId(String(supplier.defaultExpenseCategoryId));
+                            }
+                            if (!vatRateTouchedRef.current && !isNoVatExpense && isDeclared && supplier.defaultVatRate != null) {
+                                setVatRate(current => resolveSupplierDefaultVatRate({
+                                    currentVatRate: current,
+                                    supplierDefaultVatRate: supplier.defaultVatRate,
+                                    vatRateTouched: vatRateTouchedRef.current,
+                                    isFiscal: isDeclared,
+                                    supportsVat: !isNoVatExpense,
+                                }));
                             }
                         }}
                     />}
@@ -1070,7 +1140,7 @@ export default function ExpenseForm({
                 <div className="form-section-grid">
                     <div className="amount-vat-row full app-form-wizard-step app-form-wizard-step-2">
                         <div className="expense-wizard-amount-entry">
-                            {!isVatSettlement ?
+                            {!isNoVatExpense ?
                                 <div className="switch-toggle-field expense-fiscal-desktop-control">
                                     <div className="switch-toggle-field-label">
                                         <span className="app-form-field-icon">⇆</span>
@@ -1088,7 +1158,7 @@ export default function ExpenseForm({
                                         <span className="text-muted">{isDeclared ? 'Fiscale' : 'Non fiscale'}</span>
                                     </label>
                                 </div> : null}
-                            {!isVatSettlement ? <label className="app-form-wizard-mobile-switch switch-toggle-field expense-fiscal-mobile-control">
+                            {!isNoVatExpense ? <label className="app-form-wizard-mobile-switch switch-toggle-field expense-fiscal-mobile-control">
                                 <div className="app-form-field-label">
                                     <span className="app-form-field-icon" aria-hidden="true">⇆</span>
                                     <span>Fiscale</span>
@@ -1104,24 +1174,25 @@ export default function ExpenseForm({
                                 {/*<span className="text-muted">{isDeclared ? 'Detrazione' : 'Non fiscale'}</span>*/}
                             </label> : null}
                             <div className="expense-amount-control">
-                                    {!isVatSettlement ? <div className="expense-amount-vat-excluded" aria-live="polite">
+                                    {!isNoVatExpense ? <div className="expense-amount-vat-excluded" aria-live="polite">
                                         <strong>{formatEuro(netAmount)}</strong>
                                     </div> : null}
                                     <label className="expense-wizard-amount-field">
                                         <div className="app-form-field-label switch-toggle-field-label">
                                             <span className="app-form-field-icon">€</span>
-                                            <span>{!isVatSettlement ? "Costo IVA inclusa" : "Importo IVA"}</span>
+                                            <span>{isVatSettlement ? "Importo IVA" : isTaxContribution ? "Importo versamento" : "Costo IVA inclusa"}</span>
                                         </div>
                                             <MoneyInput
                                             inputRef={amountRef}
                                             required
                                             value={amount}
                                             onValueChange={handleAmountChange}
+                                            suppressSoftKeyboard
                                         />
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
 
                                     </label>
-                                    {!isVatSettlement ?
+                                    {!isNoVatExpense ?
                                         <div className="app-vat-rate-buttons vat-buttons-desktop" aria-label="Aliquota IVA">
                                             {["0", "4", "10", "22"].map(rate => <button
                                                 type="button"
@@ -1130,6 +1201,7 @@ export default function ExpenseForm({
                                                 disabled={!isDeclared}
                                                 onMouseDown={event => event.preventDefault()}
                                                 onClick={() => {
+                                                    vatRateTouchedRef.current = true;
                                                     setVatRate(rate);
                                                     focusAmount();
                                                 }}
@@ -1138,7 +1210,7 @@ export default function ExpenseForm({
                             </div>
                         </div>
 
-                        {!isVatSettlement ?
+                        {!isNoVatExpense ?
                             <div className="app-vat-rate-buttons vat-buttons-mobile" aria-label="Aliquota IVA">
                                 <label>Aliquota IVA </label>
                                 {["0", "4", "10", "22"].map(rate => <button
@@ -1148,13 +1220,14 @@ export default function ExpenseForm({
                                     disabled={!isDeclared}
                                     onMouseDown={event => event.preventDefault()}
                                     onClick={() => {
+                                        vatRateTouchedRef.current = true;
                                         setVatRate(rate);
                                         focusAmount();
                                     }}
                                 >{rate}%</button>)}
                             </div> : null}
 
-                        {!isVatSettlement ?
+                        {!isNoVatExpense ?
                             <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/> : null}
                         <div className="app-amount-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button
@@ -1167,10 +1240,15 @@ export default function ExpenseForm({
                         </div>
                     </div>
                     <input type="hidden" name="paymentStatus" value={computedPaymentStatus}/>
+                    {isTaxContribution ? <label className="app-form-field app-form-wizard-step app-form-wizard-step-2 switch-toggle-field switch-inline wide">
+                        <span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">%</span><span>Incide sull’utile fiscale</span></span>
+                        <input type="hidden" name="affectsFiscalProfit" value="false"/>
+                        <span className="switch"><input type="checkbox" name="affectsFiscalProfit" value="true" checked={affectsFiscalProfit} onChange={event => setAffectsFiscalProfit(event.currentTarget.checked)}/><span className="slider"/></span>
+                    </label> : <input type="hidden" name="affectsFiscalProfit" value="false"/>}
                 </div>
             </details>
 
-            {!isVatSettlement ?
+            {!isNoVatExpense ?
                 <details className="form-section full app-form-wizard-split-section app-form-wizard-fiscal-section" open>
                     <summary>
                         <span>Fiscale</span>
@@ -1660,8 +1738,8 @@ export default function ExpenseForm({
             </details>
 
             <MobileFormStickyActions
-                currentStep={isPaymentOnlyMode ? 1 : mobileStep}
-                submitStep={isPaymentOnlyMode ? 1 : 6}
+                currentStep={isPaymentOnlyMode ? 1 : mobileStep + (onBackToType ? mobileStepOffset : 0)}
+                submitStep={isPaymentOnlyMode ? 1 : 6 + (onBackToType ? mobileStepOffset : 0)}
                 onBack={previousMobileStep}
                 onNext={nextMobileStep}
                 onCancel={onCancel}

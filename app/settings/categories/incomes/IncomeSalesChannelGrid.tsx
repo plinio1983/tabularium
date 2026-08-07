@@ -39,16 +39,16 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
   }, [editing]);
 
   return <>
-    <section className="card expense-category-list-card sales-channel-list-card">
-      <div className="expense-category-list-heading"><div><h3>Canali configurati</h3><p className="muted">{channels.length} {channels.length === 1 ? 'canale' : 'canali'}</p></div></div>
-      <div className="expense-category-settings-list">
-      {channels.map(channel => <article className="expense-category-settings-item" key={channel.id}>
-        <span className="expense-category-settings-icon" aria-hidden="true">{channel.icon || '•'}</span>
-        <div className="expense-category-settings-copy">
+    <section className="card settings-entity-list-card sales-channel-list-card">
+      <div className="settings-entity-list-heading"><div><h3>Canali configurati</h3><p className="muted">{channels.length} {channels.length === 1 ? 'canale' : 'canali'}</p></div></div>
+      <div className="settings-entity-list">
+      {channels.map(channel => <article className="settings-entity-item" key={channel.id}>
+        <span className="settings-entity-icon" aria-hidden="true">{channel.icon || '•'}</span>
+        <div className="settings-entity-copy">
           <strong>{channel.name} {channel.isDefault ? <span className="badge">Preselezionato</span> : null} {channel.isFallback ? <span className="badge tone-neutral">Fallback</span> : null}</strong>
           <span>Ordine {channel.sortOrder} · {channel._count.incomes} {channel._count.incomes === 1 ? 'incasso' : 'incassi'}</span>
         </div>
-        <div className="expense-category-settings-actions">
+        <div className="settings-entity-actions">
           {!channel.isFallback
             ? <IncomeEntityDeleteForm id={channel.id} kind="channel" name={channel.name} action={deleteAction}/>
             : <button className="btn btn-sm btn-danger" type="button" disabled>Rimuovi</button>}

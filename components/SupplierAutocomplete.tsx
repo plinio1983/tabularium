@@ -16,6 +16,7 @@ export type SupplierAutocompleteOption = {
   internalNotes?: string | null;
   systemRole?: string | null;
   defaultExpenseCategoryId?: number | null;
+  defaultVatRate?: string | number | null;
 };
 
 type CategoryOption = {id: number; name: string; icon?: string | null};

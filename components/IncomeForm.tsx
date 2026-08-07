@@ -514,7 +514,7 @@ export default function IncomeForm({
                                     </div>
                                     {/*<div>Importo <span className="hidden-sp">IVA inclusa</span></div>*/}
                                     <div className="income-amount-row">
-                                        <MoneyInput inputRef={amountRef} required value={amount} onValueChange={handleAmountChange}/>
+                                        <MoneyInput inputRef={amountRef} required value={amount} onValueChange={handleAmountChange} suppressSoftKeyboard/>
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
                                     </div>
                                 </label>

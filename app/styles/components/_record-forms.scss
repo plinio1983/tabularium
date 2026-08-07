@@ -838,19 +838,11 @@
   .app-record-form .payment-collapse-action {
     display: inline-flex;
   }
+
+  .expense-creation-type-step .entry-type-choice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-
-
-/*.edit-expense-client-modal {*/
-/*    align-items: flex-start;*/
-/*    overflow-y: auto;*/
-/*    padding: 28px 16px;*/
-/*}*/
-
-/*.edit-expense-client-modal .modal-card {*/
-/*    width: min(1120px, 100%);*/
-/*    max-height: none;*/
-/*}*/
 
 .inline-modal-loading,
 .inline-modal-error {

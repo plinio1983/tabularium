@@ -827,12 +827,12 @@
   white-space: nowrap;
 }
 
-.expense-attachment-panel {
+.record-attachment-panel {
   display: grid;
   gap: 10px;
 }
 
-.expense-attachment-item {
+.record-attachment-item {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) auto auto;
   gap: 10px;
@@ -844,7 +844,7 @@
   text-decoration: none;
 }
 
-.expense-attachment-item > span:first-child {
+.record-attachment-item > span:first-child {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -854,7 +854,7 @@
   background: #eef2ff;
 }
 
-.expense-attachment-item strong {
+.record-attachment-item strong {
   overflow: hidden;
   color: var(--text);
   font-size: 13px;
@@ -862,13 +862,13 @@
   white-space: normal;
 }
 
-.expense-attachment-item small {
+.record-attachment-item small {
   color: var(--muted);
   font-size: 11px;
   font-weight: 800;
 }
 
-.expense-attachment-type {
+.record-attachment-type {
   padding: 4px 8px;
   border-radius: 999px;
   background: #eef2ff;
@@ -878,12 +878,12 @@
   white-space: nowrap;
 }
 
-.expense-attachment-type-payment-receipt {
+.record-attachment-type-payment-receipt {
   background: #ecfdf3;
   color: #19733b;
 }
 
-.expense-attachment-type-invoice {
+.record-attachment-type-invoice {
   background: #fff7ed;
   color: #9a4d00;
 }
@@ -1733,5 +1733,4 @@ body.invoice-attachments-modal-open {
 .party-mobile-link:active {
   background: #eef2ff;
 }
-
 

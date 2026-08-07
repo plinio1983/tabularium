@@ -91,10 +91,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
       orderBy: { businessName: 'asc' }
     });
     const csv = createCsv(
-      ['ID', 'Ragione sociale', 'Alias', 'Email', 'P.IVA', 'Codice SDI/Fiscale', 'PEC', 'IBAN', 'Categoria predefinita', 'Note interne'],
+      ['ID', 'Ragione sociale', 'Alias', 'Email', 'P.IVA', 'Codice SDI/Fiscale', 'PEC', 'IBAN', 'Categoria predefinita', 'Aliquota IVA predefinita', 'Note interne'],
       records.map(record => [
         record.id, record.businessName, record.alias, record.email, record.vatNumber, record.taxCodeSdi,
-        record.pec, record.iban, record.defaultExpenseCategory?.name, record.internalNotes
+        record.pec, record.iban, record.defaultExpenseCategory?.name,
+        record.defaultVatRate == null ? null : `${record.defaultVatRate.toString()}%`, record.internalNotes
       ])
     );
     return csvDownload(csv, filename(entity));

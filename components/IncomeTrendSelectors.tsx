@@ -123,7 +123,7 @@ function yearOptions(now: Date) {
 }
 
 function openFiltersDrawer() {
-  const trigger = document.querySelector<HTMLButtonElement>(".recurring-filter-trigger");
+  const trigger = document.querySelector<HTMLButtonElement>(".app-filter-trigger");
   if (trigger) trigger.click();
 }
 
@@ -175,19 +175,19 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
     goWithQuick(nextMode, currentMonthQuickValue(companyNow), currentYearValue(companyNow), companyNow);
   }
 
-  return <div className="expense-trend-selectors expense-trend-selectors-switch" aria-label="Selettori andamento incassi">
+  return <div className="trend-selectors trend-selectors-switch" aria-label="Selettori andamento incassi">
     <span className="w100">Andamento</span>
-    <div className="expense-trend-mode-toggle" role="group" aria-label="Tipo andamento">
-      <button type="button" className={mode === "date" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"} onClick={() => changeMode("date")}>
-        Complessivo
+    <div className="trend-mode-toggle" role="group" aria-label="Tipo andamento">
+      <button type="button" className={mode === "date" ? "trend-mode-button is-active" : "trend-mode-button"} onClick={() => changeMode("date")}>
+        Per movimento
       </button>
-      <button type="button" className={mode === "fiscal" ? "expense-trend-mode-button is-active" : "expense-trend-mode-button"} onClick={() => changeMode("fiscal")}>
-        Fiscale
+      <button type="button" className={mode === "fiscal" ? "trend-mode-button is-active" : "trend-mode-button"} onClick={() => changeMode("fiscal")}>
+        Per competenza
       </button>
     </div>
 
     {mode === "date" ? <label>
-      <div className="expense-trend-selectors-heading">
+      <div className="trend-selectors-heading">
         <select value={andamentoComplessivoValue} onChange={(event) => {
           if (event.currentTarget.value === "custom") {
             openFiltersDrawer();
@@ -202,7 +202,7 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
         </select>
       </div>
     </label> : <label>
-      <div className="expense-trend-selectors-heading">
+      <div className="trend-selectors-heading">
         <select value={andamentoFiscaleValue} onChange={(event) => {
           if (event.currentTarget.value === "custom") {
             openFiltersDrawer();
@@ -218,7 +218,7 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
       </div>
     </label>}
     <section>
-      <div className="expense-trend-quick-date btn-group" role="group" aria-label="Scorciatoie periodo">
+      <div className="trend-quick-date btn-group" role="group" aria-label="Scorciatoie periodo">
         {quickDateButtons.map((value) => {
           const target = quickButtonTarget(value, companyNow);
           const label = quickButtonLabel(value, companyNow);
@@ -226,7 +226,7 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
           return <button
             key={value}
             type="button"
-            className={isActive ? "btn-xs btn-action btn-active expense-trend-quick-btn" : "btn-xs btn-action expense-trend-quick-btn"}
+            className={isActive ? "btn-xs btn-action btn-active trend-quick-btn" : "btn-xs btn-action trend-quick-btn"}
             aria-pressed={isActive}
             aria-label={pendingQuickButton === value ? `Caricamento ${label}` : label}
             disabled={pendingQuickButton !== null}
@@ -236,7 +236,7 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
             }}
           >
             {pendingQuickButton === value
-              ? <span className="expense-trend-quick-loader" aria-hidden="true" />
+              ? <span className="trend-quick-loader" aria-hidden="true" />
               : label}
           </button>;
         })}

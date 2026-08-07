@@ -17,6 +17,7 @@ type SupplierOption = {
   internalNotes?: string | null;
   systemRole?: string | null;
   defaultExpenseCategoryId?: number | null;
+  defaultVatRate?: string | number | null;
 };
 
 type EditExpense = {
@@ -36,7 +37,8 @@ type EditExpense = {
   invoiceStatus?: string | null;
   isDeclared?: boolean;
   isRecurring?: boolean;
-  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER";
+  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION";
+  affectsFiscalProfit?: boolean;
   notes?: string | null;
   attachments?: Array<{
     id: number;
@@ -177,6 +179,7 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
           suppliers={suppliers}
           initialExpense={mode === "copy" ? {...expense, attachments: []} : expense}
           initialMobileStep={mode === "payment" || mode === "payment-edit" ? 4 : mode === "attachments" ? 7 : 1}
+          mobileStepOffset={mode === "copy" ? 0 : 1}
           openNewPayment={mode === "payment"}
           initialOpenPaymentId={mode === "payment-edit" ? targetPaymentId ?? undefined : undefined}
           focusAttachments={mode === "attachments"}

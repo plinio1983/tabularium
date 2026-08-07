@@ -9,6 +9,7 @@ import {Prisma} from '@/generated/prisma/client';
 import CashRegisterReceiptFiltersDrawer from '@/components/CashRegisterReceiptFiltersDrawer';
 import SelectedButtonGroupScroller from '@/components/SelectedButtonGroupScroller';
 import {addCalendarDays, monthInputInTimeZone, yearMonthInTimeZone, zonedMidnightUtc} from '@/lib/company-time';
+import YearNavigationSelect from '@/components/YearNavigationSelect';
 
 function value(params: Record<string, string | string[] | undefined>, key: string) {
     const item = params[key];
@@ -59,7 +60,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         lt: zonedMidnightUtc(addCalendarDays(dateTo, 1), timeZone),
     } : undefined;
 
-    const [receipts, methods, channels, dailyAggregates] = await Promise.all([
+    const [receipts, methods, channels, dailyAggregates, receiptYearBounds] = await Promise.all([
         prisma.income.findMany({
             where: {
             workspaceId: current.workspace.id,
@@ -93,7 +94,11 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
               ${fiscalFilter}
             GROUP BY 1
             ORDER BY 1
-        `)
+        `),
+        prisma.income.aggregate({
+            where: {workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'},
+            _min: {billingYear: true, creditDate: true}
+        })
     ]);
     const orderedMethods = orderPaymentMethods(methods, 'INCOME');
     const aggregates = dailyAggregates.map(item => ({day: item.day, count: item.count, total: Number(item.total)}));
@@ -124,6 +129,24 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             selected: !hasCustomDateRange && index + 1 === billingMonth,
         };
     });
+    const firstAvailableYear = Math.min(
+        billingYear,
+        currentPeriod.year,
+        ...[
+            receiptYearBounds._min.billingYear,
+            receiptYearBounds._min.creditDate?.getUTCFullYear()
+        ].filter((item): item is number => Number.isInteger(item))
+    );
+    const lastAvailableYear = Math.max(billingYear, currentPeriod.year);
+    const yearLinks = Array.from({length: lastAvailableYear - firstAvailableYear + 1}, (_, index) => lastAvailableYear - index)
+        .map(navYear => {
+            const navMonth = navYear === currentPeriod.year ? Math.min(billingMonth, currentPeriod.month) : billingMonth;
+            const query = new URLSearchParams({month: `${navYear}-${String(navMonth).padStart(2, '0')}`});
+            if (methodId) query.set('paymentMethodId', String(methodId));
+            if (channelId) query.set('salesChannelId', String(channelId));
+            if (fiscal === 'yes' || fiscal === 'no') query.set('fiscal', fiscal);
+            return {year: navYear, href: `/incomes/cash-register/receipts?${query}`};
+        });
 
     return <div className="grid cash-register-receipts-page">
         <div className="toolbar-card">
@@ -134,9 +157,10 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             </div>
         </div>
         <nav className="cash-register-receipt-period-nav" aria-label={`Mesi del ${billingYear}`}>
-            <SelectedButtonGroupScroller className="btn-group cash-register-receipt-month-group">
+            <SelectedButtonGroupScroller className="btn-group cash-register-receipt-month-group" showControls wrapperClassName="cash-register-receipt-month-scroller">
                 {monthLinks.map(item => <Link key={item.label} className={`btn btn-sm ${item.selected ? 'btn-primary is-selected' : 'btn-default'}`} aria-current={item.selected ? 'page' : undefined} href={item.href}>{item.label}</Link>)}
             </SelectedButtonGroupScroller>
+            <YearNavigationSelect options={yearLinks} year={billingYear}/>
         </nav>
         <div className="recurring-active-filters">
             <div>

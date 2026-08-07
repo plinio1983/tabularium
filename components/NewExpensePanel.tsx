@@ -28,7 +28,8 @@ type SupplierOption = {
     taxCodeSdi?: string | null;
     internalNotes?: string | null;
     systemRole?: string | null;
-    defaultExpenseCategoryId?: number | null
+    defaultExpenseCategoryId?: number | null;
+    defaultVatRate?: string | number | null
 };
 type InitialExpense = Parameters<typeof ExpenseCreationSwitcher>[0]['initialExpense'];
 
@@ -55,12 +56,15 @@ export default function NewExpensePanel({
     const [isOpen, setIsOpen] = useState(initialOpen);
     const [returnAction, setReturnAction] = useState('/api/expenses');
     const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
-    const [creationType, setCreationType] = useState<'single' | 'recurring' | 'vat'>('single');
+    const [creationType, setCreationType] = useState<'single' | 'recurring' | 'vat' | 'tax'>('single');
+    const [creationKey, setCreationKey] = useState(0);
 
     const modalCopy = creationType === 'recurring'
         ? {title: 'Nuova spesa ricorrente', description: 'Configura una nuova spesa ricorrente.'}
         : creationType === 'vat'
             ? {title: 'Nuovo saldo IVA', description: 'Inserisci un nuovo versamento IVA.'}
+            : creationType === 'tax'
+                ? {title: 'Nuove imposte - non IVA', description: 'Registra imposte e contributi non soggetti a IVA.'}
             : {title: 'Nuova spesa singola', description: 'Inserisci una nuova spesa singola.'};
 
     useEffect(() => {
@@ -73,7 +77,11 @@ export default function NewExpensePanel({
     }, []);
 
     useEffect(() => {
-        const handler = () => setIsOpen(true);
+        const handler = () => {
+            setCreationType('single');
+            setCreationKey(value => value + 1);
+            setIsOpen(true);
+        };
         window.addEventListener(expenseNewEventName, handler);
         return () => window.removeEventListener(expenseNewEventName, handler);
     }, []);
@@ -121,7 +129,7 @@ export default function NewExpensePanel({
                         </div>
                         <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
                     </div>
-                    <ExpenseCreationSwitcher categories={categories} banks={banks} paymentMethods={paymentMethods}
+                    <ExpenseCreationSwitcher key={creationKey} categories={categories} banks={banks} paymentMethods={paymentMethods}
                                              suppliers={suppliers} initialExpense={initialExpense} expenseAction={returnAction}
                                              recurringAction={recurringAction} onTypeChange={setCreationType}
                                              onCancel={() => setIsOpen(false)} onSaved={handleSaved}/>

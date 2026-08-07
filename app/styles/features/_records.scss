@@ -1,4 +1,4 @@
-.expense-trend-selectors {
+.trend-selectors {
   display: grid;
   grid-template-columns: minmax(260px, .9fr) minmax(240px, 1fr);
   gap: 12px;
@@ -10,13 +10,13 @@
   background: #fafbff;
 }
 
-.expense-trend-selectors label {
+.trend-selectors label {
   display: grid;
   gap: 6px;
   min-width: 0;
 }
 
-.expense-trend-selectors span {
+.trend-selectors span {
   color: var(--muted);
   font-size: 12px;
   font-weight: 900;
@@ -24,11 +24,11 @@
   letter-spacing: .05em;
 }
 
-.expense-trend-selectors select {
+.trend-selectors select {
   width: 100%;
 }
 
-.expense-trend-mode-toggle {
+.trend-mode-toggle {
   display: flex;
   gap: 6px;
   padding: 4px;
@@ -40,7 +40,7 @@
   justify-content: center;
 }
 
-.expense-trend-mode-button {
+.trend-mode-button {
   border: 0;
   border-radius: 10px;
   padding: 10px 12px;
@@ -58,39 +58,39 @@
   }
 }
 
-.expense-trend-mode-button.is-active {
+.trend-mode-button.is-active {
   background: #1d4ed8;
   color: #fff;
   box-shadow: 0 8px 18px rgba(29, 78, 216, .22);
 }
 
-.expense-trend-selectors .expense-trend-selectors-heading select {
+.trend-selectors .trend-selectors-heading select {
   max-width: 40%;
 }
 
-.expense-trend-selectors .expense-trend-selectors-heading select:first-child {
+.trend-selectors .trend-selectors-heading select:first-child {
   max-width: 60%;
 }
 
-.expense-trend-selectors .expense-trend-selectors-heading {
+.trend-selectors .trend-selectors-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
 }
 
-.expense-trend-quick-date {
+.trend-quick-date {
   display: flex;
   gap: 8px;
   font-size: 13px;
   justify-content: flex-start;
 }
 
-.expense-trend-quick-date button {
+.trend-quick-date button {
   height: 36px;
 }
 
-.expense-trend-quick-btn {
+.trend-quick-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -134,11 +134,11 @@ body.drawer-open {
   margin-bottom: 12px;
 }
 
-.recurring-filter-trigger {
+.app-filter-trigger {
   white-space: nowrap;
 }
 
-.expense-trend-selectors .expense-trend-quick-loader {
+.trend-selectors .trend-quick-loader {
   box-sizing: border-box;
   display: block;
   width: 13px;
@@ -159,7 +159,7 @@ body.drawer-open {
   color: var(--text);
 }
 
-.filter-drawer-wrapper .recurring-filter-trigger {
+.filter-drawer-wrapper .app-filter-trigger {
   position: absolute;
   right: 16px;
   top: 5px;
@@ -1953,6 +1953,18 @@ table th, table td {
 
 .suppliers-table form {
   margin: 0;
+}
+
+.compact-suppliers-table tbody tr.supplier-row-attention td {
+  background: #fff1f1;
+}
+
+.compact-suppliers-table tbody tr.supplier-row-attention td:first-child {
+  border-left: 4px solid #dc2626;
+}
+
+.compact-suppliers-table tbody tr.supplier-row-attention:hover td {
+  background: #ffe7e7;
 }
 
 .entity-autocomplete {

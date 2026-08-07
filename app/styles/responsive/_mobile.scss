@@ -451,7 +451,7 @@
     flex: 1 1 auto;
   }
 
-  .recurring-filter-trigger-text {
+  .app-filter-trigger-text {
     /*display: none;*/
   }
 
@@ -542,18 +542,18 @@
 }
 
 @media (max-width: 760px) {
-  .expense-trend-selectors {
+  .trend-selectors {
     grid-template-columns: 1fr;
   }
 
-  .expense-trend-quick-date {
+  .trend-quick-date {
     flex-wrap: wrap;
     justify-content: space-between;
     margin-top: 12px;
     width: 100%;
   }
 
-  .expense-trend-quick-btn {
+  .trend-quick-btn {
     flex-grow: 1;
     max-width: 100%;
     padding: 8px 6px;
@@ -1684,11 +1684,11 @@
     min-width: 0;
   }
 
-  .expense-attachment-item {
+  .record-attachment-item {
     grid-template-columns: 34px minmax(0, 1fr);
   }
 
-  .expense-attachment-item .expense-attachment-type {
+  .record-attachment-item .record-attachment-type {
     grid-column: 2;
     justify-self: start;
   }
@@ -2031,6 +2031,30 @@
 }
 
 @media (max-width: 900px) {
+  .expense-creation-type-step {
+    display: grid;
+    gap: 16px;
+  }
+
+  .expense-creation-type-step .entry-type-choice {
+    display: grid;
+    gap: 12px;
+  }
+
+  .expense-creation-type-step .app-form-wizard-header {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .expense-creation-stage:not(.is-confirmed) .expense-creation-form-stage,
+  .expense-creation-stage.is-confirmed .expense-creation-type-step {
+    display: none;
+  }
+
+  .expense-type-step-external > .entry-type-choice {
+    display: none;
+  }
+
   .single-expense-form .expense-amount-vat-excluded {
     display: none;
   }
@@ -2062,6 +2086,10 @@
     gap: 0;
     border-radius: 0;
     overflow-y: auto;
+  }
+
+  .app-wizard-modal-card .modal-title p {
+    min-height: 50px;
   }
 
   .app-form-wizard {
@@ -3341,7 +3369,7 @@
     padding: 15px;
   }
 
-  .expense-category-list-card {
+  .settings-entity-list-card {
     width: 100%;
     gap: 12px;
     padding: 14px;
@@ -3359,19 +3387,19 @@
     line-height: 1.35;
   }
 
-  .expense-category-create-form {
+  .settings-entity-create-form {
     grid-template-columns: 1fr;
     gap: 16px;
     padding-top: 14px;
   }
 
-  .expense-category-create-form .span-2,
-  .expense-category-create-form .full {
+  .settings-entity-create-form .span-2,
+  .settings-entity-create-form .full {
     grid-column: 1;
   }
 
-  .expense-category-create-form .app-form-field input,
-  .expense-category-create-form .app-select-control select {
+  .settings-entity-create-form .app-form-field input,
+  .settings-entity-create-form .app-select-control select {
     min-height: 54px;
     border-radius: 16px;
     font-size: 16px;
@@ -3390,18 +3418,18 @@
     min-width: 0;
   }
 
-  .expense-category-settings-icon {
+  .settings-entity-icon {
     width: 40px;
     height: 40px;
   }
 
-  .expense-category-settings-actions .category-settings-delete-form {
+  .settings-entity-actions .category-settings-delete-form {
     order: 1;
     display: block;
     margin: 0;
   }
 
-  .expense-category-settings-actions .btn {
+  .settings-entity-actions .btn {
     min-width: 0;
     max-width: 100%;
     order: 2;
@@ -3783,7 +3811,7 @@
     width: 100%;
   }
 
-  .payment-credit-bank-display-row.expense-category-settings-item {
+  .payment-credit-bank-display-row.settings-entity-item {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) !important;
     gap: 10px;
@@ -4239,14 +4267,14 @@
     padding: 0;
   }
 
-  .expense-category-settings-actions {
+  .settings-entity-actions {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
 
-  .expense-category-settings-item {
+  .settings-entity-item {
     grid-template-columns: auto minmax(0, 1fr);
     gap: 10px;
     padding: 11px;
@@ -4361,6 +4389,29 @@
     overscroll-behavior-x: contain;
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .cash-register-receipt-month-scroller {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .cash-register-receipt-month-scroller .button-group-scroll-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cash-register-receipt-period-nav > .year-navigation-select {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .cash-register-receipt-period-nav > .year-navigation-select select {
+    flex: 1 1 auto;
+    min-height: 42px;
   }
 
   .cash-register-receipt-month-group > .btn {
@@ -4492,7 +4543,30 @@
 
   .month-report-month-select {
     display: block;
+    flex: 1 1 180px;
+    width: auto;
+    min-height: 42px;
+  }
+
+  .month-report-navigation {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .month-report-navigation > span {
+    flex: 0 0 auto;
+  }
+
+  .month-report-period-controls {
+    flex: 0 0 100%;
+  }
+
+  .month-report-period-controls > .year-navigation-select {
     width: 100%;
+  }
+
+  .month-report-period-controls > .year-navigation-select select {
+    flex: 1 1 auto;
     min-height: 42px;
   }
 
@@ -4578,11 +4652,11 @@
     width: 100%;
   }
 
-  .annual-income-trend-controls .expense-trend-mode-toggle {
+  .annual-income-trend-controls .trend-mode-toggle {
     width: 100%;
   }
 
-  .annual-income-trend-controls .expense-trend-mode-button {
+  .annual-income-trend-controls .trend-mode-button {
     flex: 1 1 0;
   }
 
@@ -5172,6 +5246,9 @@
     margin: 0 !important;
     padding-inline: 12px !important;
     overflow-x: hidden;
+    /* A transformed ancestor becomes the containing block of the fixed action
+       bar, making the customer/supplier buttons drift with the modal scroll. */
+    transform: none !important;
   }
 
   .entity-form-modal-card > .modal-title {

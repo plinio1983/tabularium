@@ -19,9 +19,10 @@ const ExpenseSchema = z.object({
   categoryId: z.coerce.number().optional().nullable(),
   description: z.string().min(1),
   amount: z.coerce.number().nonnegative(),
-  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT']).default('STANDARD'),
+  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT', 'TAX_CONTRIBUTION']).default('STANDARD'),
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
+  affectsFiscalProfit: BooleanFromForm.default(false),
   isRecurring: BooleanFromForm.default(false),
   hasElectronicInvoice: BooleanFromForm.default(false),
   invoiceStatus: z.enum(['NON_PREVISTA', 'IN_ATTESA', 'INVIATA_SDI', 'CONTESTAZIONE', 'PARZIALE', 'RICEVUTA']).default('IN_ATTESA'),
@@ -156,7 +157,8 @@ export async function POST(request: Request) {
   const raw = formData ? Object.fromEntries(formData.entries()) : await request.json();
   const data = ExpenseSchema.parse(raw);
   const isVatSettlement = data.expenseType === 'VAT_SETTLEMENT';
-  const invoiceFields = isVatSettlement
+  const isTaxContribution = data.expenseType === 'TAX_CONTRIBUTION';
+  const invoiceFields = isVatSettlement || isTaxContribution
     ? { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const }
     : normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data, current.company.timeZone);
@@ -210,6 +212,7 @@ export async function POST(request: Request) {
     paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
     vatRate: isVatSettlement || !invoiceFields.isDeclared ? 0 : data.vatRate,
     isDeclared: invoiceFields.isDeclared,
+    affectsFiscalProfit: isTaxContribution ? data.affectsFiscalProfit : false,
     isRecurring: false,
     hasElectronicInvoice: invoiceFields.hasElectronicInvoice,
     invoiceStatus: invoiceFields.invoiceStatus,

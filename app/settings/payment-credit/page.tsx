@@ -141,14 +141,14 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
 
     {section === 'banks' ? <>
     <PaymentCreditCreatePanel action={createBankAction} type="bank" iconOptions={paymentCreditIconOptions} />
-    <section className="card expense-category-list-card payment-credit-settings-card payment-banks-list-card">
-      <div className="expense-category-list-heading">
+    <section className="card settings-entity-list-card payment-credit-settings-card payment-banks-list-card">
+      <div className="settings-entity-list-heading">
         <div>
           <h3>Banche e canali configurati</h3>
           <p className="muted">{orderedBanks.length} {orderedBanks.length === 1 ? 'elemento' : 'elementi'}</p>
         </div>
       </div>
-      <div className="expense-category-settings-list payment-banks-settings-list">
+      <div className="settings-entity-list payment-banks-settings-list">
       {orderedBanks.length ? orderedBanks.map(bank => {
         const usageCount = bank._count.payments + bank._count.recurringExpenses + bank._count.incomeLegacyCredits + bank._count.incomeCredits + bank._count.cashRegisterBankRules;
         return <PaymentCreditEditRow key={bank.id} id={bank.id} name={bank.name} icon={bank.icon} kindLabel={bank.isFallback ? 'Canale' : 'Banca'} primary={!bank.isFallback && current.company.primaryBankId === bank.id} canBePrimary={!bank.isFallback} usageCount={usageCount} protectedFromDelete={bank.isFallback} iconOptions={paymentCreditIconOptions} updateAction={updateBankAction} deleteAction={deleteBankAction} />;
@@ -159,14 +159,14 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
 
     {section === 'methods' ? <>
     <PaymentCreditCreatePanel action={createPaymentMethodAction} type="method" iconOptions={paymentCreditIconOptions} />
-    <section className="card expense-category-list-card payment-credit-settings-card payment-methods-list-card">
-      <div className="expense-category-list-heading">
+    <section className="card settings-entity-list-card payment-credit-settings-card payment-methods-list-card">
+      <div className="settings-entity-list-heading">
         <div>
           <h3>Metodi configurati</h3>
           <p className="muted">{orderedMethods.length} {orderedMethods.length === 1 ? 'metodo' : 'metodi'}</p>
         </div>
       </div>
-      <div className="expense-category-settings-list payment-methods-settings-list">
+      <div className="settings-entity-list payment-methods-settings-list">
       {orderedMethods.length ? orderedMethods.map(method => {
         const usageCount = method._count.incomePayments + method._count.expensePayments + method._count.recurringExpenses;
         const eligibleForCashRegister = method.kind === 'INCOME' || method.kind === 'BOTH';

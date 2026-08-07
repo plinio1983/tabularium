@@ -82,7 +82,7 @@ const activeLabels: Record<string, string> = {
 
 type FilterOption = { id: number; name: string; icon?: string | null; kind?: string; isFallback?: boolean | null };
 type CategoryOption = { id: number; code?: string; name: string; icon?: string | null };
-type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
+type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null; defaultExpenseCategoryId?: number | null; defaultVatRate?: string | number | null };
 
 export default function RecurringExpensesList({
   items,

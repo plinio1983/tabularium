@@ -38,6 +38,7 @@ enum ExpenseType {
   STANDARD
   VAT_SETTLEMENT
   COUNTER
+  TAX_CONTRIBUTION
 }
 
 enum AttachmentType {
@@ -405,6 +406,7 @@ model Supplier {
   workspace                Workspace?          @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   defaultExpenseCategoryId Int?
   defaultExpenseCategory   ExpenseCategory?    @relation("SupplierDefaultExpenseCategory", fields: [defaultExpenseCategoryId], references: [id], onDelete: SetNull)
+  defaultVatRate           Decimal?            @db.Decimal(5, 2)
   expenses                 Expense[]
   recurringExpenses        RecurringExpense[]
   createdAt                DateTime            @default(now())
@@ -477,6 +479,7 @@ model RecurringExpense {
   updatedAt            DateTime         @updatedAt
 
   generatedExpenses Expense[]
+  exclusions        RecurringExpenseExclusion[]
 
   @@index([workspaceId])
   @@index([workspaceId, companyId])
@@ -485,6 +488,17 @@ model RecurringExpense {
   @@index([supplierId])
   @@index([isActive])
   @@index([paymentMethodId])
+}
+
+model RecurringExpenseExclusion {
+  id                 Int              @id @default(autoincrement())
+  recurringExpenseId Int
+  recurringExpense   RecurringExpense @relation(fields: [recurringExpenseId], references: [id], onDelete: Cascade)
+  periodKey          String
+  createdAt          DateTime         @default(now())
+
+  @@unique([recurringExpenseId, periodKey])
+  @@index([recurringExpenseId])
 }
 
 model RecurringIncome {
@@ -548,6 +562,7 @@ model Expense {
   vatRate                 Decimal          @default(22) @db.Decimal(5, 2)
   isComplete              Boolean          @default(false)
   isDeclared              Boolean          @default(true)
+  affectsFiscalProfit     Boolean          @default(false)
   hasElectronicInvoice    Boolean          @default(true)
   isRecurring             Boolean          @default(false)
   isAutomaticPayment      Boolean          @default(false)

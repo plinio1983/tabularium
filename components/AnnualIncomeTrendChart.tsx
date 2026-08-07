@@ -79,17 +79,17 @@ export default function AnnualIncomeTrendChart({initialData}: { initialData: Inc
                         <span className="slider"/>
                     </span>
                 </label>
-                <div className="expense-trend-mode-toggle" role="group" aria-label="Intervallo temporale">
+                <div className="trend-mode-toggle" role="group" aria-label="Intervallo temporale">
                     {([['day', 'Giorno'], ['week', 'Settimana'], ['month', 'Mese']] as const).map(([value, label]) =>
-                        <button type="button" key={value} disabled={loading} className={`expense-trend-mode-button ${interval === value ? 'is-active' : ''}`} onClick={() => changeInterval(value)}>{label}</button>)}
+                        <button type="button" key={value} disabled={loading} className={`trend-mode-button ${interval === value ? 'is-active' : ''}`} onClick={() => changeInterval(value)}>{label}</button>)}
                 </div>
-                <div className="expense-trend-mode-toggle" role="group" aria-label="Modalità grafico">
-                    <button type="button" className={`expense-trend-mode-button ${mode === 'periodic' ? 'is-active' : ''}`} onClick={() => {
+                <div className="trend-mode-toggle" role="group" aria-label="Modalità grafico">
+                    <button type="button" className={`trend-mode-button ${mode === 'periodic' ? 'is-active' : ''}`} onClick={() => {
                         setMode('periodic');
                         setSelectedIndex(null);
                     }}>Periodico
                     </button>
-                    <button type="button" className={`expense-trend-mode-button ${mode === 'cumulative' ? 'is-active' : ''}`} onClick={() => {
+                    <button type="button" className={`trend-mode-button ${mode === 'cumulative' ? 'is-active' : ''}`} onClick={() => {
                         setMode('cumulative');
                         setSelectedIndex(null);
                     }}>Cumulativo

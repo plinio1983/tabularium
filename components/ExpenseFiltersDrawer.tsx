@@ -297,6 +297,7 @@ export default function ExpenseFiltersDrawer({
             <option value="single">Singola</option>
             <option value="recurring">Ricorrente</option>
             <option value="vat_settlement">Saldo IVA</option>
+            <option value="tax_contribution">Imposte - non IVA</option>
           </select></FilterField>
 
           <SupplierFilterInput initialValue={inputDefault(filters, "merchant")} />
@@ -325,10 +326,10 @@ export default function ExpenseFiltersDrawer({
             {invoiceStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select></FilterField>
 
-          <FilterField label="Detrazione" icon="%"><select name="declared" defaultValue={inputDefault(filters, "declared")}>
+          <FilterField label="Incidenza utile fiscale" icon="%"><select name="declared" defaultValue={inputDefault(filters, "declared")}>
             <option value="">Tutte</option>
-            <option value="yes">Si</option>
-            <option value="no">No</option>
+            <option value="yes">Incide</option>
+            <option value="no">Non incide</option>
           </select></FilterField>
 
           <FilterField label="Allegati" icon="⌕"><select name="attachments" defaultValue={inputDefault(filters, "attachments")}>
@@ -348,8 +349,8 @@ export default function ExpenseFiltersDrawer({
   ) : null;
 
   return <>
-    <button className="btn btn-sm btn-default recurring-filter-trigger" type="button" onClick={() => setOpen(true)}>
-      <span className="btn-icon"><FilterIcon /></span> <span className="recurring-filter-trigger-text">Filtri</span>
+    <button className="btn btn-sm btn-default app-filter-trigger" type="button" onClick={() => setOpen(true)}>
+      <span className="btn-icon"><FilterIcon /></span> <span className="app-filter-trigger-text">Filtri</span>
     </button>
     {drawer}
   </>;

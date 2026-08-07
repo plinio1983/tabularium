@@ -5,6 +5,7 @@ import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { writeAuditLog } from '@/lib/audit';
+import {isSupplierDefaultVatRate} from '@/lib/supplier-defaults';
 
 const SupplierSchema = z.object({
   businessName: z.string().trim().min(1),
@@ -17,6 +18,7 @@ const SupplierSchema = z.object({
   swift: z.string().trim().optional().transform(value => value || null),
   internalNotes: z.string().trim().optional().transform(value => value || null),
   defaultExpenseCategoryId: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().int().positive().nullable()),
+  defaultVatRate: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().refine(isSupplierDefaultVatRate, 'Aliquota IVA non valida').nullable()),
   _action: z.string().optional()
 });
 
@@ -70,7 +72,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       alias: data.alias,
       swift: data.swift,
       internalNotes: data.internalNotes,
-      defaultExpenseCategoryId: data.defaultExpenseCategoryId
+      defaultExpenseCategoryId: data.defaultExpenseCategoryId,
+      defaultVatRate: data.defaultVatRate
     }
   });
   await writeAuditLog({

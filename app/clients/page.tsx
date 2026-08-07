@@ -141,7 +141,7 @@ export default async function ClientsPage({searchParams}: {
                         </div>
                     </details>
                     <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="clientBulkForm" data-edit-trigger-attr="data-client-edit-id">
-                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">✎ <span className="bulk-label">Modifica</span></a>
+                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
                         <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete disabled>
                             <span className="btn-icon icon-small">🗑</span>
                             <span className="bulk-label">Elimina</span>

@@ -6,7 +6,7 @@ import RecurringExpenseForm from '@/components/RecurringExpenseForm';
 import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
-type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null };
+type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null; defaultExpenseCategoryId?: number | null; defaultVatRate?: string | number | null };
 
 type Props = {
   categories: Option[];
@@ -60,6 +60,7 @@ export default function NewRecurringExpensePanel({ categories, banks, paymentMet
           paymentMethods={paymentMethods}
           suppliers={suppliers}
           action={action}
+          mobileStepOffset={1}
           onCancel={() => setIsOpen(false)}
         />
       </div>

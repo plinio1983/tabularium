@@ -724,9 +724,10 @@ export default async function ExpensesPage({searchParams}: {
         if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
         if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
         if (categoryFilter && expense.category?.name !== categoryFilter) return false;
-        if (expenseTypeFilter === 'single' && (expense.expenseType === 'VAT_SETTLEMENT' || expense.isRecurring)) return false;
-        if (expenseTypeFilter === 'recurring' && (expense.expenseType === 'VAT_SETTLEMENT' || !expense.isRecurring)) return false;
+        if (expenseTypeFilter === 'single' && (expense.expenseType !== 'STANDARD' || expense.isRecurring)) return false;
+        if (expenseTypeFilter === 'recurring' && (expense.expenseType !== 'STANDARD' || !expense.isRecurring)) return false;
         if (expenseTypeFilter === 'vat_settlement' && expense.expenseType !== 'VAT_SETTLEMENT') return false;
+        if (expenseTypeFilter === 'tax_contribution' && expense.expenseType !== 'TAX_CONTRIBUTION') return false;
         if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
         if (supplierQuickFilter && !normalize(expense.supplier?.businessName).includes(supplierQuickFilter)) return false;
         if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
@@ -741,8 +742,9 @@ export default async function ExpensesPage({searchParams}: {
         if (invoiceStatusModeFilter === 'not_received' && !isExpenseInvoiceNotReceived(expense)) return false;
         if (invoiceStatusFilter === 'not_received' && !isExpenseInvoiceNotReceived(expense)) return false;
         if (invoiceStatusFilter && invoiceStatusFilter !== 'not_received' && expense.invoiceStatus !== invoiceStatusFilter) return false;
-        if (declaredFilter === 'yes' && !expense.isDeclared) return false;
-        if (declaredFilter === 'no' && expense.isDeclared) return false;
+        const affectsFiscalResult = expense.isDeclared || expense.affectsFiscalProfit;
+        if (declaredFilter === 'yes' && !affectsFiscalResult) return false;
+        if (declaredFilter === 'no' && affectsFiscalResult) return false;
         if (attachmentsFilter === 'with' && expense.attachments.length === 0) return false;
         if (attachmentsFilter === 'without' && expense.attachments.length > 0) return false;
 
@@ -761,7 +763,7 @@ export default async function ExpensesPage({searchParams}: {
         acc.toPay += residualAmount;
         acc.overdue += overdueResidualAmount;
         if (isExpensePastDue(expense, new Date(), current.company.timeZone)) acc.overdueCount += 1;
-        if (expense.isDeclared) {
+        if (expense.isDeclared || expense.affectsFiscalProfit) {
             acc.declared += amount;
             if (isExpenseInvoiceNotReceived(expense)) acc.invoicesNotReceived += 1;
         } else {
@@ -897,7 +899,7 @@ export default async function ExpensesPage({searchParams}: {
         categoryFilter && {label: 'Categoria', value: categoryFilter},
         expenseTypeFilter && {
             label: 'Tipo spesa',
-            value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : 'Singola'
+            value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : expenseTypeFilter === 'tax_contribution' ? 'Imposte - non IVA' : 'Singola'
         },
         inputDefault(filters, 'merchant') && {label: 'Esercente', value: inputDefault(filters, 'merchant')},
         inputDefault(filters, 'supplierQuick') && {label: 'Fornitore', value: inputDefault(filters, 'supplierQuick')},
@@ -916,7 +918,7 @@ export default async function ExpensesPage({searchParams}: {
             label: 'Stato fattura',
             value: optionLabel(invoiceStatusFilterLabels, invoiceStatusFilter || invoiceStatusModeFilter)
         },
-        declaredFilter && {label: 'Detrazione', value: declaredFilter === 'yes' ? 'Fiscale' : 'Non Fisc.'},
+        declaredFilter && {label: 'Utile fiscale', value: declaredFilter === 'yes' ? 'Incide' : 'Non incide'},
         attachmentsFilter && {
             label: 'Allegati',
             value: attachmentsFilter === 'with' ? 'Con allegati' : 'Senza allegati'
@@ -953,6 +955,7 @@ export default async function ExpensesPage({searchParams}: {
                 taxCodeSdi: s.taxCodeSdi,
                 internalNotes: s.internalNotes,
                 defaultExpenseCategoryId: s.defaultExpenseCategoryId,
+                defaultVatRate: s.defaultVatRate?.toString() ?? null,
                 systemRole: s.systemRole
             }))}
             initialOpen={inputDefault(filters, 'new') === '1'}
@@ -1296,6 +1299,7 @@ export default async function ExpensesPage({searchParams}: {
                     taxCodeSdi: s.taxCodeSdi,
                     internalNotes: s.internalNotes,
                     defaultExpenseCategoryId: s.defaultExpenseCategoryId,
+                    defaultVatRate: s.defaultVatRate?.toString() ?? null,
                     systemRole: s.systemRole
                 }))}
                 emptyMessage="Nessuna spesa trovata con i filtri selezionati."

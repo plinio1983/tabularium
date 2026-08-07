@@ -20,7 +20,7 @@ export default function IncomeEntityCreatePanel({
         <small>Aggiungi un nuovo valore disponibile nei form di incasso.</small>
       </span></span><span aria-hidden="true">{open ? '−' : '+'}</span>
     </button>
-    {open ? <form action={action} className="form app-record-form category-create-form expense-category-create-form">
+    {open ? <form action={action} className="form app-record-form category-create-form settings-entity-create-form">
       <input type="hidden" name="kind" value={kind} />
       <div className="app-form-field"><label className="app-form-field-label">Nome</label><input name="name" maxLength={80} required autoFocus/></div>
       <div className="app-form-field"><label className="app-form-field-label">Icona</label><select name="icon" defaultValue=""><option value="">Nessuna</option>{iconOptions.map(icon => <option key={icon} value={icon}>{icon}</option>)}</select></div>
