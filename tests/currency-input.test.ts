@@ -30,6 +30,15 @@ test("digits after comma fill decimals without changing the integer", () => {
   assert.equal(value, "123,45");
 });
 
+test("typing 10 comma 50 produces 10,50", () => {
+  const state = {separatorDigits: null as 0 | 1 | null};
+  let value = "";
+  for (const key of ["1", "0", ",", "5", "0"]) {
+    value = applyCurrencyInputKeyWithState(value, key, state);
+  }
+  assert.equal(value, "10,50");
+});
+
 test("currency input backspace shifts digits toward cents", () => {
   assert.equal(applyCurrencyInputKey("12,34", "backspace"), "1,23");
   assert.equal(formatCurrencyInput("15.5"), "15,50");

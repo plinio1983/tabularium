@@ -5,7 +5,6 @@ import {useRouter} from 'next/navigation';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {zonedMidnightUtc} from '@/lib/company-time';
-import {CurrencyInput} from '@/components/CurrencyInput';
 
 type Category = {id: number; name: string; icon: string | null};
 type Method = {id: number; name: string; icon: string | null; systemRole: string | null};
@@ -43,6 +42,7 @@ export default function CounterExpenseRegister({
   const [vatRate, setVatRate] = useState(0);
   const [lastVatRate, setLastVatRate] = useState(22);
   const [amount, setAmount] = useState('');
+  const amountValueRef = useRef(amount);
   const [description, setDescription] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
@@ -83,7 +83,9 @@ export default function CounterExpenseRegister({
 
   function appendKey(key: string) {
     setNotice(null);
-    setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
+    const nextAmount = applyCurrencyInputKeyWithState(amountValueRef.current, key, amountKeyStateRef.current);
+    amountValueRef.current = nextAmount;
+    setAmount(nextAmount);
     focusAmount();
   }
 
@@ -252,6 +254,8 @@ export default function CounterExpenseRegister({
       if (!response.ok) throw new Error(result.error || 'Registrazione non riuscita');
       setModalOpen(false);
       setSelectedMethodId(null);
+      amountValueRef.current = '';
+      amountKeyStateRef.current.separatorDigits = null;
       setAmount('');
       setDescription('');
       setRequestId(crypto.randomUUID());
@@ -315,8 +319,7 @@ export default function CounterExpenseRegister({
       </small>
       <div className="cash-register-display-amount">
         <span>€</span>
-        <CurrencyInput ref={amountRef} className={amountSizeClass} aria-label="Importo spesa"
-                       value={formattedAmount} onValueChange={setAmount} suppressSoftKeyboard/>
+        <input ref={amountRef} className={amountSizeClass} aria-label="Importo spesa" value={formattedAmount} readOnly inputMode="none"/>
       </div>
     </section>
 

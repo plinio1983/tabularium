@@ -5,7 +5,6 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {zonedMidnightUtc} from '@/lib/company-time';
-import {CurrencyInput} from '@/components/CurrencyInput';
 
 type Method = {
     id: number;
@@ -23,6 +22,19 @@ type InitialReceipt = {
     paymentMethodId: number;
     description: string | null;
 };
+
+function cashRegisterDateLabel(value: string) {
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) return '';
+    const parts = new Intl.DateTimeFormat('it-IT', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    }).formatToParts(new Date(year, month - 1, day, 12));
+    const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value ?? '';
+    const monthLabel = part('month').replace('.', '');
+    return `${part('day')} ${monthLabel.charAt(0).toUpperCase()}${monthLabel.slice(1)} ${part('year')}`;
+}
 
 function euro(value: number) {
     return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR'}).format(value);
@@ -58,6 +70,7 @@ export default function CashRegister({
     const keyboardCancelRef = useRef<HTMLButtonElement>(null);
     const keyboardSubmitRef = useRef<HTMLButtonElement>(null);
     const [amount, setAmount] = useState(initialReceipt ? String(initialReceipt.amount).replace('.', ',') : '');
+    const amountValueRef = useRef(amount);
     const [description, setDescription] = useState(initialReceipt?.description === 'Incasso da banco' ? '' : initialReceipt?.description ?? '');
     const [isFiscal, setIsFiscal] = useState(initialReceipt?.isFiscal ?? true);
     const [vatRate, setVatRate] = useState(initialReceipt?.vatRate ?? 22);
@@ -224,7 +237,9 @@ export default function CashRegister({
     function appendKey(key: string) {
         if (confirmationLocked) return;
         setNotice(null);
-        setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
+        const nextAmount = applyCurrencyInputKeyWithState(amountValueRef.current, key, amountKeyStateRef.current);
+        amountValueRef.current = nextAmount;
+        setAmount(nextAmount);
         focusAmount();
     }
 
@@ -300,6 +315,8 @@ export default function CashRegister({
                 return;
             }
             setNotice({tone: 'ok', text: `Incasso registrato · ${paymentMethod.icon ?? ''} ${paymentMethod.name}`});
+            amountValueRef.current = '';
+            amountKeyStateRef.current.separatorDigits = null;
             setAmount('');
             setDescription('');
             setSelectedMethodId(null);
@@ -329,20 +346,12 @@ export default function CashRegister({
         <header className="cash-register-header">
             <div className="">
                 <h1>{mode === 'edit' ? `Modifica scontrino #${initialReceipt?.id}` : mode === 'copy' ? 'Copia scontrino' : 'Registratore di cassa'}</h1>
-                <a className="btn btn-sm btn-ghost" href="/incomes/cash-register/receipts">
+                <a className="btn btn-sm btn-link" href="/incomes/cash-register/receipts">
                     <span className="btn-icon" aria-hidden="true">📊</span>
                     <span className="hidden-sm-up">Report scontrini</span>
                     <span className="hidden-sm-down">Report scontrini</span>
                 </a>
-                {/*<Link href="/incomes/cash-register/receipts">Report scontrini</Link>*/}
             </div>
-            {/*<div className="cash-register-header-actions">*/}
-            {/*    <a className="btn btn-sm btn-secondary" href="/incomes/cash-register/receipts">*/}
-            {/*        <span className="btn-icon" aria-hidden="true">📊</span>*/}
-            {/*        <span className="hidden-sm">Report</span>*/}
-            {/*        <span className="hidden-sp">Report scontrini</span>*/}
-            {/*    </a>*/}
-            {/*</div>*/}
             <div className="cash-register-header-actions">
                 <a className="btn btn-circle btn-sm btn-neutral btn-close" href="/incomes/">
                     <span className="btn-icon" aria-hidden="true">✕</span>
@@ -365,8 +374,11 @@ export default function CashRegister({
                 <span>Fiscale</span>
                 {/*<b>{isFiscal ? 'ON' : 'OFF'}</b>*/}
             </label>
-            <input aria-label="Data incasso" type="date" value={creditDate} disabled={confirmationLocked}
-                   onChange={event => setCreditDate(event.currentTarget.value)}/>
+            <div className="cash-register-date-control">
+                <input aria-label="Data incasso" type="date" value={creditDate} disabled={confirmationLocked}
+                       onChange={event => setCreditDate(event.currentTarget.value)}/>
+                <span aria-hidden="true">{cashRegisterDateLabel(creditDate)}</span>
+            </div>
             <select aria-label="Canale di vendita" value={salesChannelId} disabled={confirmationLocked}
                     onChange={event => setSalesChannelId(event.currentTarget.value)}>
                 {channels.map(channel =>
@@ -395,9 +407,8 @@ export default function CashRegister({
             </small>
             <div className="cash-register-display-amount">
                 <span>€</span>
-                <CurrencyInput ref={amountRef} className={amountSizeClass} aria-label="Importo incasso"
-                               value={formattedAmount} onValueChange={setAmount} suppressSoftKeyboard
-                               disabled={confirmationLocked}/>
+                <input ref={amountRef} className={amountSizeClass} aria-label="Importo incasso" value={formattedAmount} readOnly
+                       disabled={confirmationLocked} inputMode="none"/>
             </div>
         </section>
 
