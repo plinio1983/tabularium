@@ -275,7 +275,7 @@
     transform: translateY(-54%);
   }
 
-  .app-form-wizard .app-date-control,
+  :is(.app-form-wizard, .app-record-form) .app-date-control,
   .app-form-wizard .payment-date-control {
     position: relative;
     min-height: 54px;
@@ -287,7 +287,7 @@
     box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
   }
 
-  .app-form-wizard .app-date-control:focus-within,
+  :is(.app-form-wizard, .app-record-form) .app-date-control:focus-within,
   .app-form-wizard .payment-date-control:focus-within,
   .app-form-wizard .app-select-control:focus-within select,
   .app-form-wizard .payment-select-control:focus-within select {
@@ -295,7 +295,7 @@
     box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
   }
 
-  .app-form-wizard .app-date-control > input,
+  :is(.app-form-wizard, .app-record-form) .app-date-control > input,
   .app-form-wizard .payment-date-control > input {
     position: absolute;
     inset: 0;
@@ -307,7 +307,7 @@
     cursor: pointer;
   }
 
-  .app-form-wizard .app-date-presentation,
+  :is(.app-form-wizard, .app-record-form) .app-date-presentation,
   .app-form-wizard .payment-date-presentation {
     display: flex;
     min-height: 54px;
@@ -318,21 +318,21 @@
     pointer-events: none;
   }
 
-  .app-form-wizard .app-date-presentation strong,
+  :is(.app-form-wizard, .app-record-form) .app-date-presentation strong,
   .app-form-wizard .payment-date-presentation strong {
     color: #172033;
     font-size: 17px;
     text-transform: capitalize;
   }
 
-  .app-form-wizard .app-date-presentation span,
+  :is(.app-form-wizard, .app-record-form) .app-date-presentation span,
   .app-form-wizard .payment-date-presentation span {
     color: var(--muted);
     font-size: 12px;
     font-weight: 750;
   }
 
-  .app-form-wizard .app-date-picker-button,
+  :is(.app-form-wizard, .app-record-form) .app-date-picker-button,
   .app-form-wizard .payment-date-picker-button {
     position: absolute;
     top: 50%;

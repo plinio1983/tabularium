@@ -73,6 +73,7 @@ type Props = {
     onSwitchToTaxContribution?: () => void;
     mobileStepOffset?: number;
     onBackToType?: () => void;
+    hideMobileActions?: boolean;
 };
 
 const cashChannel = "Cash";
@@ -384,6 +385,7 @@ export default function RecurringExpenseForm({
                                                  onSwitchToTaxContribution,
                                                  mobileStepOffset = 0,
                                                  onBackToType,
+                                                 hideMobileActions = false,
                                              }: Props) {
     const isExistingExpense = Boolean(initialExpense?.id);
     const timeZone = useCompanyTimeZone();
@@ -922,7 +924,7 @@ export default function RecurringExpenseForm({
                 </div>
             </details>
 
-            <MobileFormStickyActions
+            {!hideMobileActions ? <MobileFormStickyActions
                 currentStep={mobileStep + (onBackToType ? mobileStepOffset : 0)}
                 submitStep={6 + (onBackToType ? mobileStepOffset : 0)}
                 onBack={() => mobileStep === 1 && onBackToType ? onBackToType() : goToMobileStep(mobileStep - 1)}
@@ -933,7 +935,7 @@ export default function RecurringExpenseForm({
                 isSubmitting={isSubmitting}
                 nextDisabled={mobileStep === 2 && (!Number.isFinite(amountValue) || amountValue <= 0)}
                 error={submitError}
-            />
+            /> : null}
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}

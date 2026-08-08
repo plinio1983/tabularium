@@ -316,7 +316,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   const sourcePanel = sourceMenu?.querySelector<HTMLElement>(".bulk-action-menu-panel");
   if (sourceMenu && sourcePanel) {
     const menuWrap = document.createElement("div");
-    menuWrap.className = "floating-bulk-menu-wrap";
+    menuWrap.className = "floating-bulk-menu-wrap btn-group-item";
 
     const trigger = document.createElement("button");
     trigger.type = "button";

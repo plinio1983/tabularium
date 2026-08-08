@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import SupplierFormFields from '@/components/SupplierFormFields';
+import EntityFormActions from '@/components/EntityFormActions';
 
 type SupplierData = {
   id: number;
@@ -77,14 +78,7 @@ export default function SupplierEditModalController({categories = []}: { categor
             action={`/api/suppliers/${supplier.id}?returnTo=${encodeURIComponent(returnTo)}`} method="post">
         <SupplierFormFields supplier={supplier} categories={categories}/>
 
-        <div className="full actions-row form-actions-row form-sticky-actions entity-form-actions">
-          <button className="btn btn-md btn-default" type="button" onClick={() => setSupplier(null)}>
-            <span className="btn-icon">✕</span> Annulla
-          </button>
-          <button className="btn btn-md btn-primary" type="submit">
-            <span className="btn-icon">✓</span> Salva modifiche
-          </button>
-        </div>
+        <EntityFormActions onCancel={() => setSupplier(null)} submitLabel="Salva modifiche"/>
       </form>
     </div>
   </div>;

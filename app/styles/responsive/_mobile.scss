@@ -2466,7 +2466,7 @@
   .app-form-wizard .product-suggestion-picker:focus-within > input,
   .app-form-wizard .expense-invoice-status-field:focus-within > select,
   .app-form-wizard .amount-vat-row > label:focus-within > select,
-  .app-form-wizard .app-date-control:focus-within {
+  :is(.app-form-wizard, .app-record-form) .app-date-control:focus-within {
     border-color: var(--accent);
     box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
   }
@@ -2482,7 +2482,7 @@
     color: var(--accent);
   }
 
-  .app-form-wizard .app-date-control {
+  :is(.app-form-wizard, .app-record-form) .app-date-control {
     min-height: 54px;
     overflow: hidden;
     border: 1px solid #cbd5e1;
@@ -2491,7 +2491,7 @@
     box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
   }
 
-  .app-form-wizard .app-date-control input {
+  :is(.app-form-wizard, .app-record-form) .app-date-control input {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -2501,7 +2501,7 @@
     cursor: pointer;
   }
 
-  .app-form-wizard .app-date-presentation {
+  :is(.app-form-wizard, .app-record-form) .app-date-presentation {
     display: flex;
     min-height: 54px;
     flex-direction: column;
@@ -2511,20 +2511,20 @@
     pointer-events: none;
   }
 
-  .app-form-wizard .app-date-presentation strong {
+  :is(.app-form-wizard, .app-record-form) .app-date-presentation strong {
     color: #172033;
     font-size: 17px;
     text-transform: capitalize;
   }
 
-  .app-form-wizard .app-date-presentation span {
+  :is(.app-form-wizard, .app-record-form) .app-date-presentation span {
     color: var(--muted);
     font-size: 12px;
     font-weight: 750;
     text-transform: capitalize;
   }
 
-  .app-form-wizard .app-date-picker-button {
+  :is(.app-form-wizard, .app-record-form) .app-date-picker-button {
     position: absolute;
     top: 50%;
     right: 10px;
@@ -4637,8 +4637,18 @@
   }
 
   .app-quick-search-form {
-    padding: 12px;
+    padding: 12px 0;
     border-radius: 12px;
+  }
+
+  .app-quick-search-field {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .app-quick-search-field > input {
+    width: 0;
+    min-width: 0;
   }
 
   .annual-income-trend-heading {
@@ -5309,6 +5319,7 @@
     transform: none !important;
     box-sizing: border-box;
   }
+
 }
 
 @media (max-width: 900px) {

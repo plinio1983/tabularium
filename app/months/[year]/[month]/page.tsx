@@ -295,7 +295,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <input type="hidden" name="returnTo" value={backHref}/>
                 {customerQuickValue ? <input type="hidden" name="customerQuick" value={customerQuickValue}/> : null}
                 <label className="app-form-field-label" htmlFor="monthExpenseSupplierQuickSearch"><span className="app-form-field-icon" aria-hidden="true">⌕</span><span>Ricerca fornitore</span></label>
-                <div className="entity-quick-search-field app-quick-search-field btn-group">
+                <div className="entity-quick-search-field app-quick-search-field input-group">
                     <input id="monthExpenseSupplierQuickSearch" name="supplierQuick" defaultValue={supplierQuickValue} placeholder="Nome o ragione sociale" autoComplete="off"/>
                     <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca fornitore"><SearchIcon /></button>
                 </div>
@@ -354,7 +354,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <input type="hidden" name="returnTo" value={backHref}/>
                 {supplierQuickValue ? <input type="hidden" name="supplierQuick" value={supplierQuickValue}/> : null}
                 <label className="app-form-field-label" htmlFor="monthIncomeCustomerQuickSearch"><span className="app-form-field-icon" aria-hidden="true">⌕</span><span>Ricerca cliente</span></label>
-                <div className="entity-quick-search-field app-quick-search-field btn-group">
+                <div className="entity-quick-search-field app-quick-search-field input-group">
                     <input id="monthIncomeCustomerQuickSearch" name="customerQuick" defaultValue={customerQuickValue} placeholder="Nome o ragione sociale" autoComplete="off"/>
                     <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca cliente"><SearchIcon/></button>
                 </div>

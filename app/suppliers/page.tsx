@@ -240,7 +240,7 @@ export default async function SuppliersPage({searchParams}: {
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
                     <span>Ricerca fornitore</span>
                 </label>
-                <div className="entity-quick-search-field app-quick-search-field btn-group">
+                <div className="entity-quick-search-field app-quick-search-field input-group">
                     <input
                         id="supplierQuickSearch"
                         name="businessName"

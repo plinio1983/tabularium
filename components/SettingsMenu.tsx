@@ -18,6 +18,7 @@ const mainMenuLinks = [
   { href: (_timeZone: string) => '/recurring-expenses', label: 'Uscite ricorrenti', icon: '↻' },
   { href: (_timeZone: string) => '/recurring-incomes', label: 'Entrate ricorrenti', icon: '↻' },
   { href: (_timeZone: string) => '/suppliers', label: 'Fornitori', icon: '◇' },
+  { href: (_timeZone: string) => '/employees', label: 'Dipendenti', icon: '♙' },
   { href: (_timeZone: string) => '/clients', label: 'Clienti', icon: '♙' },
   { href: (_timeZone: string) => '/settings/company', label: 'Dati azienda', icon: '🏢' },
   { href: (_timeZone: string) => '/expenses/import', label: 'Importa dati', icon: '⬆' },

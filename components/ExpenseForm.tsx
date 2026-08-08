@@ -113,6 +113,7 @@ type Props = {
     openNewPayment?: boolean;
     initialOpenPaymentId?: number;
     focusAttachments?: boolean;
+    hideMobileActions?: boolean;
 };
 
 function toDateInput(value?: string | Date | null) {
@@ -443,6 +444,7 @@ export default function ExpenseForm({
                                         openNewPayment = false,
                                         initialOpenPaymentId,
                                         focusAttachments = false,
+                                        hideMobileActions = false,
                                     }: Props) {
     const timeZone = useCompanyTimeZone();
     const today = dateInputInTimeZone(timeZone);
@@ -1142,9 +1144,9 @@ export default function ExpenseForm({
                         <div className="expense-wizard-amount-entry">
                             {!isNoVatExpense ?
                                 <div className="switch-toggle-field expense-fiscal-desktop-control">
-                                    <div className="switch-toggle-field-label">
+                                    <div className="switch-toggle-field-label app-form-field-label">
                                         <span className="app-form-field-icon">⇆</span>
-                                        <label>Fiscale</label>
+                                        <span>Fiscale</span>
                                     </div>
                                     <label className="switch">
                                         <input
@@ -1292,7 +1294,7 @@ export default function ExpenseForm({
                         <div className="switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
                             <div className="switch-toggle-field-label app-form-field-label">
                                 <span className="app-form-field-icon">⇆</span>
-                                <label>Fattura emessa</label>
+                                <span>Fattura emessa</span>
                             </div>
                             <label className="switch">
                                 <input
@@ -1737,7 +1739,7 @@ export default function ExpenseForm({
                 </div>
             </details>
 
-            <MobileFormStickyActions
+            {!hideMobileActions ? <MobileFormStickyActions
                 currentStep={isPaymentOnlyMode ? 1 : mobileStep + (onBackToType ? mobileStepOffset : 0)}
                 submitStep={isPaymentOnlyMode ? 1 : 6 + (onBackToType ? mobileStepOffset : 0)}
                 onBack={previousMobileStep}
@@ -1750,7 +1752,7 @@ export default function ExpenseForm({
                 nextDisabled={mobileStep === 2 && (!Number.isFinite(amountValue) || amountValue <= 0)}
                 submitDisabled={Boolean(attachmentError)}
                 error={submitError}
-            />
+            /> : null}
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 {submitError ? <p className="inline-warning full">{submitError}</p> : null}

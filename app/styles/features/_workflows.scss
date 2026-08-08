@@ -2457,9 +2457,13 @@ body.bulk-attachments-modal-open {
   gap: 5px;
   width: min(100%, 480px);
   margin-bottom: 12px;
+
+  @media(min-width: 769px) {
+    margin-bottom: 24px;
+  }
 }
 
-.entity-quick-search > label {
+.entity-quick-search > .app-form-field-label {
   font-size: 12px;
   font-weight: 800;
   color: var(--muted);
@@ -2501,7 +2505,16 @@ body.bulk-attachments-modal-open {
 }
 
 .app-quick-search-field {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+}
+
+.app-quick-search-field > input {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 //.app-quick-search-field input {
@@ -2910,5 +2923,3 @@ button.bulk-direct-danger {
   position: relative;
   z-index: 1;
 }
-
-

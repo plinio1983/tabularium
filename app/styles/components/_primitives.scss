@@ -211,4 +211,331 @@ button {
 .full {
   grid-column: 1 / -1;
 }
+.btn,
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: auto;
+  max-width: max-content;
+  white-space: nowrap;
+  line-height: 1.1;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+}
 
+.btn-xs {
+  min-height: 28px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.btn-sm {
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.btn-md {
+  min-height: 40px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.btn-lg {
+  min-height: 44px;
+  padding: 11px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.btn-circle {
+  border-radius: 50%;
+  max-width: 100%;
+
+  &.btn-xxs {
+    width: 22px;
+    height: 22px;
+  }
+
+  &.btn-xs {
+    width: 28px;
+    height: 28px;
+  }
+
+  &.btn-sm {
+    width: 36px;
+    height: 36px;
+  }
+
+  &.btn-md {
+    width: 40px;
+    height: 40px;
+  }
+
+  &.btn-lg {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.btn-icon-only {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
+.btn-primary {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border: 1px solid var(--accent) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background: #1f49bf !important;
+  border-color: #1f49bf !important;
+}
+
+.btn-main {
+  background: #08708b;
+  color: #fff;
+  border: 1px solid #08708b;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn-main:hover,
+.btn-main:focus,
+.btn-main:active {
+  background: #075b72;
+  border-color: #075b72;
+}
+
+.btn-main.btn-action {
+  background: rgb(24 142 172 / 8%);
+  color: #08708b;
+  border-color: #08708b1f;
+}
+
+.btn-main.btn-action {
+  &:hover,
+  &:focus,
+  &:active {
+    background: #08708b26;
+    //background: rgba(8, 112, 139, 0.1490196078);
+  }
+  &.btn-active {
+    background: #08708b;
+    border-color: #08708b;
+    color: #fff;
+  }
+}
+
+.btn-neutral {
+  background: #fff;
+  color: var(--muted);
+  border: 1px solid #c4cce2;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: #f8faff;
+    border-color: #c4cce2;
+  }
+}
+
+.btn-secondary {
+  background: #f1f0ff;
+  color: #5746b8;
+  border-color: #d7d4ff;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: #e6e1ff;
+    //border-color: #c4cce2;
+    border-color: #ded9ff;
+  }
+}
+
+.btn-default,
+.reset-button {
+  background: #fff;
+  color: var(--accent);
+  border: 1px solid #cfd7ff;
+}
+
+.btn-default:hover,
+.reset-button:hover {
+  background: #f8faff;
+  border-color: #b9c7ff;
+}
+
+.btn-danger {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.btn-danger:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.btn-success {
+  border-color: #047857;
+  background: #059669;
+  color: #fff;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background: #047857;
+    border-color: #047857;
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+  background: #eef2ff;
+}
+
+.btn-link {
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 850;
+}
+
+.btn-block {
+  width: 100%;
+  max-width: none;
+}
+
+.btn-stretch {
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+.btn-sm.btn-stretch {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: .45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Gruppo riutilizzabile di controlli adiacenti, equivalente al pattern
+   `.btn-group`: un solo profilo esterno e bordi interni condivisi. */
+.btn-group {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+}
+
+.btn-group > :is(button, .btn, a, .btn-group-item) {
+  position: relative;
+  margin-left: -1px;
+  border-radius: 0;
+}
+
+.btn-group > :is(button, .btn, a, .btn-group-item):first-child {
+  margin-left: 0;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.btn-group > :is(button, .btn, a, .btn-group-item):last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.btn-group > :is(button, .btn, a, .btn-group-item):only-child {
+  border-radius: 10px;
+}
+
+.btn-group > :is(button, .btn, a, .btn-group-item):is(:hover, :focus-visible, :focus-within, .is-selected, .btn-active) {
+  z-index: 1;
+}
+
+.btn-group > .btn-group-item {
+  display: inline-flex;
+}
+
+.btn-group > .btn-group-item > :is(button, .btn, a) {
+  margin: 0;
+  border-radius: inherit;
+}
+
+.input-group {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+}
+
+.input-group > :is(button, .btn, a, input, select, .app-select-control) {
+  position: relative;
+  margin-left: -1px;
+  border-radius: 0;
+}
+
+.input-group > :is(button, .btn, a, input, select, .app-select-control):first-child {
+  margin-left: 0;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.input-group > :is(button, .btn, a, input, select, .app-select-control):last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.input-group > :is(button, .btn, a, input, select, .app-select-control):only-child {
+  border-radius: 10px;
+}
+
+.input-group > :is(button, .btn, a, input, select, .app-select-control):is(:hover, :focus-visible, :focus-within, .is-selected, .btn-active) {
+  z-index: 1;
+}
+
+.input-group > .app-select-control {
+  display: flex;
+}
+
+.input-group > .app-select-control > select {
+  height: 100%;
+  border-radius: inherit;
+}

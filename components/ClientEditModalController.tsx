@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import ClientFormFields from '@/components/ClientFormFields';
+import EntityFormActions from '@/components/EntityFormActions';
 
 type Customer = { id: number; businessName: string; alias: string | null; email: string | null; vatNumber: string | null; taxCodeSdi: string | null; pec: string | null; iban: string | null; swift: string | null; internalNotes: string | null };
 export default function ClientEditModalController() {
@@ -19,6 +20,6 @@ export default function ClientEditModalController() {
   }, []);
   return customer ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Modifica cliente" onMouseDown={() => setCustomer(null)}><div className="modal-card modal-card-wide entity-form-modal-card" onMouseDown={event => event.stopPropagation()}>
     <div className="modal-title"><div><h3>Modifica cliente</h3><p className="muted">Aggiorna l’anagrafica di {customer.businessName}.</p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setCustomer(null)}>×</button></div>
-    <form className="card form app-record-form entity-form entity-styled-form inline-create-form" action={`/api/clients/${customer.id}?returnTo=${encodeURIComponent(returnTo)}`} method="post"><ClientFormFields customer={customer} /><div className="full actions-row form-actions-row form-sticky-actions entity-form-actions"><button className="btn btn-md btn-default" type="button" onClick={() => setCustomer(null)}><span className="btn-icon">✕</span> Annulla</button><button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> Salva modifiche</button></div></form>
+    <form className="card form app-record-form entity-form entity-styled-form inline-create-form" action={`/api/clients/${customer.id}?returnTo=${encodeURIComponent(returnTo)}`} method="post"><ClientFormFields customer={customer} /><EntityFormActions onCancel={() => setCustomer(null)} submitLabel="Salva modifiche"/></form>
   </div></div> : null;
 }

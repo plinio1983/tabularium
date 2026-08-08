@@ -3,6 +3,7 @@
 import {type FormEvent, useEffect, useState} from "react";
 import {createPortal} from "react-dom";
 import SupplierFormFields from "@/components/SupplierFormFields";
+import EntityFormActions from "@/components/EntityFormActions";
 
 type CategoryOption = {id: number; name: string; icon?: string | null};
 
@@ -114,14 +115,7 @@ export default function SupplierCreateModal({
                     />
 
                     {error ? <p className="full form-error" role="alert">{error}</p> : null}
-                    <div className="full actions-row form-actions-row form-sticky-actions entity-form-actions">
-                        <button className="btn btn-md btn-default" type="button" disabled={isSaving} onClick={onClose}>
-                            <span className="btn-icon">✕</span> Annulla
-                        </button>
-                        <button className="btn btn-md btn-primary" type="submit" disabled={isSaving}>
-                            <span className="btn-icon">✓</span> {isSaving ? "Salvataggio…" : onCreated ? "Salva e seleziona" : "Salva fornitore"}
-                        </button>
-                    </div>
+                    <EntityFormActions onCancel={onClose} submitLabel={onCreated ? "Salva e seleziona" : "Salva fornitore"} submitting={isSaving}/>
                 </form>
             </div>
         </div>,

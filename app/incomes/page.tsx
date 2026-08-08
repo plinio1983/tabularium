@@ -971,7 +971,7 @@ export default async function IncomesPage({searchParams}: {
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
                     <span>Ricerca cliente</span>
                 </label>
-                <div className="entity-quick-search-field app-quick-search-field btn-group">
+                <div className="entity-quick-search-field app-quick-search-field input-group">
                     <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
                     <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca cliente"><SearchIcon/>
                     </button>

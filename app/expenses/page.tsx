@@ -1092,7 +1092,7 @@ export default async function ExpensesPage({searchParams}: {
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
                     <span>Ricerca fornitore</span>
                 </label>
-                <div className="entity-quick-search-field app-quick-search-field btn-group">
+                <div className="entity-quick-search-field app-quick-search-field input-group">
                     <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
                     <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca fornitore"><SearchIcon/>
                     </button>
