@@ -2,7 +2,7 @@
 
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
-import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
+import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from '@/lib/currency-input';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {zonedMidnightUtc} from '@/lib/company-time';
 
@@ -243,6 +243,14 @@ export default function CashRegister({
         focusAmount();
     }
 
+    function clearAmount() {
+        const nextAmount = resetCurrencyInput(amountKeyStateRef.current);
+        amountValueRef.current = nextAmount;
+        setAmount(nextAmount);
+        setNotice(null);
+        focusAmount();
+    }
+
     function toggleFiscal(value: boolean) {
         if (confirmationLocked) return;
         setIsFiscal(value);
@@ -409,6 +417,8 @@ export default function CashRegister({
                 <span>€</span>
                 <input ref={amountRef} className={amountSizeClass} aria-label="Importo incasso" value={formattedAmount} readOnly
                        disabled={confirmationLocked} inputMode="none"/>
+                <button type="button" className="amount-clear-button" aria-label="Azzera importo"
+                        disabled={confirmationLocked} onClick={clearAmount}>×</button>
             </div>
         </section>
 

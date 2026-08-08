@@ -1092,6 +1092,50 @@ body.drawer-open {
   padding-left: 30px;
 }
 
+.amount-clear-button {
+  display: inline-flex;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.amount-clear-button:hover,
+.amount-clear-button:focus-visible {
+  background: #eef2f7;
+  color: var(--text);
+}
+
+.amount-clear-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.amount-clear-button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+.money-input > .amount-clear-button {
+  position: absolute;
+  z-index: 3;
+  right: 10px;
+}
+
+.money-input > input {
+  padding-right: 52px !important;
+}
+
 //.income-form .money-input {
 //  width: 60%;
 //}

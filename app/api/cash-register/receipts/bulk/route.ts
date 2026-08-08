@@ -5,9 +5,9 @@ import {pathFromUrl, redirectToPath} from '@/lib/redirect';
 import {writeAuditLog} from '@/lib/audit';
 
 function selectedIds(formData: FormData) {
-    return formData.getAll('ids')
+    return Array.from(new Set(formData.getAll('ids')
         .map(value => Number(value))
-        .filter(value => Number.isInteger(value) && value > 0);
+        .filter(value => Number.isInteger(value) && value > 0)));
 }
 
 export async function POST(request: Request) {

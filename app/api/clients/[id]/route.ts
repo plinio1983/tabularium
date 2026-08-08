@@ -15,7 +15,8 @@ const CustomerSchema = z.object({
   pec: z.string().trim().optional().transform(value => value || null),
   iban: z.string().trim().optional().transform(value => value || null),
   swift: z.string().trim().optional().transform(value => value || null),
-  internalNotes: z.string().trim().optional().transform(value => value || null)
+  internalNotes: z.string().trim().optional().transform(value => value || null),
+  defaultSalesChannelId: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().int().positive().nullable())
 });
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -42,6 +43,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   const data = CustomerSchema.parse(Object.fromEntries(formData.entries()));
+  if (data.defaultSalesChannelId) {
+    const channel = await prisma.incomeSalesChannel.findFirst({where: {id: data.defaultSalesChannelId, workspaceId: current.workspace.id}, select: {id: true}});
+    if (!channel) return redirectToPath(appendFlash(returnTo, {error: 'invalid_sales_channel'}));
+  }
   await prisma.customer.update({ where: { id: customerId }, data });
   await writeAuditLog({
     workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE',

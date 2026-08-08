@@ -151,7 +151,7 @@ export default function IncomesList({
     banks: SimpleOption[];
     paymentMethods: SimpleOption[];
     salesChannels: EntityOption[];
-    customers: Array<{ id: number; businessName: string; alias?: string | null; systemRole?: string | null }>;
+    customers: Array<{ id: number; businessName: string; alias?: string | null; systemRole?: string | null; defaultSalesChannelId?: number | null }>;
     initialCustomerId?: number;
     initialOpen?: boolean;
     timeZone?: string;

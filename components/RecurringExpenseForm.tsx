@@ -7,9 +7,10 @@ import {CurrencyInput} from "@/components/CurrencyInput";
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {dateInputInTimeZone, zonedCalendarParts} from '@/lib/company-time';
 import SupplierCreateModal from "@/components/SupplierCreateModal";
-import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
+import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from "@/lib/currency-input";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
 import {resolveSupplierDefaultVatRate} from '@/lib/supplier-defaults';
+import {formatItalianCompactDate} from '@/lib/date-format';
 
 type Option = {
     id: number;
@@ -114,7 +115,7 @@ function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyIn
     return (
         <div className="money-input">
             <span>€</span>
-            <CurrencyInput ref={inputRef} {...props} />
+            <CurrencyInput ref={inputRef} clearable {...props} />
         </div>
     );
 }
@@ -413,6 +414,7 @@ export default function RecurringExpenseForm({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [mobileStep, setMobileStep] = useState(1);
     const initialSupplier = suppliers.find(supplier => supplier.id === initialExpense?.supplierId);
+    const fallbackCategoryId = categories.find(category => category.code === "DEFAULT")?.id;
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
     const [vatRate, setVatRate] = useState(
         initialExpense?.vatRate != null
@@ -426,7 +428,12 @@ export default function RecurringExpenseForm({
     const [endDate, setEndDate] = useState(toDateInput(initialExpense?.endDate));
     const [dueDay, setDueDay] = useState(String(Math.min(30, initialExpense?.dueDay ?? 1)));
     const [dueMonth, setDueMonth] = useState(String(initialExpense?.dueMonth ?? currentMonth));
-    const [categoryId, setCategoryId] = useState(String(initialExpense?.categoryId ?? initialSupplier?.defaultExpenseCategoryId ?? ""));
+    const [categoryId, setCategoryId] = useState(String(
+        initialExpense?.categoryId
+        ?? initialSupplier?.defaultExpenseCategoryId
+        ?? fallbackCategoryId
+        ?? ""
+    ));
     const [supplierName, setSupplierName] = useState(
         suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.businessName ?? initialExpense?.merchant ?? "",
     );
@@ -712,7 +719,8 @@ export default function RecurringExpenseForm({
                                             })}</strong>
                                         </span>
                                     </div>
-                                    <MoneyInput inputRef={amountRef} value={amount} onValueChange={handleAmountChange} required suppressSoftKeyboard/>
+                                    <MoneyInput inputRef={amountRef} value={amount} onValueChange={handleAmountChange}
+                                                onClear={() => resetCurrencyInput(amountKeyStateRef.current)} required suppressSoftKeyboard/>
                                     <input type="hidden" name="amount" value={normalizedAmount}/>
                                 </label>
                                 <div className="app-vat-rate-buttons recurring-vat-buttons-desktop vat-buttons-desktop" aria-label="Selezione rapida IVA">
@@ -886,10 +894,10 @@ export default function RecurringExpenseForm({
                         </div>
                         <div className="record-review-grid">
                             <div className="record-review-item">
-                                <i aria-hidden="true">◷</i><span>Data inizio<strong>{startDate ? new Date(`${startDate}T12:00:00`).toLocaleDateString("it-IT") : "Non indicata"}</strong></span>
+                                <i aria-hidden="true">◷</i><span>Data inizio<strong>{startDate ? formatItalianCompactDate(startDate) : "Non indicata"}</strong></span>
                             </div>
                             <div className="record-review-item">
-                                <i aria-hidden="true">⌛</i><span>Data di fine<strong>{hasEndDate && endDate ? new Date(`${endDate}T12:00:00`).toLocaleDateString("it-IT") : "Senza scadenza"}</strong></span>
+                                <i aria-hidden="true">⌛</i><span>Data di fine<strong>{hasEndDate && endDate ? formatItalianCompactDate(endDate) : "Senza scadenza"}</strong></span>
                             </div>
                             <div className="record-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({
                                 MONTHLY: "Ogni mese",

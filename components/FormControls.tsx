@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode, useId, useRef } from 'react';
+import {formatItalianCompactDate} from '@/lib/date-format';
 
 type FormFieldProps = {
   label: string;
@@ -102,7 +103,7 @@ function datePresentation(value: string) {
   const date = new Date(year, month - 1, day, 12);
   return {
     weekday: new Intl.DateTimeFormat('it-IT', { weekday: 'long' }).format(date),
-    date: new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: 'short', year: 'numeric' }).format(date)
+    date: formatItalianCompactDate(value)
   };
 }
 

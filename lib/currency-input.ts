@@ -38,6 +38,11 @@ export type CurrencyInputKeyState = {
   separatorDigits: 0 | 1 | null;
 };
 
+export function resetCurrencyInput(state: CurrencyInputKeyState) {
+  state.separatorDigits = null;
+  return '0,00';
+}
+
 export function applyCurrencyInputKeyWithState(
   value: string | number | null | undefined,
   key: string,

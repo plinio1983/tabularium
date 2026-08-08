@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react';
 
-type Customer = { businessName?: string; alias?: string | null; email?: string | null; vatNumber?: string | null; taxCodeSdi?: string | null; pec?: string | null; iban?: string | null; swift?: string | null; internalNotes?: string | null };
+type Customer = { businessName?: string; alias?: string | null; email?: string | null; vatNumber?: string | null; taxCodeSdi?: string | null; pec?: string | null; iban?: string | null; swift?: string | null; internalNotes?: string | null; defaultSalesChannelId?: number | null };
+type SalesChannel = {id: number; name: string; icon?: string | null};
 
 function Field({name, label, icon, className = '', children}: {
   name: string;
@@ -18,7 +19,7 @@ function Field({name, label, icon, className = '', children}: {
   </div>;
 }
 
-export default function ClientFormFields({ customer }: { customer?: Customer }) {
+export default function ClientFormFields({ customer, salesChannels }: { customer?: Customer; salesChannels: SalesChannel[] }) {
   return <>
     <details className="form-section full entity-form-section" open>
       <summary><span><span className="entity-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span><small>Dati principali del cliente</small></summary>
@@ -46,6 +47,15 @@ export default function ClientFormFields({ customer }: { customer?: Customer }) 
         </Field>
         <Field name="swift" label="Swift / BIC" icon="⇄" className="span-2">
           <input id="client-swift" name="swift" defaultValue={customer?.swift ?? ''} placeholder="Es. BCITITMM" autoComplete="off" maxLength={16}/>
+        </Field>
+        <Field name="defaultSalesChannelId" label="Canale di vendita predefinito" icon="▣" className="span-2">
+          <div className="app-select-wrap">
+            <select id="client-defaultSalesChannelId" name="defaultSalesChannelId" defaultValue={customer?.defaultSalesChannelId ?? ''}>
+              <option value="">Nessun canale predefinito</option>
+              {salesChannels.map(channel => <option value={channel.id} key={channel.id}>{channel.icon ?? '•'} {channel.name}</option>)}
+            </select>
+            <span className="app-select-caret" aria-hidden="true">⌄</span>
+          </div>
         </Field>
       </div>
     </details>

@@ -1,6 +1,11 @@
 import { prisma } from '@/lib/prisma';
 
+export const defaultExpenseCategoryCode = 'DEFAULT';
+export const defaultExpenseCategoryName = 'Predefinita';
+export const defaultExpenseCategoryIcon = '•';
+
 export const defaultCategories = [
+  [defaultExpenseCategoryCode, defaultExpenseCategoryName, defaultExpenseCategoryIcon],
   ['TAX', 'Tasse/Imposte', '🧾'],
   ['MERCE', 'Merce/Forniture', '📦'],
   ['SPED', 'Spedizioni', '🚚'],
@@ -39,9 +44,9 @@ export const defaultIncomeCategories = [
 ] as const;
 
 export const defaultIncomeSalesChannels = [
-  ['GOODS', 'Vendita Beni', '🛍️', false, false],
-  ['SERVICES', 'Vendita Servizi', '💼', false, false],
-  ['B2B', 'Vendita B2B', '🤝', false, false],
+  ['GOODS', 'Retail Shop', '🛍️', false, false],
+  ['SERVICES', 'Retail Web', '💼', false, false],
+  ['B2B', 'Wholesale', '🤝', false, false],
   ['DEFAULT', 'Predefinito', '🔀', false, true]
 ] as const;
 
@@ -175,6 +180,16 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
       await prisma.expenseCategory.create({ data: { workspaceId, code, name, icon } });
     }
   }
+  await prisma.expenseCategory.upsert({
+    where: {workspaceId_code: {workspaceId, code: defaultExpenseCategoryCode}},
+    update: {},
+    create: {
+      workspaceId,
+      code: defaultExpenseCategoryCode,
+      name: defaultExpenseCategoryName,
+      icon: defaultExpenseCategoryIcon
+    }
+  });
 
   for (const [code, name, icon] of defaultIncomeCategories) {
     await prisma.incomeCategory.upsert({
@@ -191,6 +206,17 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
         data: {workspaceId, code, name, icon, isDefault, isFallback, sortOrder: (index + 1) * 10}
       });
     }
+  }
+  const renamedDefaultIncomeSalesChannels = [
+    ['GOODS', 'Vendita Beni', 'Retail Shop'],
+    ['SERVICES', 'Vendita Servizi', 'Retail Web'],
+    ['B2B', 'Vendita B2B', 'Wholesale']
+  ] as const;
+  for (const [code, previousName, name] of renamedDefaultIncomeSalesChannels) {
+    await prisma.incomeSalesChannel.updateMany({
+      where: {workspaceId, code, name: previousName},
+      data: {name}
+    });
   }
 
   const legacyCashChannels = await prisma.bank.findMany({

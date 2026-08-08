@@ -348,6 +348,7 @@ model IncomeSalesChannel {
   recurringIncomes          RecurringIncome[]
   cashRegisterForWorkspaces Workspace[]            @relation("CashRegisterSalesChannel")
   cashRegisterBankRules     CashRegisterBankRule[]
+  defaultForCustomers       Customer[]               @relation("CustomerDefaultSalesChannel")
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -466,6 +467,8 @@ model Customer {
   systemRole       CustomerSystemRole?
   workspaceId      Int
   workspace        Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  defaultSalesChannelId Int?
+  defaultSalesChannel   IncomeSalesChannel? @relation("CustomerDefaultSalesChannel", fields: [defaultSalesChannelId], references: [id], onDelete: SetNull)
   incomes          Income[]
   recurringIncomes RecurringIncome[]
   createdAt        DateTime            @default(now())
@@ -475,6 +478,7 @@ model Customer {
   @@index([businessName])
   @@index([alias])
   @@index([workspaceId])
+  @@index([defaultSalesChannelId])
 }
 
 model RecurringExpense {

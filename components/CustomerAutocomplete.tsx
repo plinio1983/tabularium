@@ -8,7 +8,10 @@ type Customer = {
   businessName: string;
   alias?: string | null;
   systemRole?: string | null;
+  defaultSalesChannelId?: number | null;
 };
+
+type SalesChannel = {id: number; name: string; icon?: string | null};
 
 const emptyCustomer = {
   businessName: '',
@@ -19,10 +22,11 @@ const emptyCustomer = {
   pec: '',
   iban: '',
   swift: '',
-  internalNotes: ''
+  internalNotes: '',
+  defaultSalesChannelId: ''
 };
 
-export default function CustomerAutocomplete({ customers, initialCustomerId, onValueChange, onCustomerSelected, wizardStepClass = 'app-form-wizard-step app-form-wizard-step-3', allowCreate = true }: { customers: Customer[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void; onCustomerSelected?: (customer: Customer | null) => void; wizardStepClass?: string; allowCreate?: boolean }) {
+export default function CustomerAutocomplete({ customers, salesChannels = [], initialCustomerId, onValueChange, onCustomerSelected, wizardStepClass = 'app-form-wizard-step app-form-wizard-step-3', allowCreate = true }: { customers: Customer[]; salesChannels?: SalesChannel[]; initialCustomerId?: number | null; onValueChange?: (value: string) => void; onCustomerSelected?: (customer: Customer | null) => void; wizardStepClass?: string; allowCreate?: boolean }) {
   const fallback = customers.find(customer => customer.id === initialCustomerId);
   const [selected, setSelected] = useState<Customer | undefined>(fallback);
   const [query, setQuery] = useState(fallback?.businessName ?? '');
@@ -184,6 +188,7 @@ export default function CustomerAutocomplete({ customers, initialCustomerId, onV
             <label>PEC<input type="email" value={createData.pec} onChange={event => updateCreateData('pec', event.target.value)} /></label>
             <label>IBAN<input value={createData.iban} onChange={event => updateCreateData('iban', event.target.value)} /></label>
             <label>Swift<input value={createData.swift} onChange={event => updateCreateData('swift', event.target.value)} /></label>
+            <label className="full">Canale di vendita predefinito<select value={createData.defaultSalesChannelId} onChange={event => updateCreateData('defaultSalesChannelId', event.target.value)}><option value="">Nessun canale predefinito</option>{salesChannels.map(channel => <option value={channel.id} key={channel.id}>{channel.icon ?? '•'} {channel.name}</option>)}</select></label>
             <label className="full">Note<textarea rows={3} value={createData.internalNotes} onChange={event => updateCreateData('internalNotes', event.target.value)} /></label>
           </div>
           {createError ? <p className="form-error" role="alert">{createError}</p> : null}

@@ -28,6 +28,7 @@ export default async function CounterExpensePage() {
     initialDate={dateInputInTimeZone(current.company.timeZone)}
     categories={orderExpenseCategories(categories).map(category => ({
       id: category.id,
+      code: category.code,
       name: category.name,
       icon: category.icon
     }))}

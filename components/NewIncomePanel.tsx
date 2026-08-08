@@ -7,7 +7,7 @@ import { flashParamNames } from '@/lib/flash';
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string; isIncomeDefault?: boolean };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
-type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
+type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null; defaultSalesChannelId?: number | null };
 
 export default function NewIncomePanel({ initialOpen = false, initialType = 'single', showToolbar = true, banks, paymentMethods, salesChannels, customers, initialCustomerId }: {
   initialOpen?: boolean;

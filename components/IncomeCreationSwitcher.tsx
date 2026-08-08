@@ -6,7 +6,7 @@ import RecurringIncomeForm from '@/components/RecurringIncomeForm';
 
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null; isPrimary?: boolean; kind?: string; isIncomeDefault?: boolean };
 type Entity = { id: number; code: string; name: string; icon?: string | null; isDefault?: boolean; isFallback?: boolean };
-type Customer = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
+type Customer = { id: number; businessName: string; alias?: string | null; systemRole?: string | null; defaultSalesChannelId?: number | null };
 type Props = {
   banks: Option[]; paymentMethods: Option[]; salesChannels: Entity[]; customers: Customer[];
   incomeAction: string; recurringAction: string; initialIncome?: Parameters<typeof IncomeForm>[0]['initialIncome'];

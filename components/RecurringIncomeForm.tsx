@@ -4,15 +4,17 @@ import {FormEvent, useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import MobileFormStickyActions from '@/components/MobileFormStickyActions';
 import {CurrencyInput} from '@/components/CurrencyInput';
-import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
+import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from '@/lib/currency-input';
 import {DateField, FormField, SelectField} from '@/components/FormControls';
 import CustomerAutocomplete from '@/components/CustomerAutocomplete';
 import DescriptionAutocomplete from '@/components/DescriptionAutocomplete';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {dateInputInTimeZone, zonedCalendarParts} from '@/lib/company-time';
+import {formatItalianCompactDate} from '@/lib/date-format';
+import {resolveCustomerSalesChannelId} from '@/lib/customer-defaults';
 
-type Option = { id: number; name: string };
-type Customer = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
+type Option = { id: number; name: string; icon?: string | null; isDefault?: boolean | null; isFallback?: boolean | null };
+type Customer = { id: number; businessName: string; alias?: string | null; systemRole?: string | null; defaultSalesChannelId?: number | null };
 type Initial = Record<string, any>;
 const labels = ['Ricorrenza', 'Dettagli', 'Importo', 'Accredito', 'Riepilogo'];
 const monthOptions = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
@@ -60,7 +62,8 @@ export default function RecurringIncomeForm({
     const [endDate, setEndDate] = useState(initial?.endDate ? new Date(initial.endDate).toISOString().slice(0, 10) : '');
     const [creditDay, setCreditDay] = useState(String(Math.min(30, initial?.creditDay ?? currentParts?.day ?? 1)));
     const [creditMonth, setCreditMonth] = useState(String(initial?.creditMonth ?? currentParts?.month ?? 1));
-    const [channelId, setChannelId] = useState(String(initial?.salesChannelId ?? channels[0]?.id ?? ''));
+    const initialCustomer = customers.find(customer => customer.id === initial?.customerId);
+    const [channelId, setChannelId] = useState(String(initial?.salesChannelId ?? resolveCustomerSalesChannelId(channels, initialCustomer?.defaultSalesChannelId) ?? ''));
     const [methodId, setMethodId] = useState(String(initial?.paymentMethodId ?? ''));
     const [bankId, setBankId] = useState(String(initial?.bankId ?? ''));
     const [billingMonth, setBillingMonth] = useState(String(initial?.billingMonth ?? ''));
@@ -192,7 +195,12 @@ export default function RecurringIncomeForm({
         <details className="form-section full recurring-form-section income-form-section income-document-section recurring-document-section recurring-details-section recurring-income-step-2 app-form-wizard-step app-form-wizard-step-2" open>
             <summary><span>Cliente e dettagli</span><small>Cliente, canale e descrizione</small></summary>
             <div className="form-section-grid recurring-form-section-grid">
-                <CustomerAutocomplete customers={customers} initialCustomerId={initial?.customerId} onValueChange={setCustomerName} wizardStepClass="app-form-wizard-step app-form-wizard-step-2"/>
+                <CustomerAutocomplete customers={customers} salesChannels={channels} initialCustomerId={initial?.customerId}
+                                      onValueChange={setCustomerName}
+                                      onCustomerSelected={customer => {
+                                          if (!customer) return;
+                                          setChannelId(String(resolveCustomerSalesChannelId(channels, customer.defaultSalesChannelId) ?? ''));
+                                      }} wizardStepClass="app-form-wizard-step app-form-wizard-step-2"/>
                 <SelectField label="Canale di vendita" icon="▣" name="salesChannelId" value={channelId} onChange={setChannelId} required options={channels.map(option => ({
                     value: option.id,
                     label: option.name
@@ -216,7 +224,8 @@ export default function RecurringIncomeForm({
                             <label className="recurring-wizard-amount-field"><span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">€</span><span>Importo IVA inclusa</span></span>
                                 <div>
                                     <div className="money-input">
-                                        <span>€</span><CurrencyInput ref={amountRef} value={amount} suppressSoftKeyboard onValueChange={value => {
+                                        <span>€</span><CurrencyInput ref={amountRef} value={amount} suppressSoftKeyboard clearable
+                                                                    onClear={() => resetCurrencyInput(amountKeyStateRef.current)} onValueChange={value => {
                                         amountRef.current?.setCustomValidity('');
                                         setAmount(value);
                                     }} required aria-label="Importo entrata ricorrente"/></div>
@@ -282,10 +291,10 @@ export default function RecurringIncomeForm({
                             EVERY_2_YEARS: 'Ogni 2 anni'
                         } as Record<string, string>)[cadence]} · giorno {creditDay}</strong></span></div>
                         <div className="record-review-item">
-                            <i aria-hidden="true">◷</i><span>Data iniziale<strong>{startDate ? new Date(`${startDate}T12:00:00`).toLocaleDateString('it-IT') : 'Non indicata'}</strong></span>
+                            <i aria-hidden="true">◷</i><span>Data iniziale<strong>{startDate ? formatItalianCompactDate(startDate) : 'Non indicata'}</strong></span>
                         </div>
                         <div className="record-review-item">
-                            <i aria-hidden="true">⌛</i><span>Data di fine<strong>{hasEndDate && endDate ? new Date(`${endDate}T12:00:00`).toLocaleDateString('it-IT') : 'Senza scadenza'}</strong></span>
+                            <i aria-hidden="true">⌛</i><span>Data di fine<strong>{hasEndDate && endDate ? formatItalianCompactDate(endDate) : 'Senza scadenza'}</strong></span>
                         </div>
                         <div className="record-review-item wide">
                             <i aria-hidden="true">◎</i><span>Cliente<strong>{customerName || 'Non indicato'}</strong></span>

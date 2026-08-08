@@ -3,7 +3,7 @@
 import {type FormEvent, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import CustomerAutocomplete from '@/components/CustomerAutocomplete';
 import {CurrencyInput} from "@/components/CurrencyInput";
-import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
+import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from "@/lib/currency-input";
 import {DateField, MonthField, SelectField} from "@/components/FormControls";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
@@ -11,6 +11,8 @@ import {incomeCreditState} from '@/lib/income-status';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {dateInputInTimeZone, monthInputInTimeZone} from '@/lib/company-time';
 import AttachmentFormSection, {type FormAttachment} from '@/components/AttachmentFormSection';
+import {formatItalianCompactDate} from '@/lib/date-format';
+import {resolveCustomerSalesChannelId} from '@/lib/customer-defaults';
 
 type InitialIncome = {
     id?: number;
@@ -61,7 +63,7 @@ type IncomeEntityOption = {
     isDefault?: boolean;
     isFallback?: boolean
 };
-type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
+type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null; defaultSalesChannelId?: number | null };
 
 type Props = {
     initialIncome?: InitialIncome;
@@ -115,22 +117,11 @@ function formatEuro(value: number) {
 }
 
 function formatDateInputLabel(value: string) {
-    if (!value) return "";
-    const [year, month, day] = value.split("-");
-    return year && month && day ? `${day}/${month}/${year}` : value;
+    return formatItalianCompactDate(value);
 }
 
 function formatCreditDateLabel(value: string) {
-    const [year, month, day] = value.split("-").map(Number);
-    if (!year || !month || !day) return value;
-    const parts = new Intl.DateTimeFormat("it-IT", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-    }).formatToParts(new Date(year, month - 1, day, 12));
-    const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value ?? "";
-    const monthLabel = part("month").replace(".", "");
-    return `${part("day")} ${monthLabel.charAt(0).toUpperCase()}${monthLabel.slice(1)} ${part("year")}`;
+    return formatItalianCompactDate(value);
 }
 
 function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyInput> & {
@@ -139,7 +130,7 @@ function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyIn
     return (
         <div className="money-input">
             <span>€</span>
-            <CurrencyInput ref={inputRef} {...props}/>
+            <CurrencyInput ref={inputRef} clearable {...props}/>
         </div>
     );
 }
@@ -182,10 +173,10 @@ export default function IncomeForm({
     const defaultPaymentMethod = paymentMethods.find(method => method.isIncomeDefault) ?? paymentMethods[0];
     const initialPaymentMethodId = findOptionId(paymentMethods, initialIncome?.paymentMethodId) || (defaultPaymentMethod ? String(defaultPaymentMethod.id) : "");
     const initialCreditBankId = findOptionId(banks, initialIncome?.creditBankId) || (defaultBank ? String(defaultBank.id) : "");
-    const defaultSalesChannel = salesChannels.find(channel => channel.isDefault)
-        ?? salesChannels.find(channel => !channel.isFallback)
-        ?? salesChannels.find(channel => channel.isFallback);
-    const initialSalesChannelId = initialIncome?.salesChannelId ? String(initialIncome.salesChannelId) : String(defaultSalesChannel?.id ?? "");
+    const initialCustomer = customers.find(customer => customer.id === initialIncome?.customerId);
+    const initialSalesChannelId = initialIncome?.salesChannelId
+        ? String(initialIncome.salesChannelId)
+        : String(resolveCustomerSalesChannelId(salesChannels, initialCustomer?.defaultSalesChannelId) ?? "");
     const [amount, setAmount] = useState(normalizeMoney(initialIncome?.amount).replace(".", ","));
     const [salesChannelId, setSalesChannelId] = useState(initialSalesChannelId);
     const [orderDate, setOrderDate] = useState(toDateInput(initialIncome?.orderDate) || today);
@@ -454,7 +445,12 @@ export default function IncomeForm({
                         </span>
                     </DateField>
 
-                    <CustomerAutocomplete customers={customers} initialCustomerId={initialIncome?.customerId} onValueChange={setCustomerName}/>
+                    <CustomerAutocomplete customers={customers} salesChannels={salesChannels} initialCustomerId={initialIncome?.customerId}
+                                          onValueChange={setCustomerName}
+                                          onCustomerSelected={customer => {
+                                              if (!customer) return;
+                                              setSalesChannelId(String(resolveCustomerSalesChannelId(salesChannels, customer.defaultSalesChannelId) ?? ""));
+                                          }}/>
 
                     <SelectField className="app-form-wizard-step app-form-wizard-step-3" label="Canale di vendita" icon="▣" name="salesChannelId" value={salesChannelId} onChange={setSalesChannelId} required options={salesChannels.map(option => ({
                         value: option.id,
@@ -512,7 +508,8 @@ export default function IncomeForm({
                                     </div>
                                     {/*<div>Importo <span className="hidden-sp">IVA inclusa</span></div>*/}
                                     <div className="income-amount-row">
-                                        <MoneyInput inputRef={amountRef} required value={amount} onValueChange={handleAmountChange} suppressSoftKeyboard/>
+                                        <MoneyInput inputRef={amountRef} required value={amount} onValueChange={handleAmountChange}
+                                                    onClear={() => resetCurrencyInput(amountKeyStateRef.current)} suppressSoftKeyboard/>
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
                                     </div>
                                 </label>

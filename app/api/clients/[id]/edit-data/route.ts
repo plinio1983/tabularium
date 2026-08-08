@@ -7,7 +7,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const customer = await prisma.customer.findFirst({
     where: { id: Number((await params).id), workspaceId: current.workspace.id },
-    select: { id: true, businessName: true, alias: true, email: true, vatNumber: true, taxCodeSdi: true, pec: true, iban: true, swift: true, internalNotes: true }
+    select: { id: true, businessName: true, alias: true, email: true, vatNumber: true, taxCodeSdi: true, pec: true, iban: true, swift: true, internalNotes: true, defaultSalesChannelId: true }
   });
   return customer ? NextResponse.json(customer) : NextResponse.json({ error: 'Cliente non trovato' }, { status: 404 });
 }

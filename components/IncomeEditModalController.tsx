@@ -35,7 +35,7 @@ type EditIncome = {
 type Option = { id: number; name: string; icon?: string | null; isFallback?: boolean | null };
 type PaymentMethodOption = Option & { kind?: string; isIncomeDefault?: boolean };
 type IncomeEntityOption = { id: number; code: string; name: string; icon?: string | null };
-type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null };
+type CustomerOption = { id: number; businessName: string; alias?: string | null; systemRole?: string | null; defaultSalesChannelId?: number | null };
 
 type Props = {
   returnTo: string;

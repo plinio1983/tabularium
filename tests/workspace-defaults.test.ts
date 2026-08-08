@@ -11,6 +11,7 @@ import {
 
 test('the new workspace catalog contains the requested values', () => {
   assert.deepEqual(defaultCategories.map(([, name]) => name), [
+    'Predefinita',
     'Tasse/Imposte',
     'Merce/Forniture',
     'Spedizioni',
@@ -23,9 +24,9 @@ test('the new workspace catalog contains the requested values', () => {
   assert.deepEqual(defaultBanks.map(([name]) => name), ['Hype', 'Revolut', 'Cassa']);
   assert.deepEqual(defaultIncomeCategories, [['DEFAULT', 'Predefinita', '•']]);
   assert.deepEqual(defaultIncomeSalesChannels.map(([, name]) => name), [
-    'Vendita Beni',
-    'Vendita Servizi',
-    'Vendita B2B',
+    'Retail Shop',
+    'Retail Web',
+    'Wholesale',
     'Predefinito'
   ]);
   assert.deepEqual(defaultPaymentMethods.map(([name]) => name), [

@@ -44,11 +44,14 @@ export default async function ClientsPage({searchParams}: {
     const listHref = `/clients${query.size ? `?${query}` : ''}`;
     const returnTo = encodeURIComponent(listHref);
     const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
-    const customers = await prisma.customer.findMany({
-        where: {workspaceId: current.workspace.id},
-        include: {incomes: {where: {companyId: current.company.id}, include: {credits: true}}},
-        orderBy: {businessName: 'asc'}
-    });
+    const [customers, salesChannels] = await Promise.all([
+        prisma.customer.findMany({
+            where: {workspaceId: current.workspace.id},
+            include: {incomes: {where: {companyId: current.company.id}, include: {credits: true}}},
+            orderBy: {businessName: 'asc'}
+        }),
+        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]})
+    ]);
     const rows = customers.map(customer => {
         const open = customer.incomes.filter(income => !income.isCredited);
         const annual = customer.incomes.filter(income => income.billingYear === currentYear);
@@ -75,7 +78,7 @@ export default async function ClientsPage({searchParams}: {
     const active = ['businessName', 'alias', 'email', 'vatNumber', 'taxCodeSdi', 'pec', 'iban', 'swift'].filter(key => input(filters, key));
 
     return <div className="grid">
-        <ClientEditModalController/><ClickableDesktopRows/><BulkSelectionController/>
+        <ClientEditModalController salesChannels={salesChannels}/><ClickableDesktopRows/><BulkSelectionController/>
         <div className="toolbar-card toolbar-card-wrap">
             <div>
                 <h2>Clienti</h2>
@@ -85,7 +88,7 @@ export default async function ClientsPage({searchParams}: {
                 <button className="btn btn-sm btn-primary" type="button" data-client-new>＋ Nuovo cliente</button>
             </div>
         </div>
-        <NewClientPanel initialOpen={input(filters, 'new') === '1'}/>
+        <NewClientPanel initialOpen={input(filters, 'new') === '1'} salesChannels={salesChannels}/>
         <ActionFeedbackBanner searchParams={rawFilters} savedMessages={{
             created: 'Cliente creato.',
             updated: 'Cliente aggiornato.',
@@ -94,7 +97,8 @@ export default async function ClientsPage({searchParams}: {
         }} errorMessages={{
             not_found: 'Cliente non trovato.',
             in_use: 'Il cliente è collegato a degli incassi.',
-            system_protected: 'Il cliente predefinito non può essere eliminato.'
+            system_protected: 'Il cliente predefinito non può essere eliminato.',
+            invalid_sales_channel: 'Il canale di vendita selezionato non è valido.'
         }} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
         <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">

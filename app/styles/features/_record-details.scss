@@ -560,6 +560,24 @@
   white-space: nowrap;
 }
 
+.expense-detail-page {
+  .expense-detail-title strong,
+  .record-detail-meta-line strong,
+  .record-detail-meta-line span,
+  .record-detail-status-strip strong,
+  .record-detail-payment-summary-list .payment-summary-primary strong,
+  .record-detail-payment-summary-list .payment-summary-date strong,
+  .record-detail-payment-summary-list .payment-summary-meta strong,
+  .record-detail-item > strong,
+  .record-attachment-item strong {
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
 .record-detail-progress {
   height: 7px;
   background: #eef2f7;

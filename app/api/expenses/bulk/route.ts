@@ -63,10 +63,13 @@ export async function POST(request: Request) {
 
     const changes = expenses.map(expense => {
       if (expense.expenseType === 'VAT_SETTLEMENT') {
-        if (orderDate && dueDate && calendarDateInput(orderDate) !== calendarDateInput(dueDate)) return null;
-        const settlementDate = orderDate ?? dueDate;
-        if (!settlementDate) return null;
-        return {id: expense.id, data: {receivedDate: settlementDate, dueDate: settlementDate}};
+        return {
+          id: expense.id,
+          data: {
+            ...(updateOrderDate ? {receivedDate: orderDate} : {}),
+            ...(updateDueDate ? {dueDate} : {})
+          }
+        };
       }
       const nextOrderDate = orderDate ?? expense.receivedDate;
       const nextDueDate = dueDate ?? expense.dueDate;

@@ -2,11 +2,12 @@
 
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
+import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from '@/lib/currency-input';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {zonedMidnightUtc} from '@/lib/company-time';
+import {formatItalianCompactDate} from '@/lib/date-format';
 
-type Category = {id: number; name: string; icon: string | null};
+type Category = {id: number; code: string; name: string; icon: string | null};
 type Method = {id: number; name: string; icon: string | null; systemRole: string | null};
 type Bank = {id: number; name: string; icon: string | null; isPrimary: boolean};
 
@@ -37,7 +38,7 @@ export default function CounterExpenseRegister({
   const cancelRef = useRef<HTMLButtonElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
   const [paymentDate, setPaymentDate] = useState(initialDate);
-  const [categoryId, setCategoryId] = useState(String(categories[0]?.id ?? ''));
+  const [categoryId, setCategoryId] = useState(String(categories.find(category => category.code === 'DEFAULT')?.id ?? categories[0]?.id ?? ''));
   const [isDeductible, setIsDeductible] = useState(false);
   const [vatRate, setVatRate] = useState(0);
   const [lastVatRate, setLastVatRate] = useState(22);
@@ -86,6 +87,14 @@ export default function CounterExpenseRegister({
     const nextAmount = applyCurrencyInputKeyWithState(amountValueRef.current, key, amountKeyStateRef.current);
     amountValueRef.current = nextAmount;
     setAmount(nextAmount);
+    focusAmount();
+  }
+
+  function clearAmount() {
+    const nextAmount = resetCurrencyInput(amountKeyStateRef.current);
+    amountValueRef.current = nextAmount;
+    setAmount(nextAmount);
+    setNotice(null);
     focusAmount();
   }
 
@@ -320,6 +329,7 @@ export default function CounterExpenseRegister({
       <div className="cash-register-display-amount">
         <span>€</span>
         <input ref={amountRef} className={amountSizeClass} aria-label="Importo spesa" value={formattedAmount} readOnly inputMode="none"/>
+        <button type="button" className="amount-clear-button" aria-label="Azzera importo" onClick={clearAmount}>×</button>
       </div>
     </section>
 
@@ -394,7 +404,7 @@ export default function CounterExpenseRegister({
             <div className="record-review-grid">
               <div className="record-review-item">
                 <i aria-hidden="true">◷</i>
-                <span>Data pagamento<strong>{new Intl.DateTimeFormat('it-IT').format(new Date(`${paymentDate}T12:00:00`))}</strong></span>
+                <span>Data pagamento<strong>{formatItalianCompactDate(paymentDate)}</strong></span>
               </div>
               <div className="record-review-item">
                 <i aria-hidden="true">%</i>

@@ -37,11 +37,11 @@ export default function ClickableDesktopRows() {
       window.location.assign(href);
     };
 
-    document.addEventListener('click', handleClick);
+    document.addEventListener('click', handleClick, true);
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.removeEventListener('click', handleClick);
+      document.removeEventListener('click', handleClick, true);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);

@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import {useState} from 'react';
 import type {ReactNode} from 'react';
 import BulkSelectionController from '@/components/BulkSelectionController';
+import SortableTableController from '@/components/SortableTableController';
 import {euro} from '@/lib/money';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 
@@ -40,23 +40,13 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger}: {rec
     const timeZone = useCompanyTimeZone();
     const formId = 'cashRegisterReceiptBulkForm';
     const returnTo = encodeURIComponent('/incomes/cash-register/receipts');
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const allSelected = receipts.length > 0 && selectedIds.length === receipts.length;
-    const singleId = selectedIds.length === 1 ? selectedIds[0] : null;
-    const anySelected = selectedIds.length > 0;
-
-    function toggleReceipt(id: number, checked: boolean) {
-        setSelectedIds(current => checked
-            ? current.includes(id) ? current : [...current, id]
-            : current.filter(item => item !== id));
-    }
-
     return <div className="card record-list-card cash-register-receipt-list-card">
         <div className="list-heading recurring-list-heading">
             <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
             {filtersTrigger}
         </div>
         <BulkSelectionController/>
+        <SortableTableController/>
         <form id={formId}
               action={`/api/cash-register/receipts/bulk?returnTo=${returnTo}`}
               method="post"
@@ -65,8 +55,6 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger}: {rec
               data-bulk-subject="scontrini">
             <label className="bulk-select-all-inline cash-register-select-all">
                 <input type="checkbox" className="bulk-select-all" data-bulk-target={formId}
-                       checked={allSelected}
-                       onChange={event => setSelectedIds(event.currentTarget.checked ? receipts.map(receipt => receipt.id) : [])}
                        aria-label="Seleziona tutti gli scontrini visibili"/>
             </label>
             <div className="bulk-action-buttons btn-group">
@@ -88,18 +76,14 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger}: {rec
                  data-copy-base="/incomes/cash-register?copyId="
                  data-copy-single-only="true"
                  data-return-to={returnTo}>
-                <a href={singleId ? `/incomes/cash-register?editId=${singleId}&returnTo=${returnTo}` : "#"}
-                   className={`bulk-direct-link ${singleId ? "" : "is-disabled"}`} data-bulk-edit
-                   aria-disabled={singleId ? "false" : "true"}>
+                <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
                     <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
                 </a>
-                <a href={singleId ? `/incomes/cash-register?copyId=${singleId}&returnTo=${returnTo}` : "#"}
-                   className={`bulk-direct-link ${singleId ? "" : "is-disabled"}`} data-bulk-copy
-                   aria-disabled={singleId ? "false" : "true"}>
+                <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
                     <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
                 </a>
                 <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp"
-                        name="bulkAction" value="delete" data-bulk-delete disabled={!anySelected}>
+                        name="bulkAction" value="delete" data-bulk-delete disabled>
                     <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span>
                 </button>
               </div>
@@ -115,12 +99,57 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger}: {rec
             </div>
         </form>
 
-        <div className="cash-register-receipt-list" aria-label="Lista scontrini">
+        <div className="table-scroll cash-register-receipt-table-scroll">
+            <table className="expenses-table compact-incomes-table cash-register-receipt-table"
+                   data-sortable-table data-default-sort="date" data-default-sort-dir="desc">
+                <thead>
+                <tr>
+                    <th className="cell-option">
+                        <input type="checkbox" className="bulk-select-all" data-bulk-target={formId}
+                               aria-label="Seleziona tutti gli scontrini visibili"/>
+                    </th>
+                    <th data-sort-key="id" data-sort-type="number">ID</th>
+                    <th data-sort-key="date" data-sort-type="date">Data e ora</th>
+                    <th data-sort-key="channel">Canale vendita</th>
+                    <th data-sort-key="fiscal">Fiscalità</th>
+                    <th data-sort-key="vat" data-sort-type="number">IVA</th>
+                    <th data-sort-key="method">Metodo pagamento</th>
+                    <th className="cell-amount" data-sort-key="amount" data-sort-type="number">Importo</th>
+                </tr>
+                </thead>
+                <tbody>
+                {receipts.map(receipt => <tr key={receipt.id}
+                    data-sort-row
+                    data-sort-id={String(receipt.id)}
+                    data-sort-date={String(new Date(receipt.creditDate).getTime())}
+                    data-sort-channel={receipt.salesChannel}
+                    data-sort-fiscal={receipt.isFiscal ? '1' : '0'}
+                    data-sort-vat={String(receipt.isFiscal ? receipt.vatRate : 0)}
+                    data-sort-method={receipt.paymentMethod}
+                    data-sort-amount={String(receipt.amount)}>
+                    <td className="cell-option">
+                        <input form={formId} type="checkbox" name="ids" value={receipt.id}
+                               aria-label={`Seleziona scontrino ${receipt.id}`}/>
+                    </td>
+                    <td>#{receipt.id}</td>
+                    <td>{receiptDate(receipt.creditDate, timeZone)}</td>
+                    <td>{receipt.salesChannelIcon ?? '•'} {receipt.salesChannel}</td>
+                    <td><span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-no'}`}>
+                        {receipt.isFiscal ? '✓ Fiscale' : '✕ Non fiscale'}
+                    </span></td>
+                    <td>{receipt.isFiscal ? <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}</td>
+                    <td>{receipt.paymentMethodIcon ?? '•'} {receipt.paymentMethod}</td>
+                    <td className="cell-amount"><strong className="text-accent">{euro(receipt.amount)}</strong></td>
+                </tr>)}
+                {!receipts.length ? <tr><td colSpan={8}>Nessuno scontrino nel periodo selezionato.</td></tr> : null}
+                </tbody>
+            </table>
+        </div>
+
+        <div className="cash-register-receipt-list cash-register-receipt-mobile-list" aria-label="Lista scontrini">
             {receipts.map(receipt => <article className="cash-register-receipt-row" key={receipt.id}>
                 <div className="mobile-record-select cash-register-receipt-select">
                     <input form={formId} type="checkbox" name="ids" value={receipt.id}
-                           checked={selectedIds.includes(receipt.id)}
-                           onChange={event => toggleReceipt(receipt.id, event.currentTarget.checked)}
                            aria-label={`Seleziona scontrino ${receipt.id}`}/>
                 </div>
                 <div className="cash-register-receipt-content">

@@ -166,7 +166,7 @@ function invoiceBadge(value: boolean, invoiceStatus?: string) {
             label = 'PDF';
         }
     } else {
-        label = '✓ eBill.';
+        label = '✓ @Fatt';
     }
     return <span className={badgeClass(style)}>{label}</span>;
 }
@@ -494,10 +494,13 @@ export default function ExpensesList({
                             <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {statusLabel}</span> :
                             <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {statusLabel}</span>}</td>
                         <td className="cell-invoice-state">{isNoVatExpense ?
-                            <span className="badge color-badge">✕</span> :
-                            <span className="expense-invoice-indicator"><span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/></span>}</td>
+                            <span className="badge color-badge tone-muted">✕</span> : <span className="expense-invoice-indicator">
+                                <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+                                <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/>
+                            </span>}
+                        </td>
                         <td className="cell-ebilling">{isNoVatExpense ?
-                            <span className="badge color-badge tone-no">✕</span> : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
+                            <span className="badge color-badge tone-muted">✕</span> : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
                         <td className="cell-residual">
                             <strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
                     </tr>;

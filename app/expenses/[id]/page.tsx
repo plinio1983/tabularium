@@ -115,7 +115,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     }
   };
 
-  return <div className="grid record-detail-page">
+  return <div className="grid record-detail-page expense-detail-page">
     <ExpenseDetailEditModalController
       categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
@@ -200,7 +200,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </div>
         <section className="record-detail-status-strip">
           <div>
-            <span>Data ordine</span>
+            <span>{isVatSettlement ? 'Data ricezione' : 'Data ordine'}</span>
             <strong>{dateLabel(expense.receivedDate)}</strong>
           </div>
           <div>

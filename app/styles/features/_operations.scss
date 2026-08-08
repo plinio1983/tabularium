@@ -935,6 +935,33 @@
   background: #fff;
 }
 
+.cash-register-receipt-table {
+  min-width: 880px;
+}
+
+.cash-register-receipt-table th,
+.cash-register-receipt-table td {
+  vertical-align: middle;
+}
+
+.cash-register-receipt-table .cell-amount {
+  text-align: right;
+}
+
+.cash-register-receipt-table input[type="checkbox"][name="ids"] {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+@media (min-width: 761px) {
+  .cash-register-receipt-mobile-list {
+    display: none;
+  }
+}
+
 .cash-register-receipt-row {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr);

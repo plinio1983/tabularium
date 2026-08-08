@@ -157,6 +157,8 @@ function submitterLabel(submitter: HTMLElement | null) {
 }
 
 function formSubject(form: HTMLFormElement) {
+  const configuredSubject = form.dataset.bulkSubject;
+  if (configuredSubject) return configuredSubject;
   if (form.id === "supplierBulkForm") return "fornitori";
   if (form.id === "clientBulkForm") return "clienti";
   if (form.id === "incomeBulkForm") return "incassi";

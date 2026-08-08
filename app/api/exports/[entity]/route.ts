@@ -104,13 +104,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
   if (entity === 'clients') {
     const records = await prisma.customer.findMany({
       where: { id: { in: ids }, workspaceId },
+      include: {defaultSalesChannel: true},
       orderBy: { businessName: 'asc' }
     });
     const csv = createCsv(
-      ['ID', 'Ragione sociale', 'Alias', 'Email', 'P.IVA', 'Codice SDI/Fiscale', 'PEC', 'IBAN', 'SWIFT', 'Note interne'],
+      ['ID', 'Ragione sociale', 'Alias', 'Email', 'P.IVA', 'Codice SDI/Fiscale', 'PEC', 'IBAN', 'SWIFT', 'Canale di vendita predefinito', 'Note interne'],
       records.map(record => [
         record.id, record.businessName, record.alias, record.email, record.vatNumber, record.taxCodeSdi,
-        record.pec, record.iban, record.swift, record.internalNotes
+        record.pec, record.iban, record.swift, record.defaultSalesChannel?.name, record.internalNotes
       ])
     );
     return csvDownload(csv, filename(entity));

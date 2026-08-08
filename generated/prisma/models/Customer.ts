@@ -29,11 +29,13 @@ export type AggregateCustomer = {
 export type CustomerAvgAggregateOutputType = {
   id: number | null
   workspaceId: number | null
+  defaultSalesChannelId: number | null
 }
 
 export type CustomerSumAggregateOutputType = {
   id: number | null
   workspaceId: number | null
+  defaultSalesChannelId: number | null
 }
 
 export type CustomerMinAggregateOutputType = {
@@ -49,6 +51,7 @@ export type CustomerMinAggregateOutputType = {
   internalNotes: string | null
   systemRole: $Enums.CustomerSystemRole | null
   workspaceId: number | null
+  defaultSalesChannelId: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +69,7 @@ export type CustomerMaxAggregateOutputType = {
   internalNotes: string | null
   systemRole: $Enums.CustomerSystemRole | null
   workspaceId: number | null
+  defaultSalesChannelId: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -83,6 +87,7 @@ export type CustomerCountAggregateOutputType = {
   internalNotes: number
   systemRole: number
   workspaceId: number
+  defaultSalesChannelId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -92,11 +97,13 @@ export type CustomerCountAggregateOutputType = {
 export type CustomerAvgAggregateInputType = {
   id?: true
   workspaceId?: true
+  defaultSalesChannelId?: true
 }
 
 export type CustomerSumAggregateInputType = {
   id?: true
   workspaceId?: true
+  defaultSalesChannelId?: true
 }
 
 export type CustomerMinAggregateInputType = {
@@ -112,6 +119,7 @@ export type CustomerMinAggregateInputType = {
   internalNotes?: true
   systemRole?: true
   workspaceId?: true
+  defaultSalesChannelId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -129,6 +137,7 @@ export type CustomerMaxAggregateInputType = {
   internalNotes?: true
   systemRole?: true
   workspaceId?: true
+  defaultSalesChannelId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -146,6 +155,7 @@ export type CustomerCountAggregateInputType = {
   internalNotes?: true
   systemRole?: true
   workspaceId?: true
+  defaultSalesChannelId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -250,6 +260,7 @@ export type CustomerGroupByOutputType = {
   internalNotes: string | null
   systemRole: $Enums.CustomerSystemRole | null
   workspaceId: number
+  defaultSalesChannelId: number | null
   createdAt: Date
   updatedAt: Date
   _count: CustomerCountAggregateOutputType | null
@@ -290,9 +301,11 @@ export type CustomerWhereInput = {
   internalNotes?: Prisma.StringNullableFilter<"Customer"> | string | null
   systemRole?: Prisma.EnumCustomerSystemRoleNullableFilter<"Customer"> | $Enums.CustomerSystemRole | null
   workspaceId?: Prisma.IntFilter<"Customer"> | number
+  defaultSalesChannelId?: Prisma.IntNullableFilter<"Customer"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
+  defaultSalesChannel?: Prisma.XOR<Prisma.IncomeSalesChannelNullableScalarRelationFilter, Prisma.IncomeSalesChannelWhereInput> | null
   incomes?: Prisma.IncomeListRelationFilter
   recurringIncomes?: Prisma.RecurringIncomeListRelationFilter
 }
@@ -310,9 +323,11 @@ export type CustomerOrderByWithRelationInput = {
   internalNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   systemRole?: Prisma.SortOrderInput | Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  defaultSalesChannelId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
+  defaultSalesChannel?: Prisma.IncomeSalesChannelOrderByWithRelationInput
   incomes?: Prisma.IncomeOrderByRelationAggregateInput
   recurringIncomes?: Prisma.RecurringIncomeOrderByRelationAggregateInput
 }
@@ -334,9 +349,11 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   internalNotes?: Prisma.StringNullableFilter<"Customer"> | string | null
   systemRole?: Prisma.EnumCustomerSystemRoleNullableFilter<"Customer"> | $Enums.CustomerSystemRole | null
   workspaceId?: Prisma.IntFilter<"Customer"> | number
+  defaultSalesChannelId?: Prisma.IntNullableFilter<"Customer"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
+  defaultSalesChannel?: Prisma.XOR<Prisma.IncomeSalesChannelNullableScalarRelationFilter, Prisma.IncomeSalesChannelWhereInput> | null
   incomes?: Prisma.IncomeListRelationFilter
   recurringIncomes?: Prisma.RecurringIncomeListRelationFilter
 }, "id" | "workspaceId_systemRole">
@@ -354,6 +371,7 @@ export type CustomerOrderByWithAggregationInput = {
   internalNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   systemRole?: Prisma.SortOrderInput | Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  defaultSalesChannelId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CustomerCountOrderByAggregateInput
@@ -379,6 +397,7 @@ export type CustomerScalarWhereWithAggregatesInput = {
   internalNotes?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   systemRole?: Prisma.EnumCustomerSystemRoleNullableWithAggregatesFilter<"Customer"> | $Enums.CustomerSystemRole | null
   workspaceId?: Prisma.IntWithAggregatesFilter<"Customer"> | number
+  defaultSalesChannelId?: Prisma.IntNullableWithAggregatesFilter<"Customer"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
 }
@@ -397,6 +416,7 @@ export type CustomerCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutCustomersInput
+  defaultSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutDefaultForCustomersInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutCustomerInput
   recurringIncomes?: Prisma.RecurringIncomeCreateNestedManyWithoutCustomerInput
 }
@@ -414,6 +434,7 @@ export type CustomerUncheckedCreateInput = {
   internalNotes?: string | null
   systemRole?: $Enums.CustomerSystemRole | null
   workspaceId: number
+  defaultSalesChannelId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutCustomerInput
@@ -434,6 +455,7 @@ export type CustomerUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutCustomersNestedInput
+  defaultSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutDefaultForCustomersNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutCustomerNestedInput
   recurringIncomes?: Prisma.RecurringIncomeUpdateManyWithoutCustomerNestedInput
 }
@@ -451,6 +473,7 @@ export type CustomerUncheckedUpdateInput = {
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  defaultSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutCustomerNestedInput
@@ -470,6 +493,7 @@ export type CustomerCreateManyInput = {
   internalNotes?: string | null
   systemRole?: $Enums.CustomerSystemRole | null
   workspaceId: number
+  defaultSalesChannelId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -502,6 +526,7 @@ export type CustomerUncheckedUpdateManyInput = {
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  defaultSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -534,6 +559,7 @@ export type CustomerCountOrderByAggregateInput = {
   internalNotes?: Prisma.SortOrder
   systemRole?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  defaultSalesChannelId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -541,6 +567,7 @@ export type CustomerCountOrderByAggregateInput = {
 export type CustomerAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  defaultSalesChannelId?: Prisma.SortOrder
 }
 
 export type CustomerMaxOrderByAggregateInput = {
@@ -556,6 +583,7 @@ export type CustomerMaxOrderByAggregateInput = {
   internalNotes?: Prisma.SortOrder
   systemRole?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  defaultSalesChannelId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -573,6 +601,7 @@ export type CustomerMinOrderByAggregateInput = {
   internalNotes?: Prisma.SortOrder
   systemRole?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  defaultSalesChannelId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -580,6 +609,7 @@ export type CustomerMinOrderByAggregateInput = {
 export type CustomerSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
+  defaultSalesChannelId?: Prisma.SortOrder
 }
 
 export type CustomerNullableScalarRelationFilter = {
@@ -626,6 +656,48 @@ export type CustomerUncheckedUpdateManyWithoutWorkspaceNestedInput = {
   connect?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
   update?: Prisma.CustomerUpdateWithWhereUniqueWithoutWorkspaceInput | Prisma.CustomerUpdateWithWhereUniqueWithoutWorkspaceInput[]
   updateMany?: Prisma.CustomerUpdateManyWithWhereWithoutWorkspaceInput | Prisma.CustomerUpdateManyWithWhereWithoutWorkspaceInput[]
+  deleteMany?: Prisma.CustomerScalarWhereInput | Prisma.CustomerScalarWhereInput[]
+}
+
+export type CustomerCreateNestedManyWithoutDefaultSalesChannelInput = {
+  create?: Prisma.XOR<Prisma.CustomerCreateWithoutDefaultSalesChannelInput, Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput> | Prisma.CustomerCreateWithoutDefaultSalesChannelInput[] | Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput[]
+  connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutDefaultSalesChannelInput | Prisma.CustomerCreateOrConnectWithoutDefaultSalesChannelInput[]
+  createMany?: Prisma.CustomerCreateManyDefaultSalesChannelInputEnvelope
+  connect?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+}
+
+export type CustomerUncheckedCreateNestedManyWithoutDefaultSalesChannelInput = {
+  create?: Prisma.XOR<Prisma.CustomerCreateWithoutDefaultSalesChannelInput, Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput> | Prisma.CustomerCreateWithoutDefaultSalesChannelInput[] | Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput[]
+  connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutDefaultSalesChannelInput | Prisma.CustomerCreateOrConnectWithoutDefaultSalesChannelInput[]
+  createMany?: Prisma.CustomerCreateManyDefaultSalesChannelInputEnvelope
+  connect?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+}
+
+export type CustomerUpdateManyWithoutDefaultSalesChannelNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerCreateWithoutDefaultSalesChannelInput, Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput> | Prisma.CustomerCreateWithoutDefaultSalesChannelInput[] | Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput[]
+  connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutDefaultSalesChannelInput | Prisma.CustomerCreateOrConnectWithoutDefaultSalesChannelInput[]
+  upsert?: Prisma.CustomerUpsertWithWhereUniqueWithoutDefaultSalesChannelInput | Prisma.CustomerUpsertWithWhereUniqueWithoutDefaultSalesChannelInput[]
+  createMany?: Prisma.CustomerCreateManyDefaultSalesChannelInputEnvelope
+  set?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+  disconnect?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+  delete?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+  connect?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+  update?: Prisma.CustomerUpdateWithWhereUniqueWithoutDefaultSalesChannelInput | Prisma.CustomerUpdateWithWhereUniqueWithoutDefaultSalesChannelInput[]
+  updateMany?: Prisma.CustomerUpdateManyWithWhereWithoutDefaultSalesChannelInput | Prisma.CustomerUpdateManyWithWhereWithoutDefaultSalesChannelInput[]
+  deleteMany?: Prisma.CustomerScalarWhereInput | Prisma.CustomerScalarWhereInput[]
+}
+
+export type CustomerUncheckedUpdateManyWithoutDefaultSalesChannelNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerCreateWithoutDefaultSalesChannelInput, Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput> | Prisma.CustomerCreateWithoutDefaultSalesChannelInput[] | Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput[]
+  connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutDefaultSalesChannelInput | Prisma.CustomerCreateOrConnectWithoutDefaultSalesChannelInput[]
+  upsert?: Prisma.CustomerUpsertWithWhereUniqueWithoutDefaultSalesChannelInput | Prisma.CustomerUpsertWithWhereUniqueWithoutDefaultSalesChannelInput[]
+  createMany?: Prisma.CustomerCreateManyDefaultSalesChannelInputEnvelope
+  set?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+  disconnect?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+  delete?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+  connect?: Prisma.CustomerWhereUniqueInput | Prisma.CustomerWhereUniqueInput[]
+  update?: Prisma.CustomerUpdateWithWhereUniqueWithoutDefaultSalesChannelInput | Prisma.CustomerUpdateWithWhereUniqueWithoutDefaultSalesChannelInput[]
+  updateMany?: Prisma.CustomerUpdateManyWithWhereWithoutDefaultSalesChannelInput | Prisma.CustomerUpdateManyWithWhereWithoutDefaultSalesChannelInput[]
   deleteMany?: Prisma.CustomerScalarWhereInput | Prisma.CustomerScalarWhereInput[]
 }
 
@@ -678,6 +750,7 @@ export type CustomerCreateWithoutWorkspaceInput = {
   systemRole?: $Enums.CustomerSystemRole | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  defaultSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutDefaultForCustomersInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutCustomerInput
   recurringIncomes?: Prisma.RecurringIncomeCreateNestedManyWithoutCustomerInput
 }
@@ -694,6 +767,7 @@ export type CustomerUncheckedCreateWithoutWorkspaceInput = {
   swift?: string | null
   internalNotes?: string | null
   systemRole?: $Enums.CustomerSystemRole | null
+  defaultSalesChannelId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutCustomerInput
@@ -742,8 +816,72 @@ export type CustomerScalarWhereInput = {
   internalNotes?: Prisma.StringNullableFilter<"Customer"> | string | null
   systemRole?: Prisma.EnumCustomerSystemRoleNullableFilter<"Customer"> | $Enums.CustomerSystemRole | null
   workspaceId?: Prisma.IntFilter<"Customer"> | number
+  defaultSalesChannelId?: Prisma.IntNullableFilter<"Customer"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
+}
+
+export type CustomerCreateWithoutDefaultSalesChannelInput = {
+  businessName: string
+  alias?: string | null
+  email?: string | null
+  vatNumber?: string | null
+  taxCodeSdi?: string | null
+  pec?: string | null
+  iban?: string | null
+  swift?: string | null
+  internalNotes?: string | null
+  systemRole?: $Enums.CustomerSystemRole | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutCustomersInput
+  incomes?: Prisma.IncomeCreateNestedManyWithoutCustomerInput
+  recurringIncomes?: Prisma.RecurringIncomeCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerUncheckedCreateWithoutDefaultSalesChannelInput = {
+  id?: number
+  businessName: string
+  alias?: string | null
+  email?: string | null
+  vatNumber?: string | null
+  taxCodeSdi?: string | null
+  pec?: string | null
+  iban?: string | null
+  swift?: string | null
+  internalNotes?: string | null
+  systemRole?: $Enums.CustomerSystemRole | null
+  workspaceId: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutCustomerInput
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerCreateOrConnectWithoutDefaultSalesChannelInput = {
+  where: Prisma.CustomerWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerCreateWithoutDefaultSalesChannelInput, Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput>
+}
+
+export type CustomerCreateManyDefaultSalesChannelInputEnvelope = {
+  data: Prisma.CustomerCreateManyDefaultSalesChannelInput | Prisma.CustomerCreateManyDefaultSalesChannelInput[]
+  skipDuplicates?: boolean
+}
+
+export type CustomerUpsertWithWhereUniqueWithoutDefaultSalesChannelInput = {
+  where: Prisma.CustomerWhereUniqueInput
+  update: Prisma.XOR<Prisma.CustomerUpdateWithoutDefaultSalesChannelInput, Prisma.CustomerUncheckedUpdateWithoutDefaultSalesChannelInput>
+  create: Prisma.XOR<Prisma.CustomerCreateWithoutDefaultSalesChannelInput, Prisma.CustomerUncheckedCreateWithoutDefaultSalesChannelInput>
+}
+
+export type CustomerUpdateWithWhereUniqueWithoutDefaultSalesChannelInput = {
+  where: Prisma.CustomerWhereUniqueInput
+  data: Prisma.XOR<Prisma.CustomerUpdateWithoutDefaultSalesChannelInput, Prisma.CustomerUncheckedUpdateWithoutDefaultSalesChannelInput>
+}
+
+export type CustomerUpdateManyWithWhereWithoutDefaultSalesChannelInput = {
+  where: Prisma.CustomerScalarWhereInput
+  data: Prisma.XOR<Prisma.CustomerUpdateManyMutationInput, Prisma.CustomerUncheckedUpdateManyWithoutDefaultSalesChannelInput>
 }
 
 export type CustomerCreateWithoutRecurringIncomesInput = {
@@ -760,6 +898,7 @@ export type CustomerCreateWithoutRecurringIncomesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutCustomersInput
+  defaultSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutDefaultForCustomersInput
   incomes?: Prisma.IncomeCreateNestedManyWithoutCustomerInput
 }
 
@@ -776,6 +915,7 @@ export type CustomerUncheckedCreateWithoutRecurringIncomesInput = {
   internalNotes?: string | null
   systemRole?: $Enums.CustomerSystemRole | null
   workspaceId: number
+  defaultSalesChannelId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutCustomerInput
@@ -811,6 +951,7 @@ export type CustomerUpdateWithoutRecurringIncomesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutCustomersNestedInput
+  defaultSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutDefaultForCustomersNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutCustomerNestedInput
 }
 
@@ -827,6 +968,7 @@ export type CustomerUncheckedUpdateWithoutRecurringIncomesInput = {
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  defaultSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutCustomerNestedInput
@@ -846,6 +988,7 @@ export type CustomerCreateWithoutIncomesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutCustomersInput
+  defaultSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutDefaultForCustomersInput
   recurringIncomes?: Prisma.RecurringIncomeCreateNestedManyWithoutCustomerInput
 }
 
@@ -862,6 +1005,7 @@ export type CustomerUncheckedCreateWithoutIncomesInput = {
   internalNotes?: string | null
   systemRole?: $Enums.CustomerSystemRole | null
   workspaceId: number
+  defaultSalesChannelId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   recurringIncomes?: Prisma.RecurringIncomeUncheckedCreateNestedManyWithoutCustomerInput
@@ -897,6 +1041,7 @@ export type CustomerUpdateWithoutIncomesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutCustomersNestedInput
+  defaultSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutDefaultForCustomersNestedInput
   recurringIncomes?: Prisma.RecurringIncomeUpdateManyWithoutCustomerNestedInput
 }
 
@@ -913,6 +1058,7 @@ export type CustomerUncheckedUpdateWithoutIncomesInput = {
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  defaultSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recurringIncomes?: Prisma.RecurringIncomeUncheckedUpdateManyWithoutCustomerNestedInput
@@ -930,6 +1076,7 @@ export type CustomerCreateManyWorkspaceInput = {
   swift?: string | null
   internalNotes?: string | null
   systemRole?: $Enums.CustomerSystemRole | null
+  defaultSalesChannelId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -947,6 +1094,7 @@ export type CustomerUpdateWithoutWorkspaceInput = {
   systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  defaultSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutDefaultForCustomersNestedInput
   incomes?: Prisma.IncomeUpdateManyWithoutCustomerNestedInput
   recurringIncomes?: Prisma.RecurringIncomeUpdateManyWithoutCustomerNestedInput
 }
@@ -963,6 +1111,7 @@ export type CustomerUncheckedUpdateWithoutWorkspaceInput = {
   swift?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
+  defaultSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   incomes?: Prisma.IncomeUncheckedUpdateManyWithoutCustomerNestedInput
@@ -981,6 +1130,78 @@ export type CustomerUncheckedUpdateManyWithoutWorkspaceInput = {
   swift?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
+  defaultSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CustomerCreateManyDefaultSalesChannelInput = {
+  id?: number
+  businessName: string
+  alias?: string | null
+  email?: string | null
+  vatNumber?: string | null
+  taxCodeSdi?: string | null
+  pec?: string | null
+  iban?: string | null
+  swift?: string | null
+  internalNotes?: string | null
+  systemRole?: $Enums.CustomerSystemRole | null
+  workspaceId: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CustomerUpdateWithoutDefaultSalesChannelInput = {
+  businessName?: Prisma.StringFieldUpdateOperationsInput | string
+  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vatNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxCodeSdi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  swift?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutCustomersNestedInput
+  incomes?: Prisma.IncomeUpdateManyWithoutCustomerNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerUncheckedUpdateWithoutDefaultSalesChannelInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  businessName?: Prisma.StringFieldUpdateOperationsInput | string
+  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vatNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxCodeSdi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  swift?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutCustomerNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerUncheckedUpdateManyWithoutDefaultSalesChannelInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  businessName?: Prisma.StringFieldUpdateOperationsInput | string
+  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vatNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxCodeSdi?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pec?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  swift?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  systemRole?: Prisma.NullableEnumCustomerSystemRoleFieldUpdateOperationsInput | $Enums.CustomerSystemRole | null
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1038,9 +1259,11 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   internalNotes?: boolean
   systemRole?: boolean
   workspaceId?: boolean
+  defaultSalesChannelId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  defaultSalesChannel?: boolean | Prisma.Customer$defaultSalesChannelArgs<ExtArgs>
   incomes?: boolean | Prisma.Customer$incomesArgs<ExtArgs>
   recurringIncomes?: boolean | Prisma.Customer$recurringIncomesArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
@@ -1059,9 +1282,11 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   internalNotes?: boolean
   systemRole?: boolean
   workspaceId?: boolean
+  defaultSalesChannelId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  defaultSalesChannel?: boolean | Prisma.Customer$defaultSalesChannelArgs<ExtArgs>
 }, ExtArgs["result"]["customer"]>
 
 export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1077,9 +1302,11 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   internalNotes?: boolean
   systemRole?: boolean
   workspaceId?: boolean
+  defaultSalesChannelId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  defaultSalesChannel?: boolean | Prisma.Customer$defaultSalesChannelArgs<ExtArgs>
 }, ExtArgs["result"]["customer"]>
 
 export type CustomerSelectScalar = {
@@ -1095,28 +1322,33 @@ export type CustomerSelectScalar = {
   internalNotes?: boolean
   systemRole?: boolean
   workspaceId?: boolean
+  defaultSalesChannelId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessName" | "alias" | "email" | "vatNumber" | "taxCodeSdi" | "pec" | "iban" | "swift" | "internalNotes" | "systemRole" | "workspaceId" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessName" | "alias" | "email" | "vatNumber" | "taxCodeSdi" | "pec" | "iban" | "swift" | "internalNotes" | "systemRole" | "workspaceId" | "defaultSalesChannelId" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  defaultSalesChannel?: boolean | Prisma.Customer$defaultSalesChannelArgs<ExtArgs>
   incomes?: boolean | Prisma.Customer$incomesArgs<ExtArgs>
   recurringIncomes?: boolean | Prisma.Customer$recurringIncomesArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CustomerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  defaultSalesChannel?: boolean | Prisma.Customer$defaultSalesChannelArgs<ExtArgs>
 }
 export type CustomerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
+  defaultSalesChannel?: boolean | Prisma.Customer$defaultSalesChannelArgs<ExtArgs>
 }
 
 export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Customer"
   objects: {
     workspace: Prisma.$WorkspacePayload<ExtArgs>
+    defaultSalesChannel: Prisma.$IncomeSalesChannelPayload<ExtArgs> | null
     incomes: Prisma.$IncomePayload<ExtArgs>[]
     recurringIncomes: Prisma.$RecurringIncomePayload<ExtArgs>[]
   }
@@ -1133,6 +1365,7 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     internalNotes: string | null
     systemRole: $Enums.CustomerSystemRole | null
     workspaceId: number
+    defaultSalesChannelId: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["customer"]>
@@ -1530,6 +1763,7 @@ readonly fields: CustomerFieldRefs;
 export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  defaultSalesChannel<T extends Prisma.Customer$defaultSalesChannelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$defaultSalesChannelArgs<ExtArgs>>): Prisma.Prisma__IncomeSalesChannelClient<runtime.Types.Result.GetResult<Prisma.$IncomeSalesChannelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   incomes<T extends Prisma.Customer$incomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$incomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recurringIncomes<T extends Prisma.Customer$recurringIncomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$recurringIncomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringIncomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1573,6 +1807,7 @@ export interface CustomerFieldRefs {
   readonly internalNotes: Prisma.FieldRef<"Customer", 'String'>
   readonly systemRole: Prisma.FieldRef<"Customer", 'CustomerSystemRole'>
   readonly workspaceId: Prisma.FieldRef<"Customer", 'Int'>
+  readonly defaultSalesChannelId: Prisma.FieldRef<"Customer", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Customer", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Customer", 'DateTime'>
 }
@@ -1973,6 +2208,25 @@ export type CustomerDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Customers to delete.
    */
   limit?: number
+}
+
+/**
+ * Customer.defaultSalesChannel
+ */
+export type Customer$defaultSalesChannelArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the IncomeSalesChannel
+   */
+  select?: Prisma.IncomeSalesChannelSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the IncomeSalesChannel
+   */
+  omit?: Prisma.IncomeSalesChannelOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IncomeSalesChannelInclude<ExtArgs> | null
+  where?: Prisma.IncomeSalesChannelWhereInput
 }
 
 /**

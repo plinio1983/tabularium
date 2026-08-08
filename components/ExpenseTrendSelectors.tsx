@@ -177,7 +177,7 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
           className={mode === "date" ? "trend-mode-button is-active" : "trend-mode-button"}
           onClick={() => changeMode("date")}
       >
-        Andamento
+        Complessivo
       </button>
       <button
           type="button"

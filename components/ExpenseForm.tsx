@@ -6,11 +6,12 @@ import {DateField, FormField, MonthField, SelectField} from "@/components/FormCo
 import {CurrencyInput} from "@/components/CurrencyInput";
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {dateInputInTimeZone, monthInputInTimeZone} from '@/lib/company-time';
-import {applyCurrencyInputKeyWithState, formatCurrencyInput} from "@/lib/currency-input";
+import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from "@/lib/currency-input";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import SupplierCreateModal from "@/components/SupplierCreateModal";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
 import {resolveSupplierDefaultVatRate} from '@/lib/supplier-defaults';
+import {formatItalianCompactDate} from '@/lib/date-format';
 
 type Option = {
     id: number;
@@ -159,9 +160,7 @@ function formatEuro(value: number) {
 }
 
 function formatDateInputLabel(value: string) {
-    if (!value) return "";
-    const [year, month, day] = value.split("-");
-    return year && month && day ? `${day}/${month}/${year}` : value;
+    return formatItalianCompactDate(value);
 }
 
 function emptyPaymentRow(key: number, today: string): PaymentRow {
@@ -215,7 +214,7 @@ function MoneyInput({inputRef, ...props}: React.ComponentProps<typeof CurrencyIn
     return (
         <div className="money-input">
             <span>€</span>
-            <CurrencyInput ref={inputRef} {...props}/>
+            <CurrencyInput ref={inputRef} clearable {...props}/>
         </div>
     );
 }
@@ -468,9 +467,11 @@ export default function ExpenseForm({
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
     const initialSupplier = suppliers.find(supplier => supplier.id === initialExpense?.supplierId);
     const initialSupplierDefaultCategoryId = initialSupplier?.defaultExpenseCategoryId;
+    const fallbackCategoryId = categories.find(category => category.code === "DEFAULT")?.id;
     const [categoryId, setCategoryId] = useState(() => String(
         initialExpense?.categoryId
         ?? (initialExpense?.id ? null : initialSupplierDefaultCategoryId)
+        ?? (initialExpense?.id ? null : fallbackCategoryId)
         ?? categories[0]?.id
         ?? "",
     ));
@@ -539,15 +540,10 @@ export default function ExpenseForm({
                 : addDaysToDateInput(initialOrderDate, 7, today),
     );
     useEffect(() => {
-        if (!isVatSettlement || !dueDate || orderDate === dueDate) return;
-        setOrderDate(dueDate);
-    }, [isVatSettlement, dueDate, orderDate]);
-    useEffect(() => {
         if (!isVatSettlement || !billingPeriod) return;
         const lastDay = lastDayOfMonthInput(billingPeriod);
         if (!lastDay) return;
         setDueDate(lastDay);
-        setOrderDate(lastDay);
     }, [isVatSettlement, billingPeriod]);
     const [invoiceStatus, setInvoiceStatus] = useState(
         initialExpense?.invoiceStatus ?? "IN_ATTESA",
@@ -1011,7 +1007,6 @@ export default function ExpenseForm({
                             const lastDay = lastDayOfMonthInput(value);
                             if (lastDay) {
                                 setDueDate(lastDay);
-                                setOrderDate(lastDay);
                             }
                         }}
                         required
@@ -1027,31 +1022,31 @@ export default function ExpenseForm({
                         required
                     /> : null}
 
-                    {isVatSettlement ? <input type="hidden" name="receivedDate" value={dueDate}/> : <DateField
+                    <DateField
                         className="app-form-wizard-step app-form-wizard-step-1"
-                        label="Data ordine"
+                        label={isVatSettlement ? "Data ricezione" : "Data ordine"}
                         name="receivedDate"
                         value={orderDate}
                         onChange={(nextOrderDate) => {
                             const nextOrderMonth = monthInputFromDateInput(nextOrderDate);
                             setOrderDate(nextOrderDate);
-                            if (nextOrderMonth && (!billingPeriod || billingPeriod < nextOrderMonth)) {
+                            if (!isVatSettlement && nextOrderMonth && (!billingPeriod || billingPeriod < nextOrderMonth)) {
                                 setBillingPeriod(nextOrderMonth);
                             }
-                            setDueDate(addDaysToDateInput(nextOrderDate, 7, today));
+                            if (!isVatSettlement && !isExistingExpense) {
+                                setDueDate(addDaysToDateInput(nextOrderDate, 7, today));
+                            }
                         }}
                         required
-                    />}
+                        hint={isVatSettlement ? "Determina il periodo nel quale la spesa viene conteggiata nell’Andamento complessivo." : undefined}
+                    />
                     <DateField
                         className="app-form-wizard-step app-form-wizard-step-1 expense-due-date-field"
                         label="Data scadenza"
                         name="dueDate"
                         value={dueDate}
                         required={isVatSettlement}
-                        onChange={(value) => {
-                            setDueDate(value);
-                            if (isVatSettlement) setOrderDate(value);
-                        }}
+                        onChange={setDueDate}
                     >
                         <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
                             {[0, 7, 15, 30].map(days => {
@@ -1061,10 +1056,7 @@ export default function ExpenseForm({
                                     key={days}
                                     className={dueDate === value ? "is-selected" : ""}
                                     aria-pressed={dueDate === value}
-                                    onClick={() => {
-                                        setDueDate(value);
-                                        if (isVatSettlement) setOrderDate(value);
-                                    }}
+                                    onClick={() => setDueDate(value)}
                                 >{days === 0 ? "Stesso g" : `+${days} gg`}</button>;
                             })}
                         </span>
@@ -1189,6 +1181,7 @@ export default function ExpenseForm({
                                             required
                                             value={amount}
                                             onValueChange={handleAmountChange}
+                                            onClear={() => resetCurrencyInput(amountKeyStateRef.current)}
                                             suppressSoftKeyboard
                                         />
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
@@ -1615,8 +1608,8 @@ export default function ExpenseForm({
                     <strong>{formatEuro(amountValue)}</strong>
                 </div>
                 <div className="record-review-grid">
-                    {!isVatSettlement ? <div className="record-review-item"><i aria-hidden="true">◷</i><span>Data ordine<strong>{formatDateInputLabel(orderDate)}</strong></span>
-                    </div> : null}
+                    <div className="record-review-item"><i aria-hidden="true">◷</i><span>{isVatSettlement ? "Data ricezione" : "Data ordine"}<strong>{formatDateInputLabel(orderDate)}</strong></span>
+                    </div>
                     <div className="record-review-item">
                         <i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span>
                     </div>

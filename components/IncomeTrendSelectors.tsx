@@ -171,7 +171,7 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
     <span className="w100">Andamento</span>
     <div className="trend-mode-toggle" role="group" aria-label="Tipo andamento">
       <button type="button" className={mode === "date" ? "trend-mode-button is-active" : "trend-mode-button"} onClick={() => changeMode("date")}>
-        Andamento
+        Complessivo
       </button>
       <button type="button" className={mode === "fiscal" ? "trend-mode-button is-active" : "trend-mode-button"} onClick={() => changeMode("fiscal")}>
         Fiscale

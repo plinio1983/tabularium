@@ -15,7 +15,8 @@ const CustomerSchema = z.object({
   pec: z.string().trim().optional().transform(value => value || null),
   iban: z.string().trim().optional().transform(value => value || null),
   swift: z.string().trim().optional().transform(value => value || null),
-  internalNotes: z.string().trim().optional().transform(value => value || null)
+  internalNotes: z.string().trim().optional().transform(value => value || null),
+  defaultSalesChannelId: z.preprocess(value => value === '' || value == null ? null : value, z.coerce.number().int().positive().nullable())
 });
 
 function returnPath(request: Request) {
@@ -53,6 +54,12 @@ export async function POST(request: Request) {
   const isForm = request.headers.get('content-type')?.includes('form');
   const raw = isForm ? Object.fromEntries((await request.formData()).entries()) : await request.json();
   const data = CustomerSchema.parse(raw);
+  if (data.defaultSalesChannelId) {
+    const channel = await prisma.incomeSalesChannel.findFirst({where: {id: data.defaultSalesChannelId, workspaceId: current.workspace.id}, select: {id: true}});
+    if (!channel) return isForm
+      ? redirectToPath(appendFlash(returnPath(request), {error: 'invalid_sales_channel'}))
+      : NextResponse.json({error: 'Canale di vendita non valido'}, {status: 400});
+  }
   const customer = await prisma.customer.create({ data: { ...data, workspaceId: current.workspace.id } });
   await writeAuditLog({
     workspaceId: current.workspace.id, userId: current.user.id, action: 'CREATE',

@@ -1,12 +1,14 @@
 'use client';
 
 import { forwardRef, type InputHTMLAttributes, type KeyboardEvent, type PointerEvent, useRef } from "react";
-import { applyCurrencyInputKeyWithState, formatCurrencyInput } from "@/lib/currency-input";
+import { applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput } from "@/lib/currency-input";
 
 type CurrencyInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "value" | "defaultValue" | "onChange"> & {
   value: string | number;
   onValueChange: (value: string) => void;
   suppressSoftKeyboard?: boolean;
+  clearable?: boolean;
+  onClear?: () => void;
 };
 
 function moveCaretToEnd(input: HTMLInputElement) {
@@ -21,7 +23,7 @@ function isMobileTouchInput() {
 }
 
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(function CurrencyInput(
-  { value, onValueChange, suppressSoftKeyboard = false, onKeyDown, onFocus, onClick, onPaste, onPointerDown, ...props },
+  { value, onValueChange, suppressSoftKeyboard = false, clearable = false, onClear, onKeyDown, onFocus, onClick, onPaste, onPointerDown, ...props },
   ref,
 ) {
   const keyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
@@ -48,38 +50,53 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
     }
   }
 
-  return <input
-    {...props}
-    ref={ref}
-    type="text"
-    inputMode={suppressSoftKeyboard ? "none" : "decimal"}
-    value={formatCurrencyInput(value)}
-    onChange={event => {
-      keyStateRef.current.separatorDigits = null;
-      onValueChange(formatCurrencyInput(event.currentTarget.value));
-      moveCaretToEnd(event.currentTarget);
-    }}
-    onKeyDown={handleKeyDown}
-    onFocus={event => {
-      if (suppressSoftKeyboard && isMobileTouchInput()) {
-        event.currentTarget.blur();
-        return;
-      }
-      onFocus?.(event);
-      moveCaretToEnd(event.currentTarget);
-    }}
-    onPointerDown={handlePointerDown}
-    onClick={event => {
-      onClick?.(event);
-      moveCaretToEnd(event.currentTarget);
-    }}
-    onPaste={event => {
-      onPaste?.(event);
-      if (event.defaultPrevented) return;
-      event.preventDefault();
-      keyStateRef.current.separatorDigits = null;
-      onValueChange(formatCurrencyInput(event.clipboardData.getData("text")));
-      moveCaretToEnd(event.currentTarget);
-    }}
-  />;
+  return <>
+    <input
+      {...props}
+      ref={ref}
+      type="text"
+      inputMode={suppressSoftKeyboard ? "none" : "decimal"}
+      value={formatCurrencyInput(value)}
+      onChange={event => {
+        keyStateRef.current.separatorDigits = null;
+        onValueChange(formatCurrencyInput(event.currentTarget.value));
+        moveCaretToEnd(event.currentTarget);
+      }}
+      onKeyDown={handleKeyDown}
+      onFocus={event => {
+        if (suppressSoftKeyboard && isMobileTouchInput()) {
+          event.currentTarget.blur();
+          return;
+        }
+        onFocus?.(event);
+        moveCaretToEnd(event.currentTarget);
+      }}
+      onPointerDown={handlePointerDown}
+      onClick={event => {
+        onClick?.(event);
+        moveCaretToEnd(event.currentTarget);
+      }}
+      onPaste={event => {
+        onPaste?.(event);
+        if (event.defaultPrevented) return;
+        event.preventDefault();
+        keyStateRef.current.separatorDigits = null;
+        onValueChange(formatCurrencyInput(event.clipboardData.getData("text")));
+        moveCaretToEnd(event.currentTarget);
+      }}
+    />
+    {clearable ? <button
+      type="button"
+      className="amount-clear-button"
+      aria-label="Azzera importo"
+      disabled={props.disabled}
+      onPointerDown={event => event.preventDefault()}
+      onClick={event => {
+        onValueChange(resetCurrencyInput(keyStateRef.current));
+        onClear?.();
+        const input = event.currentTarget.previousElementSibling;
+        if (input instanceof HTMLInputElement) input.focus({preventScroll: true});
+      }}
+    >×</button> : null}
+  </>;
 });
