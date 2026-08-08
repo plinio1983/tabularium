@@ -192,11 +192,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     <Link
                         className={mode === 'overall' ? 'trend-mode-button is-active' : 'trend-mode-button'}
                         href={`/months/${year}/${month}?mode=overall&returnTo=${encodeURIComponent(backHref)}`}
-                    >Per movimento</Link>
+                    >Andamento</Link>
                     <Link
                         className={mode === 'fiscal' ? 'trend-mode-button is-active' : 'trend-mode-button'}
                         href={`/months/${year}/${month}?mode=fiscal&returnTo=${encodeURIComponent(backHref)}`}
-                    >Per competenza</Link>
+                    >Fiscale</Link>
                 </div>
             </div>
             <div className="grid grid-4 month-report-metrics">

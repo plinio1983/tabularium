@@ -11,6 +11,10 @@ import {resolveDefaultIncomeCategory} from '@/lib/income-category';
 import {AttachmentValidationError, deleteExpenseAttachmentFile, normalizeExpenseAttachmentType, saveExpenseAttachmentFiles} from '@/lib/attachments';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
+const InvoiceStatusFromForm = z.preprocess(
+  value => value === '' ? null : value,
+  z.enum(['NON_INVIATA', 'PARZIALE', 'EMESSA']).optional().nullable()
+);
 
 const IncomeSchema = z.object({
   customerId: z.coerce.number().int().positive(),
@@ -25,7 +29,7 @@ const IncomeSchema = z.object({
   isCredited: BooleanFromForm.default(false),
   billingPeriod: z.string().regex(/^\d{4}-\d{2}$/),
   isFiscal: BooleanFromForm.default(true),
-  invoiceStatus: z.enum(['NON_INVIATA', 'PARZIALE', 'EMESSA']).optional().nullable(),
+  invoiceStatus: InvoiceStatusFromForm,
   vatRate: z.coerce.number().default(22),
   notes: z.string().optional().nullable()
 });

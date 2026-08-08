@@ -5,6 +5,7 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {zonedMidnightUtc} from '@/lib/company-time';
+import {CurrencyInput} from '@/components/CurrencyInput';
 
 type Method = {
     id: number;
@@ -394,8 +395,9 @@ export default function CashRegister({
             </small>
             <div className="cash-register-display-amount">
                 <span>€</span>
-                <input ref={amountRef} className={amountSizeClass} aria-label="Importo incasso" value={formattedAmount} readOnly
-                       disabled={confirmationLocked} inputMode="none"/>
+                <CurrencyInput ref={amountRef} className={amountSizeClass} aria-label="Importo incasso"
+                               value={formattedAmount} onValueChange={setAmount} suppressSoftKeyboard
+                               disabled={confirmationLocked}/>
             </div>
         </section>
 

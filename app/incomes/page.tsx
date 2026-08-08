@@ -558,7 +558,8 @@ export default async function IncomesPage({searchParams}: {
     const hasCreditDateFilter = Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo') || inputDefault(filters, 'dateQuick'));
     const dateYearFilter = inputDefault(filters, 'dateYear');
     const billingPeriodYearFilter = inputDefault(filters, 'billingPeriodYear');
-    const useFiscalPeriodFilter = hasFiscalPeriodFilter;
+    const viewFilter = inputDefault(filters, 'view');
+    const useFiscalPeriodFilter = viewFilter === 'fiscale' || (viewFilter !== 'andamento' && hasFiscalPeriodFilter);
     const useCreditDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
@@ -644,17 +645,20 @@ export default async function IncomesPage({searchParams}: {
         ? `/months/${reportMonth.year}/${reportMonth.month}?returnTo=${encodeURIComponent(listHref)}`
         : null;
 
-    const matchesCreditDate = (income: typeof incomes[number]) => !creditDateFromFilter && !creditDateToFilter
-        || income.credits.some(credit => matchesIsoDate(credit.creditDate, creditDateFromFilter, creditDateToFilter, current.company.timeZone));
+    const matchesOrderDate = (income: typeof incomes[number]) => {
+        if (!creditDateFromFilter && !creditDateToFilter) return true;
+        return matchesIsoDate(income.orderDate, creditDateFromFilter, creditDateToFilter, current.company.timeZone, true);
+    };
     const periodIncomes = incomes.filter(income => {
-        if (!matchesCreditDate(income)) return false;
+        if (!matchesOrderDate(income)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
         return true;
     });
 
     const filteredIncomes = periodIncomes.filter(income => {
-        if (!matchesCreditDate(income)) return false;
+        if (!matchesOrderDate(income)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
+        if (useFiscalPeriodFilter && !income.isFiscal) return false;
         if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
         if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
         if (paymentMethodFilter && !income.credits.some(credit => credit.paymentMethodId === incomePaymentMethods.find(method => method.name === paymentMethodFilter)?.id)) return false;
@@ -753,8 +757,8 @@ export default async function IncomesPage({searchParams}: {
     const residualVatDebt = recoverableExpenseVat === null ? null : totals.vatDebt - recoverableExpenseVat;
 
     const activeFilterItems = [
-        creditDateFromDefault && {label: 'Data accredito da', value: formatDateInputLabel(creditDateFromDefault)},
-        creditDateToDefault && {label: 'Data accredito a', value: formatDateInputLabel(creditDateToDefault)},
+        creditDateFromDefault && {label: 'Data ordine da', value: formatDateInputLabel(creditDateFromDefault)},
+        creditDateToDefault && {label: 'Data ordine a', value: formatDateInputLabel(creditDateToDefault)},
         billingPeriodFromFilter && {label: 'Periodo fatt. da', value: billingPeriodFromFilter},
         billingPeriodToFilter && {label: 'Periodo fatt. a', value: billingPeriodToFilter},
         salesChannelFilter && {label: 'Canale vendita', value: salesChannelFilter},

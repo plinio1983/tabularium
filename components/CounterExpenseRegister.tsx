@@ -5,6 +5,7 @@ import {useRouter} from 'next/navigation';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput} from '@/lib/currency-input';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {zonedMidnightUtc} from '@/lib/company-time';
+import {CurrencyInput} from '@/components/CurrencyInput';
 
 type Category = {id: number; name: string; icon: string | null};
 type Method = {id: number; name: string; icon: string | null; systemRole: string | null};
@@ -314,7 +315,8 @@ export default function CounterExpenseRegister({
       </small>
       <div className="cash-register-display-amount">
         <span>€</span>
-        <input ref={amountRef} className={amountSizeClass} aria-label="Importo spesa" value={formattedAmount} readOnly inputMode="none"/>
+        <CurrencyInput ref={amountRef} className={amountSizeClass} aria-label="Importo spesa"
+                       value={formattedAmount} onValueChange={setAmount} suppressSoftKeyboard/>
       </div>
     </section>
 

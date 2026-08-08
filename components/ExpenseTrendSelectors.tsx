@@ -132,25 +132,18 @@ function goWithQuick(type: "date" | "fiscal", value: string, year: string, now: 
   params.delete("new");
 
   if (type === "date") {
-    params.delete("billingPeriodFrom");
-    params.delete("billingPeriodTo");
-    params.delete("billingPeriodQuick");
-    params.delete("billingPeriodYear");
-    params.delete("period");
     params.delete("orderDateFrom");
     params.delete("orderDateTo");
     params.set("dateQuick", value || currentMonthQuickValue(now));
     params.set("dateYear", year || currentYearValue(now));
+    params.set("view", "andamento");
   } else {
-    params.delete("orderDateFrom");
-    params.delete("orderDateTo");
-    params.delete("dateQuick");
-    params.delete("dateYear");
     params.delete("billingPeriodFrom");
     params.delete("billingPeriodTo");
     params.delete("period");
     params.set("billingPeriodQuick", value || currentMonthQuickValue(now));
     params.set("billingPeriodYear", year || currentYearValue(now));
+    params.set("view", "fiscale");
   }
 
   const query = params.toString();
@@ -162,17 +155,16 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
   const companyNow = civilDateInTimeZone(timeZone);
   const [mode, setMode] = useState<"date" | "fiscal">(useFiscalPeriodFilter ? "fiscal" : "date");
   const [pendingQuickButton, setPendingQuickButton] = useState<string | null>(null);
-  const andamentoComplessivoValue = !useFiscalPeriodFilter ? (dateQuick || currentMonthQuickValue(companyNow)) : currentMonthQuickValue(companyNow);
-  const andamentoFiscaleValue = useFiscalPeriodFilter ? (billingPeriodQuick || currentMonthQuickValue(companyNow)) : currentMonthQuickValue(companyNow);
-  const andamentoComplessivoYear = !useFiscalPeriodFilter ? (dateYear || currentYearValue(companyNow)) : currentYearValue(companyNow);
-  const andamentoFiscaleYear = useFiscalPeriodFilter ? (billingPeriodYear || currentYearValue(companyNow)) : currentYearValue(companyNow);
+  const andamentoComplessivoValue = dateQuick || currentMonthQuickValue(companyNow);
+  const andamentoFiscaleValue = billingPeriodQuick || currentMonthQuickValue(companyNow);
+  const andamentoComplessivoYear = dateYear || currentYearValue(companyNow);
+  const andamentoFiscaleYear = billingPeriodYear || currentYearValue(companyNow);
   const currentQuickValue = mode === "date" ? andamentoComplessivoValue : andamentoFiscaleValue;
   const currentQuickYear = mode === "date" ? andamentoComplessivoYear : andamentoFiscaleYear;
   const years = yearOptions(companyNow);
 
   function changeMode(nextMode: "date" | "fiscal") {
-    setMode(nextMode);
-    goWithQuick(nextMode, currentMonthQuickValue(companyNow), currentYearValue(companyNow), companyNow);
+    goWithQuick(nextMode, currentQuickValue, currentQuickYear, companyNow);
   }
 
   return <div className="trend-selectors trend-selectors-switch" aria-label="Selettori andamento spese">
@@ -185,14 +177,14 @@ export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, d
           className={mode === "date" ? "trend-mode-button is-active" : "trend-mode-button"}
           onClick={() => changeMode("date")}
       >
-        Per movimento
+        Andamento
       </button>
       <button
           type="button"
           className={mode === "fiscal" ? "trend-mode-button is-active" : "trend-mode-button"}
           onClick={() => changeMode("fiscal")}
       >
-        Per competenza
+        Fiscale
       </button>
     </div>
 

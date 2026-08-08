@@ -15,6 +15,7 @@ import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 import SearchIcon from '@/components/SearchIcon';
+import {expenseAffectsFiscalProfit} from '@/lib/reports';
 
 const paymentStatusOptions = [
     ['overdue', 'Scaduto'],
@@ -595,7 +596,8 @@ export default async function ExpensesPage({searchParams}: {
     const hasOrderDateFilter = Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo') || inputDefault(filters, 'dateQuick'));
     const dateYearFilter = inputDefault(filters, 'dateYear');
     const billingPeriodYearFilter = inputDefault(filters, 'billingPeriodYear');
-    const useFiscalPeriodFilter = hasFiscalPeriodFilter;
+    const viewFilter = inputDefault(filters, 'view');
+    const useFiscalPeriodFilter = viewFilter === 'fiscale' || (viewFilter !== 'andamento' && hasFiscalPeriodFilter);
     const useOrderDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useOrderDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomOrderDateFilter = useOrderDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo'));
@@ -616,8 +618,7 @@ export default async function ExpensesPage({searchParams}: {
                 payments: {include: {bank: true, paymentMethod: true}, orderBy: {id: 'asc'}},
                 attachments: true
             },
-            orderBy: [{year: 'desc'}, {month: 'desc'}, {receivedDate: 'desc'}],
-            take: 500
+            orderBy: [{year: 'desc'}, {month: 'desc'}, {receivedDate: 'desc'}]
         }),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
@@ -720,9 +721,11 @@ export default async function ExpensesPage({searchParams}: {
         const amount = Number(expense.amount.toString());
         const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
         const residual = Math.max(0, amount - paid);
+        const affectsFiscalResult = expenseAffectsFiscalProfit(expense);
 
         if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
         if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
+        if (useFiscalPeriodFilter && !affectsFiscalResult) return false;
         if (categoryFilter && expense.category?.name !== categoryFilter) return false;
         if (expenseTypeFilter === 'single' && (expense.expenseType !== 'STANDARD' || expense.isRecurring)) return false;
         if (expenseTypeFilter === 'recurring' && (expense.expenseType !== 'STANDARD' || !expense.isRecurring)) return false;
@@ -742,7 +745,6 @@ export default async function ExpensesPage({searchParams}: {
         if (invoiceStatusModeFilter === 'not_received' && !isExpenseInvoiceNotReceived(expense)) return false;
         if (invoiceStatusFilter === 'not_received' && !isExpenseInvoiceNotReceived(expense)) return false;
         if (invoiceStatusFilter && invoiceStatusFilter !== 'not_received' && expense.invoiceStatus !== invoiceStatusFilter) return false;
-        const affectsFiscalResult = expense.isDeclared || expense.affectsFiscalProfit;
         if (declaredFilter === 'yes' && !affectsFiscalResult) return false;
         if (declaredFilter === 'no' && affectsFiscalResult) return false;
         if (attachmentsFilter === 'with' && expense.attachments.length === 0) return false;

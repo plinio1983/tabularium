@@ -16,6 +16,10 @@ function moveCaretToEnd(input: HTMLInputElement) {
   });
 }
 
+function isMobileTouchInput() {
+  return window.matchMedia("(max-width: 900px) and (pointer: coarse)").matches;
+}
+
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(function CurrencyInput(
   { value, onValueChange, suppressSoftKeyboard = false, onKeyDown, onFocus, onClick, onPaste, onPointerDown, ...props },
   ref,
@@ -39,7 +43,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
 
   function handlePointerDown(event: PointerEvent<HTMLInputElement>) {
     onPointerDown?.(event);
-    if (!event.defaultPrevented && suppressSoftKeyboard && event.pointerType === "touch") {
+    if (!event.defaultPrevented && suppressSoftKeyboard && event.pointerType === "touch" && isMobileTouchInput()) {
       event.preventDefault();
     }
   }
@@ -57,7 +61,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
     }}
     onKeyDown={handleKeyDown}
     onFocus={event => {
-      if (suppressSoftKeyboard && window.matchMedia("(max-width: 900px)").matches) {
+      if (suppressSoftKeyboard && isMobileTouchInput()) {
         event.currentTarget.blur();
         return;
       }

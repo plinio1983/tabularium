@@ -281,8 +281,8 @@ export default function IncomeFiltersDrawer({
               <option value="">Periodo personalizzato</option>
               {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></FilterField>
-            <FilterField label="Data accredito da" icon="◷"><input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} onChange={handleCreditDateInputChange} /></FilterField>
-            <FilterField label="Data accredito a" icon="◷"><input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} onChange={handleCreditDateInputChange} /></FilterField>
+            <FilterField label="Data ordine da" icon="◷"><input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} onChange={handleCreditDateInputChange} /></FilterField>
+            <FilterField label="Data ordine a" icon="◷"><input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} onChange={handleCreditDateInputChange} /></FilterField>
           </fieldset>
 
           <FilterField label="Canale vendita" icon="◇"><select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>

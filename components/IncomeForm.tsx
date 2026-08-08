@@ -483,12 +483,10 @@ export default function IncomeForm({
                                     <span className="app-form-field-icon">⇆</span>
                                     <span className="app-form-label">Fiscale</span>
                                 </div>
-                                <input type="hidden" name="isFiscal" value="false"/>
+                                <input type="hidden" name="isFiscal" value={isFiscal ? "true" : "false"}/>
                                 <label className="switch">
                                     <input
                                         type="checkbox"
-                                        name="isFiscal"
-                                        value="true"
                                         checked={isFiscal}
                                         onChange={(event) => {
                                             toggleFiscal(event.currentTarget.checked);
