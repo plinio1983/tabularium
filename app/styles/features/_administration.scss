@@ -1300,21 +1300,13 @@ table .cell-description {
 .payment-credit-modal-form {
   grid-template-columns: minmax(0, 1fr) minmax(150px, .45fr);
   align-items: flex-start;
-  width: 100%;
   min-width: 0;
   padding: 0;
   border: 0;
-}
-
-.payment-credit-modal-form > label input,
-.payment-credit-modal-form > label select {
-  width: 100%;
-  min-width: 0;
-  min-height: 48px;
+  width: min(640px, 100vw - 36px);
 }
 
 .payment-credit-modal-form .payment-credit-primary-field,
-.payment-credit-modal-form fieldset,
 .payment-credit-modal-form .payment-credit-expanded-actions {
   grid-column: 1 / -1;
 }
@@ -1327,6 +1319,7 @@ table .cell-description {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: #f8fafc;
+  grid-column: 1 / -1;
 }
 
 .payment-credit-default-fields legend {
@@ -1614,7 +1607,7 @@ table .cell-description {
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1280px) {
   .dashboard-period-cards {
     grid-template-columns: 1fr 1fr;
   }
@@ -1733,14 +1726,6 @@ table .cell-description {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-insights-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .vat-kpi-grid {
-    //grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .category-chart-row {
     grid-template-columns: 1fr;
     gap: 7px;
@@ -1828,15 +1813,6 @@ table .cell-description {
 
   .dashboard-expense-impact-amounts > div {
     text-align: left;
-  }
-
-  .profitability-summary-values {
-    grid-template-columns: minmax(90px, 1fr) auto 52px;
-    gap: 7px;
-  }
-
-  .profitability-summary-values > strong:nth-child(2) {
-    font-size: 15px;
   }
 
   .dashboard-insight-card .card-heading-row {
@@ -2002,6 +1978,7 @@ table .cell-description {
     display: flex;
     flex-direction: column;
     gap: 0;
+    align-items: stretch;
   }
 }
 
@@ -2718,7 +2695,6 @@ table .cell-description {
 
 .dashboard-section-floating-nav a {
   flex: 0 0 auto;
-  min-height: 36px;
   padding: 7px 12px;
   border-radius: 10px;
   color: #334155;
@@ -2726,6 +2702,12 @@ table .cell-description {
   font-weight: 750;
   line-height: 1.15;
   text-decoration: none;
+
+  @media (max-width: 768px) {
+    min-height: 36px;
+    align-items: center;
+    display: flex;
+  }
 }
 
 .dashboard-section-floating-nav a.is-active {

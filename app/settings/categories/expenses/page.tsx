@@ -1,6 +1,6 @@
 import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { categoryIconOptions, orderExpenseCategories } from '@/lib/workspace-defaults';
+import { categoryIconOptions, defaultExpenseCategoryCode, orderExpenseCategories } from '@/lib/workspace-defaults';
 import { createCategoryAction, deleteCategoryAction, setVatSettlementCategoryAction, updateCategoryAction } from '../actions';
 import CategoryCreatePanel from '../CategoryCreatePanel';
 import ExpenseCategoryList from './ExpenseCategoryList';
@@ -14,7 +14,8 @@ const errorMessages: Record<string, string> = {
   code_exists: 'Esiste già una categoria con questo acronimo.',
   not_found: 'Categoria non trovata.',
   in_use: 'Categoria usata da movimenti esistenti: riassegnali prima di rimuoverla.',
-  vat_settlement_category: 'Questa categoria è configurata per le spese Saldo IVA. Selezionane prima un’altra.'
+  vat_settlement_category: 'Questa categoria è configurata per le spese Saldo IVA. Selezionane prima un’altra.',
+  default_category_protected: 'La categoria Predefinita è una categoria di sistema e non può essere eliminata o privata del suo acronimo.'
 };
 
 const savedMessages: Record<string, string> = {
@@ -56,7 +57,8 @@ export default async function ExpenseCategoriesSettingsPage({ searchParams }: { 
         name: category.name,
         code: category.code,
         icon: category.icon,
-        usageCount: category._count.expenses + category._count.recurringExpenses
+        usageCount: category._count.expenses + category._count.recurringExpenses,
+        protected: category.code === defaultExpenseCategoryCode
       }))}
       iconOptions={categoryIconOptions}
       updateAction={updateCategoryAction}

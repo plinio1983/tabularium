@@ -39,6 +39,7 @@ type SupplierOption = {
     defaultExpenseCategoryId?: number | null;
     defaultVatRate?: string | number | {toString(): string} | null;
 };
+type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: "ACTIVE" | "INACTIVE" };
 type PaymentRow = {
     key: number;
     id?: number;
@@ -62,6 +63,7 @@ type InitialExpense = {
     receivedDate?: string | Date | null;
     dueDate?: string | Date | null;
     supplierId?: number | null;
+    employeeId?: number | null;
     merchant?: string | null;
     categoryId?: number | null;
     description?: string | null;
@@ -74,7 +76,11 @@ type InitialExpense = {
     invoiceStatus?: string | null;
     isDeclared?: boolean;
     isRecurring?: boolean;
-    expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION";
+    expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION" | "PAYROLL";
+    payrollNetAmount?: string | number | { toString(): string } | null;
+    payrollExtraCompensation?: string | number | { toString(): string } | null;
+    payrollGrossAmount?: string | number | { toString(): string } | null;
+    payrollEmployerCost?: string | number | { toString(): string } | null;
     affectsFiscalProfit?: boolean;
     payments?: InitialPayment[];
     notes?: string | null;
@@ -99,6 +105,7 @@ type Props = {
     banks: Option[];
     paymentMethods: Option[];
     suppliers?: SupplierOption[];
+    employees?: EmployeeOption[];
     initialExpense?: InitialExpense;
     action?: string;
     title?: string;
@@ -107,7 +114,7 @@ type Props = {
     onSaved?: () => void;
     cancelHref?: string;
     onSwitchToRecurring?: () => void;
-    onExpenseTypeChange?: (type: "single" | "vat" | "tax") => void;
+    onExpenseTypeChange?: (type: "single" | "vat" | "tax" | "payroll") => void;
     initialMobileStep?: number;
     mobileStepOffset?: number;
     onBackToType?: () => void;
@@ -428,6 +435,7 @@ export default function ExpenseForm({
                                         banks,
                                         paymentMethods,
                                         suppliers = [],
+                                        employees = [],
                                         initialExpense,
                                         action = "/api/expenses",
                                         title = "Nuova spesa",
@@ -450,7 +458,9 @@ export default function ExpenseForm({
     const currentBillingPeriod = monthInputInTimeZone(timeZone);
     const [isVatSettlement, setIsVatSettlement] = useState(initialExpense?.expenseType === "VAT_SETTLEMENT");
     const [isTaxContribution, setIsTaxContribution] = useState(initialExpense?.expenseType === "TAX_CONTRIBUTION");
-    const isNoVatExpense = isVatSettlement || isTaxContribution;
+    const [isPayroll, setIsPayroll] = useState(initialExpense?.expenseType === "PAYROLL");
+    const isNoVatExpense = isVatSettlement || isTaxContribution || isPayroll;
+    const orderDateLabel = isNoVatExpense ? "Data emissione" : "Data ordine";
     const vatSettlementCategory = categories.find(category => category.isVatSettlementDefault);
     const vatSettlementSupplier = suppliers.find(supplier => supplier.systemRole === "VAT_SETTLEMENT");
     const availablePaymentMethods = isVatSettlement
@@ -465,6 +475,10 @@ export default function ExpenseForm({
     const normalizePaymentRow = (row: PaymentRow): PaymentRow =>
         isCashChannel(methodName(row.paymentMethodId)) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
+    const [payrollNetAmount, setPayrollNetAmount] = useState(normalizeMoney(initialExpense?.payrollNetAmount ?? initialExpense?.amount).replace(".", ","));
+    const [payrollExtraCompensation, setPayrollExtraCompensation] = useState(normalizeMoney(initialExpense?.payrollExtraCompensation).replace(".", ","));
+    const [payrollGrossAmount, setPayrollGrossAmount] = useState(normalizeMoney(initialExpense?.payrollGrossAmount).replace(".", ","));
+    const [payrollEmployerCost, setPayrollEmployerCost] = useState(normalizeMoney(initialExpense?.payrollEmployerCost).replace(".", ","));
     const initialSupplier = suppliers.find(supplier => supplier.id === initialExpense?.supplierId);
     const initialSupplierDefaultCategoryId = initialSupplier?.defaultExpenseCategoryId;
     const fallbackCategoryId = categories.find(category => category.code === "DEFAULT")?.id;
@@ -490,6 +504,7 @@ export default function ExpenseForm({
         ?? initialExpense?.merchant
         ?? "",
     );
+    const [employeeId, setEmployeeId] = useState(String(initialExpense?.employeeId ?? ""));
     const [description, setDescription] = useState(initialExpense?.description ?? "");
     const [notes, setNotes] = useState(initialExpense?.notes ?? "");
     const [selectedAttachments, setSelectedAttachments] = useState<File[]>([]);
@@ -554,7 +569,10 @@ export default function ExpenseForm({
     const isExistingExpense = Boolean(initialExpense?.id);
     const canEditExpenseType = !isExistingExpense;
 
-    const normalizedAmount = amount.replace(",", ".");
+    const normalizedPayrollNetAmount = payrollNetAmount.replace(",", ".");
+    const normalizedPayrollExtraCompensation = payrollExtraCompensation.replace(",", ".");
+    const payrollAmountValue = Number(normalizedPayrollNetAmount || 0) + Number(normalizedPayrollExtraCompensation || 0);
+    const normalizedAmount = isPayroll ? payrollAmountValue.toFixed(2) : amount.replace(",", ".");
     const amountValue = Number(normalizedAmount || 0);
     const activeVatRate = isDeclared ? Number(vatRate || 0) : 0;
     const netAmount = activeVatRate > 0 ? amountValue / (1 + activeVatRate / 100) : amountValue;
@@ -578,7 +596,10 @@ export default function ExpenseForm({
     const selectedCategory = isVatSettlement
         ? vatSettlementCategory
         : categories.find(category => String(category.id) === categoryId);
-    const currentSupplierName = isVatSettlement
+    const selectedEmployee = employees.find(employee => String(employee.id) === employeeId);
+    const currentSupplierName = isPayroll
+        ? selectedEmployee ? `${selectedEmployee.lastName} ${selectedEmployee.firstName}` : "Non indicato"
+        : isVatSettlement
         ? vatSettlementSupplier?.businessName ?? "Non configurato"
         : supplierDisplayName || "Non indicato";
     const canAddPayment =
@@ -625,7 +646,8 @@ export default function ExpenseForm({
     }
 
     function appendAmountKey(key: string) {
-        setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
+        if (isPayroll) setPayrollNetAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
+        else setAmount(current => applyCurrencyInputKeyWithState(current, key, amountKeyStateRef.current));
         amountRef.current?.setCustomValidity("");
         focusAmount();
     }
@@ -898,7 +920,7 @@ export default function ExpenseForm({
             <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
                 <span className="entry-type-choice-title">Tipo di spesa</span>
                 <input type="hidden" name="isRecurring" value={isRecurring ? "true" : "false"}/>
-                <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : isTaxContribution ? "TAX_CONTRIBUTION" : "STANDARD"}/>
+                <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : isTaxContribution ? "TAX_CONTRIBUTION" : isPayroll ? "PAYROLL" : "STANDARD"}/>
                 <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
                     <button
                         type="button"
@@ -910,6 +932,7 @@ export default function ExpenseForm({
                             setIsRecurring(false);
                             setIsVatSettlement(false);
                             setIsTaxContribution(false);
+                            setIsPayroll(false);
                             onExpenseTypeChange?.("single");
                         }}
                     >
@@ -935,6 +958,7 @@ export default function ExpenseForm({
                         onClick={() => {
                             setIsVatSettlement(false);
                             setIsTaxContribution(false);
+                            setIsPayroll(false);
                             setIsRecurring(true);
                             onSwitchToRecurring?.();
                         }}
@@ -953,6 +977,7 @@ export default function ExpenseForm({
                             setIsRecurring(false);
                             setIsVatSettlement(true);
                             setIsTaxContribution(false);
+                            setIsPayroll(false);
                             onExpenseTypeChange?.("vat");
                         }}
                     >
@@ -970,6 +995,7 @@ export default function ExpenseForm({
                             setIsRecurring(false);
                             setIsVatSettlement(false);
                             setIsTaxContribution(true);
+                            setIsPayroll(false);
                             setIsDeclared(false);
                             setVatRate("0");
                             setHasElectronicInvoice(false);
@@ -981,6 +1007,29 @@ export default function ExpenseForm({
                         <span aria-hidden="true">F24</span>
                         <strong>Imposte</strong>
                         <small>Imposte e contributi non IVA</small>
+                    </button>
+                    <button
+                        type="button"
+                        className={isPayroll ? "is-selected" : ""}
+                        role="radio"
+                        aria-checked={isPayroll}
+                        disabled={!canEditExpenseType}
+                        onClick={() => {
+                            setIsRecurring(false);
+                            setIsVatSettlement(false);
+                            setIsTaxContribution(false);
+                            setIsPayroll(true);
+                            setIsDeclared(false);
+                            setVatRate("0");
+                            setHasElectronicInvoice(false);
+                            setInvoiceStatus("NON_PREVISTA");
+                            setAffectsFiscalProfit(true);
+                            onExpenseTypeChange?.("payroll");
+                        }}
+                    >
+                        <span aria-hidden="true">BP</span>
+                        <strong>Busta paga</strong>
+                        <small>Retribuzione dipendente</small>
                     </button>
                 </div>
             </div>
@@ -997,34 +1046,9 @@ export default function ExpenseForm({
                             Configura la categoria Saldo IVA nelle Impostazioni. Il fornitore di sistema deve essere inizializzato per il workspace.
                         </div> : null}
 
-                    {isVatSettlement ? <MonthField
-                        className="app-form-wizard-step app-form-wizard-step-1"
-                        label="Periodo contabile"
-                        name="billingPeriod"
-                        value={billingPeriod}
-                        onChange={(value) => {
-                            setBillingPeriod(value);
-                            const lastDay = lastDayOfMonthInput(value);
-                            if (lastDay) {
-                                setDueDate(lastDay);
-                            }
-                        }}
-                        required
-                        // hint="La scadenza viene impostata all’ultimo giorno del mese."
-                    /> : null}
-
-                    {isTaxContribution ? <MonthField
-                        className="app-form-wizard-step app-form-wizard-step-1"
-                        label="Periodo di competenza"
-                        name="billingPeriod"
-                        value={billingPeriod}
-                        onChange={setBillingPeriod}
-                        required
-                    /> : null}
-
                     <DateField
                         className="app-form-wizard-step app-form-wizard-step-1"
-                        label={isVatSettlement ? "Data ricezione" : "Data ordine"}
+                        label={orderDateLabel}
                         name="receivedDate"
                         value={orderDate}
                         onChange={(nextOrderDate) => {
@@ -1061,6 +1085,32 @@ export default function ExpenseForm({
                             })}
                         </span>
                     </DateField>
+
+                    {isTaxContribution || isPayroll ? <MonthField
+                        className="app-form-wizard-step app-form-wizard-step-1"
+                        label="Periodo di competenza"
+                        name="billingPeriod"
+                        value={billingPeriod}
+                        onChange={setBillingPeriod}
+                        required
+                        hint={isVatSettlement ? "Determina il periodo nel quale la spesa viene conteggiata nell’Andamento complessivo." : undefined}
+                    /> : null}
+
+                    {isVatSettlement ? <MonthField
+                        className="app-form-wizard-step app-form-wizard-step-1"
+                        label="Periodo contabile"
+                        name="billingPeriod"
+                        value={billingPeriod}
+                        onChange={(value) => {
+                            setBillingPeriod(value);
+                            const lastDay = lastDayOfMonthInput(value);
+                            if (lastDay) {
+                                setDueDate(lastDay);
+                            }
+                        }}
+                        required
+                        // hint="La scadenza viene impostata all’ultimo giorno del mese."
+                    /> : null}
                 </div>
             </details>
 
@@ -1075,7 +1125,18 @@ export default function ExpenseForm({
                         <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly/>
                         <input type="hidden" name="supplierId" value={vatSettlementSupplier?.id ?? ""}/>
                         <input type="hidden" name="merchant" value={vatSettlementSupplier?.businessName ?? ""}/>
-                    </label> : <SupplierAutocomplete
+                    </label> : isPayroll ? <SelectField
+                        className="app-form-wizard-step app-form-wizard-step-3"
+                        label="Dipendente"
+                        icon="♙"
+                        name="employeeId"
+                        required
+                        value={employeeId}
+                        onChange={setEmployeeId}
+                        options={[{value: "", label: "Seleziona dipendente"}, ...employees
+                            .filter(employee => employee.status === "ACTIVE" || employee.id === initialExpense?.employeeId)
+                            .map(employee => ({value: employee.id, label: `${employee.lastName} ${employee.firstName}${employee.employeeCode ? ` · ${employee.employeeCode}` : ""}${employee.status === "INACTIVE" ? " · Inattivo" : ""}`}))]}
+                    /> : <SupplierAutocomplete
                         label={isTaxContribution ? "Ente beneficiario" : "Esercente"}
                         suppliers={suppliers.filter(supplier => !supplier.systemRole)}
                         categories={categories}
@@ -1174,17 +1235,18 @@ export default function ExpenseForm({
                                     <label className="expense-wizard-amount-field">
                                         <div className="app-form-field-label switch-toggle-field-label">
                                             <span className="app-form-field-icon">€</span>
-                                            <span>{isVatSettlement ? "Importo IVA" : isTaxContribution ? "Importo versamento" : "Costo IVA inclusa"}</span>
+                                            <span>{isVatSettlement ? "Importo IVA" : isTaxContribution ? "Importo versamento" : isPayroll ? "Importo netto cedolino" : "Costo IVA inclusa"}</span>
                                         </div>
                                             <MoneyInput
                                             inputRef={amountRef}
                                             required
-                                            value={amount}
-                                            onValueChange={handleAmountChange}
+                                            value={isPayroll ? payrollNetAmount : amount}
+                                            onValueChange={isPayroll ? setPayrollNetAmount : handleAmountChange}
                                             onClear={() => resetCurrencyInput(amountKeyStateRef.current)}
                                             suppressSoftKeyboard
                                         />
                                         <input type="hidden" name="amount" value={normalizedAmount}/>
+                                        {isPayroll ? <input type="hidden" name="payrollNetAmount" value={normalizedPayrollNetAmount}/> : null}
 
                                     </label>
                                     {!isNoVatExpense ?
@@ -1204,6 +1266,12 @@ export default function ExpenseForm({
                                         </div> : null}
                             </div>
                         </div>
+                        {isPayroll ? <div className="form-section-grid full">
+                            <FormField label="Compensi extra" icon="+"><CurrencyInput name="payrollExtraCompensation" value={payrollExtraCompensation} onValueChange={setPayrollExtraCompensation} clearable/></FormField>
+                            <FormField label="Lordo cedolino" icon="€"><CurrencyInput name="payrollGrossAmount" value={payrollGrossAmount} onValueChange={setPayrollGrossAmount} clearable/></FormField>
+                            <FormField label="Costo complessivo aziendale" icon="€"><CurrencyInput name="payrollEmployerCost" value={payrollEmployerCost} onValueChange={setPayrollEmployerCost} clearable/></FormField>
+                            <div className="field-note"><span>Totale da corrispondere</span><strong>{formatEuro(amountValue)}</strong><small>Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</small></div>
+                        </div> : null}
 
                         {!isNoVatExpense ?
                             <div className="app-vat-rate-buttons vat-buttons-mobile" aria-label="Aliquota IVA">
@@ -1444,7 +1512,7 @@ export default function ExpenseForm({
                                             <strong className="payment-summary-amount">{formatEuro(Number(payment.amount || 0))}</strong>
                                         </div>
                                         <div className="payment-summary-date">
-                                            <span>Data pagamento</span>
+                                            <span>{isPayroll ? "Data accredito" : "Data pagamento"}</span>
                                             <strong>{payment.paymentDate ? formatDateInputLabel(payment.paymentDate) : "Data non impostata"}</strong>
                                         </div>
                                         <div className="payment-summary-meta">
@@ -1486,7 +1554,7 @@ export default function ExpenseForm({
                                     <input type="hidden" name="paymentId[]" value={payment.id ?? ""}/>
                                     <DateField
                                         className="payment-date-field"
-                                        label="Data pagamento"
+                                        label={isPayroll ? "Data accredito" : "Data pagamento"}
                                         name="paymentDate[]"
                                         value={payment.paymentDate}
                                         onChange={(value) => updatePayment(index, {paymentDate: value})}
@@ -1608,7 +1676,7 @@ export default function ExpenseForm({
                     <strong>{formatEuro(amountValue)}</strong>
                 </div>
                 <div className="record-review-grid">
-                    <div className="record-review-item"><i aria-hidden="true">◷</i><span>{isVatSettlement ? "Data ricezione" : "Data ordine"}<strong>{formatDateInputLabel(orderDate)}</strong></span>
+                    <div className="record-review-item"><i aria-hidden="true">◷</i><span>{orderDateLabel}<strong>{formatDateInputLabel(orderDate)}</strong></span>
                     </div>
                     <div className="record-review-item">
                         <i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span>
@@ -1625,7 +1693,7 @@ export default function ExpenseForm({
                         <i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span>
                     </div>
                     <div className="record-review-item">
-                        <i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span>
+                        <i aria-hidden="true">%</i><span>Fiscale / IVA<strong>{isPayroll ? "Incide · IVA non applicabile" : isDeclared ? `Sì · ${vatRate}%` : "No · 0%"}</strong></span>
                     </div>
                     <div className="record-review-item wide">
                         <i aria-hidden="true">▤</i><span>Fattura elettronica<strong>{hasElectronicInvoice ? `Sì · ${currentInvoiceStatusLabel}` : `No · ${currentInvoiceStatusLabel}`}</strong></span>

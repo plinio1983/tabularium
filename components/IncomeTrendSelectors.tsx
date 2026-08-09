@@ -164,6 +164,7 @@ export default function IncomeTrendSelectors({ dateQuick, billingPeriodQuick, da
   const years = yearOptions(companyNow);
 
   function changeMode(nextMode: "date" | "fiscal") {
+    setMode(nextMode);
     goWithQuick(nextMode, currentQuickValue, currentQuickYear, companyNow);
   }
 

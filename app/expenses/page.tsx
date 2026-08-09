@@ -609,12 +609,13 @@ export default async function ExpensesPage({searchParams}: {
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
 
-    const [expenses, categories, banks, paymentMethods, suppliers] = await Promise.all([
+    const [expenses, categories, banks, paymentMethods, suppliers, employees] = await Promise.all([
         prisma.expense.findMany({
             where: {workspaceId: current.workspace.id, companyId: current.company.id},
             include: {
                 category: true,
                 supplier: true,
+                employee: true,
                 payments: {include: {bank: true, paymentMethod: true}, orderBy: {id: 'asc'}},
                 attachments: true
             },
@@ -627,7 +628,8 @@ export default async function ExpensesPage({searchParams}: {
             where: {workspaceId: current.workspace.id},
             orderBy: {businessName: 'asc'},
             take: 100
-        })
+        }),
+        prisma.employee.findMany({where: {workspaceId: current.workspace.id, companyId: current.company.id}, orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]})
     ]);
 
     const orderedBanks = orderBanks(banks);
@@ -731,6 +733,7 @@ export default async function ExpensesPage({searchParams}: {
         if (expenseTypeFilter === 'recurring' && (expense.expenseType !== 'STANDARD' || !expense.isRecurring)) return false;
         if (expenseTypeFilter === 'vat_settlement' && expense.expenseType !== 'VAT_SETTLEMENT') return false;
         if (expenseTypeFilter === 'tax_contribution' && expense.expenseType !== 'TAX_CONTRIBUTION') return false;
+        if (expenseTypeFilter === 'payroll' && expense.expenseType !== 'PAYROLL') return false;
         if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
         if (supplierQuickFilter && !normalize(expense.supplier?.businessName).includes(supplierQuickFilter)) return false;
         if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
@@ -901,7 +904,7 @@ export default async function ExpensesPage({searchParams}: {
         categoryFilter && {label: 'Categoria', value: categoryFilter},
         expenseTypeFilter && {
             label: 'Tipo spesa',
-            value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : expenseTypeFilter === 'tax_contribution' ? 'Imposte - non IVA' : 'Singola'
+            value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : expenseTypeFilter === 'tax_contribution' ? 'Imposte - non IVA' : expenseTypeFilter === 'payroll' ? 'Busta paga' : 'Singola'
         },
         inputDefault(filters, 'merchant') && {label: 'Esercente', value: inputDefault(filters, 'merchant')},
         inputDefault(filters, 'supplierQuick') && {label: 'Fornitore', value: inputDefault(filters, 'supplierQuick')},
@@ -960,6 +963,7 @@ export default async function ExpensesPage({searchParams}: {
                 defaultVatRate: s.defaultVatRate?.toString() ?? null,
                 systemRole: s.systemRole
             }))}
+            employees={employees.map(employee => ({id: employee.id, firstName: employee.firstName, lastName: employee.lastName, employeeCode: employee.employeeCode, status: employee.status}))}
             initialOpen={inputDefault(filters, 'new') === '1'}
         />
         <ActionFeedbackBanner
@@ -1304,6 +1308,7 @@ export default async function ExpensesPage({searchParams}: {
                     defaultVatRate: s.defaultVatRate?.toString() ?? null,
                     systemRole: s.systemRole
                 }))}
+                employees={employees.map(employee => ({id: employee.id, firstName: employee.firstName, lastName: employee.lastName, employeeCode: employee.employeeCode, status: employee.status}))}
                 emptyMessage="Nessuna spesa trovata con i filtri selezionati."
             />
         </div>

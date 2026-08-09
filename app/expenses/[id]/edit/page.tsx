@@ -11,12 +11,13 @@ export default async function EditExpensePage({ params, searchParams }: { params
   const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/expenses/${id}`;
   const encodedReturnTo = encodeURIComponent(returnTo);
-  const [expense, categories, banks, paymentMethods, suppliers] = await Promise.all([
+  const [expense, categories, banks, paymentMethods, suppliers, employees] = await Promise.all([
     prisma.expense.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id }, include: { payments: { orderBy: { id: 'asc' } }, supplier: true } }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 }),
+    prisma.employee.findMany({where: {workspaceId: current.workspace.id, companyId: current.company.id}, orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]})
   ]);
 
   if (!expense) notFound();
@@ -36,6 +37,8 @@ export default async function EditExpensePage({ params, searchParams }: { params
           banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
           paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
           suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null, systemRole: s.systemRole }))}
+          employees={employees.map(employee => ({id: employee.id, firstName: employee.firstName, lastName: employee.lastName, employeeCode: employee.employeeCode, status: employee.status}))}
+          mobileStepOffset={1}
           initialExpense={{
             id: expense.id,
             expenseType: expense.expenseType,
@@ -43,9 +46,14 @@ export default async function EditExpensePage({ params, searchParams }: { params
             dueDate: expense.dueDate,
             merchant: expense.merchant,
             supplierId: expense.supplierId,
+            employeeId: expense.employeeId,
             categoryId: expense.categoryId,
             description: expense.description,
             amount: expense.amount.toString(),
+            payrollNetAmount: expense.payrollNetAmount?.toString(),
+            payrollExtraCompensation: expense.payrollExtraCompensation?.toString(),
+            payrollGrossAmount: expense.payrollGrossAmount?.toString(),
+            payrollEmployerCost: expense.payrollEmployerCost?.toString(),
             vatRate: expense.vatRate.toString(),
             paymentStatus: expense.paymentStatus,
             month: expense.month,

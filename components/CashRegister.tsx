@@ -11,8 +11,11 @@ type Method = {
     name: string;
     icon: string | null;
     systemRole: string | null;
+    defaultBankId: number | null;
+    bankRules: Array<{salesChannelId: number; bankId: number}>;
 };
 type Channel = { id: number; name: string; icon: string | null };
+type Bank = { id: number; name: string; icon: string | null };
 type InitialReceipt = {
     id: number;
     amount: number;
@@ -20,6 +23,7 @@ type InitialReceipt = {
     vatRate: number;
     salesChannelId: number;
     paymentMethodId: number;
+    bankId: number;
     description: string | null;
 };
 
@@ -46,20 +50,24 @@ function newRequestId() {
 
 export default function CashRegister({
                                          methods,
+                                         banks,
                                          channels,
                                          defaultChannelId,
                                          primaryMethodId,
                                          initialDate,
                                          mode,
-                                         initialReceipt
+                                         initialReceipt,
+                                         returnTo
                                      }: {
     methods: Method[];
+    banks: Bank[];
     channels: Channel[];
     defaultChannelId: number;
     primaryMethodId: number | null;
     initialDate: string;
     mode: 'create' | 'edit' | 'copy';
     initialReceipt: InitialReceipt | null;
+    returnTo: string;
 }) {
     const timeZone = useCompanyTimeZone();
     const router = useRouter();
@@ -82,6 +90,7 @@ export default function CashRegister({
             ? methods.find(method => method.systemRole === 'CASH')?.id ?? null
             : initialReceipt?.paymentMethodId ?? null
     );
+    const [selectedBankId, setSelectedBankId] = useState<number | null>(initialReceipt?.bankId ?? null);
     const [requestId, setRequestId] = useState('');
     const [menuOpen, setMenuOpen] = useState(false);
     const [keyboardMethodOpen, setKeyboardMethodOpen] = useState(false);
@@ -114,6 +123,18 @@ export default function CashRegister({
             ? 'is-long'
             : undefined;
     const methodIsAvailable = (method: Method) => isFiscal || method.id === cashMethod?.id;
+
+    function editMethodBankId(method: Method, channelId: number) {
+        return method.bankRules.find(rule => rule.salesChannelId === channelId)?.bankId
+            ?? method.defaultBankId
+            ?? selectedBankId;
+    }
+
+    function changeEditMethod(methodId: number) {
+        const method = methods.find(item => item.id === methodId);
+        setSelectedMethodId(methodId);
+        if (method) setSelectedBankId(editMethodBankId(method, Number(salesChannelId)));
+    }
 
     function moveKeyboardMethod(direction: 1 | -1) {
         setKeyboardMethodIndex(current => {
@@ -291,8 +312,9 @@ export default function CashRegister({
 
     async function submitReceipt(methodOverride?: Method) {
         const paymentMethod = methodOverride ?? selectedMethod;
-        if (!paymentMethod || !methodIsAvailable(paymentMethod) || !requestId || !Number.isFinite(numericAmount) || numericAmount <= 0 || sending) {
-            setNotice({tone: 'error', text: 'Inserisci un importo valido e scegli il metodo.'});
+        const editing = mode === 'edit' && initialReceipt;
+        if (!paymentMethod || !methodIsAvailable(paymentMethod) || (!editing && !requestId) || (editing && !selectedBankId) || !Number.isFinite(numericAmount) || numericAmount <= 0 || sending) {
+            setNotice({tone: 'error', text: editing ? 'Inserisci un importo valido, il metodo e la banca.' : 'Inserisci un importo valido e scegli il metodo.'});
             focusAmount();
             return;
         }
@@ -300,7 +322,6 @@ export default function CashRegister({
         setNotice(null);
         try {
             const localDate = new Date(zonedMidnightUtc(creditDate, timeZone).getTime() + 12 * 60 * 60 * 1000);
-            const editing = mode === 'edit' && initialReceipt;
             const response = await fetch(editing ? `/api/cash-register/receipts/${initialReceipt.id}` : '/api/cash-register/receipts', {
                 method: editing ? 'PATCH' : 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -312,13 +333,14 @@ export default function CashRegister({
                     salesChannelId: Number(salesChannelId),
                     description,
                     paymentMethodId: paymentMethod.id,
+                    ...(editing ? {bankId: selectedBankId} : {}),
                     ...(!editing ? {requestId} : {})
                 })
             });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || 'Registrazione non riuscita');
             if (editing) {
-                router.push('/incomes/cash-register/receipts');
+                router.push(returnTo);
                 router.refresh();
                 return;
             }
@@ -361,19 +383,12 @@ export default function CashRegister({
                 </a>
             </div>
             <div className="cash-register-header-actions">
-                <a className="btn btn-circle btn-sm btn-neutral btn-close" href="/incomes/">
+                <a className="btn btn-circle btn-sm btn-neutral btn-close" href={mode === 'edit' ? returnTo : '/incomes/'}>
                     <span className="btn-icon" aria-hidden="true">✕</span>
                 </a>
                 {/*<DetailBackButton href={mode === 'edit' ? '/incomes/cash-register/receipts' : '/incomes'}/>*/}
             </div>
         </header>
-
-        {mode === 'edit' ? <div className="cash-register-edit-confirm">
-            <button className="btn btn-sm btn-success" type="button" disabled={sending}
-                    onClick={() => void submitReceipt()}>
-                ✓ {sending ? 'Salvataggio…' : 'Conferma modifica'}
-            </button>
-        </div> : null}
 
         <section className="cash-register-controls" aria-label="Impostazioni incasso">
             <label className="cash-register-fiscal-switch">
@@ -442,7 +457,37 @@ export default function CashRegister({
             {notice.text}
         </div> : null}
 
-        <section className={`cash-register-actions ${primaryMethod ? '' : 'without-primary'} ${selectedMethod && mode === 'create' ? 'has-confirmation' : ''}`}>
+        <section className={`cash-register-actions ${mode === 'edit' ? 'is-edit-mode' : ''} ${primaryMethod ? '' : 'without-primary'} ${selectedMethod && mode === 'create' ? 'has-confirmation' : ''}`}>
+            {mode === 'edit' ? <>
+                <div className="payment-select-field">
+                    <span className="payment-select-label"><i aria-hidden="true">▣</i> Metodo di accredito</span>
+                    <div className="payment-select-control">
+                        <select aria-label="Metodo di accredito" value={selectedMethodId ?? ''} required
+                                onChange={event => changeEditMethod(Number(event.currentTarget.value))}>
+                            <option value="">Seleziona metodo</option>
+                            {methods.map(method => <option key={method.id} value={method.id} disabled={!methodIsAvailable(method)}>
+                                {method.icon ?? '•'} {method.name}
+                            </option>)}
+                        </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
+                    </div>
+                </div>
+                <div className="payment-select-field">
+                    <span className="payment-select-label"><i aria-hidden="true">▥</i> Banca di accredito</span>
+                    <div className="payment-select-control">
+                        <select aria-label="Banca di accredito" value={selectedBankId ?? ''} required
+                                onChange={event => setSelectedBankId(Number(event.currentTarget.value) || null)}>
+                            <option value="">Seleziona banca</option>
+                            {banks.map(bank => <option key={bank.id} value={bank.id}>{bank.icon ?? '•'} {bank.name}</option>)}
+                        </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
+                    </div>
+                </div>
+                <button className="cash-register-submit" type="button"
+                        disabled={sending || !hasValidAmount || !selectedMethod || !selectedBankId || !methodIsAvailable(selectedMethod)}
+                        onClick={() => void submitReceipt()}>
+                    <span>✓</span> {sending ? 'Salvataggio…' : 'SALVA MODIFICHE'}
+                </button>
+            </> : null}
+            {mode !== 'edit' ? <>
             {selectedMethod && mode === 'create' ? <button className="cash-register-cancel btn-danger" type="button"
                                                            disabled={sending} onClick={cancelMethod}
                                                            aria-label="Annulla metodo selezionato" title="Annulla">
@@ -477,6 +522,7 @@ export default function CashRegister({
                         onClick={() => void submitReceipt()}>
                     <span>{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INVIA COPIA'}
                 </button> : null}
+            </> : null}
         </section>
         {menuOpen && otherMethods.length ? <div className="cash-register-method-backdrop"
                                                 role="presentation"

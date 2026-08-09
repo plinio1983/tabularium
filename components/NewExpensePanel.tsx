@@ -4,7 +4,6 @@ import Link from 'next/link';
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import ExpenseCreationSwitcher from '@/components/ExpenseCreationSwitcher';
-import {expenseNewEventName} from '@/components/ExpenseNewTriggerButton';
 import {flashParamNames} from '@/lib/flash';
 
 type Option = {
@@ -32,12 +31,14 @@ type SupplierOption = {
     defaultVatRate?: string | number | null
 };
 type InitialExpense = Parameters<typeof ExpenseCreationSwitcher>[0]['initialExpense'];
+type EmployeeOption = NonNullable<Parameters<typeof ExpenseCreationSwitcher>[0]['employees']>[number];
 
 type Props = {
     categories: Option[];
     banks: Option[];
     paymentMethods: Option[];
     suppliers: SupplierOption[];
+    employees?: EmployeeOption[];
     initialExpense?: InitialExpense;
     initialOpen?: boolean;
     showToolbar?: boolean;
@@ -48,6 +49,7 @@ export default function NewExpensePanel({
                                             banks,
                                             paymentMethods,
                                             suppliers,
+                                            employees = [],
                                             initialExpense,
                                             initialOpen = false,
                                             showToolbar = true
@@ -56,8 +58,9 @@ export default function NewExpensePanel({
     const [isOpen, setIsOpen] = useState(initialOpen);
     const [returnAction, setReturnAction] = useState('/api/expenses');
     const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
-    const [creationType, setCreationType] = useState<'single' | 'recurring' | 'vat' | 'tax'>('single');
+    const [creationType, setCreationType] = useState<'single' | 'recurring' | 'vat' | 'tax' | 'payroll'>('single');
     const [creationKey, setCreationKey] = useState(0);
+    const [availableEmployees, setAvailableEmployees] = useState<EmployeeOption[]>(employees);
 
     const modalCopy = creationType === 'recurring'
         ? {title: 'Nuova spesa ricorrente', description: 'Configura una nuova spesa ricorrente.'}
@@ -65,6 +68,8 @@ export default function NewExpensePanel({
             ? {title: 'Nuovo saldo IVA', description: 'Inserisci un nuovo versamento IVA.'}
             : creationType === 'tax'
                 ? {title: 'Nuove imposte - non IVA', description: 'Registra imposte e contributi non soggetti a IVA.'}
+            : creationType === 'payroll'
+                ? {title: 'Nuova busta paga', description: 'Registra la retribuzione di un dipendente.'}
             : {title: 'Nuova spesa singola', description: 'Inserisci una nuova spesa singola.'};
 
     useEffect(() => {
@@ -77,14 +82,22 @@ export default function NewExpensePanel({
     }, []);
 
     useEffect(() => {
-        const handler = () => {
+        if (!isOpen || availableEmployees.length) return;
+        let cancelled = false;
+        fetch('/api/employees', {cache: 'no-store'})
+            .then(response => response.ok ? response.json() : [])
+            .then((records: EmployeeOption[]) => { if (!cancelled) setAvailableEmployees(records); })
+            .catch(() => undefined);
+        return () => { cancelled = true; };
+    }, [isOpen, availableEmployees.length]);
+
+    useEffect(() => {
+        if (initialOpen) {
             setCreationType('single');
             setCreationKey(value => value + 1);
             setIsOpen(true);
-        };
-        window.addEventListener(expenseNewEventName, handler);
-        return () => window.removeEventListener(expenseNewEventName, handler);
-    }, []);
+        }
+    }, [initialOpen]);
 
     function handleSaved() {
         setIsOpen(false);
@@ -130,7 +143,7 @@ export default function NewExpensePanel({
                         <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
                     </div>
                     <ExpenseCreationSwitcher key={creationKey} categories={categories} banks={banks} paymentMethods={paymentMethods}
-                                             suppliers={suppliers} initialExpense={initialExpense} expenseAction={returnAction}
+                                             suppliers={suppliers} employees={availableEmployees} initialExpense={initialExpense} expenseAction={returnAction}
                                              recurringAction={recurringAction} onTypeChange={setCreationType}
                                              onCancel={() => setIsOpen(false)} onSaved={handleSaved}/>
                 </div>

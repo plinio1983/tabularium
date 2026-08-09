@@ -7,4 +7,5 @@ test('classifica correttamente le spese che incidono sull’utile fiscale', () =
   assert.equal(expenseAffectsFiscalProfit({expenseType: 'TAX_CONTRIBUTION', isDeclared: false, affectsFiscalProfit: true}), true);
   assert.equal(expenseAffectsFiscalProfit({expenseType: 'TAX_CONTRIBUTION', isDeclared: false, affectsFiscalProfit: false}), false);
   assert.equal(expenseAffectsFiscalProfit({expenseType: 'VAT_SETTLEMENT', isDeclared: true, affectsFiscalProfit: true}), false);
+  assert.equal(expenseAffectsFiscalProfit({expenseType: 'PAYROLL', isDeclared: false, affectsFiscalProfit: true}), true);
 });

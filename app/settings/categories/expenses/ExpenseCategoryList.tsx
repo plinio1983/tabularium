@@ -13,6 +13,7 @@ type Category = {
   code: string;
   icon: string | null;
   usageCount: number;
+  protected: boolean;
 };
 
 type Props = {
@@ -52,10 +53,10 @@ export default function ExpenseCategoryList({categories, iconOptions, updateActi
           <span className="settings-entity-icon" aria-hidden="true">{category.icon || '•'}</span>
           <div className="settings-entity-copy">
             <strong>{category.name}</strong>
-            <span><b>{category.code}</b> · {category.usageCount} {category.usageCount === 1 ? 'movimento' : 'movimenti'}</span>
+            <span><b>{category.code}</b> · {category.usageCount} {category.usageCount === 1 ? 'movimento' : 'movimenti'} {category.protected ? '· Categoria protetta' : ''}</span>
           </div>
           <div className="settings-entity-actions">
-            <CategoryDeleteForm id={category.id} name={category.name} action={deleteAction}/>
+            {!category.protected ? <CategoryDeleteForm id={category.id} name={category.name} action={deleteAction}/> : null}
             <button className="btn btn-xs btn-primary" type="button" onClick={() => setEditing(category)}>
               <span className="btn-icon" aria-hidden="true">✎</span> Modifica
             </button>
@@ -90,8 +91,8 @@ export default function ExpenseCategoryList({categories, iconOptions, updateActi
                 <span className="app-form-field-icon" aria-hidden="true">#</span>
                 <span>Acronimo</span>
               </label>
-              <input id="expense-category-code" name="code" defaultValue={editing.code} maxLength={5} pattern="[A-Za-z0-9]{1,5}" required/>
-              <small className="app-form-field-hint">Massimo 5 lettere o numeri.</small>
+              <input id="expense-category-code" name="code" defaultValue={editing.code} maxLength={5} pattern="[A-Za-z0-9]{1,5}" readOnly={editing.protected} required/>
+              <small className="app-form-field-hint">{editing.protected ? 'Acronimo di sistema non modificabile.' : 'Massimo 5 lettere o numeri.'}</small>
             </div>
             <div className="app-form-field">
               <label className="app-form-field-label" htmlFor="expense-category-icon">

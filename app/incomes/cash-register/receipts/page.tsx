@@ -147,6 +147,14 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             if (fiscal === 'yes' || fiscal === 'no') query.set('fiscal', fiscal);
             return {year: navYear, href: `/incomes/cash-register/receipts?${query}`};
         });
+    const returnQuery = new URLSearchParams();
+    if (month) returnQuery.set('month', month);
+    if (rawDateFrom) returnQuery.set('dateFrom', rawDateFrom);
+    if (rawDateTo) returnQuery.set('dateTo', rawDateTo);
+    if (methodId) returnQuery.set('paymentMethodId', String(methodId));
+    if (channelId) returnQuery.set('salesChannelId', String(channelId));
+    if (fiscal === 'yes' || fiscal === 'no') returnQuery.set('fiscal', fiscal);
+    const receiptListReturnTo = `/incomes/cash-register/receipts${returnQuery.size ? `?${returnQuery}` : ''}`;
 
     return <div className="grid cash-register-receipts-page">
         <div className="toolbar-card">
@@ -172,6 +180,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         </div>
         <CashRegisterReceiptTrendChart points={trend}/>
         <CashRegisterReceiptList
+            returnTo={receiptListReturnTo}
             filtersTrigger={<CashRegisterReceiptFiltersDrawer month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}
             receipts={receipts.map(receipt => ({
                 id: receipt.id,

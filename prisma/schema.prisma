@@ -39,6 +39,7 @@ enum ExpenseType {
   VAT_SETTLEMENT
   COUNTER
   TAX_CONTRIBUTION
+  PAYROLL
 }
 
 enum AttachmentType {
@@ -294,6 +295,7 @@ model Employee {
   terminatedAt  DateTime?
   status        EmployeeStatus @default(ACTIVE)
   internalNotes String?
+  expenses      Expense[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -587,12 +589,18 @@ model Expense {
   workspace               Workspace?       @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
   receivedDate            DateTime?
   merchant                String
-  supplierId              Int
-  supplier                Supplier         @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  supplierId              Int?
+  supplier                Supplier?        @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  employeeId              Int?
+  employee                Employee?        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
   categoryId              Int?
   category                ExpenseCategory? @relation(fields: [categoryId], references: [id])
   description             String?
   amount                  Decimal          @db.Decimal(12, 2)
+  payrollNetAmount        Decimal?         @db.Decimal(12, 2)
+  payrollExtraCompensation Decimal?        @db.Decimal(12, 2)
+  payrollGrossAmount      Decimal?         @db.Decimal(12, 2)
+  payrollEmployerCost     Decimal?         @db.Decimal(12, 2)
   expenseType             ExpenseType      @default(STANDARD)
   paymentDate             DateTime?
   dueDate                 DateTime?
@@ -631,6 +639,7 @@ model Expense {
   @@index([year, month])
   @@index([merchant])
   @@index([expenseType])
+  @@index([employeeId])
 }
 
 model ExpensePayment {

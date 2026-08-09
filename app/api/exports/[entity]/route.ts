@@ -61,16 +61,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
       where: { id: { in: ids }, workspaceId, companyId },
       include: {
         supplier: true,
+        employee: true,
         category: true,
         payments: { include: { paymentMethod: true, bank: true }, orderBy: { paymentDate: 'asc' } }
       },
       orderBy: [{ receivedDate: 'desc' }, { id: 'desc' }]
     });
     const csv = createCsv(
-      ['ID', 'Data ordine', 'Data scadenza', 'Periodo contabile', 'Fornitore', 'Descrizione', 'Categoria', 'Importo', 'IVA %', 'Fiscale', 'Fattura elettronica', 'Stato fattura', 'Stato pagamento', 'Importo pagato', 'Pagamenti', 'Tipo', 'Ricorrente', 'Note'],
+      ['ID', 'Data ordine', 'Data scadenza', 'Periodo contabile', 'Fornitore/Dipendente', 'Matricola dipendente', 'Descrizione', 'Categoria', 'Importo', 'Netto cedolino', 'Compensi extra', 'Lordo cedolino', 'Costo aziendale', 'IVA %', 'Fiscale', 'Fattura elettronica', 'Stato fattura', 'Stato pagamento', 'Importo pagato', 'Pagamenti', 'Tipo', 'Ricorrente', 'Note'],
       records.map(record => [
         record.id, record.receivedDate, record.dueDate, `${record.year}-${String(record.month).padStart(2, '0')}`,
-        record.supplier.businessName, record.description, record.category?.name, decimal(record.amount), decimal(record.vatRate),
+        record.supplier?.businessName ?? (record.employee ? `${record.employee.lastName} ${record.employee.firstName}` : record.merchant), record.employee?.employeeCode, record.description, record.category?.name, decimal(record.amount), decimal(record.payrollNetAmount), decimal(record.payrollExtraCompensation), decimal(record.payrollGrossAmount), decimal(record.payrollEmployerCost), decimal(record.vatRate),
         record.isDeclared, record.hasElectronicInvoice, record.invoiceStatus, record.paymentStatus, decimal(record.paidAmount),
         record.payments.map(payment => [
           payment.paymentDate?.toISOString().slice(0, 10) ?? '',

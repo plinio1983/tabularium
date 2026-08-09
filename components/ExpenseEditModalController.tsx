@@ -19,10 +19,16 @@ type SupplierOption = {
   defaultExpenseCategoryId?: number | null;
   defaultVatRate?: string | number | null;
 };
+type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: "ACTIVE" | "INACTIVE" };
 
 type EditExpense = {
   id: number;
-  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION";
+  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION" | "PAYROLL";
+  employeeId?: number | null;
+  payrollNetAmount?: string | number | null;
+  payrollExtraCompensation?: string | number | null;
+  payrollGrossAmount?: string | number | null;
+  payrollEmployerCost?: string | number | null;
   affectsFiscalProfit?: boolean;
   receivedDate?: string | Date | null;
   dueDate?: string | Date | null;
@@ -55,6 +61,7 @@ type Props = {
   banks: Option[];
   paymentMethods: Option[];
   suppliers: SupplierOption[];
+  employees?: EmployeeOption[];
   listHref: string;
   formId?: string;
 };
@@ -69,11 +76,17 @@ function selectedExpenseIdsFromBulk(formId: string) {
     .filter(id => Number.isInteger(id) && id > 0);
 }
 
-export default function ExpenseEditModalController({ categories, banks, paymentMethods, suppliers, listHref, formId = "expenseBulkForm" }: Props) {
+export default function ExpenseEditModalController({ categories, banks, paymentMethods, suppliers, employees = [], listHref, formId = "expenseBulkForm" }: Props) {
+  const [availableEmployees, setAvailableEmployees] = useState(employees);
   const [expense, setExpense] = useState<EditExpense | null>(null);
   const [mode, setMode] = useState<"edit" | "copy" | "payment">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (availableEmployees.length) return;
+    fetch('/api/employees', {cache: 'no-store'}).then(response => response.ok ? response.json() : []).then(setAvailableEmployees).catch(() => undefined);
+  }, [availableEmployees.length]);
 
   async function openExpense(id: number, nextMode: "edit" | "copy" | "payment" = "edit") {
     setError("");
@@ -164,6 +177,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
           banks={banks}
           paymentMethods={paymentMethods}
           suppliers={suppliers}
+          employees={availableEmployees}
           initialExpense={expense}
           initialMobileStep={mode === "payment" ? 4 : 1}
           mobileStepOffset={1}

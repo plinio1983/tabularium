@@ -142,18 +142,11 @@
     gap: 16px;
   }
 
+  .form-section-grid .expense-fiscal-desktop-control,
+  .form-section-grid .expense-invoice-desktop-control,
   .expense-invoice-desktop-control {
     min-width: 205px;
   }
-
-  //.app-form-wizard .expense-fiscal-desktop-control > span,
-  //.app-form-wizard .expense-invoice-desktop-control > span,
-  //.recurring-record-form .recurring-switch-control > span,
-  //.income-form .income-switch-control > span {
-  //  color: #334155;
-  //  font-size: 13px;
-  //  font-weight: 850;
-  //}
 
   .single-expense-form .expense-wizard-amount-field {
     min-width: 0;
@@ -425,11 +418,11 @@
   }
 }
 
-@media (min-width: 1180px) {
-  .dashboard-period-cards {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
+//@media (min-width: 1180px) {
+//  .dashboard-period-cards {
+//    grid-template-columns: repeat(4, minmax(0, 1fr));
+//  }
+//}
 
 @media (min-width: 761px) {
   .app-form-modal .app-record-form .form-actions-row,

@@ -298,6 +298,7 @@ export default function ExpenseFiltersDrawer({
             <option value="recurring">Ricorrente</option>
             <option value="vat_settlement">Saldo IVA</option>
             <option value="tax_contribution">Imposte - non IVA</option>
+            <option value="payroll">Busta paga</option>
           </select></FilterField>
 
           <SupplierFilterInput initialValue={inputDefault(filters, "merchant")} />

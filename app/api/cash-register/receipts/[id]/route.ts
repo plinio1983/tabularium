@@ -3,7 +3,6 @@ import {z} from 'zod';
 import {getWorkspaceApiAccess, workspaceOperationalRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {writeAuditLog} from '@/lib/audit';
-import {resolveCashRegisterBankId} from '@/lib/cash-register-bank';
 import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const UpdateSchema = z.object({
@@ -13,7 +12,8 @@ const UpdateSchema = z.object({
     creditDate: z.string().datetime(),
     salesChannelId: z.coerce.number().int().positive(),
     description: z.string().trim().max(200).optional(),
-    paymentMethodId: z.coerce.number().int().positive()
+    paymentMethodId: z.coerce.number().int().positive(),
+    bankId: z.coerce.number().int().positive()
 });
 
 export async function PATCH(request: Request, {params}: { params: Promise<{ id: string }> }) {
@@ -27,22 +27,20 @@ export async function PATCH(request: Request, {params}: { params: Promise<{ id: 
     const vatRate = input.isFiscal ? input.vatRate : 0;
     if (![0, 4, 10, 22].includes(vatRate)) return NextResponse.json({error: 'Aliquota non valida'}, {status: 400});
     const date = new Date(input.creditDate);
-    const [receipt, channel, method] = await Promise.all([
+    const [receipt, channel, method, bank] = await Promise.all([
         prisma.income.findFirst({where: {id, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'}}),
         prisma.incomeSalesChannel.findFirst({where: {id: input.salesChannelId, workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findFirst({
-            where: {id: input.paymentMethodId, workspaceId: current.workspace.id, cashRegisterEnabled: true}
-        })
+            where: {id: input.paymentMethodId, workspaceId: current.workspace.id, cashRegisterEnabled: true, kind: {in: ['INCOME', 'BOTH']}}
+        }),
+        prisma.bank.findFirst({where: {id: input.bankId, workspaceId: current.workspace.id}})
     ]);
     if (!receipt) return NextResponse.json({error: 'Scontrino non trovato'}, {status: 404});
-    if (!channel || !method) return NextResponse.json({error: 'Configurazione non valida'}, {status: 409});
+    if (!channel || !method || !bank) return NextResponse.json({error: 'Configurazione non valida'}, {status: 409});
     if (!input.isFiscal && method.systemRole !== 'CASH') {
         return NextResponse.json({error: 'Gli incassi non fiscali possono essere registrati solo in contanti'}, {status: 400});
     }
-    const creditBankId = await resolveCashRegisterBankId(current.workspace.id, method, channel.id);
-    if (!creditBankId) {
-        return NextResponse.json({error: 'Configura la banca per questo metodo e canale di vendita'}, {status: 409});
-    }
+    const creditBankId = bank.id;
     const period = yearMonthInTimeZone(current.company.timeZone, date);
     const updated = await prisma.income.update({
         where: {id},

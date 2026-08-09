@@ -36,10 +36,10 @@ function receiptDate(value: string, timeZone: string) {
     return `${part('day')} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${part('hour')}:${part('minute')}`;
 }
 
-export default function CashRegisterReceiptList({receipts, filtersTrigger}: {receipts: Receipt[]; filtersTrigger?: ReactNode}) {
+export default function CashRegisterReceiptList({receipts, filtersTrigger, returnTo}: {receipts: Receipt[]; filtersTrigger?: ReactNode; returnTo: string}) {
     const timeZone = useCompanyTimeZone();
     const formId = 'cashRegisterReceiptBulkForm';
-    const returnTo = encodeURIComponent('/incomes/cash-register/receipts');
+    const encodedReturnTo = encodeURIComponent(returnTo);
     return <div className="card record-list-card cash-register-receipt-list-card">
         <div className="list-heading recurring-list-heading">
             <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
@@ -48,7 +48,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger}: {rec
         <BulkSelectionController/>
         <SortableTableController/>
         <form id={formId}
-              action={`/api/cash-register/receipts/bulk?returnTo=${returnTo}`}
+              action={`/api/cash-register/receipts/bulk?returnTo=${encodedReturnTo}`}
               method="post"
               className="bulk-actions-bar grouped-bulk-actions-bar cash-register-receipt-bulk-actions-bar confirm-bulk-form"
               data-bulk-button-group="true"
@@ -75,7 +75,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger}: {rec
                  data-edit-suffix=""
                  data-copy-base="/incomes/cash-register?copyId="
                  data-copy-single-only="true"
-                 data-return-to={returnTo}>
+                 data-return-to={encodedReturnTo}>
                 <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
                     <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
                 </a>

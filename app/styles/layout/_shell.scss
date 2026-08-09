@@ -1,7 +1,17 @@
 .shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
   max-width: 1280px;
   margin: 0 auto;
   padding: 18px;
+}
+
+.app-content {
+  flex: 1 0 auto;
+  min-width: 0;
+  width: 100%;
 }
 
 .nav {
@@ -780,3 +790,32 @@ body:has(.admin-login-page) .app-footer {
   //}
 }
 
+.dashboard-grid {
+  .dashboard-body-wrapper {
+    display: grid;
+    gap: 16px;
+  }
+
+  &.fixed {
+    .dashboard-header-card {
+      max-width: 100%;
+      width: 100%;
+      display: grid;
+    }
+    .dashboard-section-nav-slot {
+      justify-self: initial;
+    }
+    .dashboard-body-wrapper {
+      max-width: 1180px;
+      justify-self: center;
+    }
+
+    .charts-grid.dashboard-overview-charts {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .monthly-profit-comparison-list {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+}

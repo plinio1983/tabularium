@@ -564,64 +564,57 @@ function ExpenseCompositionChart({data, total, incomeTotal}: {
     </section>;
 }
 
-function ProfitabilitySummaryCard({totals, year}: { totals: any; year: number }) {
+function ProfitabilitySummaryCard({totals, year, periodLabel}: { totals: any; year: number; periodLabel: string }) {
     const income = totals.incassoTotale;
     const items = [
-        {label: 'Margine lordo', value: totals.utileLordo, color: '#2563eb'},
-        {label: 'Utile netto', value: totals.utileNetto, color: '#0f766e'},
-        {label: 'Utile fiscale', value: totals.utileFiscale, color: '#7c3aed'},
-        {label: 'Imponibile', value: totals.imponibileIncassi, color: '#b45309'}
+        {label: 'Margine lordo', value: totals.utileLordo, formula: 'Entrate meno spese totali', className: 'is-gross'},
+        {
+            label: 'Utile netto',
+            value: totals.utileNetto,
+            formula: 'Margine lordo meno saldo IVA stimato',
+            className: 'is-net'
+        },
+        {
+            label: 'Utile fiscale',
+            value: totals.utileFiscale,
+            formula: 'Imponibile meno costi fiscalmente rilevanti',
+            className: 'is-fiscal'
+        },
+        {
+            label: 'Imponibile',
+            value: totals.imponibileIncassi,
+            formula: 'Entrate fiscali meno IVA generata',
+            className: 'is-taxable',
+            secondary: true
+        }
     ];
     const ratio = (value: number) => income ? value / Math.abs(income) * 100 : 0;
-    const negativeExtent = Math.max(...items.map(item => Math.max(-ratio(item.value), 0)), 0);
-    const positiveExtent = Math.max(...items.map(item => Math.max(ratio(item.value), 0)), 0);
-    const totalExtent = Math.max(negativeExtent + positiveExtent, 1);
-    const zeroPosition = negativeExtent / totalExtent * 100;
 
     return <section className="card profitability-summary-card">
-        <div className="card-heading-row">
+        <div className="card-heading-row profitability-summary-heading">
             <div>
-                <h2>Sintesi della redditività</h2>
-                <p className="muted">Risultati annuali e incidenza sulle entrate nel {year}.</p>
+                <span className="profitability-summary-eyebrow">Redditività consolidata</span>
+                <h2>Margini e utili</h2>
+                <p className="muted">Periodo {periodLabel} · anno fiscale {year}</p>
             </div>
-            <div className="dashboard-chart-main-totals">
-                <div className="dashboard-chart-main-total">
-                    <span>Entrate totali</span>
-                    <strong>{chartEuro(income)}</strong>
-                </div>
-                <div className={'dashboard-chart-main-total unpaid-total '.concat(totals.nonAccreditato > 0 ? 'tone-warning' : '')}>
-                    <span>Atteso, non accreditato</span>
-                    {/*<strong className={moneyTone(totals.nonAccreditato)}>{chartEuro(totals.nonAccreditato)}</strong>*/}
-                    <strong className={totals.nonAccreditato > 0 ? 'text-warning' : ''}>{chartEuro(totals.nonAccreditato)}</strong>
-                </div>
+            <div className="profitability-summary-reference">
+                <span>Entrate di riferimento</span>
+                <strong>{chartEuro(income)}</strong>
+                <small>Base delle percentuali</small>
             </div>
         </div>
-        <div className="profitability-summary-list">
+        <div className="profitability-summary-kpis">
             {items.map(item => {
                 const percentage = ratio(item.value);
-                const width = Math.abs(percentage) / totalExtent * 100;
-                return <div className="profitability-summary-row" key={item.label}>
-                    <div className="profitability-summary-values">
-                        <strong>{item.label}</strong>
-                        <strong className={moneyTone(item.value)}>{chartEuro(item.value)}</strong>
-                        <span className={moneyTone(item.value)}>{percentage.toFixed(1)}%</span>
+                return <article className={`profitability-summary-kpi ${item.className} ${item.secondary ? 'is-secondary' : ''}`} key={item.label}>
+                    <span>{item.label}</span>
+                    <strong className={moneyTone(item.value)}>{chartEuro(item.value)}</strong>
+                    <div className={moneyTone(item.value, 'profitability-summary-percentage')}>
+                        <b>{percentage.toFixed(1)}%</b>
+                        <small>sugli incassi</small>
                     </div>
-                    <div className={`profitability-summary-axis ${negativeExtent ? 'has-negative-values' : ''}`}
-                         style={{
-                             background: negativeExtent
-                                 ? `linear-gradient(90deg, #fff1f2 0 ${zeroPosition}%, #eef2f7 ${zeroPosition}% 100%)`
-                                 : '#eef2f7'
-                         }}
-                         aria-label={`${item.label}: ${chartEuro(item.value)}, ${percentage.toFixed(1)}% delle entrate`}>
-                        <i style={{
-                            left: percentage < 0 ? `${zeroPosition - width}%` : `${zeroPosition}%`,
-                            width: `${width}%`,
-                            background: item.value < 0 ? '#dc2626' : item.color
-                        }}/>
-                        {negativeExtent ?
-                            <b className="profitability-summary-zero" style={{left: `${zeroPosition}%`}}/> : null}
-                    </div>
-                </div>;
+                    <small className="profitability-summary-formula">{item.formula}</small>
+                </article>;
             })}
         </div>
         <div className="profitability-summary-footer">
@@ -1774,16 +1767,27 @@ export default async function Dashboard({searchParams}: {
     const fiscalQuarterValue = Array.isArray(params.fiscalQuarter) ? params.fiscalQuarter[0] : params.fiscalQuarter;
     const annualYearValue = Array.isArray(params.annualYear) ? params.annualYear[0] : params.annualYear;
     const annualYear = parseYearSelection(annualYearValue, currentYear);
-    const annualFallbackMonth = annualYear === currentYear ? currentMonth : 1;
-    const annualFallbackQuarter = annualYear === currentYear ? currentQuarterIndex : 0;
-    const rawSelectedTrendMonth = parseMonthSelection(trendMonthValue, annualYear, annualFallbackMonth);
-    const rawSelectedTrendQuarter = parseQuarterSelection(trendQuarterValue, annualYear, annualFallbackQuarter);
-    const rawSelectedMonth = parseMonthSelection(fiscalMonthValue, annualYear, annualFallbackMonth);
-    const rawSelectedQuarter = parseQuarterSelection(fiscalQuarterValue, annualYear, annualFallbackQuarter);
-    const selectedTrendMonth = {...rawSelectedTrendMonth, year: annualYear};
-    const selectedTrendQuarter = {...rawSelectedTrendQuarter, year: annualYear};
-    const selectedMonth = {...rawSelectedMonth, year: annualYear};
-    const selectedQuarter = {...rawSelectedQuarter, year: annualYear};
+    const defaultCompletedMonth = annualYear < currentYear
+        ? {year: annualYear, month: 12}
+        : annualYear === currentYear && currentMonth === 1
+            ? {year: currentYear - 1, month: 12}
+            : {year: annualYear, month: annualYear === currentYear ? currentMonth - 1 : 1};
+    const defaultCompletedQuarter = annualYear < currentYear
+        ? {year: annualYear, quarterIndex: 3}
+        : annualYear === currentYear && currentQuarterIndex === 0
+            ? {year: currentYear - 1, quarterIndex: 3}
+            : {year: annualYear, quarterIndex: annualYear === currentYear ? currentQuarterIndex - 1 : 0};
+    const rawSelectedTrendMonth = parseMonthSelection(trendMonthValue, defaultCompletedMonth.year, defaultCompletedMonth.month);
+    const rawSelectedTrendQuarter = parseQuarterSelection(trendQuarterValue, defaultCompletedQuarter.year, defaultCompletedQuarter.quarterIndex);
+    const rawSelectedMonth = parseMonthSelection(fiscalMonthValue, defaultCompletedMonth.year, defaultCompletedMonth.month);
+    const rawSelectedQuarter = parseQuarterSelection(fiscalQuarterValue, defaultCompletedQuarter.year, defaultCompletedQuarter.quarterIndex);
+    const selectedTrendMonth = trendMonthValue ? {...rawSelectedTrendMonth, year: annualYear} : rawSelectedTrendMonth;
+    const selectedTrendQuarter = trendQuarterValue ? {
+        ...rawSelectedTrendQuarter,
+        year: annualYear
+    } : rawSelectedTrendQuarter;
+    const selectedMonth = fiscalMonthValue ? {...rawSelectedMonth, year: annualYear} : rawSelectedMonth;
+    const selectedQuarter = fiscalQuarterValue ? {...rawSelectedQuarter, year: annualYear} : rawSelectedQuarter;
     const reportYear = annualYear;
     const trendQuarterPeriods = fiscalQuarterMonthsByIndex(selectedTrendQuarter.year, selectedTrendQuarter.quarterIndex);
     const scheduleFrom = new Date(Date.UTC(annualYear, 0, 1));
@@ -1873,8 +1877,20 @@ export default async function Dashboard({searchParams}: {
     const yearOptions = Array.from(new Set([currentYear + 1, currentYear, currentYear - 1, currentYear - 2, reportYear, annualYear, selectedTrendMonth.year, selectedTrendQuarter.year, monthOptionYear, quarterOptionYear])).sort((a, b) => b - a);
     const monthOptions = Array.from({length: 12}, (_, index) => ({year: monthOptionYear, month: index + 1}));
     const quarterOptions = Array.from({length: 4}, (_, index) => ({year: quarterOptionYear, quarterIndex: index}));
-    const annualPeriods = Array.from({length: 12}, (_, index) => ({year: report.annualYear, month: index + 1}));
-    const nonFiscalExpenseChartMonths = report.months.filter(month => report.annualYear === currentYear ? month.month <= currentMonth : true);
+    const annualPeriods = Array.from({length: report.annualCompletedThroughMonth}, (_, index) => ({
+        year: report.annualYear,
+        month: index + 1
+    }));
+    const completedReportMonths = report.months.slice(0, report.reportCompletedThroughMonth);
+    const consolidatedPeriodLabel = report.annualCompletedThroughMonth
+        ? `${capitalizedMonthName(report.annualCompletedThroughMonth)} ${report.annualYear}`
+        : null;
+    const consolidatedPeriodCopy = consolidatedPeriodLabel
+        ? `fino a ${consolidatedPeriodLabel}`
+        : `senza mesi conclusi nel ${report.annualYear}`;
+    const consolidatedRangeLabel = consolidatedPeriodLabel
+        ? `${capitalizedMonthName(1)} – ${consolidatedPeriodLabel}`
+        : `nessun mese concluso nel ${report.annualYear}`;
     const cashSchedule: CashScheduleItem[] = Array.from({length: 12}, (_, index) => ({
         month: index + 1,
         incoming: 0,
@@ -1899,6 +1915,7 @@ export default async function Dashboard({searchParams}: {
     });
 
     return <div className="grid dashboard-grid">
+
         <NewExpensePanel
             categories={orderedExpenseCategories.map(c => ({
                 id: c.id,
@@ -1907,7 +1924,13 @@ export default async function Dashboard({searchParams}: {
                 icon: c.icon,
                 isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId
             }))}
-            banks={orderedBanks.map(b => ({id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId}))}
+            banks={orderedBanks.map(b => ({
+                id: b.id,
+                name: b.name,
+                icon: b.icon,
+                isFallback: b.isFallback,
+                isPrimary: b.id === current.company.primaryBankId
+            }))}
             paymentMethods={expensePaymentMethods.map(method => ({
                 id: method.id,
                 name: method.name,
@@ -1935,7 +1958,7 @@ export default async function Dashboard({searchParams}: {
         <div className="dashboard-actions toolbar-card dashboard-header-card">
             <div className="dashboard-title-block">
                 <h2>Dashboard</h2>
-                <p className="muted">Sintesi fiscale, incassi e spese.</p>
+                <p className="muted">Dati consolidati {consolidatedPeriodCopy}. Liquidità e scadenze sono aggiornate a oggi.</p>
             </div>
             <div className="actions-row dashboard-top-actions">
                 <ExpenseNewTriggerButton className="btn btn-md btn-primary"><span
@@ -1968,257 +1991,180 @@ export default async function Dashboard({searchParams}: {
                     </Link> : null}
             </div>
         </div>
+        <div className="dashboard-body-wrapper">
+            <DashboardSectionNav/>
 
-        <DashboardSectionNav/>
-
-        <div id="sintesi" className="dashboard-report-charts dashboard-anchor-section">
-            <div className="charts-grid dashboard-overview-charts">
-                <IncomeBreakdownChart title="Entrate per canale di vendita"
-                                      description={`Distribuzione degli incassi per canale di vendita nell’anno fiscale ${report.annualYear}.`}
-                                      data={report.incomesBySalesChannel}/>
-                <ExpenseCompositionChart data={report.expensesByCategory} total={report.totals.speseTotali} incomeTotal={report.totals.incassoTotale}/>
-                <ProfitabilitySummaryCard totals={report.totals} year={report.annualYear}/>
-            </div>
-        </div>
-
-        <div id="fiscale" className="dashboard-anchor-section">
-            <FiscalNonFiscalOverview totals={report.totals} year={report.annualYear} periods={annualPeriods}/>
-        </div>
-        <AnnualIncomeTrendChart initialData={initialIncomeTrend}/>
-
-        <div className="grid grid-2 dashboard-period-cards">
-            <DashboardFiscalAjax
-                annualYear={report.annualYear}
-                monthOptions={monthOptions}
-                quarterOptions={quarterOptions}
-                initialTrend={{
-                    year: selectedTrendMonth.year,
-                    month: selectedTrendMonth.month,
-                    totals: monthlyTrendTotals
-                }}
-                initialTrendQuarter={{periods: trendQuarterPeriods, totals: quarterlyTrendTotals}}
-                initialMonth={{periods: report.currentFiscalMonth.periods, totals: report.currentFiscalMonth.totals}}
-                initialQuarter={{
-                    periods: report.currentFiscalQuarter.periods,
-                    totals: report.currentFiscalQuarter.totals
-                }}
-            />
-        </div>
-
-        {/*<article className="dashboard-statement-cards">*/}
-        {/*<section className="card dashboard-statement-panel dashboard-annual-card">*/}
-        {/*    <div className="dashboard-statement-heading">*/}
-        {/*        <div>*/}
-        {/*            <h2>Da inizio anno</h2>*/}
-        {/*            <p className="muted">Totali fiscali anno {report.annualYear}</p>*/}
-        {/*        </div>*/}
-        {/*    </div>*/}
-        {/*    <div className="dashboard-statement-body">*/}
-        {/*        <table className="dashboard-statement-table dashboard-annual-statement-table">*/}
-        {/*            <tbody>*/}
-        {/*            <tr className="dashboard-statement-result">*/}
-        {/*                <td>Entrate totali anno</td>*/}
-        {/*                <td>*/}
-        {/*                    <AnnualMoneyWithRatio value={report.totals.incassoTotale}*/}
-        {/*                                          denominator={report.totals.incassoTotale}*/}
-        {/*                                          percentageOverride={100}*/}
-        {/*                                          highlight/>*/}
-        {/*                </td>*/}
-        {/*            </tr>*/}
-        {/*            <tr>*/}
-        {/*                <td>Uscite anno</td>*/}
-        {/*                <td>*/}
-        {/*                    <AnnualMoneyWithRatio value={report.totals.speseTotali}*/}
-        {/*                                          denominator={report.totals.incassoTotale}/>*/}
-        {/*                </td>*/}
-        {/*            </tr>*/}
-        {/*            <tr className="dashboard-statement-result">*/}
-        {/*                <td>Margine lordo anno</td>*/}
-        {/*                <td>*/}
-        {/*                    <AnnualMoneyWithRatio value={report.totals.utileLordo}*/}
-        {/*                                          denominator={report.totals.incassoTotale}*/}
-        {/*                                          highlight/>*/}
-        {/*                </td>*/}
-        {/*            </tr>*/}
-        {/*            <tr className="dashboard-statement-result">*/}
-        {/*                <td>Utile netto anno</td>*/}
-        {/*                <td>*/}
-        {/*                    <AnnualMoneyWithRatio value={report.totals.utileNetto}*/}
-        {/*                                          denominator={report.totals.incassoTotale}*/}
-        {/*                                          highlight/>*/}
-        {/*                </td>*/}
-        {/*            </tr>*/}
-        {/*            <tr>*/}
-        {/*                <td>Imponibile</td>*/}
-        {/*                <td>*/}
-        {/*                    <AnnualMoneyWithRatio value={report.totals.imponibileIncassi}*/}
-        {/*                                          denominator={report.totals.incassoTotale}/>*/}
-        {/*                </td>*/}
-        {/*            </tr>*/}
-        {/*            <tr>*/}
-        {/*                <td>Entrate non fiscali</td>*/}
-        {/*                <td>*/}
-        {/*                    <AnnualMoneyWithRatio value={report.totals.incassoNonFiscale}*/}
-        {/*                                          denominator={report.totals.incassoTotale}/>*/}
-        {/*                </td>*/}
-        {/*            </tr>*/}
-        {/*            <tr>*/}
-        {/*                <td>Uscite non fiscali</td>*/}
-        {/*                <td>*/}
-        {/*                    <AnnualMoneyWithRatio value={report.totals.usciteNonFiscali}*/}
-        {/*                                          denominator={report.totals.speseTotali}*/}
-        {/*                                          denominatorLabel="uscite totali"/>*/}
-        {/*                </td>*/}
-        {/*            </tr>*/}
-        {/*            <tr className="dashboard-statement-result">*/}
-        {/*                <td>Utile fiscale anno</td>*/}
-        {/*                <td>*/}
-        {/*                    <AnnualMoneyWithRatio value={report.totals.utileFiscale}*/}
-        {/*                                          denominator={report.totals.incassoTotale}*/}
-        {/*                                          highlight/>*/}
-        {/*                </td>*/}
-        {/*            </tr>*/}
-        {/*            /!*<tr className="row-warning"><td>Previsione imposte anno</td><td><strong className={moneyTone(report.totals.previsioneImposte, 'money-warning')}>{euro(report.totals.previsioneImposte)}</strong></td></tr>*!/*/}
-        {/*            </tbody>*/}
-        {/*        </table>*/}
-        {/*    </div>*/}
-        {/*</section>*/}
-
-        {/*<IncomeExpenseBreakdownChart totals={report.totals} periods={annualPeriods}/>*/}
-        {/*</article>*/}
-
-        <div id="mensile" className="dashboard-monthly-section dashboard-anchor-section">
-        <MonthlyProfitComparisonChart months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-
-        <div className="card dashboard-report-card dashboard-monthly-legacy-report">
-            <div className="card-heading-row">
-                <div>
-                    <h2>Report mensile {report.year}</h2>
-                    <p className="muted">Dati mensili per l’anno fiscale selezionato.</p>
+            <div id="sintesi" className="dashboard-report-charts dashboard-anchor-section">
+                <div className="charts-grid dashboard-overview-charts">
+                    <ProfitabilitySummaryCard totals={report.totals} year={report.annualYear}
+                                              periodLabel={consolidatedRangeLabel}/>
+                    <IncomeBreakdownChart title="Entrate per canale di vendita"
+                                          description={`Distribuzione degli incassi per canale di vendita ${consolidatedPeriodCopy}.`}
+                                          data={report.incomesBySalesChannel}/>
+                    <ExpenseCompositionChart data={report.expensesByCategory} total={report.totals.speseTotali} incomeTotal={report.totals.incassoTotale}/>
                 </div>
             </div>
-            <div className="table-scroll">
-                <table className="dashboard-report-table">
-                    <thead>
-                    <tr>
-                        <th><span className="th-wrap">Mese</span></th>
-                        <th className="highlight-column"><span className="th-wrap">Entrate<br/>totali</span></th>
-                        <th><span className="th-wrap">Spesa<br/>Totale</span></th>
-                        {/*<th><span className="th-wrap">Incasso<br />Fiscale</span></th>*/}
-                        <th className="highlight-column"><span className="th-wrap">Margine<br/>lordo</span></th>
-                        <th className="highlight-column"><span className="th-wrap">Utile<br/>netto</span></th>
-                        <th className="highlight-column"><span className="th-wrap">Utile<br/>fiscale</span></th>
-                        <th><span className="th-wrap">Incasso<br/>non fiscale</span></th>
-                        <th><span className="th-wrap">Spese non<br/>fiscalizzate</span></th>
-                        <th><span className="th-wrap">Spese non<br/>saldate</span></th>
-                        {/*<th><span className="th-wrap">Pagamenti<br />scaduti</span></th>*/}
-                        <th><span className="th-wrap">Debito<br/>IVA</span></th>
-                    </tr>
-                    </thead>
-                    <tbody>{report.months.map(m => <tr key={m.month}>
-                        <td><Link className="badge" href={monthReportLink(m.year, m.month)}>{monthName(m.month)}</Link>
-                        </td>
-                        <td><Link href={periodLink('/incomes', [{year: m.year, month: m.month}])}><MoneyCell
-                            value={m.totals.incassoTotale} highlight/></Link></td>
-                        <td><Link href={periodLink('/expenses', [{year: m.year, month: m.month}])}><MoneyCell
-                            value={m.totals.speseTotali}/></Link></td>
-                        <td className="money-value-col">
-                            <PercentCell value={m.totals.utileLordo} total={m.totals.incassoTotale}/></td>
-                        <td className="money-value-col"><MoneyCell value={m.totals.utileNetto} highlight/></td>
-                        <td className="money-value-col"><MoneyCell value={m.totals.utileFiscale} highlight/></td>
-                        {/*<td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'yes' })}><MoneyCell value={m.totals.incassoFiscale} /></Link></td>*/}
-                        <td><Link
-                            href={periodLink('/incomes', [{year: m.year, month: m.month}], {fiscal: 'no'})}><PercentCell
-                            value={m.totals.incassoNonFiscale} total={m.totals.incassoTotale}/></Link></td>
-                        <td><Link href={periodLink('/expenses', [{
-                            year: m.year,
-                            month: m.month
-                        }], {declared: 'no'})}><PercentCell value={m.totals.usciteNonFiscali}
-                                                            total={m.totals.speseTotali}
-                                                            tone={nonFiscalExpensePercentTone(m.totals.usciteNonFiscali, m.totals.speseTotali)}/></Link>
-                        </td>
-                        <td><Link href={periodLink('/expenses', [{
-                            year: m.year,
-                            month: m.month
-                        }], {paymentStatus: 'not_complete'})}><MoneyCell value={m.totals.nonSaldato}/></Link></td>
-                        {/*<td><Link className={m.totals.fattureScaduteCount > 0 ? 'count-critical' : 'count-muted'} href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'overdue' })}>{m.totals.fattureScaduteCount}</Link></td>*/}
-                        <td><MoneyCell value={m.totals.debitoIva}/></td>
-                    </tr>)}</tbody>
-                </table>
-            </div>
-            <div className="dashboard-monthly-mobile" aria-label={`Report mensile ${report.year}`}>
 
-                {report.months.map(m => <div className="dashboard-monthly-mobile-row" key={`mobile-${m.month}`}>
-                    <div className="dashboard-monthly-mobile-labels" aria-hidden="true">
-                        <span>Mese</span><span>Margine lordo</span><span>Utile netto</span><span>Utile fiscale</span>
-                    </div>
-                    <div className="dashboard-monthly-mobile-main">
-                        <Link className="dashboard-monthly-mobile-month" href={monthReportLink(m.year, m.month)}>
-                            <span className="dashboard-label-short">{capitalizedMonthName(m.month).slice(0, 3)}</span>
-                            <span className="dashboard-label">{capitalizedMonthName(m.month)}</span>
-                        </Link>
-                        <div className="dashboard-monthly-mobile-badge dashboard-monthly-mobile-percent">
-                            <MobilePercentCell value={m.totals.utileLordo} total={m.totals.incassoTotale}/>
-                        </div>
-                        <div><span className=""><MobileMoneyCell value={m.totals.utileNetto}/></span></div>
-                        <div><MobileMoneyCell value={m.totals.utileFiscale}/></div>
-                    </div>
-                    <div className="dashboard-monthly-mobile-secondary">
+            <div id="fiscale" className="dashboard-anchor-section">
+                <FiscalNonFiscalOverview totals={report.totals} year={report.annualYear} periods={annualPeriods}/>
+            </div>
+            <MonthlyEconomicTrendChart data={completedReportMonths} year={report.annualYear}/>
+            <AnnualIncomeTrendChart initialData={initialIncomeTrend}/>
+
+            <div className="grid grid-2 dashboard-period-cards">
+                <DashboardFiscalAjax
+                    annualYear={report.annualYear}
+                    monthOptions={monthOptions}
+                    quarterOptions={quarterOptions}
+                    initialTrend={{
+                        year: selectedTrendMonth.year,
+                        month: selectedTrendMonth.month,
+                        totals: monthlyTrendTotals
+                    }}
+                    initialTrendQuarter={{periods: trendQuarterPeriods, totals: quarterlyTrendTotals}}
+                    initialMonth={{
+                        periods: report.currentFiscalMonth.periods,
+                        totals: report.currentFiscalMonth.totals
+                    }}
+                    initialQuarter={{
+                        periods: report.currentFiscalQuarter.periods,
+                        totals: report.currentFiscalQuarter.totals
+                    }}
+                />
+            </div>
+
+            <div id="mensile" className="dashboard-monthly-section dashboard-anchor-section">
+                <MonthlyProfitComparisonChart months={completedReportMonths} year={report.annualYear}/>
+
+                <div className="card dashboard-report-card dashboard-monthly-legacy-report">
+                    <div className="card-heading-row">
                         <div>
-                            <span>Entrate</span>
-                            <Link href={periodLink('/incomes', [{year: m.year, month: m.month}])}>
-                                <MobileMoneyCellNoFormat value={m.totals.incassoTotale}/>
-                            </Link>
-                        </div>
-                        <div>
-                            <span>Uscite</span>
-                            <Link href={periodLink('/expenses', [{year: m.year, month: m.month}])}>
-                                <MobileMoneyCellNoFormat value={m.totals.speseTotali}/>
-                            </Link>
-                        </div>
-                        <div>
-                            <span>Entrate n.f.</span>
-                            <div className="dashboard-monthly-mobile-badge">
-                                <Link href={periodLink('/incomes', [{year: m.year, month: m.month}], {fiscal: 'no'})}>
-                                    <MobilePercentCell value={m.totals.incassoNonFiscale} total={m.totals.incassoTotale}/>
-                                </Link>
-                            </div>
-                        </div>
-                        <div>
-                            <span>Spese n.f.</span>
-                            <div className="dashboard-monthly-mobile-badge"><Link
-                                href={periodLink('/expenses', [{year: m.year, month: m.month}], {declared: 'no'})}>
-                                <MobilePercentCell value={m.totals.usciteNonFiscali}
-                                                   total={m.totals.speseTotali}
-                                                   tone={nonFiscalExpensePercentTone(m.totals.usciteNonFiscali, m.totals.speseTotali)}/>
-                            </Link></div>
+                            <h2>Report mensile {report.year}</h2>
+                            <p className="muted">Mesi conclusi {consolidatedPeriodCopy}.</p>
                         </div>
                     </div>
-                </div>)}
+                    <div className="table-scroll">
+                        <table className="dashboard-report-table">
+                            <thead>
+                            <tr>
+                                <th><span className="th-wrap">Mese</span></th>
+                                <th className="highlight-column"><span className="th-wrap">Entrate<br/>totali</span>
+                                </th>
+                                <th><span className="th-wrap">Spesa<br/>Totale</span></th>
+                                {/*<th><span className="th-wrap">Incasso<br />Fiscale</span></th>*/}
+                                <th className="highlight-column"><span className="th-wrap">Margine<br/>lordo</span></th>
+                                <th className="highlight-column"><span className="th-wrap">Utile<br/>netto</span></th>
+                                <th className="highlight-column"><span className="th-wrap">Utile<br/>fiscale</span></th>
+                                <th><span className="th-wrap">Incasso<br/>non fiscale</span></th>
+                                <th><span className="th-wrap">Spese non<br/>fiscalizzate</span></th>
+                                <th><span className="th-wrap">Spese non<br/>saldate</span></th>
+                                {/*<th><span className="th-wrap">Pagamenti<br />scaduti</span></th>*/}
+                                <th><span className="th-wrap">Debito<br/>IVA</span></th>
+                            </tr>
+                            </thead>
+                            <tbody>{completedReportMonths.map(m => <tr key={m.month}>
+                                <td>
+                                    <Link className="badge" href={monthReportLink(m.year, m.month)}>{monthName(m.month)}</Link>
+                                </td>
+                                <td><Link href={periodLink('/incomes', [{year: m.year, month: m.month}])}><MoneyCell
+                                    value={m.totals.incassoTotale} highlight/></Link></td>
+                                <td><Link href={periodLink('/expenses', [{year: m.year, month: m.month}])}><MoneyCell
+                                    value={m.totals.speseTotali}/></Link></td>
+                                <td className="money-value-col">
+                                    <PercentCell value={m.totals.utileLordo} total={m.totals.incassoTotale}/></td>
+                                <td className="money-value-col"><MoneyCell value={m.totals.utileNetto} highlight/></td>
+                                <td className="money-value-col"><MoneyCell value={m.totals.utileFiscale} highlight/>
+                                </td>
+                                {/*<td><Link href={periodLink('/incomes', [{ year: m.year, month: m.month }], { fiscal: 'yes' })}><MoneyCell value={m.totals.incassoFiscale} /></Link></td>*/}
+                                <td><Link
+                                    href={periodLink('/incomes', [{
+                                        year: m.year,
+                                        month: m.month
+                                    }], {fiscal: 'no'})}><PercentCell
+                                    value={m.totals.incassoNonFiscale} total={m.totals.incassoTotale}/></Link></td>
+                                <td><Link href={periodLink('/expenses', [{
+                                    year: m.year,
+                                    month: m.month
+                                }], {declared: 'no'})}><PercentCell value={m.totals.usciteNonFiscali}
+                                                                    total={m.totals.speseTotali}
+                                                                    tone={nonFiscalExpensePercentTone(m.totals.usciteNonFiscali, m.totals.speseTotali)}/></Link>
+                                </td>
+                                <td><Link href={periodLink('/expenses', [{
+                                    year: m.year,
+                                    month: m.month
+                                }], {paymentStatus: 'not_complete'})}><MoneyCell value={m.totals.nonSaldato}/></Link>
+                                </td>
+                                {/*<td><Link className={m.totals.fattureScaduteCount > 0 ? 'count-critical' : 'count-muted'} href={periodLink('/expenses', [{ year: m.year, month: m.month }], { paymentStatus: 'overdue' })}>{m.totals.fattureScaduteCount}</Link></td>*/}
+                                <td><MoneyCell value={m.totals.debitoIva}/></td>
+                            </tr>)}</tbody>
+                        </table>
+                    </div>
+                    <div className="dashboard-monthly-mobile" aria-label={`Report mensile ${report.year}`}>
+
+                        {completedReportMonths.map(m =>
+                            <div className="dashboard-monthly-mobile-row" key={`mobile-${m.month}`}>
+                                <div className="dashboard-monthly-mobile-labels" aria-hidden="true">
+                                    <span>Mese</span><span>Margine lordo</span><span>Utile netto</span><span>Utile fiscale</span>
+                                </div>
+                                <div className="dashboard-monthly-mobile-main">
+                                    <Link className="dashboard-monthly-mobile-month" href={monthReportLink(m.year, m.month)}>
+                                        <span className="dashboard-label-short">{capitalizedMonthName(m.month).slice(0, 3)}</span>
+                                        <span className="dashboard-label">{capitalizedMonthName(m.month)}</span>
+                                    </Link>
+                                    <div className="dashboard-monthly-mobile-badge dashboard-monthly-mobile-percent">
+                                        <MobilePercentCell value={m.totals.utileLordo} total={m.totals.incassoTotale}/>
+                                    </div>
+                                    <div><span className=""><MobileMoneyCell value={m.totals.utileNetto}/></span></div>
+                                    <div><MobileMoneyCell value={m.totals.utileFiscale}/></div>
+                                </div>
+                                <div className="dashboard-monthly-mobile-secondary">
+                                    <div>
+                                        <span>Entrate</span>
+                                        <Link href={periodLink('/incomes', [{year: m.year, month: m.month}])}>
+                                            <MobileMoneyCellNoFormat value={m.totals.incassoTotale}/>
+                                        </Link>
+                                    </div>
+                                    <div>
+                                        <span>Uscite</span>
+                                        <Link href={periodLink('/expenses', [{year: m.year, month: m.month}])}>
+                                            <MobileMoneyCellNoFormat value={m.totals.speseTotali}/>
+                                        </Link>
+                                    </div>
+                                    <div>
+                                        <span>Entrate n.f.</span>
+                                        <div className="dashboard-monthly-mobile-badge">
+                                            <Link href={periodLink('/incomes', [{
+                                                year: m.year,
+                                                month: m.month
+                                            }], {fiscal: 'no'})}>
+                                                <MobilePercentCell value={m.totals.incassoNonFiscale} total={m.totals.incassoTotale}/>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span>Spese n.f.</span>
+                                        <div className="dashboard-monthly-mobile-badge"><Link
+                                            href={periodLink('/expenses', [{
+                                                year: m.year,
+                                                month: m.month
+                                            }], {declared: 'no'})}>
+                                            <MobilePercentCell value={m.totals.usciteNonFiscali}
+                                                               total={m.totals.speseTotali}
+                                                               tone={nonFiscalExpensePercentTone(m.totals.usciteNonFiscali, m.totals.speseTotali)}/>
+                                        </Link></div>
+                                    </div>
+                                </div>
+                            </div>)}
+                    </div>
+                </div>
+            </div>
+
+            <div className="dashboard-report-charts">
+                <div className="dashboard-insights-grid">
+                    <CashScheduleChart items={cashSchedule} year={report.annualYear}/>
+                    <VatSituationCard months={completedReportMonths} year={report.annualYear}/>
+                </div>
             </div>
         </div>
-        </div>
-
-        <div className="dashboard-report-charts">
-            <div className="dashboard-insights-grid">
-                <MonthlyEconomicTrendChart data={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-                <CashScheduleChart items={cashSchedule} year={report.annualYear}/>
-                <VatSituationCard months={nonFiscalExpenseChartMonths} year={report.annualYear}/>
-            </div>
-        </div>
-
-        {/*<div className="dashboard-actions toolbar-card dashboard-actions-bottom">*/}
-        {/*    <div>*/}
-        {/*        <h2>Azioni rapide</h2>*/}
-        {/*        <p className="muted">Inserisci rapidamente una nuova operazione.</p>*/}
-        {/*    </div>*/}
-        {/*    <div className="actions-row">*/}
-        {/*        <button className="btn btn-lg btn-primary" type="button" data-expense-new>*/}
-        {/*            <span className="btn-icon">＋</span> Spesa*/}
-        {/*        </button>*/}
-        {/*        <Link className="btn btn-lg btn-primary" href="/incomes?new=1"><span className="btn-icon">＋</span> Incasso</Link>*/}
-        {/*        <Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
-        {/*    </div>*/}
-        {/*</div>*/}
     </div>;
 }

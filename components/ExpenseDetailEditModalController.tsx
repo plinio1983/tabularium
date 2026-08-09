@@ -19,12 +19,14 @@ type SupplierOption = {
   defaultExpenseCategoryId?: number | null;
   defaultVatRate?: string | number | null;
 };
+type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: "ACTIVE" | "INACTIVE" };
 
 type EditExpense = {
   id: number;
   receivedDate?: string | Date | null;
   dueDate?: string | Date | null;
   supplierId?: number | null;
+  employeeId?: number | null;
   merchant?: string | null;
   categoryId?: number | null;
   description?: string | null;
@@ -37,7 +39,11 @@ type EditExpense = {
   invoiceStatus?: string | null;
   isDeclared?: boolean;
   isRecurring?: boolean;
-  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION";
+  expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION" | "PAYROLL";
+  payrollNetAmount?: string | number | null;
+  payrollExtraCompensation?: string | number | null;
+  payrollGrossAmount?: string | number | null;
+  payrollEmployerCost?: string | number | null;
   affectsFiscalProfit?: boolean;
   notes?: string | null;
   attachments?: Array<{
@@ -61,15 +67,22 @@ type Props = {
   banks: Option[];
   paymentMethods: Option[];
   suppliers: SupplierOption[];
+  employees?: EmployeeOption[];
   returnTo: string;
 };
 
-export default function ExpenseDetailEditModalController({ categories, banks, paymentMethods, suppliers, returnTo }: Props) {
+export default function ExpenseDetailEditModalController({ categories, banks, paymentMethods, suppliers, employees = [], returnTo }: Props) {
+  const [availableEmployees, setAvailableEmployees] = useState(employees);
   const [expense, setExpense] = useState<EditExpense | null>(null);
   const [mode, setMode] = useState<"edit" | "copy" | "payment" | "payment-edit" | "attachments">("edit");
   const [targetPaymentId, setTargetPaymentId] = useState<number | null>(null);
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (availableEmployees.length) return;
+    fetch('/api/employees', {cache: 'no-store'}).then(response => response.ok ? response.json() : []).then(setAvailableEmployees).catch(() => undefined);
+  }, [availableEmployees.length]);
 
   async function openExpense(
     id: number,
@@ -177,6 +190,7 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
           banks={banks}
           paymentMethods={paymentMethods}
           suppliers={suppliers}
+          employees={availableEmployees}
           initialExpense={mode === "copy" ? {...expense, attachments: []} : expense}
           initialMobileStep={mode === "payment" || mode === "payment-edit" ? 4 : mode === "attachments" ? 7 : 1}
           mobileStepOffset={mode === "copy" ? 0 : 1}

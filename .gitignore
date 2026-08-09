@@ -32,6 +32,8 @@ prisma/migrations/*
 !prisma/migrations/20260807130000_recurring_expense_exclusions/migration.sql
 !prisma/migrations/20260807160000_supplier_default_vat_rate/
 !prisma/migrations/20260807160000_supplier_default_vat_rate/migration.sql
+!prisma/migrations/20260808190000_expense_payroll/
+!prisma/migrations/20260808190000_expense_payroll/migration.sql
 !prisma/migrations/20260728120000_multi_company_accounting/
 !prisma/migrations/20260728120000_multi_company_accounting/migration.sql
 !prisma/migrations/20260728183000_supplier_swift/

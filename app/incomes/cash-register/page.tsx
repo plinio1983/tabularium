@@ -2,8 +2,9 @@ import {redirect} from 'next/navigation';
 import CashRegister from '@/components/CashRegister';
 import {requireWorkspace} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
-import {ensureWorkspaceDefaults, orderPaymentMethods} from '@/lib/workspace-defaults';
+import {ensureWorkspaceDefaults, orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {dateInputInTimeZone} from '@/lib/company-time';
+import {pathFromUrl} from '@/lib/redirect';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,8 +21,9 @@ export default async function CashRegisterPage({searchParams}: {
     const params = (await searchParams) ?? {};
     const editId = Number(paramValue(params, 'editId')) || null;
     const copyId = Number(paramValue(params, 'copyId')) || null;
+    const returnTo = pathFromUrl(paramValue(params, 'returnTo'), '/incomes/cash-register/receipts');
     const sourceId = editId ?? copyId;
-    const [workspace, methods, channels, sourceReceipt] = await Promise.all([
+    const [workspace, methods, banks, channels, sourceReceipt, bankRules] = await Promise.all([
         prisma.workspace.findUnique({
             where: {id: current.workspace.id},
             select: {cashRegisterSalesChannelId: true, cashRegisterPrimaryPaymentMethodId: true}
@@ -33,13 +35,18 @@ export default async function CashRegisterPage({searchParams}: {
                 kind: {in: ['INCOME', 'BOTH']}
             }
         }),
+        prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.incomeSalesChannel.findMany({
             where: {workspaceId: current.workspace.id},
             orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]
         }),
         sourceId ? prisma.income.findFirst({
             where: {id: sourceId, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'}
-        }) : null
+        }) : null,
+        prisma.cashRegisterBankRule.findMany({
+            where: {workspaceId: current.workspace.id},
+            select: {paymentMethodId: true, salesChannelId: true, bankId: true}
+        })
     ]);
     if (sourceId && !sourceReceipt) redirect('/incomes/cash-register/receipts');
     if (!workspace?.cashRegisterSalesChannelId || !methods.length || !channels.length) {
@@ -50,8 +57,14 @@ export default async function CashRegisterPage({searchParams}: {
             id: method.id,
             name: method.name,
             icon: method.icon,
-            systemRole: method.systemRole
+            systemRole: method.systemRole,
+            defaultBankId: method.cashRegisterDefaultBankId,
+            bankRules: bankRules.filter(rule => rule.paymentMethodId === method.id).map(rule => ({
+                salesChannelId: rule.salesChannelId,
+                bankId: rule.bankId
+            }))
         }))}
+        banks={orderBanks(banks).map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))}
         channels={channels.map(channel => ({
             id: channel.id,
             name: channel.name,
@@ -61,6 +74,7 @@ export default async function CashRegisterPage({searchParams}: {
         primaryMethodId={workspace.cashRegisterPrimaryPaymentMethodId}
         initialDate={dateInputInTimeZone(current.company.timeZone, sourceReceipt?.creditDate ?? new Date())}
         mode={editId ? 'edit' : copyId ? 'copy' : 'create'}
+        returnTo={returnTo}
         initialReceipt={sourceReceipt ? {
             id: sourceReceipt.id,
             amount: Number(sourceReceipt.amount),
@@ -68,6 +82,7 @@ export default async function CashRegisterPage({searchParams}: {
             vatRate: Number(sourceReceipt.vatRate),
             salesChannelId: sourceReceipt.salesChannelId,
             paymentMethodId: sourceReceipt.paymentMethodId,
+            bankId: sourceReceipt.creditBankId,
             description: sourceReceipt.description
         } : null}
     />;

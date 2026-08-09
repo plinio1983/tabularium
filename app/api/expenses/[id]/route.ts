@@ -8,18 +8,25 @@ import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/
 import { AttachmentValidationError, deleteExpenseAttachmentFile, normalizeExpenseAttachmentType, saveExpenseAttachmentFiles } from '@/lib/attachments';
 import { writeAuditLog } from '@/lib/audit';
 import {yearMonthInTimeZone} from '@/lib/company-time';
+import {resolveExpenseAmounts} from '@/lib/payroll-expense';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
+const OptionalMoneyFromForm = z.preprocess(value => value === '' || value == null ? undefined : typeof value === 'string' ? value.replace(',', '.') : value, z.coerce.number().nonnegative().optional());
 
 const ExpenseSchema = z.object({
   receivedDate: z.string().optional(),
   dueDate: z.string().optional(),
   merchant: z.string().optional().default(''),
   supplierId: z.coerce.number().optional().nullable(),
+  employeeId: z.coerce.number().optional().nullable(),
   categoryId: z.coerce.number().optional().nullable(),
   description: z.string().min(1),
   amount: z.coerce.number().nonnegative(),
-  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT', 'TAX_CONTRIBUTION']).default('STANDARD'),
+  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT', 'TAX_CONTRIBUTION', 'PAYROLL']).default('STANDARD'),
+  payrollNetAmount: OptionalMoneyFromForm,
+  payrollExtraCompensation: OptionalMoneyFromForm,
+  payrollGrossAmount: OptionalMoneyFromForm,
+  payrollEmployerCost: OptionalMoneyFromForm,
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
   affectsFiscalProfit: BooleanFromForm.default(false),
@@ -158,12 +165,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
   const isVatSettlement = existing.expenseType === 'VAT_SETTLEMENT';
   const isTaxContribution = existing.expenseType === 'TAX_CONTRIBUTION';
-  const invoiceFields = isVatSettlement || isTaxContribution
+  const isPayroll = existing.expenseType === 'PAYROLL';
+  const invoiceFields = isVatSettlement || isTaxContribution || isPayroll
     ? { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const }
     : normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data.billingPeriod, current.company.timeZone);
   const payments = await resolvePaymentInputs(parsePayments(formData), current.workspace.id, isVatSettlement);
-  let supplierRef;
+  let supplierRef: {id: number; businessName: string} | null = null;
+  let employeeRef: {id: number; firstName: string; lastName: string} | null = null;
   let configuredCategoryId: number | null = null;
   try {
     if (isVatSettlement) {
@@ -174,6 +183,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       if (!workspace?.vatSettlementCategoryId || !systemSupplier) throw new Error('Configurazione Saldo IVA incompleta');
       configuredCategoryId = await resolveCategoryId(workspace.vatSettlementCategoryId, current.workspace.id);
       supplierRef = { id: systemSupplier.id, businessName: systemSupplier.businessName };
+    } else if (isPayroll) {
+      employeeRef = data.employeeId ? await prisma.employee.findFirst({
+        where: {id: data.employeeId, workspaceId: current.workspace.id, companyId: current.company.id},
+        select: {id: true, firstName: true, lastName: true}
+      }) : null;
+      if (!employeeRef) throw new Error('Dipendente non valido');
     } else supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
   } catch (error) {
     if (error instanceof SupplierReferenceError) {
@@ -183,7 +198,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     throw error;
   }
   const categoryId = isVatSettlement ? configuredCategoryId : await resolveCategoryId(data.categoryId, current.workspace.id);
+  const {amount: expenseAmount, payrollNetAmount, payrollExtraCompensation} = resolveExpenseAmounts({isPayroll, amount: data.amount, payrollNetAmount: data.payrollNetAmount, payrollExtraCompensation: data.payrollExtraCompensation});
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
+  if (isPayroll && paidAmount > expenseAmount + 0.005) throw new Error('I pagamenti non possono superare il netto da corrispondere');
   const firstPayment = payments[0];
 
   const nextIsRecurring = isVatSettlement ? false : (existing.isRecurring ? data.isRecurring : false);
@@ -218,15 +235,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     data: {
       receivedDate: data.receivedDate ? new Date(data.receivedDate) : null,
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
-      merchant: supplierRef.businessName,
-      supplierId: supplierRef.id,
+      merchant: isPayroll ? `${employeeRef!.lastName} ${employeeRef!.firstName}` : supplierRef!.businessName,
+      supplierId: supplierRef?.id ?? null,
+      employeeId: employeeRef?.id ?? null,
       categoryId,
       description: data.description || null,
-      amount: data.amount,
+      amount: expenseAmount,
+      payrollNetAmount,
+      payrollExtraCompensation,
+      payrollGrossAmount: isPayroll ? data.payrollGrossAmount ?? null : null,
+      payrollEmployerCost: isPayroll ? data.payrollEmployerCost ?? null : null,
       paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
-      vatRate: isVatSettlement || !invoiceFields.isDeclared ? 0 : data.vatRate,
+      vatRate: isVatSettlement || isPayroll || !invoiceFields.isDeclared ? 0 : data.vatRate,
       isDeclared: invoiceFields.isDeclared,
-      affectsFiscalProfit: isTaxContribution ? data.affectsFiscalProfit : false,
+      affectsFiscalProfit: isPayroll ? true : isTaxContribution ? data.affectsFiscalProfit : false,
       isRecurring: nextIsRecurring,
       hasElectronicInvoice: invoiceFields.hasElectronicInvoice,
       invoiceStatus: invoiceFields.invoiceStatus,
@@ -262,7 +284,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     action: 'UPDATE',
     entityType: 'Expense',
     entityId: expenseId,
-    metadata: { amount: data.amount, expenseType: data.expenseType, paymentStatus: data.paymentStatus },
+    metadata: { amount: expenseAmount, expenseType: data.expenseType, paymentStatus: data.paymentStatus },
     request
   });
 

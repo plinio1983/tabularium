@@ -14,7 +14,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   const expense = await prisma.expense.findFirst({
     where: { id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id },
-    include: { payments: { orderBy: { id: 'asc' } }, attachments: {orderBy: {id: 'asc'}}, supplier: true }
+    include: { payments: { orderBy: { id: 'asc' } }, attachments: {orderBy: {id: 'asc'}}, supplier: true, employee: true }
   });
 
   if (!expense) {
@@ -28,9 +28,14 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       dueDate: expense.dueDate,
       merchant: expense.merchant,
       supplierId: expense.supplierId,
+      employeeId: expense.employeeId,
       categoryId: expense.categoryId,
       description: expense.description,
       amount: expense.amount.toString(),
+      payrollNetAmount: expense.payrollNetAmount?.toString() ?? null,
+      payrollExtraCompensation: expense.payrollExtraCompensation?.toString() ?? null,
+      payrollGrossAmount: expense.payrollGrossAmount?.toString() ?? null,
+      payrollEmployerCost: expense.payrollEmployerCost?.toString() ?? null,
       expenseType: expense.expenseType,
       vatRate: expense.vatRate.toString(),
       paymentStatus: expense.paymentStatus,

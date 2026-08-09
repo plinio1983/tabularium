@@ -1,8 +1,8 @@
 'use client';
 
+import Link from 'next/link';
+import {usePathname, useSearchParams} from 'next/navigation';
 import type { ReactNode } from 'react';
-
-export const expenseNewEventName = 'tabularium:expense-new';
 
 export default function ExpenseNewTriggerButton({
   className,
@@ -13,14 +13,18 @@ export default function ExpenseNewTriggerButton({
   children: ReactNode;
   floatingLabel?: string;
 }) {
-  return <button
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const query = new URLSearchParams(searchParams.toString());
+  query.set('new', '1');
+
+  return <Link
     className={className}
-    type="button"
+    href={`${pathname}?${query}`}
     data-bulk-new
     data-expense-new
     data-floating-label={floatingLabel}
-    onClick={() => window.dispatchEvent(new CustomEvent(expenseNewEventName))}
   >
     {children}
-  </button>;
+  </Link>;
 }

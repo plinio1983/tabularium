@@ -167,7 +167,8 @@ export default function PaymentCreditEditRow({
                 <option value="INCOME">Incassi</option>
                 <option value="EXPENSE">Spese</option>
             </select></label> : null}
-            {kind ? <fieldset className="payment-credit-default-fields">
+          <label className="hidden-md-down">&nbsp;</label>
+          {kind ? <fieldset className="payment-credit-default-fields">
                 <legend>Predefinito nei form</legend>
                 <div className="payment-credit-default-switch-row switch-toggle-field switch-inline wide">
                     <div><strong>Spese</strong><span>Preseleziona questo metodo nei nuovi pagamenti.</span></div>
@@ -187,7 +188,7 @@ export default function PaymentCreditEditRow({
             {cashRegister ? <fieldset className="payment-credit-cash-register-fields">
                 <legend>Uso nel registratore di cassa</legend>
                 <div className="cash-register-setting-intro">
-                    <strong>{cashRegister.cash ? 'Pagamento Cash' : 'Disponibilità del metodo'}</strong>
+                    <small>{cashRegister.cash ? 'Pagamento Cash' : 'Disponibilità del metodo'}</small>
                     <span>{cashRegister.cash
                         ? 'Questo metodo è sempre associato al canale di accredito Cassa.'
                         : 'Decidi se questo metodo può essere scelto durante una vendita da banco.'}</span>
@@ -198,10 +199,10 @@ export default function PaymentCreditEditRow({
                         <span>{cashRegisterEnabled ? 'Il metodo compare tra le opzioni di pagamento.' : 'Il metodo non compare nel registratore.'}</span>
                     </div>
                     <label className="switch" aria-label="Disponibile nel registratore">
+                        {/*<span>{cashRegisterEnabled ? 'Attivo' : 'Non attivo'}</span>*/}
                         <input type="checkbox" name="cashRegisterEnabled" checked={cashRegisterEnabled}
                                onChange={event => setRegisterAvailability(event.currentTarget.checked)}/>
                         <span className="slider"/>
-                        <span>{cashRegisterEnabled ? 'Attivo' : 'Non attivo'}</span>
                     </label>
                 </div>
                 {cashRegisterEnabled && !cashRegister.cash ? <>
@@ -220,10 +221,10 @@ export default function PaymentCreditEditRow({
                             <span>Mostra questo metodo come pulsante diretto insieme a Cash.</span>
                         </div>
                         <label className="switch" aria-label="Mostra come pagamento rapido">
+                            <small>{cashRegisterPrimary ? 'Visibile' : 'Nel menu'}</small>
                             <input type="checkbox" name="cashRegisterPrimary" checked={cashRegisterPrimary}
                                    onChange={event => setCashRegisterPrimary(event.currentTarget.checked)}/>
                             <span className="slider"/>
-                            <span>{cashRegisterPrimary ? 'Visibile' : 'Nel menu'}</span>
                         </label>
                     </div>
                 </> : null}

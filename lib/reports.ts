@@ -28,6 +28,13 @@ function periodKey(year: number, month: number) {
   return year * 12 + month;
 }
 
+export function completedMonthCountForYear(year: number, now = new Date(), timeZone = DEFAULT_COMPANY_TIME_ZONE) {
+  const current = yearMonthInTimeZone(timeZone, now);
+  if (year < current.year) return 12;
+  if (year > current.year) return 0;
+  return Math.max(0, current.month - 1);
+}
+
 function periodFromKey(key: number) {
   const year = Math.floor((key - 1) / 12);
   return { year, month: key - year * 12 };
@@ -72,13 +79,6 @@ function incomeMatchesPeriod(income: any, year: number, month: number) {
   if (income.isCredited) return false;
   const dueDate = income.dueDate ? new Date(income.dueDate) : null;
   return Boolean(dueDate && dueDate.getUTCFullYear() === year && dueDate.getUTCMonth() + 1 === month);
-}
-
-function incomeMatchesYear(income: any, year: number) {
-  if (Number(income.billingYear) === year) return true;
-  if (income.isCredited) return false;
-  const dueDate = income.dueDate ? new Date(income.dueDate) : null;
-  return Boolean(dueDate && dueDate.getUTCFullYear() === year);
 }
 
 function periodRecordKey(record: any, kind: 'income' | 'expense') {
@@ -255,6 +255,8 @@ export async function getAccountingDashboardReport(
   const currentPeriod = yearMonthInTimeZone(timeZone, now);
   const currentYear = currentPeriod.year;
   const currentMonth = currentPeriod.month;
+  const annualCompletedThroughMonth = completedMonthCountForYear(annualYear, now, timeZone);
+  const reportCompletedThroughMonth = completedMonthCountForYear(reportYear, now, timeZone);
   const fiscalMonthPeriods = [selectedMonth ?? { year: currentYear, month: currentMonth }];
   const fiscalQuarterPeriods = selectedQuarter
     ? fiscalQuarterMonthsByIndex(selectedQuarter.year, selectedQuarter.quarterIndex)
@@ -279,11 +281,12 @@ export async function getAccountingDashboardReport(
     return { year: reportYear, month, totals: summarizeRecords(incomes, expenses, [{ year: reportYear, month }], {timeZone}) };
   });
 
-  const yearlyIncomes = yearIncomes.filter(income => incomeMatchesYear(income, annualYear));
-  const yearlyExpenses = yearExpenses.filter(expense => expense.year === annualYear);
-  const totals = summarizeRecords(yearlyIncomes, yearlyExpenses, Array.from({ length: 12 }, (_, index) => ({ year: annualYear, month: index + 1 })), {timeZone});
+  const annualCompletedPeriods = Array.from({ length: annualCompletedThroughMonth }, (_, index) => ({ year: annualYear, month: index + 1 }));
+  const yearlyIncomes = yearIncomes.filter(income => annualCompletedPeriods.some(period => incomeMatchesPeriod(income, period.year, period.month)));
+  const yearlyExpenses = yearExpenses.filter(expense => expense.year === annualYear && expense.month <= annualCompletedThroughMonth);
+  const totals = summarizeRecords(yearlyIncomes, yearlyExpenses, annualCompletedPeriods, {timeZone});
 
-  const reportYearExpenses = yearExpenses.filter(expense => expense.year === reportYear);
+  const reportYearExpenses = yearExpenses.filter(expense => expense.year === reportYear && expense.month <= reportCompletedThroughMonth);
   const categoryTotalsMap = new Map<string, { name: string; code: string; total: number }>();
   for (const expense of reportYearExpenses) {
     const name = expense.category?.name ?? 'Senza categoria';
@@ -321,6 +324,8 @@ export async function getAccountingDashboardReport(
   return {
     year: reportYear,
     annualYear,
+    annualCompletedThroughMonth,
+    reportCompletedThroughMonth,
     currentFiscalMonth: { periods: fiscalMonthPeriods, totals: currentFiscalMonth },
     currentFiscalQuarter: { periods: fiscalQuarterPeriods, totals: currentFiscalQuarter },
     months,

@@ -2124,6 +2124,7 @@ table th, table td {
   justify-content: space-between;
   min-height: 54px;
   gap: 16px;
+  min-width: 0;
 }
 
 .form .switch-toggle-field.switch-inline.push-down,

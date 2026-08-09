@@ -61,20 +61,21 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const encodedReturnTo = encodeURIComponent(returnTo);
   const currentDetailReturnTo = `/expenses/${id}?returnTo=${encodedReturnTo}`;
   const encodedCurrentDetailReturnTo = encodeURIComponent(currentDetailReturnTo);
-  const [expense, categories, banks, paymentMethods, suppliers] = await Promise.all([
+  const [expense, categories, banks, paymentMethods, suppliers, employees] = await Promise.all([
     prisma.expense.findFirst({
       where: { id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id },
-      include: { category: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } }, attachments: true }
+      include: { category: true, supplier: true, employee: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } }, attachments: true }
     }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 }),
+    prisma.employee.findMany({where: {workspaceId: current.workspace.id, companyId: current.company.id}, orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]})
   ]);
 
   if (!expense) notFound();
 
-  const supplierName = expense.supplier.businessName;
+  const supplierName = expense.supplier?.businessName ?? expense.merchant;
   const orderedBanks = orderBanks(banks);
   const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
 
@@ -83,7 +84,8 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
   const amount = Number(expense.amount.toString());
   const isVatSettlement = expense.expenseType === 'VAT_SETTLEMENT';
   const isTaxContribution = expense.expenseType === 'TAX_CONTRIBUTION';
-  const isNoVatExpense = isVatSettlement || isTaxContribution;
+  const isPayroll = expense.expenseType === 'PAYROLL';
+  const isNoVatExpense = isVatSettlement || isTaxContribution || isPayroll;
   const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
   const residual = Math.max(0, amount - paid);
   const categoryClassName = categoryTone(expense.category);
@@ -121,6 +123,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
       banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null, systemRole: s.systemRole }))}
+      employees={employees.map(employee => ({id: employee.id, firstName: employee.firstName, lastName: employee.lastName, employeeCode: employee.employeeCode, status: employee.status}))}
       returnTo={currentDetailReturnTo}
     />
     <ActionFeedbackBanner
@@ -151,13 +154,13 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <div className="record-detail-title-block">
               <p className="record-detail-kicker">
                 <span>Spesa #{expense.id}</span>
-                <span className={isVatSettlement ? 'badge vat-settlement-expense-badge' : isTaxContribution ? 'badge tone-neutral' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : isTaxContribution ? 'Imposte - non IVA' : expense.isRecurring ? 'R' : 'S'}</span>
+                <span className={isVatSettlement ? 'badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge tone-neutral' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : isTaxContribution ? 'Imposte - non IVA' : isPayroll ? 'Busta paga' : expense.isRecurring ? 'R' : 'S'}</span>
               </p>
               <div className="expense-detail-title">
                   <strong>{expense.description}</strong>
               </div>
               <div className="record-detail-meta-line">
-                  <strong className="text-accent">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</strong>
+                  <strong className="text-accent">{isPayroll && expense.employeeId ? <Link href={`/employees/${expense.employeeId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</strong>
                   <span>{expense.category ? categoryLabel(expense.category, expense.category.name) : 'Senza categoria'}</span>
                   {/*<strong>{fiscalBadge(expense.isDeclared)}</strong>*/}
               </div>
@@ -166,7 +169,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
 
           <aside className="record-detail-amount-panel">
             <div className="record-detail-amount-panel-header-row">
-              <span className="record-detail-amount-panel-header">{isVatSettlement ? 'Importo interamente IVA' : isTaxContribution ? 'Importo versamento' : 'IVA inclusa'} </span>
+              <span className="record-detail-amount-panel-header">{isVatSettlement ? 'Importo interamente IVA' : isTaxContribution ? 'Importo versamento' : isPayroll ? 'Netto da corrispondere' : 'IVA inclusa'} </span>
               {!isNoVatExpense ? <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span> : null}
             </div>
             <strong>{euro(expense.amount.toString())}</strong>
@@ -219,18 +222,24 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <span>Fiscale</span>
             <strong>{fiscalLabel(expense.isDeclared)}</strong>
           </div> : null}
-          {isTaxContribution ? <div>
+          {isTaxContribution || isPayroll ? <div>
             <span>Utile fiscale</span>
-            <strong>{expense.affectsFiscalProfit ? 'Incide' : 'Non incide'}</strong>
+            <strong>{isPayroll || expense.affectsFiscalProfit ? 'Incide' : 'Non incide'}</strong>
           </div> : null}
           <div>
             <span>IVA</span>
-            <strong>{isVatSettlement ? euro(paidVat) : isTaxContribution ? 'Non applicabile' : vatStyle.label}</strong>
+            <strong>{isVatSettlement ? euro(paidVat) : isTaxContribution || isPayroll ? 'Non applicabile' : vatStyle.label}</strong>
           </div>
           <div>
-            <span>Fornitore</span>
-            <strong className="">{expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</strong>
+            <span>{isPayroll ? 'Dipendente' : 'Fornitore'}</span>
+            <strong className="">{isPayroll && expense.employeeId ? <Link href={`/employees/${expense.employeeId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</strong>
           </div>
+          {isPayroll ? <>
+            <div><span>Netto cedolino</span><strong>{euro(expense.payrollNetAmount?.toString() ?? '0')}</strong></div>
+            <div><span>Compensi extra</span><strong>{euro(expense.payrollExtraCompensation?.toString() ?? '0')}</strong></div>
+            <div><span>Lordo cedolino · informativo</span><strong>{expense.payrollGrossAmount != null ? euro(expense.payrollGrossAmount.toString()) : 'Non indicato'}</strong></div>
+            <div><span>Costo aziendale · informativo</span><strong>{expense.payrollEmployerCost != null ? euro(expense.payrollEmployerCost.toString()) : 'Non indicato'}</strong></div>
+          </> : null}
           <div>
             <span>Descrizione</span>
             <strong className="">{expense.description ?? 'Spesa senza descrizione'}</strong>

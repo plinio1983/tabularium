@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { categoryIconOptions } from '@/lib/workspace-defaults';
+import { categoryIconOptions, defaultExpenseCategoryCode } from '@/lib/workspace-defaults';
 import { writeAuditLog } from '@/lib/audit';
 
 const categoriesPath = '/settings/categories/expenses';
@@ -66,6 +66,9 @@ export async function updateCategoryAction(formData: FormData) {
     where: { id, workspaceId: current.workspace.id }
   });
   if (!category) categoriesError('not_found');
+  if (category.code === defaultExpenseCategoryCode && code !== defaultExpenseCategoryCode) {
+    categoriesError('default_category_protected');
+  }
 
   const duplicate = await prisma.expenseCategory.findFirst({
     where: {
@@ -96,6 +99,7 @@ export async function deleteCategoryAction(formData: FormData) {
     include: { _count: { select: { expenses: true, recurringExpenses: true } } }
   });
   if (!category) categoriesError('not_found');
+  if (category.code === defaultExpenseCategoryCode) categoriesError('default_category_protected');
 
   const configuredWorkspace = await prisma.workspace.findFirst({
     where: { id: current.workspace.id, vatSettlementCategoryId: id },

@@ -8,18 +8,25 @@ import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/
 import { AttachmentValidationError, saveExpenseAttachmentFiles } from '@/lib/attachments';
 import { writeAuditLog } from '@/lib/audit';
 import {yearMonthInTimeZone} from '@/lib/company-time';
+import {resolveExpenseAmounts} from '@/lib/payroll-expense';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
+const OptionalMoneyFromForm = z.preprocess(value => value === '' || value == null ? undefined : typeof value === 'string' ? value.replace(',', '.') : value, z.coerce.number().nonnegative().optional());
 
 const ExpenseSchema = z.object({
   receivedDate: z.string().optional(),
   dueDate: z.string().optional(),
   merchant: z.string().optional().default(''),
   supplierId: z.coerce.number().optional().nullable(),
+  employeeId: z.coerce.number().optional().nullable(),
   categoryId: z.coerce.number().optional().nullable(),
   description: z.string().min(1),
   amount: z.coerce.number().nonnegative(),
-  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT', 'TAX_CONTRIBUTION']).default('STANDARD'),
+  expenseType: z.enum(['STANDARD', 'VAT_SETTLEMENT', 'TAX_CONTRIBUTION', 'PAYROLL']).default('STANDARD'),
+  payrollNetAmount: OptionalMoneyFromForm,
+  payrollExtraCompensation: OptionalMoneyFromForm,
+  payrollGrossAmount: OptionalMoneyFromForm,
+  payrollEmployerCost: OptionalMoneyFromForm,
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
   affectsFiscalProfit: BooleanFromForm.default(false),
@@ -140,7 +147,7 @@ export async function GET() {
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
   const expenses = await prisma.expense.findMany({
     where: { workspaceId: current.workspace.id, companyId: current.company.id },
-    include: { category: true, company: true, supplier: true, payments: { include: { bank: true, paymentMethod: true } }, attachments: true },
+    include: { category: true, company: true, supplier: true, employee: true, payments: { include: { bank: true, paymentMethod: true } }, attachments: true },
     orderBy: { id: 'desc' },
     take: 500
   });
@@ -158,12 +165,14 @@ export async function POST(request: Request) {
   const data = ExpenseSchema.parse(raw);
   const isVatSettlement = data.expenseType === 'VAT_SETTLEMENT';
   const isTaxContribution = data.expenseType === 'TAX_CONTRIBUTION';
-  const invoiceFields = isVatSettlement || isTaxContribution
+  const isPayroll = data.expenseType === 'PAYROLL';
+  const invoiceFields = isVatSettlement || isTaxContribution || isPayroll
     ? { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const }
     : normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data, current.company.timeZone);
   const payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id, isVatSettlement);
-  let supplierRef;
+  let supplierRef: {id: number; businessName: string} | null = null;
+  let employeeRef: {id: number; firstName: string; lastName: string} | null = null;
   let configuredCategoryId: number | null = null;
   try {
     if (isVatSettlement) {
@@ -174,6 +183,12 @@ export async function POST(request: Request) {
       if (!workspace?.vatSettlementCategoryId || !systemSupplier) throw new Error('Configura categoria e fornitore di sistema per il Saldo IVA');
       configuredCategoryId = await resolveCategoryId(workspace.vatSettlementCategoryId, current.workspace.id);
       supplierRef = { id: systemSupplier.id, businessName: systemSupplier.businessName };
+    } else if (isPayroll) {
+      employeeRef = data.employeeId ? await prisma.employee.findFirst({
+        where: {id: data.employeeId, workspaceId: current.workspace.id, companyId: current.company.id, status: 'ACTIVE'},
+        select: {id: true, firstName: true, lastName: true}
+      }) : null;
+      if (!employeeRef) throw new Error('Dipendente non valido');
     } else supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
   } catch (error) {
     if (error instanceof SupplierReferenceError) {
@@ -184,7 +199,9 @@ export async function POST(request: Request) {
     throw error;
   }
   const categoryId = isVatSettlement ? configuredCategoryId : await resolveCategoryId(data.categoryId, current.workspace.id);
+  const {amount: expenseAmount, payrollNetAmount, payrollExtraCompensation} = resolveExpenseAmounts({isPayroll, amount: data.amount, payrollNetAmount: data.payrollNetAmount, payrollExtraCompensation: data.payrollExtraCompensation});
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
+  if (isPayroll && paidAmount > expenseAmount + 0.005) throw new Error('I pagamenti non possono superare il netto da corrispondere');
   let attachments;
   try {
     attachments = formData ? await saveExpenseAttachmentFiles(formData.getAll('attachments'), 0, formData.getAll('attachmentTypes')) : [];
@@ -203,16 +220,21 @@ export async function POST(request: Request) {
     companyId: current.company.id,
     receivedDate: data.receivedDate ? new Date(data.receivedDate) : null,
     dueDate: data.dueDate ? new Date(data.dueDate) : null,
-    merchant: supplierRef.businessName,
-    supplierId: supplierRef.id,
+    merchant: isPayroll ? `${employeeRef!.lastName} ${employeeRef!.firstName}` : supplierRef!.businessName,
+    supplierId: supplierRef?.id ?? null,
+    employeeId: employeeRef?.id ?? null,
     categoryId,
     description: data.description || null,
-    amount: data.amount,
+    amount: expenseAmount,
+    payrollNetAmount,
+    payrollExtraCompensation,
+    payrollGrossAmount: isPayroll ? data.payrollGrossAmount ?? null : null,
+    payrollEmployerCost: isPayroll ? data.payrollEmployerCost ?? null : null,
     expenseType: data.expenseType,
     paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
-    vatRate: isVatSettlement || !invoiceFields.isDeclared ? 0 : data.vatRate,
+    vatRate: isVatSettlement || isPayroll || !invoiceFields.isDeclared ? 0 : data.vatRate,
     isDeclared: invoiceFields.isDeclared,
-    affectsFiscalProfit: isTaxContribution ? data.affectsFiscalProfit : false,
+    affectsFiscalProfit: isPayroll ? true : isTaxContribution ? data.affectsFiscalProfit : false,
     isRecurring: false,
     hasElectronicInvoice: invoiceFields.hasElectronicInvoice,
     invoiceStatus: invoiceFields.invoiceStatus,
@@ -241,7 +263,7 @@ export async function POST(request: Request) {
     action: 'CREATE',
     entityType: 'Expense',
     entityId: expense.id,
-    metadata: { amount: data.amount, expenseType: data.expenseType, paymentStatus: data.paymentStatus },
+    metadata: { amount: expenseAmount, expenseType: data.expenseType, paymentStatus: data.paymentStatus },
     request
   });
 

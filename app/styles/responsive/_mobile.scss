@@ -47,7 +47,25 @@
   }
 }
 
+.profitability-summary-reference {
+  max-width: 210px;
+  align-self: flex-end;
+
+  @media (max-width: 760px) {
+    text-align: left;
+  }
+  @media (max-width: 576px) {
+    max-width: 100%;
+    width: 100%;
+    text-align: left;
+  }
+}
+
 @media (max-width: 760px) {
+  .profitability-summary-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .bulk-attachments-modal-backdrop {
     align-items: stretch;
     padding: 0;
@@ -1327,7 +1345,7 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .modal-page-wrap + .app-footer {
+  .app-content:has(> .modal-page-wrap) + .app-footer {
     display: none;
   }
 }
@@ -2665,10 +2683,6 @@
     display: none !important;
   }
 
-  //.app-form-wizard .app-form-wizard-mobile-switch {
-  //  display: flex;
-  //}
-
   .app-form-wizard .app-form-wizard-fiscal-section .toggle-field-wrap {
     display: none;
   }
@@ -2792,14 +2806,6 @@
   .app-form-wizard .recurring-payment-section .recurring-form-section-grid > div {
     width: 100%;
   }
-
-  //.app-form-wizard .expense-fiscal-desktop-control > span,
-  //.app-form-wizard .expense-invoice-desktop-control > span,
-  //.recurring-record-form .recurring-switch-control > span {
-  //  color: #334155;
-  //  font-size: 13px;
-  //  font-weight: 850;
-  //}
 
   .record-review-heading {
     display: flex;
@@ -3902,6 +3908,7 @@
     flex-direction: row;
     align-items: flex-start;
     padding-right: 46px;
+    width: min(680px, 100vw - 36px);
   }
 
   .payment-credit-edit-modal .modal-close-button {
@@ -4332,6 +4339,14 @@
   .cash-register-controls select {
     grid-column: 1 / -1;
     height: 54px;
+  }
+
+  .cash-register-actions.is-edit-mode {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cash-register-actions.is-edit-mode .cash-register-submit {
+    grid-column: 1 / -1;
   }
 
   .cash-register-controls input[type="date"],

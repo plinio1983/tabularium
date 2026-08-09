@@ -56,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           .catch(function () {});
       }
     ` }} />
-    {children}{/* dms-root-suspense-boundary */}
+    <div className="app-content">{children}{/* dms-root-suspense-boundary */}</div>
     <ShellChrome slot="footer" />
     </CompanyTimeZoneProvider>
   </main></body></html>;
