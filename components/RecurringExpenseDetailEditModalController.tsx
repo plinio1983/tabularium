@@ -26,6 +26,7 @@ type EditRecurringExpense = {
   cadence?: string | null;
   dueDay?: number | null;
   dueMonth?: number | null;
+  generationTiming?: string | null;
   isAutomaticPayment?: boolean | null;
   billingPeriodMode?: string | null;
   billingMonth?: number | null;

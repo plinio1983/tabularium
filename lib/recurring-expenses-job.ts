@@ -26,6 +26,27 @@ function startOfDay(date: Date) {
   return copy;
 }
 
+function addDays(date: Date, days: number) {
+  const copy = startOfDay(date);
+  copy.setUTCDate(copy.getUTCDate() + days);
+  return copy;
+}
+
+export function recurringExpenseGenerationDate(dueDateInput: Date, timing = 'FIRST_OF_MONTH') {
+  const dueDate = startOfDay(dueDateInput);
+  if (timing === 'FIRST_OF_MONTH') {
+    return new Date(Date.UTC(dueDate.getUTCFullYear(), dueDate.getUTCMonth(), 1));
+  }
+  const daysBefore: Record<string, number> = {
+    DAYS_7_BEFORE: 7,
+    DAYS_10_BEFORE: 10,
+    DAYS_15_BEFORE: 15,
+    DAYS_30_BEFORE: 30,
+    ON_DUE_DATE: 0
+  };
+  return addDays(dueDate, -(daysBefore[timing] ?? 0));
+}
+
 function addMonths(year: number, month: number, delta: number) {
   const date = new Date(Date.UTC(year, month - 1 + delta, 1));
   return { year: date.getUTCFullYear(), month: date.getUTCMonth() + 1 };
@@ -56,17 +77,18 @@ function isCadenceDue(startDate: Date, dueYear: number, dueMonth: number, cadenc
   return diff % cadenceMonths(cadence) === 0;
 }
 
-function calculateDueDates(recurringExpense: any, todayInput: Date) {
+export function calculateRecurringExpenseDueDates(recurringExpense: any, todayInput: Date) {
   const today = startOfDay(todayInput);
   const startDate = startOfDay(new Date(recurringExpense.startDate));
   const endDate = recurringExpense.endDate ? startOfDay(new Date(recurringExpense.endDate)) : null;
-  const generationEnd = endDate && endDate < today ? endDate : today;
+  const lookAheadEnd = addDays(today, 30);
+  const occurrenceEnd = endDate && endDate < lookAheadEnd ? endDate : lookAheadEnd;
 
-  if (startDate > generationEnd) return [];
+  if (startDate > occurrenceEnd) return [];
 
   const dueDates: Date[] = [];
   const cursorStart = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1));
-  const cursorEnd = new Date(Date.UTC(generationEnd.getUTCFullYear(), generationEnd.getUTCMonth(), 1));
+  const cursorEnd = new Date(Date.UTC(occurrenceEnd.getUTCFullYear(), occurrenceEnd.getUTCMonth(), 1));
 
   for (
     let cursor = cursorStart;
@@ -85,7 +107,8 @@ function calculateDueDates(recurringExpense: any, todayInput: Date) {
     const dueDate = startOfDay(new Date(Date.UTC(dueYear, dueMonth - 1, dueDay)));
 
     if (dueDate < startDate) continue;
-    if (dueDate > generationEnd) continue;
+    if (dueDate > occurrenceEnd) continue;
+    if (recurringExpenseGenerationDate(dueDate, recurringExpense.generationTiming) > today) continue;
 
     dueDates.push(dueDate);
   }
@@ -135,7 +158,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
     try {
       const errorsBefore = result.errors.length;
       const companyToday = startOfDay(new Date(`${dateInputInTimeZone(recurringExpense.company.timeZone, todayInput)}T00:00:00Z`));
-      const dueDates = calculateDueDates(recurringExpense, companyToday);
+      const dueDates = calculateRecurringExpenseDueDates(recurringExpense, companyToday);
       const excludedPeriodKeys = new Set((await prisma.recurringExpenseExclusion.findMany({
         where: {recurringExpenseId: recurringExpense.id},
         select: {periodKey: true}

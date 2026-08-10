@@ -124,9 +124,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
     orderBy: [{ startDate: 'desc' }, { id: 'desc' }]
   });
   const csv = createCsv(
-    ['ID', 'Data inizio', 'Cadenza', 'Giorno scadenza', 'Mese scadenza', 'Fornitore', 'Descrizione', 'Categoria', 'Importo', 'IVA %', 'Fiscale', 'Fattura elettronica', 'Periodo fatturazione', 'Pagamento automatico', 'Metodo pagamento', 'Banca', 'Attiva', 'Note'],
+    ['ID', 'Data inizio', 'Cadenza', 'Giorno scadenza', 'Mese scadenza', 'Generazione spesa', 'Fornitore', 'Descrizione', 'Categoria', 'Importo', 'IVA %', 'Fiscale', 'Fattura elettronica', 'Periodo fatturazione', 'Pagamento automatico', 'Metodo pagamento', 'Banca', 'Attiva', 'Note'],
     records.map(record => [
-      record.id, record.startDate, record.cadence, record.dueDay, record.dueMonth, record.supplier?.businessName ?? record.merchant,
+      record.id, record.startDate, record.cadence, record.dueDay, record.dueMonth, record.generationTiming, record.supplier?.businessName ?? record.merchant,
       record.description, record.category?.name, decimal(record.amount), decimal(record.vatRate), record.isDeclared,
       record.hasElectronicInvoice, record.billingPeriodMode, record.isAutomaticPayment, record.paymentMethod?.name,
       record.bank?.name, record.isActive, record.notes

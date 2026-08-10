@@ -25,9 +25,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     expense: {
       id: expense.id,
       startDate: expense.startDate,
+      endDate: expense.endDate,
+      archivedAt: expense.archivedAt,
       cadence: expense.cadence,
       dueDay: expense.dueDay,
       dueMonth: expense.dueMonth,
+      generationTiming: expense.generationTiming,
       isAutomaticPayment: expense.isAutomaticPayment,
       billingPeriodMode: expense.billingPeriodMode,
       billingMonth: expense.billingMonth,

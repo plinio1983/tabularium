@@ -43,6 +43,7 @@ type InitialRecurringExpense = {
     cadence?: string | null;
     dueDay?: number | null;
     dueMonth?: number | null;
+    generationTiming?: string | null;
     isAutomaticPayment?: boolean | null;
     billingPeriodMode?: string | null;
     billingMonth?: number | null;
@@ -92,6 +93,14 @@ const monthOptions = [
     [10, "Ottobre"],
     [11, "Novembre"],
     [12, "Dicembre"],
+] as const;
+const generationTimingOptions = [
+    {value: "FIRST_OF_MONTH", label: "Il primo del mese"},
+    {value: "DAYS_7_BEFORE", label: "7 giorni prima della scadenza"},
+    {value: "DAYS_10_BEFORE", label: "10 giorni prima della scadenza"},
+    {value: "DAYS_15_BEFORE", label: "15 giorni prima della scadenza"},
+    {value: "DAYS_30_BEFORE", label: "30 giorni prima della scadenza"},
+    {value: "ON_DUE_DATE", label: "Il giorno di scadenza"},
 ] as const;
 
 function toDateInput(value?: string | Date | null) {
@@ -428,6 +437,7 @@ export default function RecurringExpenseForm({
     const [endDate, setEndDate] = useState(toDateInput(initialExpense?.endDate));
     const [dueDay, setDueDay] = useState(String(Math.min(30, initialExpense?.dueDay ?? 1)));
     const [dueMonth, setDueMonth] = useState(String(initialExpense?.dueMonth ?? currentMonth));
+    const [generationTiming, setGenerationTiming] = useState(initialExpense?.generationTiming ?? "FIRST_OF_MONTH");
     const [categoryId, setCategoryId] = useState(String(
         initialExpense?.categoryId
         ?? initialSupplier?.defaultExpenseCategoryId
@@ -642,6 +652,16 @@ export default function RecurringExpenseForm({
                             label: String(index + 1)
                         }))}/>
                     )}
+                    <SelectField
+                        className="app-form-wizard-step app-form-wizard-step-1"
+                        label="Generazione spesa"
+                        icon="◷"
+                        name="generationTiming"
+                        value={generationTiming}
+                        onChange={setGenerationTiming}
+                        required
+                        options={[...generationTimingOptions]}
+                    />
                     <div className="app-form-field app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide push-down">
                         <div className="switch-toggle-field-label app-form-field-label">
                             <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
@@ -907,6 +927,9 @@ export default function RecurringExpenseForm({
                                 YEARLY: "Annuale",
                                 EVERY_2_YEARS: "Ogni 2 anni"
                             } as Record<string, string>)[cadence]} · giorno {dueDay}{isYearly ? ` ${monthOptions.find(([value]) => String(value) === dueMonth)?.[1] ?? ""}` : ""}</strong></span>
+                            </div>
+                            <div className="record-review-item">
+                                <i aria-hidden="true">◷</i><span>Generazione<strong>{generationTimingOptions.find(option => option.value === generationTiming)?.label ?? "Il primo del mese"}</strong></span>
                             </div>
                             <div className="record-review-item wide">
                                 <i aria-hidden="true">◎</i><span>Fornitore<strong>{supplierName || "Non indicato"}</strong></span>

@@ -9,5 +9,8 @@ data
 !data/seed.generated.json
 *.dump
 *.sql
+!prisma/migrations/
+!prisma/migrations/**/
+!prisma/migrations/**/migration.sql
 public/uploads/invoices/*
 !public/uploads/invoices/.gitkeep

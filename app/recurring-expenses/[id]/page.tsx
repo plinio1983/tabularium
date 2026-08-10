@@ -35,6 +35,15 @@ const billingLabels: Record<string, string> = {
   CUSTOM_MONTH: 'Mese impostato'
 };
 
+const generationTimingLabels: Record<string, string> = {
+  FIRST_OF_MONTH: 'Il primo del mese',
+  DAYS_7_BEFORE: '7 giorni prima della scadenza',
+  DAYS_10_BEFORE: '10 giorni prima della scadenza',
+  DAYS_15_BEFORE: '15 giorni prima della scadenza',
+  DAYS_30_BEFORE: '30 giorni prima della scadenza',
+  ON_DUE_DATE: 'Il giorno di scadenza'
+};
+
 const months = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 
 function dateLabel(value?: Date | null) {
@@ -198,6 +207,10 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           <div>
             <span>Pagamento</span>
             <strong>{item.isAutomaticPayment ? 'Automatico' : 'Manuale'}</strong>
+          </div>
+          <div>
+            <span>Generazione</span>
+            <strong>{generationTimingLabels[item.generationTiming] ?? item.generationTiming}</strong>
           </div>
         </section>
         <div className="record-detail-progress" aria-label={item.isActive ? 'Regola attiva' : 'Regola disattivata'}>

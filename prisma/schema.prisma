@@ -72,6 +72,15 @@ enum IncomeType {
   CASH_REGISTER
 }
 
+enum RecurringExpenseGenerationTiming {
+  FIRST_OF_MONTH
+  DAYS_7_BEFORE
+  DAYS_10_BEFORE
+  DAYS_15_BEFORE
+  DAYS_30_BEFORE
+  ON_DUE_DATE
+}
+
 model User {
   id                  Int       @id @default(autoincrement())
   email               String    @unique
@@ -495,6 +504,7 @@ model RecurringExpense {
   cadence              String
   dueDay               Int?
   dueMonth             Int?
+  generationTiming     RecurringExpenseGenerationTiming @default(FIRST_OF_MONTH)
   isAutomaticPayment   Boolean          @default(false)
   billingPeriodMode    String           @default("SAME_MONTH")
   billingMonth         Int?

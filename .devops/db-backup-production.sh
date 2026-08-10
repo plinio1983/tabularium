@@ -2,7 +2,7 @@
 set -euo pipefail
 
 CONFIG_FILE="./deploy.conf"
-OUTPUT_DIR="./backups"
+OUTPUT_DIR="./resources/backups"
 SERVER_HOST=""
 SERVER_USER=""
 SSH_KEY=""

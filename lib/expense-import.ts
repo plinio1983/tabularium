@@ -308,6 +308,16 @@ function mapAutomaticPayment(value: unknown) {
   return text.includes('auto');
 }
 
+function mapRecurringExpenseGenerationTiming(value: unknown) {
+  const text = textValue(value).toLowerCase();
+  if (text.includes('7 giorn')) return 'DAYS_7_BEFORE';
+  if (text.includes('10 giorn')) return 'DAYS_10_BEFORE';
+  if (text.includes('15 giorn')) return 'DAYS_15_BEFORE';
+  if (text.includes('30 giorn')) return 'DAYS_30_BEFORE';
+  if (text.includes('scadenza') || text.includes('stesso giorno')) return 'ON_DUE_DATE';
+  return 'FIRST_OF_MONTH';
+}
+
 export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, options: { clearBeforeImport?: boolean; workspaceId: number; companyId: number }): Promise<ExpenseImportResult> {
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const rows = getRecurringDefinitionRows(workbook);
@@ -355,6 +365,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     const billingPeriodMode = mapBillingPeriodMode(rowValue(row, ['Competenza', 'Periodo fatturazione', 'Modalità periodo fatturazione']));
     const billingMonth = parseInteger(rowValue(row, ['Mese competenza', 'Mese fatturazione']));
     const isAutomaticPayment = mapAutomaticPayment(rowValue(row, ['Generazione pagamento', 'Tipo generazione', 'Accrual']));
+    const generationTiming = mapRecurringExpenseGenerationTiming(rowValue(row, ['Generazione spesa', 'Momento generazione', 'Anticipo generazione']));
     const notes = textValue(rowValue(row, ['Note', 'Annotazioni', 'Memo']));
     const isActive = rowValue(row, ['Attiva', 'Attivo', 'Active']) === null ? true : parseBool(rowValue(row, ['Attiva', 'Attivo', 'Active']));
     const { supplier, created } = await getOrCreateSupplier(supplierName, {
@@ -395,6 +406,7 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
         cadence,
         dueDay,
         dueMonth,
+        generationTiming,
         isAutomaticPayment,
         billingPeriodMode,
         billingMonth: billingPeriodMode === 'CUSTOM_MONTH' ? billingMonth : null,

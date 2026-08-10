@@ -13,6 +13,7 @@ import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import {yearMonthInTimeZone} from '@/lib/company-time';
 import CopyValueButton from '@/components/CopyValueButton';
+import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
 
 function valueOrDash(value?: string | null) {
   return value && value.trim() ? value : '-';
@@ -62,6 +63,8 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
   const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
+  const uninvoicedExpenses = supplier.expenses.filter(isExpenseInvoiceNotReceived);
+  const uninvoicedAmount = uninvoicedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
   return <div className="grid record-detail-page party-detail-page">
     <SupplierEditModalController categories={orderedCategories.map(category => ({ id: category.id, name: category.name, icon: category.icon }))}/>
@@ -171,6 +174,16 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             <span>Acquistati {currentYear}</span>
             <strong>{euro(annualPurchasedAmount)}</strong>
           </div>
+          {uninvoicedExpenses.length > 0 ? <>
+            <div>
+              <span>Ordini senza fattura</span>
+              <strong className="text-warning">{uninvoicedExpenses.length}</strong>
+            </div>
+            <div>
+              <span>Importo non ancora fatturato</span>
+              <strong className="text-warning">{euro(uninvoicedAmount)}</strong>
+            </div>
+          </> : null}
         </section>
 
         <details className="record-detail-section party-detail-collapsible">
