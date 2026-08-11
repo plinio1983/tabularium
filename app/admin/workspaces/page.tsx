@@ -17,7 +17,7 @@ export default async function SystemWorkspacesPage() {
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="btn btn-xs btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
+        <Link className="btn btn-sm btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
         <h2>Workspace sistema</h2>
         <p className="muted">Workspace creati dagli utenti e relativi proprietari.</p>
       </div>
@@ -34,7 +34,7 @@ export default async function SystemWorkspacesPage() {
           <td>{workspace.name}</td>
           <td>{workspace.owner.email}</td>
           <td>{workspace.members.length}</td>
-          <td><Link className="btn btn-xs btn-default" href={`/admin/workspaces/${workspace.id}`}>Gestisci</Link></td>
+          <td><Link className="btn btn-sm btn-default" href={`/admin/workspaces/${workspace.id}`}>Gestisci</Link></td>
         </tr>)}
       </tbody></table></div>
     </div>

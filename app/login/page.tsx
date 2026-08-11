@@ -45,7 +45,7 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
         <Link href="/forgot-password" className="muted">Password dimenticata?</Link>
         <a className="btn btn-md btn-default full login-google-button" href={`/api/auth/google?next=${encodeURIComponent(next && next.startsWith('/') ? next : '/')}`}>Accedi con Google</a>
         <div className="actions-row right-actions login-actions">
-          <Link className="btn btn-xs btn-default" href="/register">Registrati</Link>
+          <Link className="btn btn-sm btn-default" href="/register">Registrati</Link>
           <button type="submit" className="btn btn-md btn-primary">Accedi</button>
         </div>
       </form>

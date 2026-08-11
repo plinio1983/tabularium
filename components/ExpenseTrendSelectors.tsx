@@ -6,9 +6,7 @@ import {civilDateInTimeZone} from '@/lib/company-time';
 
 type Props = {
   dateQuick: string;
-  billingPeriodQuick: string;
   dateYear: string;
-  billingPeriodYear: string;
   useFiscalPeriodFilter: boolean;
 };
 
@@ -35,31 +33,26 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+  ["last_30_days", "Ultimi 30 giorni"],
+  ["last_90_days", "Ultimi 90 giorni"],
   ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
   ["custom", "Data personalizzata"],
 ];
 
-const quickBillingPeriodOptions = [
-  ["year_to_date", "Anno intero"],
-  ...monthQuickOptions,
-  ...quarterQuickOptions,
-  ["custom", "Periodo personalizzato"],
-];
-
 const quickDateButtons = [
-  "current_month",
-  "previous_month",
+  "last_30_days",
+  "last_90_days",
   "current_quarter",
   "previous_quarter",
   "year_to_date",
 ] as const;
 
-const monthShortLabels = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
+const defaultQuickValue = "last_90_days";
 
-function currentMonthQuickValue(now: Date) {
-  return `month_${String(now.getMonth() + 1).padStart(2, "0")}`;
+function isRollingQuickValue(value: string) {
+  return value === "last_30_days" || value === "last_90_days";
 }
 
 function currentYearValue(now: Date) {
@@ -70,8 +63,8 @@ function quickButtonLabel(value: (typeof quickDateButtons)[number], now: Date) {
   const currentMonth = now.getMonth();
   const currentQuarter = Math.floor(currentMonth / 3) + 1;
 
-  if (value === "current_month") return monthShortLabels[currentMonth];
-  if (value === "previous_month") return monthShortLabels[new Date(now.getFullYear(), currentMonth - 1, 1).getMonth()];
+  if (value === "last_30_days") return "30 gg";
+  if (value === "last_90_days") return "90 gg";
   if (value === "current_quarter") return `Tri ${currentQuarter}`;
   if (value === "previous_quarter") return `Tri ${currentQuarter > 1 ? currentQuarter - 1 : 4}`;
   return "Anno";
@@ -82,19 +75,8 @@ function quickButtonTarget(value: string, now: Date) {
   const currentMonth = now.getMonth();
   const currentQuarter = Math.floor(currentMonth / 3) + 1;
 
-  if (value === "current_month") {
-    return {
-      value: `month_${String(currentMonth + 1).padStart(2, "0")}`,
-      year: String(currentYear),
-    };
-  }
-
-  if (value === "previous_month") {
-    const previousMonth = new Date(currentYear, currentMonth - 1, 1);
-    return {
-      value: `month_${String(previousMonth.getMonth() + 1).padStart(2, "0")}`,
-      year: String(previousMonth.getFullYear()),
-    };
+  if (value === "last_30_days" || value === "last_90_days") {
+    return { value, year: String(currentYear) };
   }
 
   if (value === "current_quarter") {
@@ -127,117 +109,73 @@ function openFiltersDrawer() {
   if (trigger) trigger.click();
 }
 
-function goWithQuick(type: "date" | "fiscal", value: string, year: string, now: Date) {
+function goWithQuick(value: string, year: string, now: Date) {
   const params = new URLSearchParams(window.location.search);
   params.delete("new");
-
-  if (type === "date") {
-    params.delete("orderDateFrom");
-    params.delete("orderDateTo");
-    params.set("dateQuick", value || currentMonthQuickValue(now));
-    params.set("dateYear", year || currentYearValue(now));
-    params.set("view", "andamento");
-  } else {
-    params.delete("billingPeriodFrom");
-    params.delete("billingPeriodTo");
-    params.delete("period");
-    params.set("billingPeriodQuick", value || currentMonthQuickValue(now));
-    params.set("billingPeriodYear", year || currentYearValue(now));
-    params.set("view", "fiscale");
-  }
+  params.delete("orderDateFrom");
+  params.delete("orderDateTo");
+  params.delete("billingPeriodFrom");
+  params.delete("billingPeriodTo");
+  params.delete("billingPeriodQuick");
+  params.delete("billingPeriodYear");
+  params.delete("period");
+  params.set("dateQuick", value || defaultQuickValue);
+  params.set("dateYear", year || currentYearValue(now));
+  params.set("view", "andamento");
 
   const query = params.toString();
   window.location.href = query ? `/expenses?${query}` : "/expenses";
 }
 
-export default function ExpenseTrendSelectors({ dateQuick, billingPeriodQuick, dateYear, billingPeriodYear, useFiscalPeriodFilter }: Props) {
+export default function ExpenseTrendSelectors({ dateQuick, dateYear, useFiscalPeriodFilter }: Props) {
   const timeZone = useCompanyTimeZone();
   const companyNow = civilDateInTimeZone(timeZone);
-  const [mode, setMode] = useState<"date" | "fiscal">(useFiscalPeriodFilter ? "fiscal" : "date");
   const [pendingQuickButton, setPendingQuickButton] = useState<string | null>(null);
-  const andamentoComplessivoValue = dateQuick || currentMonthQuickValue(companyNow);
-  const andamentoFiscaleValue = billingPeriodQuick || currentMonthQuickValue(companyNow);
-  const andamentoComplessivoYear = dateYear || currentYearValue(companyNow);
-  const andamentoFiscaleYear = billingPeriodYear || currentYearValue(companyNow);
-  const currentQuickValue = mode === "date" ? andamentoComplessivoValue : andamentoFiscaleValue;
-  const currentQuickYear = mode === "date" ? andamentoComplessivoYear : andamentoFiscaleYear;
+  const currentQuickValue = useFiscalPeriodFilter ? "" : dateQuick || defaultQuickValue;
+  const currentQuickYear = dateYear || currentYearValue(companyNow);
   const years = yearOptions(companyNow);
-
-  function changeMode(nextMode: "date" | "fiscal") {
-    setMode(nextMode);
-    goWithQuick(nextMode, currentQuickValue, currentQuickYear, companyNow);
-  }
 
   return <div className="trend-selectors trend-selectors-switch" aria-label="Selettori andamento spese">
 
     <span className="w100">Andamento</span>
 
-    <div className="trend-mode-toggle" role="group" aria-label="Tipo andamento">
-      <button
-          type="button"
-          className={mode === "date" ? "trend-mode-button is-active" : "trend-mode-button"}
-          onClick={() => changeMode("date")}
-      >
-        Complessivo
-      </button>
-      <button
-          type="button"
-          className={mode === "fiscal" ? "trend-mode-button is-active" : "trend-mode-button"}
-          onClick={() => changeMode("fiscal")}
-      >
-        Fiscale
-      </button>
-    </div>
-
-    {mode === "date" ? <label className="flex-grow">
+    <label className="flex-grow">
       <div className="trend-selectors-heading">
-        <select value={andamentoComplessivoValue} onChange={(event) => {
+        <select value={currentQuickValue} onChange={(event) => {
           if (event.currentTarget.value === "custom") {
             openFiltersDrawer();
             return;
           }
-          goWithQuick("date", event.currentTarget.value, andamentoComplessivoYear, companyNow);
+          goWithQuick(event.currentTarget.value, currentQuickYear, companyNow);
         }}>
+          {useFiscalPeriodFilter ? <option value="" disabled>Periodo fiscale dai filtri</option> : null}
           {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
-        <select value={andamentoComplessivoYear}
-                onChange={(event) => goWithQuick("date", andamentoComplessivoValue, event.currentTarget.value, companyNow)}>
+        <select value={currentQuickYear}
+                disabled={useFiscalPeriodFilter || isRollingQuickValue(currentQuickValue)}
+                onChange={(event) => goWithQuick(currentQuickValue, event.currentTarget.value, companyNow)}>
           {years.map(year => <option key={year} value={year}>{year}</option>)}
         </select>
       </div>
-    </label> : <label className="flex-grow">
-      <div className="trend-selectors-heading">
-        <select value={andamentoFiscaleValue} onChange={(event) => {
-          if (event.currentTarget.value === "custom") {
-            openFiltersDrawer();
-            return;
-          }
-          goWithQuick("fiscal", event.currentTarget.value, andamentoFiscaleYear, companyNow);
-        }}>
-          {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-        </select>
-        <select value={andamentoFiscaleYear}
-                onChange={(event) => goWithQuick("fiscal", andamentoFiscaleValue, event.currentTarget.value, companyNow)}>
-          {years.map(year => <option key={year} value={year}>{year}</option>)}
-        </select>
-      </div>
-    </label>}
+    </label>
     <section>
     <div className="trend-quick-date btn-group" role="group" aria-label="Scorciatoie periodo">
       {quickDateButtons.map((value) => {
           const target = quickButtonTarget(value, companyNow);
           const label = quickButtonLabel(value, companyNow);
-        const isActive = currentQuickValue === target.value && currentQuickYear === target.year;
+        const isActive = currentQuickValue === target.value && (isRollingQuickValue(target.value) || currentQuickYear === target.year);
+        const accessibleLabel = value === "current_quarter" ? `Trimestre in corso, ${label}` : value === "previous_quarter" ? `Ultimo trimestre concluso, ${label}` : label;
         return <button
           key={value}
           type="button"
           className={isActive ? "btn-xs btn-action btn-active trend-quick-btn" : "btn-xs btn-action trend-quick-btn"}
           aria-pressed={isActive}
-          aria-label={pendingQuickButton === value ? `Caricamento ${label}` : label}
+          aria-label={pendingQuickButton === value ? `Caricamento ${accessibleLabel}` : accessibleLabel}
+          title={accessibleLabel}
           disabled={pendingQuickButton !== null}
           onClick={() => {
             setPendingQuickButton(value);
-            goWithQuick(mode, target.value, target.year, companyNow);
+            goWithQuick(target.value, target.year, companyNow);
           }}
         >
           {pendingQuickButton === value

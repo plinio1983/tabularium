@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, type InputHTMLAttributes, type KeyboardEvent, type PointerEvent, useRef } from "react";
+import { forwardRef, type InputHTMLAttributes, type KeyboardEvent, type PointerEvent, useEffect, useRef, useState } from "react";
 import { applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput } from "@/lib/currency-input";
 
 type CurrencyInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "value" | "defaultValue" | "onChange"> & {
@@ -18,15 +18,23 @@ function moveCaretToEnd(input: HTMLInputElement) {
   });
 }
 
-function isMobileTouchInput() {
-  return window.matchMedia("(max-width: 900px) and (pointer: coarse)").matches;
-}
+const internalKeypadMediaQuery = "(max-width: 900px) and (pointer: coarse)";
 
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(function CurrencyInput(
   { value, onValueChange, suppressSoftKeyboard = false, clearable = false, onClear, onKeyDown, onFocus, onClick, onPaste, onPointerDown, ...props },
   ref,
 ) {
   const keyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
+  const [isInternalKeypadDevice, setIsInternalKeypadDevice] = useState(false);
+  const useInternalKeypad = suppressSoftKeyboard && isInternalKeypadDevice;
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(internalKeypadMediaQuery);
+    const update = () => setIsInternalKeypadDevice(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, []);
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     onKeyDown?.(event);
@@ -45,7 +53,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
 
   function handlePointerDown(event: PointerEvent<HTMLInputElement>) {
     onPointerDown?.(event);
-    if (!event.defaultPrevented && suppressSoftKeyboard && event.pointerType === "touch" && isMobileTouchInput()) {
+    if (!event.defaultPrevented && useInternalKeypad && event.pointerType === "touch") {
       event.preventDefault();
     }
   }
@@ -55,7 +63,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
       {...props}
       ref={ref}
       type="text"
-      inputMode={suppressSoftKeyboard ? "none" : "decimal"}
+      inputMode={useInternalKeypad ? "none" : "decimal"}
       value={formatCurrencyInput(value)}
       onChange={event => {
         keyStateRef.current.separatorDigits = null;
@@ -64,7 +72,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
       }}
       onKeyDown={handleKeyDown}
       onFocus={event => {
-        if (suppressSoftKeyboard && isMobileTouchInput()) {
+        if (useInternalKeypad) {
           event.currentTarget.blur();
           return;
         }

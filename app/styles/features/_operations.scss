@@ -343,7 +343,7 @@
 }
 
 .cash-register-actions.is-edit-mode {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: end;
 }
 
@@ -353,6 +353,13 @@
 
 .cash-register-actions.is-edit-mode .cash-register-submit {
   grid-column: auto;
+}
+
+.cash-register-actions.is-edit-mode .cash-register-edit-cancel {
+  border-color: var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-weight: 850;
 }
 
 .cash-register-actions.has-confirmation {
@@ -1294,7 +1301,7 @@ a.record-top-summary-item.is-invoice-waiting:hover {
   color: var(--accent);
   cursor: pointer;
   font: inherit;
-  font-weight: 850;
+  font-weight: 750;
   white-space: nowrap;
 
   &.btn-active {

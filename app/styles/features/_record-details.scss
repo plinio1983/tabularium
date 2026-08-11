@@ -26,6 +26,23 @@
   padding: 8px 0 !important;
 }
 
+.record-list-card > .incomes-list-shared > .bulk-actions-bar {
+  position: sticky !important;
+  top: 58px !important;
+  z-index: 99 !important;
+  margin: 0 0 10px !important;
+  padding: 8px 0 !important;
+}
+
+.record-list-card > .incomes-list-shared > .bulk-actions-bar .bulk-action-menu,
+.record-list-card > .incomes-list-shared > .bulk-actions-bar .bulk-direct-actions {
+  z-index: 960 !important;
+}
+
+.record-list-card > .incomes-list-shared > .bulk-actions-bar .bulk-action-menu-panel {
+  z-index: 99999 !important;
+}
+
 .record-list-card > .bulk-actions-bar .bulk-action-menu,
 .record-list-card > .bulk-actions-bar .bulk-direct-actions {
   z-index: 960 !important;

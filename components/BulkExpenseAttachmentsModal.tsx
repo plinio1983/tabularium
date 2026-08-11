@@ -155,7 +155,7 @@ export default function BulkExpenseAttachmentsModal({formId, endpoint = '/api/ex
 
   return <>
     <button className="btn btn-sm btn-default" type="button" onClick={showModal} data-bulk-download-attachments>
-      <span className="btn-icon">📎</span><span className="bulk-label">Scarica allegati</span>
+      <span className="btn-icon">📎</span><span className="hidden-sm-down">Scarica allegati</span>
     </button>
     {modal}
   </>;

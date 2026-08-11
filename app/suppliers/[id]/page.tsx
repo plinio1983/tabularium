@@ -100,6 +100,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         systemRole: s.systemRole
       }))}
       initialExpense={{ supplierId: supplier.id, merchant: supplier.businessName }}
+      initialOpen={(Array.isArray(query.new) ? query.new[0] : query.new) === '1'}
       showToolbar={false}
     />
     <div className="record-detail-shell">

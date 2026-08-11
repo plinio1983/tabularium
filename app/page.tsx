@@ -12,12 +12,14 @@ import {
 import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
 import DashboardSectionNav from '@/components/DashboardSectionNav';
 import {requireWorkspace} from '@/lib/auth';
-import {calendarDayNumber, yearMonthInTimeZone} from '@/lib/company-time';
+import {calendarDayNumber, yearMonthInTimeZone, zonedMidnightUtc} from '@/lib/company-time';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
-import {getIncomeTrendData} from '@/lib/income-trend';
-import AnnualIncomeTrendChart from '@/components/AnnualIncomeTrendChart';
+import IncomeSalesChannelTrendChart from '@/components/IncomeSalesChannelTrendChart';
+import {aggregateIncomeChannelTrend} from '@/lib/income-channel-trend';
+import ExpenseCategoryTrendChart from '@/components/ExpenseCategoryTrendChart';
+import {aggregateExpenseCategoryTrend} from '@/lib/expense-category-trend';
 import MonthlyEconomicTrendChart from '@/components/MonthlyEconomicTrendChart';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
@@ -481,24 +483,6 @@ function ExpenseCategoryIncomeImpactChart({
         emptyMessage="Nessun incasso disponibile per calcolare l’impatto percentuale."
         remainderLabel="RESTO"
         remainderName="Incasso non assorbito"
-    />;
-}
-
-function IncomeBreakdownChart({title, description, data}: {
-    title: string;
-    description: string;
-    data: Array<{ name: string; code: string; total: number }>
-}) {
-    const total = data.reduce((sum, item) => sum + item.total, 0);
-    const groupedData = groupedChartData(data);
-    return <DashboardPieChart
-        title={title}
-        description={description}
-        badge={null}
-        data={groupedData}
-        total={total}
-        centerLabel="Entrate"
-        emptyMessage="Nessun incasso presente per l’anno selezionato."
     />;
 }
 
@@ -1383,13 +1367,17 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
     const totalIncome = months.reduce((sum, month) => sum + month.totals.incassoTotale, 0);
     const totalNetProfit = months.reduce((sum, month) => sum + month.totals.utileNetto, 0);
     const totalFiscalProfit = months.reduce((sum, month) => sum + month.totals.utileFiscale, 0);
-    const monthlyRatio = (value: number, income: number) => income ? value / Math.abs(income) * 100 : 0;
+    const monthlyRatio = (value: number, income: number) => {
+        const ratio = income ? value / Math.abs(income) * 100 : 0;
+        return Math.abs(ratio) < 0.05 ? 0 : ratio;
+    };
     const ratios = months.flatMap(month => [
         monthlyRatio(month.totals.utileLordo, month.totals.incassoTotale),
         monthlyRatio(month.totals.utileNetto, month.totals.incassoTotale),
         monthlyRatio(month.totals.utileFiscale, month.totals.incassoTotale)
     ]);
-    const negativeExtent = Math.max(...ratios.map(value => Math.max(-value, 0)), 0);
+    const hasNegativeValues = ratios.some(value => Number.isFinite(value) && value < 0);
+    const negativeExtent = hasNegativeValues ? Math.max(...ratios.map(value => Math.max(-value, 0)), 0) : 0;
     const totalExtent = Math.max(negativeExtent + 100, 1);
     const zeroPosition = negativeExtent / totalExtent * 100;
     const annualRatio = (value: number) => totalIncome ? value / Math.abs(totalIncome) * 100 : 0;
@@ -1421,6 +1409,10 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
             </div>
             <div className="dashboard-chart-main-totals">
                 <div className="dashboard-chart-main-total">
+                    <span>Entrate anno</span>
+                    <strong>{chartEuro(totalIncome)}</strong>
+                </div>
+                <div className="dashboard-chart-main-total">
                     <span>Utile netto anno · {annualRatio(totalNetProfit).toFixed(1)}%</span>
                     <strong className={moneyTone(totalNetProfit)}>{chartEuro(totalNetProfit)}</strong>
                 </div>
@@ -1429,6 +1421,12 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
                     <strong className={moneyTone(totalFiscalProfit)}>{chartEuro(totalFiscalProfit)}</strong>
                 </div>
             </div>
+        </div>
+        <div className="monthly-profit-comparison-legend" aria-label="Legenda del grafico">
+            <span className="is-gross">Margine lordo</span>
+            <span className="is-net">Utile netto</span>
+            <span className="is-fiscal">Utile fiscale</span>
+            <small>Le percentuali sono calcolate sulle entrate del mese.</small>
         </div>
         {months.length ? <div className="monthly-profit-comparison-list">
             {months.map(month => {
@@ -1453,30 +1451,30 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
                     <div className="monthly-profit-comparison-series">
                         <div>
                             <span>Lordo</span>
-                            <div className={`monthly-profit-comparison-axis ${negativeExtent ? 'has-negative-values' : ''}`}
+                            <div className={`monthly-profit-comparison-axis ${hasNegativeValues ? 'has-negative-values' : ''}`}
                                  aria-label={`Margine lordo ${grossPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
                                 <i className={grossProfit < 0 ? 'is-negative' : 'is-gross'} style={barStyle(grossPercentage)}/>
-                                {negativeExtent ? <b style={{left: `${zeroPosition}%`}}/> : null}
+                                {hasNegativeValues ? <b style={{left: `${zeroPosition}%`}}/> : null}
                             </div>
                             <strong className={moneyTone(grossProfit)}>{chartEuro(grossProfit)}</strong>
                             <em className={moneyTone(grossProfit)}>{grossPercentage.toFixed(1)}%</em>
                         </div>
                         <div>
                             <span>Netto</span>
-                            <div className={`monthly-profit-comparison-axis ${negativeExtent ? 'has-negative-values' : ''}`}
+                            <div className={`monthly-profit-comparison-axis ${hasNegativeValues ? 'has-negative-values' : ''}`}
                                  aria-label={`Utile netto ${netPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
                                 <i className={netProfit < 0 ? 'is-negative' : 'is-net'} style={barStyle(netPercentage)}/>
-                                {negativeExtent ? <b style={{left: `${zeroPosition}%`}}/> : null}
+                                {hasNegativeValues ? <b style={{left: `${zeroPosition}%`}}/> : null}
                             </div>
                             <strong className={moneyTone(netProfit)}>{chartEuro(netProfit)}</strong>
                             <em className={moneyTone(netProfit)}>{netPercentage.toFixed(1)}%</em>
                         </div>
                         <div>
                             <span>Fiscale</span>
-                            <div className={`monthly-profit-comparison-axis ${negativeExtent ? 'has-negative-values' : ''}`}
+                            <div className={`monthly-profit-comparison-axis ${hasNegativeValues ? 'has-negative-values' : ''}`}
                                  aria-label={`Utile fiscale ${fiscalPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
                                 <i className={fiscalProfit < 0 ? 'is-negative' : 'is-fiscal'} style={barStyle(fiscalPercentage)}/>
-                                {negativeExtent ? <b style={{left: `${zeroPosition}%`}}/> : null}
+                                {hasNegativeValues ? <b style={{left: `${zeroPosition}%`}}/> : null}
                             </div>
                             <strong className={moneyTone(fiscalProfit)}>{chartEuro(fiscalProfit)}</strong>
                             <em className={moneyTone(fiscalProfit)}>{fiscalPercentage.toFixed(1)}%</em>
@@ -1792,9 +1790,30 @@ export default async function Dashboard({searchParams}: {
     const trendQuarterPeriods = fiscalQuarterMonthsByIndex(selectedTrendQuarter.year, selectedTrendQuarter.quarterIndex);
     const scheduleFrom = new Date(Date.UTC(annualYear, 0, 1));
     const scheduleTo = new Date(Date.UTC(annualYear + 1, 0, 1));
-    const [report, initialIncomeTrend, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers, pendingIncomes, pendingExpenses] = await Promise.all([
+    const [report, incomeChannelTrendRecords, expenseCategoryTrendRecords, monthlyTrendTotals, quarterlyTrendTotals, expenseCategories, banks, paymentMethods, suppliers, pendingIncomes, pendingExpenses] = await Promise.all([
         getAccountingDashboardReport(reportYear, now, selectedMonth, selectedQuarter, annualYear, current.workspace.id, current.company.id, current.company.timeZone),
-        getIncomeTrendData(annualYear, 'month', current.workspace.id, current.company.id, true, current.company.timeZone),
+        prisma.income.findMany({
+            where: {
+                workspaceId: current.workspace.id,
+                companyId: current.company.id,
+                creditDate: {
+                    gte: zonedMidnightUtc(`${annualYear}-01-01`, current.company.timeZone),
+                    lt: zonedMidnightUtc(`${annualYear + 1}-01-01`, current.company.timeZone)
+                }
+            },
+            select: {amount: true, creditDate: true, salesChannelId: true, salesChannelRef: {select: {name: true, icon: true}}}
+        }),
+        prisma.expense.findMany({
+            where: {
+                workspaceId: current.workspace.id,
+                companyId: current.company.id,
+                receivedDate: {
+                    gte: zonedMidnightUtc(`${annualYear}-01-01`, current.company.timeZone),
+                    lt: zonedMidnightUtc(`${annualYear + 1}-01-01`, current.company.timeZone)
+                }
+            },
+            select: {amount: true, receivedDate: true, expenseType: true, categoryId: true, category: {select: {name: true, icon: true}}}
+        }),
         getOrderDateMonthSummary(selectedTrendMonth.year, selectedTrendMonth.month, current.workspace.id, current.company.id, current.company.timeZone),
         getOrderDatePeriodSummary(trendQuarterPeriods, current.workspace.id, current.company.id, current.company.timeZone),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
@@ -1829,6 +1848,8 @@ export default async function Dashboard({searchParams}: {
         })
     ]);
     const orderedExpenseCategories = orderExpenseCategories(expenseCategories);
+    const incomeChannelTrend = aggregateIncomeChannelTrend(incomeChannelTrendRecords, annualYear, current.company.timeZone);
+    const expenseCategoryTrend = aggregateExpenseCategoryTrend(expenseCategoryTrendRecords, annualYear, current.company.timeZone);
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
     const fiscalMonth = report.currentFiscalMonth.periods[0];
@@ -1914,7 +1935,7 @@ export default async function Dashboard({searchParams}: {
         if (dueDay !== null && todayDay !== null && dueDay < todayDay) item.overdue += residual;
     });
 
-    return <div className="grid dashboard-grid">
+    return <div className="grid dashboard-grid fixed">
 
         <NewExpensePanel
             categories={orderedExpenseCategories.map(c => ({
@@ -1953,6 +1974,7 @@ export default async function Dashboard({searchParams}: {
                 defaultVatRate: s.defaultVatRate?.toString() ?? null,
                 systemRole: s.systemRole
             }))}
+            initialOpen={(Array.isArray(params.new) ? params.new[0] : params.new) === '1'}
             showToolbar={false}
         />
         <div className="dashboard-actions toolbar-card dashboard-header-card">
@@ -1998,9 +2020,6 @@ export default async function Dashboard({searchParams}: {
                 <div className="charts-grid dashboard-overview-charts">
                     <ProfitabilitySummaryCard totals={report.totals} year={report.annualYear}
                                               periodLabel={consolidatedRangeLabel}/>
-                    <IncomeBreakdownChart title="Entrate per canale di vendita"
-                                          description={`Distribuzione degli incassi per canale di vendita ${consolidatedPeriodCopy}.`}
-                                          data={report.incomesBySalesChannel}/>
                     <ExpenseCompositionChart data={report.expensesByCategory} total={report.totals.speseTotali} incomeTotal={report.totals.incassoTotale}/>
                 </div>
             </div>
@@ -2009,7 +2028,8 @@ export default async function Dashboard({searchParams}: {
                 <FiscalNonFiscalOverview totals={report.totals} year={report.annualYear} periods={annualPeriods}/>
             </div>
             <MonthlyEconomicTrendChart data={completedReportMonths} year={report.annualYear}/>
-            <AnnualIncomeTrendChart initialData={initialIncomeTrend}/>
+            <IncomeSalesChannelTrendChart initialData={incomeChannelTrend} availableYears={[annualYear]}/>
+            <ExpenseCategoryTrendChart data={expenseCategoryTrend}/>
 
             <div className="grid grid-2 dashboard-period-cards">
                 <DashboardFiscalAjax

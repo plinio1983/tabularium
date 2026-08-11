@@ -1524,7 +1524,8 @@
     top: 0 !important;
   }
 
-  .record-list-card > .bulk-actions-bar {
+  .record-list-card > .bulk-actions-bar,
+  .record-list-card > .incomes-list-shared > .bulk-actions-bar {
     top: 52px !important;
     overflow-y: visible !important;
     -webkit-overflow-scrolling: touch;
@@ -3716,7 +3717,7 @@
   }
 
   .payment-credit-bank-display-row .payment-credit-display-kind {
-    order: 3;
+    order: 2;
     flex: 0 0 auto;
     padding: 4px 9px;
     border-radius: 999px;
@@ -4346,7 +4347,7 @@
   }
 
   .cash-register-actions.is-edit-mode .cash-register-submit {
-    grid-column: 1 / -1;
+    grid-column: auto;
   }
 
   .cash-register-controls input[type="date"],
@@ -4558,31 +4559,42 @@
 
   .month-report-month-select {
     display: block;
-    flex: 1 1 180px;
-    width: auto;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    height: 42px;
     min-height: 42px;
   }
 
   .month-report-navigation {
-    flex-wrap: wrap;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
   }
 
   .month-report-navigation > span {
-    flex: 0 0 auto;
+    grid-column: 1;
+    grid-row: 1;
   }
 
-  .month-report-period-controls {
-    flex: 0 0 100%;
-  }
-
-  .month-report-period-controls > .year-navigation-select {
+  .month-report-navigation > .year-navigation-select {
+    grid-column: 2;
+    grid-row: 1;
     width: 100%;
+    justify-self: stretch;
   }
 
-  .month-report-period-controls > .year-navigation-select select {
-    flex: 1 1 auto;
+  .month-report-navigation > .year-navigation-select select {
+    width: 100%;
+    height: 42px;
     min-height: 42px;
+  }
+
+  .month-report-navigation > .report-period-type-toggle {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    //width: 220px;
+    max-width: 100%;
+    justify-self: start;
   }
 
   .month-report-metrics {
@@ -4647,6 +4659,47 @@
 }
 
 @media (max-width: 760px) {
+  .income-channel-trend-card {
+    padding: 12px 8px;
+  }
+
+  .income-channel-trend-heading,
+  .income-channel-trend-controls {
+    display: grid;
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .income-channel-trend-controls .trend-mode-toggle {
+    width: 100%;
+  }
+
+  .income-channel-trend-controls .trend-mode-button {
+    flex: 1 1 0;
+  }
+
+  .income-channel-period-toggle {
+    overflow-x: auto;
+  }
+
+  .income-channel-trend-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .income-channel-trend-kpis > div {
+    padding: 9px;
+  }
+
+  .income-channel-trend-legend {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .income-channel-trend-legend > div {
+    flex: 0 0 auto;
+  }
+
   .entity-quick-search {
     width: 100%;
   }
@@ -5169,34 +5222,39 @@
   }
 }
 
-/* Il menu delle azioni bulk resta un bottom sheet compatto. */
+/* Su mobile il menu delle azioni bulk si apre come pannello laterale. */
 @media (max-width: 760px) {
   .bulk-action-modal-backdrop {
-    align-items: flex-end;
-    justify-content: center;
-    padding: 16px 16px max(16px, env(safe-area-inset-bottom)) !important;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0 !important;
     background: rgba(15, 23, 42, .42);
     animation: bulk-action-backdrop-enter .2s ease both;
   }
 
   .bulk-action-modal-backdrop > .bulk-action-modal {
-    width: min(420px, 100%);
-    max-width: 420px;
-    height: auto;
+    position: relative;
+    width: min(86vw, 380px);
+    max-width: none;
+    height: 100dvh;
     min-height: 0;
-    max-height: min(72dvh, 560px);
-    margin: 0 0 -15px 0;
-    padding: 0;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    max-height: none;
+    margin: 0;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) env(safe-area-inset-left);
+    box-sizing: border-box;
+    grid-template-rows: auto minmax(0, 1fr);
     border: 1px solid rgba(226, 232, 240, .95);
-    border-radius: 20px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    border-left: 0;
+    border-radius: 0 20px 20px 0;
     overflow: hidden;
-    transform: translateY(var(--bulk-sheet-offset, 0));
+    transform: translateX(calc(-1 * var(--bulk-drawer-offset, 0px)));
     transition: transform .18s ease;
-    animation: bulk-action-sheet-enter .24s cubic-bezier(.2, .75, .25, 1) both;
-    box-shadow: 0 24px 70px rgba(15, 23, 42, .28);
+    animation: bulk-action-drawer-enter .24s cubic-bezier(.2, .75, .25, 1) both;
+    box-shadow: 18px 0 50px rgba(15, 23, 42, .28);
+  }
+
+  .bulk-action-modal .hidden-sm-down {
+    display: inline !important;
   }
 
   .bulk-action-modal-backdrop > .bulk-action-modal.is-dragging,
@@ -5214,24 +5272,27 @@
   }
 
   .bulk-action-modal-drag-handle {
-    position: relative;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 0;
     display: block;
-    flex: 0 0 auto;
-    height: 26px;
+    width: 24px;
+    height: 100%;
     cursor: grab;
-    touch-action: none;
+    touch-action: pan-y;
   }
 
   .bulk-action-modal-drag-handle::after {
     content: "";
     position: absolute;
-    top: 9px;
-    left: 50%;
-    width: 44px;
-    height: 5px;
+    top: 50%;
+    right: 7px;
+    width: 4px;
+    height: 44px;
     border-radius: 999px;
     background: #cbd5e1;
-    transform: translateX(-50%);
+    transform: translateY(-50%);
   }
 
   .bulk-action-modal.is-dragging .bulk-action-modal-drag-handle {
@@ -5239,19 +5300,20 @@
   }
 
   .bulk-action-modal-header {
-    padding-top: 6px;
+    padding-right: 28px;
   }
 
   .bulk-action-modal-actions {
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    padding-right: 24px;
+    padding-bottom: 14px;
   }
 
-  @keyframes bulk-action-sheet-enter {
-    from { transform: translateY(calc(100% + 24px)); }
-    to { transform: translateY(0); }
+  @keyframes bulk-action-drawer-enter {
+    from { transform: translateX(calc(-100% - 24px)); }
+    to { transform: translateX(0); }
   }
 
   @keyframes bulk-action-backdrop-enter {

@@ -20,7 +20,7 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
         <label>Nuova password<input name="password" type="password" autoComplete="new-password" minLength={10} required /></label>
         <label>Conferma password<input name="passwordConfirmation" type="password" autoComplete="new-password" minLength={10} required /></label>
         <div className="actions-row right-actions login-actions">
-          <Link className="btn btn-xs btn-default" href="/login">Annulla</Link>
+          <Link className="btn btn-sm btn-default" href="/login">Annulla</Link>
           <button type="submit" className="btn btn-md btn-primary" disabled={!token}>Salva password</button>
         </div>
       </form>

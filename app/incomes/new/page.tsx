@@ -32,7 +32,7 @@ export default async function NewIncomePage({ searchParams }: { searchParams?: P
         <h2>{copyIncome ? `Copia incasso #${copyIncome.id}` : requestedType === 'recurring' ? 'Nuova ricorrente' : 'Nuovo incasso'}</h2>
         <p className="muted">{copyIncome ? 'I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso.' : requestedType === 'recurring' ? 'Configura una nuova entrata ricorrente.' : 'Inserisci un nuovo incasso.'}</p>
       </div>
-      <Link className="btn btn-xs btn-default" href={returnTo}><span className="btn-icon">×</span> Annulla</Link>
+      <Link className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">×</span> Annulla</Link>
     </div>
     <IncomeCreationSwitcher
       initialIncome={copyIncome ? {

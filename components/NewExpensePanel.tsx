@@ -99,6 +99,17 @@ export default function NewExpensePanel({
         }
     }, [initialOpen]);
 
+    useEffect(() => {
+        const open = (event: Event) => {
+            event.preventDefault();
+            setCreationType('single');
+            setCreationKey(value => value + 1);
+            setIsOpen(true);
+        };
+        window.addEventListener('tabularium:expense-new', open);
+        return () => window.removeEventListener('tabularium:expense-new', open);
+    }, []);
+
     function handleSaved() {
         setIsOpen(false);
         router.refresh();
@@ -121,7 +132,7 @@ export default function NewExpensePanel({
             </div>
             <div className="toolbar-actions record-toolbar-actions">
                 {/*<Link className="btn btn-md btn-default expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>*/}
-                <Link className="btn btn-sm btn-secondary" href="/recurring-expenses">
+                <Link className="btn btn-sm btn-ghost" href="/recurring-expenses">
                     <span className="btn-icon">↻</span>Uscite ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary" type="button" onClick={() => setIsOpen(true)}>

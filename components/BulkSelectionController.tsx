@@ -29,15 +29,12 @@ function syncDirectActionGroup(group: HTMLElement) {
   const selected = selectedInputs.length;
   const firstId = selectedInputs[0]?.value ?? "";
   const returnTo = group.getAttribute("data-return-to") ?? "";
+  const bar = group.closest<HTMLElement>(".bulk-actions-bar");
   const edit = group.querySelector<HTMLAnchorElement>("[data-bulk-edit]");
-  const copy = group.querySelector<HTMLElement>("[data-bulk-copy]");
+  const copy = bar?.querySelector<HTMLElement>("[data-bulk-copy]");
   const del = group.querySelector<HTMLButtonElement>("[data-bulk-delete]");
-  const payment = document.querySelector<HTMLButtonElement>(
-    `[data-bulk-menu][data-bulk-form="${formId}"] [data-bulk-add-payment]`,
-  );
-  const credit = document.querySelector<HTMLButtonElement>(
-    `[data-bulk-menu][data-bulk-form="${formId}"] [data-bulk-add-credit]`,
-  );
+  const payment = group.querySelector<HTMLButtonElement>("[data-bulk-add-payment]");
+  const credit = group.querySelector<HTMLButtonElement>("[data-bulk-add-credit]");
   const singleEnabled = selected === 1;
   const anyEnabled = selected > 0;
 
@@ -65,9 +62,10 @@ function syncDirectActionGroup(group: HTMLElement) {
     const copyEnabled = singleOnly ? singleEnabled : anyEnabled;
     copy.classList.toggle("is-disabled", !copyEnabled);
     copy.setAttribute("aria-disabled", copyEnabled ? "false" : "true");
+    if (copy instanceof HTMLButtonElement) copy.disabled = !copyEnabled;
     const triggerAttr = group.getAttribute("data-copy-trigger-attr");
-    if (triggerAttr && copy instanceof HTMLAnchorElement) {
-      copy.href = "#";
+    if (triggerAttr) {
+      if (copy instanceof HTMLAnchorElement) copy.href = "#";
       if (singleEnabled) copy.setAttribute(triggerAttr, firstId);
       else copy.removeAttribute(triggerAttr);
       copy.dataset.bulkCopyMode = !singleOnly && selected > 1 ? "bulk" : "single";
@@ -80,14 +78,19 @@ function syncDirectActionGroup(group: HTMLElement) {
   }
 
   if (payment) {
-    payment.disabled = selected === 0;
-    if (singleEnabled) payment.setAttribute("data-expense-payment-id", firstId);
+    const paymentEnabled = singleEnabled && selectedInputs[0]?.dataset.paymentComplete !== "true";
+    payment.disabled = !paymentEnabled;
+    payment.classList.toggle("is-disabled", !paymentEnabled);
+    payment.setAttribute("aria-disabled", paymentEnabled ? "false" : "true");
+    if (paymentEnabled) payment.setAttribute("data-expense-payment-id", firstId);
     else payment.removeAttribute("data-expense-payment-id");
   }
 
   if (credit) {
     const creditEnabled = singleEnabled && selectedInputs[0]?.dataset.creditComplete !== "true";
     credit.disabled = !creditEnabled;
+    credit.classList.toggle("is-disabled", !creditEnabled);
+    credit.setAttribute("aria-disabled", creditEnabled ? "false" : "true");
     if (creditEnabled) credit.setAttribute("data-income-credit-id", firstId);
     else credit.removeAttribute("data-income-credit-id");
   }
@@ -242,7 +245,7 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
     if (event.target === backdrop) closeBulkActionModal();
   });
 
-  let dragStartY = 0;
+  let dragStartX = 0;
   let dragStartedAt = 0;
   let dragOffset = 0;
   let dragging = false;
@@ -251,12 +254,12 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
     dragging = false;
     dragOffset = 0;
     modal.classList.remove("is-dragging");
-    modal.style.removeProperty("--bulk-sheet-offset");
+    modal.style.removeProperty("--bulk-drawer-offset");
   };
 
   dragHandle.addEventListener("pointerdown", (event) => {
     dragging = true;
-    dragStartY = event.clientY;
+    dragStartX = event.clientX;
     dragStartedAt = performance.now();
     dragOffset = 0;
     modal.classList.add("has-entered");
@@ -266,8 +269,8 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
 
   dragHandle.addEventListener("pointermove", (event) => {
     if (!dragging) return;
-    dragOffset = Math.max(0, event.clientY - dragStartY);
-    modal.style.setProperty("--bulk-sheet-offset", `${dragOffset}px`);
+    dragOffset = Math.max(0, dragStartX - event.clientX);
+    modal.style.setProperty("--bulk-drawer-offset", `${dragOffset}px`);
   });
 
   const finishDrag = (event: PointerEvent) => {
@@ -277,11 +280,11 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
     dragging = false;
     modal.classList.remove("is-dragging");
     if (dragOffset >= 90 || (dragOffset >= 42 && velocity >= .45)) {
-      modal.style.setProperty("--bulk-sheet-offset", "100dvh");
+      modal.style.setProperty("--bulk-drawer-offset", "100vw");
       backdrop.classList.add("is-closing");
       window.setTimeout(closeBulkActionModal, 180);
     } else {
-      modal.style.removeProperty("--bulk-sheet-offset");
+      modal.style.removeProperty("--bulk-drawer-offset");
     }
     if (dragHandle.hasPointerCapture(event.pointerId)) dragHandle.releasePointerCapture(event.pointerId);
   };
@@ -376,12 +379,16 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   }
 
   const edit = sourceBar.querySelector<HTMLElement>("[data-bulk-edit]");
-  const copy = sourceBar.querySelector<HTMLElement>("[data-bulk-copy]");
+  const directCopy = sourceBar.querySelector<HTMLElement>("[data-bulk-direct-actions] [data-bulk-copy]");
+  const payment = sourceBar.querySelector<HTMLElement>("[data-bulk-add-payment]");
+  const credit = sourceBar.querySelector<HTMLElement>("[data-bulk-add-credit]");
   const del = sourceBar.querySelector<HTMLElement>("[data-bulk-delete]");
   const newItem = sourceBar.querySelector<HTMLElement>("[data-bulk-new], [data-expense-new]");
 
   if (edit) actionTarget.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
-  if (copy) actionTarget.appendChild(buildFloatingButton(copy, "Copia", "⧉", "floating-bulk-copy"));
+  if (directCopy) actionTarget.appendChild(buildFloatingButton(directCopy, "Copia", "⧉", "floating-bulk-copy"));
+  if (payment) actionTarget.appendChild(buildFloatingButton(payment, "Inserisci pagamento", "＋", "floating-bulk-payment"));
+  if (credit) actionTarget.appendChild(buildFloatingButton(credit, "Inserisci accredito", "＋", "floating-bulk-credit"));
   if (del) actionTarget.appendChild(buildFloatingButton(del, "Elimina", "🗑", "floating-bulk-delete hidden-sp", "icon-small"));
   if (newItem) {
     const newItemWrap = document.createElement("div");
@@ -399,7 +406,9 @@ function makeFloatingBar(sourceBar: HTMLElement) {
 function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
   const sourceMenu = sourceBar.querySelector<HTMLElement>("[data-bulk-menu]");
   const sourceEdit = sourceBar.querySelector<HTMLElement>("[data-bulk-edit]");
-  const sourceCopy = sourceBar.querySelector<HTMLElement>("[data-bulk-copy]");
+  const sourceDirectCopy = sourceBar.querySelector<HTMLElement>("[data-bulk-direct-actions] [data-bulk-copy]");
+  const sourcePayment = sourceBar.querySelector<HTMLButtonElement>("[data-bulk-add-payment]");
+  const sourceCredit = sourceBar.querySelector<HTMLButtonElement>("[data-bulk-add-credit]");
   const sourceDel = sourceBar.querySelector<HTMLButtonElement>("[data-bulk-delete]");
   const sourceSelectAll = sourceBar.querySelector<HTMLInputElement>(".bulk-select-all-inline .bulk-select-all");
   const floatingSelectAll = floating.querySelector<HTMLInputElement>(".floating-bulk-select-all-inline input");
@@ -419,7 +428,19 @@ function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
 
   floating
     .querySelector(".floating-bulk-copy")
-    ?.classList.toggle("is-disabled", Boolean(sourceCopy?.classList.contains("is-disabled")));
+    ?.classList.toggle("is-disabled", Boolean(sourceDirectCopy?.classList.contains("is-disabled")));
+
+  const floatingPayment = floating.querySelector<HTMLButtonElement>(".floating-bulk-payment");
+  if (floatingPayment) {
+    floatingPayment.disabled = Boolean(sourcePayment?.disabled);
+    floatingPayment.classList.toggle("is-disabled", Boolean(sourcePayment?.disabled));
+  }
+
+  const floatingCredit = floating.querySelector<HTMLButtonElement>(".floating-bulk-credit");
+  if (floatingCredit) {
+    floatingCredit.disabled = Boolean(sourceCredit?.disabled);
+    floatingCredit.classList.toggle("is-disabled", Boolean(sourceCredit?.disabled));
+  }
 
   floating
     .querySelector(".floating-bulk-delete")
@@ -518,8 +539,7 @@ export default function BulkSelectionController() {
 
       const bulkCopy = target.closest<HTMLElement>("[data-bulk-copy]");
       if (bulkCopy?.dataset.bulkCopyMode === "bulk") {
-        const group = bulkCopy.closest<HTMLElement>("[data-bulk-direct-actions]");
-        const formId = group?.getAttribute("data-bulk-form") ?? "";
+        const formId = bulkCopy.closest<HTMLFormElement>("form")?.id ?? "";
         if (!formId) return;
         event.preventDefault();
         const eventName = formId === "incomeBulkForm" ? "income-bulk-copy-request" : "expense-bulk-copy-request";

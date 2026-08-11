@@ -481,6 +481,10 @@ export default function CashRegister({
                         </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
                     </div>
                 </div>
+                <button className="cash-register-edit-cancel btn btn-md btn-default" type="button"
+                        disabled={sending} onClick={() => router.push(returnTo)}>
+                    <span aria-hidden="true">×</span> ANNULLA
+                </button>
                 <button className="cash-register-submit" type="button"
                         disabled={sending || !hasValidAmount || !selectedMethod || !selectedBankId || !methodIsAvailable(selectedMethod)}
                         onClick={() => void submitReceipt()}>

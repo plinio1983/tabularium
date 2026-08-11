@@ -336,24 +336,25 @@ export async function getAccountingDashboardReport(
   };
 }
 
-export async function getMonthlyReport(year: number, month: number, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal', companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
-  const dateRange = monthDateRange(year, month);
-  const instantRange = monthInstantRange(year, month, timeZone);
+export async function getPeriodReport(periods: Array<{year: number; month: number}>, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal', companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
+  if (!periods.length) throw new Error('At least one report period is required.');
+  const dateRanges = periods.map(({year, month}) => monthDateRange(year, month));
+  const instantRanges = periods.map(({year, month}) => monthInstantRange(year, month, timeZone));
   const [expenses, incomes] = await Promise.all([
     prisma.expense.findMany({
       where: mode === 'fiscal'
-        ? { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), year, month }
-        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), receivedDate: dateRange },
+        ? periodWhere(periods, workspaceId, companyId)
+        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), OR: dateRanges.map(receivedDate => ({receivedDate})) },
       include: { category: true, company: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } } },
       orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }]
     }),
     prisma.income.findMany({
       where: mode === 'fiscal'
-        ? incomePeriodWhereIncludingUncredited([{ year, month }], workspaceId, companyId)
-        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {creditDate: instantRange}} },
+        ? incomePeriodWhereIncludingUncredited(periods, workspaceId, companyId)
+        : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {OR: instantRanges.map(creditDate => ({creditDate}))}} },
       include: {
         salesChannelRef: true, paymentMethodRef: true, creditBank: true, customer: true,
-        credits: mode === 'fiscal' ? true : {where: {creditDate: instantRange}}
+        credits: mode === 'fiscal' ? true : {where: {OR: instantRanges.map(creditDate => ({creditDate}))}}
       }
     })
   ]);
@@ -363,13 +364,36 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
     amount: income.credits.reduce((sum, credit) => sum + Number(credit.amount), 0),
     isCredited: true,
   }));
-  const summary = summarizeRecords(summaryIncomes, expenses, mode === 'fiscal' ? [{ year, month }] : undefined, {timeZone});
+  const summary = summarizeRecords(summaryIncomes, expenses, mode === 'fiscal' ? periods : undefined, {timeZone});
+  const monthlyBreakdown = periods.map(period => {
+    const periodExpenses = mode === 'fiscal'
+      ? expenses.filter(expense => Number(expense.year) === period.year && Number(expense.month) === period.month)
+      : expenses.filter(expense => {
+          if (!expense.receivedDate) return false;
+          const receivedDate = new Date(expense.receivedDate);
+          return receivedDate.getUTCFullYear() === period.year && receivedDate.getUTCMonth() + 1 === period.month;
+        });
+    const periodIncomes = mode === 'fiscal'
+      ? incomes.filter(income => incomeMatchesPeriod(income, period.year, period.month))
+      : incomes.flatMap(income => {
+          const range = monthInstantRange(period.year, period.month, timeZone);
+          const credits = income.credits.filter(credit => credit.creditDate >= range.gte && credit.creditDate < range.lt);
+          if (!credits.length) return [];
+          return [{...income, credits, amount: credits.reduce((sum, credit) => sum + Number(credit.amount), 0), isCredited: true}];
+        });
+    return {
+      ...period,
+      totals: summarizeRecords(periodIncomes, periodExpenses, mode === 'fiscal' ? [period] : undefined, {timeZone})
+    };
+  });
   const taxRate = 30;
   const estimatedTax = Math.max(summary.utileFiscale, 0) * taxRate / 100;
 
   return {
-    year,
-    month,
+    year: periods[0].year,
+    month: periods[0].month,
+    periods,
+    monthlyBreakdown,
     mode,
     expenses,
     incomes,
@@ -389,6 +413,10 @@ export async function getMonthlyReport(year: number, month: number, workspaceId?
       estimatedNetProfit: summary.utileNetto
     }
   };
+}
+
+export async function getMonthlyReport(year: number, month: number, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal', companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
+  return getPeriodReport([{year, month}], workspaceId, mode, companyId, timeZone);
 }
 
 export async function getYearReport(year: number, workspaceId?: number, companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {

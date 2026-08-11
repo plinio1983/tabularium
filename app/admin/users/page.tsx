@@ -18,7 +18,7 @@ export default async function SystemUsersPage() {
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="btn btn-xs btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
+        <Link className="btn btn-sm btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
         <h2>Utenti sistema</h2>
         <p className="muted">Vista globale riservata agli amministratori.</p>
       </div>
@@ -63,11 +63,11 @@ export default async function SystemUsersPage() {
           <td className="actions-row">
             <form action={systemToggleUserAction}>
               <input type="hidden" name="userId" value={user.id} />
-              <button className="btn btn-xs btn-default" name="action" value={user.isActive ? 'deactivate' : 'activate'} type="submit" disabled={user.id === current.user.id}>{user.isActive ? 'Disattiva' : 'Attiva'}</button>
+              <button className="btn btn-sm btn-default" name="action" value={user.isActive ? 'deactivate' : 'activate'} type="submit" disabled={user.id === current.user.id}>{user.isActive ? 'Disattiva' : 'Attiva'}</button>
             </form>
             <form action={systemToggleUserAction}>
               <input type="hidden" name="userId" value={user.id} />
-              <button className="btn btn-xs btn-default" name="action" value={user.isSystemAdmin ? 'system_admin_off' : 'system_admin_on'} type="submit" disabled={user.id === current.user.id}>{user.isSystemAdmin ? 'Rimuovi admin' : 'Rendi admin'}</button>
+              <button className="btn btn-sm btn-default" name="action" value={user.isSystemAdmin ? 'system_admin_off' : 'system_admin_on'} type="submit" disabled={user.id === current.user.id}>{user.isSystemAdmin ? 'Rimuovi admin' : 'Rendi admin'}</button>
             </form>
           </td>
         </tr>)}

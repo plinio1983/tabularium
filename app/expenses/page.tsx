@@ -16,6 +16,7 @@ import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 import SearchIcon from '@/components/SearchIcon';
 import {expenseAffectsFiscalProfit} from '@/lib/reports';
+import {matchesEntityQuickSearch} from '@/lib/entity-quick-search';
 
 const paymentStatusOptions = [
     ['overdue', 'Scaduto'],
@@ -127,6 +128,9 @@ function quickOrderDateLabel(quickDateFilter: string, selectedYear: string) {
     const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
     const monthMatch = quickDateFilter.match(/^month_(\d{2})$/);
     const quarterMatch = quickDateFilter.match(/^quarter_([1-4])$/);
+
+    if (quickDateFilter === 'last_30_days') return 'ultimi 30 giorni';
+    if (quickDateFilter === 'last_90_days') return 'ultimi 90 giorni';
 
     if (monthMatch) {
         return `${monthNameFromIndex(Number(monthMatch[1]) - 1)} ${year}`;
@@ -249,49 +253,49 @@ function ExpenseCategoryColumnChart({data, total}: { data: ExpenseCategoryDatum[
     </div>;
 }
 
-function ExpenseCategoryPieChart({data}: { data: ExpenseCategoryDatum[] }) {
-    const total = data.reduce((sum, item) => sum + item.total, 0);
-    const orderedData = [...data].sort((a, b) => b.total - a.total);
-    const groupedData = orderedData.length > 5
-        ? [...orderedData.slice(0, 4), orderedData.slice(4).reduce((other, item) => ({
-            name: 'Altre categorie',
-            code: 'ALTRO',
-            total: other.total + item.total,
-            residual: other.residual + item.residual
-        }), {name: 'Altre categorie', code: 'ALTRO', total: 0, residual: 0})]
-        : orderedData;
-
-    return <section className="category-chart-card category-pie-chart summary-composition-card">
-        <div className="card-heading-row">
-            <div>
-                <h2>Composizione delle spese</h2>
-                <p className="muted">Peso delle categorie sul totale filtrato.</p>
-            </div>
-        </div>
-        {groupedData.length && total > 0 ? <div className="composition-pie-legend summary-composition-list"
-                                                  aria-label="Composizione delle spese per categoria">
-                {groupedData.map((item, index) => {
-                    const percentage = total ? (item.total / total) * 100 : 0;
-                    return <div className="composition-pie-row-wrap" key={`${item.code}-${item.name}`}>
-                        <div className="composition-pie-legend-row">
-                            <span className="composition-pie-dot" style={{background: expensePieChartColors[index % expensePieChartColors.length]}}/>
-                            <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
-                            <div className="justify-end">
-                                <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong>
-                                <strong className="text-accent">{percentage.toFixed(1)}%</strong>
-                            </div>
-                        </div>
-                        <div className="composition-pie-bar-track">
-                            <div className="composition-pie-bar" style={{
-                                width: `${percentage.toFixed(1)}%`,
-                                background: expensePieChartColors[index % expensePieChartColors.length]
-                            }}/>
-                        </div>
-                    </div>;
-                })}
-        </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
-    </section>;
-}
+// function ExpenseCategoryPieChart({data}: { data: ExpenseCategoryDatum[] }) {
+//     const total = data.reduce((sum, item) => sum + item.total, 0);
+//     const orderedData = [...data].sort((a, b) => b.total - a.total);
+//     const groupedData = orderedData.length > 5
+//         ? [...orderedData.slice(0, 4), orderedData.slice(4).reduce((other, item) => ({
+//             name: 'Altre categorie',
+//             code: 'ALTRO',
+//             total: other.total + item.total,
+//             residual: other.residual + item.residual
+//         }), {name: 'Altre categorie', code: 'ALTRO', total: 0, residual: 0})]
+//         : orderedData;
+//
+//     return <section className="category-chart-card category-pie-chart summary-composition-card">
+//         <div className="card-heading-row">
+//             <div>
+//                 <h2>Composizione delle spese</h2>
+//                 <p className="muted">Peso delle categorie sul totale filtrato.</p>
+//             </div>
+//         </div>
+//         {groupedData.length && total > 0 ? <div className="composition-pie-legend summary-composition-list"
+//                                                   aria-label="Composizione delle spese per categoria">
+//                 {groupedData.map((item, index) => {
+//                     const percentage = total ? (item.total / total) * 100 : 0;
+//                     return <div className="composition-pie-row-wrap" key={`${item.code}-${item.name}`}>
+//                         <div className="composition-pie-legend-row">
+//                             <span className="composition-pie-dot" style={{background: expensePieChartColors[index % expensePieChartColors.length]}}/>
+//                             <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
+//                             <div className="justify-end">
+//                                 <strong className={moneyTone(item.total)}>{chartEuro(item.total)}</strong>
+//                                 <strong className="text-accent">{percentage.toFixed(1)}%</strong>
+//                             </div>
+//                         </div>
+//                         <div className="composition-pie-bar-track">
+//                             <div className="composition-pie-bar" style={{
+//                                 width: `${percentage.toFixed(1)}%`,
+//                                 background: expensePieChartColors[index % expensePieChartColors.length]
+//                             }}/>
+//                         </div>
+//                     </div>;
+//                 })}
+//         </div> : <p className="muted">Nessuna spesa presente nei risultati filtrati.</p>}
+//     </section>;
+// }
 
 function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
     const value = searchParams[key];
@@ -377,14 +381,6 @@ function toDateInputValue(date: Date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-function currentMonthStart(now: Date) {
-    return toDateInputValue(new Date(now.getFullYear(), now.getMonth(), 1));
-}
-
-function currentMonthQuickValue(now: Date) {
-    return `month_${String(now.getMonth() + 1).padStart(2, '0')}`;
-}
-
 function fiscalQuarterRange(year: number, quarterIndex: number) {
     const startMonth = quarterIndex * 3;
     return {
@@ -400,6 +396,14 @@ function getQuickDateRange(value: string, selectedYear: string | undefined, now:
     const currentQuarter = Math.floor(month / 3);
     const monthMatch = String(value).match(/^month_(\d{2})$/);
     const quarterMatch = String(value).match(/^quarter_(\d)$/);
+
+    if (value === 'last_30_days' || value === 'last_90_days') {
+        const days = value === 'last_30_days' ? 30 : 90;
+        return {
+            from: toDateInputValue(new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1))),
+            to: toDateInputValue(now)
+        };
+    }
 
     if (monthMatch) {
         const selectedMonth = Number(monthMatch[1]) - 1;
@@ -481,6 +485,8 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+    ['last_30_days', 'Ultimi 30 giorni'],
+    ['last_90_days', 'Ultimi 90 giorni'],
     ['year_to_date', 'Anno intero'],
     ...monthQuickOptions,
     ...quarterQuickOptions
@@ -499,6 +505,12 @@ function getQuickBillingPeriodRange(value: string, selectedYear: string | undefi
     const currentQuarter = Math.floor(month / 3);
     const monthMatch = String(value).match(/^month_(\d{2})$/);
     const quarterMatch = String(value).match(/^quarter_(\d)$/);
+
+    if (value === 'last_30_days' || value === 'last_90_days') {
+        const days = value === 'last_30_days' ? 30 : 90;
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1));
+        return {from: toMonthInputValue(start.getFullYear(), start.getMonth()), to: toMonthInputValue(now.getFullYear(), now.getMonth())};
+    }
 
     if (monthMatch) {
         const selectedMonth = Number(monthMatch[1]) - 1;
@@ -536,6 +548,8 @@ function getQuickBillingPeriodRange(value: string, selectedYear: string | undefi
 }
 
 const quickBillingPeriodOptions = [
+    ['last_30_days', 'Ultimi 30 giorni'],
+    ['last_90_days', 'Ultimi 90 giorni'],
     ['year_to_date', 'Anno intero'],
     ...monthQuickOptions,
     ...quarterQuickOptions
@@ -591,7 +605,6 @@ export default async function ExpensesPage({searchParams}: {
     const currentQueryString = currentQuery.toString();
     const listHref = `/expenses${currentQueryString ? `?${currentQueryString}` : ''}`;
     const returnTo = encodeURIComponent(listHref);
-    const hasAnyFilter = Object.keys(filters).length > 0;
     const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'period') || inputDefault(filters, 'billingPeriodQuick'));
     const hasOrderDateFilter = Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo') || inputDefault(filters, 'dateQuick'));
     const dateYearFilter = inputDefault(filters, 'dateYear');
@@ -601,12 +614,16 @@ export default async function ExpensesPage({searchParams}: {
     const useOrderDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useOrderDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomOrderDateFilter = useOrderDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo'));
-    const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasOrderDateFilter ? currentMonthQuickValue(companyNow) : '')) : '';
+    const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasOrderDateFilter ? 'last_90_days' : '')) : '';
     const dateQuickSelectorValue = hasCustomOrderDateFilter ? 'custom' : quickDateFilter;
     const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
-    const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom') || (!hasAnyFilter ? currentMonthStart(companyNow) : '')) : '';
+    const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom')) : '';
     const orderDateToDefault = useOrderDateFilter ? (quickDateRange?.to || inputDefault(filters, 'orderDateTo')) : '';
-    const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
+    const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || (
+        !inputDefault(filters, 'billingPeriodFrom') && !inputDefault(filters, 'billingPeriodTo') && !inputDefault(filters, 'period')
+            ? 'last_90_days'
+            : ''
+    )) : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
 
     const [expenses, categories, banks, paymentMethods, suppliers, employees] = await Promise.all([
@@ -735,7 +752,7 @@ export default async function ExpensesPage({searchParams}: {
         if (expenseTypeFilter === 'tax_contribution' && expense.expenseType !== 'TAX_CONTRIBUTION') return false;
         if (expenseTypeFilter === 'payroll' && expense.expenseType !== 'PAYROLL') return false;
         if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
-        if (supplierQuickFilter && !normalize(expense.supplier?.businessName).includes(supplierQuickFilter)) return false;
+        if (!matchesEntityQuickSearch(supplierQuickFilter, expense.supplier?.businessName, expense.description)) return false;
         if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
         if (!amountMatchesFilter(amount, amountFilterValue)) return false;
         if (paymentStatusFilter === 'not_complete' && expense.paymentStatus === 'COMPLETATO') return false;
@@ -907,7 +924,7 @@ export default async function ExpensesPage({searchParams}: {
             value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : expenseTypeFilter === 'tax_contribution' ? 'Imposte - non IVA' : expenseTypeFilter === 'payroll' ? 'Busta paga' : 'Singola'
         },
         inputDefault(filters, 'merchant') && {label: 'Esercente', value: inputDefault(filters, 'merchant')},
-        inputDefault(filters, 'supplierQuick') && {label: 'Fornitore', value: inputDefault(filters, 'supplierQuick')},
+        inputDefault(filters, 'supplierQuick') && {label: 'Ricerca spesa', value: inputDefault(filters, 'supplierQuick')},
         inputDefault(filters, 'product') && {label: 'Descrizione', value: inputDefault(filters, 'product')},
         amountFilterRaw && {label: 'Importo', value: amountFilterRaw},
         paymentStatusFilter && {
@@ -994,9 +1011,7 @@ export default async function ExpensesPage({searchParams}: {
             </div>
             <ExpenseTrendSelectors
                 dateQuick={dateQuickSelectorValue}
-                billingPeriodQuick={quickBillingPeriodFilter}
                 dateYear={dateYearFilter}
-                billingPeriodYear={billingPeriodYearFilter}
                 useFiscalPeriodFilter={useFiscalPeriodFilter}
             />
 
@@ -1048,10 +1063,9 @@ export default async function ExpensesPage({searchParams}: {
                     </Link>
                 </div>
             </section>
-
-            <div className="record-summary-chart">
-                <ExpenseCategoryPieChart data={expensesByCategory}/>
-            </div>
+            {/*<div className="record-summary-chart">*/}
+            {/*    <ExpenseCategoryPieChart data={expensesByCategory}/>*/}
+            {/*</div>*/}
         </div>
         <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
@@ -1096,11 +1110,11 @@ export default async function ExpensesPage({searchParams}: {
                     <input type="hidden" name={key} value={value} key={key}/>] : []))}
                 <label className="app-form-field-label" htmlFor="expenseSupplierQuickSearch">
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
-                    <span>Ricerca fornitore</span>
+                    <span>Ricerca spesa</span>
                 </label>
                 <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca fornitore"><SearchIcon/>
+                    <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Fornitore o descrizione" autoComplete="off"/>
+                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca spesa"><SearchIcon/>
                     </button>
                 </div>
             </form>
@@ -1199,6 +1213,11 @@ export default async function ExpensesPage({searchParams}: {
             const currentQuarter = Math.floor(m / 3);
             const monthMatch = String(value).match(/^month_(\d{2})$/);
             const quarterMatch = String(value).match(/^quarter_(\d)$/);
+            if (value === 'last_30_days' || value === 'last_90_days') {
+              const days = value === 'last_30_days' ? 30 : 90;
+              const start = new Date(y, m, now.getDate() - (days - 1));
+              return { from: fmt(start.getFullYear(), start.getMonth()), to: fmt(y, m) };
+            }
             if (monthMatch) {
               const selectedMonth = Number(monthMatch[1]) - 1;
               return { from: fmt(y, selectedMonth), to: fmt(y, selectedMonth) };
@@ -1242,6 +1261,10 @@ export default async function ExpensesPage({searchParams}: {
             const currentQuarter = Math.floor(m / 3);
             const monthMatch = String(value).match(/^month_(\d{2})$/);
             const quarterMatch = String(value).match(/^quarter_(\d)$/);
+            if (value === 'last_30_days' || value === 'last_90_days') {
+              const days = value === 'last_30_days' ? 30 : 90;
+              return { from: fmt(new Date(y, m, now.getDate() - (days - 1))), to: fmt(now) };
+            }
             if (monthMatch) {
               const selectedMonth = Number(monthMatch[1]) - 1;
               return { from: fmt(new Date(y, selectedMonth, 1)), to: fmt(new Date(y, selectedMonth + 1, 0)) };

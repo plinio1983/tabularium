@@ -9,12 +9,12 @@ type Option = {
   disabled: boolean;
 };
 
-export default function MonthReportMonthSelect({ options, value }: { options: Option[]; value: string }) {
+export default function MonthReportMonthSelect({ options, value, ariaLabel = 'Seleziona mese' }: { options: Option[]; value: string; ariaLabel?: string }) {
   const router = useRouter();
 
   return <select
     className="month-report-month-select"
-    aria-label="Seleziona mese"
+    aria-label={ariaLabel}
     value={value}
     onChange={(event) => {
       const href = event.currentTarget.value;

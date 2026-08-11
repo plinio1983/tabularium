@@ -181,37 +181,37 @@ export default function IncomesList({
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
                     <summary className="bulk-action-trigger">
-                        <span className="btn-icon hidden-mobile">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span>
+                        <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
                                 formAction="/api/exports/incomes" formMethod="post" data-confirm-label="Esporta CSV">
-                            <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+                            <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                         </button>
                         <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
-                            <span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span>
+                            <span className="btn-icon">✓</span><span className="hidden-sm-down">Fattura emessa</span>
                         </button>
-                        <button className="btn btn-sm btn-default" type="button" data-bulk-add-credit>
-                            <span className="btn-icon">＋</span><span className="bulk-label">Inserisci accredito</span>
+                        <button className="btn btn-sm btn-default is-disabled" type="button" data-bulk-copy aria-disabled="true" disabled>
+                            <span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia incassi selezionati</span>
                         </button>
                         <BulkExpenseAttachmentsModal formId={formId} endpoint="/api/incomes/attachments/archive" subject="incassi"/>
                         <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
                                 name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
-                            <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                            <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
                         </button>
                     </div>
                 </details>
                 <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
+                    <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-credit aria-disabled="true" disabled><span className="btn-icon">＋</span><span className="hidden-sm-down">Inserisci accredito</span></button>
                     <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
-                        <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span>
+                        <span className="btn-icon icon-small">🗑</span><span className="hidden-sm-down">Elimina</span>
                     </button>
                 </div>
             </div>
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link bulk-add-link  btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
-                    <span className="btn-icon">+</span><span className="bulk-label">Incasso</span></button>
+                    <span className="btn-icon">+</span><span className="hidden-sm-down">Incasso</span></button>
             </div>
         </form>
         <div className="income-mobile-list mobile-record-list" aria-label="Lista incassi mobile">

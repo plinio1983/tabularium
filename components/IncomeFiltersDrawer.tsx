@@ -50,12 +50,16 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+  ["last_30_days", "Ultimi 30 giorni"],
+  ["last_90_days", "Ultimi 90 giorni"],
   ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
 ];
 
 const quickBillingPeriodOptions = [
+  ["last_30_days", "Ultimi 30 giorni"],
+  ["last_90_days", "Ultimi 90 giorni"],
   ["year_to_date", "Anno intero"],
   ...monthQuickOptions,
   ...quarterQuickOptions,
@@ -89,6 +93,12 @@ function quickBillingPeriodRange(value: string, now: Date) {
   const monthMatch = value.match(/^month_(\d{2})$/);
   const quarterMatch = value.match(/^quarter_(\d)$/);
 
+  if (value === "last_30_days" || value === "last_90_days") {
+    const days = value === "last_30_days" ? 30 : 90;
+    const start = new Date(year, month, now.getDate() - (days - 1));
+    return { from: monthInputValue(start.getFullYear(), start.getMonth()), to: monthInputValue(year, month) };
+  }
+
   if (monthMatch) {
     const selectedMonth = Number(monthMatch[1]) - 1;
     return { from: monthInputValue(year, selectedMonth), to: monthInputValue(year, selectedMonth) };
@@ -115,6 +125,11 @@ function quickCreditDateRange(value: string, now: Date) {
     from: dateInputValue(new Date(targetYear, quarter * 3, 1)),
     to: dateInputValue(new Date(targetYear, quarter * 3 + 3, 0)),
   });
+
+  if (value === "last_30_days" || value === "last_90_days") {
+    const days = value === "last_30_days" ? 30 : 90;
+    return { from: dateInputValue(new Date(year, month, now.getDate() - (days - 1))), to: dateInputValue(now) };
+  }
 
   if (monthMatch) {
     const selectedMonth = Number(monthMatch[1]) - 1;

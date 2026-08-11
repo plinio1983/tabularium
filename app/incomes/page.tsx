@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import BulkSelectionController from '@/components/BulkSelectionController';
 import {prisma} from '@/lib/prisma';
 import {euro, moneyTone} from '@/lib/money';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
@@ -16,6 +15,7 @@ import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 import SearchIcon from '@/components/SearchIcon';
 import {incomeCreditState} from '@/lib/income-status';
+import {matchesEntityQuickSearch} from '@/lib/entity-quick-search';
 
 const invoiceStatusOptions = [
     ['NON_INVIATA', 'Non inviata'],
@@ -214,10 +214,6 @@ function toDateInputValue(date: Date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-function currentMonthQuickValue(now: Date) {
-    return `month_${String(now.getMonth() + 1).padStart(2, '0')}`;
-}
-
 function fiscalQuarterRange(year: number, quarterIndex: number) {
     const startMonth = quarterIndex * 3;
     return {
@@ -233,6 +229,14 @@ function getQuickDateRange(value: string, selectedYear: string | undefined, now:
     const currentQuarter = Math.floor(month / 3);
     const monthMatch = String(value).match(/^month_(\d{2})$/);
     const quarterMatch = String(value).match(/^quarter_(\d)$/);
+
+    if (value === 'last_30_days' || value === 'last_90_days') {
+        const days = value === 'last_30_days' ? 30 : 90;
+        return {
+            from: toDateInputValue(new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1))),
+            to: toDateInputValue(now)
+        };
+    }
 
     if (monthMatch) {
         const selectedMonth = Number(monthMatch[1]) - 1;
@@ -285,6 +289,8 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+    ['last_30_days', 'Ultimi 30 giorni'],
+    ['last_90_days', 'Ultimi 90 giorni'],
     ['year_to_date', 'Anno intero'],
     ...monthQuickOptions,
     ...quarterQuickOptions
@@ -302,6 +308,12 @@ function getQuickBillingPeriodRange(value: string, selectedYear: string | undefi
     const currentQuarter = Math.floor(month / 3);
     const monthMatch = String(value).match(/^month_(\d{2})$/);
     const quarterMatch = String(value).match(/^quarter_(\d)$/);
+
+    if (value === 'last_30_days' || value === 'last_90_days') {
+        const days = value === 'last_30_days' ? 30 : 90;
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1));
+        return {from: toMonthInputValue(start.getFullYear(), start.getMonth()), to: toMonthInputValue(now.getFullYear(), now.getMonth())};
+    }
 
     if (monthMatch) {
         const selectedMonth = Number(monthMatch[1]) - 1;
@@ -335,6 +347,8 @@ function getQuickBillingPeriodRange(value: string, selectedYear: string | undefi
 }
 
 const quickBillingPeriodOptions = [
+    ['last_30_days', 'Ultimi 30 giorni'],
+    ['last_90_days', 'Ultimi 90 giorni'],
     ['year_to_date', 'Anno intero'],
     ...monthQuickOptions,
     ...quarterQuickOptions
@@ -454,50 +468,50 @@ function IncomeBreakdownChart({title, description, data}: {
 
 const incomePieChartColors = ['#2563eb', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0f766e', '#db2777', '#64748b'];
 
-function IncomePieBreakdownChart({title, data}: {
-    title: string;
-    data: Array<{ name: string; code: string; total: number }>
-}) {
-    const total = data.reduce((sum, item) => sum + item.total, 0);
-    const orderedData = [...data].sort((a, b) => b.total - a.total);
-    const groupedData = orderedData.length > 5
-        ? [...orderedData.slice(0, 4), orderedData.slice(4).reduce((other, item) => ({
-            name: 'Altri canali',
-            code: 'ALTRO',
-            total: other.total + item.total
-        }), {name: 'Altri canali', code: 'ALTRO', total: 0})]
-        : orderedData;
-
-    return <section className="category-chart-card category-pie-chart income-chart summary-composition-card">
-        <div className="card-heading-row">
-            <div>
-                <h2>{title}</h2>
-                <p className="muted">Peso dei canali di vendita sul totale filtrato.</p>
-            </div>
-        </div>
-        {groupedData.length && total > 0 ? <div className="composition-pie-legend summary-composition-list"
-                                                   aria-label={title}>
-                {groupedData.map((item, index) => {
-                    const percentage = total ? (item.total / total) * 100 : 0;
-                    return <div className="composition-pie-row-wrap" key={`${item.code}-${item.name}`}>
-                        <div className="composition-pie-legend-row">
-                            <span className="composition-pie-dot" style={{background: incomePieChartColors[index % incomePieChartColors.length]}}/>
-                            <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
-                            <div className="justify-end">
-                                <strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
-                            </div>
-                        </div>
-                        <div className="composition-pie-bar-track">
-                            <div className="composition-pie-bar" style={{
-                                width: `${percentage.toFixed(1)}%`,
-                                background: incomePieChartColors[index % incomePieChartColors.length]
-                            }}/>
-                        </div>
-                    </div>;
-                })}
-        </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
-    </section>;
-}
+// function IncomePieBreakdownChart({title, data}: {
+//     title: string;
+//     data: Array<{ name: string; code: string; total: number }>
+//     }) {
+//     const total = data.reduce((sum, item) => sum + item.total, 0);
+//     const orderedData = [...data].sort((a, b) => b.total - a.total);
+//     const groupedData = orderedData.length > 5
+//         ? [...orderedData.slice(0, 4), orderedData.slice(4).reduce((other, item) => ({
+//             name: 'Altri canali',
+//             code: 'ALTRO',
+//             total: other.total + item.total
+//         }), {name: 'Altri canali', code: 'ALTRO', total: 0})]
+//         : orderedData;
+//
+//     return <section className="category-chart-card category-pie-chart income-chart summary-composition-card">
+//         <div className="card-heading-row">
+//             <div>
+//                 <h2>{title}</h2>
+//                 <p className="muted">Peso dei canali di vendita sul totale filtrato.</p>
+//             </div>
+//         </div>
+//         {groupedData.length && total > 0 ? <div className="composition-pie-legend summary-composition-list"
+//                                                    aria-label={title}>
+//                 {groupedData.map((item, index) => {
+//                     const percentage = total ? (item.total / total) * 100 : 0;
+//                     return <div className="composition-pie-row-wrap" key={`${item.code}-${item.name}`}>
+//                         <div className="composition-pie-legend-row">
+//                             <span className="composition-pie-dot" style={{background: incomePieChartColors[index % incomePieChartColors.length]}}/>
+//                             <div><strong className="hidden-mobile">{item.code}</strong><span>{item.name}</span></div>
+//                             <div className="justify-end">
+//                                 <strong className={moneyTone(item.total)}>{euro(item.total)}</strong><small>{percentage.toFixed(1)}%</small>
+//                             </div>
+//                         </div>
+//                         <div className="composition-pie-bar-track">
+//                             <div className="composition-pie-bar" style={{
+//                                 width: `${percentage.toFixed(1)}%`,
+//                                 background: incomePieChartColors[index % incomePieChartColors.length]
+//                             }}/>
+//                         </div>
+//                     </div>;
+//                 })}
+//         </div> : <p className="muted">Nessun incasso presente nei risultati filtrati.</p>}
+//     </section>;
+// }
 
 function IncomeVerticalBarChart({title, description, data}: {
     title: string;
@@ -553,7 +567,6 @@ export default async function IncomesPage({searchParams}: {
     const currentQueryString = currentQuery.toString();
     const listHref = `/incomes${currentQueryString ? `?${currentQueryString}` : ''}`;
     const returnTo = encodeURIComponent(listHref);
-    const hasAnyFilter = Object.keys(filters).length > 0;
     const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod') || inputDefault(filters, 'billingPeriodQuick'));
     const hasCreditDateFilter = Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo') || inputDefault(filters, 'dateQuick'));
     const dateYearFilter = inputDefault(filters, 'dateYear');
@@ -563,12 +576,16 @@ export default async function IncomesPage({searchParams}: {
     const useCreditDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
-    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasAnyFilter && !hasCreditDateFilter ? currentMonthQuickValue(companyNow) : '')) : '';
+    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasCreditDateFilter ? 'last_90_days' : '')) : '';
     const dateQuickSelectorValue = hasCustomCreditDateFilter ? 'custom' : quickDateFilter;
     const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
     const creditDateFromDefault = useCreditDateFilter ? (quickDateRange?.from || inputDefault(filters, 'creditDateFrom')) : '';
     const creditDateToDefault = useCreditDateFilter ? (quickDateRange?.to || inputDefault(filters, 'creditDateTo')) : '';
-    const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || '') : '';
+    const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || (
+        !inputDefault(filters, 'billingPeriodFrom') && !inputDefault(filters, 'billingPeriodTo') && !inputDefault(filters, 'billingPeriod')
+            ? 'last_90_days'
+            : ''
+    )) : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
 
     const [incomes, expensesForVat, banks, paymentMethods, salesChannels, customers] = await Promise.all([
@@ -663,7 +680,7 @@ export default async function IncomesPage({searchParams}: {
         if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
         if (paymentMethodFilter && !income.credits.some(credit => credit.paymentMethodId === incomePaymentMethods.find(method => method.name === paymentMethodFilter)?.id)) return false;
         if (creditChannelFilter && !income.credits.some(credit => credit.bankId === orderedBanks.find(bank => bank.name === creditChannelFilter)?.id)) return false;
-        if (customerQuickFilter && !normalize(income.customer?.businessName).includes(customerQuickFilter)) return false;
+        if (!matchesEntityQuickSearch(customerQuickFilter, income.customer?.businessName, income.description)) return false;
         if (fiscalFilter === 'yes' && !income.isFiscal) return false;
         if (fiscalFilter === 'no' && income.isFiscal) return false;
         if (invoiceStatusModeFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
@@ -765,7 +782,7 @@ export default async function IncomesPage({searchParams}: {
         amountFilterRaw && {label: 'Importo', value: amountFilterRaw},
         paymentMethodFilter && {label: 'Metodo pagamento', value: paymentMethodFilter},
         creditChannelFilter && {label: 'Canale accredito', value: creditChannelFilter},
-        customerQuickFilter && {label: 'Cliente', value: inputDefault(filters, 'customerQuick')},
+        customerQuickFilter && {label: 'Ricerca incasso', value: inputDefault(filters, 'customerQuick')},
         fiscalFilter && {label: 'Fiscale', value: fiscalFilter === 'yes' ? 'Si' : 'No'},
         (invoiceStatusFilter || invoiceStatusModeFilter) && {
             label: 'Stato fattura',
@@ -839,7 +856,7 @@ export default async function IncomesPage({searchParams}: {
                 <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
             </div>
             <div className="toolbar-actions">
-                <Link className="btn btn-sm btn-secondary" href="/recurring-incomes">
+                <Link className="btn btn-sm btn-ghost" href="/recurring-incomes">
                     <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
@@ -877,9 +894,7 @@ export default async function IncomesPage({searchParams}: {
             </div>
             <IncomeTrendSelectors
                 dateQuick={dateQuickSelectorValue}
-                billingPeriodQuick={quickBillingPeriodFilter}
                 dateYear={dateYearFilter}
-                billingPeriodYear={billingPeriodYearFilter}
                 useFiscalPeriodFilter={useFiscalPeriodFilter}
             />
 
@@ -930,9 +945,9 @@ export default async function IncomesPage({searchParams}: {
                 </div>
             </section>
 
-            <div className="record-summary-chart">
-                <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>
-            </div>
+            {/*<div className="record-summary-chart">*/}
+            {/*    <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>*/}
+            {/*</div>*/}
         </div>
         <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
@@ -971,18 +986,19 @@ export default async function IncomesPage({searchParams}: {
             </div> : null}
 
             <form className="entity-quick-search app-quick-search-form" action="/incomes" method="get" role="search">
+                {Object.entries(filters).flatMap(([key, value]) => key === 'customerQuick' || key === 'mobileSort' ? [] : (Array.isArray(value) ? value.map(item =>
+                    <input type="hidden" name={key} value={item} key={`${key}-${item}`}/>) : value ? [
+                    <input type="hidden" name={key} value={value} key={key}/>] : []))}
                 <label className="app-form-field-label" htmlFor="incomeCustomerQuickSearch">
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
-                    <span>Ricerca cliente</span>
+                    <span>Ricerca incasso</span>
                 </label>
                 <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca cliente"><SearchIcon/>
+                    <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Cliente o descrizione" autoComplete="off"/>
+                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca incasso"><SearchIcon/>
                     </button>
                 </div>
             </form>
-
-            <BulkSelectionController/>
 
             <script dangerouslySetInnerHTML={{
                 __html: `
@@ -1072,6 +1088,7 @@ export default async function IncomesPage({searchParams}: {
                     const currentQuarter = Math.floor(m / 3);
                     const monthMatch = String(value).match(/^month_(\d{2})$/);
                     const quarterMatch = String(value).match(/^quarter_(\d)$/);
+                    if (value === 'last_30_days' || value === 'last_90_days') { const days = value === 'last_30_days' ? 30 : 90; const start = new Date(y, m, now.getDate() - (days - 1)); return { from: fmt(start.getFullYear(), start.getMonth()), to: fmt(y, m) }; }
                     if (monthMatch) { const selectedMonth = Number(monthMatch[1]) - 1; return { from: fmt(y, selectedMonth), to: fmt(y, selectedMonth) }; }
                     if (quarterMatch) { const quarter = Number(quarterMatch[1]) - 1; return { from: fmt(y, quarter * 3), to: fmt(y, quarter * 3 + 2) }; }
                     if (value === 'previous_month') return { from: fmt(y, m - 1), to: fmt(y, m - 1) };
@@ -1085,72 +1102,6 @@ export default async function IncomesPage({searchParams}: {
                   [from, to].forEach((field) => field.addEventListener('change', () => { quick.value = ''; ['creditDateFrom','creditDateTo','incomeDateQuick'].forEach(id => { const f = document.getElementById(id); if (f) f.value = ''; }); }));
                 })();
                 document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });
-                document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui record selezionati?'; if (!confirm(message)) event.preventDefault(); } });
-                (() => {
-                  const syncBulkMenus = () => {
-                    document.querySelectorAll('[data-bulk-menu]').forEach(menu => {
-                      const formId = menu.getAttribute('data-bulk-form');
-                      const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
-                      menu.classList.toggle('bulk-action-menu-disabled', selected === 0);
-                      if (selected === 0) menu.removeAttribute('open');
-                    });
-                    document.querySelectorAll('[data-bulk-direct-actions]').forEach(group => {
-                      const formId = group.getAttribute('data-bulk-form');
-                      const selectedInputs = formId ? Array.from(document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked')) : [];
-                      const selected = selectedInputs.length;
-                      const firstId = selectedInputs[0] ? selectedInputs[0].value : '';
-                      const returnTo = group.getAttribute('data-return-to') || '';
-                      const edit = group.querySelector('[data-bulk-edit]');
-                      const copy = group.querySelector('[data-bulk-copy]');
-                      const del = group.querySelector('[data-bulk-delete]');
-                      const singleEnabled = selected === 1;
-                      const anyEnabled = selected > 0;
-                      if (edit) {
-                        edit.classList.toggle('is-disabled', !singleEnabled);
-                        edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                        edit.href = '#';
-                        if (singleEnabled) edit.setAttribute('data-income-edit-id', firstId);
-                        else edit.removeAttribute('data-income-edit-id');
-                      }
-                      if (copy) {
-                        copy.classList.toggle('is-disabled', !anyEnabled);
-                        copy.setAttribute('aria-disabled', anyEnabled ? 'false' : 'true');
-                        copy.href = '#';
-                        if (singleEnabled) copy.setAttribute('data-income-copy-id', firstId);
-                        else copy.removeAttribute('data-income-copy-id');
-                        copy.dataset.bulkCopyMode = selected > 1 ? 'bulk' : 'single';
-                      }
-                      if (del) del.disabled = !anyEnabled;
-                    });
-                  };
-                  document.addEventListener('change', function(event) {
-                    const target = event.target;
-                    if (target && target.classList && target.classList.contains('bulk-select-all')) {
-                      const formId = target.getAttribute('data-bulk-target');
-                      if (!formId) return;
-                      document.querySelectorAll('input[form="' + formId + '"][name="ids"]').forEach(input => { input.checked = target.checked; });
-                    }
-                    if (target && target.matches && (target.matches('input[name="ids"]') || target.classList.contains('bulk-select-all'))) syncBulkMenus();
-                  });
-                  document.addEventListener('click', function(event) {
-                    document.querySelectorAll('[data-bulk-menu][open]').forEach(menu => {
-                      if (!menu.contains(event.target)) menu.removeAttribute('open');
-                    });
-                  });
-                  document.addEventListener('click', function(event) {
-                    const link = event.target.closest && event.target.closest('.bulk-direct-link.is-disabled');
-                    if (link) event.preventDefault();
-                  });
-                  document.addEventListener('toggle', function(event) {
-                    const menu = event.target;
-                    if (menu && menu.matches && menu.matches('[data-bulk-menu][open]')) {
-                      const formId = menu.getAttribute('data-bulk-form');
-                      const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
-                      if (!selected) menu.removeAttribute('open');
-                    }
-                  }, true);
-                  syncBulkMenus();
-                })();
                 (() => {
                   const quick = document.getElementById('incomeDateQuick');
                   const from = document.getElementById('creditDateFrom');
@@ -1163,6 +1114,7 @@ export default async function IncomesPage({searchParams}: {
                     const currentQuarter = Math.floor(m / 3);
                     const monthMatch = String(value).match(/^month_(\d{2})$/);
                     const quarterMatch = String(value).match(/^quarter_(\d)$/);
+                    if (value === 'last_30_days' || value === 'last_90_days') { const days = value === 'last_30_days' ? 30 : 90; return { from: fmt(new Date(y, m, now.getDate() - (days - 1))), to: fmt(now) }; }
                     if (monthMatch) { const selectedMonth = Number(monthMatch[1]) - 1; return { from: fmt(new Date(y, selectedMonth, 1)), to: fmt(new Date(y, selectedMonth + 1, 0)) }; }
                     if (quarterMatch) return fiscalQuarterRange(y, Number(quarterMatch[1]) - 1);
                     if (value === 'previous_month') return { from: fmt(new Date(y, m - 1, 1)), to: fmt(new Date(y, m, 0)) };

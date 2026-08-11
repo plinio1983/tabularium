@@ -137,23 +137,23 @@ export default async function ClientsPage({searchParams}: {
                         <div className="bulk-action-menu-panel">
                             <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
                                     formAction="/api/exports/clients" formMethod="post" data-confirm-label="Esporta CSV">
-                                <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+                                <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                             </button>
                             <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
-                                <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                                <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
                             </button>
                         </div>
                     </details>
                     <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="clientBulkForm" data-edit-trigger-attr="data-client-edit-id">
-                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
+                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
                         <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete disabled>
                             <span className="btn-icon icon-small">🗑</span>
-                            <span className="bulk-label">Elimina</span>
+                            <span className="hidden-sm-down">Elimina</span>
                         </button>
                     </div>
                 </div>
                 <div className="bulk-inner-container">
-                    <button className="bulk-direct-link btn btn-md bulk-add-link  btn-primary" type="button" data-bulk-new data-client-new data-floating-label="Cliente">+ <span className="bulk-label">Cliente</span>
+                    <button className="bulk-direct-link btn btn-md bulk-add-link btn-primary" type="button" data-bulk-new data-client-new data-floating-label="Cliente"><span className="btn-icon">+</span><span className="hidden-sm-down">Cliente</span>
                     </button>
                 </div>
             </form>

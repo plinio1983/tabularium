@@ -1,4 +1,8 @@
 /* UX refactor: dense forms as guided sections */
+.expense-type-step-external > .entry-type-choice {
+  display: none;
+}
+
 .form-section {
   grid-column: 1 / -1;
   border: 1px solid var(--line);
@@ -889,4 +893,3 @@
 .app-form-modal .app-record-form .form-sticky-actions .btn {
   min-width: 150px;
 }
-

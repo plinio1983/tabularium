@@ -47,7 +47,7 @@ export default function MonthlyEconomicTrendChart({data, year}: {data: MonthData
     return `${x},${y(month.totals.utileNetto)}`;
   }).join(' ');
 
-  return <section className="card dashboard-insight-card full">
+  return <section id="andamento" className="card dashboard-insight-card full dashboard-anchor-section">
     <div className="card-heading-row">
       <div>
         <h2>Entrate, uscite e utile per mese</h2>

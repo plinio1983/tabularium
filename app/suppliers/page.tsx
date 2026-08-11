@@ -317,69 +317,6 @@ export default async function SuppliersPage({searchParams}: {
             else localStorage.removeItem(storageKey);
           });
         })();
-        document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui fornitori selezionati?'; if (!confirm(message)) event.preventDefault(); } });
-        (() => {
-          const syncBulkMenus = () => {
-            document.querySelectorAll('[data-bulk-menu]').forEach(menu => {
-              const formId = menu.getAttribute('data-bulk-form');
-              const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
-              menu.classList.toggle('bulk-action-menu-disabled', selected === 0);
-              if (selected === 0) menu.removeAttribute('open');
-            });
-            document.querySelectorAll('[data-bulk-direct-actions]').forEach(group => {
-              const formId = group.getAttribute('data-bulk-form');
-              const selectedInputs = formId ? Array.from(document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked')) : [];
-              const selected = selectedInputs.length;
-              const firstId = selectedInputs[0] ? selectedInputs[0].value : '';
-              const returnTo = group.getAttribute('data-return-to') || '';
-              const edit = group.querySelector('[data-bulk-edit]');
-              const copy = group.querySelector('[data-bulk-copy]');
-              const del = group.querySelector('[data-bulk-delete]');
-              const singleEnabled = selected === 1;
-              const anyEnabled = selected > 0;
-              if (edit) {
-                edit.classList.toggle('is-disabled', !singleEnabled);
-                edit.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                edit.href = '#';
-                if (singleEnabled) edit.setAttribute('data-supplier-edit-id', firstId);
-                else edit.removeAttribute('data-supplier-edit-id');
-              }
-              if (copy) {
-                copy.classList.toggle('is-disabled', !singleEnabled);
-                copy.setAttribute('aria-disabled', singleEnabled ? 'false' : 'true');
-                copy.href = singleEnabled ? (group.getAttribute('data-copy-base') + firstId + '&returnTo=' + returnTo) : '#';
-              }
-              if (del) del.disabled = !anyEnabled;
-            });
-          };
-          document.addEventListener('change', function(event) {
-            const target = event.target;
-            if (target && target.classList && target.classList.contains('bulk-select-all')) {
-              const formId = target.getAttribute('data-bulk-target');
-              if (!formId) return;
-              document.querySelectorAll('input[form="' + formId + '"][name="ids"]').forEach(input => { input.checked = target.checked; });
-            }
-            if (target && target.matches && (target.matches('input[name="ids"]') || target.classList.contains('bulk-select-all'))) syncBulkMenus();
-          });
-          document.addEventListener('click', function(event) {
-            document.querySelectorAll('[data-bulk-menu][open]').forEach(menu => {
-              if (!menu.contains(event.target)) menu.removeAttribute('open');
-            });
-          });
-          document.addEventListener('click', function(event) {
-            const link = event.target.closest && event.target.closest('.bulk-direct-link.is-disabled');
-            if (link) event.preventDefault();
-          });
-          document.addEventListener('toggle', function(event) {
-            const menu = event.target;
-            if (menu && menu.matches && menu.matches('[data-bulk-menu][open]')) {
-              const formId = menu.getAttribute('data-bulk-form');
-              const selected = formId ? document.querySelectorAll('input[form="' + formId + '"][name="ids"]:checked').length : 0;
-              if (!selected) menu.removeAttribute('open');
-            }
-          }, true);
-          syncBulkMenus();
-        })();
       `
             }}/>
 
@@ -398,26 +335,26 @@ export default async function SuppliersPage({searchParams}: {
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
                                 formAction="/api/exports/suppliers" formMethod="post" data-confirm-label="Esporta CSV">
-                            <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+                            <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                         </button>
                         <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
-                            <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                            <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
                         </button>
                     </div>
                   </details>
                   <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-copy-base="/suppliers/new?copyId=" data-return-to={returnTo}>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="bulk-label">Copia</span></a>
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia</span></a>
                     <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
                         <span className="btn-icon icon-small">🗑</span>
-                        <span className="bulk-label">Elimina</span>
+                        <span className="hidden-sm-down">Elimina</span>
                     </button>
                   </div>
                 </div>
                 <div className="bulk-inner-container">
                     <button className="bulk-direct-link btn btn-md btn-primary bulk-add-link " type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">
                         <span className="btn-icon">+</span>
-                        <span className="bulk-label">Fornitore</span>
+                        <span className="hidden-sm-down">Fornitore</span>
                     </button>
                 </div>
             </form>

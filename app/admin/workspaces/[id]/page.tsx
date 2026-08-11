@@ -35,7 +35,7 @@ export default async function SystemWorkspaceDetailPage({ params }: { params: Pr
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="btn btn-xs btn-default" href="/admin/workspaces"><span className="btn-icon">↩</span> Workspace</Link>
+        <Link className="btn btn-sm btn-default" href="/admin/workspaces"><span className="btn-icon">↩</span> Workspace</Link>
         <h2>{workspace.name}</h2>
         <p className="muted">Owner: {workspace.owner.email}</p>
       </div>
@@ -80,8 +80,8 @@ export default async function SystemWorkspaceDetailPage({ params }: { params: Pr
             </form>
           </td>
           <td className="actions-row">
-            <button form={`system-member-${member.id}`} className="btn btn-xs btn-default" name="action" value="assign" type="submit">Salva</button>
-            <button form={`system-member-${member.id}`} className="btn btn-xs btn-default" name="action" value="remove" type="submit">Rimuovi</button>
+            <button form={`system-member-${member.id}`} className="btn btn-sm btn-default" name="action" value="assign" type="submit">Salva</button>
+            <button form={`system-member-${member.id}`} className="btn btn-sm btn-default" name="action" value="remove" type="submit">Rimuovi</button>
           </td>
         </tr>)}
       </tbody></table></div>

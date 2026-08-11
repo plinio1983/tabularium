@@ -17,7 +17,7 @@ export default async function ResendVerificationPage({ searchParams }: { searchP
         {sent ? <div className="form-summary">Se l’account richiede la verifica, riceverai a breve un’email.</div> : null}
         <label>Email<input name="email" type="email" autoComplete="email" defaultValue={email || ''} required /></label>
         <div className="actions-row right-actions login-actions">
-          <Link className="btn btn-xs btn-default" href="/login">Torna al login</Link>
+          <Link className="btn btn-sm btn-default" href="/login">Torna al login</Link>
           <button type="submit" className="btn btn-md btn-primary">Invia link</button>
         </div>
       </form>

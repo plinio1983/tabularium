@@ -39,7 +39,7 @@ export default async function RegisterPage({ searchParams }: { searchParams?: Pr
         </div>
         <a className="btn btn-md btn-default full login-google-button" href="/api/auth/google?next=/register/success">Registrati con Google</a>
         <div className="actions-row right-actions login-actions">
-          <Link className="btn btn-xs btn-default" href="/login">Ho già un account</Link>
+          <Link className="btn btn-sm btn-default" href="/login">Ho già un account</Link>
           <button type="submit" className="btn btn-md btn-primary">Registrati</button>
         </div>
       </form>

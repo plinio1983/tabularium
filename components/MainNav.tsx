@@ -67,7 +67,7 @@ function MainNavContent() {
       { href: '/', label: 'Dashboard', shortLabel: 'Home', icon: '⌂', match: (pathname: string) => pathname === '/' },
       { href: '/expenses', label: 'Spese', shortLabel: 'Spese', icon: '−', match: (pathname: string) => pathname.startsWith('/expenses') },
       { href: '/incomes', label: 'Incassi', shortLabel: 'Incassi', icon: '+', match: (pathname: string) => pathname.startsWith('/incomes') },
-      { href: currentMonthHref, label: 'Mese', shortLabel: 'Mese', icon: <MonthlyReportIcon/>, match: (currentPathname: string) => currentPathname.startsWith('/months/') },
+      { href: currentMonthHref, label: 'Report', shortLabel: 'Report', icon: <MonthlyReportIcon/>, match: (currentPathname: string) => currentPathname.startsWith('/months/') },
       { href: '/suppliers', label: 'Fornitori', shortLabel: 'Fornitori', icon: '◇', match: (pathname: string) => pathname.startsWith('/suppliers'), isMonthLink: true },
   ];
   const navigationMobileLinks = [

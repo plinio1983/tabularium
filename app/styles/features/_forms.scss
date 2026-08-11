@@ -477,8 +477,21 @@
 }
 
 .recurring-form-section.recurring-fiscal-section .recurring-form-section-grid {
-  @media(min-width: 900px) {
-    display: flex;
+  @media(min-width: 901px) {
+    display: grid;
+    grid-template-columns: minmax(154px, max-content) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 901px) {
+  .recurring-expense-form .recurring-fiscal-section .recurring-invoice-switch {
+    width: auto;
+    min-width: 154px;
+    max-width: max-content;
+  }
+
+  .recurring-expense-form .recurring-fiscal-section .recurring-billing-month-field {
+    grid-column: 2;
   }
 }
 

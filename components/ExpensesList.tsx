@@ -244,19 +244,18 @@ export default function ExpensesList({
                         <div className="bulk-action-menu-panel">
                             <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
                                     formAction="/api/exports/expenses" formMethod="post" data-confirm-label="Esporta CSV">
-                                <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
+                                <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                             </button>
                             <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
-                                <span className="btn-icon">✓</span><span className="bulk-label">Fattura emessa</span>
+                                <span className="btn-icon">✓</span><span className="hidden-sm-down">Fattura emessa</span>
                             </button>
-                            {/*<button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="payment_completed"><span className="btn-icon">€</span><span className="bulk-label">Pagamento completato</span></button>*/}
-                            <button className="btn btn-sm btn-default" type="button" data-bulk-add-payment>
-                                <span className="btn-icon">＋</span><span className="bulk-label">Inserisci pagamento</span>
+                            <button className="btn btn-sm btn-default is-disabled" type="button" data-bulk-copy aria-disabled="true" disabled>
+                                <span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia spese selezionate</span>
                             </button>
                             <BulkExpenseAttachmentsModal formId={formId}/>
                             <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
                                     name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
-                                <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                                <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
                             </button>
                         </div>
                     </details>
@@ -266,10 +265,10 @@ export default function ExpensesList({
                             <span className="btn-icon">✎</span>
                             <span className="hidden-sm-down">Modifica</span>
                         </a>
-                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
-                            <span className="btn-icon">⧉</span>
-                            <span className="hidden-sm-down">Copia</span>
-                        </a>
+                        <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-payment aria-disabled="true" disabled>
+                            <span className="btn-icon">＋</span>
+                            <span className="hidden-sm-down">Inserisci pagamento</span>
+                        </button>
                         <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete"
                                 data-bulk-delete data-confirm-label="Elimina" disabled>
                             <span className="btn-icon icon-small">🗑</span>
@@ -333,7 +332,7 @@ export default function ExpensesList({
 
                 return <div className={recordClass} key={`mobile-${expense.id}`}>
                     {selectable ? <div className="mobile-record-select">
-                        <input form={formId} type="checkbox" name="ids" value={expense.id} aria-label={`Seleziona spesa ${expense.id}`}/>
+                        <input form={formId} type="checkbox" name="ids" value={expense.id} data-payment-complete={!unpaid ? "true" : "false"} aria-label={`Seleziona spesa ${expense.id}`}/>
                     </div> : null}
                     <Link className="mobile-record-link" href={detailHref}>
                         <div className="mobile-record-main">
@@ -478,7 +477,7 @@ export default function ExpensesList({
                         tabIndex={0}
                     >
                         {selectable ? <td className="cell-option cell-center">
-                            <input form={formId} type="checkbox" name="ids" value={expense.id} aria-label={`Seleziona spesa ${expense.id}`}/>
+                            <input form={formId} type="checkbox" name="ids" value={expense.id} data-payment-complete={!paymentWaiting ? "true" : "false"} aria-label={`Seleziona spesa ${expense.id}`}/>
                         </td> : null}
                         <td className="cell-order-date">{dateLabel(expense.receivedDate)}</td>
                         <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>

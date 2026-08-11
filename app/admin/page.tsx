@@ -19,7 +19,7 @@ export default async function AdminPage() {
         <p className="muted">Area globale riservata agli amministratori di sistema.</p>
       </div>
       <form action={logoutAction}>
-        <button className="btn btn-xs btn-default" type="submit">Logout</button>
+        <button className="btn btn-sm btn-default" type="submit">Logout</button>
       </form>
     </div>
 

@@ -2622,7 +2622,15 @@ table .cell-description {
   width: max-content;
   max-width: 100%;
   padding: 7px 9px;
+  overflow-x: auto;
+  overflow-y: hidden;
   border-radius: 14px;
+  scrollbar-width: thin;
+}
+
+.dashboard-section-nav-desktop a {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .dashboard-section-nav-desktop > span {
@@ -2636,6 +2644,7 @@ table .cell-description {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   min-height: 36px;
   padding: 7px 12px;
   border-radius: 10px;
@@ -2645,6 +2654,26 @@ table .cell-description {
   line-height: 1.15;
   text-decoration: none;
   transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.dashboard-section-nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 6px;
+  background: #eef2ff;
+  color: #1f3ea8;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.dashboard-section-nav a.is-active .dashboard-section-nav-icon {
+  background: rgba(255, 255, 255, .2);
+  color: #fff;
 }
 
 .dashboard-section-nav a:hover {
@@ -2695,7 +2724,10 @@ table .cell-description {
 
 .dashboard-section-floating-nav a {
   flex: 0 0 auto;
-  padding: 7px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
   border-radius: 10px;
   color: #334155;
   font-size: 13px;
@@ -2713,6 +2745,16 @@ table .cell-description {
 .dashboard-section-floating-nav a.is-active {
   background: #1f3ea8;
   color: #fff;
+}
+
+.dashboard-section-floating-nav a.is-active .dashboard-section-nav-icon {
+  background: rgba(255, 255, 255, .2);
+  color: #fff;
+}
+
+.dashboard-section-nav-mobile summary .dashboard-section-nav-icon {
+  color: #1f3ea8;
+  font-size: 11px;
 }
 
 /* `overflow-x: hidden` su html/body crea un contenitore di scorrimento che

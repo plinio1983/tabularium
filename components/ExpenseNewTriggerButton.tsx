@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {usePathname, useSearchParams} from 'next/navigation';
 import type { ReactNode } from 'react';
+import type { MouseEvent } from 'react';
 
 export default function ExpenseNewTriggerButton({
   className,
@@ -24,6 +25,10 @@ export default function ExpenseNewTriggerButton({
     data-bulk-new
     data-expense-new
     data-floating-label={floatingLabel}
+    onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+      const openEvent = new CustomEvent('tabularium:expense-new', {cancelable: true});
+      if (!window.dispatchEvent(openEvent)) event.preventDefault();
+    }}
   >
     {children}
   </Link>;

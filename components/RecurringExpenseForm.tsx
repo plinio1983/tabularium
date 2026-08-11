@@ -815,14 +815,14 @@ export default function RecurringExpenseForm({
                         </label>
                     </div>
 
-                    <SelectField label="Periodo fatturazione" className="flex-grow" icon="▦" name="billingPeriodMode" value={billingPeriodMode} disabled={!isDeclared} onChange={setBillingPeriodMode} options={[
+                    <SelectField label="Periodo fatturazione" className="recurring-billing-period-field" icon="▦" name="billingPeriodMode" value={billingPeriodMode} disabled={!isDeclared} onChange={setBillingPeriodMode} options={[
                         {value: "SAME_MONTH", label: "Stesso mese"},
                         {value: "NEXT_MONTH", label: "Mese successivo"},
                         {value: "CUSTOM_MONTH", label: "Imposta mese"},
                     ]}/>
                     {!isDeclared && <input type="hidden" name="billingPeriodMode" value="SAME_MONTH"/>}
                     {billingPeriodMode === "CUSTOM_MONTH" && isDeclared ?
-                        <SelectField label="Mese contabile" icon="▦" name="billingMonth" value={billingMonth} onChange={setBillingMonth} options={monthOptions.map(([value, label]) => ({
+                        <SelectField label="Mese contabile" className="recurring-billing-month-field" icon="▦" name="billingMonth" value={billingMonth} onChange={setBillingMonth} options={monthOptions.map(([value, label]) => ({
                             value,
                             label
                         }))}/> : null}
