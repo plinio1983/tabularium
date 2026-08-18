@@ -1258,9 +1258,7 @@ html, body {
   padding: 11px 12px;
   border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 12px;
-  //background: rgb(15 23 42 / 96%);
   box-shadow: 0 8px 18px rgb(15 23 42 / 14%);
-  //color: #e2e8f0;
 }
 
 .income-channel-comparison-detail.is-empty {
@@ -1278,10 +1276,8 @@ html, body {
   display: flex;
   align-items: flex-end;
   gap: 12px;
-  //display: grid;
   flex: 0 0 155px;
   align-content: center;
-  //gap: 3px;
   padding-right: 12px;
   border-right: 1px solid rgb(255 255 255 / 12%);
 }
@@ -1293,7 +1289,6 @@ html, body {
 }
 
 .income-channel-comparison-detail-period strong {
-  //color: #fff;
   font-size: 14px;
 }
 
@@ -1349,7 +1344,7 @@ html, body {
 .income-channel-comparison-detail-list small {
   grid-column: 2 / -1;
   color: #86efac;
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .income-channel-comparison-detail-list small.is-negative {
