@@ -1745,6 +1745,17 @@ table .cell-description {
   }
 }
 
+@media (min-width: 769px) {
+  .monthly-performance-cashflow {
+    grid-template-columns: 80px minmax(112px, 118px) minmax(280px, 1.5fr);
+  }
+  .monthly-performance-cashflow>div {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+}
+
 @media (max-width: 576px) {
   .fiscal-non-fiscal-overview .card-heading-row {
     align-items: flex-start;

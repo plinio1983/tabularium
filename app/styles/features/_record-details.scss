@@ -306,7 +306,9 @@
 }
 
 .bulk-action-modal-actions {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
   gap: 8px;
   overflow: auto;
   padding: 10px;

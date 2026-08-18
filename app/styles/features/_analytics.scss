@@ -1174,6 +1174,16 @@ html, body {
   gap: 8px;
 }
 
+.income-channel-item-values {}
+
+.income-channel-item-values .income-trend-money {}
+
+.income-channel-item-values .income-trend-percent {
+  color: #b45309;
+  font-weight: 800;
+  font-size: 16px;
+}
+
 .income-channel-trend-legend > div {
   display: grid;
   grid-template-columns: 9px auto;
