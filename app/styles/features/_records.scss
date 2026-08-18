@@ -1075,6 +1075,16 @@ body.drawer-open {
   color: var(--muted);
 }
 
+.dashboard-chart-main-total .text-secondary,
+.text-secondary {
+  color: #6042a8;
+}
+
+.dashboard-chart-main-total .text-green,
+.text-green {
+  color: #0f766e;
+}
+
 .money-input {
   position: relative;
   display: flex;

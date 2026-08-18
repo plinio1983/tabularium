@@ -1785,8 +1785,8 @@ table .cell-description {
   }
 
   .dashboard-chart-main-total {
-    //width: 100%;
     text-align: left;
+    max-width: 100%;
   }
 
   .dashboard-chart-main-totals {

@@ -1411,14 +1411,17 @@ function MonthlyProfitComparisonChart({months, year}: { months: DashboardMonth[]
                 <div className="dashboard-chart-main-total">
                     <span>Entrate anno</span>
                     <strong>{chartEuro(totalIncome)}</strong>
+                    <span className="dashboard-chart-main-total-percent text-muted">100%</span>
                 </div>
                 <div className="dashboard-chart-main-total">
-                    <span>Utile netto anno · {annualRatio(totalNetProfit).toFixed(1)}%</span>
+                    <span className="">Utile netto anno · </span>
                     <strong className={moneyTone(totalNetProfit)}>{chartEuro(totalNetProfit)}</strong>
+                    <span className="dashboard-chart-main-total-percent text-green">{annualRatio(totalNetProfit).toFixed(1)}%</span>
                 </div>
                 <div className="dashboard-chart-main-total">
-                    <span>Utile fiscale anno · {annualRatio(totalFiscalProfit).toFixed(1)}%</span>
+                    <span className="">Utile fiscale anno · </span>
                     <strong className={moneyTone(totalFiscalProfit)}>{chartEuro(totalFiscalProfit)}</strong>
+                    <span className="dashboard-chart-main-total-percent text-secondary">{annualRatio(totalFiscalProfit).toFixed(1)}%</span>
                 </div>
             </div>
         </div>
@@ -1998,20 +2001,20 @@ export default async function Dashboard({searchParams}: {
                     </AutoSubmitSelect>
                 </form>
             </div>
-            <div className="flex align-center justify-end dashboard-link-selector h100">
-                {fiscalMonth ?
-                    <Link className="btn btn-sm btn-ghost dashboard-month-report-link" href={monthReportLink(fiscalMonth.year, fiscalMonth.month)}>
-                    <span className="btn-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="5" width="18" height="16" rx="2"/>
-                            <path d="M16 3v4M8 3v4M3 10h18"/>
-                            <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>
-                        </svg>
-                    </span>
-                        Vai al Report mensile
-                    </Link> : null}
-            </div>
+            {/*<div className="flex align-center justify-end dashboard-link-selector h100">*/}
+            {/*    {fiscalMonth ?*/}
+            {/*        <Link className="btn btn-sm btn-ghost dashboard-month-report-link" href={monthReportLink(fiscalMonth.year, fiscalMonth.month)}>*/}
+            {/*        <span className="btn-icon" aria-hidden="true">*/}
+            {/*            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"*/}
+            {/*                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">*/}
+            {/*                <rect x="3" y="5" width="18" height="16" rx="2"/>*/}
+            {/*                <path d="M16 3v4M8 3v4M3 10h18"/>*/}
+            {/*                <path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>*/}
+            {/*            </svg>*/}
+            {/*        </span>*/}
+            {/*            Vai al Report mensile*/}
+            {/*        </Link> : null}*/}
+            {/*</div>*/}
         </div>
         <div className="dashboard-body-wrapper">
             <DashboardSectionNav/>

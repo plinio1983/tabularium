@@ -1083,6 +1083,279 @@ html, body {
   pointer-events: none;
 }
 
+.income-channel-comparison-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.income-channel-comparison-toolbar p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.income-channel-comparison-mode {
+  flex: 0 0 230px;
+  width: 230px;
+}
+
+.income-channel-comparison-wrap {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fff, #f8fbff);
+  transition: opacity .2s ease;
+}
+
+.income-channel-comparison-wrap.is-loading {
+  opacity: .5;
+  pointer-events: none;
+}
+
+.income-channel-comparison-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: inherit;
+}
+
+.income-channel-comparison-chart {
+  display: block;
+  min-width: 920px;
+  max-width: none;
+  height: 330px;
+}
+
+.income-channel-comparison-grid {
+  stroke: #e2e8f0;
+  stroke-width: 1;
+}
+
+.income-channel-comparison-baseline {
+  stroke: #64748b;
+  stroke-dasharray: 5 4;
+  stroke-width: 1.5;
+}
+
+.income-channel-comparison-axis-label,
+.income-channel-comparison-bucket-label {
+  fill: #64748b;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.income-channel-comparison-series path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+}
+
+.income-channel-comparison-series circle {
+  stroke: #fff;
+  stroke-width: 1.5;
+  transition: r .15s ease;
+}
+
+.income-channel-comparison-crosshair {
+  stroke: #94a3b8;
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+}
+
+.income-channel-comparison-hit {
+  cursor: crosshair;
+  fill: transparent;
+  outline: none;
+}
+
+.income-channel-comparison-hit:focus {
+  fill: rgb(37 99 235 / 4%);
+}
+
+.income-channel-comparison-empty {
+  min-height: 180px;
+  margin: 0;
+  padding: 72px 18px;
+  text-align: center;
+}
+
+.income-channel-comparison-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+.income-channel-comparison-actions > span {
+  margin-right: auto;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.income-channel-comparison-legend > button {
+  display: grid;
+  grid-template-columns: 9px minmax(90px, auto);
+  gap: 4px 7px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background: #fff;
+  color: inherit;
+  cursor: pointer;
+  opacity: .55;
+  text-align: left;
+}
+
+.income-channel-comparison-legend > button.is-active {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  box-shadow: 0 2px 7px rgb(37 99 235 / 8%);
+  opacity: 1;
+}
+
+.income-channel-comparison-legend > button > span {
+  grid-row: 1 / 3;
+  width: 9px;
+  height: 9px;
+  border-radius: 99px;
+}
+
+.income-channel-comparison-legend > button > strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.income-channel-comparison-legend .income-channel-item-values {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.income-channel-comparison-legend .income-channel-item-values b {
+  font-size: 11px;
+}
+
+.income-channel-comparison-legend .is-positive { color: #047857; }
+.income-channel-comparison-legend .is-negative { color: #be123c; }
+
+.income-channel-comparison-detail {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  min-width: 0;
+  min-height: 82px;
+  padding: 11px 12px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 12px;
+  //background: rgb(15 23 42 / 96%);
+  box-shadow: 0 8px 18px rgb(15 23 42 / 14%);
+  //color: #e2e8f0;
+}
+
+.income-channel-comparison-detail.is-empty {
+  display: block;
+  min-height: 0;
+}
+
+.income-channel-comparison-detail.is-empty p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.income-channel-comparison-detail-period {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  //display: grid;
+  flex: 0 0 155px;
+  align-content: center;
+  //gap: 3px;
+  padding-right: 12px;
+  border-right: 1px solid rgb(255 255 255 / 12%);
+}
+
+.income-channel-comparison-detail-period span,
+.income-channel-comparison-detail-period small {
+  color: #94a3b8;
+  font-size: 10px;
+}
+
+.income-channel-comparison-detail-period strong {
+  //color: #fff;
+  font-size: 14px;
+}
+
+.income-channel-comparison-detail-list {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 7px;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.income-channel-comparison-detail-list > a {
+  display: grid;
+  flex: 1 0 170px;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  gap: 2px 7px;
+  align-items: center;
+  padding: 7px 9px;
+  border: 1px solid rgb(255 255 255 / 13%);
+  border-radius: 9px;
+  //background: rgb(255 255 255 / 6%);
+  color: #e2e8f0;
+  text-decoration: none;
+  background: rgb(15 23 42 / 96%);
+}
+
+.income-channel-comparison-detail-list > a:hover {
+  border-color: #60a5fa;
+  background: rgb(96 165 250 / 12%);
+}
+
+.income-channel-comparison-detail-list i {
+  grid-row: 1 / 3;
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+}
+
+.income-channel-comparison-detail-list span {
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.income-channel-comparison-detail-list strong {
+  color: #fff;
+  font-size: 11px;
+}
+
+.income-channel-comparison-detail-list small {
+  grid-column: 2 / -1;
+  color: #86efac;
+  font-size: 9px;
+}
+
+.income-channel-comparison-detail-list small.is-negative {
+  color: #fda4af;
+}
+
 .income-channel-trend-plot {
   display: grid;
   grid-template-columns: repeat(12, minmax(64px, 1fr));
@@ -1620,10 +1893,8 @@ html, body {
 .dashboard-chart-main-totals {
   display: flex;
   flex: 0 0 auto;
-  //flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-  //width: 100%;
 }
 
 .dashboard-chart-main-total {
@@ -1636,11 +1907,14 @@ html, body {
   border-radius: 11px;
   background: #f8fafc;
   text-align: right;
-
-  //@media (min-width: 1024px) {
   max-width: fit-content;
-  //}
   align-self: flex-end;
+}
+
+.dashboard-chart-main-total .dashboard-chart-main-total-percent {
+  font-size: 16px;
+  // color: #a15c00;
+  //color: #6d28d9;
 }
 
 .dashboard-chart-main-total > span {
@@ -2536,6 +2810,17 @@ html, body {
     width: auto;
     padding-inline: 6px;
     justify-self: end;
+  }
+
+  .monthly-profit-comparison-card .dashboard-chart-main-totals {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .monthly-profit-comparison-card .dashboard-chart-main-totals > .dashboard-chart-main-total:first-of-type {
+    max-width: 100%;
+    grid-column: 1 / -1;
   }
 }
 

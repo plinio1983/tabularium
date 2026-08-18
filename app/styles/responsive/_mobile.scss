@@ -765,11 +765,11 @@
   }
 }
 
-@media (max-width: 496px) {
-  .dashboard-chart-main-total {
-    max-width: 49%;
-  }
-}
+//@media (max-width: 496px) {
+//  .dashboard-chart-main-total {
+//    max-width: 49%;
+//  }
+//}
 
 @media (max-width: 496px) {
   .record-summary-row .expense-column-panel,
@@ -4698,6 +4698,50 @@
 
   .income-channel-trend-legend > div {
     flex: 0 0 auto;
+  }
+
+  .income-channel-comparison-toolbar {
+    display: grid;
+    gap: 8px;
+    padding: 9px;
+  }
+
+  .income-channel-comparison-mode {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .income-channel-comparison-chart {
+    height: 300px;
+  }
+
+  .income-channel-comparison-actions > span {
+    flex-basis: 100%;
+  }
+
+  .income-channel-comparison-legend {
+    display: flex;
+  }
+
+  .income-channel-comparison-legend > button {
+    flex: 0 0 auto;
+    min-width: 160px;
+  }
+
+  .income-channel-comparison-detail {
+    flex-direction: column;
+    padding: 9px;
+  }
+
+  .income-channel-comparison-detail-period {
+    flex-basis: auto;
+    //padding: 0 0 8px;
+    border-right: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+  }
+
+  .income-channel-comparison-detail-list > a {
+    flex-basis: 175px;
   }
 
   .entity-quick-search {

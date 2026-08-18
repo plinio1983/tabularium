@@ -39,6 +39,59 @@ export type IncomeChannelTrendData = {
   channels: IncomeChannelTrendChannel[];
 };
 
+export type IncomeChannelComparisonPoint = {
+  bucketIndex: number;
+  amount: number;
+  indexValue: number | null;
+  previousChange: number | null;
+};
+
+export type IncomeChannelComparisonSeries = IncomeChannelTrendChannel & {
+  share: number;
+  baseValue: number | null;
+  points: IncomeChannelComparisonPoint[];
+};
+
+export function buildIncomeChannelComparisonSeries(
+  buckets: IncomeChannelTrendMonth[],
+  channels: IncomeChannelTrendChannel[]
+): IncomeChannelComparisonSeries[] {
+  const periodTotal = buckets.reduce((sum, bucket) => sum + bucket.total, 0);
+  return channels.map(channel => {
+    const amounts = buckets.map(bucket => bucket.channels.find(item => item.id === channel.id)?.total ?? 0);
+    const baseIndex = amounts.findIndex(amount => amount > 0);
+    const baseValue = baseIndex >= 0 ? amounts[baseIndex] : null;
+    const total = amounts.reduce((sum, amount) => sum + amount, 0);
+    const points = amounts.map((amount, bucketIndex) => {
+      const previous = bucketIndex > 0 ? amounts[bucketIndex - 1] : null;
+      return {
+        bucketIndex,
+        amount,
+        indexValue: baseValue !== null && bucketIndex >= baseIndex ? amount / baseValue * 100 : null,
+        previousChange: previous !== null && previous > 0 ? (amount - previous) / previous * 100 : null
+      };
+    });
+    return {...channel, total, share: periodTotal ? total / periodTotal * 100 : 0, baseValue, points};
+  }).filter(channel => channel.total > 0).sort((a, b) => b.total - a.total || a.name.localeCompare(b.name, 'it'));
+}
+
+export function leadingIncomeChannelIds(series: IncomeChannelComparisonSeries[], limit = 5) {
+  return series.slice(0, Math.max(0, limit)).map(channel => channel.id);
+}
+
+export function incomeChannelComparisonDomain(values: number[], includeBaseline?: number) {
+  const finite = values.filter(Number.isFinite);
+  if (includeBaseline !== undefined) finite.push(includeBaseline);
+  if (!finite.length) return {min: 0, max: 1};
+  const rawMin = Math.min(...finite);
+  const rawMax = Math.max(...finite);
+  const span = Math.max(rawMax - rawMin, Math.abs(rawMax) * .1, 1);
+  return {
+    min: Math.max(0, rawMin - span * .1),
+    max: rawMax + span * .1
+  };
+}
+
 const monthLabels = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 
 function dateInput(year: number, month: number, day: number) {
