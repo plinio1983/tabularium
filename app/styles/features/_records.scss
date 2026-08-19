@@ -1,6 +1,6 @@
 .trend-selectors {
   display: grid;
-  grid-template-columns: minmax(260px, .9fr) minmax(240px, 1fr);
+  //grid-template-columns: minmax(260px, .9fr) minmax(240px, 1fr);
   gap: 12px;
   align-items: flex-end;
   margin-bottom: 12px;
@@ -22,6 +22,7 @@
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: .05em;
+  //grid-column: 1 / -1;
 }
 
 .trend-selectors select {
@@ -2218,4 +2219,294 @@ table th, table td {
   display: flex;
   align-items: center;
   gap: 7px;
+}
+
+/* Responsive rules migrated from the former viewport-specific stylesheets. */
+@media (max-width: 760px) {
+  .totals-row {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 761px) {
+  .clickable-desktop-row {
+      cursor: pointer;
+    }
+}
+
+@media (min-width: 761px) {
+  .clickable-desktop-row:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+}
+
+@media (min-width: 1280px) {
+  .compact-incomes-table {
+      min-width: 980px;
+    }
+}
+
+@media (min-width: 1280px) {
+  .compact-incomes-table th,
+    .compact-incomes-table td {
+      padding: 6px 5px;
+    }
+}
+@media (max-width: 760px) {
+  .income-totals-row,
+    .totals-row {
+      grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .totals-row .total-card,
+    .income-totals-row .total-card {
+      min-height: auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .totals-row .total-card span,
+    .income-totals-row .total-card span {
+      min-height: auto;
+    }
+}
+
+@media (max-width: 620px) {
+  .search-totals-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+  .totals-row .total-card,
+    .income-totals-row .total-card {
+      min-height: auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .compact-incomes-table {
+      min-width: 900px;
+      font-size: 10.5px;
+    }
+}
+
+@media (max-width: 760px) {
+  .mobile-record-main {
+      gap: 4px;
+    }
+}
+
+@media (max-width: 640px) {
+  .record-list-card > .list-heading {
+      top: 0 !important;
+    }
+}
+
+@media (max-width: 700px) {
+  .mobile-record-empty-state {
+      display: block;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-list-card > .list-heading {
+      display: flex !important;
+      align-items: flex-start !important;
+      gap: 10px !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-list-card > .list-heading > div:first-child {
+      display: block !important;
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-list-card > .list-heading > div:last-child {
+      display: flex !important;
+      flex: 0 0 auto !important;
+      justify-content: flex-end !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-list-card .table-scroll {
+      display: none;
+    }
+}
+
+@media (max-width: 760px) {
+  .mobile-record-list {
+      display: grid;
+    }
+}
+
+@media (max-width: 760px) {
+  .mobile-record-link .badge {
+      padding: 2px 6px;
+      border: none;
+      font-size: 13px;
+    }
+}
+
+@media (max-width: 760px) {
+  .search-totals-row {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .search-totals-row {
+      /*grid-template-columns: repeat(2, minmax(0, 1fr));*/
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .search-totals-row > div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+}
+
+@media (max-width: 760px) {
+  .incomes-table-scroll {
+      display: none;
+    }
+}
+
+@media (max-width: 760px) {
+  .income-mobile-list {
+      display: grid;
+      margin-top: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .income-mobile-item .mobile-record-title-row {
+      justify-content: flex-start;
+      align-items: center;
+
+      .mobile-record-subtitle {
+        display: block;
+      }
+    }
+}
+
+@media (max-width: 760px) {
+  .income-mobile-item .mobile-record-title-row > .right-side,
+    .income-mobile-item .income-mobile-status-row > :last-child {
+      margin-left: auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .income-mobile-item .mobile-record-footer {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+}
+
+.income-mobile-item .mobile-record-title-row .left-side {
+  @media (max-width: 760px) {
+    display: flex;
+    align-items: baseline;
+    column-gap: 10px;
+    row-gap: 4px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 460px) {
+    display: block;
+  }
+}
+
+@media (max-width: 760px) {
+  .compact-suppliers-table {
+      display: none;
+    }
+}
+
+@media (max-width: 760px) {
+  .party-mobile-list {
+      display: grid;
+      margin-top: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .mobile-record-title-left {
+      display: flex;
+      flex-direction: column;
+      font-weight: 400;
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+}
+
+@media (max-width: 760px) {
+  .mobile-record-meta .mobile-record-meta-left {
+      display: flex;
+      gap: 2px;
+      flex-grow: 1;
+      font-weight: 400;
+    }
+}
+
+@media (max-width: 576px) {
+  .mobile-record-title-right {
+      display: flex;
+      flex-direction: column;
+      font-weight: 400;
+    }
+}
+
+@media (max-width: 576px) {
+  .mobile-record-title-right .mobile-record-date {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 400;
+      padding-bottom: 1px;
+    }
+}
+
+@media (max-width: 576px) {
+  .mobile-record-meta .mobile-record-meta-right {
+      display: flex;
+      gap: 2px;
+      text-align: right;
+    }
+}
+
+@media (max-width: 576px) {
+  .income-mobile-list .income-mobile-item.mobile-record-item {
+      margin-left: -9px;
+    }
+}
+
+@media (max-width: 351px) {
+  .record-list-card {
+      padding: 14px 6px;
+    }
+}
+
+@media (min-width: 761px) {
+  .mobile-record-list {
+      display: none;
+    }
+}
+@media (max-width: 760px) {
+  .entity-quick-search {
+        width: 100%;
+      }
 }

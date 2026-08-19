@@ -158,8 +158,13 @@
   font-size: 13px;
 }
 
-.quarter-report-month > strong.is-positive { color: #237a57; }
-.quarter-report-month > strong.is-negative { color: #b83b2d; }
+.quarter-report-month > strong.is-positive {
+  color: #237a57;
+}
+
+.quarter-report-month > strong.is-negative {
+  color: #b83b2d;
+}
 
 @media (max-width: 576px) {
   .report-period-type-toggle {
@@ -1239,23 +1244,29 @@ html, body {
   align-items: baseline;
   gap: 7px;
   color: #64748b;
-  font-size: 10px;
+  font-size: 14px;
 }
 
 .income-channel-comparison-legend .income-channel-item-values b {
-  font-size: 11px;
+  font-size: 14px;
 }
 
-.income-channel-comparison-legend .is-positive { color: #047857; }
-.income-channel-comparison-legend .is-negative { color: #be123c; }
+.income-channel-comparison-legend .is-positive {
+  color: #047857;
+}
+
+.income-channel-comparison-legend .is-negative {
+  color: #be123c;
+}
 
 .income-channel-comparison-detail {
   display: flex;
+  flex-direction: column;
   align-items: stretch;
   gap: 12px;
   min-width: 0;
   min-height: 82px;
-  padding: 11px 12px;
+  padding: 9px;
   border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 12px;
   box-shadow: 0 8px 18px rgb(15 23 42 / 14%);
@@ -1330,7 +1341,7 @@ html, body {
 
 .income-channel-comparison-detail-list span {
   overflow: hidden;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1442,9 +1453,11 @@ html, body {
   gap: 8px;
 }
 
-.income-channel-item-values {}
+.income-channel-item-values {
+}
 
-.income-channel-item-values .income-trend-money {}
+.income-channel-item-values .income-trend-money {
+}
 
 .income-channel-item-values .income-trend-percent {
   color: #b45309;
@@ -1476,7 +1489,7 @@ html, body {
 
 .income-channel-trend-legend small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .record-summary-chart .summary-composition-card {
@@ -2854,9 +2867,17 @@ html, body {
   content: '';
 }
 
-.monthly-profit-comparison-legend > span.is-gross::before { background: #2563eb; }
-.monthly-profit-comparison-legend > span.is-net::before { background: #0f766e; }
-.monthly-profit-comparison-legend > span.is-fiscal::before { background: #7c3aed; }
+.monthly-profit-comparison-legend > span.is-gross::before {
+  background: #2563eb;
+}
+
+.monthly-profit-comparison-legend > span.is-net::before {
+  background: #0f766e;
+}
+
+.monthly-profit-comparison-legend > span.is-fiscal::before {
+  background: #7c3aed;
+}
 
 .monthly-profit-comparison-legend > small {
   margin-left: auto;
@@ -3708,4 +3729,1141 @@ html, body {
 .nav-links a.nav-link-active:hover {
   color: #fff;
   transform: translateY(-1px);
+}
+
+.dashboard-header-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: flex-start;
+  gap: 14px 18px;
+}
+
+.dashboard-header-card .dashboard-top-actions {
+  justify-self: end;
+  align-self: start;
+}
+
+.dashboard-header-card .dashboard-year-selector {
+  grid-column: 1 / -1;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fafbff;
+}
+
+.dashboard-header-card .dashboard-year-selector select {
+  width: auto;
+  min-width: 230px;
+}
+
+.dashboard-header-card .dashboard-year-selector button {
+  width: auto;
+  white-space: nowrap;
+}
+
+.fiscal-summary-metrics-ordered {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fiscal-summary-metrics-ordered .summary-metric {
+  min-height: 74px;
+  align-content: center;
+}
+
+.annual-kpi-grid .kpi-help {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+/* Responsive rules migrated from the former viewport-specific stylesheets. */
+.profitability-summary-reference {
+  max-width: 210px;
+  align-self: flex-end;
+
+  @media (max-width: 760px) {
+    text-align: left;
+  }
+  @media (max-width: 576px) {
+    max-width: 100%;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 760px) {
+  .profitability-summary-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-anchor-section {
+    scroll-margin-top: 76px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-slot {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-desktop {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile {
+    display: block;
+    overflow: hidden;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 10px 14px;
+    cursor: pointer;
+    list-style: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile summary span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 750;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile summary strong {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #1f3ea8;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile summary strong::after {
+    content: '\203A';
+    display: inline-block;
+    font-size: 20px;
+    line-height: 1;
+    transform: rotate(90deg);
+    transition: transform .18s ease;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile[open] summary strong::after {
+    transform: rotate(-90deg);
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 0 10px 10px;
+    border-top: 1px solid #eef2f7;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-nav-mobile nav a {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-floating-nav {
+    top: calc(8px + env(safe-area-inset-top));
+    right: 8px;
+    left: 8px;
+    width: auto;
+    max-width: none;
+    flex-wrap: nowrap;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    transform: translateY(-16px);
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-section-floating-nav.is-visible {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-report-card .table-scroll {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile {
+    display: grid;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-labels,
+  .dashboard-monthly-mobile-main {
+    display: grid;
+    grid-template-columns: 44px repeat(3, minmax(0, 1fr));
+    align-items: center;
+    column-gap: 6px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-main {
+    background: #f6f8ff;
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-labels {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--line);
+    background: #f8fafc;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-labels span {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 850;
+    line-height: 1.1;
+    text-align: right;
+    text-transform: uppercase;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-labels span:first-child {
+    text-align: left;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-row {
+    padding: 0 0 8px 0;
+    margin-bottom: 12px;
+    border-radius: 13px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.045);
+    border: 1px solid #cbd5e1;
+
+    .money-positive {
+      color: #16a34a;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-main > * {
+    min-width: 0;
+    text-align: right;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-main strong {
+    font-size: 16px !important;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-main .dashboard-monthly-mobile-month {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 900;
+    text-align: left;
+    text-transform: capitalize;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-secondary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    padding: 4px 8px 2px 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-secondary > div {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: 21px 24px;
+    align-items: flex-end;
+    gap: 3px;
+    //text-align: right;
+    border: 1px solid var(--line);
+    //border-radius: 12px;
+    padding: 0 6px;
+
+    @media (min-width: 576px) and (max-width: 760px) {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-secondary span {
+    overflow: hidden;
+    max-width: 100%;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.15;
+    white-space: normal;
+    text-align: left;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-secondary strong {
+    font-size: 13px;
+    line-height: 22px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-percent {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 22px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-badge {
+    display: flex;
+    align-items: center;
+    //justify-content: flex-end;
+    height: 22px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile .dashboard-monthly-mobile-badge {
+    .tone-warning {
+      background: transparent;
+      color: #a15c00;
+    }
+
+    .tone-critical {
+      color: #b42318;
+      background: transparent;
+    }
+
+    .tone-neutral {
+      background: transparent;
+    }
+
+    .tone-muted {
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .tone-accent {
+      color: var(--accent);
+      background: transparent;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-monthly-mobile-badge .badge {
+    display: inline-flex;
+    width: auto;
+    padding: 2px 7px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+
+@media (min-width: 1180px) {
+  .dashboard-annual-card {
+    min-width: 33%;
+  }
+}
+
+@media (max-width: 496px) {
+  .record-summary-row .expense-column-panel,
+  .income-sales-channel-chart {
+    display: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-statement-cards {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-period-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-statement-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-statement-heading .period-selector,
+  .dashboard-statement-heading .period-selector select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-expense-chart-row {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 1fr);
+    gap: 8px 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-expense-chart-bar-wrap,
+  .income-expense-chart-value {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-expense-chart-value {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 700px) {
+  .embedded-chart-card .card-heading-row {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard-period-cards .period-selector,
+  .dashboard-report-card .period-selector,
+  .dashboard-annual-card .period-selector {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard-period-cards .period-selector button,
+  .dashboard-report-card .period-selector button,
+  .dashboard-annual-card .period-selector button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .fiscal-summary-metrics-ordered {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-header-card .dashboard-top-actions,
+  .dashboard-header-card .dashboard-year-selector {
+    justify-self: stretch;
+  }
+
+  .dashboard-header-card .dashboard-top-actions {
+    justify-content: flex-end;
+  }
+
+  .dashboard-header-card .dashboard-link-selector {
+    height: 100%;
+
+    @media (min-width: 576px) {
+      a {
+        margin-top: 20px;
+      }
+    }
+  }
+
+  .dashboard-header-card .dashboard-year-selector {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    //margin-top: 20px;
+  }
+
+  .dashboard-header-card .dashboard-year-selector .selector-label {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-header-card .dashboard-year-selector select {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard-header-card .dashboard-year-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-header-card .dashboard-year-selector button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .fiscal-summary-card .summary-metrics-grid,
+  .fiscal-summary-card .summary-metrics-grid-priority,
+  .fiscal-summary-card .fiscal-summary-metrics-ordered {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fiscal-summary-card .summary-metric {
+    padding: 10px;
+    min-height: 84px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fiscal-summary-card .summary-metric span {
+    font-size: 12px;
+    line-height: 1.15;
+  }
+}
+
+@media (max-width: 760px) {
+  .fiscal-summary-card .summary-metric strong {
+    font-size: 16px;
+    line-height: 1.15;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-expenses .table-scroll {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .record-list-card .dashboard-statement-panel {
+    padding: 14px 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-statement-table {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-statement-table a {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header-card .dashboard-top-actions {
+    order: 3;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-top-actions .btn {
+    font-size: 14px;
+    max-width: initial;
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-actions-bottom .actions-row .btn {
+    padding: 7px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-collapsible > .month-report-section-heading {
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-right: 0;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-collapsible > .month-report-section-heading h3 {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-collapsible > .month-report-section-heading .month-report-inline-total {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: right;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-collapsible .record-list-card,
+  .month-report-collapsible .mobile-record-list,
+  .month-report-collapsible .income-mobile-list,
+  .month-report-collapsible .mobile-record-item {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-month-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-month-select {
+    display: block;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-navigation {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-navigation > span {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-navigation > .year-navigation-select {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-navigation > .year-navigation-select select {
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-navigation > .report-period-type-toggle {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    //width: 220px;
+    max-width: 100%;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-metrics {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-metrics .month-report-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    grid-template-rows: none;
+    padding-right: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 17px;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-metrics .month-report-value span {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-metrics .month-report-value strong {
+    font-size: 22px;
+    text-align: right;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-fiscal-metrics {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-fiscal-metrics .month-report-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    grid-template-rows: none;
+    padding-right: 0;
+    border-right: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-fiscal-metrics .month-report-value span {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .month-report-fiscal-metrics .month-report-value strong {
+    font-size: 19px;
+    text-align: right;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-trend-card {
+    padding: 12px 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-trend-heading,
+  .income-channel-trend-controls {
+    display: grid;
+    width: 100%;
+    justify-content: stretch;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-trend-controls .trend-mode-toggle {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-trend-controls .trend-mode-button {
+    flex: 1 1 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-period-toggle {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-trend-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-trend-kpis > div {
+    padding: 9px;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-trend-legend {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-trend-legend > div {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-toolbar {
+    display: grid;
+    gap: 8px;
+    padding: 9px;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-mode {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-chart {
+    height: 300px;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-actions > span {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-legend {
+    display: flex;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-legend > button {
+    flex: 0 0 auto;
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-detail {
+    flex-direction: column;
+    padding: 9px;
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-detail-period {
+    flex-basis: auto;
+    //padding: 0 0 8px;
+    border-right: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+  }
+}
+
+@media (max-width: 760px) {
+  .income-channel-comparison-detail-list > a {
+    flex-basis: 175px;
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-heading {
+    display: grid;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-controls {
+    display: grid;
+    justify-content: stretch;
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-controls .trend-mode-toggle {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-controls .trend-mode-button {
+    flex: 1 1 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-kpis > div {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-kpis strong {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-selection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .annual-income-trend-selection > .btn {
+    grid-column: 1 / -1;
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-collapsible {
+    display: block;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-collapsible > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-weight: 800;
+    list-style: none;
+    background: var(--bg);
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-collapsible > summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-collapsible:not([open]) > .composition-pie-legend {
+    display: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-collapsible[open] > .composition-pie-legend {
+    display: grid !important;
+    padding: 0 12px 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-hide {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-collapsible[open] .dashboard-pie-legend-show {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-collapsible[open] .dashboard-pie-legend-hide {
+    display: inline;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-caret {
+    transition: transform .2s ease;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-pie-legend-collapsible[open] .dashboard-pie-legend-caret {
+    transform: rotate(180deg);
+  }
+}
+
+@media (min-width: 761px) {
+  .dashboard-statement-panel.list-totals-statement {
+    max-width: 760px;
+  }
+}
+
+@media (min-width: 761px) {
+  .dashboard-statement-panel.list-totals-statement table {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .record-top-summary .card-heading-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 760px) {
+  .composition-pie-row-wrap {
+    margin: 4px 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .composition-pie-layout {
+    flex-direction: column;
+
+    .composition-pie-legend {
+      max-width: 100%;
+      width: 100%;
+      padding: 0 14px;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .fiscal-overview-bar-labels {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fiscal-overview-bar-labels > span {
+    display: grid;
+    gap: 3px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fiscal-overview-bar-labels strong {
+    margin-left: 0;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-panel {
+    gap: 14px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-heading {
+    display: grid;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-tabs a {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+  }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-tabs a:last-child {
+    border-bottom: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-metric {
+    display: grid;
+  }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-delta {
+    grid-template-columns: 1fr auto auto;
+  }
 }

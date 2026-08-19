@@ -1748,3 +1748,605 @@ body.invoice-attachments-modal-open {
 .party-mobile-link:active {
   background: #eef2ff;
 }
+
+/* Responsive rules migrated from the former viewport-specific stylesheets. */
+@media (max-width: 760px) {
+  .bulk-attachments-modal-backdrop {
+      align-items: stretch;
+      padding: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-attachments-modal {
+      width: 100%;
+      max-width: none;
+      height: 100dvh;
+      max-height: none;
+      padding: calc(14px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom));
+      border: 0;
+      border-radius: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-attachment-filter-group {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-attachment-filter-group button {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-attachments-summary {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-attachments-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: auto;
+    }
+}
+
+@media (max-width: 576px) {
+  .expense-review-attachments-button {
+      max-width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+  .income-detail-hero {
+      padding: 16px;
+      border-radius: 18px;
+    }
+}
+
+@media (max-width: 760px) {
+  .income-detail-summary-strip {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+}
+
+@media (max-width: 760px) {
+  .income-detail-grid-card {
+      padding: 14px;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-hero {
+      //grid-template-columns: 1fr;
+      padding: 18px;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-hero-side {
+      padding: 18px 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-detail-actions {
+      justify-content: space-between !important;
+      margin-bottom: 6px;
+      margin-top: -8px;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-detail-actions a,
+    .expense-detail-actions button {
+      flex-grow: 1;
+      max-width: initial;
+      padding: 10px 10px;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-detail-actions .btn {
+      flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-actions-collapse > summary {
+      align-items: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-actions-collapse > summary small {
+      margin-left: auto;
+      text-align: right;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-actions-collapse-panel {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-actions-collapse-panel .btn,
+    .record-detail-actions-collapse-panel form,
+    .record-detail-actions-collapse-panel form .btn {
+      width: 100%;
+      max-width: none;
+      justify-content: center;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-detail-priority-grid {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-detail-priority-card {
+      min-height: 118px;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-detail-priority-card.supplier-card,
+    .expense-detail-priority-card.amount-card {
+      display: none;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-section-title {
+      flex-direction: column;
+    }
+}
+
+@media (max-width: 760px) {
+  .recurring-detail-hero .record-detail-hero-side-wrap .text-pre {
+      font-size: 15px;
+    }
+}
+
+@media (min-width: 761px) {
+  .expense-detail-mobile-nav-only {
+      display: none;
+    }
+}
+@media (max-width: 760px) {
+  .expense-payments-desktop {
+        display: none;
+      }
+}
+
+@media (max-width: 760px) {
+  .expense-payments-mobile {
+        display: grid;
+        gap: 12px;
+      }
+}
+
+@media (max-width: 680px) {
+  .payments-summary {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+}
+
+@media (max-width: 760px) {
+  .payment-status-note {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .payment-status-note > div {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 4px;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-status-strip strong {
+      font-size: 16px !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-detail-info-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-hero,
+    .record-detail-section {
+      padding: 18px 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-action-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-action-row button,
+    .record-detail-action-row a {
+      flex-grow: 1;
+      max-width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-action-row .left-side {
+      flex: 1 1 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-detail-action-row .right-side {
+      display: flex;
+      gap: 8px;
+      flex-grow: 1;
+      justify-content: flex-end;
+    }
+}
+
+@media (max-width: 700px) {
+  .record-detail-document {
+      border-radius: 20px;
+    }
+}
+
+@media (max-width: 700px) {
+  .expense-detail-info-grid,
+    .record-detail-status-strip,
+    .expense-payment-data {
+      grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+  .record-detail-status-strip {
+      grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+  .record-detail-status-strip > div {
+      border-bottom: 1px solid rgba(226, 232, 240, .85);
+    }
+}
+
+@media (max-width: 700px) {
+  .record-detail-section-heading {
+      align-items: flex-start;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 700px) {
+  .record-detail-section-heading-actions {
+      justify-content: space-between;
+    }
+}
+
+@media (max-width: 700px) {
+  .record-detail-section-heading-actions .btn {
+      min-width: 0;
+    }
+}
+
+@media (max-width: 700px) {
+  .record-attachment-item {
+      grid-template-columns: 34px minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+  .record-attachment-item .record-attachment-type {
+      grid-column: 2;
+      justify-self: start;
+    }
+}
+
+@media (max-width: 700px) {
+  .invoice-attachments-modal-backdrop {
+      align-items: stretch;
+      padding: 0;
+    }
+}
+
+@media (max-width: 700px) {
+  .invoice-attachments-modal {
+      width: 100%;
+      max-width: none;
+      height: 100dvh;
+      max-height: none;
+      margin: 0;
+      padding: 16px 14px calc(16px + env(safe-area-inset-bottom));
+      border: 0;
+      border-radius: 0;
+    }
+}
+
+@media (max-width: 700px) {
+  .invoice-attachments-modal-list {
+      max-height: calc(100dvh - 100px - env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-width: 700px) {
+  .invoice-attachments-modal-list a {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+}
+
+@media (max-width: 700px) {
+  .invoice-attachments-modal-list a small {
+      grid-column: 2;
+    }
+}
+
+@media (max-width: 760px) {
+  .income-detail-section {
+      display: block;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-action-row {
+      padding: 12px 16px;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-action-row a {
+      min-width: 50% !important;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-action-row .expense-detail-back,
+    .income-detail-action-row .btn {
+      width: auto;
+      justify-content: center;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-hero > div,
+    .income-detail-hero > aside {
+      padding: 0 20px;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-hero,
+    .income-detail-section {
+      padding: 20px 0;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-section {
+      gap: 16px;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-section > div {
+      padding: 0 16px;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-section .income-detail-section-heading {
+      padding: 10px 16px;
+    }
+}
+
+@media (max-width: 700px) {
+  .income-detail-fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 14px;
+    }
+}
+
+@media (max-width: 430px) {
+  .income-detail-section {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-form-wizard .expense-attachments-notes-desktop {
+      display: none;
+    }
+}
+
+@media (max-width: 900px) {
+  .expense-review-attachments-button {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      min-height: 62px;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 13px;
+      border-color: #c7d2fe;
+      border-radius: 16px;
+      background: #f5f7ff;
+      color: var(--accent);
+      text-align: left;
+    }
+}
+
+@media (max-width: 900px) {
+  .expense-review-attachments-button > span:nth-child(2) {
+      display: grid;
+      gap: 2px;
+    }
+}
+
+@media (max-width: 900px) {
+  .expense-review-attachments-button small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-record-form .payment-status-note {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+  .record-detail-payment-summary-list .payment-row-actions {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-record-form .attachment-row-title,
+    .app-record-form .attachment-row {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-record-form .attachments-note {
+      min-width: 0;
+      text-align: left;
+    }
+}
+
+@media (max-width: 900px) {
+  .attachment-type-selector {
+      display: flex;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 900px) {
+  .attachment-type-selector button {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+}
+
+@media (max-width: 576px) {
+  .attachments-note {
+      text-align: right;
+      align-self: center;
+    }
+}
+
+@media (max-width: 576px) {
+  .attachment-row-wrap .attachment-row-title {
+      display: flex;
+      flex-direction: column;
+    }
+}
+
+@media (max-width: 576px) {
+  .expense-detail-info-grid,
+    .record-detail-status-strip {
+      grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-form-wizard-current-1.income-mobile-wizard .income-amount-section,
+    .app-form-wizard-current-2.income-mobile-wizard .income-document-section,
+    .app-form-wizard-current-3.income-mobile-wizard .income-amount-section,
+    .app-form-wizard-current-4.income-mobile-wizard .income-document-section,
+    .app-form-wizard-current-4.income-mobile-wizard .income-amount-section,
+    .app-form-wizard-current-5.income-mobile-wizard .income-document-section,
+    .app-form-wizard-current-5.income-mobile-wizard .income-amount-section,
+    .app-form-wizard-current-6.income-mobile-wizard .income-document-section,
+    .app-form-wizard-current-6.income-mobile-wizard .income-amount-section {
+      display: none;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-form-wizard-current-4.recurring-form-wizard .recurring-document-section,
+    .app-form-wizard-current-5.recurring-form-wizard .recurring-document-section,
+    .app-form-wizard-current-6.recurring-form-wizard .recurring-document-section {
+      display: none;
+    }
+}
+@media (max-width: 640px) {
+  .payment-detail-row {
+        grid-template-columns: 1fr;
+      }
+}
+
+@media (max-width: 700px) {
+  .expense-payment-timeline {
+        display: none !important;
+      }
+}
+
+@media (max-width: 700px) {
+  .mobile-expense-payment-timeline {
+        display: block;
+      }
+}
+
+@media (max-width: 700px) {
+  .mobile-expense-payment-timeline .expense-payment-card {
+        grid-template-columns: 1fr;
+      }
+}
+
+@media (max-width: 700px) {
+  .mobile-expense-payment-timeline .expense-payment-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid rgba(226, 232, 240, .9);
+        padding-bottom: 12px;
+      }
+}
+
+@media (max-width: 700px) {
+  .mobile-expense-payment-timeline .expense-payment-data {
+        display: flex;
+        gap: 40px;
+
+        @media (max-width: 760px) {
+          gap: 19px;
+        }
+      }
+}
+
+@media (max-width: 700px) {
+  .mobile-expense-payment-timeline .expense-payment-date {
+        border-right: 0;
+      }
+}

@@ -1428,3 +1428,608 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 .dashboard-monthly-mobile {
   display: none;
 }
+
+/* Responsive rules migrated from the former viewport-specific stylesheets. */
+@media (max-width: 576px) {
+  .app-filter-trigger-text {
+      /*display: none;*/
+    }
+}
+
+@media (max-width: 576px) {
+  .filter-drawer-panel {
+      width: min(646px, calc(100vw - 24px));
+    }
+}
+
+@media (max-width: 576px) {
+  .filter-drawer-actions a,
+    .filter-drawer-actions button {
+      max-width: initial;
+    }
+}
+
+@media (max-width: 576px) {
+  .filter-drawer-actions {
+      bottom: -14px;
+    }
+}
+
+@media (max-width: 760px) {
+  .toolbar-card {
+      align-items: stretch;
+      flex-direction: column;
+    }
+}
+
+@media (max-width: 760px) {
+  .record-filters, .totals-row {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .compact-filters {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .filter-actions {
+      justify-content: stretch;
+    }
+}
+
+@media (max-width: 760px) {
+  .filter-actions button, .filter-actions .reset-button {
+      width: 100%;
+    }
+}
+@media (max-width: 760px) {
+  .filter-actions {
+      justify-content: stretch;
+    }
+}
+
+@media (max-width: 760px) {
+  .filter-actions .btn {
+      width: 100%;
+      max-width: none;
+      flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 720px) {
+  .toolbar-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+}
+
+@media (max-width: 720px) {
+  .bulk-actions-bar {
+      align-items: stretch;
+    }
+}
+
+@media (max-width: 720px) {
+  .bulk-actions-left {
+      justify-content: space-between;
+    }
+}
+
+@media (max-width: 720px) {
+  .bulk-actions-controls {
+      justify-content: flex-end;
+    }
+}
+
+@media (max-width: 460px) {
+  .bulk-actions-controls select,
+    .bulk-actions-controls button {
+      width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+  .bulk-actions-controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+  .bulk-actions-controls .btn {
+      width: 100%;
+      justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+  .bulk-actions-bar {
+      justify-content: stretch;
+    }
+}
+
+@media (max-width: 640px) {
+  .bulk-action-menu {
+      width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+  .bulk-action-menu > summary {
+      width: 100%;
+      justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+  .bulk-action-menu-panel {
+      left: 0;
+      right: 0;
+      min-width: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .filter-collapse > summary {
+      padding: 11px 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-actions-bar {
+      justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-menu-panel {
+      min-width: 180px;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-actions-bar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-direct-actions {
+      width: auto !important;
+      flex: 0 0 auto !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .modal-toolbar-card {
+      padding: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .modal-toolbar-card h2 {
+      margin-top: 0;
+    }
+}
+
+@media (max-width: 576px) {
+  .party-filters {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-select-all-inline {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 8px;
+      flex: 0 0 auto;
+      //min-height: 42px;
+      //padding: 0px 0 2px 7px;
+      padding: 0;
+      margin: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-actions-bar {
+      justify-content: flex-start;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-direct-link .bulk-label,
+    .bulk-action-trigger .bulk-label,
+    .floating-bulk-label {
+      display: none;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-direct-link {
+      width: 66px;
+      min-width: 42px;
+      //height: 38px;
+      min-height: 42px;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-direct-link.bulk-add-link {
+      width: 42px;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-actions-bar {
+      align-items: center !important;
+      flex-direction: row !important;
+      justify-content: flex-start !important;
+      flex-wrap: nowrap !important;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-menu {
+      width: auto !important;
+      flex: 0 0 auto !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-direct-link .bulk-label,
+    .bulk-link .bulk-label {
+      display: none !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-trigger .bulk-label {
+      display: inline !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-menu-panel {
+      left: 0 !important;
+      right: auto !important;
+      min-width: 230px !important;
+      max-width: calc(100vw - 24px) !important;
+    }
+}
+
+@media (max-width: 640px) {
+  .record-list-card > .bulk-actions-bar,
+    .record-list-card > .incomes-list-shared > .bulk-actions-bar {
+      top: 52px !important;
+      overflow-y: visible !important;
+      -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-menu > summary {
+      height: 42px;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-actions-inner .floating-bulk-button {
+      height: 38px;
+      min-height: 38px;
+      width: 66px;
+      min-width: 42px;
+      padding: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-actions-inner .floating-bulk-new {
+      width: 38px;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-actions-inner .floating-bulk-select-all-inline {
+      padding: 5px 0 2px 14px;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-actions-inner .floating-bulk-menu-wrap .floating-bulk-menu-trigger {
+      width: auto;
+      padding: 0 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-actions-inner .mobile-record-select {
+      padding: 5px 0 2px 14px;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-actions-bar {
+      top: 1px;
+      left: 8px;
+      right: 8px;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-actions-inner {
+      overflow-y: visible;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-button {
+      padding: 0 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-actions-bar {
+      position: sticky;
+      top: 0;
+      z-index: 35;
+      margin-inline: -14px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+}
+
+@media (max-width: 760px) {
+  .record-toolbar-card .record-toolbar-actions a,
+    .record-toolbar-card .record-toolbar-actions button {
+      max-width: initial;
+    }
+}
+
+@media (max-width: 760px) {
+  .supplier-toolbar-card .actions-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 7px !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .supplier-toolbar-card .actions-row a,
+    .supplier-toolbar-card .actions-row button {
+      max-width: initial;
+      flex-grow: 1;
+      padding: 10px 7px;
+    }
+}
+
+@media (max-width: 760px) {
+  .floating-bulk-actions-inner {
+      justify-content: flex-start;
+      max-width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-direct-link .btn-icon,
+    .floating-bulk-actions-inner .btn-icon {
+      font-size: 30px;
+      font-weight: 400;
+
+      &.icon-small {
+        font-size: 22px;
+      }
+    }
+}
+
+@media (max-width: 690px) {
+  .filter-group.filter-group-order-date,
+    .filter-group.filter-group-fiscal {
+      display: inherit;
+    }
+}
+
+@media (max-width: 576px) {
+  .grouped-filters .filter-group {
+      gap: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+  .compact-filters {
+      gap: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+  .grouped-bulk-actions-bar .bulk-action-buttons > .bulk-direct-actions > .bulk-direct-link:nth-last-child(2) {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-backdrop {
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 0 !important;
+      background: rgba(15, 23, 42, .42);
+      animation: bulk-action-backdrop-enter .2s ease both;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-backdrop > .bulk-action-modal {
+      position: relative;
+      width: min(86vw, 380px);
+      max-width: none;
+      height: 100dvh;
+      min-height: 0;
+      max-height: none;
+      margin: 0;
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) env(safe-area-inset-left);
+      box-sizing: border-box;
+      grid-template-rows: auto minmax(0, 1fr);
+      border: 1px solid rgba(226, 232, 240, .95);
+      border-left: 0;
+      border-radius: 0 20px 20px 0;
+      overflow: hidden;
+      transform: translateX(calc(-1 * var(--bulk-drawer-offset, 0px)));
+      transition: transform .18s ease;
+      animation: bulk-action-drawer-enter .24s cubic-bezier(.2, .75, .25, 1) both;
+      box-shadow: 18px 0 50px rgba(15, 23, 42, .28);
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal .hidden-sm-down {
+      display: inline !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-backdrop > .bulk-action-modal.is-dragging,
+    .bulk-action-modal-backdrop > .bulk-action-modal.has-entered {
+      animation: none;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-backdrop > .bulk-action-modal.is-dragging {
+      transition: none;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-backdrop.is-closing {
+      background: rgba(15, 23, 42, 0);
+      transition: background .18s ease;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-drag-handle {
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      right: 0;
+      display: block;
+      width: 24px;
+      height: 100%;
+      cursor: grab;
+      touch-action: pan-y;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-drag-handle::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 7px;
+      width: 4px;
+      height: 44px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      transform: translateY(-50%);
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal.is-dragging .bulk-action-modal-drag-handle {
+      cursor: grabbing;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-header {
+      padding-right: 28px;
+    }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-modal-actions {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-right: 24px;
+      padding-bottom: 14px;
+    }
+}
+
+@media (max-width: 760px) {
+  @keyframes bulk-action-drawer-enter {
+      from { transform: translateX(calc(-100% - 24px)); }
+      to { transform: translateX(0); }
+    }
+}
+
+@media (max-width: 760px) {
+  @keyframes bulk-action-backdrop-enter {
+      from { background: rgba(15, 23, 42, 0); }
+      to { background: rgba(15, 23, 42, .42); }
+    }
+}
+
+@media (min-width: 761px) {
+  .filter-drawer-panel {
+      width: min(646px, calc(100vw - 28px));
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      background: var(--card);
+      box-shadow: -18px 0 44px rgba(15, 23, 42, .18);
+      transform: translateX(100%);
+      transition: transform .22s ease;
+    }
+}
+
+@media (min-width: 761px) {
+  form.record-filters {
+      grid-template-columns: repeat(1, minmax(130px, 1fr));
+    }
+}
+
+@media (min-width: 761px) {
+  .supplier-toolbar-card {
+      display: flex;
+      flex-direction: row-reverse;
+    }
+}
+@media (max-width: 700px) {
+  .income-add-btn {
+        max-width: max-content !important;
+      }
+}
+
+@media (max-width: 640px) {
+  .expense-type-toggle {
+        flex-wrap: wrap;
+      }
+}
+
+@media (max-width: 640px) {
+  .expense-type-toggle > span {
+        width: 100%;
+        margin-right: 0;
+      }
+}
+
+@media (max-width: 760px) {
+  .mobile-sort-control {
+        display: flex !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        flex-wrap: nowrap !important;
+      }
+}

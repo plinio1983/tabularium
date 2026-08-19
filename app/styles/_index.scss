@@ -1,8 +1,5 @@
-// Manifest della cascata globale.
-//
-// L'ordine e intenzionale: i moduli responsive chiudono la cascata e possono
-// specializzare componenti e feature senza aumentare artificialmente la
-// specificita dei selettori.
+// Manifest della cascata globale. Le regole responsive sono collocate nei
+// rispettivi moduli semantici, accanto alle regole base che specializzano.
 @use 'foundation/base';
 @use 'layout/shell';
 @use 'components/primitives';
@@ -15,7 +12,5 @@
 @use 'features/record-details';
 @use 'components/record-forms';
 @use 'features/administration';
-@use 'responsive/mobile';
-@use 'responsive/desktop';
 @use 'features/counter-expense';
 @use 'features/recurring-expense-form';

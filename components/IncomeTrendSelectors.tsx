@@ -137,7 +137,7 @@ export default function IncomeTrendSelectors({ dateQuick, dateYear, useFiscalPer
   const years = yearOptions(companyNow);
 
   return <div className="trend-selectors trend-selectors-switch" aria-label="Selettori andamento incassi">
-    <span className="w100">Andamento</span>
+    <span className="w100">Periodo</span>
     <label>
       <div className="trend-selectors-heading">
         <select value={currentQuickValue} onChange={(event) => {

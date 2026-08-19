@@ -101,3 +101,406 @@
   }
 
 }
+@media (max-width: 760px) {
+  .cash-register-routing-content {
+      padding: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-content .table-scroll {
+      overflow: visible;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table {
+      display: block;
+      min-width: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table thead {
+      display: none;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table tbody {
+      display: grid;
+      gap: 14px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table tr {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid #dbe3ee;
+      border-radius: 16px;
+      background: #f8fafc;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table th,
+    .cash-register-routing-table td {
+      display: grid;
+      min-width: 0;
+      width: 100%;
+      padding: 0;
+      border: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table tbody th {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      color: var(--text);
+      font-size: 16px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table td {
+      gap: 7px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table td::before {
+      content: attr(data-channel);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table select {
+      min-height: 54px;
+      height: 54px;
+      padding: 11px 42px 11px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      background-color: #fff;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 750;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-table select:focus {
+      border-color: var(--accent);
+      outline: 0;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, .12);
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-actions {
+      justify-content: stretch;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-routing-actions .btn {
+      width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+  body:has(.cash-register-shell) {
+      overflow: hidden;
+      padding-bottom: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  body:has(.cash-register-shell) .mobile-bottom-nav {
+      display: none !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-shell {
+      width: calc(100vw - 12px);
+      max-width: calc(100vw - 12px);
+      height: calc(100dvh - 20px);
+      min-height: 0;
+      margin: 0 0 0 calc(50% - 50vw + 6px);
+      padding: 0 9px;
+      border: 0;
+      border-radius: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-header,
+    .cash-register-header > div,
+    .cash-register-controls,
+    .cash-register-display,
+    .cash-register-vat,
+    .cash-register-keypad,
+    .cash-register-actions {
+      min-width: 0;
+      max-width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-header .btn.btn-close {
+      background: var(--bg);
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-controls {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+  .counter-expense-controls {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-controls select {
+      grid-column: 1 / -1;
+      height: 54px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-actions.is-edit-mode {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-actions.is-edit-mode .cash-register-submit {
+      grid-column: auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-controls input[type="date"],
+    .cash-register-fiscal-switch {
+      height: 54px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-settings-form,
+    .payment-credit-cash-register-fields {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-method-backdrop {
+      place-items: end center;
+      padding: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-method-modal {
+      width: 100%;
+      padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+      border-radius: 18px 18px 0 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .counter-expense-payment-modal {
+      max-height: 100dvh;
+      border-radius: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .counter-expense-summary {
+      gap: 16px;
+    }
+}
+
+@media (max-width: 760px) {
+  .counter-expense-modal-actions {
+      position: sticky;
+      bottom: calc(-16px - env(safe-area-inset-bottom));
+      margin-right: -16px;
+      margin-left: -16px;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      background: #fff;
+    }
+}
+
+@media (max-width: 760px) {
+  .counter-expense-modal-actions .btn {
+      flex: 1;
+      min-width: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-period-nav {
+      align-items: stretch;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-month-group {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-month-scroller {
+      flex: 1 1 100%;
+      width: 100%;
+      min-width: 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-month-scroller .button-group-scroll-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-period-nav > .year-navigation-select {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-period-nav > .year-navigation-select select {
+      flex: 1 1 auto;
+      min-height: 42px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-month-group > .btn {
+      flex: 0 0 auto;
+      min-width: 58px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-filter-trigger {
+      flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-trend-card {
+      gap: 12px;
+      padding: 14px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-trend-heading {
+      display: grid;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-trend-kpis {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-trend-chart {
+      width: 720px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-trend-selection {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-trend-selection > div:first-child {
+      grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-row {
+      grid-template-columns: 30px minmax(0, 1fr);
+      padding: 10px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-content {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px 10px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-date {
+      grid-column: 1 / -1;
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-channel {
+      grid-column: 1 / -1;
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-method {
+      min-width: 0;
+      font-weight: 800;
+    }
+}
+
+@media (max-width: 760px) {
+  .cash-register-receipt-amount {
+      align-self: center;
+    }
+}
+
+@media (max-width: 760px) {
+  body:has(.modal-backdrop),
+    body:has(.app-form-modal-backdrop),
+    body:has(.bulk-action-modal-backdrop),
+    body:has(.cash-register-method-backdrop),
+    body:has(.filter-drawer-backdrop.is-open) {
+      overflow: hidden;
+    }
+}

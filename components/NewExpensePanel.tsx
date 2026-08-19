@@ -127,7 +127,7 @@ export default function NewExpensePanel({
                     {/*</Link>*/}
                 </div>
                 <div className="record-toolbar-card-text">
-                    <p className="muted">Gestisci le uscite ricorrenti.</p>
+                    <p className="muted">Consulta e gestisci le spese fiscali e non fiscali compresi stipendi e saldi IVA .</p>
                 </div>
             </div>
             <div className="toolbar-actions record-toolbar-actions">

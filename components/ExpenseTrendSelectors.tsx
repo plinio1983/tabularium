@@ -137,7 +137,7 @@ export default function ExpenseTrendSelectors({ dateQuick, dateYear, useFiscalPe
 
   return <div className="trend-selectors trend-selectors-switch" aria-label="Selettori andamento spese">
 
-    <span className="w100">Andamento</span>
+    <span className="w100">Periodo</span>
 
     <label className="flex-grow">
       <div className="trend-selectors-heading">

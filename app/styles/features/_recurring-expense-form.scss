@@ -53,3 +53,173 @@
     display: none !important;
   }
 }
+
+/* Responsive rules migrated from the former viewport-specific stylesheets. */
+.recurring-wizard-amount-field .money-input > input,
+.expense-wizard-amount-field .money-input > input,
+.income-amount-field .money-input > input {
+  font-size: 24px !important;
+}
+@media (max-width: 900px) {
+  .recurring-wizard-amount-entry {
+      display: grid;
+      grid-template-columns: minmax(112px, .42fr) minmax(0, 1fr);
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-wizard-amount-field {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-form-section {
+      width: 100%;
+      margin: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-wizard-modal-card > .recurring-form-wizard {
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: 100%;
+      padding-bottom: calc(180px + env(safe-area-inset-bottom));
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+      scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-width: 900px) {
+  .app-wizard-modal-card:has(> .recurring-form-wizard) {
+      overflow: hidden;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-wizard-modal-card:has(> .recurring-form-wizard) > .modal-title {
+      flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-wizard-page-card > .recurring-form-wizard {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding-bottom: calc(180px + env(safe-area-inset-bottom));
+      scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-form-section > summary {
+      display: none;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-form-section > .recurring-form-section-grid,
+    .recurring-form-wizard .recurring-form-section > .form-section-stack {
+      //display: flex;
+      //flex-direction: column;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      gap: 22px;
+      background: transparent;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-type-desktop {
+      display: none;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-form-wizard-current-1.recurring-form-wizard .recurring-details-section,
+    .app-form-wizard-current-1.recurring-form-wizard .recurring-amount-section,
+    .app-form-wizard-current-2.recurring-form-wizard .recurring-dates-section,
+    .app-form-wizard-current-2.recurring-form-wizard .recurring-details-section,
+    .app-form-wizard-current-3.recurring-form-wizard .recurring-dates-section,
+    .app-form-wizard-current-3.recurring-form-wizard .recurring-amount-section {
+      display: none;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-wizard-amount {
+      align-items: stretch;
+      gap: 14px;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-vat-buttons-desktop {
+      display: none !important;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-vat-buttons-mobile {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: 100%;
+      grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-wizard-amount > label {
+      width: 100%;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-wizard-amount .money-input {
+      min-height: 70px;
+      overflow: hidden;
+      border: 1px solid #dbe3ef;
+      border-radius: 16px;
+      background: #f8fafc;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-wizard-amount .money-input > span {
+      left: 16px;
+      font-size: 26px;
+    }
+}
+
+@media (max-width: 900px) {
+  .recurring-form-wizard .recurring-wizard-amount .money-input input {
+      height: 68px;
+      padding: 6px 14px 6px 48px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font-size: 38px;
+      font-weight: 850;
+      line-height: 1;
+      text-align: right;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-form-wizard-current-6.recurring-form-wizard .recurring-notes-section > .form-section-stack {
+      padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
+    }
+}

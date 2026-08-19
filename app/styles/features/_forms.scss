@@ -695,3 +695,283 @@
     display: none !important;
   }
 }
+
+/* Responsive rules migrated from the former viewport-specific stylesheets. */
+@media (max-width: 760px) {
+  .modal-backdrop,
+    .app-form-modal {
+      z-index: 9999999 !important;
+    }
+}
+
+@media (max-width: 760px) {
+  .trend-selectors {
+      grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 576px) {
+  .actions-row .btn-primary,
+    .actions-row .btn {
+      max-width: none;
+      /*flex-grow: 1;*/
+      /*width: 100%;*/
+    }
+}
+
+@media (max-width: 700px) {
+  .form-actions-row {
+      justify-content: stretch;
+    }
+}
+
+@media (max-width: 700px) {
+  .form-actions-row .btn {
+      max-width: none;
+      flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .sales-channel-edit-form {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .sales-channel-edit-form .span-2 {
+      grid-column: auto;
+    }
+}
+
+@media (max-width: 760px) {
+  .sales-channel-edit-form {
+      padding-bottom: calc(92px + env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-width: 760px) {
+  .app-form-modal,
+    .modal-backdrop {
+      align-items: flex-start;
+      padding: 10px;
+    }
+}
+
+@media (max-width: 760px) {
+  .mobile-sort-control select {
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+}
+
+@media (max-width: 900px) {
+  .app-due-date-shortcuts button.is-selected,
+    .app-vat-rate-buttons button.is-selected {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+}
+
+@media (max-width: 760px) {
+  .form-actions-row .btn-cancel {
+      order: 4;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-category-edit-form {
+      grid-template-columns: 1fr;
+      align-content: start;
+      padding: 14px 0 0;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-category-edit-form .span-2,
+    .expense-category-edit-form .full {
+      grid-column: 1;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-category-edit-form .app-form-field input,
+    .expense-category-edit-form .app-select-control select {
+      min-height: 54px;
+      border-radius: 16px;
+      font-size: 16px;
+    }
+}
+
+@media (max-width: 760px) {
+  .expense-category-edit-form {
+      padding-bottom: calc(92px + env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-width: 760px) {
+  .vat-settlement-category-field .app-form-field-label {
+      color: #334155;
+      font-size: 13px;
+      font-weight: 900;
+    }
+}
+
+@media (max-width: 760px) {
+  .vat-settlement-category-field .app-form-field-icon {
+      width: 25px;
+      height: 25px;
+      border-radius: 9px;
+    }
+}
+
+@media (max-width: 760px) {
+  .vat-settlement-category-field .app-select-control select {
+      min-height: 54px;
+      border-radius: 16px;
+      font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+  input, select {
+      font-weight: 400;
+    }
+}
+
+@media (max-width: 576px) {
+  input:active, select:active,
+    input:focus, select:focus {
+      font-weight: 400;
+    }
+}
+
+@media (max-width: 576px) {
+  .form {
+      gap: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+  .form label,
+    .field-note,
+    .switch-toggle-field > span {
+      font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+  .toggle-field-wrap .switch-toggle-field {
+      width: 50%;
+    }
+}
+
+@media (max-width: 576px) {
+  .currency-input > span,
+    .vat-input > span {
+      height: 44px;
+      line-height: 46px;
+    }
+}
+
+@media (max-width: 576px) {
+  .grid-4, .grid-2, .form {
+      grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+  .app-quick-search-form {
+      padding: 12px 0;
+      border-radius: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+  .app-quick-search-field {
+      width: 100%;
+      max-width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+  .app-quick-search-field > input {
+      width: 0;
+      min-width: 0;
+    }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-custom-form {
+      display: grid;
+      align-items: stretch;
+    }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-custom-form input,
+    .month-comparison-custom-form button {
+      width: 100%;
+    }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-period-field {
+      width: 100%;
+    }
+}
+
+@media (max-width: 900px) {
+  .month-comparison-period-field .app-date-control input {
+      min-height: 54px;
+      height: 54px;
+      border-radius: 16px;
+      font-size: 16px;
+    }
+}
+
+@media (max-width: 760px) {
+  .modal-backdrop,
+    .app-form-modal-backdrop {
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      min-height: 100dvh;
+      padding: 0 !important;
+      align-items: stretch;
+      justify-content: stretch;
+      overflow: hidden;
+    }
+}
+
+@media (max-width: 760px) {
+  .modal-backdrop > .modal-card,
+    .app-form-modal-backdrop > .app-form-modal {
+      width: 100vw;
+      max-width: 100vw;
+      height: 100dvh;
+      min-height: 100dvh;
+      max-height: 100dvh;
+      margin: 0;
+      padding-top: max(14px, env(safe-area-inset-top));
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+      border: 0;
+      border-radius: 0;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+}
+
+@media (min-width: 761px) {
+  .modal-backdrop,
+    .app-form-modal {
+      z-index: 9999999;
+    }
+}
+@media (max-width: 576px) {
+  .section-title {
+        flex-direction: column;
+      }
+}
