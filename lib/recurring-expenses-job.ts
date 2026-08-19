@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
+import {createSystemNotification} from '@/lib/notifications';
 
 export type RecurringExpenseJobResult = {
   checked: number;
@@ -201,8 +202,9 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
           continue;
         }
 
-        await prisma.expense.create({
-          data: {
+        await prisma.$transaction(async tx => {
+          const expense = await tx.expense.create({
+            data: {
             workspaceId: recurringExpense.workspaceId || null,
             companyId: recurringExpense.companyId,
             receivedDate: dueDate,
@@ -224,7 +226,19 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             notes: recurringExpense.notes || null,
             recurringExpenseId: recurringExpense.id,
             recurringExpensePeriodKey
-          }
+            }
+          });
+          await createSystemNotification({
+            workspaceId: recurringExpense.company.workspaceId,
+            companyId: recurringExpense.companyId,
+            type: 'RECURRING_EXPENSE_CREATED',
+            title: 'Spesa ricorrente creata',
+            message: `${recurringExpense.supplier.businessName}: generata la spesa ${recurringExpensePeriodKey}.`,
+            actionUrl: `/expenses/${expense.id}`,
+            sourceType: 'Expense',
+            sourceId: expense.id,
+            dedupeKey: `recurring-expense-created:${recurringExpense.id}:${recurringExpensePeriodKey}`
+          }, tx);
         });
 
         result.created += 1;
@@ -233,10 +247,24 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
         await prisma.recurringExpense.update({where: {id: recurringExpense.id}, data: {isActive: false, archivedAt: companyToday}});
       }
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
       result.errors.push({
         recurringExpenseId: recurringExpense.id,
-        message: error instanceof Error ? error.message : String(error)
+        message
       });
+      await createSystemNotification({
+        workspaceId: recurringExpense.company.workspaceId,
+        companyId: recurringExpense.companyId,
+        type: 'RECURRING_JOB_FAILED',
+        severity: 'CRITICAL',
+        title: 'Generazione spesa ricorrente non riuscita',
+        message: `${recurringExpense.description || recurringExpense.merchant}: ${message}`,
+        actionUrl: `/recurring-expenses/${recurringExpense.id}`,
+        sourceType: 'RecurringExpense',
+        sourceId: recurringExpense.id,
+        dedupeKey: `recurring-expense-failed:${recurringExpense.id}:${dateInputInTimeZone(recurringExpense.company.timeZone, todayInput)}`,
+        recipientRoles: ['OWNER', 'ADMIN']
+      }).catch(() => undefined);
     }
   }
 
@@ -284,6 +312,12 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
       }
       if (!expense.recurringExpense.paymentMethodId) {
         result.errors.push({ expenseId: expense.id, message: 'Metodo di pagamento automatico mancante' });
+        await createSystemNotification({
+          workspaceId: expense.company.workspaceId, companyId: expense.companyId, type: 'AUTOMATIC_PAYMENT_FAILED', severity: 'CRITICAL',
+          title: 'Pagamento automatico non riuscito', message: `${expense.merchant}: metodo di pagamento automatico mancante.`,
+          actionUrl: `/recurring-expenses/${expense.recurringExpense.id}`, sourceType: 'Expense', sourceId: expense.id,
+          dedupeKey: `automatic-payment-failed:${expense.id}:${dateInputInTimeZone(expense.company.timeZone, todayInput)}`, recipientRoles: ['OWNER', 'ADMIN']
+        }).catch(() => undefined);
         result.skipped += 1;
         continue;
       }
@@ -329,12 +363,31 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
         })
       ]);
 
+      await createSystemNotification({
+        workspaceId: expense.company.workspaceId,
+        companyId: expense.companyId,
+        type: 'AUTOMATIC_PAYMENT_COMPLETED',
+        title: 'Pagamento automatico registrato',
+        message: `${expense.merchant}: registrato il pagamento automatico della spesa #${expense.id}.`,
+        actionUrl: `/expenses/${expense.id}`,
+        sourceType: 'Expense',
+        sourceId: expense.id,
+        dedupeKey: `automatic-payment-completed:${expense.id}`
+      });
+
       result.created += 1;
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
       result.errors.push({
         expenseId: expense.id,
-        message: error instanceof Error ? error.message : String(error)
+        message
       });
+      await createSystemNotification({
+        workspaceId: expense.company.workspaceId, companyId: expense.companyId, type: 'AUTOMATIC_PAYMENT_FAILED', severity: 'CRITICAL',
+        title: 'Pagamento automatico non riuscito', message: `${expense.merchant}: ${message}`,
+        actionUrl: `/expenses/${expense.id}`, sourceType: 'Expense', sourceId: expense.id,
+        dedupeKey: `automatic-payment-failed:${expense.id}:${dateInputInTimeZone(expense.company.timeZone, todayInput)}`, recipientRoles: ['OWNER', 'ADMIN']
+      }).catch(() => undefined);
     }
   }
 

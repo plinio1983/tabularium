@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { generateRecurringExpenses, runRecurringExpensesDailyJob, settleAutomaticRecurringPayments } from '@/lib/recurring-expenses-job';
 import { generateRecurringIncomes, runRecurringIncomesDailyJob, settleAutomaticRecurringCredits } from '@/lib/recurring-incomes-job';
+import {generateDueNotifications} from '@/lib/notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,11 +28,13 @@ export async function GET(request: Request) {
         ? await generateRecurringIncomes()
         : task === 'credits'
           ? await settleAutomaticRecurringCredits()
-          : { expenses: await runRecurringExpensesDailyJob(), incomes: await runRecurringIncomesDailyJob() };
+      : task === 'notifications'
+        ? await generateDueNotifications()
+        : { expenses: await runRecurringExpensesDailyJob(), incomes: await runRecurringIncomesDailyJob(), notifications: await generateDueNotifications() };
 
   const hasErrors = 'errors' in result ? result.errors.length > 0
     : result.expenses
-      ? result.expenses.generate.errors.length > 0 || result.expenses.payments.errors.length > 0 || result.incomes.generate.errors.length > 0 || result.incomes.credits.errors.length > 0
+      ? result.expenses.generate.errors.length > 0 || result.expenses.payments.errors.length > 0 || result.incomes.generate.errors.length > 0 || result.incomes.credits.errors.length > 0 || result.notifications.errors.length > 0
       : result.generate.errors.length > 0 || (result.payments?.errors.length ?? result.credits?.errors.length ?? 0) > 0;
   if (hasErrors) console.error(JSON.stringify({ event: 'recurring_expenses_job_failed', task, result }));
   return NextResponse.json({ task, result }, { status: hasErrors ? 500 : 200 });

@@ -120,11 +120,6 @@ export default function NewExpensePanel({
             <div className="record-toolbar-card-content">
                 <div className="record-toolbar-card-title">
                     <h2>Spese</h2>
-                    {/*<Link className="btn btn-md btn-default expense-import-btn" href="/expenses/import">*/}
-                    {/*  <span className="btn-icon">⬆</span>*/}
-                    {/*  <span className="expense-import-btn-text"> Importa Excel</span>*/}
-                    {/*  <span className="expense-import-btn-text-compact"> XLS</span>*/}
-                    {/*</Link>*/}
                 </div>
                 <div className="record-toolbar-card-text">
                     <p className="muted">Consulta e gestisci le spese fiscali e non fiscali compresi stipendi e saldi IVA .</p>

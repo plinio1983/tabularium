@@ -58,6 +58,26 @@ enum EmployeeStatus {
   INACTIVE
 }
 
+enum NotificationType {
+  RECURRING_EXPENSE_CREATED
+  RECURRING_INCOME_CREATED
+  EXPENSE_DUE_SOON
+  EXPENSE_OVERDUE
+  INCOME_DUE_SOON
+  INCOME_OVERDUE
+  AUTOMATIC_PAYMENT_COMPLETED
+  AUTOMATIC_PAYMENT_FAILED
+  AUTOMATIC_CREDIT_COMPLETED
+  AUTOMATIC_CREDIT_FAILED
+  RECURRING_JOB_FAILED
+}
+
+enum NotificationSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
 enum CustomerSystemRole {
   DEFAULT
   CASH_REGISTER
@@ -100,6 +120,7 @@ model User {
   auditLogs               AuditLog[]
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens     PasswordResetToken[]
+  notificationRecipients NotificationRecipient[]
 }
 
 model Workspace {
@@ -127,6 +148,7 @@ model Workspace {
   monthlyRevenues                    MonthlyRevenue[]
   incomes                            Income[]
   auditLogs                          AuditLog[]
+  notifications                     Notification[]
   cashRegisterBankRules              CashRegisterBankRule[]
   vatSettlementCategoryId            Int?
   vatSettlementCategory              ExpenseCategory?       @relation("VatSettlementCategory", fields: [vatSettlementCategoryId], references: [id], onDelete: Restrict)
@@ -279,12 +301,52 @@ model Company {
   employees         Employee[]
   revenues          MonthlyRevenue[]
   activeSessions    AuthSession[]      @relation("ActiveCompanySession")
+  notifications     Notification[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
   @@index([primaryBankId])
+}
+
+model Notification {
+  id          BigInt               @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  companyId   Int?
+  company     Company?             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  type        NotificationType
+  severity    NotificationSeverity @default(INFO)
+  title       String
+  message     String
+  actionUrl   String?
+  sourceType  String?
+  sourceId    String?
+  dedupeKey   String
+  occurredAt  DateTime             @default(now())
+  expiresAt   DateTime?
+  createdAt   DateTime             @default(now())
+  recipients  NotificationRecipient[]
+
+  @@unique([workspaceId, dedupeKey])
+  @@index([workspaceId, companyId, occurredAt])
+  @@index([type, occurredAt])
+  @@index([expiresAt])
+}
+
+model NotificationRecipient {
+  notificationId BigInt
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  userId          Int
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  readAt          DateTime?
+  archivedAt      DateTime?
+  createdAt       DateTime     @default(now())
+
+  @@id([notificationId, userId])
+  @@index([userId, readAt, archivedAt])
+  @@index([userId, createdAt])
 }
 
 model Employee {
@@ -650,6 +712,7 @@ model Expense {
   @@index([merchant])
   @@index([expenseType])
   @@index([employeeId])
+  @@index([dueDate])
 }
 
 model ExpensePayment {

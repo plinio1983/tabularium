@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { recurrenceBillingPeriod, recurrenceDates, recurrencePeriodKey, recurrenceStartOfDay } from '@/lib/recurrence-schedule';
 import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
+import {createSystemNotification} from '@/lib/notifications';
 
 type JobError = { recurringIncomeId: number; message: string };
 export type RecurringIncomeJobResult = { checked: number; created: number; skipped: number; errors: JobError[] };
@@ -32,22 +33,42 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
         const key = recurrencePeriodKey(creditDate.getUTCFullYear(), creditDate.getUTCMonth() + 1);
         const existing = await prisma.income.findFirst({ where: { recurringIncomeId: definition.id, recurringIncomePeriodKey: key } });
         if (existing) { result.skipped++; continue; }
-        await prisma.income.create({ data: {
-          workspaceId: definition.workspaceId, companyId: definition.companyId, customerId: definition.customerId,
-          salesChannelId: definition.salesChannelId, incomeCategoryId: definition.incomeCategoryId,
-          description: definition.description, amount: definition.amount, paymentMethodId, creditBankId: bankId,
-          orderDate: creditDate, creditDate, dueDate: creditDate, isCredited: false,
-          billingMonth: billing.month, billingYear: billing.year, isFiscal: definition.isFiscal,
-          invoiceStatus: definition.isFiscal ? 'NON_INVIATA' : null, vatRate: definition.vatRate, notes: definition.notes,
-          recurringIncomeId: definition.id, recurringIncomePeriodKey: key
-        } });
+        await prisma.$transaction(async tx => {
+          const income = await tx.income.create({ data: {
+            workspaceId: definition.workspaceId, companyId: definition.companyId, customerId: definition.customerId,
+            salesChannelId: definition.salesChannelId, incomeCategoryId: definition.incomeCategoryId,
+            description: definition.description, amount: definition.amount, paymentMethodId, creditBankId: bankId,
+            orderDate: creditDate, creditDate, dueDate: creditDate, isCredited: false,
+            billingMonth: billing.month, billingYear: billing.year, isFiscal: definition.isFiscal,
+            invoiceStatus: definition.isFiscal ? 'NON_INVIATA' : null, vatRate: definition.vatRate, notes: definition.notes,
+            recurringIncomeId: definition.id, recurringIncomePeriodKey: key
+          } });
+          await createSystemNotification({
+            workspaceId: definition.workspaceId,
+            companyId: definition.companyId,
+            type: 'RECURRING_INCOME_CREATED',
+            title: 'Incasso ricorrente creato',
+            message: `Generato l’incasso ${key}: ${definition.description}.`,
+            actionUrl: `/incomes/${income.id}`,
+            sourceType: 'Income',
+            sourceId: income.id,
+            dedupeKey: `recurring-income-created:${definition.id}:${key}`
+          }, tx);
+        });
         result.created++;
       }
       if (endDate && today > endDate) {
         await prisma.recurringIncome.update({where: {id: definition.id}, data: {isActive: false, archivedAt: today}});
       }
     } catch (error) {
-      result.errors.push({ recurringIncomeId: definition.id, message: error instanceof Error ? error.message : String(error) });
+      const message = error instanceof Error ? error.message : String(error);
+      result.errors.push({ recurringIncomeId: definition.id, message });
+      await createSystemNotification({
+        workspaceId: definition.workspaceId, companyId: definition.companyId, type: 'RECURRING_JOB_FAILED', severity: 'CRITICAL',
+        title: 'Generazione incasso ricorrente non riuscita', message: `${definition.description}: ${message}`,
+        actionUrl: `/recurring-incomes/${definition.id}/edit`, sourceType: 'RecurringIncome', sourceId: definition.id,
+        dedupeKey: `recurring-income-failed:${definition.id}:${dateInputInTimeZone(definition.company.timeZone, todayInput)}`, recipientRoles: ['OWNER', 'ADMIN']
+      }).catch(() => undefined);
     }
   }
   return result;
@@ -74,9 +95,27 @@ export async function settleAutomaticRecurringCredits(todayInput = new Date()): 
         prisma.incomeCredit.create({ data: { incomeId: income.id, creditDate: income.dueDate ?? income.creditDate, paymentMethodId: definition.paymentMethodId, bankId: definition.bankId, amount: residual, sourceKey } }),
         prisma.income.update({ where: { id: income.id }, data: { isCredited: true, paymentMethodId: definition.paymentMethodId, creditBankId: definition.bankId } })
       ]);
+      await createSystemNotification({
+        workspaceId: income.company.workspaceId,
+        companyId: income.companyId,
+        type: 'AUTOMATIC_CREDIT_COMPLETED',
+        title: 'Accredito automatico registrato',
+        message: `Registrato l’accredito automatico dell’incasso #${income.id}.`,
+        actionUrl: `/incomes/${income.id}`,
+        sourceType: 'Income',
+        sourceId: income.id,
+        dedupeKey: `automatic-credit-completed:${income.id}`
+      });
       result.created++;
     } catch (error) {
-      result.errors.push({ incomeId: income.id, message: error instanceof Error ? error.message : String(error) });
+      const message = error instanceof Error ? error.message : String(error);
+      result.errors.push({ incomeId: income.id, message });
+      await createSystemNotification({
+        workspaceId: income.company.workspaceId, companyId: income.companyId, type: 'AUTOMATIC_CREDIT_FAILED', severity: 'CRITICAL',
+        title: 'Accredito automatico non riuscito', message,
+        actionUrl: `/incomes/${income.id}`, sourceType: 'Income', sourceId: income.id,
+        dedupeKey: `automatic-credit-failed:${income.id}:${dateInputInTimeZone(income.company.timeZone, todayInput)}`, recipientRoles: ['OWNER', 'ADMIN']
+      }).catch(() => undefined);
     }
   }
   return result;

@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import MainNav from '@/components/MainNav';
 import SettingsMenu from '@/components/SettingsMenu';
+import NotificationBell from '@/components/NotificationBell';
 import logoHorizontal from '../public/img/tabularium-logo-horiz.png';
 
 type Props = {
@@ -35,6 +36,7 @@ function DesktopHeader({ compactOnMobile = false }: { compactOnMobile?: boolean 
     <div className="site-header-actions">
       <Suspense fallback={null}>
         <MainNav />
+        <NotificationBell />
         <SettingsMenu />
       </Suspense>
     </div>

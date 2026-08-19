@@ -10,6 +10,8 @@ backups/
 prisma/migrations
 !prisma/migrations/
 prisma/migrations/*
+!prisma/migrations/20260819143000_system_notifications/
+!prisma/migrations/20260819143000_system_notifications/migration.sql
 !prisma/migrations/20260810120000_recurring_expense_generation_timing/
 !prisma/migrations/20260810120000_recurring_expense_generation_timing/migration.sql
 !prisma/migrations/20260801120000_income_credits/

@@ -1890,11 +1890,11 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     }
 }
 
-@media (max-width: 760px) {
-  .bulk-action-modal .hidden-sm-down {
-      display: inline !important;
-    }
-}
+//@media (max-width: 760px) {
+//  .bulk-action-modal .hidden-sm-down {
+//      display: inline !important;
+//    }
+//}
 
 @media (max-width: 760px) {
   .bulk-action-modal-backdrop > .bulk-action-modal.is-dragging,
