@@ -423,6 +423,7 @@ export async function getPeriodReport(periods: Array<{year: number; month: numbe
       vatToPay: summary.ivaGenerataIncassi,
       paidVat: summary.ivaVersataSpese,
       remainingVat: summary.debitoIva,
+      taxableIncome: summary.imponibileIncassi,
       declaredProfit: summary.utileFiscale,
       grossProfit: summary.utileLordo,
       taxRate,

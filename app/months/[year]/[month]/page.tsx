@@ -26,6 +26,10 @@ function euroInt(value: number | string | null | undefined) {
     return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0}).format(n);
 }
 
+function marginPercentage(margin: number, revenue: number) {
+    return revenue ? `${(margin / revenue * 100).toFixed(1).replace('.', ',')}%` : '—';
+}
+
 function safeReturnTo(value: string | string[] | undefined) {
     const raw = Array.isArray(value) ? value[0] : value;
     return raw && raw.startsWith('/') && !raw.startsWith('//') ? raw : '/';
@@ -232,15 +236,21 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     >Fiscale</Link>
                 </div>
             </div>
-            <div className="grid grid-4 month-report-metrics">
+            <div className="month-report-metrics">
                 <div className="month-report-value"><span>{mode === 'fiscal' ? 'Entrate fiscali' : 'Entrate'}</span><strong
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
                 <div className="month-report-value">
                     <span>{mode === 'fiscal' ? 'Uscite rilevanti' : 'Uscite'}</span><strong>{euroInt(report.totals.totalExpenses)}</strong></div>
-                <div className="month-report-value"><span>{mode === 'fiscal' ? 'Utile fiscale' : 'Utile lordo'}</span><strong
-                    className="month-report-positive">{euroInt(mode === 'fiscal' ? report.totals.declaredProfit : report.totals.grossProfit)}</strong></div>
-                <div className="month-report-value"><span>{mode === 'fiscal' ? 'Imposte previste' : 'Netto previsto'}</span><strong
-                    className="month-report-positive">{euroInt(mode === 'fiscal' ? report.totals.estimatedTax : report.totals.estimatedNetProfit)}</strong></div>
+                <div className="month-report-value"><span>Margine lordo</span><strong
+                    className="month-report-positive">{euroInt(report.totals.grossProfit)} <small
+                    className="month-report-metric-percentage"
+                    aria-label="Percentuale del margine lordo sulle entrate">{marginPercentage(report.totals.grossProfit, report.totals.totalRevenue)}</small></strong></div>
+                <div className="month-report-value"><span>Imponibile</span><strong
+                    className="month-report-positive">{euroInt(report.totals.taxableIncome)}</strong></div>
+                <div className="month-report-value"><span>Utile fiscale</span><strong
+                    className="month-report-positive">{euroInt(report.totals.declaredProfit)}</strong></div>
+                <div className="month-report-value"><span>Imposte previste</span><strong
+                    className="month-report-positive">{euroInt(report.totals.estimatedTax)}</strong></div>
             </div>
         </section>
 

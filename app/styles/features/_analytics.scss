@@ -425,7 +425,7 @@
 
 .month-report-metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
   border-top: 1px solid var(--line);
   padding-top: 16px;
@@ -493,7 +493,7 @@
   border-right: 1px solid var(--line);
 }
 
-.month-report-metrics .month-report-value:last-child {
+.month-report-metrics .month-report-value:nth-child(3n) {
   padding-right: 0;
   border-right: 0;
 }
@@ -536,6 +536,14 @@
   margin-top: 0;
   font-size: 24px;
   line-height: 1.05;
+}
+
+.month-report-metric-percentage {
+  margin-left: 5px;
+  color: var(--muted);
+  font-size: .62em;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .month-report-fiscal-metrics .month-report-value strong {
@@ -4530,7 +4538,7 @@ html, body {
 
 @media (max-width: 760px) {
   .month-report-metrics {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
 }
