@@ -4,6 +4,7 @@ import {
   calendarDayNumber,
   dateInputInTimeZone,
   isValidTimeZone,
+  lastCompletedMonthInTimeZone,
   normalizeTimeZone,
   zonedMidnightUtc,
 } from '../lib/company-time';
@@ -20,6 +21,12 @@ test('the same instant uses the company calendar day', () => {
   const instant = new Date('2026-08-02T22:30:00.000Z');
   assert.equal(dateInputInTimeZone('Europe/Rome', instant), '2026-08-03');
   assert.equal(dateInputInTimeZone('America/New_York', instant), '2026-08-02');
+});
+
+test('the report defaults to the last fully completed company month', () => {
+  assert.deepEqual(lastCompletedMonthInTimeZone('Europe/Rome', new Date('2026-08-20T10:00:00Z')), {year: 2026, month: 7});
+  assert.deepEqual(lastCompletedMonthInTimeZone('Europe/Rome', new Date('2026-01-15T10:00:00Z')), {year: 2025, month: 12});
+  assert.deepEqual(lastCompletedMonthInTimeZone('Pacific/Kiritimati', new Date('2026-08-31T10:30:00Z')), {year: 2026, month: 8});
 });
 
 test('company midnight respects both Rome daylight-saving transitions', () => {

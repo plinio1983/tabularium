@@ -469,7 +469,7 @@
   min-width: 0;
   flex-grow: 1;
 
-  @media (max-width: 576px) {
+  @media (max-width: 768px) {
     border-bottom: 1px solid var(--line);
     padding-bottom: 17px;
   }
@@ -544,6 +544,14 @@
   font-size: .62em;
   font-weight: 800;
   white-space: nowrap;
+}
+
+@media (max-width: 389px) {
+  .month-report-metric-percentage {
+    display: block;
+    margin-top: 5px;
+    margin-left: 0;
+  }
 }
 
 .month-report-fiscal-metrics .month-report-value strong {
@@ -4549,7 +4557,7 @@ html, body {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1180px) {
   .month-report-metrics .month-report-value {
     display: flex;
     flex-direction: column;

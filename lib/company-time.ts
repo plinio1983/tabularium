@@ -50,6 +50,13 @@ export function yearMonthInTimeZone(timeZone: string, now = new Date()) {
   return parts ? {year: parts.year, month: parts.month} : {year: now.getUTCFullYear(), month: now.getUTCMonth() + 1};
 }
 
+export function lastCompletedMonthInTimeZone(timeZone: string, now = new Date()) {
+  const current = yearMonthInTimeZone(timeZone, now);
+  return current.month === 1
+    ? {year: current.year - 1, month: 12}
+    : {year: current.year, month: current.month - 1};
+}
+
 /** Calendar surrogate for legacy helpers that use local Date getters.
  * It carries the company's calendar fields in the runtime's local zone and
  * must never be persisted as an instant. */

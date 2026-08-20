@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import MonthlyReportIcon from '@/components/MonthlyReportIcon';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
-import {yearMonthInTimeZone} from '@/lib/company-time';
+import {lastCompletedMonthInTimeZone} from '@/lib/company-time';
 
 function currentMonthReportHref(timeZone: string) {
-  const current = yearMonthInTimeZone(timeZone);
-  return `/months/${current.year}/${current.month}?mode=overall&returnTo=${encodeURIComponent('/')}`;
+  const completed = lastCompletedMonthInTimeZone(timeZone);
+  return `/months/${completed.year}/${completed.month}?mode=overall&returnTo=${encodeURIComponent('/')}`;
 }
 
 const mainMenuLinks = [

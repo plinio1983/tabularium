@@ -9,7 +9,7 @@ import {prisma} from '@/lib/prisma';
 import {getMonthlyReport, getOrderDatePeriodSummary, getPeriodReport, getPeriodSummary} from '@/lib/reports';
 import {monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
-import {yearMonthInTimeZone} from '@/lib/company-time';
+import {lastCompletedMonthInTimeZone, yearMonthInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import SearchIcon from '@/components/SearchIcon';
 import {prepareIncomeList} from '@/lib/income-list';
@@ -26,8 +26,8 @@ function euroInt(value: number | string | null | undefined) {
     return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0}).format(n);
 }
 
-function marginPercentage(margin: number, revenue: number) {
-    return revenue ? `${(margin / revenue * 100).toFixed(1).replace('.', ',')}%` : '—';
+function revenuePercentage(value: number, revenue: number) {
+    return revenue ? `${(value / revenue * 100).toFixed(1).replace('.', ',')}%` : '—';
 }
 
 function safeReturnTo(value: string | string[] | undefined) {
@@ -62,6 +62,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const comparedPeriod = comparisonPeriod({year, month}, comparisonKind, rawComparisonMonth);
     const backHref = safeReturnTo(query.returnTo);
     const currentPeriod = yearMonthInTimeZone(current.company.timeZone);
+    const lastCompletedMonth = lastCompletedMonthInTimeZone(current.company.timeZone);
     const currentYear = currentPeriod.year;
     const currentMonth = currentPeriod.month;
     const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers, expenseYearBounds, incomeYearBounds] = await Promise.all([
@@ -199,7 +200,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 </span>
 
                 <div className="trend-mode-toggle report-period-type-toggle" role="group" aria-label="Tipo di periodo">
-                    <Link className={periodType === 'month' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>Mese</Link>
+                    <Link className={periodType === 'month' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${lastCompletedMonth.year}/${lastCompletedMonth.month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>Mese</Link>
                     <Link className={periodType === 'quarter' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/${(quarter - 1) * 3 + 1}?mode=${mode}&period=quarter&returnTo=${encodeURIComponent(backHref)}`}>Trimestre</Link>
                     <Link className={periodType === 'year' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/1?mode=${mode}&period=year&returnTo=${encodeURIComponent(backHref)}`}>Anno</Link>
                 </div>
@@ -238,19 +239,29 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             </div>
             <div className="month-report-metrics">
                 <div className="month-report-value"><span>{mode === 'fiscal' ? 'Entrate fiscali' : 'Entrate'}</span><strong
-                    className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
+                    className="month-report-positive">{euroInt(report.totals.totalRevenue)} <small
+                    className="month-report-metric-percentage"
+                    aria-label="Base percentuale degli incassi">{report.totals.totalRevenue ? '100,0%' : '—'}</small></strong></div>
                 <div className="month-report-value">
-                    <span>{mode === 'fiscal' ? 'Uscite rilevanti' : 'Uscite'}</span><strong>{euroInt(report.totals.totalExpenses)}</strong></div>
+                    <span>{mode === 'fiscal' ? 'Uscite rilevanti' : 'Uscite'}</span><strong>{euroInt(report.totals.totalExpenses)} <small
+                    className="month-report-metric-percentage"
+                    aria-label="Percentuale delle uscite sugli incassi">{revenuePercentage(report.totals.totalExpenses, report.totals.totalRevenue)}</small></strong></div>
                 <div className="month-report-value"><span>Margine lordo</span><strong
                     className="month-report-positive">{euroInt(report.totals.grossProfit)} <small
                     className="month-report-metric-percentage"
-                    aria-label="Percentuale del margine lordo sulle entrate">{marginPercentage(report.totals.grossProfit, report.totals.totalRevenue)}</small></strong></div>
-                <div className="month-report-value"><span>Imponibile</span><strong
-                    className="month-report-positive">{euroInt(report.totals.taxableIncome)}</strong></div>
+                    aria-label="Percentuale del margine lordo sugli incassi">{revenuePercentage(report.totals.grossProfit, report.totals.totalRevenue)}</small></strong></div>
+                <div className="month-report-value"><span>Utile netto</span><strong
+                    className="month-report-positive">{euroInt(report.totals.estimatedNetProfit)} <small
+                    className="month-report-metric-percentage"
+                    aria-label="Percentuale dell'utile netto sugli incassi">{revenuePercentage(report.totals.estimatedNetProfit, report.totals.totalRevenue)}</small></strong></div>
                 <div className="month-report-value"><span>Utile fiscale</span><strong
-                    className="month-report-positive">{euroInt(report.totals.declaredProfit)}</strong></div>
+                    className="month-report-positive">{euroInt(report.totals.declaredProfit)} <small
+                    className="month-report-metric-percentage"
+                    aria-label="Percentuale dell'utile fiscale sugli incassi">{revenuePercentage(report.totals.declaredProfit, report.totals.totalRevenue)}</small></strong></div>
                 <div className="month-report-value"><span>Imposte previste</span><strong
-                    className="month-report-positive">{euroInt(report.totals.estimatedTax)}</strong></div>
+                    className="month-report-positive">{euroInt(report.totals.estimatedTax)} <small
+                    className="month-report-metric-percentage"
+                    aria-label="Percentuale delle imposte previste sugli incassi">{revenuePercentage(report.totals.estimatedTax, report.totals.totalRevenue)}</small></strong></div>
             </div>
         </section>
 
@@ -280,6 +291,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             <div className="month-report-fiscal-metrics">
                 <div className="month-report-value"><span>Utile fiscale</span><strong
                     className="month-report-positive">{euroInt(fiscalTotals.utileFiscale)}</strong></div>
+                <div className="month-report-value"><span>Imponibile</span><strong
+                    className="month-report-positive">{euroInt(report.totals.taxableIncome)}</strong></div>
                 <div className="month-report-value"><span>Fatture non ricevute</span><strong
                     className="month-report-warning">{fiscalTotals.fattureNonRicevute}</strong></div>
                 <div className="month-report-value"><span>Fatture da inviare</span><strong
