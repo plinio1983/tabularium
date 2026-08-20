@@ -9,6 +9,7 @@ type Totals = {
   grossProfit: number;
   estimatedNetProfit: number;
   declaredProfit: number;
+  estimatedTax: number;
 };
 
 type Metric = {
@@ -52,15 +53,17 @@ export default function MonthComparisonPanel({
   returnTo,
   isCurrentMonth
 }: Props) {
-  const metrics: Metric[] = [
+  const metrics: Metric[] = mode === 'fiscal' ? [
+    {label: 'Entrate fiscali', key: 'totalRevenue', positiveDirection: 1},
+    {label: 'Uscite rilevanti', key: 'totalExpenses', positiveDirection: -1},
+    {label: 'Utile fiscale', key: 'declaredProfit', positiveDirection: 1},
+    {label: 'Imposte previste', key: 'estimatedTax', positiveDirection: -1}
+  ] : [
     {label: 'Entrate', key: 'totalRevenue', positiveDirection: 1},
     {label: 'Uscite', key: 'totalExpenses', positiveDirection: -1},
     {label: 'Utile lordo', key: 'grossProfit', positiveDirection: 1},
     {label: 'Netto previsto', key: 'estimatedNetProfit', positiveDirection: 1}
   ];
-  if (mode === 'fiscal') {
-    metrics.push({label: 'Utile fiscale', key: 'declaredProfit', positiveDirection: 1});
-  }
   const customValue = `${comparison.year}-${String(comparison.month).padStart(2, '0')}`;
 
   return <section className="card month-comparison-panel" aria-labelledby="month-comparison-title">

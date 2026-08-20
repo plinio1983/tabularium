@@ -62,7 +62,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         getPeriodReport(reportPeriods, current.workspace.id, mode, current.company.id, current.company.timeZone),
         getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id, current.company.timeZone),
         mode === 'fiscal'
-            ? getPeriodSummary(reportPeriods, {workspaceId: current.workspace.id, companyId: current.company.id, timeZone: current.company.timeZone})
+            ? getPeriodSummary(reportPeriods, {workspaceId: current.workspace.id, companyId: current.company.id, timeZone: current.company.timeZone, fiscalOnly: true})
             : getOrderDatePeriodSummary(reportPeriods, current.workspace.id, current.company.id, current.company.timeZone),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
@@ -228,14 +228,14 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 </div>
             </div>
             <div className="grid grid-4 month-report-metrics">
-                <div className="month-report-value"><span>Entrate</span><strong
+                <div className="month-report-value"><span>{mode === 'fiscal' ? 'Entrate fiscali' : 'Entrate'}</span><strong
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
                 <div className="month-report-value">
-                    <span>Uscite</span><strong>{euroInt(report.totals.totalExpenses)}</strong></div>
-                <div className="month-report-value"><span>Utile lordo</span><strong
-                    className="month-report-positive">{euroInt(report.totals.grossProfit)}</strong></div>
-                <div className="month-report-value"><span>Netto previsto</span><strong
-                    className="month-report-positive">{euroInt(report.totals.estimatedNetProfit)}</strong></div>
+                    <span>{mode === 'fiscal' ? 'Uscite rilevanti' : 'Uscite'}</span><strong>{euroInt(report.totals.totalExpenses)}</strong></div>
+                <div className="month-report-value"><span>{mode === 'fiscal' ? 'Utile fiscale' : 'Utile lordo'}</span><strong
+                    className="month-report-positive">{euroInt(mode === 'fiscal' ? report.totals.declaredProfit : report.totals.grossProfit)}</strong></div>
+                <div className="month-report-value"><span>{mode === 'fiscal' ? 'Imposte previste' : 'Netto previsto'}</span><strong
+                    className="month-report-positive">{euroInt(mode === 'fiscal' ? report.totals.estimatedTax : report.totals.estimatedNetProfit)}</strong></div>
             </div>
         </section>
 
@@ -269,8 +269,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     className="month-report-warning">{fiscalTotals.fattureNonRicevute}</strong></div>
                 <div className="month-report-value"><span>Fatture da inviare</span><strong
                     className="month-report-warning">{fiscalTotals.fattureNonInviate}</strong></div>
-                <div className="month-report-value"><span>Uscite non fiscali</span><strong
-                    className="month-report-muted-value">{euroInt(fiscalTotals.usciteNonFiscali)}</strong></div>
+                {mode === 'overall' ? <div className="month-report-value"><span>Uscite non fiscali</span><strong
+                    className="month-report-muted-value">{euroInt(fiscalTotals.usciteNonFiscali)}</strong></div> : null}
             </div>
         </section>
 
@@ -304,10 +304,10 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                         <td>Incassi fiscali</td>
                         <td>{euroInt(fiscalTotals.incassoFiscale)}</td>
                     </tr>
-                    <tr>
+                    {mode === 'overall' ? <tr>
                         <td>Incassi non fiscali</td>
                         <td>{euroInt(fiscalTotals.incassoNonFiscale)}</td>
-                    </tr>
+                    </tr> : null}
                     </tbody>
                 </table>
             </section>

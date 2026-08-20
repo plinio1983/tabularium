@@ -197,8 +197,13 @@
   right: 0;
   bottom: 0;
   z-index: 100020;
+  display: flex;
+  flex-direction: column;
   width: min(360px, calc(100vw - 32px));
+  height: 100vh;
+  height: 100dvh;
   padding: 22px;
+  overflow: hidden;
   border-left: 1px solid var(--line);
   background: rgba(255, 255, 255, .98);
   transform: translateX(105%);
@@ -213,6 +218,7 @@
 }
 
 .settings-drawer-header {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -254,8 +260,16 @@
 }
 
 .settings-drawer-nav {
+  flex: 1 1 auto;
+  min-height: 0;
   display: grid;
+  align-content: start;
   gap: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .settings-drawer-nav a,

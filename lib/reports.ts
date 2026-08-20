@@ -89,6 +89,7 @@ function periodRecordKey(record: any, kind: 'income' | 'expense') {
 
 type SummaryOptions = {
   declaredExpensesOnlyForOpenTotals?: boolean;
+  fiscalOnly?: boolean;
   workspaceId?: number;
   companyId?: number;
   timeZone?: string;
@@ -134,7 +135,11 @@ function isExpenseOverdue(expense: any) {
 
 export function expenseAffectsFiscalProfit(expense: {expenseType?: unknown; isDeclared?: boolean; affectsFiscalProfit?: boolean}) {
   return expense.expenseType !== 'VAT_SETTLEMENT'
-    && (expense.isDeclared || expense.affectsFiscalProfit);
+    && Boolean(expense.isDeclared || expense.affectsFiscalProfit);
+}
+
+export function expenseAffectsFiscalAccounting(expense: {expenseType?: unknown; isDeclared?: boolean; affectsFiscalProfit?: boolean}) {
+  return expense.expenseType === 'VAT_SETTLEMENT' || expenseAffectsFiscalProfit(expense);
 }
 
 function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
@@ -204,9 +209,22 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
 }
 
 export async function getPeriodSummary(periods: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
+  const expensePeriodFilter = periodWhere(periods, options.workspaceId, options.companyId);
+  const incomePeriodFilter = options.fiscalOnly
+    ? incomePeriodWhere(periods, options.workspaceId, options.companyId)
+    : incomePeriodWhereIncludingUncredited(periods, options.workspaceId, options.companyId);
   const [incomes, expenses] = await Promise.all([
-    prisma.income.findMany({ where: incomePeriodWhereIncludingUncredited(periods, options.workspaceId, options.companyId), include: {credits: true} }),
-    prisma.expense.findMany({ where: periodWhere(periods, options.workspaceId, options.companyId), include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } } })
+    prisma.income.findMany({
+      where: {...incomePeriodFilter, ...(options.fiscalOnly ? {isFiscal: true} : {})},
+      include: {credits: true}
+    }),
+    prisma.expense.findMany({
+      where: {
+        ...expensePeriodFilter,
+        ...(options.fiscalOnly ? {AND: [{OR: [{isDeclared: true}, {affectsFiscalProfit: true}, {expenseType: 'VAT_SETTLEMENT'}]}]} : {})
+      },
+      include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } } }
+    })
   ]);
 
   return summarizeRecords(incomes, expenses, periods, options);
@@ -343,14 +361,14 @@ export async function getPeriodReport(periods: Array<{year: number; month: numbe
   const [expenses, incomes] = await Promise.all([
     prisma.expense.findMany({
       where: mode === 'fiscal'
-        ? periodWhere(periods, workspaceId, companyId)
+        ? {...periodWhere(periods, workspaceId, companyId), AND: [{OR: [{isDeclared: true}, {affectsFiscalProfit: true}, {expenseType: 'VAT_SETTLEMENT'}]}]}
         : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), OR: dateRanges.map(receivedDate => ({receivedDate})) },
       include: { category: true, company: true, supplier: true, payments: { include: { bank: true, paymentMethod: true }, orderBy: { id: 'asc' } } },
       orderBy: [{ receivedDate: 'asc' }, { id: 'asc' }]
     }),
     prisma.income.findMany({
       where: mode === 'fiscal'
-        ? incomePeriodWhereIncludingUncredited(periods, workspaceId, companyId)
+        ? {...incomePeriodWhere(periods, workspaceId, companyId), isFiscal: true}
         : { ...(workspaceId ? { workspaceId } : {}), ...(companyId ? {companyId} : {}), credits: {some: {OR: instantRanges.map(creditDate => ({creditDate}))}} },
       include: {
         salesChannelRef: true, paymentMethodRef: true, creditBank: true, customer: true,

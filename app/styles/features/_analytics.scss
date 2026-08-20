@@ -4374,6 +4374,27 @@ html, body {
   }
 }
 
+/* Report incassi: tabella desktop e lista mobile devono essere mutuamente esclusive. */
+@media (max-width: 760px) {
+  .month-report-incomes .incomes-table-scroll {
+    display: none !important;
+  }
+
+  .month-report-incomes .income-mobile-list {
+    display: grid !important;
+  }
+}
+
+@media (min-width: 761px) {
+  .month-report-incomes .incomes-table-scroll {
+    display: block !important;
+  }
+
+  .month-report-incomes .income-mobile-list {
+    display: none !important;
+  }
+}
+
 @media (max-width: 760px) {
   .month-report-month-nav {
     display: none;

@@ -248,7 +248,7 @@ export default function IncomesList({
                                 <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ NF'}</span>
                                 <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>
                                 {/*<span className="badge">IVA &nbsp;{aggregateVatLabel(group)}</span>*/}
-                                <small className="text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</small>
+                                <small className="text-muted">•&nbsp; {formatPeriod(group.billingMonth, group.billingYear)}</small>
                                 <span className={badgeClass(incomeCreditStatusStyles.ACCREDITATO.className)}>
                                     {incomeCreditStatusStyles.ACCREDITATO.icon} {incomeCreditStatusStyles.ACCREDITATO.label}
                                 </span>
