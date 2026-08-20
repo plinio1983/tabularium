@@ -41,11 +41,13 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const year = Number(resolvedParams.year);
     const month = Number(resolvedParams.month);
     const rawPeriodType = Array.isArray(query.period) ? query.period[0] : query.period;
-    const periodType: 'month' | 'quarter' = rawPeriodType === 'quarter' ? 'quarter' : 'month';
+    const periodType: 'month' | 'quarter' | 'year' = rawPeriodType === 'quarter' || rawPeriodType === 'year' ? rawPeriodType : 'month';
     const quarter = Math.floor((month - 1) / 3) + 1;
-    const reportPeriods = periodType === 'quarter'
-        ? Array.from({length: 3}, (_, index) => ({year, month: (quarter - 1) * 3 + index + 1}))
-        : [{year, month}];
+    const reportPeriods = periodType === 'year'
+        ? Array.from({length: 12}, (_, index) => ({year, month: index + 1}))
+        : periodType === 'quarter'
+            ? Array.from({length: 3}, (_, index) => ({year, month: (quarter - 1) * 3 + index + 1}))
+            : [{year, month}];
     const rawMode = Array.isArray(query.mode) ? query.mode[0] : query.mode;
     const mode: 'overall' | 'fiscal' = rawMode === 'fiscal' ? 'fiscal' : 'overall';
     const rawComparisonKind = Array.isArray(query.compare) ? query.compare[0] : query.compare;
@@ -60,7 +62,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const currentMonth = currentPeriod.month;
     const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers, expenseYearBounds, incomeYearBounds] = await Promise.all([
         getPeriodReport(reportPeriods, current.workspace.id, mode, current.company.id, current.company.timeZone),
-        getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id, current.company.timeZone),
+        periodType === 'month' ? getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id, current.company.timeZone) : Promise.resolve(null),
         mode === 'fiscal'
             ? getPeriodSummary(reportPeriods, {workspaceId: current.workspace.id, companyId: current.company.id, timeZone: current.company.timeZone, fiscalOnly: true})
             : getOrderDatePeriodSummary(reportPeriods, current.workspace.id, current.company.id, current.company.timeZone),
@@ -87,7 +89,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
     const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
-    const periodQuery = periodType === 'quarter' ? '&period=quarter' : '';
+    const periodQuery = periodType === 'month' ? '' : `&period=${periodType}`;
     const currentReportHref = `/months/${year}/${month}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}`;
     const returnTo = encodeURIComponent(currentReportHref);
     const supplierQuickValue = Array.isArray(query.supplierQuick) ? query.supplierQuick[0] ?? '' : query.supplierQuick ?? '';
@@ -132,9 +134,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const lastAvailableYear = Math.max(year, currentYear);
     const yearNavOptions = Array.from({length: lastAvailableYear - firstAvailableYear + 1}, (_, index) => lastAvailableYear - index)
         .map(navYear => {
-            const navMonth = periodType === 'quarter'
-                ? Math.min((quarter - 1) * 3 + 1, navYear === currentYear ? (Math.floor((currentMonth - 1) / 3) * 3 + 1) : 10)
-                : (navYear === currentYear ? Math.min(month, currentMonth) : month);
+            const navMonth = periodType === 'year'
+                ? 1
+                : periodType === 'quarter'
+                    ? Math.min((quarter - 1) * 3 + 1, navYear === currentYear ? (Math.floor((currentMonth - 1) / 3) * 3 + 1) : 10)
+                    : (navYear === currentYear ? Math.min(month, currentMonth) : month);
             return {
                 year: navYear,
                 href: `/months/${navYear}/${navMonth}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}`
@@ -179,7 +183,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 defaultExpenseCategoryId: supplier.defaultExpenseCategoryId,
                 defaultVatRate: supplier.defaultVatRate?.toString() ?? null
             }))}
-            initialExpense={{month: periodType === 'quarter' ? (year === currentYear && quarter === Math.floor((currentMonth - 1) / 3) + 1 ? currentMonth : quarter * 3) : month, year}}
+            initialExpense={{month: periodType === 'year' ? (year === currentYear ? currentMonth : 12) : periodType === 'quarter' ? (year === currentYear && quarter === Math.floor((currentMonth - 1) / 3) + 1 ? currentMonth : quarter * 3) : month, year}}
             showToolbar={false}
         />
         <section className="month-report-header">
@@ -193,28 +197,29 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <div className="trend-mode-toggle report-period-type-toggle" role="group" aria-label="Tipo di periodo">
                     <Link className={periodType === 'month' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>Mese</Link>
                     <Link className={periodType === 'quarter' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/${(quarter - 1) * 3 + 1}?mode=${mode}&period=quarter&returnTo=${encodeURIComponent(backHref)}`}>Trimestre</Link>
+                    <Link className={periodType === 'year' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/1?mode=${mode}&period=year&returnTo=${encodeURIComponent(backHref)}`}>Anno</Link>
                 </div>
                 <YearNavigationSelect options={yearNavOptions} year={year}/>
-                <MonthReportMonthSelect
-                    options={periodType === 'month' ? monthNavOptions : quarterNavOptions.map(option => ({...option, selectLabel: option.label}))}
+                {periodType === 'month' ? <MonthReportMonthSelect
+                    options={monthNavOptions}
                     value={currentReportHref}
-                    ariaLabel={periodType === 'month' ? 'Seleziona mese' : 'Seleziona trimestre'}
-                />
-                <div className="month-report-month-nav" aria-label={periodType === 'month' ? 'Seleziona mese' : 'Seleziona trimestre'}>
+                    ariaLabel="Seleziona mese"
+                /> : null}
+                {periodType !== 'year' ? <div className={periodType === 'quarter' ? 'btn-group month-report-month-nav month-report-quarter-nav' : 'month-report-month-nav'} aria-label={periodType === 'month' ? 'Seleziona mese' : 'Seleziona trimestre'}>
                     {(periodType === 'month' ? monthNavOptions : quarterNavOptions).map((option) => {
                         const optionValue = 'month' in option ? option.month : option.quarter;
                         const isActive = optionValue === (periodType === 'month' ? month : quarter);
                         return option.disabled
-                            ? <button className="btn-xs btn-action month-report-month-button" type="button" disabled key={optionValue}>{option.label}</button>
-                            : <Link className={isActive ? 'btn-xs btn-action btn-active month-report-month-button' : 'btn-xs btn-action month-report-month-button'} href={option.href} key={optionValue}>{option.label}</Link>;
+                            ? <button className="btn-sm btn-action month-report-month-button" type="button" disabled key={optionValue}>{option.label}</button>
+                            : <Link className={isActive ? 'btn-sm btn-action btn-active month-report-month-button' : 'btn-sm btn-action month-report-month-button'} href={option.href} aria-current={isActive ? 'page' : undefined} key={optionValue}>{option.label}</Link>;
                     })}
-                </div>
+                </div> : null}
             </div>
 
             <div className="month-report-title">
                 <div>
-                    <p>{periodType === 'month' ? 'Dettaglio mensile' : 'Dettaglio trimestrale'}</p>
-                    <h2>{periodType === 'month' ? `${capitalize(monthName(month))} ${year}` : `${quarter}° trimestre ${year} · ${capitalize(monthName(reportPeriods[0].month))}–${capitalize(monthName(reportPeriods[2].month))}`}</h2>
+                    <p>{periodType === 'month' ? 'Dettaglio mensile' : periodType === 'quarter' ? 'Dettaglio trimestrale' : 'Dettaglio annuale'}</p>
+                    <h2>{periodType === 'month' ? `${capitalize(monthName(month))} ${year}` : periodType === 'quarter' ? `${quarter}° trimestre ${year} · ${capitalize(monthName(reportPeriods[0].month))}–${capitalize(monthName(reportPeriods[2].month))}` : `${year}`}</h2>
                 </div>
                 <div className="trend-mode-toggle month-report-mode-toggle" role="group" aria-label="Tipo andamento mensile">
                     <Link
@@ -239,7 +244,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             </div>
         </section>
 
-        {periodType === 'month' ? null : <section className="card quarter-report-trend" aria-labelledby="quarter-report-trend-title">
+        {periodType === 'month' ? null : <section className={periodType === 'year' ? 'card quarter-report-trend year-report-trend' : 'card quarter-report-trend'} aria-labelledby="quarter-report-trend-title">
             <div className="quarter-report-trend-heading">
                 <p className="muted">Andamento del periodo</p>
                 <h3 id="quarter-report-trend-title">Entrate, uscite e risultato mensile</h3>
@@ -276,43 +281,21 @@ export default async function MonthPage({params, searchParams}: { params: Promis
 
         <div className="grid grid-2 month-report-panels">
             <section className="card month-report-section"><h3>IVA</h3>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>IVA vendite</td>
-                        <td>{euroInt(report.totals.vatToPay)}</td>
-                    </tr>
-                    <tr>
-                        <td>IVA spese</td>
-                        <td>{euroInt(report.totals.paidVat)}</td>
-                    </tr>
-                    <tr>
-                        <td>IVA da versare</td>
-                        <td>{euroInt(report.totals.remainingVat)}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <dl className="month-report-summary-grid">
+                    <div><dt>IVA vendite</dt><dd>{euroInt(report.totals.vatToPay)}</dd></div>
+                    <div><dt>IVA spese</dt><dd>{euroInt(report.totals.paidVat)}</dd></div>
+                    <div><dt>IVA da versare</dt><dd>{euroInt(report.totals.remainingVat)}</dd></div>
+                </dl>
             </section>
             <section className="card month-report-section"><h3>Entrate</h3>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>Totale incassi</td>
-                        <td>{euroInt(report.totals.totalRevenue)}</td>
-                    </tr>
-                    <tr>
-                        <td>Incassi fiscali</td>
-                        <td>{euroInt(fiscalTotals.incassoFiscale)}</td>
-                    </tr>
-                    {mode === 'overall' ? <tr>
-                        <td>Incassi non fiscali</td>
-                        <td>{euroInt(fiscalTotals.incassoNonFiscale)}</td>
-                    </tr> : null}
-                    </tbody>
-                </table>
+                <dl className="month-report-summary-grid">
+                    <div><dt>Totale incassi</dt><dd>{euroInt(report.totals.totalRevenue)}</dd></div>
+                    <div><dt>Incassi fiscali</dt><dd>{euroInt(fiscalTotals.incassoFiscale)}</dd></div>
+                    {mode === 'overall' ? <div><dt>Incassi non fiscali</dt><dd>{euroInt(fiscalTotals.incassoNonFiscale)}</dd></div> : null}
+                </dl>
             </section>
         </div>
-        {periodType === 'month' ? <MonthComparisonPanel
+        {periodType === 'month' && comparisonReport ? <MonthComparisonPanel
             current={{
                 year,
                 month,
@@ -334,13 +317,13 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         <MonthReportAccordionController />
         <details className="month-report-section month-report-expenses month-report-collapsible" open>
             <summary className="month-report-section-heading">
-                <h3>Spese del {periodType === 'month' ? 'mese' : 'trimestre'}</h3>
+                <h3>Spese del {periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno'}</h3>
                 <div className="month-report-value month-report-inline-total"><span>Spese non saldate</span><strong
                     className="money-warning">{euroInt(fiscalTotals.nonSaldato)}</strong></div>
             </summary>
             <form className="entity-quick-search app-quick-search-form" action={`/months/${year}/${month}`} method="get" role="search">
                 <input type="hidden" name="mode" value={mode}/>
-                {periodType === 'quarter' ? <input type="hidden" name="period" value="quarter"/> : null}
+                {periodType !== 'month' ? <input type="hidden" name="period" value={periodType}/> : null}
                 <input type="hidden" name="returnTo" value={backHref}/>
                 {customerQuickValue ? <input type="hidden" name="customerQuick" value={customerQuickValue}/> : null}
                 <label className="app-form-field-label" htmlFor="monthExpenseSupplierQuickSearch"><span className="app-form-field-icon" aria-hidden="true">⌕</span><span>Ricerca fornitore</span></label>
@@ -388,19 +371,19 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     defaultExpenseCategoryId: supplier.defaultExpenseCategoryId,
                     defaultVatRate: supplier.defaultVatRate?.toString() ?? null
                 }))}
-                mobileLabel={`Lista spese del ${periodType === 'month' ? 'mese' : 'trimestre'} mobile`}
-                emptyMessage={`Nessuna spesa trovata in questo ${periodType === 'month' ? 'mese' : 'trimestre'}.`}
+                mobileLabel={`Lista spese del ${periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno'} mobile`}
+                emptyMessage={`Nessuna spesa trovata in questo ${periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno'}.`}
             />
         </details>
         <details className="month-report-section month-report-incomes month-report-collapsible">
             <summary className="month-report-section-heading">
-                <h3>Incassi del {periodType === 'month' ? 'mese' : 'trimestre'}</h3>
+                <h3>Incassi del {periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno'}</h3>
                 <div className="month-report-value month-report-inline-total flex-grow"><span>Totale incassi</span><strong
                     className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
             </summary>
             <form className="entity-quick-search app-quick-search-form" action={`/months/${year}/${month}`} method="get" role="search">
                 <input type="hidden" name="mode" value={mode}/>
-                {periodType === 'quarter' ? <input type="hidden" name="period" value="quarter"/> : null}
+                {periodType !== 'month' ? <input type="hidden" name="period" value={periodType}/> : null}
                 <input type="hidden" name="returnTo" value={backHref}/>
                 {supplierQuickValue ? <input type="hidden" name="supplierQuick" value={supplierQuickValue}/> : null}
                 <label className="app-form-field-label" htmlFor="monthIncomeCustomerQuickSearch"><span className="app-form-field-icon" aria-hidden="true">⌕</span><span>Ricerca cliente</span></label>

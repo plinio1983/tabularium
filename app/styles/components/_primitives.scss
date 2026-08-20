@@ -461,7 +461,7 @@ button {
 .btn-group {
   display: inline-flex;
   align-items: stretch;
-  gap: 0;
+  gap: 0 !important;
   min-width: 0;
 }
 
