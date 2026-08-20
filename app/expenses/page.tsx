@@ -991,7 +991,7 @@ export default async function ExpensesPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
-        <div className="card record-list-card">
+        <div className="card record-list-card fixed">
             <div className="filter-drawer-wrapper">
                 <ExpenseFiltersDrawer
                     filters={filters}
@@ -1067,7 +1067,7 @@ export default async function ExpensesPage({searchParams}: {
             {/*    <ExpenseCategoryPieChart data={expensesByCategory}/>*/}
             {/*</div>*/}
         </div>
-        <div className="card record-list-card">
+        <div className="card record-list-card fixed">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista spese</h2>

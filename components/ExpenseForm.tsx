@@ -1,7 +1,7 @@
 "use client";
 
 import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
-import {categoryIcon} from "@/lib/expense-ui";
+import {categoryIcon, formatPeriod} from "@/lib/expense-ui";
 import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
@@ -12,6 +12,7 @@ import SupplierCreateModal from "@/components/SupplierCreateModal";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
 import {resolveSupplierDefaultVatRate} from '@/lib/supplier-defaults';
 import {formatItalianCompactDate} from '@/lib/date-format';
+import ExpenseTypeChoice, {type ExpenseCreationType} from '@/components/ExpenseTypeChoice';
 
 type Option = {
     id: number;
@@ -37,9 +38,15 @@ type SupplierOption = {
     internalNotes?: string | null;
     systemRole?: string | null;
     defaultExpenseCategoryId?: number | null;
-    defaultVatRate?: string | number | {toString(): string} | null;
+    defaultVatRate?: string | number | { toString(): string } | null;
 };
-type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: "ACTIVE" | "INACTIVE" };
+type EmployeeOption = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    employeeCode?: string | null;
+    status: "ACTIVE" | "INACTIVE"
+};
 type PaymentRow = {
     key: number;
     id?: number;
@@ -94,7 +101,7 @@ type InitialExpense = {
 
 type AttachmentType = "INVOICE" | "DOCUMENT" | "PAYMENT_RECEIPT";
 
-const attachmentTypeOptions: Array<{value: AttachmentType; label: string; icon: string}> = [
+const attachmentTypeOptions: Array<{ value: AttachmentType; label: string; icon: string }> = [
     {value: "INVOICE", label: "Fattura", icon: "▤"},
     {value: "DOCUMENT", label: "Documento", icon: "📄"},
     {value: "PAYMENT_RECEIPT", label: "Ricevuta pagamento", icon: "✓"},
@@ -325,91 +332,92 @@ function SupplierAutocomplete({
             />
 
 
-
-            <div className="app-form-field entity-autocomplete-field">
-                <label className="app-form-field-label">
+            <div className="app-form-field-label entity-autocomplete-heading">
+                <label className="entity-autocomplete-label" htmlFor="expense-supplier-search">
                     <span className="app-form-field-icon" aria-hidden="true">◎</span>
                     <span>{label}</span>
-                    <span className="flex flex-grow justify-end">
-                        <button
-                            type="button"
-                            className="btn btn-sm btn-link mr-22"
-                            onClick={() => setShowCreate(true)}
-                        >
-                        ＋ Nuovo
-                    </button>
-                    </span>
                 </label>
+                <button
+                    type="button"
+                    className="btn btn-sm btn-link entity-autocomplete-create mr-22"
+                    onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setShowCreate(true);
+                    }}
+                >
+                    ＋ Nuovo
+                </button>
             </div>
 
             {/*<FormField label="Esercente" icon="◎" className="entity-autocomplete-field" htmlFor="expense-supplier-search">*/}
-                <div className="entity-autocomplete-input-row">
-                    <div className={`app-autocomplete-control ${selected ? "has-selection" : ""}`}>
-                        <span className="app-autocomplete-search-icon" aria-hidden="true">⌕</span>
-                        <input
-                            id="expense-supplier-search"
-                            value={query}
-                            onChange={(event) => {
-                                setQuery(event.target.value);
-                                onSupplierValueChange?.(event.target.value);
-                                setSelected(null);
-                                setIsOpen(true);
-                            }}
-                            onFocus={() => setIsOpen(true)}
-                            onKeyDown={onKeyDown}
-                            placeholder="Cerca per ragione sociale o referente"
-                            autoComplete="off"
-                            role="combobox"
-                            aria-expanded={isOpen}
-                            aria-autocomplete="list"
-                            required
-                        />
-                        {query ? <button
-                            type="button"
-                            className="app-autocomplete-clear"
-                            aria-label="Cancella fornitore"
-                            onClick={() => {
-                                setQuery("");
-                                onSupplierValueChange?.("");
-                                setSelected(null);
-                                setResults(suppliers.slice(0, 10));
-                                setIsOpen(true);
-                            }}
-                        >×</button> : null}
-                        {isOpen && (
-                            <div className="entity-autocomplete-results" role="listbox">
-                                {results.length ? (
-                                    results.map((supplier, index) => (
-                                        <button
-                                            type="button"
-                                            key={supplier.id}
-                                            role="option"
-                                            aria-selected={index === activeIndex}
-                                            className={index === activeIndex ? "active" : ""}
-                                            onMouseEnter={() => setActiveIndex(index)}
-                                            onMouseDown={(event) => {
-                                                event.preventDefault();
-                                                selectSupplier(supplier);
-                                            }}
-                                        >
-                                            <strong>{supplier.businessName}</strong>
-                                            {supplier.alias && <small>Referente: {supplier.alias}</small>}
-                                        </button>
-                                    ))
-                                ) : (
-                                    <div className="entity-autocomplete-empty">
-                                        Nessun fornitore trovato.
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
+            <div className="entity-autocomplete-input-row">
+                <div className={`app-autocomplete-control ${selected ? "has-selection" : ""}`}>
+                    <span className="app-autocomplete-search-icon" aria-hidden="true">⌕</span>
+                    <input
+                        id="expense-supplier-search"
+                        value={query}
+                        onChange={(event) => {
+                            setQuery(event.target.value);
+                            onSupplierValueChange?.(event.target.value);
+                            setSelected(null);
+                            setIsOpen(true);
+                        }}
+                        onFocus={() => setIsOpen(true)}
+                        onKeyDown={onKeyDown}
+                        placeholder="Cerca per ragione sociale o referente"
+                        autoComplete="off"
+                        role="combobox"
+                        aria-expanded={isOpen}
+                        aria-autocomplete="list"
+                        required
+                    />
+                    {query ? <button
+                        type="button"
+                        className="app-autocomplete-clear"
+                        aria-label="Cancella fornitore"
+                        onClick={() => {
+                            setQuery("");
+                            onSupplierValueChange?.("");
+                            setSelected(null);
+                            setResults(suppliers.slice(0, 10));
+                            setIsOpen(true);
+                        }}
+                    >×</button> : null}
+                    {isOpen && (
+                        <div className="entity-autocomplete-results" role="listbox">
+                            {results.length ? (
+                                results.map((supplier, index) => (
+                                    <button
+                                        type="button"
+                                        key={supplier.id}
+                                        role="option"
+                                        aria-selected={index === activeIndex}
+                                        className={index === activeIndex ? "active" : ""}
+                                        onMouseEnter={() => setActiveIndex(index)}
+                                        onMouseDown={(event) => {
+                                            event.preventDefault();
+                                            selectSupplier(supplier);
+                                        }}
+                                    >
+                                        <strong>{supplier.businessName}</strong>
+                                        {supplier.alias && <small>Referente: {supplier.alias}</small>}
+                                    </button>
+                                ))
+                            ) : (
+                                <div className="entity-autocomplete-empty">
+                                    Nessun fornitore trovato.
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
-                {selected ? <div className="app-autocomplete-selection">
-                    <span aria-hidden="true">✓</span>
-                    <div><strong>{selected.businessName}</strong>{selected.alias ?
-                        <small>{selected.alias}</small> : null}</div>
-                </div> : null}
+            </div>
+            {selected ? <div className="app-autocomplete-selection">
+                <span aria-hidden="true">✓</span>
+                <div><strong>{selected.businessName}</strong>{selected.alias ?
+                    <small>{selected.alias}</small> : null}</div>
+            </div> : null}
             {/*</FormField>*/}
 
             <SupplierCreateModal
@@ -547,6 +555,13 @@ export default function ExpenseForm({
             : currentBillingPeriod;
     const [orderDate, setOrderDate] = useState(initialOrderDate);
     const [billingPeriod, setBillingPeriod] = useState(initialBillingPeriod);
+    const payrollDescription = useMemo(() => {
+        const [year, month] = billingPeriod.split("-").map(Number);
+        return Number.isInteger(year) && Number.isInteger(month) && month >= 1 && month <= 12
+            ? `Competenze ${formatPeriod(month, year)}`
+            : "Competenze";
+    }, [billingPeriod]);
+    const effectiveDescription = isPayroll ? payrollDescription : description;
     const [dueDate, setDueDate] = useState(
         initialExpense?.dueDate
             ? toDateInput(initialExpense.dueDate)
@@ -600,8 +615,8 @@ export default function ExpenseForm({
     const currentSupplierName = isPayroll
         ? selectedEmployee ? `${selectedEmployee.lastName} ${selectedEmployee.firstName}` : "Non indicato"
         : isVatSettlement
-        ? vatSettlementSupplier?.businessName ?? "Non configurato"
-        : supplierDisplayName || "Non indicato";
+            ? vatSettlementSupplier?.businessName ?? "Non configurato"
+            : supplierDisplayName || "Non indicato";
     const canAddPayment =
         payments.length === 0 || isPaymentComplete(payments[payments.length - 1]);
 
@@ -880,6 +895,22 @@ export default function ExpenseForm({
         }
     }
 
+    function selectExpenseType(type: ExpenseCreationType) {
+        setIsRecurring(type === "recurring");
+        setIsVatSettlement(type === "vat");
+        setIsTaxContribution(type === "tax");
+        setIsPayroll(type === "payroll");
+        if (type === "tax" || type === "payroll") {
+            setIsDeclared(false);
+            setVatRate("0");
+            setHasElectronicInvoice(false);
+            setInvoiceStatus("NON_PREVISTA");
+            setAffectsFiscalProfit(true);
+        }
+        if (type === "recurring") onSwitchToRecurring?.();
+        else onExpenseTypeChange?.(type);
+    }
+
     return (
         <form
             ref={formRef}
@@ -917,122 +948,18 @@ export default function ExpenseForm({
             {/*  </div>*/}
             {/*</div>*/}
 
-            <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
-                <span className="entry-type-choice-title">Tipo di spesa</span>
+            <>
                 <input type="hidden" name="isRecurring" value={isRecurring ? "true" : "false"}/>
                 <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : isTaxContribution ? "TAX_CONTRIBUTION" : isPayroll ? "PAYROLL" : "STANDARD"}/>
-                <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
-                    <button
-                        type="button"
-                        className={!isRecurring && !isNoVatExpense ? "is-selected" : ""}
-                        role="radio"
-                        aria-checked={!isRecurring && !isNoVatExpense}
-                        disabled={!canEditExpenseType}
-                        onClick={() => {
-                            setIsRecurring(false);
-                            setIsVatSettlement(false);
-                            setIsTaxContribution(false);
-                            setIsPayroll(false);
-                            onExpenseTypeChange?.("single");
-                        }}
-                    >
-                        <span aria-hidden="true">●</span>
-                        <strong>Singola</strong>
-                        <small>Spesa occasionale</small>
-                    </button>
-                    <button
-                        type="button"
-                        disabled={isExistingExpense}
-                        onClick={() => window.location.assign("/expenses/counter")}
-                    >
-                        <span aria-hidden="true">🛍️</span>
-                        <strong>Da banco</strong>
-                        <small>Acquisto già pagato</small>
-                    </button>
-                    <button
-                        type="button"
-                        className={isRecurring ? "is-selected" : ""}
-                        role="radio"
-                        aria-checked={isRecurring}
-                        disabled={isExistingExpense || !onSwitchToRecurring}
-                        onClick={() => {
-                            setIsVatSettlement(false);
-                            setIsTaxContribution(false);
-                            setIsPayroll(false);
-                            setIsRecurring(true);
-                            onSwitchToRecurring?.();
-                        }}
-                    >
-                        <span aria-hidden="true">↻</span>
-                        <strong>Ricorrente</strong>
-                        <small>Spesa periodica</small>
-                    </button>
-                    <button
-                        type="button"
-                        className={isVatSettlement ? "is-selected" : ""}
-                        role="radio"
-                        aria-checked={isVatSettlement}
-                        disabled={!canEditExpenseType}
-                        onClick={() => {
-                            setIsRecurring(false);
-                            setIsVatSettlement(true);
-                            setIsTaxContribution(false);
-                            setIsPayroll(false);
-                            onExpenseTypeChange?.("vat");
-                        }}
-                    >
-                        <span aria-hidden="true">IVA</span>
-                        <strong>Saldo IVA</strong>
-                        <small>Versamento IVA</small>
-                    </button>
-                    <button
-                        type="button"
-                        className={isTaxContribution ? "is-selected" : ""}
-                        role="radio"
-                        aria-checked={isTaxContribution}
-                        disabled={!canEditExpenseType}
-                        onClick={() => {
-                            setIsRecurring(false);
-                            setIsVatSettlement(false);
-                            setIsTaxContribution(true);
-                            setIsPayroll(false);
-                            setIsDeclared(false);
-                            setVatRate("0");
-                            setHasElectronicInvoice(false);
-                            setInvoiceStatus("NON_PREVISTA");
-                            setAffectsFiscalProfit(true);
-                            onExpenseTypeChange?.("tax");
-                        }}
-                    >
-                        <span aria-hidden="true">F24</span>
-                        <strong>Imposte</strong>
-                        <small>Imposte e contributi non IVA</small>
-                    </button>
-                    <button
-                        type="button"
-                        className={isPayroll ? "is-selected" : ""}
-                        role="radio"
-                        aria-checked={isPayroll}
-                        disabled={!canEditExpenseType}
-                        onClick={() => {
-                            setIsRecurring(false);
-                            setIsVatSettlement(false);
-                            setIsTaxContribution(false);
-                            setIsPayroll(true);
-                            setIsDeclared(false);
-                            setVatRate("0");
-                            setHasElectronicInvoice(false);
-                            setInvoiceStatus("NON_PREVISTA");
-                            setAffectsFiscalProfit(true);
-                            onExpenseTypeChange?.("payroll");
-                        }}
-                    >
-                        <span aria-hidden="true">BP</span>
-                        <strong>Busta paga</strong>
-                        <small>Retribuzione dipendente</small>
-                    </button>
-                </div>
-            </div>
+                <ExpenseTypeChoice
+                    className="app-form-wizard-step app-form-wizard-step-1"
+                    selected={isRecurring ? "recurring" : isVatSettlement ? "vat" : isTaxContribution ? "tax" : isPayroll ? "payroll" : "single"}
+                    onSelect={selectExpenseType}
+                    onSelectCounter={() => window.location.assign("/expenses/counter")}
+                    disabled={!canEditExpenseType}
+                    disabledTypes={!onSwitchToRecurring ? ["recurring"] : []}
+                />
+            </>
 
             <details className="form-section full app-form-wizard-split-section expense-wizard-document-section expense-wizard-dates-section" open>
                 <summary>
@@ -1135,7 +1062,10 @@ export default function ExpenseForm({
                         onChange={setEmployeeId}
                         options={[{value: "", label: "Seleziona dipendente"}, ...employees
                             .filter(employee => employee.status === "ACTIVE" || employee.id === initialExpense?.employeeId)
-                            .map(employee => ({value: employee.id, label: `${employee.lastName} ${employee.firstName}${employee.employeeCode ? ` · ${employee.employeeCode}` : ""}${employee.status === "INACTIVE" ? " · Inattivo" : ""}`}))]}
+                            .map(employee => ({
+                                value: employee.id,
+                                label: `${employee.lastName} ${employee.firstName}${employee.employeeCode ? ` · ${employee.employeeCode}` : ""}${employee.status === "INACTIVE" ? " · Inattivo" : ""}`
+                            }))]}
                     /> : <SupplierAutocomplete
                         label={isTaxContribution ? "Ente beneficiario" : "Esercente"}
                         suppliers={suppliers.filter(supplier => !supplier.systemRole)}
@@ -1175,15 +1105,17 @@ export default function ExpenseForm({
                             label: c.icon ? `${categoryIcon(c)} ${c.name}` : c.name
                         }))}
                     />}
-                    <DescriptionAutocomplete
-                        endpoint="/api/expense-descriptions"
-                        label="Prodotto/servizio"
-                        placeholder="Descrizione libera della spesa"
-                        initialValue={initialExpense?.description ?? ""}
-                        onValueChange={setDescription}
-                        required
-                        className="span-2 app-form-wizard-step app-form-wizard-step-3"
-                    />
+                    {isPayroll
+                        ? <input type="hidden" name="description" value={payrollDescription}/>
+                        : <DescriptionAutocomplete
+                            endpoint="/api/expense-descriptions"
+                            label="Prodotto/servizio"
+                            placeholder="Descrizione libera della spesa"
+                            initialValue={initialExpense?.description ?? ""}
+                            onValueChange={setDescription}
+                            required
+                            className="span-2 app-form-wizard-step app-form-wizard-step-3"
+                        />}
                 </div>
             </details>
 
@@ -1213,12 +1145,13 @@ export default function ExpenseForm({
                                         <span className="text-muted">{isDeclared ? 'Fiscale' : 'Non fiscale'}</span>
                                     </label>
                                 </div> : null}
-                            {!isNoVatExpense ? <label className="app-form-wizard-mobile-switch switch-toggle-field expense-fiscal-mobile-control">
-                                <div className="app-form-field-label">
-                                    <span className="app-form-field-icon" aria-hidden="true">⇆</span>
-                                    <span>Fiscale</span>
-                                </div>
-                                <span className="switch">
+                            {!isNoVatExpense ?
+                                <label className="app-form-wizard-mobile-switch switch-toggle-field expense-fiscal-mobile-control">
+                                    <div className="app-form-field-label">
+                                        <span className="app-form-field-icon" aria-hidden="true">⇆</span>
+                                        <span>Fiscale</span>
+                                    </div>
+                                    <span className="switch">
                                     <input
                                         type="checkbox"
                                         checked={isDeclared}
@@ -1226,51 +1159,56 @@ export default function ExpenseForm({
                                     />
                                     <span className="slider"/>
                                 </span>
-                                {/*<span className="text-muted">{isDeclared ? 'Detrazione' : 'Non fiscale'}</span>*/}
-                            </label> : null}
+                                    {/*<span className="text-muted">{isDeclared ? 'Detrazione' : 'Non fiscale'}</span>*/}
+                                </label> : null}
                             <div className="expense-amount-control">
-                                    {!isNoVatExpense ? <div className="expense-amount-vat-excluded" aria-live="polite">
-                                        <strong>{formatEuro(netAmount)}</strong>
-                                    </div> : null}
-                                    <label className="expense-wizard-amount-field">
-                                        <div className="app-form-field-label switch-toggle-field-label">
-                                            <span className="app-form-field-icon">€</span>
-                                            <span>{isVatSettlement ? "Importo IVA" : isTaxContribution ? "Importo versamento" : isPayroll ? "Importo netto cedolino" : "Costo IVA inclusa"}</span>
-                                        </div>
-                                            <MoneyInput
-                                            inputRef={amountRef}
-                                            required
-                                            value={isPayroll ? payrollNetAmount : amount}
-                                            onValueChange={isPayroll ? setPayrollNetAmount : handleAmountChange}
-                                            onClear={() => resetCurrencyInput(amountKeyStateRef.current)}
-                                            suppressSoftKeyboard
-                                        />
-                                        <input type="hidden" name="amount" value={normalizedAmount}/>
-                                        {isPayroll ? <input type="hidden" name="payrollNetAmount" value={normalizedPayrollNetAmount}/> : null}
+                                {!isNoVatExpense ? <div className="expense-amount-vat-excluded" aria-live="polite">
+                                    <strong>{formatEuro(netAmount)}</strong>
+                                </div> : null}
+                                <label className="expense-wizard-amount-field">
+                                    <div className="app-form-field-label switch-toggle-field-label">
+                                        <span className="app-form-field-icon">€</span>
+                                        <span>{isVatSettlement ? "Importo IVA" : isTaxContribution ? "Importo versamento" : isPayroll ? "Importo netto cedolino" : "Costo IVA inclusa"}</span>
+                                    </div>
+                                    <MoneyInput
+                                        inputRef={amountRef}
+                                        required
+                                        value={isPayroll ? payrollNetAmount : amount}
+                                        onValueChange={isPayroll ? setPayrollNetAmount : handleAmountChange}
+                                        onClear={() => resetCurrencyInput(amountKeyStateRef.current)}
+                                        suppressSoftKeyboard={!isPayroll}
+                                    />
+                                    <input type="hidden" name="amount" value={normalizedAmount}/>
+                                    {isPayroll ?
+                                        <input type="hidden" name="payrollNetAmount" value={normalizedPayrollNetAmount}/> : null}
 
-                                    </label>
-                                    {!isNoVatExpense ?
-                                        <div className="app-vat-rate-buttons vat-buttons-desktop" aria-label="Aliquota IVA">
-                                            {["0", "4", "10", "22"].map(rate => <button
-                                                type="button"
-                                                key={rate}
-                                                className={vatRate === rate ? "is-selected" : ""}
-                                                disabled={!isDeclared}
-                                                onMouseDown={event => event.preventDefault()}
-                                                onClick={() => {
-                                                    vatRateTouchedRef.current = true;
-                                                    setVatRate(rate);
-                                                    focusAmount();
-                                                }}
-                                            >{rate}%</button>)}
-                                        </div> : null}
+                                </label>
+                                {!isNoVatExpense ?
+                                    <div className="app-vat-rate-buttons vat-buttons-desktop" aria-label="Aliquota IVA">
+                                        {["0", "4", "10", "22"].map(rate => <button
+                                            type="button"
+                                            key={rate}
+                                            className={vatRate === rate ? "is-selected" : ""}
+                                            disabled={!isDeclared}
+                                            onMouseDown={event => event.preventDefault()}
+                                            onClick={() => {
+                                                vatRateTouchedRef.current = true;
+                                                setVatRate(rate);
+                                                focusAmount();
+                                            }}
+                                        >{rate}%</button>)}
+                                    </div> : null}
                             </div>
                         </div>
-                        {isPayroll ? <div className="form-section-grid full">
-                            <FormField label="Compensi extra" icon="+"><CurrencyInput name="payrollExtraCompensation" value={payrollExtraCompensation} onValueChange={setPayrollExtraCompensation} clearable/></FormField>
-                            <FormField label="Lordo cedolino" icon="€"><CurrencyInput name="payrollGrossAmount" value={payrollGrossAmount} onValueChange={setPayrollGrossAmount} clearable/></FormField>
-                            <FormField label="Costo complessivo aziendale" icon="€"><CurrencyInput name="payrollEmployerCost" value={payrollEmployerCost} onValueChange={setPayrollEmployerCost} clearable/></FormField>
-                            <div className="field-note"><span>Totale da corrispondere</span><strong>{formatEuro(amountValue)}</strong><small>Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</small></div>
+                        {isPayroll ? <div className="form-section-grid full payroll-money-fields">
+                            <FormField label="Compensi extra" icon="+"><MoneyInput name="payrollExtraCompensation" value={payrollExtraCompensation} onValueChange={setPayrollExtraCompensation}/></FormField>
+                            <FormField label="Lordo cedolino" icon="€"><MoneyInput name="payrollGrossAmount" value={payrollGrossAmount} onValueChange={setPayrollGrossAmount}/></FormField>
+                            <FormField label="Costo complessivo aziendale" icon="€"><MoneyInput name="payrollEmployerCost" value={payrollEmployerCost} onValueChange={setPayrollEmployerCost}/></FormField>
+                            <div className="field-note">
+                                <span>Totale da corrispondere &nbsp;</span>
+                                <strong>{formatEuro(amountValue)}</strong>
+                                <small>&nbsp; Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</small>
+                            </div>
                         </div> : null}
 
                         {!isNoVatExpense ?
@@ -1292,7 +1230,7 @@ export default function ExpenseForm({
 
                         {!isNoVatExpense ?
                             <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/> : null}
-                        <div className="app-amount-keypad full" aria-label="Tastiera numerica">
+                        {!isPayroll ? <div className="app-amount-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key => <button
                                 type="button"
                                 key={key}
@@ -1300,14 +1238,15 @@ export default function ExpenseForm({
                                 onMouseDown={event => event.preventDefault()}
                                 onClick={() => appendAmountKey(key)}
                             >{key === "backspace" ? "⌫" : key}</button>)}
-                        </div>
+                        </div> : null}
                     </div>
                     <input type="hidden" name="paymentStatus" value={computedPaymentStatus}/>
-                    {isTaxContribution ? <label className="app-form-field app-form-wizard-step app-form-wizard-step-2 switch-toggle-field switch-inline wide">
-                        <span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">%</span><span>Incide sull’utile fiscale</span></span>
-                        <input type="hidden" name="affectsFiscalProfit" value="false"/>
-                        <span className="switch"><input type="checkbox" name="affectsFiscalProfit" value="true" checked={affectsFiscalProfit} onChange={event => setAffectsFiscalProfit(event.currentTarget.checked)}/><span className="slider"/></span>
-                    </label> : <input type="hidden" name="affectsFiscalProfit" value="false"/>}
+                    {isTaxContribution ?
+                        <label className="app-form-field app-form-wizard-step app-form-wizard-step-2 switch-toggle-field switch-inline wide">
+                            <span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">%</span><span>Incide sull’utile fiscale</span></span>
+                            <input type="hidden" name="affectsFiscalProfit" value="false"/>
+                            <span className="switch"><input type="checkbox" name="affectsFiscalProfit" value="true" checked={affectsFiscalProfit} onChange={event => setAffectsFiscalProfit(event.currentTarget.checked)}/><span className="slider"/></span>
+                        </label> : <input type="hidden" name="affectsFiscalProfit" value="false"/>}
                 </div>
             </details>
 
@@ -1377,7 +1316,7 @@ export default function ExpenseForm({
 
                         <div className="expense-invoice-step-row app-form-wizard-step app-form-wizard-step-5">
 
-                            <label className="app-form-wizard-mobile-switch app-form-field-label switch-toggle-field switch-inline wide">
+                            <label className="mt-12 app-form-wizard-mobile-switch app-form-field-label switch-toggle-field switch-inline wide">
                                 <div className="app-form-field-label">
                                     <span className="app-form-field-icon" aria-hidden="true">⇆</span>
                                     <span>Fattura elettronica</span>
@@ -1446,7 +1385,7 @@ export default function ExpenseForm({
                     <input type="hidden" name="invoiceStatus" value="NON_PREVISTA"/>
                 </>}
 
-            <details className="form-section full app-form-wizard-step app-form-wizard-step-4" open>
+            <details className="form-section full expense-payments-section app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
                     <span>Pagamenti</span>
                     <small>Stato, residuo e movimenti registrati</small>
@@ -1493,7 +1432,7 @@ export default function ExpenseForm({
                                     onClick={addPaymentRow}
                                     disabled={!canAddPayment}
                                 >
-                                    ➕ Aggiungi pagamento
+                                    <span className="btn-icon" aria-hidden="true">€</span> Aggiungi pagamento
                                 </button>
                             </div>
                         </div>
@@ -1675,8 +1614,43 @@ export default function ExpenseForm({
                     </div>
                     <strong>{formatEuro(amountValue)}</strong>
                 </div>
-                <div className="record-review-grid">
-                    <div className="record-review-item"><i aria-hidden="true">◷</i><span>{orderDateLabel}<strong>{formatDateInputLabel(orderDate)}</strong></span>
+                {isPayroll ? <div className="record-review-grid payroll-review-grid">
+                    <div className="record-review-item">
+                        <i aria-hidden="true">◷</i><span>{orderDateLabel}<strong>{formatDateInputLabel(orderDate)}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">♙</i><span>Dipendente<strong>{currentSupplierName}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">▦</i><span>Periodo di competenza<strong>{billingPeriod || "Non indicato"}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">€</i><span>Netto cedolino<strong>{formatEuro(Number(normalizedPayrollNetAmount || 0))}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">+</i><span>Compensi extra<strong>{formatEuro(Number(normalizedPayrollExtraCompensation || 0))}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">€</i><span>Lordo cedolino<strong>{payrollGrossAmount ? formatEuro(Number(payrollGrossAmount.replace(",", "."))) : "Non indicato"}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">€</i><span>Costo aziendale<strong>{payrollEmployerCost ? formatEuro(Number(payrollEmployerCost.replace(",", "."))) : "Non indicato"}</strong></span>
+                    </div>
+                    <div className="record-review-item wide">
+                        <i aria-hidden="true">≡</i><span>Descrizione<strong>{effectiveDescription || "Non indicata"}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">€</i><span>Pagamenti<strong>{payments.length ? `${payments.length} · ${formatEuro(paidAmountValue)}` : "Nessun pagamento"}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">=</i><span>Residuo<strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong></span>
+                    </div>
+                </div> : <div className="record-review-grid">
+                    <div className="record-review-item">
+                        <i aria-hidden="true">◷</i><span>{orderDateLabel}<strong>{formatDateInputLabel(orderDate)}</strong></span>
                     </div>
                     <div className="record-review-item">
                         <i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span>
@@ -1684,7 +1658,7 @@ export default function ExpenseForm({
                     <div className="record-review-item wide">
                         <i aria-hidden="true">◎</i><span>Fornitore<strong>{currentSupplierName}</strong></span></div>
                     <div className="record-review-item wide">
-                        <i aria-hidden="true">≡</i><span>Descrizione<strong>{description || "Non indicata"}</strong></span>
+                        <i aria-hidden="true">≡</i><span>Descrizione<strong>{effectiveDescription || "Non indicata"}</strong></span>
                     </div>
                     <div className="record-review-item wide">
                         <i aria-hidden="true">◇</i><span>Categoria<strong>{selectedCategory ? `${selectedCategory.icon ? `${categoryIcon(selectedCategory)} ` : ""}${selectedCategory.name}` : "Non indicata"}</strong></span>
@@ -1704,7 +1678,7 @@ export default function ExpenseForm({
                     <div className="record-review-item">
                         <i aria-hidden="true">=</i><span>Residuo<strong className={residual > 0 ? "text-critical" : "text-ok"}>{formatEuro(residual)}</strong></span>
                     </div>
-                </div>
+                </div>}
                 <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
                     <span className="btn-icon">＋</span>
                     <span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span>
@@ -1722,7 +1696,7 @@ export default function ExpenseForm({
                 </label>
             </section>
 
-            <details ref={attachmentsSectionRef} className="form-section full app-form-wizard-step app-form-wizard-step-7" open={mobileStep === 7}>
+            <details ref={attachmentsSectionRef} className="form-section full expense-attachments-section app-form-wizard-step app-form-wizard-step-7" open={mobileStep === 7}>
                 <summary>
                     <span>Allegati</span>
                     <small>File, XML e P7M</small>
@@ -1764,9 +1738,15 @@ export default function ExpenseForm({
                         return <div className="card attachment-type-item" key={`existing-attachment-${attachment.id}`}>
                             <input type="hidden" name="existingAttachmentIds" value={attachment.id}/>
                             <input type="hidden" name="existingAttachmentTypes" value={currentType}/>
-                            <div className="attachment-type-item-heading"><span aria-hidden="true">📎</span><strong>{attachment.originalName}</strong><small>{attachment.sizeBytes ? `${Math.round(attachment.sizeBytes / 1024)} KB` : "Allegato salvato"}</small></div>
+                            <div className="attachment-type-item-heading">
+                                <span aria-hidden="true">📎</span><strong>{attachment.originalName}</strong><small>{attachment.sizeBytes ? `${Math.round(attachment.sizeBytes / 1024)} KB` : "Allegato salvato"}</small>
+                            </div>
                             <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${attachment.originalName}`}>
-                                {attachmentTypeOptions.map(option => <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setExistingAttachmentTypes(current => ({...current, [attachment.id]: option.value}))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
+                                {attachmentTypeOptions.map(option =>
+                                    <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setExistingAttachmentTypes(current => ({
+                                        ...current,
+                                        [attachment.id]: option.value
+                                    }))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
                             </div>
                             <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeExistingAttachment(attachment.id)}>🗑 Elimina</button>
                         </div>;
@@ -1776,9 +1756,13 @@ export default function ExpenseForm({
                         const currentType = selectedAttachmentTypes[index] ?? "DOCUMENT";
                         return <div className="card attachment-type-item" key={`${file.name}-${file.size}-${index}`}>
                             <input type="hidden" name="attachmentTypes" value={currentType}/>
-                            <div className="attachment-type-item-heading"><span aria-hidden="true">＋</span><strong>{file.name}</strong><small>{Math.max(1, Math.round(file.size / 1024))} KB</small></div>
+                            <div className="attachment-type-item-heading">
+                                <span aria-hidden="true">＋</span><strong>{file.name}</strong><small>{Math.max(1, Math.round(file.size / 1024))} KB</small>
+                            </div>
                             <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${file.name}`}>
-                                {attachmentTypeOptions.map(option => <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setSelectedAttachmentTypes(current => current.map((value, itemIndex) => itemIndex === index ? option.value : value))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
+                                {attachmentTypeOptions.map(option =>
+                                    <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setSelectedAttachmentTypes(current => current.map((value, itemIndex) => itemIndex === index ? option.value : value))}>
+                                        <span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
                             </div>
                             <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeSelectedAttachment(index)}>🗑 Elimina</button>
                         </div>;

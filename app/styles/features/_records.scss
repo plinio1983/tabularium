@@ -2028,6 +2028,7 @@ table th, table td {
   display: grid;
   overflow: visible;
   z-index: 20;
+  gap: 8px;
 }
 
 .entity-autocomplete:focus-within {
@@ -2380,13 +2381,6 @@ table th, table td {
 @media (max-width: 760px) {
   .incomes-table-scroll {
       display: none;
-    }
-}
-
-@media (max-width: 760px) {
-  .income-mobile-list {
-      display: grid;
-      margin-top: 12px;
     }
 }
 

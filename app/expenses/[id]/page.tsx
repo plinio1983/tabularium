@@ -260,7 +260,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <div className="record-detail-section-heading-actions">
               <span className="badge hidden-mobile">{expense.payments.length} record</span>
               <button className="btn btn-sm btn-primary" type="button" data-expense-detail-payment-id={expense.id}>
-                ＋ Aggiungi pagamento
+                <span className="btn-icon" aria-hidden="true">€</span> Aggiungi pagamento
               </button>
             </div>
           </div>

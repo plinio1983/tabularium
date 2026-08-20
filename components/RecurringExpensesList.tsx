@@ -192,33 +192,35 @@ export default function RecurringExpensesList({
     ` }} />
     <p className="muted">Risultati mostrati: {itemCount}</p>
     <MobileSortControl action="/recurring-expenses" currentValue={mobileSort} options={recurringMobileSortOptions} searchParams={currentFilters} />
-    <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar confirm-bulk-form recurring-bulk-actions-bar">
+    <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar grouped-bulk-actions-bar recurring-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
       <label className="bulk-select-all-inline">
         <input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le uscite ricorrenti visibili" />
       </label>
-      <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
-        <summary className="bulk-action-trigger"><span className="btn-icon">⚙</span><span className="bulk-label"><span className="floating-bulk-label">Bulk </span>Actions</span></summary>
-        <div className="bulk-action-menu-panel">
-          <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
-                  formAction="/api/exports/recurring-expenses" formMethod="post" data-confirm-label="Esporta CSV">
-            <span className="btn-icon">⇩</span><span className="bulk-label">Esporta CSV</span>
-          </button>
-          <BulkChangeCategoryModal
-            formId="recurringExpenseBulkForm"
-            action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses"
-            fieldName="categoryId"
-            categories={categories.map(category => ({ value: String(category.id), label: category.name, icon: category.icon }))}
-          />
+      <div className="bulk-action-buttons btn-group">
+        <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
+          <summary className="bulk-action-trigger"><span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span></summary>
+          <div className="bulk-action-menu-panel">
+            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                    formAction="/api/exports/recurring-expenses" formMethod="post" data-confirm-label="Esporta CSV">
+              <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
+            </button>
+            <BulkChangeCategoryModal
+              formId="recurringExpenseBulkForm"
+              action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses"
+              fieldName="categoryId"
+              categories={categories.map(category => ({ value: String(category.id), label: category.name, icon: category.icon }))}
+            />
+          </div>
+        </details>
+        <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to="%2Frecurring-expenses">
+          <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
+          <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon icon-small">🗑</span><span className="hidden-sm-down">Elimina</span></button>
         </div>
-      </details>
-      <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to="%2Frecurring-expenses">
-        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="bulk-label">Modifica</span></a>
-        <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled><span className="btn-icon">🗑</span><span className="bulk-label">Elimina</span></button>
       </div>
       <div className="bulk-inner-container">
-        <button className="bulk-direct-link btn btn-sm btn-secondary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
+        <button className="bulk-direct-link bulk-add-link btn btn-md btn-primary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Aggiungi spesa ricorrente">
           <span className="btn-icon">+</span>
-          <span className="bulk-label">Spesa ricorrente</span>
+          <span className="hidden-sm-down">Spesa ricorrente</span>
         </button>
       </div>
     </form>

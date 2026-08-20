@@ -266,10 +266,10 @@ export default function ExpensesList({
                             <span className="hidden-sm-down">Modifica</span>
                         </a>
                         <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-payment aria-disabled="true" disabled>
-                            <span className="btn-icon">＋</span>
+                            <span className="btn-icon" aria-hidden="true">€</span>
                             <span className="hidden-sm-down">Inserisci pagamento</span>
                         </button>
-                        <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete"
+                        <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete"
                                 data-bulk-delete data-confirm-label="Elimina" disabled>
                             <span className="btn-icon icon-small">🗑</span>
                             <span className="hidden-sm-down">Elimina</span>
@@ -349,8 +349,8 @@ export default function ExpensesList({
                                         </span> : null}
 
                                     {/*-- Periodo fiscale -->*/}
-                                    <span className="mobile-record-date hidden-sp-up">• &nbsp;{formatMonthPeriod(expense.month)}</span>
-                                    <span className="mobile-record-date date-long hidden-sp-down">• &nbsp;{formatPeriod(expense.month, expense.year)}</span>
+                                    <span className="mobile-record-date hidden-xs-up">• &nbsp;{formatMonthPeriod(expense.month)}</span>
+                                    <span className="mobile-record-date date-long hidden-xs-down">• &nbsp;{formatPeriod(expense.month, expense.year)}</span>
 
                                     {/*-- Aliquota IVA -->*/}
                                     {isVatSettlement ? <span className="badge tone-neutral">100%</span> : isTaxContribution || isPayroll ? <span className="badge tone-neutral">N/A</span> :

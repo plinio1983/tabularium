@@ -203,8 +203,8 @@ export default function IncomesList({
                 </details>
                 <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-credit aria-disabled="true" disabled><span className="btn-icon">＋</span><span className="hidden-sm-down">Inserisci accredito</span></button>
-                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
+                    <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-credit aria-disabled="true" disabled><span className="btn-icon" aria-hidden="true">€</span><span className="hidden-sm-down">Inserisci accredito</span></button>
+                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
                         <span className="btn-icon icon-small">🗑</span><span className="hidden-sm-down">Elimina</span>
                     </button>
                 </div>
@@ -313,8 +313,8 @@ export default function IncomesList({
                                 <span className="text-muted">
                                         <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(income.vatRate)}%</span>
                                     </span>
-                                <small className="text-pre text-muted hidden-sp-up">• &nbsp;{formatMonthPeriod(income.billingMonth)}</small>
-                                <small className="text-pre text-muted hidden-sp-down">• &nbsp;{formatPeriod(income.billingMonth, income.billingYear)}</small>
+                                <small className="text-pre text-muted hidden-xs-up">• &nbsp;{formatMonthPeriod(income.billingMonth)}</small>
+                                <small className="text-pre text-muted hidden-xs-down">• &nbsp;{formatPeriod(income.billingMonth, income.billingYear)}</small>
                                 <span title={statusLabel} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {statusLabel}</span>
                             </div>
                         </div>
@@ -332,17 +332,17 @@ export default function IncomesList({
                     <th className="cell-option">
                         <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi"/>
                     </th>
-                    <th data-sort-key="billing-period" data-sort-type="number">Periodo fatt.</th>
-                    <th data-sort-key="order-date" data-sort-type="date">Data ordine</th>
-                    <th data-sort-key="sales-channel">Canale vendita</th>
-                    {!hideCustomer ? <th data-sort-key="customer">Cliente</th> : null}
-                    <th data-sort-key="fiscal">Fisc.</th>
-                    <th data-sort-key="amount" data-sort-type="number">Importo</th>
-                    <th data-sort-key="description">Descrizione</th>
-                    <th data-sort-key="vat" data-sort-type="number">IVA</th>
-                    <th data-sort-key="credit-status">Accr.</th>
-                    <th data-sort-key="invoice-status" className="text-center">Stato fatt.</th>
-                    <th data-sort-key="credit-date" data-sort-type="date">Data accr.</th>
+                    <th data-sort-key="billing-period" data-sort-type="number" className="cell-billing-period">Periodo fatt.</th>
+                    <th data-sort-key="order-date" data-sort-type="date" className="cell-order-date">Data ordine</th>
+                    <th data-sort-key="sales-channel" className="cell-category">Canale vendita</th>
+                    {!hideCustomer ? <th data-sort-key="customer" className="cell-supplier">Cliente</th> : null}
+                    <th data-sort-key="fiscal" className="cell-fiscal">Fisc.</th>
+                    <th data-sort-key="amount" data-sort-type="number" className="cell-amount">Importo</th>
+                    <th data-sort-key="description" className="cell-description">Descrizione</th>
+                    <th data-sort-key="vat" data-sort-type="number" className="cell-vat">IVA</th>
+                    <th data-sort-key="credit-status"  className="cell-credit-state">Accr.</th>
+                    <th data-sort-key="invoice-status" className="cell-invoice-state">Stato fatt.</th>
+                    <th data-sort-key="credit-date" data-sort-type="date" className="cell-order-date">Data accr.</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -423,7 +423,7 @@ export default function IncomesList({
                         <td className="text-center">{income.isFiscal ?
                             <span className="expense-invoice-indicator"><span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/></span> :
                             <span className="badge tone-muted">✕</span>}</td>
-                        <td>{compactDateTableLabel(income.creditDate)}</td>
+                        <td className="text-center">{compactDateTableLabel(income.creditDate)}</td>
                     </tr>;
                 })}
                 {!incomes.length && !cashRegisterGroups.length ? <tr>

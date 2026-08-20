@@ -65,7 +65,10 @@ export default function DescriptionAutocomplete({endpoint, label, placeholder, i
     }
 
     return <label className={`${className} product-suggestion-picker`} ref={containerRef}>
-        {label}
+        <label className="app-form-field-label">
+            <span className="app-form-field-icon" aria-hidden="true"></span>
+            <span>{label}</span>
+        </label>
         <input name="description" required={required} placeholder={placeholder} value={query}
                onChange={event => {
                    setQuery(event.target.value);

@@ -12,6 +12,7 @@ import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {dateInputInTimeZone, zonedCalendarParts} from '@/lib/company-time';
 import {formatItalianCompactDate} from '@/lib/date-format';
 import {resolveCustomerSalesChannelId} from '@/lib/customer-defaults';
+import IncomeTypeChoice from '@/components/IncomeTypeChoice';
 
 type Option = { id: number; name: string; icon?: string | null; isDefault?: boolean | null; isFallback?: boolean | null };
 type Customer = { id: number; businessName: string; alias?: string | null; systemRole?: string | null; defaultSalesChannelId?: number | null };
@@ -139,26 +140,19 @@ export default function RecurringIncomeForm({
         }
     }
 
-    return <form ref={formRef} className={`card form income-form app-record-form recurring-record-form recurring-income-form app-form-wizard income-mobile-wizard recurring-form-wizard app-form-wizard-current-${step}`} action={editId ? undefined : action} method="post" onSubmit={submit}>
+    return <form ref={formRef} className={`form income-form app-record-form recurring-record-form recurring-income-form app-form-wizard income-mobile-wizard recurring-form-wizard app-form-wizard-current-${step}`} action={editId ? undefined : action} method="post" onSubmit={submit}>
         <div className="app-form-wizard-header full">
             <div className="app-form-wizard-heading">
                 <span>Passaggio {step} di 5</span><strong>{labels[step - 1]}</strong></div>
             <div className="app-form-wizard-progress"><span style={{width: `${step / 5 * 100}%`}}/></div>
         </div>
-        <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
-            <span className="entry-type-choice-title">Tipo di incasso</span>
-            <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di incasso">
-                <button type="button" role="radio" aria-checked="false" disabled={!onSwitchToSingle} onClick={onSwitchToSingle}>
-                    <span aria-hidden="true">●</span><strong>Incasso<br/>singolo</strong><small>Entrata occasionale</small>
-                </button>
-                <button type="button" className="is-selected" role="radio" aria-checked="true">
-                    <span aria-hidden="true">↻</span><strong>Entrata<br/>ricorrente</strong><small>Entrata periodica</small>
-                </button>
-                <button type="button" role="radio" aria-checked="false" onClick={() => window.location.assign('/incomes/cash-register')}>
-                    <span aria-hidden="true">🧮</span><strong>Incasso da Banco</strong><small>Inserimento scontrini</small>
-                </button>
-            </div>
-        </div>
+        <IncomeTypeChoice
+            selected="recurring"
+            className="app-form-wizard-step app-form-wizard-step-1"
+            disabled={Boolean(editId)}
+            onSelect={type => type === 'single' && onSwitchToSingle?.()}
+            onSelectCounter={() => window.location.assign('/incomes/cash-register')}
+        />
 
         <details className="form-section full recurring-form-section recurring-document-section recurring-dates-section recurring-income-step-1 app-form-wizard-step app-form-wizard-step-1" open>
             <summary><span>Ricorrenza e scadenza</span><small>Data iniziale, frequenza e giorno previsto</small>

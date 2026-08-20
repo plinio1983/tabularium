@@ -633,6 +633,8 @@ export default async function IncomesPage({searchParams}: {
     const vatRateFilter = inputDefault(filters, 'vatRate');
     const dueDateFromFilter = inputDefault(filters, 'dueDateFrom');
     const dueDateToFilter = inputDefault(filters, 'dueDateTo');
+    const orderDateFromFilter = inputDefault(filters, 'orderDateFrom');
+    const orderDateToFilter = inputDefault(filters, 'orderDateTo');
     const creditStatusFilter = inputDefault(filters, 'creditStatus');
     const totalsFilterHref = (extraFilters: Record<string, string>) => {
         const query = new URLSearchParams();
@@ -662,18 +664,18 @@ export default async function IncomesPage({searchParams}: {
         ? `/months/${reportMonth.year}/${reportMonth.month}?returnTo=${encodeURIComponent(listHref)}`
         : null;
 
-    const matchesOrderDate = (income: typeof incomes[number]) => {
+    const matchesCreditDate = (income: typeof incomes[number]) => {
         if (!creditDateFromFilter && !creditDateToFilter) return true;
-        return matchesIsoDate(income.orderDate, creditDateFromFilter, creditDateToFilter, current.company.timeZone, true);
+        return matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter, current.company.timeZone, true);
     };
     const periodIncomes = incomes.filter(income => {
-        if (!matchesOrderDate(income)) return false;
+        if (!matchesCreditDate(income)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
         return true;
     });
 
     const filteredIncomes = periodIncomes.filter(income => {
-        if (!matchesOrderDate(income)) return false;
+        if (!matchesIsoDate(income.orderDate, orderDateFromFilter, orderDateToFilter, current.company.timeZone, true)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
         if (useFiscalPeriodFilter && !income.isFiscal) return false;
         if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
@@ -774,8 +776,10 @@ export default async function IncomesPage({searchParams}: {
     const residualVatDebt = recoverableExpenseVat === null ? null : totals.vatDebt - recoverableExpenseVat;
 
     const activeFilterItems = [
-        creditDateFromDefault && {label: 'Data ordine da', value: formatDateInputLabel(creditDateFromDefault)},
-        creditDateToDefault && {label: 'Data ordine a', value: formatDateInputLabel(creditDateToDefault)},
+        orderDateFromFilter && {label: 'Data ordine da', value: formatDateInputLabel(orderDateFromFilter)},
+        orderDateToFilter && {label: 'Data ordine a', value: formatDateInputLabel(orderDateToFilter)},
+        creditDateFromDefault && {label: 'Data accredito da', value: formatDateInputLabel(creditDateFromDefault)},
+        creditDateToDefault && {label: 'Data accredito a', value: formatDateInputLabel(creditDateToDefault)},
         billingPeriodFromFilter && {label: 'Periodo fatt. da', value: billingPeriodFromFilter},
         billingPeriodToFilter && {label: 'Periodo fatt. a', value: billingPeriodToFilter},
         salesChannelFilter && {label: 'Canale vendita', value: salesChannelFilter},
@@ -873,7 +877,7 @@ export default async function IncomesPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
-        <div className="card record-list-card">
+        <div className="card record-list-card fixed">
             <div className="filter-drawer-wrapper">
                 <IncomeFiltersDrawer
                     filters={filters}
@@ -949,7 +953,7 @@ export default async function IncomesPage({searchParams}: {
             {/*    <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>*/}
             {/*</div>*/}
         </div>
-        <div className="card record-list-card">
+        <div className="card record-list-card fixed">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista incassi</h2>

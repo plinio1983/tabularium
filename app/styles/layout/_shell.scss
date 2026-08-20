@@ -793,6 +793,13 @@ body:has(.admin-login-page) .app-footer {
   //  display: none;
   //}
 }
+.month-report-page.fixed,
+.card.record-list-card.fixed {
+  max-width: 1180px;
+  width: calc(100%);
+  min-width: 0;
+  margin: 0 auto;
+}
 
 .dashboard-grid {
   .dashboard-body-wrapper {

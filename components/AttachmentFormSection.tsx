@@ -37,7 +37,7 @@ export default function AttachmentFormSection({initialAttachments = [], onStateC
     setFileTypes(current => current.filter((_, itemIndex) => itemIndex !== index));
   }
 
-  return <details ref={sectionRef} className="form-section full app-form-wizard-step app-form-wizard-step-7" open>
+  return <details ref={sectionRef} className="form-section full expense-attachments-section app-form-wizard-step app-form-wizard-step-7" open>
     <summary><span>Allegati</span><small>File, XML e P7M</small></summary>
     <div className="form-section-stack">
       <label className="card attachment-row-wrap">

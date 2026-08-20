@@ -1462,6 +1462,12 @@ body.invoice-attachments-modal-open {
   margin-bottom: 30px;
 }
 
+@media (max-width: 760px) {
+  .mobile-record-list {
+    display: grid;
+  }
+}
+
 .mobile-record-header > .left-side {
   flex-grow: 1;
   display: flex;
@@ -1685,6 +1691,13 @@ body.invoice-attachments-modal-open {
 /* Mobile-first income list cards */
 .income-mobile-list {
   display: none;
+}
+
+@media (max-width: 760px) {
+  .income-mobile-list {
+    display: grid;
+    margin-top: 12px;
+  }
 }
 
 .income-mobile-item .mobile-record-title-row strong {

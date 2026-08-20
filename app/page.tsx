@@ -714,8 +714,8 @@ function FiscalNonFiscalOverview({totals, year, periods}: {
                     <span className="is-non-fiscal-expense">Non fiscali <strong>{nonFiscalExpensePercentage.toFixed(1)}%</strong></span>
                     {otherExpenses ?
                         <span className="is-other-expense">
-                            <span className="hidden-sp-up">Liquid. IVA/altre</span>
-                            <span className="hidden-sp">Liquidazioni IVA/altre</span>
+                            <span className="hidden-xs-up">Liquid. IVA/altre</span>
+                            <span className="hidden-xs-down">Liquidazioni IVA/altre</span>
                             <strong>{otherExpensePercentage.toFixed(1)}%</strong>
                         </span> : null}
                 </div>
@@ -1983,7 +1983,7 @@ export default async function Dashboard({searchParams}: {
         <div className="dashboard-actions toolbar-card dashboard-header-card">
             <div className="dashboard-title-block">
                 <h2>Dashboard</h2>
-                <p className="muted">Dati consolidati {consolidatedPeriodCopy}. Liquidità e scadenze sono aggiornate a oggi.</p>
+                <p className="muted">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
             </div>
             <div className="actions-row dashboard-top-actions">
                 <ExpenseNewTriggerButton className="btn btn-md btn-primary"><span

@@ -802,16 +802,8 @@
   text-align: left;
 }
 
-
-.dashboard-statement-table .text-highlight {
-
-}
-
-
-/* Expense form amount/VAT row and payment edit actions */
 .app-record-form .amount-vat-row {
-  /*display: grid;*/
-  /*grid-template-columns: minmax(0, 1fr) 140px;*/
+  flex-direction: column;
   display: flex;
   gap: 14px;
   align-items: flex-end;
@@ -845,6 +837,12 @@
 
   .expense-creation-type-step .entry-type-choice-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 901px) {
+  .app-form-wizard.expense-type-step-external > .entry-type-choice {
+    display: grid;
   }
 }
 
@@ -1285,8 +1283,8 @@
 }
 
 @media (max-width: 760px) {
-  .app-form-modal .app-record-form .form-actions-row,
-    .app-form-modal .app-record-form .form-sticky-actions {
+  .app-form-modal .app-record-form:not(.app-form-wizard) .form-actions-row,
+    .app-form-modal .app-record-form:not(.app-form-wizard) .form-sticky-actions {
       bottom: calc(10px + env(safe-area-inset-bottom));
       width: calc(100vw - 20px);
       display: grid !important;
@@ -1297,8 +1295,8 @@
 }
 
 @media (max-width: 760px) {
-  .app-form-modal .app-record-form .form-actions-row button,
-    .app-form-modal .app-record-form .form-sticky-actions button {
+  .app-form-modal .app-record-form:not(.app-form-wizard) .form-actions-row button,
+    .app-form-modal .app-record-form:not(.app-form-wizard) .form-sticky-actions button {
       min-width: 0;
       width: 100%;
       max-width: 100%;
@@ -1777,7 +1775,7 @@
 }
 
 @media (max-width: 760px) {
-  .app-form-modal .app-record-form .form-sticky-actions {
+  .app-form-modal .app-record-form:not(.app-form-wizard) .form-sticky-actions {
       display: grid !important;
     }
 }
@@ -1857,7 +1855,7 @@
 }
 
 @media (max-width: 760px) {
-  .app-form-modal .app-record-form .form-sticky-actions,
+  .app-form-modal .app-record-form:not(.app-form-wizard) .form-sticky-actions,
     .entity-form-modal-card .entity-form-actions {
       position: fixed !important;
       left: 10px !important;
@@ -1919,4 +1917,254 @@
   .app-form-modal .app-record-form {
       padding-bottom: 12px;
     }
+}
+
+@media (max-width: 900px) {
+  :is(.single-expense-form, .income-mobile-wizard) .app-amount-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  :is(.single-expense-form, .income-mobile-wizard) .app-amount-keypad > button {
+    width: 100%;
+    min-width: 0;
+    height: 54px;
+    min-height: 54px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #1e293b;
+    font-size: 24px;
+    font-weight: 850;
+    line-height: 1;
+    text-align: center;
+  }
+}
+
+.single-expense-form .app-form-wizard-details-section {
+  position: relative;
+  overflow: visible;
+}
+
+.single-expense-form .app-form-wizard-details-section:focus-within {
+  z-index: 600;
+}
+
+.single-expense-form .app-form-wizard-details-section > .form-section-grid,
+.single-expense-form .entity-autocomplete-wide,
+.single-expense-form .entity-autocomplete-input-row,
+.single-expense-form .app-autocomplete-control {
+  overflow: visible;
+}
+
+.single-expense-form .entity-autocomplete-wide:focus-within {
+  z-index: 700;
+}
+
+.single-expense-form .entity-autocomplete-results {
+  z-index: 710;
+}
+
+:is(.single-expense-form, .recurring-expense-form) .entity-autocomplete-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+:is(.single-expense-form, .recurring-expense-form) .entity-autocomplete-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+:is(.single-expense-form, .recurring-expense-form) .entity-autocomplete-create {
+  flex: 0 0 auto;
+  //margin: 0;
+}
+
+.single-expense-form .payroll-money-fields .money-input > input {
+  padding-left: 46px !important;
+  padding-right: 52px !important;
+}
+
+.single-expense-form .payroll-money-fields .money-input > span {
+  left: 14px;
+  width: 20px;
+}
+
+/* Wizard mobile overrides must remain after the generic record-form rules. */
+.income-form .income-invoice-issued-mobile {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .income-form .income-invoice-issued-desktop {
+    display: none !important;
+  }
+
+  .income-form .income-invoice-issued-mobile {
+    display: flex !important;
+  }
+
+  .app-form-wizard.expense-type-step-external > .entry-type-choice {
+    display: none !important;
+  }
+
+  .single-expense-form.app-form-wizard .expense-payments-section,
+  .single-expense-form.app-form-wizard .expense-payments-section > .form-section-stack {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .single-expense-form.app-form-wizard .expense-payments-section > .form-section-stack {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .single-expense-form.app-form-wizard .expense-payments-section .payment-row:not(.payment-summary-row) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    width: 100%;
+  }
+
+  .single-expense-form.app-form-wizard .expense-payments-section .payment-date-field,
+  .single-expense-form.app-form-wizard .expense-payments-section .payment-amount-field,
+  .single-expense-form.app-form-wizard .expense-payments-section .payment-select-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .single-expense-form.app-form-wizard .expense-payments-section .payment-edit-actions {
+    grid-column: 1 / -1;
+  }
+
+  :is(.single-expense-form, .income-mobile-wizard).app-form-wizard .expense-attachments-section,
+  :is(.single-expense-form, .income-mobile-wizard).app-form-wizard .expense-attachments-section > .form-section-stack,
+  :is(.single-expense-form, .income-mobile-wizard).app-form-wizard .expense-attachments-section .attachment-row-wrap {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  :is(.single-expense-form, .income-mobile-wizard).app-form-wizard .expense-attachments-section > .form-section-stack {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 12px;
+  }
+
+  :is(.single-expense-form, .income-mobile-wizard).app-form-wizard .expense-attachments-section .attachment-row-wrap {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  :is(.single-expense-form, .income-mobile-wizard).app-form-wizard .expense-attachments-section .attachment-row-title {
+    margin: 0 0 8px;
+    padding: 0;
+  }
+
+  .app-form-modal .app-form-wizard > .form-sticky-actions,
+  .modal-page-card .app-form-wizard > .form-sticky-actions,
+  .app-form-wizard > .form-sticky-actions {
+    display: none !important;
+  }
+
+  .single-expense-form.app-form-wizard .app-form-wizard-split-section,
+  .recurring-form-wizard .recurring-form-section {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .income-mobile-wizard .income-form-section,
+  .income-mobile-wizard .income-form-section > .form-section-grid,
+  .income-mobile-wizard .income-form-section > .form-section-stack {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .income-mobile-wizard .income-form-section > .form-section-grid,
+  .income-mobile-wizard .income-form-section > .form-section-stack {
+    padding: 0;
+  }
+
+  .income-mobile-wizard .income-credits-section .payment-row:not(.payment-summary-row) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    width: 100%;
+  }
+
+  .income-mobile-wizard .income-credits-section .payment-date-field,
+  .income-mobile-wizard .income-credits-section .payment-amount-field,
+  .income-mobile-wizard .income-credits-section .payment-select-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .income-mobile-wizard .income-credits-section .payment-edit-actions {
+    grid-column: 1 / -1;
+  }
+
+}
+
+@media (max-width: 576px) {
+  .single-expense-form.app-form-wizard .expense-payments-section .payment-row:not(.payment-summary-row) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .income-mobile-wizard .income-credits-section .payment-row:not(.payment-summary-row) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+}
+
+@media (min-width: 901px) {
+  .income-form .income-invoice-issued-desktop {
+    display: flex !important;
+  }
+
+  .income-form .income-invoice-issued-mobile {
+    display: none !important;
+  }
+
+  .app-form-modal .app-form-wizard > .form-sticky-actions,
+  .modal-page-card .app-form-wizard > .form-sticky-actions,
+  .app-form-wizard > .form-sticky-actions {
+    position: static !important;
+    inset: auto !important;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    transform: none !important;
+    box-shadow: none;
+    background: transparent;
+    border: 0;
+    backdrop-filter: none;
+  }
+}
+
+.payroll-money-fields .field-note {
+  min-height: 87px;
 }

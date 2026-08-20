@@ -42,18 +42,18 @@ body:has(.detail-page-no-site-header) .shell {
 
 
 table .cell-option {
-  width: 4% !important;
-  max-width: 28px !important;
+  //width: 4% !important;
+  width: 46px !important;
   text-align: center;
 }
 
 table .cell-order-date {
-  width: 8% !important;
+  width: 75px !important;
   text-align: center;
 }
 
 table .cell-billing-period {
-  width: 6% !important;
+  width: 80px !important;
   text-align: left;
 }
 
@@ -68,7 +68,7 @@ table .cell-selling {
 }
 
 table .cell-category {
-  width: 7% !important;
+  width: 122px !important;
   text-align: center;
 }
 
@@ -83,33 +83,40 @@ table .cell-type {
 }
 
 table .cell-fiscal {
-  width: 5% !important;
+  width: 56px !important;
   text-align: center;
 }
 
 table .cell-supplier {
-  width: 11% !important;
+  width: 120px !important;
   text-align: left;
 }
 
 table .cell-residual,
 table .cell-amount {
-  width: 7% !important;
-  //text-align: center;
+  //width: 7% !important;
+  width: 110px;
+  min-width: 110px;
+  max-width: 127px;
 }
 
 table .cell-vat {
-  width: 5% !important;
+  width: 56px;
   text-align: center;
 }
 
 table .cell-invoice-state {
-  width: 9% !important;
+  width: 90px;
+  text-align: center;
+}
+
+table .cell-credit-state {
+  width: 130px;
   text-align: center;
 }
 
 table .cell-payment-state {
-  width: 10% !important;
+  width: 10%;
   text-align: center;
 }
 
@@ -119,7 +126,7 @@ table .cell-payment-state > * {
 }
 
 table .cell-description {
-  width: 9% !important;
+  width: 118px;
   text-align: left;
 }
 
@@ -1451,7 +1458,8 @@ table .cell-description {
 
 @media (max-width: 900px) {
   .recurring-record-form .recurring-form-section-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    //grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 

@@ -88,8 +88,12 @@
 }
 
 @keyframes app-modal-backdrop-enter {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes app-modal-panel-enter {
@@ -612,6 +616,7 @@
 .record-top-summary-item.is-invoice-waiting {
   background: linear-gradient(90deg, #eff6ff 0%, rgba(255, 255, 255, .2) 72%);
 }
+
 .expense-creation-type-step {
   display: none;
 }
@@ -619,56 +624,56 @@
 /* Responsive rules migrated from the former viewport-specific stylesheets. */
 @media (max-width: 576px) {
   .income-form .income-form-section-grid,
-    .income-form .income-amount-vat-row {
-      grid-template-columns: minmax(0, 1fr);
-    }
+  .income-form .income-amount-vat-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 576px) {
   .income-form .amount-vat-row,
-    .app-record-form .amount-vat-row {
-      display: grid !important;
-      grid-template-columns: minmax(0, 1fr) 1fr;
-      gap: 10px;
-    }
+  .app-record-form .amount-vat-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 1fr;
+    gap: 10px;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .app-vat-rate-buttons.vat-buttons-desktop {
-      display: flex !important;
-      flex-wrap: nowrap;
-      align-items: center;
-      gap: 7px;
-      width: fit-content;
-      max-width: 100%;
-      margin: 2px 0 0;
-    }
+    display: flex !important;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 2px 0 0;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .app-vat-rate-buttons.vat-buttons-desktop button {
-      width: auto;
-      min-width: 64px;
-    }
+    width: auto;
+    min-width: 64px;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .app-vat-rate-buttons.vat-buttons-mobile {
-      display: none !important;
-    }
+    display: none !important;
+  }
 }
 
 @media (min-width: 901px) {
   .single-expense-form .expense-amount-vat-excluded {
-      position: absolute;
-      top: 6px;
-      right: 14px;
-      z-index: 1;
-      color: #217a36;
-      font-size: 15px;
-      font-weight: 800;
-      line-height: 1.2;
-    }
+    position: absolute;
+    top: 6px;
+    right: 14px;
+    z-index: 1;
+    color: #217a36;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
 }
 
 .income-mobile-wizard .income-amount-vat-excluded {
@@ -682,1729 +687,1858 @@
 
 @media (min-width: 901px) {
   .app-form-wizard .app-form-wizard-header,
-    .app-form-wizard .app-form-wizard-actions,
-    .app-form-wizard .app-amount-keypad,
-    .app-form-wizard .app-vat-rate-buttons,
-    .app-form-wizard .expense-review-step,
-    .app-form-wizard .app-form-wizard-mobile-switch,
-    .app-form-wizard .expense-invoice-switches {
-      display: none !important;
-    }
+  .app-form-wizard .app-form-wizard-actions,
+  .app-form-wizard .app-amount-keypad,
+  .app-form-wizard .app-vat-rate-buttons,
+  .app-form-wizard .expense-review-step,
+  .app-form-wizard .app-form-wizard-mobile-switch,
+  .app-form-wizard .expense-invoice-switches {
+    display: none !important;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice {
-      display: grid;
-      gap: 9px;
-      margin-bottom: 4px;
-    }
+    display: grid;
+    gap: 9px;
+    margin-bottom: 4px;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice-title {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 7px;
-    }
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice-grid button {
-      display: grid;
-      min-width: 0;
-      min-height: 92px;
-      align-content: center;
-      justify-items: center;
-      gap: 4px;
-      padding: 9px 5px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: #f8fafc;
-      color: var(--text);
-      text-align: center;
-    }
+    display: grid;
+    min-width: 0;
+    min-height: 92px;
+    align-content: center;
+    justify-items: center;
+    gap: 4px;
+    padding: 9px 5px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: #f8fafc;
+    color: var(--text);
+    text-align: center;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice-grid button > span {
-      color: var(--accent);
-      font-size: 16px;
-      font-weight: 900;
-    }
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 900;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice-grid button strong {
-      font-size: 13px;
-    }
+    font-size: 13px;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice-grid button small {
-      color: var(--muted);
-      font-size: 10px;
-    }
+    color: var(--muted);
+    font-size: 10px;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice-grid button.is-selected {
-      border-color: var(--accent);
-      background: #eef4ff;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, .1);
-    }
+    border-color: var(--accent);
+    background: #eef4ff;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, .1);
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .entry-type-choice-grid button:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
+    opacity: .55;
+    cursor: not-allowed;
+  }
 }
 
 @media (min-width: 901px) {
   .single-expense-form .expense-wizard-amount-entry {
-      display: grid;
-      grid-template-columns: minmax(125px, auto) minmax(0, 1fr);
-      gap: 14px;
-      width: 100%;
-      align-items: flex-start;
-    }
+    display: grid;
+    grid-template-columns: minmax(125px, auto) minmax(0, 1fr);
+    gap: 14px;
+    width: 100%;
+    align-items: flex-start;
+  }
 }
 
 @media (min-width: 901px) {
   .single-expense-form .expense-wizard-amount-entry > .expense-amount-control:only-child {
-      grid-column: 1 / -1;
-    }
+    grid-column: 1 / -1;
+  }
 }
 
 @media (min-width: 901px) {
   .single-expense-form .amount-vat-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      align-items: end;
-      gap: 16px;
-    }
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: end;
+    gap: 16px;
+  }
 }
 
 @media (min-width: 901px) {
   .single-expense-form .expense-wizard-amount-field {
-      min-width: 0;
-    }
+    min-width: 0;
+  }
 }
 
 @media (min-width: 901px) {
   .single-expense-form .expense-wizard-amount-field .money-input,
-    .single-expense-form .expense-wizard-amount-field .money-input > input {
-      width: 100%;
-    }
+  .single-expense-form .expense-wizard-amount-field .money-input > input {
+    width: 100%;
+  }
 }
 
 @media (min-width: 901px) {
   .income-form .income-vat-buttons {
-      display: grid !important;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 901px) {
   .income-form .income-wizard-amount-entry {
-      display: flex;
-      flex-grow: 1;
-    }
+    display: flex;
+    flex-grow: 1;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .app-form-wizard-fiscal-section .toggle-field-wrap {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(156px, 1fr));
-      gap: 12px;
-    }
+    display: grid;
+    grid-template-columns: repeat(2, minmax(156px, 1fr));
+    gap: 12px;
+  }
 }
 
 @media (min-width: 901px) {
   .single-expense-form .app-form-wizard-fiscal-section .form-section-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      align-items: center;
-    }
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+  }
 }
 
 @media (min-width: 901px) {
   .single-expense-form .app-form-wizard-fiscal-section .form-section-grid .app-form-wizard-step {
-      flex: 1 1 50%;
-    }
+    flex: 1 1 50%;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .expense-invoice-step-row {
-      display: block;
-    }
+    display: block;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .app-form-field-label {
-      color: #334155;
-      font-weight: 900;
-    }
+    color: #334155;
+    font-weight: 900;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .app-form-field-icon,
-    .app-form-wizard .payment-date-label > i,
-    .app-form-wizard .payment-select-label > i {
-      display: inline-grid;
-      width: 25px;
-      height: 25px;
-      place-items: center;
-      border-radius: 9px;
-      background: linear-gradient(145deg, #eef2ff, #e0e7ff);
-      color: var(--accent);
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 900;
-      box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
-    }
+  .app-form-wizard .payment-date-label > i,
+  .app-form-wizard .payment-select-label > i {
+    display: inline-grid;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+    color: var(--accent);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 900;
+    box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .app-select-control select,
-    .app-form-wizard .payment-select-control select {
-      min-height: 54px;
-      height: 54px;
-      appearance: none;
-      padding-right: 52px;
-      border: 1px solid #cbd5e1;
-      border-radius: 16px;
-      background: #fff;
-      background-image: none;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
-      color: var(--text);
-      font-size: 16px;
-      font-weight: 750;
-    }
+  .app-form-wizard .payment-select-control select {
+    min-height: 54px;
+    height: 54px;
+    appearance: none;
+    padding-right: 52px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #fff;
+    background-image: none;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 750;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .app-select-caret,
-    .app-form-wizard .payment-select-caret {
-      position: absolute;
-      top: 50%;
-      right: 11px;
-      display: grid;
-      width: 30px;
-      height: 30px;
-      place-items: center;
-      border-radius: 10px;
-      background: #f1f5f9;
-      color: var(--accent);
-      font-size: 18px;
-      pointer-events: none;
-      transform: translateY(-54%);
-    }
+  .app-form-wizard .payment-select-caret {
+    position: absolute;
+    top: 50%;
+    right: 11px;
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: var(--accent);
+    font-size: 18px;
+    pointer-events: none;
+    transform: translateY(-54%);
+  }
 }
 
 @media (min-width: 901px) {
   :is(.app-form-wizard, .app-record-form) .app-date-control,
-    .app-form-wizard .payment-date-control {
-      position: relative;
-      min-height: 54px;
-      height: 54px;
-      overflow: hidden;
-      border: 1px solid #cbd5e1;
-      border-radius: 17px;
-      background: linear-gradient(145deg, #fff, #f8fafc);
-      box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
-    }
+  .app-form-wizard .payment-date-control {
+    position: relative;
+    min-height: 54px;
+    height: 54px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 17px;
+    background: linear-gradient(145deg, #fff, #f8fafc);
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
+  }
 }
 
 @media (min-width: 901px) {
   :is(.app-form-wizard, .app-record-form) .app-date-control:focus-within,
-    .app-form-wizard .payment-date-control:focus-within,
-    .app-form-wizard .app-select-control:focus-within select,
-    .app-form-wizard .payment-select-control:focus-within select {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
-    }
+  .app-form-wizard .payment-date-control:focus-within,
+  .app-form-wizard .app-select-control:focus-within select,
+  .app-form-wizard .payment-select-control:focus-within select {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+  }
 }
 
 @media (min-width: 901px) {
   :is(.app-form-wizard, .app-record-form) .app-date-control > input,
-    .app-form-wizard .payment-date-control > input {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      min-height: 54px;
-      opacity: 0;
-      cursor: pointer;
-    }
+  .app-form-wizard .payment-date-control > input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 54px;
+    opacity: 0;
+    cursor: pointer;
+  }
 }
 
 @media (min-width: 901px) {
   :is(.app-form-wizard, .app-record-form) .app-date-presentation,
-    .app-form-wizard .payment-date-presentation {
-      display: flex;
-      min-height: 54px;
-      flex-direction: column;
-      justify-content: center;
-      gap: 3px;
-      padding: 10px 56px 10px 15px;
-      pointer-events: none;
-    }
+  .app-form-wizard .payment-date-presentation {
+    display: flex;
+    min-height: 54px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 56px 10px 15px;
+    pointer-events: none;
+  }
 }
 
 @media (min-width: 901px) {
   :is(.app-form-wizard, .app-record-form) .app-date-presentation strong,
-    .app-form-wizard .payment-date-presentation strong {
-      color: #172033;
-      font-size: 17px;
-      text-transform: capitalize;
-    }
+  .app-form-wizard .payment-date-presentation strong {
+    color: #172033;
+    font-size: 17px;
+    text-transform: capitalize;
+  }
 }
 
 @media (min-width: 901px) {
   :is(.app-form-wizard, .app-record-form) .app-date-presentation span,
-    .app-form-wizard .payment-date-presentation span {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 750;
-    }
+  .app-form-wizard .payment-date-presentation span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+  }
 }
 
 @media (min-width: 901px) {
   :is(.app-form-wizard, .app-record-form) .app-date-picker-button,
-    .app-form-wizard .payment-date-picker-button {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      z-index: 2;
-      display: grid;
-      width: 38px;
-      height: 38px;
-      padding: 0;
-      place-items: center;
-      border: 0;
-      border-radius: 12px;
-      background: #eef2ff;
-      color: var(--accent);
-      font-size: 18px;
-      transform: translateY(-50%);
-    }
+  .app-form-wizard .payment-date-picker-button {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    z-index: 2;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 18px;
+    transform: translateY(-50%);
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .payment-date-field,
-    .app-form-wizard .payment-select-field {
-      color: #334155;
-      font-weight: 900;
-    }
+  .app-form-wizard .payment-select-field {
+    color: #334155;
+    font-weight: 900;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .payment-date-label,
-    .app-form-wizard .payment-select-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
+  .app-form-wizard .payment-select-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
 }
 
 @media (min-width: 901px) {
   .app-form-wizard .money-input > input {
-      padding-left: 42px !important;
-    }
+    padding-left: 42px !important;
+  }
+
+  .recurring-form-section.recurring-payment-section {
+    display: grid;
+  }
+
+  .recurring-form-section.recurring-payment-section .recurring-form-section-grid {
+    display: flex;
+  }
 }
+
 @media (max-width: 900px) {
   .expense-creation-type-step .entry-type-choice {
-      display: grid;
-      gap: 12px;
-    }
+    display: grid;
+    gap: 12px;
+  }
 }
 
 @media (max-width: 900px) {
   .expense-creation-type-step .app-form-wizard-header {
-      display: flex;
-      flex-direction: column;
-    }
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 900px) {
   .expense-creation-stage:not(.is-confirmed) .expense-creation-form-stage,
-    .expense-creation-stage.is-confirmed .expense-creation-type-step {
-      display: none;
-    }
+  .expense-creation-stage.is-confirmed .expense-creation-type-step {
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .expense-type-step-external > .entry-type-choice {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .single-expense-form .expense-amount-vat-excluded {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-vat-rate-buttons.vat-buttons-desktop {
-      display: none !important;
-    }
+    display: none !important;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-vat-rate-buttons.vat-buttons-mobile {
-      display: grid !important;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 7px;
-      width: 100%;
-    }
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    width: 100%;
+  }
 }
 
 @media (max-width: 900px) {
   .app-wizard-modal {
-      padding: 0;
-      overflow: hidden;
-    }
+    padding: 0;
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 900px) {
   .app-wizard-modal-card {
-      flex: 1 1 auto;
-      width: 100vw;
-      max-width: 100vw;
-      height: 100dvh;
-      max-height: 100dvh;
-      margin: 0;
-      padding: 14px;
-      gap: 0;
-      border-radius: 0;
-      overflow-y: auto;
-    }
+    flex: 1 1 auto;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 14px;
+    gap: 0;
+    border-radius: 0;
+    overflow-y: auto;
+  }
 }
 
 @media (max-width: 900px) {
   .app-wizard-modal-card .modal-title p {
-      min-height: 50px;
-    }
+    min-height: 50px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 22px;
-      width: 100%;
-      padding-bottom: 92px;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+    width: 100%;
+    padding-bottom: 92px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-header {
-      display: flex;
-      flex-direction: column;
-      flex: 0 0 60px;
-      width: 100%;
-      height: 60px;
-      min-height: 60px;
-      justify-content: center;
-      gap: 6px;
-      position: sticky;
-      top: 0;
-      z-index: 110;
-      margin: 0;
-      padding: 2px 0 8px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, .97);
-      backdrop-filter: blur(10px);
-    }
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 60px;
+    width: 100%;
+    height: 60px;
+    min-height: 60px;
+    justify-content: center;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 110;
+    margin: 0;
+    padding: 2px 0 8px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 255, 255, .97);
+    backdrop-filter: blur(10px);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-heading {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 12px;
-    }
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-heading span {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-    }
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-heading strong {
-      color: var(--text);
-      font-size: 18px;
-    }
+    color: var(--text);
+    font-size: 18px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-progress {
-      height: 5px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: #e7ecf5;
-    }
+    height: 5px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e7ecf5;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-progress span {
-      display: block;
-      height: 100%;
-      border-radius: inherit;
-      background: var(--accent);
-      transition: width .2s ease;
-    }
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width .2s ease;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-step {
-      display: none !important;
-      width: 100%;
-      margin-inline: 0;
-    }
+    display: none !important;
+    width: 100%;
+    margin-inline: 0;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-current-1 .app-form-wizard-step-1,
-    .app-form-wizard-current-2 .app-form-wizard-step-2,
-    .app-form-wizard-current-3 .app-form-wizard-step-3,
-    .app-form-wizard-current-4 .app-form-wizard-step-4,
-    .app-form-wizard-current-5 .app-form-wizard-step-5,
-    .app-form-wizard-current-6 .app-form-wizard-step-6,
-    .app-form-wizard-current-7 .app-form-wizard-step-7 {
-      display: flex !important;
-      flex-direction: column;
-      align-items: stretch;
-      row-gap: 9px;
-    }
+  .app-form-wizard-current-2 .app-form-wizard-step-2,
+  .app-form-wizard-current-3 .app-form-wizard-step-3,
+  .app-form-wizard-current-4 .app-form-wizard-step-4,
+  .app-form-wizard-current-5 .app-form-wizard-step-5,
+  .app-form-wizard-current-6 .app-form-wizard-step-6,
+  .app-form-wizard-current-7 .app-form-wizard-step-7 {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    row-gap: 9px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-split-section {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      margin: 0;
-      border: 0;
-      box-shadow: none;
-    }
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-current-4 .app-form-wizard-split-section,
-    .app-form-wizard-current-6 .app-form-wizard-split-section,
-    .app-form-wizard-current-7 .app-form-wizard-split-section,
-    .app-form-wizard-current-1 .app-form-wizard-details-section,
-    .app-form-wizard-current-1 .app-form-wizard-amount-section,
-    .app-form-wizard-current-1 .app-form-wizard-fiscal-section,
-    .app-form-wizard-current-2 .expense-wizard-dates-section,
-    .app-form-wizard-current-2 .app-form-wizard-details-section,
-    .app-form-wizard-current-2 .app-form-wizard-fiscal-section,
-    .app-form-wizard-current-3 .expense-wizard-dates-section,
-    .app-form-wizard-current-3 .app-form-wizard-amount-section,
-    .app-form-wizard-current-3 .app-form-wizard-fiscal-section,
-    .app-form-wizard-current-5 .expense-wizard-dates-section,
-    .app-form-wizard-current-5 .app-form-wizard-details-section,
-    .app-form-wizard-current-5 .app-form-wizard-amount-section {
-      display: none;
-    }
+  .app-form-wizard-current-6 .app-form-wizard-split-section,
+  .app-form-wizard-current-7 .app-form-wizard-split-section,
+  .app-form-wizard-current-1 .app-form-wizard-details-section,
+  .app-form-wizard-current-1 .app-form-wizard-amount-section,
+  .app-form-wizard-current-1 .app-form-wizard-fiscal-section,
+  .app-form-wizard-current-2 .expense-wizard-dates-section,
+  .app-form-wizard-current-2 .app-form-wizard-details-section,
+  .app-form-wizard-current-2 .app-form-wizard-fiscal-section,
+  .app-form-wizard-current-3 .expense-wizard-dates-section,
+  .app-form-wizard-current-3 .app-form-wizard-amount-section,
+  .app-form-wizard-current-3 .app-form-wizard-fiscal-section,
+  .app-form-wizard-current-5 .expense-wizard-dates-section,
+  .app-form-wizard-current-5 .app-form-wizard-details-section,
+  .app-form-wizard-current-5 .app-form-wizard-amount-section {
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-split-section > summary {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-split-section > .form-section-grid {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      margin: 0;
-      //padding: 0;
-    }
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    //padding: 0;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-step-4,
-    .app-form-wizard .app-form-wizard-step-6,
-    .app-form-wizard .app-form-wizard-step-7 {
-      width: 100%;
-      margin: 0;
-      overflow: visible;
-    }
+  .app-form-wizard .app-form-wizard-step-6,
+  .app-form-wizard .app-form-wizard-step-7 {
+    width: 100%;
+    margin: 0;
+    overflow: visible;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard > details.app-form-wizard-step > summary {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard > details.app-form-wizard-step > .form-section-stack {
-      padding: 0;
-      background: transparent;
-    }
+    padding: 0;
+    background: transparent;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-actions-row {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-    }
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-actions-row > .btn,
-    .app-form-wizard-actions-row > a {
-      flex: 1 1 0;
-      width: 100%;
-      max-width: none;
-      min-width: 0;
-      justify-content: center;
-    }
+  .app-form-wizard-actions-row > a {
+    flex: 1 1 0;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-due-date-shortcuts {
-      display: flex;
-      gap: 7px;
-      margin-top: 2px;
-    }
+    display: flex;
+    gap: 7px;
+    margin-top: 2px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-field-label {
-      color: #334155;
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: .01em;
-    }
+    color: #334155;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .01em;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-field-icon {
-      width: 25px;
-      height: 25px;
-      border-radius: 9px;
-      background: linear-gradient(145deg, #eef2ff, #e0e7ff);
-      box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
-    }
+    width: 25px;
+    height: 25px;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+    box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard-heading > strong {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-select-control select,
-    .app-form-wizard .payment-select-control select,
-    .app-form-wizard .app-autocomplete-control input,
-    .app-form-wizard .product-suggestion-picker > input,
-    .app-form-wizard .expense-invoice-status-field > select,
-    .app-form-wizard .amount-vat-row > label > select,
-    .app-form-wizard label > input[type="month"],
-    .app-form-wizard .payment-row label > input,
-    .app-form-wizard .payment-row label > select {
-      min-height: 54px;
-      border: 1px solid #cbd5e1;
-      border-radius: 16px;
-      background: #fff;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
-      color: var(--text);
-      font-size: 16px;
-      font-weight: 750;
-      transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
-    }
+  .app-form-wizard .payment-select-control select,
+  .app-form-wizard .app-autocomplete-control input,
+  .app-form-wizard .product-suggestion-picker > input,
+  .app-form-wizard .expense-invoice-status-field > select,
+  .app-form-wizard .amount-vat-row > label > select,
+  .app-form-wizard label > input[type="month"],
+  .app-form-wizard .payment-row label > input,
+  .app-form-wizard .payment-row label > select {
+    min-height: 54px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 750;
+    transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-amount-field .money-input,
-    .app-form-wizard .payment-amount-field .money-input > input {
-      min-height: 54px;
-    }
+  .app-form-wizard .payment-amount-field .money-input > input {
+    min-height: 54px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-amount-field {
-      align-content: start;
-    }
+    align-content: start;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-amount-field .money-input {
-      overflow: hidden;
-      border-color: #cbd5e1;
-      border-style: solid;
-      border-width: 1px;
-      border-radius: 16px;
-      background: #fff;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
-      transition: border-color .16s ease, box-shadow .16s ease;
-    }
+    overflow: hidden;
+    border-color: #cbd5e1;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+    transition: border-color .16s ease, box-shadow .16s ease;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-amount-field .money-input:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
-    }
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-amount-field .money-input > span {
-      left: 13px;
-      color: var(--accent);
-      //font-size: 15px;
-    }
+    left: 13px;
+    color: var(--accent);
+    //font-size: 15px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-amount-field .money-input > input {
-      padding: 10px 12px 10px 34px;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-      font-size: 16px;
-      font-weight: 850;
-    }
+    padding: 10px 12px 10px 34px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 16px;
+    font-weight: 850;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-amount-field .money-input > input:focus {
-      outline: 0;
-    }
+    outline: 0;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-field {
-      color: #334155;
-      font-weight: 850;
-    }
+    color: #334155;
+    font-weight: 850;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-select-field {
-      color: #334155;
-      font-weight: 900;
-    }
+    color: #334155;
+    font-weight: 900;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-label,
-    .app-form-wizard .payment-select-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
+  .app-form-wizard .payment-select-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-label > i,
-    .app-form-wizard .payment-select-label > i {
-      display: inline-grid;
-      width: 25px;
-      height: 25px;
-      place-items: center;
-      border-radius: 9px;
-      background: linear-gradient(145deg, #eef2ff, #e0e7ff);
-      color: var(--accent);
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 900;
-      box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
-    }
+  .app-form-wizard .payment-select-label > i {
+    display: inline-grid;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+    color: var(--accent);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 900;
+    box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .08);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-select-control select {
-      appearance: none;
-      padding-right: 52px;
-    }
+    appearance: none;
+    padding-right: 52px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-select-control:focus-within select {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
-    }
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-select-caret {
-      position: absolute;
-      top: 50%;
-      right: 11px;
-      display: grid;
-      width: 30px;
-      height: 30px;
-      place-items: center;
-      border-radius: 10px;
-      background: #f1f5f9;
-      color: var(--accent);
-      font-size: 18px;
-      pointer-events: none;
-      transform: translateY(-54%);
-    }
+    position: absolute;
+    top: 50%;
+    right: 11px;
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: var(--accent);
+    font-size: 18px;
+    pointer-events: none;
+    transform: translateY(-54%);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-select-control select:disabled + .payment-select-caret {
-      opacity: .45;
-    }
+    opacity: .45;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-control {
-      min-height: 54px;
-      overflow: hidden;
-      border: 1px solid #cbd5e1;
-      border-radius: 17px;
-      background: linear-gradient(145deg, #fff, #f8fafc);
-      box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
-    }
+    min-height: 54px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 17px;
+    background: linear-gradient(145deg, #fff, #f8fafc);
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-control:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
-    }
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-control > input {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      min-height: 54px;
-      opacity: 0;
-      cursor: pointer;
-    }
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 54px;
+    opacity: 0;
+    cursor: pointer;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-presentation {
-      display: flex;
-      min-height: 54px;
-      flex-direction: column;
-      justify-content: center;
-      gap: 3px;
-      padding: 10px 56px 10px 15px;
-      pointer-events: none;
-    }
+    display: flex;
+    min-height: 54px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 56px 10px 15px;
+    pointer-events: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-presentation strong {
-      color: #172033;
-      font-size: 17px;
-    }
+    color: #172033;
+    font-size: 17px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-presentation span {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 750;
-    }
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .payment-date-picker-button {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      z-index: 2;
-      display: grid;
-      width: 38px;
-      height: 38px;
-      padding: 0;
-      place-items: center;
-      border: 0;
-      border-radius: 12px;
-      background: #eef2ff;
-      color: var(--accent);
-      font-size: 18px;
-      transform: translateY(-50%);
-    }
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    z-index: 2;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 18px;
+    transform: translateY(-50%);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-select-control:focus-within select,
-    .app-form-wizard .app-autocomplete-control:focus-within input,
-    .app-form-wizard .product-suggestion-picker:focus-within > input,
-    .app-form-wizard .expense-invoice-status-field:focus-within > select,
-    .app-form-wizard .amount-vat-row > label:focus-within > select,
-    :is(.app-form-wizard, .app-record-form) .app-date-control:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
-    }
+  .app-form-wizard .app-autocomplete-control:focus-within input,
+  .app-form-wizard .product-suggestion-picker:focus-within > input,
+  .app-form-wizard .expense-invoice-status-field:focus-within > select,
+  .app-form-wizard .amount-vat-row > label:focus-within > select,
+  :is(.app-form-wizard, .app-record-form) .app-date-control:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, .12), 0 8px 24px rgba(15, 23, 42, .08);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-select-caret {
-      display: grid;
-      width: 30px;
-      height: 30px;
-      right: 11px;
-      place-items: center;
-      border-radius: 10px;
-      background: #f1f5f9;
-      color: var(--accent);
-    }
+    display: grid;
+    width: 30px;
+    height: 30px;
+    right: 11px;
+    place-items: center;
+    border-radius: 10px;
+    background: #f1f5f9;
+    color: var(--accent);
+  }
 }
 
 @media (max-width: 900px) {
   :is(.app-form-wizard, .app-record-form) .app-date-control {
-      min-height: 54px;
-      overflow: hidden;
-      border: 1px solid #cbd5e1;
-      border-radius: 17px;
-      background: linear-gradient(145deg, #fff, #f8fafc);
-      box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
-    }
+    min-height: 54px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    border-radius: 17px;
+    background: linear-gradient(145deg, #fff, #f8fafc);
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .055);
+  }
 }
 
 @media (max-width: 900px) {
   :is(.app-form-wizard, .app-record-form) .app-date-control input {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
 }
 
 @media (max-width: 900px) {
   :is(.app-form-wizard, .app-record-form) .app-date-presentation {
-      display: flex;
-      min-height: 54px;
-      flex-direction: column;
-      justify-content: center;
-      gap: 3px;
-      padding: 10px 56px 10px 15px;
-      pointer-events: none;
-    }
+    display: flex;
+    min-height: 54px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 56px 10px 15px;
+    pointer-events: none;
+  }
 }
 
 @media (max-width: 900px) {
   :is(.app-form-wizard, .app-record-form) .app-date-presentation strong {
-      color: #172033;
-      font-size: 17px;
-      text-transform: capitalize;
-    }
+    color: #172033;
+    font-size: 17px;
+    text-transform: capitalize;
+  }
 }
 
 @media (max-width: 900px) {
   :is(.app-form-wizard, .app-record-form) .app-date-presentation span {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 750;
-      text-transform: capitalize;
-    }
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 750;
+    text-transform: capitalize;
+  }
 }
 
 @media (max-width: 900px) {
   :is(.app-form-wizard, .app-record-form) .app-date-picker-button {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      z-index: 3;
-      display: grid;
-      width: 38px;
-      height: 38px;
-      padding: 0;
-      place-items: center;
-      border: 0;
-      border-radius: 12px;
-      background: #eef2ff;
-      color: var(--accent);
-      font-size: 19px;
-      transform: translateY(-50%);
-    }
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    z-index: 3;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 19px;
+    transform: translateY(-50%);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-due-date-shortcuts {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-    }
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-due-date-shortcuts button {
-      //min-width: 0;
-      min-height: 38px;
-      padding-inline: 5px;
-      border-radius: 12px;
-    }
+    //min-width: 0;
+    min-height: 38px;
+    padding-inline: 5px;
+    border-radius: 12px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .entity-autocomplete-input-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-    }
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-autocomplete-control.has-selection input {
-      border-color: #86efac;
-      background: #f7fff9;
-    }
+    border-color: #86efac;
+    background: #f7fff9;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-autocomplete-selection {
-      padding: 8px 10px;
-      border-radius: 12px;
-      background: #f0fdf4;
-    }
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: #f0fdf4;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .entity-autocomplete-results {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: calc(100% + 7px);
-      bottom: auto;
-      z-index: 520;
-      width: 100%;
-      max-height: min(38dvh, 320px);
-      padding: 7px;
-      border: 1px solid #dbe2ee;
-      border-radius: 20px;
-      box-shadow: 0 -18px 48px rgba(15, 23, 42, .22);
-    }
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 7px);
+    bottom: auto;
+    z-index: 520;
+    width: 100%;
+    max-height: min(38dvh, 320px);
+    padding: 7px;
+    border: 1px solid #dbe2ee;
+    border-radius: 20px;
+    box-shadow: 0 -18px 48px rgba(15, 23, 42, .22);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .entity-autocomplete-results button {
-      min-height: 54px;
-      padding: 10px 12px;
-      border: 0;
-      border-radius: 13px;
-    }
+    min-height: 54px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 13px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .entity-autocomplete-results button + button {
-      margin-top: 3px;
-    }
+    margin-top: 3px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .entity-autocomplete-results button.active {
-      background: #eef2ff;
-      box-shadow: inset 3px 0 0 var(--accent);
-    }
+    background: #eef2ff;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-vat-rate-buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 7px;
-    }
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 7px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-vat-rate-buttons > label {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-amount-control {
-      display: grid;
-      flex: 1 1 auto;
-      min-width: 0;
-      gap: 8px;
-    }
+    display: grid;
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 8px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-amount-keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-amount-keypad button {
-      min-height: 54px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: #f8fafc;
-      color: #1e293b;
-      font-size: 24px;
-      font-weight: 850;
-    }
+    min-height: 54px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #1e293b;
+    font-size: 24px;
+    font-weight: 850;
+  }
 }
 
 @media (max-width: 900px) {
   .app-amount-keypad button:active {
-      transform: translateY(1px);
-      background: #e9eff7;
-    }
+    transform: translateY(1px);
+    background: #e9eff7;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-fiscal-desktop-control,
-    .app-form-wizard .expense-invoice-desktop-control {
-      display: none !important;
-    }
+  .app-form-wizard .expense-invoice-desktop-control {
+    display: none !important;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-fiscal-section .toggle-field-wrap {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-fiscal-section .form-section-grid {
-      display: flex;
-      flex-wrap: wrap;
-    }
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-fiscal-section .form-section-grid > div {
-      min-width: 45%;
-    }
+    min-width: 45%;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-fiscal-section .income-form-section-grid.income-form-section-fiscal {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 
-      @media (max-width: 900px) {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-
-      >div {
-        flex: 1 1 auto;
-      }
-
-      .app-form-field {
-        flex: 1 1 100%;
-      }
+    @media (max-width: 900px) {
+      display: grid;
+      grid-template-columns: 1fr;
     }
+
+    > div {
+      flex: 1 1 auto;
+    }
+
+    .app-form-field {
+      flex: 1 1 100%;
+    }
+  }
 }
 
 @media (max-width: 900px) {
   .expense-wizard-amount-entry,
-    .expense-invoice-step-row {
-      display: flex;
-      width: 100%;
-      gap: 12px;
-    }
+  .expense-invoice-step-row {
+    display: flex;
+    width: 100%;
+    gap: 12px;
+  }
 }
 
 @media (max-width: 900px) {
   .expense-wizard-amount-entry {
-      align-items: center;
-    }
+    align-items: center;
+  }
 }
 
 @media (max-width: 900px) {
   .expense-invoice-switches .app-form-wizard-mobile-switch {
-      min-width: 156px;
-    }
+    min-width: 156px;
+  }
 }
 
 @media (max-width: 900px) {
   .expense-wizard-amount-field,
-    .expense-invoice-status-field {
-      flex: 1 1 auto;
-      min-width: 0;
-    }
+  .expense-invoice-status-field {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-wizard-amount-field .money-input {
-      min-height: 70px;
-      overflow: hidden;
-      border: 1px solid #dbe3ef;
-      border-radius: 16px;
-      //background: #f8fafc;
-    }
+    min-height: 70px;
+    overflow: hidden;
+    border: 1px solid #dbe3ef;
+    border-radius: 16px;
+    //background: #f8fafc;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-wizard-amount-field .money-input > span {
-      left: 16px;
-      font-size: 24px;
-    }
+    left: 16px;
+    font-size: 24px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-wizard-amount-field .money-input input {
-      height: 68px;
-      padding: 6px 14px 6px 48px;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      font-size: 38px;
-      font-weight: 850;
-      line-height: 1;
-      text-align: right;
-    }
+    height: 68px;
+    padding: 6px 14px 6px 48px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 38px;
+    font-weight: 850;
+    line-height: 1;
+    text-align: right;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-wizard-amount-field .money-input:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
-    }
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-step-6 {
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-    }
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .record-review-step {
-      gap: 16px;
-      padding: 0;
-      //margin-bottom: 72px;
-    }
+    gap: 16px;
+    padding: 0;
+    //margin-bottom: 72px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-review-notes-mobile {
-      display: grid;
-      gap: 8px;
-    }
+    display: grid;
+    gap: 8px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-step-7 {
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-    }
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-review-notes textarea {
-      min-height: 118px;
-      border: 1px solid #cbd5e1;
-      border-radius: 16px;
-      background: #fff;
-      font-size: 16px;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
-    }
+    min-height: 118px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #fff;
+    font-size: 16px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-step-4 {
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-    }
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-step-4 .payments-box {
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-      margin-bottom: 92px;
-    }
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    margin-bottom: 92px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .app-form-wizard-step-2.amount-vat-row > label:nth-child(2) {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .expense-type-desktop {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .entry-type-choice {
-      gap: 9px;
-      margin-bottom: 22px;
-    }
+    gap: 9px;
+    margin-bottom: 22px;
+  }
 }
 
 @media (max-width: 900px) {
   .entry-type-choice-title {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+  }
 }
 
 @media (max-width: 900px) {
   .entry-type-choice-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 7px;
-    }
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
 }
 
 @media (max-width: 900px) {
   .entry-type-choice-grid button {
-      display: grid;
-      min-width: 0;
-      min-height: 92px;
-      align-content: center;
-      justify-items: center;
-      gap: 4px;
-      padding: 9px 5px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: #f8fafc;
-      color: var(--text);
-      text-align: center;
-    }
+    display: grid;
+    min-width: 0;
+    min-height: 92px;
+    align-content: center;
+    justify-items: center;
+    gap: 4px;
+    padding: 9px 5px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: #f8fafc;
+    color: var(--text);
+    text-align: center;
+  }
 }
 
 @media (max-width: 900px) {
   .entry-type-choice-grid button > span {
-      color: var(--accent);
-      font-size: 15px;
-      font-weight: 900;
-    }
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: 900;
+  }
 }
 
 @media (max-width: 900px) {
   .entry-type-choice-grid button strong {
-      font-size: 13px;
-    }
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 900px) {
   .entry-type-choice-grid button small {
-      color: var(--muted);
-      font-size: 10px;
-    }
+    color: var(--muted);
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 900px) {
   .entry-type-choice-grid button.is-selected {
-      border-color: var(--accent);
-      background: #eef4ff;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, .1);
-    }
+    border-color: var(--accent);
+    background: #eef4ff;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, .1);
+  }
 }
 
 @media (max-width: 900px) {
   .entry-type-choice-grid button:disabled {
-      opacity: .55;
-    }
+    opacity: .55;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-form-section {
-      width: 100%;
-      margin: 0;
-      border: 0;
-      background: transparent;
-      box-shadow: none;
-    }
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-form-section > summary {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-form-section > .income-form-section-grid,
-    .income-mobile-wizard .income-form-section > .income-form-section-stack {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      gap: 22px;
-      background: transparent;
-    }
+  .income-mobile-wizard .income-form-section > .income-form-section-stack {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 22px;
+    background: transparent;
+  }
 }
 
 @media (max-width: 900px) {
   .app-wizard-modal-card > .income-mobile-wizard {
-      flex: 1 1 auto;
-      min-height: 0;
-      max-height: 100%;
-      padding-bottom: calc(180px + env(safe-area-inset-bottom));
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior-y: contain;
-      touch-action: pan-y;
-      -webkit-overflow-scrolling: touch;
-      scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
-    }
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    padding-bottom: calc(180px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
+  }
 }
 
 @media (max-width: 900px) {
   .app-wizard-modal-card:has(> .income-mobile-wizard) {
-      overflow: hidden;
-    }
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 900px) {
   .app-wizard-modal-card:has(> .income-mobile-wizard) > .modal-title {
-      flex: 0 0 auto;
-    }
+    flex: 0 0 auto;
+  }
 }
 
 @media (max-width: 900px) {
   .income-wizard-page-card {
-      min-height: calc(100dvh - 72px);
-    }
+    min-height: calc(100dvh - 72px);
+  }
 }
 
 @media (max-width: 900px) {
   .income-wizard-page-card > .income-mobile-wizard {
-      flex: 1 1 auto;
-      min-height: 0;
-      padding-bottom: calc(180px + env(safe-area-inset-bottom));
-      scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
-    }
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-bottom: calc(180px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom));
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-wizard-amount {
-      align-items: stretch;
-      gap: 14px;
-    }
+    align-items: stretch;
+    gap: 14px;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-amount-vat-row {
-      grid-template-columns: minmax(0, 1fr) !important;
-    }
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-amount-vat-excluded > span {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-wizard-amount-entry {
-      display: flex;
+    display: flex;
 
-      .income-amount-control {
-        flex-grow: 1;
-      }
+    .income-amount-control {
+      flex-grow: 1;
     }
+
+    .income-switch-control {
+      min-height: 101px;
+    }
+  }
 }
 
 @media (max-width: 900px) {
   .income-wizard-amount .income-net-amount-summary {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-wizard-amount-entry {
-      grid-template-columns: minmax(112px, .42fr) minmax(0, 1fr);
-      width: 100%;
-    }
+    grid-template-columns: minmax(112px, .42fr) minmax(0, 1fr);
+    width: 100%;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-wizard-amount > label {
-      width: 100%;
-    }
+    width: 100%;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-wizard-amount .money-input {
-      width: 100%;
-      min-height: 70px;
-      overflow: hidden;
-      border: 1px solid #dbe3ef;
-      border-radius: 16px;
-    }
+    width: 100%;
+    min-height: 70px;
+    overflow: hidden;
+    border: 1px solid #dbe3ef;
+    border-radius: 16px;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-wizard-amount .money-input > span {
-      left: 16px;
-      font-size: 24px;
-    }
+    left: 16px;
+    font-size: 24px;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-wizard-amount .money-input input {
-      width: 100%;
-      height: 68px;
-      padding: 6px 14px 6px 48px;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      font-size: 38px;
-      font-weight: 850;
-      line-height: 1;
-      text-align: right;
-    }
+    width: 100%;
+    height: 68px;
+    padding: 6px 14px 6px 48px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 38px;
+    font-weight: 850;
+    line-height: 1;
+    text-align: right;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-payment-section .income-form-section-grid,
-    .income-mobile-wizard .income-fiscal-section .income-form-section-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 22px;
-    }
+  .income-mobile-wizard .income-fiscal-section .income-form-section-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-payment-field-wide {
-      grid-column: 1 / -1;
-    }
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 900px) {
   .income-mobile-wizard .income-vat-buttons {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 7px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 7px;
 
-      @media (max-width: 576px) {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
+    @media (max-width: 576px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-wizard .form-section-grid:empty {
-      display: none;
-    }
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
   .app-form-modal .app-form-wizard > .form-sticky-actions,
-    .modal-page-card .app-form-wizard > .form-sticky-actions,
-    .app-form-wizard > .form-sticky-actions {
-      display: none !important;
-    }
+  .modal-page-card .app-form-wizard > .form-sticky-actions,
+  .app-form-wizard > .form-sticky-actions {
+    display: none !important;
+  }
 }
 
 @media (max-width: 900px) {
   .app-wizard-modal-card {
-      transform: none !important;
-    }
+    transform: none !important;
+  }
 }
+
 @media (max-width: 900px) {
   .expense-creation-type-step {
-        display: grid;
-        gap: 16px;
-      }
+    display: grid;
+    gap: 16px;
+  }
 }
 
 @media (max-width: 900px) {
   .app-due-date-shortcuts button,
-      .app-vat-rate-buttons button {
-        min-height: 34px;
-        padding: 6px 10px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: #f8fafc;
-        color: var(--text);
-        font-size: 12px;
-        font-weight: 850;
-      }
+  .app-vat-rate-buttons button {
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #f8fafc;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 850;
+  }
 }
 
 @media (max-width: 900px) {
   .expense-invoice-step-row {
-        align-items: flex-end;
-      }
+    align-items: flex-end;
+  }
 }
 
 @media (max-width: 900px) {
   .expense-invoice-switches {
-        display: grid;
-        gap: 8px;
-        //grid-template-columns: repeat(2, 1fr);
-        grid-template-columns: 1fr;
-      }
+    display: grid;
+    gap: 8px;
+    //grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-heading {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 14px;
-        padding: 4px 2px;
-      }
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 4px 2px;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-heading h3 {
-        margin: 3px 0 0;
-        color: var(--text);
-        font-size: 20px;
-      }
+    margin: 3px 0 0;
+    color: var(--text);
+    font-size: 20px;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-heading > strong {
-        color: var(--accent);
-        font-size: 22px;
-        white-space: nowrap;
-      }
+    color: var(--accent);
+    font-size: 22px;
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-kicker {
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 900;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-      }
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 9px;
-      }
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-grid > div {
-        display: flex;
-        min-width: 0;
-        align-items: center;
-        gap: 10px;
-        padding: 12px;
-        border-bottom: 1px solid #e2e8f0;
-      }
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-grid > div.wide {
-        grid-column: 1 / -1;
-      }
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-item > i {
-        display: grid;
-        flex: 0 0 34px;
-        width: 34px;
-        height: 34px;
-        place-items: center;
-        border-radius: 11px;
-        background: #eef2ff;
-        color: var(--accent);
-        font-size: 13px;
-        font-style: normal;
-        font-weight: 900;
-      }
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 11px;
+    background: #eef2ff;
+    color: var(--accent);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 900;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-grid span {
-        display: grid;
-        min-width: 0;
-        gap: 3px;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 800;
-      }
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+  }
 }
 
 @media (max-width: 900px) {
   .record-review-grid strong {
-        overflow-wrap: anywhere;
-        color: #172033;
-        font-size: 13px;
-      }
+    overflow-wrap: anywhere;
+    color: #172033;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 760px) {
   .category-create-toggle {
-        align-items: flex-start;
-      }
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 760px) {
   .category-create-toggle-copy {
-        align-items: flex-start;
-      }
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 760px) {
   .category-create-toggle-copy small {
-        line-height: 1.35;
-      }
+    line-height: 1.35;
+  }
 }
 
 @media (max-width: 760px) {
   .category-create-actions {
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-        padding-top: 14px;
-        border-top: 1px solid var(--line);
-      }
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
 }
 
 @media (max-width: 760px) {
   .category-create-actions .btn {
-        width: 100%;
-        min-width: 0;
-      }
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Disabled: the production wizard already owns the responsive amount layout. */
+@if false {
+  .app-wizard-modal-card .single-expense-form .form-section,
+  .single-expense-form .app-form-wizard-amount-section {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-wizard-modal-card .single-expense-form .form-section > summary,
+  .app-wizard-modal-card .single-expense-form .form-section[open] > summary {
+    border-bottom: 0;
+    background: transparent;
+  }
+
+  .app-wizard-modal-card .single-expense-form .form-section-grid,
+  .single-expense-form .app-form-wizard-amount-section > .form-section-grid,
+  .single-expense-form .app-form-wizard-amount-section .amount-vat-row,
+  .single-expense-form .expense-wizard-amount-entry {
+    margin: 0;
+    border: 0;
+  }
+
+  .single-expense-form .expense-fiscal-control {
+    min-width: 125px;
+  }
+
+  .single-expense-form .expense-vat-rate-buttons {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 2px 0 0;
+  }
+
+  .single-expense-form .expense-vat-rate-buttons button {
+    width: auto;
+    min-width: 64px;
+  }
+
+  @media (max-width: 900px) {
+    .single-expense-form .app-form-wizard-amount-section,
+    .single-expense-form .app-form-wizard-amount-section > .form-section-grid,
+    .single-expense-form .app-form-wizard-amount-section .amount-vat-row {
+      padding: 0;
+    }
+
+    .single-expense-form .expense-wizard-amount-entry {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .single-expense-form .expense-fiscal-control {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .single-expense-form .expense-fiscal-control .switch-toggle-field-label {
+      margin: 0;
+    }
+
+    .single-expense-form .expense-fiscal-control .switch {
+      flex: 0 0 auto;
+    }
+
+    .single-expense-form .expense-fiscal-control .switch > .text-muted {
+      display: none;
+    }
+
+    .single-expense-form .expense-amount-control,
+    .single-expense-form .expense-wizard-amount-field,
+    .single-expense-form .expense-wizard-amount-field .money-input {
+      width: 100%;
+      margin: 0;
+    }
+
+    .single-expense-form .expense-vat-rate-buttons {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: 100%;
+      margin: 0;
+    }
+
+    .single-expense-form .expense-vat-rate-buttons > label {
+      display: none;
+    }
+
+    .single-expense-form .expense-vat-rate-buttons button {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .single-expense-form .app-amount-keypad {
+      width: 100%;
+      margin: 0;
+    }
+  }
+}
+
+.recurring-payment-section {
+  @media (min-width: 901px) {
+    display: flex;
+  }
 }

@@ -274,6 +274,12 @@ export default function IncomeFiltersDrawer({
         </div>
 
         <form className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+          <fieldset className="filter-group filter-group-order-date">
+            <legend>Data ordine</legend>
+            <FilterField label="Data ordine da" icon="◷"><input name="orderDateFrom" type="date" defaultValue={inputDefault(filters, "orderDateFrom")} /></FilterField>
+            <FilterField label="Data ordine a" icon="◷"><input name="orderDateTo" type="date" defaultValue={inputDefault(filters, "orderDateTo")} /></FilterField>
+          </fieldset>
+
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
             <FilterField label="Periodo fiscale rapido" icon="▦"><select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>
@@ -296,8 +302,8 @@ export default function IncomeFiltersDrawer({
               <option value="">Periodo personalizzato</option>
               {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></FilterField>
-            <FilterField label="Data ordine da" icon="◷"><input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} onChange={handleCreditDateInputChange} /></FilterField>
-            <FilterField label="Data ordine a" icon="◷"><input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} onChange={handleCreditDateInputChange} /></FilterField>
+            <FilterField label="Data accredito da" icon="◷"><input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} onChange={handleCreditDateInputChange} /></FilterField>
+            <FilterField label="Data accredito a" icon="◷"><input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} onChange={handleCreditDateInputChange} /></FilterField>
           </fieldset>
 
           <FilterField label="Canale vendita" icon="◇"><select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>

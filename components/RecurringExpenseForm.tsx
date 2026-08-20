@@ -9,6 +9,7 @@ import {dateInputInTimeZone, zonedCalendarParts} from '@/lib/company-time';
 import SupplierCreateModal from "@/components/SupplierCreateModal";
 import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from "@/lib/currency-input";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
+import ExpenseTypeChoice from "@/components/ExpenseTypeChoice";
 import {resolveSupplierDefaultVatRate} from '@/lib/supplier-defaults';
 import {formatItalianCompactDate} from '@/lib/date-format';
 
@@ -73,6 +74,7 @@ type Props = {
     onSwitchToSingle?: () => void;
     onSwitchToVatSettlement?: () => void;
     onSwitchToTaxContribution?: () => void;
+    onSwitchToPayroll?: () => void;
     mobileStepOffset?: number;
     onBackToType?: () => void;
     hideMobileActions?: boolean;
@@ -207,13 +209,26 @@ function SupplierAutocomplete({
         <div className="entity-autocomplete entity-autocomplete-wide" ref={containerRef}>
             <input type="hidden" name="supplierId" value={selected?.id ?? ""}/>
             <input type="hidden" name="merchant" value={selected?.businessName ?? query}/>
-            <label className="recurring-supplier-field">
-        <span className="app-form-field-label">
-          <span className="app-form-field-icon" aria-hidden="true">◎</span>
-          <span>Esercente/Fornitore</span>
-        </span>
-                <div className="entity-autocomplete-input-row">
+            <div className="app-form-field-label entity-autocomplete-heading">
+                <label className="entity-autocomplete-label" htmlFor="recurring-expense-supplier-search">
+                    <span className="app-form-field-icon" aria-hidden="true">◎</span>
+                    <span>Esercente/Fornitore</span>
+                </label>
+                <button
+                    type="button"
+                    className="btn btn-sm btn-link entity-autocomplete-create mr-22"
+                    onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setShowCreate(true);
+                    }}
+                >
+                    ＋ Nuovo
+                </button>
+            </div>
+            <div className="entity-autocomplete-input-row">
                     <input
+                        id="recurring-expense-supplier-search"
                         value={query}
                         onChange={(event) => {
                             setQuery(event.target.value);
@@ -227,15 +242,7 @@ function SupplierAutocomplete({
                         autoComplete="off"
                         required
                     />
-                    <button
-                        type="button"
-                        className="ml-6 btn btn-sm btn-link"
-                        onClick={() => setShowCreate(true)}
-                    >
-                        ＋ Nuovo
-                    </button>
-                </div>
-            </label>
+            </div>
 
             {isOpen && (
                 <div className="entity-autocomplete-results" role="listbox">
@@ -393,6 +400,7 @@ export default function RecurringExpenseForm({
                                                  onSwitchToSingle,
                                                  onSwitchToVatSettlement,
                                                  onSwitchToTaxContribution,
+                                                 onSwitchToPayroll,
                                                  mobileStepOffset = 0,
                                                  onBackToType,
                                                  hideMobileActions = false,
@@ -578,36 +586,24 @@ export default function RecurringExpenseForm({
                 </div>
             </div>
 
-            <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
-                <span className="entry-type-choice-title">Tipo di spesa</span>
-                <div className="entry-type-choice-grid recurring-expense-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
-                    <button type="button" role="radio" aria-checked={false} disabled={!onSwitchToSingle} onClick={onSwitchToSingle}>
-                        <span aria-hidden="true">●</span>
-                        <strong>Singola</strong>
-                        <small>Spesa occasionale</small>
-                    </button>
-                    <button type="button" disabled={isExistingExpense} onClick={() => window.location.assign("/expenses/counter")}>
-                        <span aria-hidden="true">🛍️</span>
-                        <strong>Da banco</strong>
-                        <small>Acquisto già pagato</small>
-                    </button>
-                    <button type="button" className="is-selected" role="radio" aria-checked>
-                        <span aria-hidden="true">↻</span>
-                        <strong>Ricorrente</strong>
-                        <small>Spesa periodica</small>
-                    </button>
-                    <button type="button" role="radio" aria-checked={false} disabled={!onSwitchToVatSettlement} onClick={onSwitchToVatSettlement}>
-                        <span aria-hidden="true">IVA</span>
-                        <strong>Saldo IVA</strong>
-                        <small>Versamento IVA</small>
-                    </button>
-                    <button type="button" role="radio" aria-checked={false} disabled={!onSwitchToTaxContribution} onClick={onSwitchToTaxContribution}>
-                        <span aria-hidden="true">F24</span>
-                        <strong>Imposte</strong>
-                        <small>Imposte e contributi non IVA</small>
-                    </button>
-                </div>
-            </div>
+            <ExpenseTypeChoice
+                selected="recurring"
+                className="app-form-wizard-step app-form-wizard-step-1"
+                disabled={isExistingExpense}
+                onSelect={type => {
+                    if (type === "single") onSwitchToSingle?.();
+                    if (type === "vat") onSwitchToVatSettlement?.();
+                    if (type === "tax") onSwitchToTaxContribution?.();
+                    if (type === "payroll") onSwitchToPayroll?.();
+                }}
+                disabledTypes={[
+                    ...(!onSwitchToSingle ? ["single" as const] : []),
+                    ...(!onSwitchToVatSettlement ? ["vat" as const] : []),
+                    ...(!onSwitchToTaxContribution ? ["tax" as const] : []),
+                    ...(!onSwitchToPayroll ? ["payroll" as const] : []),
+                ]}
+                onSelectCounter={() => window.location.assign("/expenses/counter")}
+            />
 
             <details className="form-section full recurring-form-section recurring-document-section recurring-dates-section" open>
                 <summary>

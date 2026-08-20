@@ -7,6 +7,7 @@ import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput}
 import {DateField, MonthField, SelectField} from "@/components/FormControls";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
+import IncomeTypeChoice from "@/components/IncomeTypeChoice";
 import {incomeCreditState} from '@/lib/income-status';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {dateInputInTimeZone, monthInputInTimeZone} from '@/lib/company-time';
@@ -402,28 +403,13 @@ export default function IncomeForm({
             </div>
             {/*<h2 className="full">{title}</h2>*/}
 
-            <div className="entry-type-choice full app-form-wizard-step app-form-wizard-step-1">
-                <span className="entry-type-choice-title">Tipo di incasso</span>
-                <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di incasso">
-                    <button type="button" className="is-selected" role="radio" aria-checked="true">
-                        <span aria-hidden="true">●</span>
-                        <strong>Incasso <br/>singolo</strong>
-                        <small>Entrata occasionale</small>
-                    </button>
-                    <button type="button" role="radio" aria-checked="false" disabled={Boolean(initialIncome?.id) || !onSwitchToRecurring}
-                            onClick={onSwitchToRecurring}>
-                        <span aria-hidden="true">↻</span>
-                        <strong>Entrata <br/>ricorrente</strong>
-                        <small>Configura ricorrenza</small>
-                    </button>
-                    <button type="button" role="radio" aria-checked="false" disabled={Boolean(initialIncome?.id)}
-                            onClick={() => window.location.assign("/incomes/cash-register")}>
-                        <span aria-hidden="true">🧮</span>
-                        <strong>Incasso da Banco</strong>
-                        <small>Inserimento scontrini</small>
-                    </button>
-                </div>
-            </div>
+            <IncomeTypeChoice
+                selected="single"
+                className="app-form-wizard-step app-form-wizard-step-1"
+                disabled={Boolean(initialIncome?.id)}
+                onSelect={type => type === "recurring" && onSwitchToRecurring?.()}
+                onSelectCounter={() => window.location.assign("/incomes/cash-register")}
+            />
 
             <details className="form-section full income-form-section income-document-section" open>
                 <summary>
@@ -472,7 +458,7 @@ export default function IncomeForm({
                     <small>Fiscalità, importo e aliquota IVA</small>
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
-                    <div className="amount-vat-row full income-amount-vat-row app-form-wizard-step app-form-wizard-step-2 income-wizard-amount">
+                    <div className="amount-vat-row full income-amount-vat-row app-form-wizard-step app-form-wizard-step-2 income-wizard-amount w100">
                         <div className="income-wizard-amount-entry">
                             <div className="app-form-field-label income-switch-control income-fiscal-switch switch-toggle-field ">
                                 <div className="switch-toggle-field-label gap-4">
@@ -506,7 +492,7 @@ export default function IncomeForm({
                                             <span className="hidden-sm-up">Importo</span>
                                         </span>
                                     </div>
-                                    {/*<div>Importo <span className="hidden-sp">IVA inclusa</span></div>*/}
+                                    {/*<div>Importo <span className="hidden-xs-down">IVA inclusa</span></div>*/}
                                     <div className="income-amount-row">
                                         <MoneyInput inputRef={amountRef} required value={amount} onValueChange={handleAmountChange}
                                                     onClear={() => resetCurrencyInput(amountKeyStateRef.current)} suppressSoftKeyboard/>
@@ -524,7 +510,7 @@ export default function IncomeForm({
                         </div>
 
                         <div className="app-vat-rate-buttons income-vat-buttons vat-buttons-mobile align-center" aria-label="Aliquota IVA">
-                            <div className="hidden-sp">
+                            <div className="hidden-xs-down">
                                 <label className="ml-12">IVA</label>
                             </div>
                             {vatRates.map(value =>
@@ -544,7 +530,7 @@ export default function IncomeForm({
                 </div>
             </details>
 
-            <details className="form-section full income-form-section income-payment-section app-form-wizard-step app-form-wizard-step-4" open>
+            <details className="form-section full income-form-section income-payment-section income-credits-section app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
                     <span>Accrediti</span>
                     <small>Importi, date e conti di destinazione</small>
@@ -562,7 +548,7 @@ export default function IncomeForm({
                             </div>
                             <button type="button" className="btn btn-sm btn-default" disabled={!canAddCredit}
                                     onClick={addCredit}>
-                                ➕ Aggiungi accredito
+                                <span className="btn-icon" aria-hidden="true">€</span> Aggiungi accredito
                             </button>
                         </div>
 
@@ -657,7 +643,7 @@ export default function IncomeForm({
                 </summary>
                 <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
                     <MonthField label="Periodo contabile" name="billingPeriod" value={billingPeriod} onChange={setBillingPeriod} required/>
-                    <div className="app-form-field-label switch-toggle-field hidden-md-down">
+                    <div className="app-form-field-label switch-toggle-field income-invoice-issued-desktop">
                         <div className="switch-toggle-field-label app-form-field-label">
                             <span className="app-form-field-icon">⇆</span>
                             <span className="app-form-label">Fattura emessa</span>
@@ -672,7 +658,7 @@ export default function IncomeForm({
                             <small className="text-muted">{isFiscal && invoiceStatus === "EMESSA" ? "Emessa" : invoiceStatus === "PARZIALE" ? "Parziale" : "Non inviata"}</small>
                         </label>
                     </div>
-                    <div className="app-form-field-label switch-toggle-field switch-inline wide hidden-md-up">
+                    <div className="app-form-field-label switch-toggle-field switch-inline wide income-invoice-issued-mobile">
                         <div className="switch-toggle-field-label app-form-field-label">
                             <span className="app-form-field-icon">⇆</span>
                             <span className="app-form-label">Fattura emessa</span>

@@ -223,3 +223,9 @@
       padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
     }
 }
+
+@media (max-width: 576px) {
+  .recurring-form-wizard .recurring-form-section > .recurring-form-section-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

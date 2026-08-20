@@ -41,7 +41,7 @@ export default async function WorkspaceAccountPage({ searchParams }: { searchPar
           <span className="ml-0 badge workspace-role-badge hidden-sm-up">{roleLabels[current.membership.role] ?? current.membership.role}</span>
           <p className="muted">{current.user.email}</p>
       </div>
-        <span className="badge workspace-role-badge hidden-sp">{roleLabels[current.membership.role] ?? current.membership.role}</span>
+        <span className="badge workspace-role-badge hidden-xs-down">{roleLabels[current.membership.role] ?? current.membership.role}</span>
     </section>
 
     <section className="card workspace-account-card workspace-edit-card">
