@@ -118,7 +118,8 @@ function MainNavContent() {
               aria-current={isActive ? 'page' : undefined}
             >
               <span className="nav-link-icon" aria-hidden="true">{link.icon}</span>
-              <span>{link.label}</span>
+              <span className="hidden-md-up">{link.shortLabel}</span>
+              <span className="hidden-md-down">{link.label}</span>
             </Link>
           );
         })}

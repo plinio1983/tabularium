@@ -1374,6 +1374,9 @@ a.record-top-summary-item.is-invoice-waiting:hover {
   font-size: 10px;
   line-height: 1.08;
   letter-spacing: .025em;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: normal;
 }
 
 .dashboard-report-table .th-wrap {
@@ -1384,13 +1387,13 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 
 .dashboard-report-table th:first-child,
 .dashboard-report-table td:first-child {
-  width: 82px;
+  width: 68px;
   text-align: left;
 }
 
 .dashboard-report-table th:not(:first-child),
 .dashboard-report-table td:not(:first-child) {
-  width: 98px;
+  width: 80px;
 }
 
 .dashboard-report-table .highlight-column {

@@ -174,13 +174,13 @@ function periodTotalsLabel({
     }
 
     const quickLabel = quickDateFilter ? quickOrderDateLabel(quickDateFilter, dateYearFilter) : '';
-    if (quickLabel) return `Totali andamento ${quickLabel}`;
+    if (quickLabel) return `Riepilogo ${quickLabel}`;
 
     if (orderDateFromDefault && orderDateToDefault && orderDateFromDefault !== orderDateToDefault) {
-        return `Totali andamento\n dal ${formatDateTextInputLabel(orderDateFromDefault)} al ${formatDateTextInputLabel(orderDateToDefault)}`;
+        return `Riepilogo\n dal ${formatDateTextInputLabel(orderDateFromDefault)} al ${formatDateTextInputLabel(orderDateToDefault)}`;
     }
     const value = orderDateFromDefault || orderDateToDefault;
-    return value ? `Totali andamento ${formatDateTextInputLabel(value)}` : 'Totali andamento date selezionate';
+    return value ? `Riepilogo ${formatDateTextInputLabel(value)}` : 'Riepilogo date selezionate';
 }
 
 function ActiveFilterSummary({items}: { items: Array<{ label: string; value: string }> }) {
@@ -1019,7 +1019,7 @@ export default async function ExpensesPage({searchParams}: {
                 <div className="card-heading-row">
                     <div>
                         <h2 id="record-top-summary-title">{totalsPeriodLabel}</h2>
-                        <p className="muted">Riepilogo immediato delle spese comprese nei filtri correnti.</p>
+                        <p className="muted">Riepilogo delle spese comprese nei filtri impostati.</p>
                     </div>
                     {/*{monthlyReportHref ? <Link className="btn btn-sm btn-secondary" href={monthlyReportHref}>*/}
                     {/*    <span className="btn-icon" aria-hidden="true">*/}

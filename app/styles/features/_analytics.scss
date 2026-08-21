@@ -348,6 +348,26 @@
 }
 
 .month-report-page {
+
+  .month-report-summary-grid > div {
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #f8fafc;
+
+    @media (min-width: 577px) {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 448px) {
+      background: transparent;
+      border-bottom: 1px solid var(--line);
+      padding: 6px 0 12px;
+    }
+  }
+
   .month-report-accordion {
     .month-report-section {
       margin-top: 18px;
@@ -456,6 +476,49 @@
   padding-bottom: 18px;
 }
 
+.month-report-record-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.month-report-record-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 18px 20px;
+  color: #1d2538;
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.month-report-record-link:hover {
+  border-color: #b9c8f5;
+  box-shadow: 0 12px 30px rgba(31, 62, 168, .1);
+}
+
+.month-report-record-link strong {
+  color: #1f3ea8;
+  font-size: 22px;
+}
+
+.month-report-record-link.is-expense strong {
+  color: #b42318;
+}
+
+@media (max-width: 576px) {
+  .month-report-record-links {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .month-report-record-link {
+    padding: 15px 16px;
+    font-size: 15px;
+  }
+}
+
 .month-report-section h3 {
   margin: 0 0 14px;
   color: #1d2538;
@@ -547,6 +610,11 @@
 }
 
 @media (max-width: 389px) {
+  .month-report-metrics .month-report-value:nth-child(2),
+  .month-report-metrics .month-report-value:nth-child(4),
+  .month-report-metrics .month-report-value:nth-child(6) {
+    align-items: flex-end;
+  }
   .month-report-metric-percentage {
     display: block;
     margin-top: 5px;
@@ -590,19 +658,6 @@
   //grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 12px;
   margin: 0;
-}
-
-.month-report-summary-grid > div {
-  min-width: 0;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: #f8fafc;
-
-  @media (min-width: 577px) {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-  }
 }
 
 .month-report-summary-grid dt {
@@ -695,12 +750,6 @@
 
 .supplier-inline-create-card .inline-create-form {
   margin-top: 0;
-}
-
-
-.dashboard-period-cards {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: flex-start;
 }
 
 .dashboard-statement-cards {
@@ -4218,12 +4267,6 @@ html, body {
 }
 
 @media (max-width: 760px) {
-  .dashboard-period-cards {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 760px) {
   .dashboard-statement-heading {
     flex-direction: column;
     align-items: stretch;
@@ -4935,13 +4978,17 @@ html, body {
 
 @media (max-width: 900px) {
   .month-comparison-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
     gap: 14px;
     padding: 15px;
   }
 }
 
 @media (max-width: 900px) {
-  .month-comparison-heading {
+  .month-comparison-panel .month-comparison-heading {
     display: grid;
     gap: 12px;
   }
@@ -4969,20 +5016,64 @@ html, body {
   }
 }
 
-@media (max-width: 900px) {
-  .month-comparison-grid {
-    grid-template-columns: 1fr;
-  }
-}
+
 
 @media (max-width: 900px) {
   .month-comparison-metric {
     display: grid;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 }
 
 @media (max-width: 900px) {
   .month-comparison-delta {
     grid-template-columns: 1fr auto auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .month-comparison-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .month-comparison-tabs a {
+    min-width: 0;
+    padding-inline: 8px;
+  }
+
+  .month-comparison-values {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+  }
+
+  .month-comparison-versus {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+
+  .month-comparison-current-value,
+  .month-comparison-reference-value {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 389px) {
+  .month-comparison-panel {
+    padding: 12px;
+  }
+
+  .month-comparison-metric {
+    padding: 12px;
+  }
+
+  .month-comparison-delta {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .month-comparison-delta > span {
+    grid-column: 1 / -1;
   }
 }

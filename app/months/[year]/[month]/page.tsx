@@ -1,19 +1,13 @@
 import Link from 'next/link';
-import ExpensesList from '@/components/ExpensesList';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
 import YearNavigationSelect from '@/components/YearNavigationSelect';
-import IncomesList from '@/components/IncomesList';
-import MonthReportAccordionController from '@/components/MonthReportAccordionController';
 import {prisma} from '@/lib/prisma';
 import {getMonthlyReport, getOrderDatePeriodSummary, getPeriodReport, getPeriodSummary} from '@/lib/reports';
 import {monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {lastCompletedMonthInTimeZone, yearMonthInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
-import SearchIcon from '@/components/SearchIcon';
-import {prepareIncomeList} from '@/lib/income-list';
-import {sortExpensesByReceivedDateDesc} from '@/lib/expense-calculations';
 import MonthComparisonPanel from '@/components/MonthComparisonPanel';
 import {comparisonPeriod, type MonthComparisonKind} from '@/lib/month-comparison';
 
@@ -28,6 +22,27 @@ function euroInt(value: number | string | null | undefined) {
 
 function revenuePercentage(value: number, revenue: number) {
     return revenue ? `${(value / revenue * 100).toFixed(1).replace('.', ',')}%` : '—';
+}
+
+function monthValue(period: {year: number; month: number}) {
+    return `${period.year}-${String(period.month).padStart(2, '0')}`;
+}
+
+function periodListHref(path: '/expenses' | '/incomes', periods: Array<{year: number; month: number}>, mode: 'overall' | 'fiscal') {
+    const first = periods[0];
+    const last = periods[periods.length - 1];
+    const query = new URLSearchParams();
+    if (mode === 'fiscal') {
+        query.set('billingPeriodFrom', monthValue(first));
+        query.set('billingPeriodTo', monthValue(last));
+    } else {
+        const from = `${monthValue(first)}-01`;
+        const lastDay = new Date(Date.UTC(last.year, last.month, 0)).getUTCDate();
+        const to = `${monthValue(last)}-${String(lastDay).padStart(2, '0')}`;
+        query.set(path === '/expenses' ? 'orderDateFrom' : 'creditDateFrom', from);
+        query.set(path === '/expenses' ? 'orderDateTo' : 'creditDateTo', to);
+    }
+    return `${path}?${query}`;
 }
 
 function safeReturnTo(value: string | string[] | undefined) {
@@ -65,7 +80,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const lastCompletedMonth = lastCompletedMonthInTimeZone(current.company.timeZone);
     const currentYear = currentPeriod.year;
     const currentMonth = currentPeriod.month;
-    const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, salesChannels, customers, expenseYearBounds, incomeYearBounds] = await Promise.all([
+    const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, expenseYearBounds, incomeYearBounds] = await Promise.all([
         getPeriodReport(reportPeriods, current.workspace.id, mode, current.company.id, current.company.timeZone),
         periodType === 'month' ? getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id, current.company.timeZone) : Promise.resolve(null),
         mode === 'fiscal'
@@ -79,8 +94,6 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             orderBy: {businessName: 'asc'},
             take: 100
         }),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
-        prisma.customer.findMany({where: {workspaceId: current.workspace.id}, orderBy: {businessName: 'asc'}}),
         prisma.expense.aggregate({
             where: {workspaceId: current.workspace.id, companyId: current.company.id},
             _min: {year: true, receivedDate: true}
@@ -93,18 +106,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
-    const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
     const periodQuery = periodType === 'month' ? '' : `&period=${periodType}`;
     const currentReportHref = `/months/${year}/${month}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}`;
-    const returnTo = encodeURIComponent(currentReportHref);
-    const supplierQuickValue = Array.isArray(query.supplierQuick) ? query.supplierQuick[0] ?? '' : query.supplierQuick ?? '';
-    const supplierQuick = supplierQuickValue.trim().toLocaleLowerCase('it');
-    const filteredExpenses = report.expenses.filter(expense => !supplierQuick || (expense.supplier?.businessName ?? '').toLocaleLowerCase('it').includes(supplierQuick));
-    const mobileExpenses = sortExpensesByReceivedDateDesc(filteredExpenses);
-    const customerQuickValue = Array.isArray(query.customerQuick) ? query.customerQuick[0] ?? '' : query.customerQuick ?? '';
-    const customerQuick = customerQuickValue.trim().toLocaleLowerCase('it');
-    const filteredIncomes = report.incomes.filter(income => !customerQuick || (income.customer?.businessName ?? '').toLocaleLowerCase('it').includes(customerQuick));
-    const {standardIncomes: listedIncomes, cashRegisterGroups} = prepareIncomeList(filteredIncomes);
+    const periodLabel = periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno';
+    const expensesHref = periodListHref('/expenses', reportPeriods, mode);
+    const incomesHref = periodListHref('/incomes', reportPeriods, mode);
     const monthNavOptions = monthNavLabels.map((label, index) => {
         const navMonth = index + 1;
         const href = `/months/${year}/${navMonth}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
@@ -336,97 +342,13 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             returnTo={backHref}
             isCurrentMonth={year === currentYear && month === currentMonth}
         /> : null}
-        <div className="month-report-accordion" data-month-report-accordion>
-        <MonthReportAccordionController />
-        <details className="month-report-section month-report-expenses month-report-collapsible" open>
-            <summary className="month-report-section-heading">
-                <h3>Spese del {periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno'}</h3>
-                <div className="month-report-value month-report-inline-total"><span>Spese non saldate</span><strong
-                    className="money-warning">{euroInt(fiscalTotals.nonSaldato)}</strong></div>
-            </summary>
-            <form className="entity-quick-search app-quick-search-form" action={`/months/${year}/${month}`} method="get" role="search">
-                <input type="hidden" name="mode" value={mode}/>
-                {periodType !== 'month' ? <input type="hidden" name="period" value={periodType}/> : null}
-                <input type="hidden" name="returnTo" value={backHref}/>
-                {customerQuickValue ? <input type="hidden" name="customerQuick" value={customerQuickValue}/> : null}
-                <label className="app-form-field-label" htmlFor="monthExpenseSupplierQuickSearch"><span className="app-form-field-icon" aria-hidden="true">⌕</span><span>Ricerca fornitore</span></label>
-                <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input id="monthExpenseSupplierQuickSearch" name="supplierQuick" defaultValue={supplierQuickValue} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca fornitore"><SearchIcon /></button>
-                </div>
-            </form>
-            {supplierQuickValue ? <div className="recurring-active-filters"><div><span className="recurring-active-filters-title">Filtri attivi</span><div className="recurring-active-filter-tags"><span className="badge"><strong>Fornitore:</strong> {supplierQuickValue}</span></div></div><Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href={`/months/${year}/${month}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}${customerQuickValue ? `&customerQuick=${encodeURIComponent(customerQuickValue)}` : ''}`}>× Reset</Link></div> : null}
-            <ExpensesList
-                timeZone={current.company.timeZone}
-                expenses={filteredExpenses}
-                mobileExpenses={mobileExpenses}
-                returnTo={returnTo}
-                showSupplierColumn
-                selectable
-                formId="monthExpenseBulkForm"
-                categories={orderedCategories.map(category => ({
-                    id: category.id,
-                    code: category.code,
-                    name: category.name,
-                    icon: category.icon,
-                    isVatSettlementDefault: category.id === current.workspace.vatSettlementCategoryId
-                }))}
-                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId}))}
-                paymentMethods={expensePaymentMethods.map(method => ({
-                    id: method.id,
-                    name: method.name,
-                    icon: method.icon,
-                    kind: method.kind,
-                    isFallback: method.isFallback,
-                    systemRole: method.systemRole
-                }))}
-                suppliers={suppliers.map(supplier => ({
-                    id: supplier.id,
-                    businessName: supplier.businessName,
-                    alias: supplier.alias,
-                    email: supplier.email,
-                    vatNumber: supplier.vatNumber,
-                    iban: supplier.iban,
-                    pec: supplier.pec,
-                    taxCodeSdi: supplier.taxCodeSdi,
-                    systemRole: supplier.systemRole,
-                    internalNotes: supplier.internalNotes,
-                    defaultExpenseCategoryId: supplier.defaultExpenseCategoryId,
-                    defaultVatRate: supplier.defaultVatRate?.toString() ?? null
-                }))}
-                mobileLabel={`Lista spese del ${periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno'} mobile`}
-                emptyMessage={`Nessuna spesa trovata in questo ${periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno'}.`}
-            />
-        </details>
-        <details className="month-report-section month-report-incomes month-report-collapsible">
-            <summary className="month-report-section-heading">
-                <h3>Incassi del {periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno'}</h3>
-                <div className="month-report-value month-report-inline-total flex-grow"><span>Totale incassi</span><strong
-                    className="month-report-positive">{euroInt(report.totals.totalRevenue)}</strong></div>
-            </summary>
-            <form className="entity-quick-search app-quick-search-form" action={`/months/${year}/${month}`} method="get" role="search">
-                <input type="hidden" name="mode" value={mode}/>
-                {periodType !== 'month' ? <input type="hidden" name="period" value={periodType}/> : null}
-                <input type="hidden" name="returnTo" value={backHref}/>
-                {supplierQuickValue ? <input type="hidden" name="supplierQuick" value={supplierQuickValue}/> : null}
-                <label className="app-form-field-label" htmlFor="monthIncomeCustomerQuickSearch"><span className="app-form-field-icon" aria-hidden="true">⌕</span><span>Ricerca cliente</span></label>
-                <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input id="monthIncomeCustomerQuickSearch" name="customerQuick" defaultValue={customerQuickValue} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca cliente"><SearchIcon/></button>
-                </div>
-            </form>
-            {customerQuickValue ? <div className="recurring-active-filters"><div><span className="recurring-active-filters-title">Filtri attivi</span><div className="recurring-active-filter-tags"><span className="badge"><strong>Cliente:</strong> {customerQuickValue}</span></div></div><Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href={`/months/${year}/${month}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}${supplierQuickValue ? `&supplierQuick=${encodeURIComponent(supplierQuickValue)}` : ''}`}>× Reset</Link></div> : null}
-            <div className="--card record-list-card"><IncomesList
-                timeZone={current.company.timeZone}
-                incomes={listedIncomes}
-                cashRegisterGroups={cashRegisterGroups}
-                returnTo={returnTo}
-                banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId}))}
-                paymentMethods={incomePaymentMethods.map(method => ({id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback}))}
-                salesChannels={salesChannels}
-                customers={customers}
-            /></div>
-        </details>
-        </div>
+        <nav className="month-report-record-links" aria-label={`Movimenti del ${periodLabel}`}>
+            <Link className="card month-report-record-link is-expense" href={expensesHref}>
+                <span>Spese del {periodLabel}</span><strong aria-hidden="true">→</strong>
+            </Link>
+            <Link className="card month-report-record-link is-income" href={incomesHref}>
+                <span>Incassi del {periodLabel}</span><strong aria-hidden="true">→</strong>
+            </Link>
+        </nav>
     </div>;
 }
