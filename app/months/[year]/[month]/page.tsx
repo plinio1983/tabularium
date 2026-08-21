@@ -9,6 +9,7 @@ import {requireWorkspace} from '@/lib/auth';
 import {lastCompletedMonthInTimeZone, yearMonthInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import MonthComparisonPanel from '@/components/MonthComparisonPanel';
+import PeriodVatOverview from '@/components/PeriodVatOverview';
 import {comparisonPeriod, type MonthComparisonKind} from '@/lib/month-comparison';
 
 function capitalize(value: string) {
@@ -315,6 +316,10 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     <div><dt>IVA spese</dt><dd>{euroInt(report.totals.paidVat)}</dd></div>
                     <div><dt>IVA da versare</dt><dd>{euroInt(report.totals.remainingVat)}</dd></div>
                 </dl>
+                {mode === 'overall' && periodType !== 'month' ? <Link
+                    className="month-report-vat-detail-link"
+                    href={`/months/${year}/${month}?mode=fiscal${periodQuery}&returnTo=${encodeURIComponent(backHref)}#iva`}
+                >Apri il prospetto IVA dettagliato in modalità Fiscale →</Link> : null}
             </section>
             <section className="card month-report-section"><h3>Entrate</h3>
                 <dl className="month-report-summary-grid">
@@ -350,5 +355,9 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <span>Incassi del {periodLabel}</span><strong aria-hidden="true">→</strong>
             </Link>
         </nav>
+        {mode === 'fiscal' && periodType !== 'month' ? <PeriodVatOverview
+            months={report.monthlyBreakdown}
+            periodType={periodType}
+        /> : null}
     </div>;
 }

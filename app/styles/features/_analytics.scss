@@ -507,6 +507,14 @@
   color: #b42318;
 }
 
+.month-report-vat-detail-link {
+  display: inline-flex;
+  margin-top: 14px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 850;
+}
+
 @media (max-width: 576px) {
   .month-report-record-links {
     grid-template-columns: 1fr;
@@ -3483,6 +3491,201 @@ html, body {
 .vat-detail-note {
   margin: 10px 0 0;
   font-size: 11px;
+}
+
+.report-vat-statement {
+  display: grid;
+  gap: 22px;
+  padding: 26px;
+  border-color: #d8d1f2;
+}
+
+.report-vat-statement-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.report-vat-statement-heading h2,
+.report-vat-periods-heading h3,
+.report-vat-period h4 {
+  margin: 0;
+}
+
+.report-vat-statement-heading p,
+.report-vat-periods-heading p {
+  margin: 5px 0 0;
+}
+
+.report-vat-eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: #6d28d9;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.report-vat-balance {
+  display: grid;
+  gap: 3px;
+  min-width: 190px;
+  padding: 13px 16px;
+  border-radius: 13px;
+  background: #f1f5f9;
+  color: #475569;
+  text-align: right;
+}
+
+.report-vat-balance span,
+.report-vat-period-balance span {
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.report-vat-balance strong {
+  font-size: 23px;
+}
+
+.report-vat-balance.is-debit { background: #fff1f2; color: #be123c; }
+.report-vat-balance.is-credit { background: #ecfdf5; color: #047857; }
+
+.report-vat-foundation {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.report-vat-foundation > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.report-vat-foundation span,
+.report-vat-period-values span,
+.report-vat-period > header > div:first-child > span,
+.report-vat-period footer > div span {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.report-vat-foundation strong { font-size: 20px; }
+.report-vat-foundation small { color: var(--muted); font-size: 10px; }
+
+.report-vat-equation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 9px;
+  padding: 16px;
+  border-radius: 15px;
+  background: #f8fafc;
+}
+
+.report-vat-equation > div {
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+  border-left: 4px solid #94a3b8;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.report-vat-equation > b { align-self: center; color: #94a3b8; font-size: 20px; }
+.report-vat-equation span { color: #64748b; font-size: 10px; font-weight: 850; text-transform: uppercase; }
+.report-vat-equation strong { overflow-wrap: anywhere; font-size: 18px; }
+.report-vat-equation .is-generated { border-left-color: #7c3aed; }
+.report-vat-equation .is-deductible { border-left-color: #0d9488; }
+.report-vat-equation .is-settled { border-left-color: #f59e0b; }
+.report-vat-equation .is-balance { border-left-color: #3657c8; background: #f5f3ff; }
+
+.report-vat-periods-heading { padding-top: 4px; border-top: 1px solid var(--line); }
+.report-vat-periods-heading h3 { margin-top: 18px; font-size: 17px; }
+
+.report-vat-period-list { display: grid; gap: 12px; }
+
+.report-vat-period {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.report-vat-period > header,
+.report-vat-period > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 15px;
+  background: #f8fafc;
+}
+
+.report-vat-period h4 { margin-top: 3px; font-size: 17px; }
+.report-vat-period-balance { display: grid; gap: 2px; text-align: right; }
+.report-vat-period-balance strong { font-size: 17px; }
+
+.report-vat-period-values {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  padding: 15px;
+}
+
+.report-vat-period-values > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 2px 13px;
+  border-right: 1px solid var(--line);
+}
+
+.report-vat-period-values > div:first-child { padding-left: 0; }
+.report-vat-period-values > div:last-child { padding-right: 0; border-right: 0; }
+.report-vat-period-values strong { overflow-wrap: anywhere; font-size: 16px; }
+.report-vat-period-values .is-generated strong { color: #6d28d9; }
+.report-vat-period-values .is-deductible strong { color: #0f766e; }
+.report-vat-period-values .is-settled strong { color: #b45309; }
+
+.report-vat-period footer { border-top: 1px solid var(--line); }
+.report-vat-period footer nav { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.report-vat-period footer a { color: var(--accent); font-size: 11px; font-weight: 850; }
+.report-vat-period footer > div { display: flex; align-items: baseline; gap: 8px; }
+.report-vat-period footer > div strong { font-size: 16px; }
+.report-vat-note { margin: 0; font-size: 11px; }
+
+@media (max-width: 900px) {
+  .report-vat-equation { grid-template-columns: 1fr; }
+  .report-vat-equation > b { justify-self: center; line-height: 1; }
+  .report-vat-period-values { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .report-vat-period-values > div,
+  .report-vat-period-values > div:first-child,
+  .report-vat-period-values > div:last-child { padding: 0; border-right: 0; }
+}
+
+@media (max-width: 576px) {
+  .report-vat-statement { gap: 16px; padding: 15px; }
+  .report-vat-statement-heading { display: grid; }
+  .report-vat-balance { width: 100%; min-width: 0; text-align: left; }
+  .report-vat-foundation { grid-template-columns: 1fr; }
+  .report-vat-period > header,
+  .report-vat-period > footer { align-items: flex-start; }
+  .report-vat-period-values { grid-template-columns: 1fr; }
+  .report-vat-period footer { display: grid; }
+  .report-vat-period footer > div { justify-content: space-between; }
 }
 
 .composition-pie-layout {
