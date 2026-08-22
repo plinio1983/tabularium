@@ -128,6 +128,20 @@ function updateUrlParam(key: 'trendMonth' | 'trendQuarter' | 'fiscalMonth' | 'fi
   window.history.replaceState(null, '', `${url.pathname}?${url.searchParams.toString()}`);
 }
 
+function updateOverviewUrl(key: 'overviewMonth' | 'overviewQuarter', value: string, annualYear: number) {
+  const url = new URL(window.location.href);
+  url.searchParams.set(key, value);
+  url.searchParams.set('annualYear', String(annualYear));
+  if (key === 'overviewMonth') {
+    url.searchParams.delete('trendMonth');
+    url.searchParams.delete('fiscalMonth');
+  } else {
+    url.searchParams.delete('trendQuarter');
+    url.searchParams.delete('fiscalQuarter');
+  }
+  window.history.replaceState(null, '', `${url.pathname}?${url.searchParams.toString()}`);
+}
+
 function MonthlyTrendCard({
   state,
   selector,
@@ -311,6 +325,83 @@ function FiscalSummaryCard({
   </section>;
 }
 
+function PeriodOverviewCard({
+  kind,
+  overallState,
+  fiscalState,
+  selector,
+  loading
+}: {
+  kind: 'month' | 'quarter';
+  overallState: FiscalState;
+  fiscalState: FiscalState;
+  selector: React.ReactNode;
+  loading: boolean;
+}) {
+  const periods = overallState.periods;
+  const overall = overallState.totals;
+  const fiscal = fiscalState.totals;
+  const isMonth = kind === 'month';
+  const title = isMonth ? 'Andamento mese' : 'Andamento trimestre';
+  const subtitle = isMonth && periods[0]
+    ? `${monthName(periods[0].month)} ${periods[0].year}`
+    : compactQuarterLabel(periods);
+  const overallExpensesHref = dateRangeLinkForPeriods('/expenses', periods);
+  const overallIncomesHref = dateRangeLinkForPeriods('/incomes', periods);
+  const nonFiscalExpensesHref = dateRangeLinkForPeriods('/expenses', periods, {declared: 'no'});
+  const nonFiscalIncomesHref = dateRangeLinkForPeriods('/incomes', periods, {fiscal: 'no'});
+  const overallUnpaidHref = dateRangeLinkForPeriods('/expenses', periods, {paymentStatus: 'not_complete'});
+  const overallOverdueHref = dateRangeLinkForPeriods('/expenses', periods, {paymentStatus: 'overdue'});
+  const fiscalExpensesHref = periodLink('/expenses', periods, {declared: 'yes'});
+  const fiscalIncomesHref = periodLink('/incomes', periods);
+  const fiscalUnpaidHref = periodLink('/expenses', periods, {paymentStatus: 'not_complete', declared: 'yes'});
+  const fiscalOverdueHref = periodLink('/expenses', periods, {paymentStatus: 'overdue', declared: 'yes'});
+  const invoicesNotSentHref = periodLink('/incomes', periods, {fiscal: 'yes', invoiceStatusMode: 'not_emitted'});
+  const invoicesNotReceivedHref = periodLink('/expenses', periods, {declared: 'yes', invoiceStatusMode: 'not_received'});
+  const first = periods[0];
+  const reportHref = first
+    ? `/months/${first.year}/${first.month}?mode=overall${isMonth ? '' : '&period=quarter'}&returnTo=${encodeURIComponent('/')}`
+    : '/';
+
+  return <section className={`card dashboard-period-overview ${loading ? 'is-loading' : ''}`}>
+    <header className="dashboard-statement-heading dashboard-period-overview-heading">
+      <div><h2>{title}</h2><p className="muted">{subtitle}</p></div>
+      {selector}
+    </header>
+    <div className="dashboard-period-overview-groups">
+      <section className="dashboard-period-overview-group is-overall" aria-label="Andamento complessivo">
+        <div className="dashboard-period-overview-group-heading"><span>Movimenti effettivi</span><h3>Andamento complessivo</h3></div>
+        <table className="dashboard-statement-table"><tbody>
+          <StatementMoneyRow label="Entrate totali" value={overall.incassoTotale} href={overallIncomesHref} highlight />
+          <StatementMoneyRow label="Uscite totali" value={overall.speseTotali} href={overallExpensesHref} />
+          <StatementMoneyRow label="Utile netto" value={overall.utileNetto} highlight />
+          <StatementMoneyRow label="Incasso non fiscale" value={overall.incassoNonFiscale} href={nonFiscalIncomesHref} />
+          <StatementMoneyRow label="Spese non fiscali" value={overall.usciteNonFiscali} warning={overall.usciteNonFiscali > 0} href={nonFiscalExpensesHref} />
+          <StatementMoneyRow label="Non saldato complessivo" value={overall.nonSaldato} warning={overall.nonSaldato > 0} href={overallUnpaidHref} />
+          <StatementCountRow label="Scaduti complessivi" value={overall.fattureScaduteCount} warning={overall.fattureScaduteCount > 0} href={overallOverdueHref} />
+        </tbody></table>
+      </section>
+      <section className="dashboard-period-overview-group is-fiscal" aria-label="Situazione fiscale">
+        <div className="dashboard-period-overview-group-heading"><span>Periodo di competenza</span><h3>Situazione fiscale</h3></div>
+        <table className="dashboard-statement-table"><tbody>
+          <StatementMoneyRow label="Entrate fiscali" value={fiscal.incassoFiscale} href={fiscalIncomesHref} />
+          <StatementMoneyRow label="Imponibile" value={fiscal.imponibileIncassi} />
+          <StatementMoneyRow label="Uscite fiscali" value={fiscal.usciteFiscali} href={fiscalExpensesHref} />
+          <StatementMoneyRow label="Utile fiscale" value={fiscal.utileFiscale} highlight />
+          <StatementMoneyRow label="Non saldato fiscale" value={fiscal.nonSaldato} warning={fiscal.nonSaldato > 0} href={fiscalUnpaidHref} />
+          <StatementMoneyRow label="Previsione saldo IVA" value={fiscal.debitoIva} vat highlight />
+          <StatementCountRow label="Scaduti fiscali" value={fiscal.fattureScaduteCount} warning={fiscal.fattureScaduteCount > 0} href={fiscalOverdueHref} />
+          <StatementCountRow label="Fatture non inviate" value={fiscal.fattureNonInviate} warning={fiscal.fattureNonInviate > 0} href={invoicesNotSentHref} />
+          <StatementCountRow label="Fatture non ricevute" value={fiscal.fattureNonRicevute} warning={fiscal.fattureNonRicevute > 0} href={invoicesNotReceivedHref} />
+        </tbody></table>
+      </section>
+    </div>
+    <footer className="dashboard-statement-actions dashboard-period-overview-actions">
+      <Link className="btn btn-sm btn-ghost" href={reportHref}>Apri Report {isMonth ? 'mensile' : 'trimestrale'}</Link>
+    </footer>
+  </section>;
+}
+
 export default function DashboardFiscalAjax({
   annualYear,
   monthOptions,
@@ -408,47 +499,64 @@ export default function DashboardFiscalAjax({
     }
   }
 
+  async function loadMonthOverview(value: string) {
+    const [year, month] = value.split('-').map(Number);
+    setTrendLoading(true);
+    setMonthLoading(true);
+    try {
+      const response = await fetch(`/api/dashboard/fiscal-summary?type=monthOverview&year=${year}&month=${month}`, {cache: 'no-store'});
+      if (!response.ok) throw new Error('Errore nel caricamento del riepilogo mensile');
+      const data = await response.json();
+      setTrendState({year, month, totals: data.overallTotals});
+      setMonthState({periods: data.periods, totals: data.fiscalTotals});
+      updateOverviewUrl('overviewMonth', value, annualYear);
+    } finally {
+      setTrendLoading(false);
+      setMonthLoading(false);
+    }
+  }
+
+  async function loadQuarterOverview(value: string) {
+    const match = value.match(/^(\d{4})-Q([1-4])$/);
+    if (!match) return;
+    const year = Number(match[1]);
+    const quarterIndex = Number(match[2]) - 1;
+    setTrendQuarterLoading(true);
+    setQuarterLoading(true);
+    try {
+      const response = await fetch(`/api/dashboard/fiscal-summary?type=quarterOverview&year=${year}&quarterIndex=${quarterIndex}`, {cache: 'no-store'});
+      if (!response.ok) throw new Error('Errore nel caricamento del riepilogo trimestrale');
+      const data = await response.json();
+      setTrendQuarterState({periods: data.periods, totals: data.overallTotals});
+      setQuarterState({periods: data.periods, totals: data.fiscalTotals});
+      updateOverviewUrl('overviewQuarter', value, annualYear);
+    } finally {
+      setTrendQuarterLoading(false);
+      setQuarterLoading(false);
+    }
+  }
+
   return <>
-    <MonthlyTrendCard
-      state={trendState}
-      loading={trendLoading}
+    <PeriodOverviewCard
+      kind="month"
+      overallState={{periods: [{year: trendState.year, month: trendState.month}], totals: trendState.totals}}
+      fiscalState={monthState}
+      loading={trendLoading || monthLoading}
       selector={<form className="period-selector" onSubmit={(event) => event.preventDefault()}>
-        <select name="trendMonth" value={selectedTrendValue} aria-label="Andamento mensile" onChange={(event) => loadTrend(event.currentTarget.value)}>
-          {monthOptions.map(option => <option key={`trend-${monthValue(option.year, option.month)}`} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
+        <select name="overviewMonth" value={selectedTrendValue} aria-label="Periodo mensile" onChange={(event) => loadMonthOverview(event.currentTarget.value)}>
+          {monthOptions.map(option => <option key={`overview-${monthValue(option.year, option.month)}`} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
         </select>
       </form>}
     />
 
-    <QuarterlyTrendCard
-      state={trendQuarterState}
-      loading={trendQuarterLoading}
+    <PeriodOverviewCard
+      kind="quarter"
+      overallState={trendQuarterState}
+      fiscalState={quarterState}
+      loading={trendQuarterLoading || quarterLoading}
       selector={<form className="period-selector" onSubmit={(event) => event.preventDefault()}>
-        <select name="trendQuarter" value={selectedTrendQuarterValue} aria-label="Andamento trimestre" onChange={(event) => loadTrendQuarter(event.currentTarget.value)}>
-          {quarterOptions.map(option => <option key={`trend-quarter-${quarterValue(option.year, option.quarterIndex)}`} value={quarterValue(option.year, option.quarterIndex)}>T{option.quarterIndex + 1} {option.year}</option>)}
-        </select>
-      </form>}
-    />
-
-    <FiscalSummaryCard
-      title="Mese fiscale"
-      subtitle={monthState.periods[0] ? `${monthName(monthState.periods[0].month)} ${monthState.periods[0].year}` : '-'}
-      state={monthState}
-      loading={monthLoading}
-      selector={<form className="period-selector" onSubmit={(event) => event.preventDefault()}>
-        <select name="fiscalMonth" value={selectedMonthValue} aria-label="Mese fiscale" onChange={(event) => loadMonth(event.currentTarget.value)}>
-          {monthOptions.map(option => <option key={monthValue(option.year, option.month)} value={monthValue(option.year, option.month)}>{monthName(option.month)} {option.year}</option>)}
-        </select>
-      </form>}
-    />
-
-    <FiscalSummaryCard
-      title="Trimestre fiscale"
-      subtitle={compactQuarterLabel(quarterState.periods)}
-      state={quarterState}
-      loading={quarterLoading}
-      selector={<form className="period-selector" onSubmit={(event) => event.preventDefault()}>
-        <select name="fiscalQuarter" value={selectedQuarterValue} aria-label="Trimestre fiscale" onChange={(event) => loadQuarter(event.currentTarget.value)}>
-          {quarterOptions.map(option => <option key={quarterValue(option.year, option.quarterIndex)} value={quarterValue(option.year, option.quarterIndex)}>T{option.quarterIndex + 1} {option.year}</option>)}
+        <select name="overviewQuarter" value={selectedTrendQuarterValue} aria-label="Periodo trimestrale" onChange={(event) => loadQuarterOverview(event.currentTarget.value)}>
+          {quarterOptions.map(option => <option key={`overview-quarter-${quarterValue(option.year, option.quarterIndex)}`} value={quarterValue(option.year, option.quarterIndex)}>T{option.quarterIndex + 1} {option.year}</option>)}
         </select>
       </form>}
     />

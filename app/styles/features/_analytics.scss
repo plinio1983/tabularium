@@ -548,11 +548,21 @@
 
 .month-report-metrics .month-report-value {
   width: auto;
-  display: grid;
-  grid-template-rows: 28px auto;
+  //display: grid;
+  //grid-template-rows: 28px auto;
   align-content: start;
-  padding-right: 18px;
+  //padding-right: 18px;
   border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  grid-template-rows: none;
+  padding-right: 0;
+  border-right: 0;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 17px;
 }
 
 .month-report-fiscal-metrics .month-report-value {
@@ -1421,7 +1431,7 @@ html, body {
   display: flex;
   align-items: flex-end;
   gap: 12px;
-  flex: 0 0 155px;
+  flex: 0 0 auto;
   align-content: center;
   padding-right: 12px;
   border-right: 1px solid rgb(255 255 255 / 12%);
@@ -4476,6 +4486,104 @@ html, body {
   }
 }
 
+.dashboard-period-overview {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-width: 0;
+  border-color: rgba(37, 99, 235, .18);
+  background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+}
+
+.dashboard-period-overview-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dashboard-period-overview-heading h2,
+.dashboard-period-overview-group-heading h3 {
+  margin: 0;
+}
+
+.dashboard-period-overview-heading p {
+  margin: 4px 0 0;
+}
+
+.dashboard-period-overview-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.dashboard-period-overview-group {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #fff;
+}
+
+.dashboard-period-overview-group-heading {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--line);
+  background: #f8fafc;
+}
+
+.dashboard-period-overview-group-heading span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.dashboard-period-overview-group-heading h3 {
+  font-size: 14px;
+}
+
+.dashboard-period-overview-group.is-fiscal {
+  border-color: #d8d1f2;
+}
+
+.dashboard-period-overview-group.is-fiscal .dashboard-period-overview-group-heading {
+  background: #faf8ff;
+}
+
+.dashboard-period-overview-group .dashboard-statement-table {
+  margin: 0;
+}
+
+.dashboard-period-overview-actions {
+  padding-top: 2px;
+}
+
+.dashboard-period-overview.is-loading {
+  opacity: .65;
+  pointer-events: none;
+}
+
+@media (max-width: 1280px) {
+  .dashboard-period-overview-groups {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-period-overview-heading {
+    display: grid;
+  }
+
+  .dashboard-period-overview-heading .period-selector,
+  .dashboard-period-overview-heading .period-selector select {
+    width: 100%;
+  }
+}
+
 @media (max-width: 760px) {
   .dashboard-statement-heading .period-selector,
   .dashboard-statement-heading .period-selector select {
@@ -4800,21 +4908,6 @@ html, body {
 @media (max-width: 576px) {
   .month-report-metrics .month-report-value {
     flex-direction: column;
-  }
-}
-
-@media (max-width: 1180px) {
-  .month-report-metrics .month-report-value {
-    display: flex;
-    flex-direction: column;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    grid-template-rows: none;
-    padding-right: 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 17px;
   }
 }
 

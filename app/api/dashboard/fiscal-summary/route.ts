@@ -13,6 +13,32 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Anno non valido' }, { status: 400 });
   }
 
+  if (type === 'monthOverview') {
+    const month = Number(searchParams.get('month'));
+    if (!Number.isInteger(month) || month < 1 || month > 12) {
+      return NextResponse.json({ error: 'Mese non valido' }, { status: 400 });
+    }
+    const periods = [{year, month}];
+    const [overallTotals, fiscalTotals] = await Promise.all([
+      getOrderDateMonthSummary(year, month, current.workspace.id, current.company.id, current.company.timeZone),
+      getPeriodSummary(periods, {declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id, companyId: current.company.id, timeZone: current.company.timeZone})
+    ]);
+    return NextResponse.json({periods, overallTotals, fiscalTotals});
+  }
+
+  if (type === 'quarterOverview') {
+    const quarterIndex = Number(searchParams.get('quarterIndex'));
+    if (!Number.isInteger(quarterIndex) || quarterIndex < 0 || quarterIndex > 3) {
+      return NextResponse.json({ error: 'Trimestre non valido' }, { status: 400 });
+    }
+    const periods = fiscalQuarterMonthsByIndex(year, quarterIndex);
+    const [overallTotals, fiscalTotals] = await Promise.all([
+      getOrderDatePeriodSummary(periods, current.workspace.id, current.company.id, current.company.timeZone),
+      getPeriodSummary(periods, {declaredExpensesOnlyForOpenTotals: true, workspaceId: current.workspace.id, companyId: current.company.id, timeZone: current.company.timeZone})
+    ]);
+    return NextResponse.json({periods, overallTotals, fiscalTotals});
+  }
+
   if (type === 'trend') {
     const month = Number(searchParams.get('month'));
     if (!Number.isInteger(month) || month < 1 || month > 12) {

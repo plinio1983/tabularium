@@ -491,13 +491,9 @@
 }
 
 .dashboard-body-wrapper .dashboard-period-cards {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   //align-items: stretch;
   align-items: flex-start;
-
-  @media (max-width: 1280px) {
-    grid-template-columns: 1fr 1fr;
-  }
 
   @media (max-width: 760px) {
     grid-template-columns: 1fr;
