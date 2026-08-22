@@ -47,6 +47,7 @@ type EmployeeOption = {
     employeeCode?: string | null;
     status: "ACTIVE" | "INACTIVE"
 };
+type TaxAuthorityOption = {id: number; name: string; kind: string; defaultDescription?: string | null; defaultExpenseCategoryId?: number | null};
 type PaymentRow = {
     key: number;
     id?: number;
@@ -70,6 +71,7 @@ type InitialExpense = {
     receivedDate?: string | Date | null;
     dueDate?: string | Date | null;
     supplierId?: number | null;
+    taxAuthorityId?: number | null;
     employeeId?: number | null;
     merchant?: string | null;
     categoryId?: number | null;
@@ -467,6 +469,8 @@ export default function ExpenseForm({
     const [isVatSettlement, setIsVatSettlement] = useState(initialExpense?.expenseType === "VAT_SETTLEMENT");
     const [isTaxContribution, setIsTaxContribution] = useState(initialExpense?.expenseType === "TAX_CONTRIBUTION");
     const [isPayroll, setIsPayroll] = useState(initialExpense?.expenseType === "PAYROLL");
+    const [taxAuthorities, setTaxAuthorities] = useState<TaxAuthorityOption[]>([]);
+    const [taxAuthorityId, setTaxAuthorityId] = useState(String(initialExpense?.taxAuthorityId ?? ""));
     const isNoVatExpense = isVatSettlement || isTaxContribution || isPayroll;
     const orderDateLabel = isNoVatExpense ? "Data emissione" : "Data ordine";
     const vatSettlementCategory = categories.find(category => category.isVatSettlementDefault);
@@ -515,6 +519,14 @@ export default function ExpenseForm({
     const [employeeId, setEmployeeId] = useState(String(initialExpense?.employeeId ?? ""));
     const [description, setDescription] = useState(initialExpense?.description ?? "");
     const [notes, setNotes] = useState(initialExpense?.notes ?? "");
+
+    useEffect(() => {
+        if (!isTaxContribution) return;
+        fetch('/api/tax-authorities', {cache: 'no-store'})
+            .then(response => response.ok ? response.json() : [])
+            .then((records: TaxAuthorityOption[]) => setTaxAuthorities(records))
+            .catch(() => setTaxAuthorities([]));
+    }, [isTaxContribution]);
     const [selectedAttachments, setSelectedAttachments] = useState<File[]>([]);
     const [selectedAttachmentTypes, setSelectedAttachmentTypes] = useState<AttachmentType[]>([]);
     const [removedAttachmentIds, setRemovedAttachmentIds] = useState<number[]>([]);
@@ -1066,8 +1078,22 @@ export default function ExpenseForm({
                                 value: employee.id,
                                 label: `${employee.lastName} ${employee.firstName}${employee.employeeCode ? ` · ${employee.employeeCode}` : ""}${employee.status === "INACTIVE" ? " · Inattivo" : ""}`
                             }))]}
+                    /> : isTaxContribution ? <SelectField
+                        className="app-form-wizard-step app-form-wizard-step-3"
+                        label="Ente beneficiario"
+                        icon="🏛"
+                        name="taxAuthorityId"
+                        required
+                        value={taxAuthorityId}
+                        onChange={(value) => {
+                            setTaxAuthorityId(value);
+                            const authority = taxAuthorities.find(item => String(item.id) === value);
+                            if (authority?.defaultExpenseCategoryId) setCategoryId(String(authority.defaultExpenseCategoryId));
+                            if (!description && authority?.defaultDescription) setDescription(authority.defaultDescription);
+                        }}
+                        options={[{value: '', label: taxAuthorities.length ? 'Seleziona ente' : 'Caricamento enti…'}, ...taxAuthorities.map(authority => ({value: authority.id, label: authority.name}))]}
                     /> : <SupplierAutocomplete
-                        label={isTaxContribution ? "Ente beneficiario" : "Esercente"}
+                        label="Esercente"
                         suppliers={suppliers.filter(supplier => !supplier.systemRole)}
                         categories={categories}
                         initialSupplierId={initialExpense?.supplierId ?? null}

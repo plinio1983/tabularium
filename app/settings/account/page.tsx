@@ -27,7 +27,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
     where: { userId: current.user.id, expiresAt: { gt: new Date() } }
   });
 
-  return <div className="grid admin-page account-settings-page">
+  return <div className="grid admin-page settings-admin-page account-settings-page">
     <div className="toolbar-card">
       <div>
         <h2>Account</h2>

@@ -92,6 +92,16 @@ export const vatSettlementSupplierName = 'Erario – Saldo IVA';
 export const vatSettlementCategoryCode = 'TAX';
 export const cashRegisterCustomerName = 'Banco';
 export const counterExpenseSupplierName = 'Merchant';
+export const defaultTaxAuthorities = [
+  ['Agenzia delle Entrate', 'FISCAL'],
+  ['INPS', 'SOCIAL_SECURITY'],
+  ['INAIL', 'INSURANCE'],
+  ['Comune', 'LOCAL'],
+  ['Regione', 'LOCAL'],
+  ['Camera di Commercio', 'LOCAL'],
+  ['Agenzia delle Entrate-Riscossione', 'COLLECTION'],
+  ['Altro ente', 'OTHER']
+] as const;
 
 export function orderExpenseCategories<T extends { id: number; code: string; name: string }>(categories: T[]) {
   const defaultCodes = defaultCategories.map(([code]) => code);
@@ -190,6 +200,15 @@ export async function ensureWorkspaceDefaults(workspaceId: number) {
       icon: defaultExpenseCategoryIcon
     }
   });
+
+  const taxCategory = await prisma.expenseCategory.findFirst({where: {workspaceId, code: 'TAX'}, select: {id: true}});
+  for (const [name, kind] of defaultTaxAuthorities) {
+    await prisma.taxAuthority.upsert({
+      where: {workspaceId_name: {workspaceId, name}},
+      update: {},
+      create: {workspaceId, name, kind, isSystemDefault: true, defaultExpenseCategoryId: taxCategory?.id ?? null}
+    });
+  }
 
   for (const [code, name, icon] of defaultIncomeCategories) {
     await prisma.incomeCategory.upsert({

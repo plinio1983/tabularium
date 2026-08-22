@@ -26,7 +26,7 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
     default: 'Società predefinita aggiornata.',
     status: 'Stato della società aggiornato.'
   };
-  return <div className="grid admin-page categories-settings-page company-settings-page">
+  return <div className="grid admin-page settings-admin-page categories-settings-page company-settings-page">
     <div className="toolbar-card">
       <div><h2>Società</h2><p className="muted">Gestisci le entità contabili del workspace. La società attiva determina movimenti e report visualizzati.</p></div>
       <DetailBackButton href="/settings"/>

@@ -130,6 +130,60 @@ table .cell-description {
   text-align: left;
 }
 
+.settings-admin-page {
+  width: min(100%, 1024px);
+  justify-self: center;
+  align-content: start;
+
+  > * {
+    width: 100%;
+    max-width: none;
+    justify-self: stretch;
+    box-sizing: border-box;
+  }
+
+  > .toolbar-card {
+    flex-direction: row;
+    align-items: center;
+
+    @media (max-width: 760px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .detail-back-button {
+    width: fit-content;
+    max-width: 100%;
+    flex: 0 0 auto;
+
+    @media (max-width: 760px) {
+      align-self: flex-start;
+    }
+  }
+
+  form,
+  fieldset,
+  .app-form-field {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  &.company-settings-page .company-settings-form {
+    @media (max-width: 760px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
 .party-mobile-row-grow {
   flex-grow: 1;
 }
@@ -149,7 +203,7 @@ table .cell-description {
 
 .account-styled-form,
 .account-sessions-card {
-  width: min(100%, 920px);
+  width: 100%;
   justify-self: center;
 }
 
@@ -265,7 +319,7 @@ table .cell-description {
 .workspace-profile-card,
 .workspace-edit-card,
 .workspace-audit-link {
-  width: min(100%, 820px);
+  width: 100%;
   justify-self: center;
 }
 
@@ -322,6 +376,22 @@ table .cell-description {
 
 .workspace-role-badge {
   flex: 0 0 auto;
+}
+
+.workspace-role-badge-mobile {
+  display: none;
+
+  @media (max-width: 760px) {
+    display: inline-flex;
+  }
+}
+
+.workspace-role-badge-desktop {
+  display: inline-flex;
+
+  @media (max-width: 760px) {
+    display: none;
+  }
 }
 
 .workspace-edit-card {
@@ -423,10 +493,135 @@ table .cell-description {
 
 .settings-entity-list-card {
   display: grid;
-  width: min(100%, 1024px);
+  width: 100%;
   justify-self: center;
   gap: 14px;
   padding: 18px;
+}
+
+.tax-authority-item.is-archived {
+  opacity: .68;
+}
+
+.tax-authority-item .settings-entity-actions {
+  align-items: center;
+}
+
+.tax-authority-item .settings-entity-actions form {
+  margin: 0;
+}
+
+.tax-authority-modal-backdrop {
+  z-index: 10100;
+
+  @media (max-width: 760px) {
+    padding: 0;
+  }
+}
+
+.settings-form-modal {
+  position: relative;
+  width: min(1024px, calc(100vw - 36px));
+
+  > .modal-toolbar-card {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    min-height: 34px;
+    padding: 0 46px 14px 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+
+    .modal-close-button {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      margin: 0;
+    }
+  }
+
+  form,
+  fieldset,
+  .app-form-field {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.tax-authority-modal {
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+
+  .tax-authority-modal-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+
+    > * {
+      min-width: 0;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 6rem;
+      resize: vertical;
+    }
+  }
+
+  .tax-authority-modal-actions {
+    justify-content: flex-end;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  @media (max-width: 760px) {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: 14px;
+    border: 0;
+    border-radius: 0;
+
+    .tax-authority-modal-form {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 14px;
+
+      .full {
+        grid-column: 1;
+      }
+    }
+
+    .tax-authority-modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+
+      .btn {
+        flex: 1 1 130px;
+        max-width: none;
+      }
+    }
+  }
 }
 
 .settings-entity-list-heading {
@@ -510,10 +705,6 @@ table .cell-description {
   z-index: 10100;
 }
 
-.expense-category-edit-modal {
-  width: min(680px, calc(100vw - 36px));
-}
-
 .expense-category-edit-toolbar {
   margin: 0;
 }
@@ -521,17 +712,36 @@ table .cell-description {
 .expense-category-edit-form {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   padding: 18px;
-}
 
-.expense-category-edit-form .app-form-field input,
-.expense-category-edit-form .app-select-control select {
-  min-height: 48px;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
-  font-size: 15px;
-  font-weight: 700;
+  .app-form-field input,
+  .app-select-control select {
+    min-height: 48px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 760px) {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    padding: 14px 0 calc(92px + env(safe-area-inset-bottom));
+
+    .span-2,
+    .full {
+      grid-column: 1;
+    }
+
+    .app-form-field input,
+    .app-select-control select {
+      min-height: 54px;
+      border-radius: 16px;
+      font-size: 16px;
+    }
+
+  }
 }
 
 .expense-category-edit-actions {
@@ -542,7 +752,7 @@ table .cell-description {
 
 .vat-settlement-category-card {
   grid-template-columns: minmax(0, 1fr) auto;
-  width: min(100%, 1024px);
+  width: 100%;
   justify-self: center;
   align-items: end;
   gap: 18px;
@@ -632,6 +842,19 @@ table .cell-description {
 .company-settings-form {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+
+    .entity-form-section-grid {
+      grid-template-columns: 1fr;
+
+      .span-2,
+      .full {
+        grid-column: 1;
+      }
+    }
+  }
 }
 
 .company-settings-actions {
@@ -815,10 +1038,6 @@ table .cell-description {
   z-index: 10100;
 }
 
-.sales-channel-edit-modal {
-  width: min(620px, calc(100vw - 36px));
-}
-
 .sales-channel-edit-modal .modal-toolbar-card {
   flex-direction: row;
   align-items: center;
@@ -853,18 +1072,36 @@ table .cell-description {
   width: 100%;
 }
 
-.income-entity-settings-section .category-create-panel {
-  width: min(100%, 1024px);
-  justify-self: center;
+.sales-channel-create-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+
+  @media (max-width: 760px) {
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }
 
-.income-entity-settings-section .settings-entity-create-form {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.sales-channel-create-modal {
+  @media (max-width: 760px) {
+    .sales-channel-edit-actions {
+      display: flex !important;
+      flex-wrap: wrap;
+
+      .btn {
+        flex: 1 1 140px;
+        justify-content: center;
+      }
+    }
+  }
 }
 
 .sales-channel-register-card {
   grid-template-columns: minmax(0, 1fr) minmax(240px, .8fr) auto;
-  width: min(100%, 1024px);
+  width: 100%;
   justify-self: center;
   align-items: end;
   padding: 20px;
@@ -986,7 +1223,6 @@ table .cell-description {
   align-self: center;
   margin: 0 auto;
   min-width: auto;
-  max-width: 1024px;
   width: 100%;
 
   .payment-credit-table-head,
@@ -1010,12 +1246,6 @@ table .cell-description {
 }
 
 
-@media (min-width: 576px) {
-  .vat-settlement-category-title {
-    grid-template: 1 / -1;
-  }
-}
-
 .payment-credit-row-shell {
   overflow: hidden;
   border: 1px solid #e5e7eb;
@@ -1024,11 +1254,8 @@ table .cell-description {
   margin-bottom: 12px;
 }
 
-@media (max-width: 768px) {
-  .payment-credit-row-shell form {
-    //max-width: fit-content;
-  }
-  .payment-credit-row-shell form .switch {
+.payment-credit-row-shell form .switch {
+  @media (max-width: 760px) {
     margin-left: 12px;
   }
 }
@@ -1261,7 +1488,6 @@ table .cell-description {
 }
 
 .payment-credit-edit-modal {
-  width: min(680px, calc(100vw - 36px));
   max-height: calc(100dvh - 36px);
   display: grid;
   gap: 18px;
@@ -1278,7 +1504,7 @@ table .cell-description {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 0 14px;
+  padding: 0 46px 14px 0;
   border: 0;
   border-bottom: 1px solid var(--line);
   border-radius: 0;
@@ -1310,7 +1536,7 @@ table .cell-description {
   min-width: 0;
   padding: 0;
   border: 0;
-  width: min(640px, 100vw - 36px);
+  width: 100%;
 }
 
 .payment-credit-modal-form .payment-credit-primary-field,
@@ -2277,17 +2503,9 @@ table .cell-description {
 
 .settings-category-hub {
   display: grid;
-  //grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
   justify-self: center;
-  max-width: 768px;
   width: 100%;
-}
-
-@media (max-width: 768px) {
-  .settings-category-hub {
-    grid-template-columns: 1fr;
-  }
 }
 
 .settings-category-link {
@@ -2318,9 +2536,9 @@ table .cell-description {
 .settings-hub-toolbar-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 10px;
   min-width: 0;
+  justify-content: space-between;
 }
 
 .settings-hub-toolbar-actions .active-company-switcher select {
@@ -2363,7 +2581,6 @@ table .cell-description {
 
 .settings-logout-form {
   width: 100%;
-  max-width: 768px;
   justify-self: center;
   display: flex;
   justify-content: flex-end;
@@ -3152,18 +3369,6 @@ body:has(.dashboard-grid) {
 }
 
 @media (max-width: 760px) {
-  .company-settings-form {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 760px) {
-  .company-settings-form .span-2 {
-    grid-column: auto;
-  }
-}
-
-@media (max-width: 760px) {
   .settings-main-hub .settings-category-link {
     align-items: center;
     padding: 14px;
@@ -3329,13 +3534,7 @@ body:has(.dashboard-grid) {
   }
 }
 
-@media (max-width: 576px) {
-  .categories-settings-card {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 576px) {
+@media (max-width: 760px) {
   .settings-entity-actions {
     grid-column: 1 / -1;
     display: grid;
@@ -3344,7 +3543,7 @@ body:has(.dashboard-grid) {
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 760px) {
   .settings-entity-item {
     grid-template-columns: auto minmax(0, 1fr);
     gap: 10px;
@@ -3378,12 +3577,6 @@ body:has(.dashboard-grid) {
 }
 
 @media (max-width: 760px) {
-  .sales-channel-edit-actions {
-    display: none !important;
-  }
-}
-
-@media (max-width: 760px) {
   .expense-category-edit-backdrop {
     padding: 0;
   }
@@ -3399,12 +3592,6 @@ body:has(.dashboard-grid) {
     border: 0;
     border-radius: 0;
     overflow-y: auto;
-  }
-}
-
-@media (max-width: 760px) {
-  .expense-category-edit-actions {
-    display: none !important;
   }
 }
 

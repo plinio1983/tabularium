@@ -22,7 +22,7 @@ export default async function PasswordSettingsPage({searchParams}: {
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const saved = Array.isArray(params.saved) ? params.saved[0] : params.saved;
 
-  return <div className="grid admin-page account-settings-page">
+  return <div className="grid admin-page settings-admin-page account-settings-page">
     <div className="toolbar-card">
       <div>
         <h2>Cambia password</h2>

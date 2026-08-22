@@ -77,7 +77,7 @@ export default async function EmployeesPage({searchParams}: {searchParams?: Prom
       <div className="toolbar-actions"><NewEmployeePanel initialOpen={text(raw.new) === '1'}/></div>
     </div>
     <ActionFeedbackBanner searchParams={raw} savedMessages={{created: 'Dipendente creato.', updated: 'Dipendente aggiornato.', deleted: 'Dipendente eliminato.', bulk_deleted: 'Dipendenti eliminati.', activated: 'Dipendente riattivato.', deactivated: 'Dipendente disattivato.'}} errorMessages={{invalid: 'Controlla i dati inseriti.', not_found: 'Dipendente non trovato.', duplicate_code: 'La matricola è già utilizzata.'}} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
-    <div className="card record-list-card">
+    <div className="card record-list-card fixed">
       <div className="list-heading recurring-list-heading"><div><h2>Lista dipendenti</h2><p className="muted">Risultati mostrati: {employees.length}</p></div><div><EmployeeFiltersDrawer filters={filters}/></div></div>
       <form className="entity-quick-search app-quick-search-form" action="/employees" method="get" role="search">
         {filterKeys.map(key => text(filters[key]) ? <input type="hidden" name={key} value={text(filters[key])} key={key}/> : null)}

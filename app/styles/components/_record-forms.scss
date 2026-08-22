@@ -1664,20 +1664,10 @@
 
 @media (max-width: 760px) {
   .payment-credit-edit-modal .modal-toolbar-card {
-      position: relative;
       flex-direction: row;
       align-items: flex-start;
       padding-right: 46px;
-      width: min(680px, 100vw - 36px);
-    }
-}
-
-@media (max-width: 760px) {
-  .payment-credit-edit-modal .modal-close-button {
-      position: absolute;
-      top: 0;
-      right: 0;
-      margin: 0;
+      width: 100%;
     }
 }
 
@@ -1688,12 +1678,6 @@
       min-height: 0;
       align-content: start;
       padding: 0 0 calc(92px + env(safe-area-inset-bottom));
-    }
-}
-
-@media (max-width: 760px) {
-  .payment-credit-modal-form .payment-credit-expanded-actions {
-      display: none;
     }
 }
 

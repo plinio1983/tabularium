@@ -24,7 +24,7 @@ export default async function WorkspaceAccountPage({ searchParams }: { searchPar
   const saved = Array.isArray(params.saved) ? params.saved[0] : params.saved;
   const canEditWorkspace = current.membership.role === 'OWNER' || current.membership.role === 'ADMIN';
 
-  return <div className="grid admin-page workspace-settings-page">
+  return <div className="grid admin-page settings-admin-page workspace-settings-page">
     <div className="toolbar-card">
       <div>
         <h2>Workspace</h2>
@@ -38,10 +38,10 @@ export default async function WorkspaceAccountPage({ searchParams }: { searchPar
       <div className="workspace-profile-copy">
         <span className="workspace-profile-eyebrow">Workspace attivo</span>
         <h3>{current.workspace.name}</h3>
-          <span className="ml-0 badge workspace-role-badge hidden-sm-up">{roleLabels[current.membership.role] ?? current.membership.role}</span>
+          <span className="ml-0 badge workspace-role-badge workspace-role-badge-mobile">{roleLabels[current.membership.role] ?? current.membership.role}</span>
           <p className="muted">{current.user.email}</p>
       </div>
-        <span className="badge workspace-role-badge hidden-xs-down">{roleLabels[current.membership.role] ?? current.membership.role}</span>
+        <span className="badge workspace-role-badge workspace-role-badge-desktop">{roleLabels[current.membership.role] ?? current.membership.role}</span>
     </section>
 
     <section className="card workspace-account-card workspace-edit-card">

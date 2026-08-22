@@ -18,6 +18,7 @@ const ExpenseSchema = z.object({
   dueDate: z.string().optional(),
   merchant: z.string().optional().default(''),
   supplierId: z.coerce.number().optional().nullable(),
+  taxAuthorityId: z.coerce.number().optional().nullable(),
   employeeId: z.coerce.number().optional().nullable(),
   categoryId: z.coerce.number().optional().nullable(),
   description: z.string().min(1),
@@ -172,6 +173,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const { year, month } = resolveBillingPeriod(data.billingPeriod, current.company.timeZone);
   const payments = await resolvePaymentInputs(parsePayments(formData), current.workspace.id, isVatSettlement);
   let supplierRef: {id: number; businessName: string} | null = null;
+  let taxAuthorityRef: {id: number; name: string} | null = null;
   let employeeRef: {id: number; firstName: string; lastName: string} | null = null;
   let configuredCategoryId: number | null = null;
   try {
@@ -183,6 +185,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       if (!workspace?.vatSettlementCategoryId || !systemSupplier) throw new Error('Configurazione Saldo IVA incompleta');
       configuredCategoryId = await resolveCategoryId(workspace.vatSettlementCategoryId, current.workspace.id);
       supplierRef = { id: systemSupplier.id, businessName: systemSupplier.businessName };
+    } else if (isTaxContribution) {
+      taxAuthorityRef = data.taxAuthorityId ? await prisma.taxAuthority.findFirst({
+        where: {id: data.taxAuthorityId, workspaceId: current.workspace.id}, select: {id: true, name: true}
+      }) : null;
+      // Compatibilità: una vecchia imposta può essere aperta prima di scegliere il nuovo ente dedicato.
+      if (!taxAuthorityRef && existing.taxAuthorityId) throw new Error('Ente beneficiario non valido');
+      if (!taxAuthorityRef) throw new Error('Seleziona un ente beneficiario');
     } else if (isPayroll) {
       employeeRef = data.employeeId ? await prisma.employee.findFirst({
         where: {id: data.employeeId, workspaceId: current.workspace.id, companyId: current.company.id},
@@ -235,8 +244,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     data: {
       receivedDate: data.receivedDate ? new Date(data.receivedDate) : null,
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
-      merchant: isPayroll ? `${employeeRef!.lastName} ${employeeRef!.firstName}` : supplierRef!.businessName,
+      merchant: isPayroll ? `${employeeRef!.lastName} ${employeeRef!.firstName}` : isTaxContribution ? taxAuthorityRef!.name : supplierRef!.businessName,
       supplierId: supplierRef?.id ?? null,
+      taxAuthorityId: taxAuthorityRef?.id ?? null,
       employeeId: employeeRef?.id ?? null,
       categoryId,
       description: data.description || null,

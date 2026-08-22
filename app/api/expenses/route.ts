@@ -18,6 +18,7 @@ const ExpenseSchema = z.object({
   dueDate: z.string().optional(),
   merchant: z.string().optional().default(''),
   supplierId: z.coerce.number().optional().nullable(),
+  taxAuthorityId: z.coerce.number().optional().nullable(),
   employeeId: z.coerce.number().optional().nullable(),
   categoryId: z.coerce.number().optional().nullable(),
   description: z.string().min(1),
@@ -172,6 +173,7 @@ export async function POST(request: Request) {
   const { year, month } = resolveBillingPeriod(data, current.company.timeZone);
   const payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id, isVatSettlement);
   let supplierRef: {id: number; businessName: string} | null = null;
+  let taxAuthorityRef: {id: number; name: string} | null = null;
   let employeeRef: {id: number; firstName: string; lastName: string} | null = null;
   let configuredCategoryId: number | null = null;
   try {
@@ -183,6 +185,11 @@ export async function POST(request: Request) {
       if (!workspace?.vatSettlementCategoryId || !systemSupplier) throw new Error('Configura categoria e fornitore di sistema per il Saldo IVA');
       configuredCategoryId = await resolveCategoryId(workspace.vatSettlementCategoryId, current.workspace.id);
       supplierRef = { id: systemSupplier.id, businessName: systemSupplier.businessName };
+    } else if (isTaxContribution) {
+      taxAuthorityRef = data.taxAuthorityId ? await prisma.taxAuthority.findFirst({
+        where: {id: data.taxAuthorityId, workspaceId: current.workspace.id, isActive: true}, select: {id: true, name: true}
+      }) : null;
+      if (!taxAuthorityRef) throw new Error('Ente beneficiario non valido');
     } else if (isPayroll) {
       employeeRef = data.employeeId ? await prisma.employee.findFirst({
         where: {id: data.employeeId, workspaceId: current.workspace.id, companyId: current.company.id, status: 'ACTIVE'},
@@ -220,8 +227,9 @@ export async function POST(request: Request) {
     companyId: current.company.id,
     receivedDate: data.receivedDate ? new Date(data.receivedDate) : null,
     dueDate: data.dueDate ? new Date(data.dueDate) : null,
-    merchant: isPayroll ? `${employeeRef!.lastName} ${employeeRef!.firstName}` : supplierRef!.businessName,
+    merchant: isPayroll ? `${employeeRef!.lastName} ${employeeRef!.firstName}` : isTaxContribution ? taxAuthorityRef!.name : supplierRef!.businessName,
     supplierId: supplierRef?.id ?? null,
+    taxAuthorityId: taxAuthorityRef?.id ?? null,
     employeeId: employeeRef?.id ?? null,
     categoryId,
     description: data.description || null,

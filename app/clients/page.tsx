@@ -50,7 +50,10 @@ export default async function ClientsPage({searchParams}: {
             include: {incomes: {where: {companyId: current.company.id}, include: {credits: true}}},
             orderBy: {businessName: 'asc'}
         }),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]})
+        prisma.incomeSalesChannel.findMany({
+            where: {workspaceId: current.workspace.id},
+            orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]
+        })
     ]);
     const rows = customers.map(customer => {
         const open = customer.incomes.filter(income => !income.isCredited);
@@ -100,7 +103,7 @@ export default async function ClientsPage({searchParams}: {
             system_protected: 'Il cliente predefinito non può essere eliminato.',
             invalid_sales_channel: 'Il canale di vendita selezionato non è valido.'
         }} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
-        <div className="card record-list-card">
+        <div className="card record-list-card fixed">
             <div className="list-heading recurring-list-heading">
                 <div><h2>Lista clienti</h2><p className="muted">Risultati mostrati: {rows.length}</p></div>
                 <ClientFiltersDrawer filters={filters}/></div>
@@ -153,7 +156,8 @@ export default async function ClientsPage({searchParams}: {
                     </div>
                 </div>
                 <div className="bulk-inner-container">
-                    <button className="bulk-direct-link btn btn-md bulk-add-link btn-primary" type="button" data-bulk-new data-client-new data-floating-label="Cliente"><span className="btn-icon">+</span><span className="hidden-sm-down">Cliente</span>
+                    <button className="bulk-direct-link btn btn-md bulk-add-link btn-primary" type="button" data-bulk-new data-client-new data-floating-label="Cliente">
+                        <span className="btn-icon">+</span><span className="hidden-sm-down">Cliente</span>
                     </button>
                 </div>
             </form>

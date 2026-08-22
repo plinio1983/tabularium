@@ -67,7 +67,7 @@ export default async function IncomeCategoriesSettingsPage({searchParams}: {
             select: {cashRegisterSalesChannelId: true}
         })
     ]);
-    return <div className="grid admin-page categories-settings-page">
+    return <div className="grid admin-page settings-admin-page categories-settings-page">
         <div className="toolbar-card">
             <div><h2>Canali di vendita</h2>
                 <p className="muted">Gestisci i canali e la posizione con cui vengono mostrati nelle select. I valori più bassi compaiono per primi.</p>

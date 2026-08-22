@@ -140,6 +140,7 @@ model Workspace {
   banks                              Bank[]
   paymentMethods                     PaymentMethod[]
   suppliers                          Supplier[]
+  taxAuthorities                    TaxAuthority[]
   employees                          Employee[]
   customers                          Customer[]
   recurringExpenses                  RecurringExpense[]
@@ -387,6 +388,7 @@ model ExpenseCategory {
   recurringExpenses          RecurringExpense[]
   vatSettlementForWorkspaces Workspace[]        @relation("VatSettlementCategory")
   defaultForSuppliers        Supplier[]         @relation("SupplierDefaultExpenseCategory")
+  defaultForTaxAuthorities   TaxAuthority[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -523,6 +525,28 @@ model Supplier {
   @@index([businessName])
   @@index([alias])
   @@index([workspaceId])
+  @@index([defaultExpenseCategoryId])
+}
+
+model TaxAuthority {
+  id                       Int              @id @default(autoincrement())
+  workspaceId              Int
+  workspace                Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name                     String
+  kind                     String           @default("FISCAL")
+  defaultDescription       String?
+  defaultExpenseCategoryId Int?
+  defaultExpenseCategory   ExpenseCategory? @relation(fields: [defaultExpenseCategoryId], references: [id], onDelete: SetNull)
+  iban                     String?
+  notes                    String?
+  isActive                 Boolean          @default(true)
+  isSystemDefault          Boolean          @default(false)
+  expenses                 Expense[]
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId, isActive])
   @@index([defaultExpenseCategoryId])
 }
 
@@ -663,6 +687,8 @@ model Expense {
   merchant                String
   supplierId              Int?
   supplier                Supplier?        @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  taxAuthorityId          Int?
+  taxAuthority            TaxAuthority?    @relation(fields: [taxAuthorityId], references: [id], onDelete: Restrict)
   employeeId              Int?
   employee                Employee?        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
   categoryId              Int?
@@ -712,6 +738,7 @@ model Expense {
   @@index([merchant])
   @@index([expenseType])
   @@index([employeeId])
+  @@index([taxAuthorityId])
   @@index([dueDate])
 }
 

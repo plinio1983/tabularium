@@ -28,6 +28,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       dueDate: expense.dueDate,
       merchant: expense.merchant,
       supplierId: expense.supplierId,
+      taxAuthorityId: expense.taxAuthorityId,
       employeeId: expense.employeeId,
       categoryId: expense.categoryId,
       description: expense.description,

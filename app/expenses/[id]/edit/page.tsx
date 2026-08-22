@@ -12,7 +12,7 @@ export default async function EditExpensePage({ params, searchParams }: { params
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : `/expenses/${id}`;
   const encodedReturnTo = encodeURIComponent(returnTo);
   const [expense, categories, banks, paymentMethods, suppliers, employees] = await Promise.all([
-    prisma.expense.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id }, include: { payments: { orderBy: { id: 'asc' } }, supplier: true } }),
+    prisma.expense.findFirst({ where: { id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id }, include: { payments: { orderBy: { id: 'asc' } }, supplier: true, taxAuthority: true } }),
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
@@ -46,6 +46,7 @@ export default async function EditExpensePage({ params, searchParams }: { params
             dueDate: expense.dueDate,
             merchant: expense.merchant,
             supplierId: expense.supplierId,
+            taxAuthorityId: expense.taxAuthorityId,
             employeeId: expense.employeeId,
             categoryId: expense.categoryId,
             description: expense.description,

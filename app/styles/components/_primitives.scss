@@ -211,20 +211,21 @@ button {
 .full {
   grid-column: 1 / -1;
 }
-.btn,
-.reset-button {
+
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  width: auto;
-  max-width: max-content;
   white-space: nowrap;
   line-height: 1.1;
-  border: 1px solid transparent;
   text-decoration: none;
   cursor: pointer;
   transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+}
+
+.btn.wide {
+  width: 100%;
 }
 
 .btn-xs {
@@ -303,9 +304,6 @@ button {
   background: var(--accent) !important;
   color: #fff !important;
   border: 1px solid var(--accent) !important;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
 }
 
 .btn-primary:hover,
@@ -319,9 +317,6 @@ button {
   background: #08708b;
   color: #fff;
   border: 1px solid #08708b;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
 }
 
 .btn-main:hover,
@@ -344,6 +339,7 @@ button {
     background: #08708b26;
     //background: rgba(8, 112, 139, 0.1490196078);
   }
+
   &.btn-active {
     background: #08708b;
     border-color: #08708b;
@@ -378,15 +374,13 @@ button {
   }
 }
 
-.btn-default,
-.reset-button {
+.btn-default {
   background: #fff;
   color: var(--accent);
   border: 1px solid #cfd7ff;
 }
 
-.btn-default:hover,
-.reset-button:hover {
+.btn-default:hover {
   background: #f8faff;
   border-color: #b9c7ff;
 }
@@ -543,8 +537,8 @@ button {
 /* Responsive rules migrated from the former viewport-specific stylesheets. */
 @media (max-width: 760px) {
   .compact-mobile-header-path {
-          display: none;
-        }
+    display: none;
+  }
 }
 
 @media (max-width: 576px) {
@@ -596,103 +590,99 @@ button {
 
 @media (max-width: 760px) {
   .trend-quick-date {
-          flex-wrap: wrap;
-          justify-content: space-between;
-          margin-top: 12px;
-          width: 100%;
-        }
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 12px;
+    width: 100%;
+  }
 }
 
 @media (max-width: 760px) {
   .trend-quick-btn {
-          flex-grow: 1;
-          max-width: 100%;
-          padding: 8px 6px;
-        }
+    flex-grow: 1;
+    max-width: 100%;
+    padding: 8px 6px;
+  }
 }
 
 @media (max-width: 576px) {
   .detail-grid {
-          grid-template-columns: 1fr;
-        }
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 700px) {
   .annual-totals-grid {
-        grid-template-columns:1fr 1fr;
-      }
+    grid-template-columns:1fr 1fr;
+  }
 }
 
 @media (max-width: 760px) {
   .site-header-actions {
-        /*width: 100%;*/
-        align-items: flex-start;
-      }
+    /*width: 100%;*/
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 760px) {
   .pwa-install-button {
-        width: 100%;
-        max-width: none;
-      }
+    width: 100%;
+    max-width: none;
+  }
 }
 
 @media (max-width: 680px) {
   .collapse-indicator {
-        width: 100%;
-        text-align: center;
-      }
+    width: 100%;
+    text-align: center;
+  }
 }
 
 @media (max-width: 760px) {
   body {
-        padding-bottom: 82px;
-      }
+    padding-bottom: 82px;
+  }
 }
 
 @media (max-width: 760px) {
   .modal-card-wide,
-      .modal-card.modal-card-wide {
-        width: calc(100vw);
-        max-width: calc(100vw);
-        max-height: 100dvh;
-        //width: calc(100vw - 20px);
-        //max-width: calc(100vw - 20px);
-        //max-height: calc(100dvh - 20px);
-        //border-radius: 18px;
-        padding: 12px;
-      }
+  .modal-card.modal-card-wide {
+    width: calc(100vw);
+    max-width: calc(100vw);
+    max-height: 100dvh;
+    padding: 12px;
+  }
 }
 
 @media (max-width: 760px) {
   .modal-page-wrap {
-        min-height: calc(100dvh - 64px);
-        padding: 0 0 8px;
-      }
+    min-height: calc(100dvh - 64px);
+    padding: 0 0 8px;
+  }
 }
 
 @media (max-width: 760px) {
   .modal-title {
-        align-items: flex-start;
-      }
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 760px) {
   .modal-card,
-      .modal-page-card {
-        position: relative;
-        z-index: 301;
-      }
+  .modal-page-card {
+    position: relative;
+    z-index: 301;
+  }
 }
 
 @media (max-width: 576px) {
   body {
-        overflow-x: hidden !important;
-      }
+    overflow-x: hidden !important;
+  }
 }
 
 @media (max-width: 576px) {
   textarea {
-        font-weight: 400;
-      }
+    font-weight: 400;
+  }
 }

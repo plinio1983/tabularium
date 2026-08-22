@@ -15,14 +15,6 @@
   flex: 0 0 auto;
 }
 
-.filter-actions .reset-button {
-  background: #fff;
-  color: var(--accent);
-  border: 1px solid #cfd7ff;
-  text-decoration: none;
-}
-
-
 /* v32: align supplier amount header with numeric values */
 .suppliers-table th:nth-child(8) {
   text-align: right;
@@ -2785,10 +2777,13 @@ body.bulk-attachments-modal-open {
   white-space: nowrap;
 }
 
-
-/* v074: stable bulk action bar alignment, mobile size and dropdown layering */
 .record-list-card {
-  overflow: visible !important;
+  overflow: hidden;
+  //overflow: visible;
+
+  @media (max-width: 351px) {
+      padding: 14px 6px;
+  }
 }
 
 .bulk-actions-bar {

@@ -2,7 +2,6 @@
 
 import {useEffect, useState} from 'react';
 import IncomeEntityDeleteForm from './IncomeEntityDeleteForm';
-import MobileFormStickyActions from '@/components/MobileFormStickyActions';
 
 type Channel = {
   id: number;
@@ -66,7 +65,7 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
       onMouseDown={() => setEditing(null)}
     >
       <section
-        className="modal-card sales-channel-edit-modal"
+        className="modal-card settings-form-modal sales-channel-edit-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="sales-channel-edit-title"
@@ -99,8 +98,6 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
             <button className="btn btn-md btn-default" type="button" onClick={() => setEditing(null)}>Annulla</button>
             <button className="btn btn-md btn-primary" type="submit">✓ Salva modifiche</button>
           </div>
-          <MobileFormStickyActions currentStep={1} submitStep={1} onBack={() => undefined} onNext={() => undefined}
-            onCancel={() => setEditing(null)} submitLabel="Salva canale"/>
         </form>
       </section>
     </div> : null}

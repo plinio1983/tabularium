@@ -43,7 +43,7 @@ export default async function ExpenseCategoriesSettingsPage({ searchParams }: { 
   ]);
   const categories = orderExpenseCategories(categoryRecords);
 
-  return <div className="grid admin-page categories-settings-page">
+  return <div className="grid admin-page settings-admin-page categories-settings-page">
     <div className="toolbar-card">
       <div><h2>Categorie di spesa</h2><p className="muted">Gestisci categorie, acronimi e icone usati da spese, filtri e report.</p></div>
       <DetailBackButton href="/settings"/>

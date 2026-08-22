@@ -744,36 +744,6 @@
 }
 
 @media (max-width: 760px) {
-  .expense-category-edit-form {
-      grid-template-columns: 1fr;
-      align-content: start;
-      padding: 14px 0 0;
-    }
-}
-
-@media (max-width: 760px) {
-  .expense-category-edit-form .span-2,
-    .expense-category-edit-form .full {
-      grid-column: 1;
-    }
-}
-
-@media (max-width: 760px) {
-  .expense-category-edit-form .app-form-field input,
-    .expense-category-edit-form .app-select-control select {
-      min-height: 54px;
-      border-radius: 16px;
-      font-size: 16px;
-    }
-}
-
-@media (max-width: 760px) {
-  .expense-category-edit-form {
-      padding-bottom: calc(92px + env(safe-area-inset-bottom));
-    }
-}
-
-@media (max-width: 760px) {
   .vat-settlement-category-field .app-form-field-label {
       color: #334155;
       font-size: 13px;

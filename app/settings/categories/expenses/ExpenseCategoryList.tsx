@@ -3,7 +3,6 @@
 import {useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import CategoryDeleteForm from '../CategoryDeleteForm';
-import MobileFormStickyActions from '@/components/MobileFormStickyActions';
 
 type Action = (formData: FormData) => void | Promise<void>;
 
@@ -69,13 +68,13 @@ export default function ExpenseCategoryList({categories, iconOptions, updateActi
       <div className="modal-backdrop app-form-modal expense-category-edit-backdrop" role="presentation" onMouseDown={event => {
         if (event.target === event.currentTarget) setEditing(null);
       }}>
-        <section className="modal-card expense-category-edit-modal" role="dialog" aria-modal="true" aria-labelledby="expense-category-edit-title" onMouseDown={event => event.stopPropagation()}>
+        <section className="modal-card settings-form-modal expense-category-edit-modal" role="dialog" aria-modal="true" aria-labelledby="expense-category-edit-title" onMouseDown={event => event.stopPropagation()}>
           <div className="toolbar-card modal-toolbar-card expense-category-edit-toolbar">
             <div>
               <h2 id="expense-category-edit-title">Modifica categoria</h2>
               <p className="muted">{editing.icon ?? ''} {editing.name}</p>
             </div>
-            <button className="btn btn-icon-only btn-default" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}>×</button>
+            <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}>×</button>
           </div>
           <form action={updateAction} className="form app-record-form expense-category-edit-form">
             <input type="hidden" name="id" value={editing.id}/>
@@ -111,14 +110,6 @@ export default function ExpenseCategoryList({categories, iconOptions, updateActi
               <button className="btn btn-md btn-default" type="button" onClick={() => setEditing(null)}>× Annulla</button>
               <button className="btn btn-md btn-primary" type="submit">✓ Salva categoria</button>
             </div>
-            <MobileFormStickyActions
-              currentStep={1}
-              submitStep={1}
-              onBack={() => undefined}
-              onNext={() => undefined}
-              onCancel={() => setEditing(null)}
-              submitLabel="Salva categoria"
-            />
           </form>
         </section>
       </div>,

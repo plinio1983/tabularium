@@ -23,7 +23,7 @@ export default async function WorkspaceAuditPage() {
     take: 200
   });
 
-  return <div className="grid admin-page">
+  return <div className="grid admin-page settings-admin-page workspace-settings-page">
     <div className="toolbar-card">
       <div>
         <h2>Registro attività</h2>
@@ -49,4 +49,3 @@ export default async function WorkspaceAuditPage() {
     </div>
   </div>;
 }
-

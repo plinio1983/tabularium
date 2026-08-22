@@ -58,6 +58,7 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
         receivedDate: clampDateToToday(copyExpense.receivedDate),
         dueDate: copyExpense.dueDate,
         supplierId: copyExpense.supplierId,
+        taxAuthorityId: copyExpense.taxAuthorityId,
         employeeId: copyExpense.employeeId,
         merchant: copyExpense.merchant,
         categoryId: copyExpense.categoryId,

@@ -110,7 +110,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
   );
   const ruleBank = new Map(bankRules.map(rule => [`${rule.paymentMethodId}_${rule.salesChannelId}`, rule.bankId]));
 
-  return <div className="grid admin-page categories-settings-page">
+  return <div className="grid admin-page settings-admin-page categories-settings-page">
     <div className="toolbar-card">
       <div>
         <h2>{section ? sectionTitles[section] : 'Pagamento e Accredito'}</h2>

@@ -838,10 +838,6 @@ body.drawer-open {
   overflow-x: auto;
 }
 
-.record-list-card {
-  overflow: hidden;
-}
-
 .expenses-table {
   min-width: 1260px;
 }
@@ -1774,7 +1770,8 @@ body.drawer-open {
   align-items: flex-end;
 }
 
-.filter-actions button, .reset-button {
+.filter-actions button,
+.filter-actions .reset-button {
   min-height: 36px;
   display: inline-flex;
   align-items: center;
@@ -1784,13 +1781,12 @@ body.drawer-open {
   font-weight: 800;
 }
 
-.reset-button {
-  width: 100%;
-  padding: 9px 12px;
-  background: #fff;
-  color: var(--accent);
-  border: 1px solid #cfd7ff;
-}
+//.filter-drawer-actions {
+//  .reset-button {
+//    width: 100%;
+//    max-width: none;
+//  }
+//}
 
 .compact-expenses-table {
   font-size: 12px;
@@ -2485,12 +2481,6 @@ table th, table td {
 @media (max-width: 576px) {
   .income-mobile-list .income-mobile-item.mobile-record-item {
       margin-left: -9px;
-    }
-}
-
-@media (max-width: 351px) {
-  .record-list-card {
-      padding: 14px 6px;
     }
 }
 

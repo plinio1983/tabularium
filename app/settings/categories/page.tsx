@@ -5,7 +5,7 @@ import DetailBackButton from '@/components/DetailBackButton';
 export default async function CategoriesSettingsPage() {
   await requireWorkspaceRole(workspaceManagementRoles, '/settings/categories');
 
-  return <div className="grid admin-page categories-settings-page">
+  return <div className="grid admin-page settings-admin-page categories-settings-page">
     <div className="toolbar-card">
       <div><h2>Categorie</h2><p className="muted">Scegli l’area di categorie da configurare.</p></div>
       <DetailBackButton href="/settings" />
