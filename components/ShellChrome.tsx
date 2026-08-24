@@ -26,6 +26,10 @@ function isChromeHiddenPath(pathname: string) {
   return pathname === '/login' || pathname.startsWith('/register') || pathname.startsWith('/admin');
 }
 
+function isFooterHiddenPath(pathname: string) {
+  return pathname === '/incomes/cash-register';
+}
+
 function DesktopHeader({ compactOnMobile = false }: { compactOnMobile?: boolean }) {
   const className = compactOnMobile ? "nav compact-mobile-header-path" : "nav";
 
@@ -63,6 +67,8 @@ export default function ShellChrome({ slot }: Props) {
 
     return <DesktopHeader />;
   }
+
+  if (isFooterHiddenPath(pathname)) return null;
 
   return <footer className="app-footer">
     <div>Tabularium</div>

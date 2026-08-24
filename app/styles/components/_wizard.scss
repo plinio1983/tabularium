@@ -301,15 +301,6 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.compact-incomes-table {
-  min-width: 980px;
-}
-
-.compact-incomes-table th, .compact-incomes-table td {
-  vertical-align: middle;
-}
-
-
 .toolbar-card-wrap {
   flex-wrap: wrap;
 }
@@ -379,7 +370,27 @@
 }
 
 .compact-incomes-table {
-  min-width: 1120px;
+  table-layout: fixed;
+  font-size: 12px;
+  min-width: 920px;
+  width: 100%;
+
+  @media (max-width: 1200px) {
+    min-width: 960px;
+  }
+
+  @media (min-width: 1280px) {
+    min-width: 980px;
+  }
+
+  @media (max-width: 900px) {
+    min-width: 1000px;
+  }
+
+  @media (max-width: 760px) {
+    min-width: 900px;
+    font-size: 10.5px;
+  }
 }
 
 .copyable-detail-field {

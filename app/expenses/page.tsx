@@ -1067,28 +1067,11 @@ export default async function ExpensesPage({searchParams}: {
             {/*    <ExpenseCategoryPieChart data={expensesByCategory}/>*/}
             {/*</div>*/}
         </div>
-        <div className="card record-list-card fixed">
+        <div className="card record-list-card --fixed">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista spese</h2>
                     <p className="muted">Risultati mostrati: {filteredExpenses.length}</p>
-                </div>
-                <div>
-                    <ExpenseFiltersDrawer
-                        filters={filters}
-                        categories={orderedCategories.map(category => ({
-                            id: category.id,
-                            code: category.code,
-                            name: category.name,
-                            icon: category.icon
-                        }))}
-                        quickDateFilter={quickDateFilter}
-                        orderDateFromDefault={orderDateFromDefault}
-                        orderDateToDefault={orderDateToDefault}
-                        quickBillingPeriodFilter={quickBillingPeriodFilter}
-                        billingPeriodFromFilter={billingPeriodFromFilter}
-                        billingPeriodToFilter={billingPeriodToFilter}
-                    />
                 </div>
             </div>
 
@@ -1301,6 +1284,22 @@ export default async function ExpensesPage({searchParams}: {
                 showSupplierColumn
                 selectable
                 formId="expenseBulkForm"
+                filterAction={<ExpenseFiltersDrawer
+                    filters={filters}
+                    categories={orderedCategories.map(category => ({
+                        id: category.id,
+                        code: category.code,
+                        name: category.name,
+                        icon: category.icon
+                    }))}
+                    quickDateFilter={quickDateFilter}
+                    orderDateFromDefault={orderDateFromDefault}
+                    orderDateToDefault={orderDateToDefault}
+                    quickBillingPeriodFilter={quickBillingPeriodFilter}
+                    billingPeriodFromFilter={billingPeriodFromFilter}
+                    billingPeriodToFilter={billingPeriodToFilter}
+                    listAction
+                />}
                 categories={orderedCategories.map(c => ({
                     id: c.id,
                     code: c.code,

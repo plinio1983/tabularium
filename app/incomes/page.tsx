@@ -959,23 +959,6 @@ export default async function IncomesPage({searchParams}: {
                     <h2>Lista incassi</h2>
                     <p className="muted">Risultati mostrati: {standardFilteredIncomes.length + cashRegisterGroups.length}</p>
                 </div>
-                <div>
-                    <IncomeFiltersDrawer
-                        filters={filters}
-                        quickDateFilter={quickDateFilter}
-                        creditDateFromDefault={creditDateFromDefault}
-                        creditDateToDefault={creditDateToDefault}
-                        quickBillingPeriodFilter={quickBillingPeriodFilter}
-                        billingPeriodFromFilter={billingPeriodFromFilter}
-                        billingPeriodToFilter={billingPeriodToFilter}
-                        banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))}
-                        paymentMethods={incomePaymentMethods.map(method => ({
-                            id: method.id,
-                            name: method.name,
-                            icon: method.icon
-                        }))}
-                        salesChannels={salesChannels}/>
-                </div>
             </div>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">
@@ -1144,6 +1127,23 @@ export default async function IncomesPage({searchParams}: {
                 mobileIncomes={mobileSortedIncomes}
                 cashRegisterGroups={cashRegisterGroups}
                 returnTo={returnTo}
+                filterAction={<IncomeFiltersDrawer
+                    filters={filters}
+                    quickDateFilter={quickDateFilter}
+                    creditDateFromDefault={creditDateFromDefault}
+                    creditDateToDefault={creditDateToDefault}
+                    quickBillingPeriodFilter={quickBillingPeriodFilter}
+                    billingPeriodFromFilter={billingPeriodFromFilter}
+                    billingPeriodToFilter={billingPeriodToFilter}
+                    banks={orderedBanks.map(bank => ({id: bank.id, name: bank.name, icon: bank.icon}))}
+                    paymentMethods={incomePaymentMethods.map(method => ({
+                        id: method.id,
+                        name: method.name,
+                        icon: method.icon
+                    }))}
+                    salesChannels={salesChannels}
+                    listAction
+                />}
                 banks={orderedBanks.map(bank => ({
                     id: bank.id,
                     name: bank.name,

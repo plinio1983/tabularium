@@ -68,6 +68,8 @@ export default async function NewExpensePage({ searchParams }: { searchParams?: 
         payrollExtraCompensation: copyExpense.payrollExtraCompensation?.toString(),
         payrollGrossAmount: copyExpense.payrollGrossAmount?.toString(),
         payrollEmployerCost: copyExpense.payrollEmployerCost?.toString(),
+        payrollPeriodStart: copyExpense.payrollPeriodStart,
+        payrollPeriodEnd: copyExpense.payrollPeriodEnd,
         expenseType: copyExpense.expenseType,
         vatRate: copyExpense.vatRate.toString(),
         paymentStatus: 'DA_PAGARE',

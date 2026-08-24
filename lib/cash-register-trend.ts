@@ -51,3 +51,30 @@ export function buildDailyReceiptTrendRange(
   }
   return points;
 }
+
+export function buildMonthlyReceiptTrend(
+  year: number,
+  aggregates: ReceiptTrendAggregate[],
+): DailyReceiptTrend[] {
+  const byMonth = new Map<number, ReceiptTrendAggregate>();
+  aggregates.forEach(item => {
+    const month = Number(item.day.slice(5, 7));
+    const current = byMonth.get(month) ?? {day: `${year}-${String(month).padStart(2, '0')}-01`, count: 0, total: 0};
+    current.count += item.count;
+    current.total += item.total;
+    byMonth.set(month, current);
+  });
+
+  return Array.from({length: 12}, (_, index) => {
+    const month = index + 1;
+    const aggregate = byMonth.get(month);
+    const count = aggregate?.count ?? 0;
+    const total = aggregate?.total ?? 0;
+    return {
+      day: `${year}-${String(month).padStart(2, '0')}-01`,
+      count,
+      total,
+      average: count ? total / count : 0,
+    };
+  });
+}

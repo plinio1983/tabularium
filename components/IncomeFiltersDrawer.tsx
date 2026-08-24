@@ -18,6 +18,7 @@ type Props = {
   banks: { id: number; name: string; icon?: string | null }[];
   paymentMethods: { id: number; name: string; icon?: string | null }[];
   salesChannels: { id: number; name: string; icon?: string | null }[];
+  listAction?: boolean;
 };
 
 const invoiceStatusOptions = [
@@ -152,6 +153,7 @@ export default function IncomeFiltersDrawer({
   billingPeriodToFilter,
   banks,
   paymentMethods, salesChannels,
+  listAction = false,
 }: Props) {
   const timeZone = useCompanyTimeZone();
   const companyNow = civilDateInTimeZone(timeZone);
@@ -361,7 +363,13 @@ export default function IncomeFiltersDrawer({
   ) : null;
 
   return <>
-    <button className="btn btn-sm btn-default app-filter-trigger" type="button" onClick={() => setOpen(true)}>
+    <button
+      className={`btn btn-sm btn-default app-filter-trigger${listAction ? " bulk-direct-link bulk-filter-action" : ""}`}
+      type="button"
+      onClick={() => setOpen(true)}
+      data-bulk-filter={listAction ? "true" : undefined}
+      aria-label="Filtri"
+    >
       <span className="btn-icon"><FilterIcon /></span> <span className="app-filter-trigger-text">Filtri</span>
     </button>
     {drawer}

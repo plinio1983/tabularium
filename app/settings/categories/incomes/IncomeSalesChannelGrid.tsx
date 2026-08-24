@@ -91,8 +91,9 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
           <label className="app-form-field">Ordine nelle select
             <input name="sortOrder" type="number" min="0" max="9999" step="1" defaultValue={editing.sortOrder}/>
           </label>
-          {!editing.isFallback ? <label className="span-2">
-            <span><input name="isDefault" type="checkbox" defaultChecked={editing.isDefault}/> Preseleziona questo canale nei nuovi incassi</span>
+          {!editing.isFallback ? <label className="span-2 sales-channel-default-field">
+            <input name="isDefault" type="checkbox" defaultChecked={editing.isDefault}/>
+            <span>Preseleziona questo canale nei nuovi incassi</span>
           </label> : <p className="muted span-2">Questo è il canale tecnico di fallback e viene usato solo quando non sono disponibili canali ordinari.</p>}
           <div className="actions-row span-2 sales-channel-edit-actions">
             <button className="btn btn-md btn-default" type="button" onClick={() => setEditing(null)}>Annulla</button>

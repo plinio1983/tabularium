@@ -103,7 +103,11 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   button.type = "button";
   button.className = `floating-bulk-button ${className}`.trim();
   const sicon = document.createElement("span");
-  sicon.textContent = icon;
+  if (icon) sicon.textContent = icon;
+  else {
+    const originalIcon = original.querySelector<HTMLElement>(".btn-icon");
+    if (originalIcon) sicon.innerHTML = originalIcon.innerHTML;
+  }
   const slabel = document.createElement("span");
   slabel.textContent = label;
   sicon.className = `btn-icon ${iconClassName}`;
@@ -384,6 +388,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   const credit = sourceBar.querySelector<HTMLElement>("[data-bulk-add-credit]");
   const del = sourceBar.querySelector<HTMLElement>("[data-bulk-delete]");
   const newItem = sourceBar.querySelector<HTMLElement>("[data-bulk-new], [data-expense-new]");
+  const filter = sourceBar.querySelector<HTMLElement>("[data-bulk-filter]");
 
   if (edit) actionTarget.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
   if (directCopy) actionTarget.appendChild(buildFloatingButton(directCopy, "Copia", "⧉", "floating-bulk-copy"));
@@ -396,6 +401,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     const icon = newItem.getAttribute("data-floating-icon") ?? "+";
     newItemWrap.className = "bulk-inner-container";
     newItemWrap.appendChild(buildFloatingButton(newItem, label, icon, "floating-bulk-new btn-primary"));
+    if (filter) newItemWrap.appendChild(buildFloatingButton(filter, "Filtri", "", "floating-bulk-filter"));
     inner.appendChild(newItemWrap);
   }
 

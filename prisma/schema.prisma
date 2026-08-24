@@ -699,6 +699,8 @@ model Expense {
   payrollExtraCompensation Decimal?        @db.Decimal(12, 2)
   payrollGrossAmount      Decimal?         @db.Decimal(12, 2)
   payrollEmployerCost     Decimal?         @db.Decimal(12, 2)
+  payrollPeriodStart      DateTime?
+  payrollPeriodEnd        DateTime?
   expenseType             ExpenseType      @default(STANDARD)
   paymentDate             DateTime?
   dueDate                 DateTime?

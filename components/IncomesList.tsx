@@ -15,6 +15,7 @@ import {DEFAULT_COMPANY_TIME_ZONE} from '@/lib/company-time';
 import ExpenseInvoiceAttachmentsLink from '@/components/ExpenseInvoiceAttachmentsLink';
 import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
 import BulkCopyIncomesModal from '@/components/BulkCopyIncomesModal';
+import type {ReactNode} from 'react';
 
 type IncomeItem = {
     id: number;
@@ -142,7 +143,8 @@ export default function IncomesList({
                                         initialOpen = false,
                                         timeZone = DEFAULT_COMPANY_TIME_ZONE,
                                         hideCustomer = false,
-                                        emptyMessage = 'Nessun incasso trovato.'
+                                        emptyMessage = 'Nessun incasso trovato.',
+                                        filterAction
                                     }: {
     incomes: IncomeItem[];
     mobileIncomes?: IncomeItem[];
@@ -157,6 +159,7 @@ export default function IncomesList({
     timeZone?: string;
     hideCustomer?: boolean;
     emptyMessage?: string;
+    filterAction?: ReactNode;
 }) {
     const mobileIncomes = suppliedMobileIncomes ?? [...incomes].sort((a, b) => (b.creditDate?.getTime() ?? 0) - (a.creditDate?.getTime() ?? 0) || b.id - a.id);
     const formId = 'incomeBulkForm';
@@ -212,6 +215,7 @@ export default function IncomesList({
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link bulk-add-link  btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
                     <span className="btn-icon">+</span><span className="hidden-sm-down">Incasso</span></button>
+                {filterAction}
             </div>
         </form>
         <div className="income-mobile-list mobile-record-list" aria-label="Lista incassi mobile">
@@ -333,7 +337,7 @@ export default function IncomesList({
                         <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi"/>
                     </th>
                     <th data-sort-key="billing-period" data-sort-type="number" className="cell-billing-period">Periodo fatt.</th>
-                    <th data-sort-key="order-date" data-sort-type="date" className="cell-order-date">Data ordine</th>
+                    <th data-sort-key="order-date" data-sort-type="date" className="cell-order-date">Data riferimento</th>
                     <th data-sort-key="sales-channel" className="cell-category">Canale vendita</th>
                     {!hideCustomer ? <th data-sort-key="customer" className="cell-supplier">Cliente</th> : null}
                     <th data-sort-key="fiscal" className="cell-fiscal">Fisc.</th>

@@ -19,6 +19,7 @@ import {
 import {vatRateLabel, yesNoStyles} from "@/lib/expense-ui";
 import {incomeCreditSummary} from '@/lib/income-credits';
 import {incomeCreditState, isIncomeOverdue} from '@/lib/income-status';
+import {dueStatusLabel} from '@/lib/due-status-label';
 
 function dateLabel(value?: Date | null) {
     if (!value) return '-';
@@ -114,8 +115,20 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const incomeCreditChannelName = income.creditBank.name;
     const salesTone = salesChannelTone(income.salesChannelRef.code);
     const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
-    const creditStatus = incomeCreditStatusStyles[incomeCreditState(income, new Date(), current.company.timeZone)];
-    const detailToneClass = isIncomeOverdue(income)
+    const currentCreditState = incomeCreditState(income, new Date(), current.company.timeZone);
+    const creditStatus = incomeCreditStatusStyles[currentCreditState];
+    const isOverdue = isIncomeOverdue(income, new Date(), current.company.timeZone);
+    const creditStatusLabel = isOverdue
+        ? dueStatusLabel({
+            dueDate: income.dueDate,
+            isComplete: false,
+            isPartial: creditSummary.credited > 0.005,
+            completeLabel: incomeCreditStatusStyles.ACCREDITATO.label,
+            pendingFallback: creditStatus.label,
+            timeZone: current.company.timeZone
+        })
+        : creditStatus.label;
+    const detailToneClass = isOverdue
         ? 'income-row-overdue'
         : income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE'
             ? 'income-row-warning'
@@ -195,7 +208,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         </div>
                         <strong>{euro(amount)}</strong>
                         <div className="record-detail-badge-row">
-                            <span className={badgeClass(creditStatus.className)}>{creditStatus.icon} {creditStatus.label}</span>
+                            <span className={badgeClass(creditStatus.className)}>{creditStatus.icon} {creditStatusLabel}</span>
                             {/*<span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '  •  '} {incomePaymentMethodName}</span>*/}
                             <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span>
                         </div>
@@ -214,7 +227,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     <div className="record-detail-payment">
                         {/*<div className="record-detail-payment-icon">{creditStatus.icon}</div>*/}
                         <span>Stato</span>
-                        <strong>{creditStatus.icon} {creditStatus.label}</strong>
+                        <strong>{creditStatus.icon} {creditStatusLabel}</strong>
                     </div>
                     <div>
                         <span>Fattura</span>
@@ -270,6 +283,12 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
                         <div><h2>Accrediti</h2><p>Movimenti registrati per questo incasso.</p></div>
+                        <div className="record-detail-section-heading-actions">
+                            <span className="badge hidden-mobile">{income.credits.length} record</span>
+                            <button className="btn btn-sm btn-primary" type="button" data-income-credit-id={income.id}>
+                                <span className="btn-icon" aria-hidden="true">€</span> Aggiungi accredito
+                            </button>
+                        </div>
                     </div>
                     {income.credits.length ? <div className="app-record-form record-detail-payment-summary-list">
                         {income.credits.map(credit => <article className="payment-row payment-summary-row" key={credit.id}>

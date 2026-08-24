@@ -36,11 +36,15 @@ function receiptDate(value: string, timeZone: string) {
     return `${part('day')} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${part('hour')}:${part('minute')}`;
 }
 
-export default function CashRegisterReceiptList({receipts, filtersTrigger, returnTo}: {receipts: Receipt[]; filtersTrigger?: ReactNode; returnTo: string}) {
+export default function CashRegisterReceiptList({receipts, filtersTrigger, returnTo}: {
+    receipts: Receipt[];
+    filtersTrigger?: ReactNode;
+    returnTo: string
+}) {
     const timeZone = useCompanyTimeZone();
     const formId = 'cashRegisterReceiptBulkForm';
     const encodedReturnTo = encodeURIComponent(returnTo);
-    return <div className="card record-list-card cash-register-receipt-list-card">
+    return <div className="card record-list-card cash-register-receipt-list-card fixed">
         <div className="list-heading recurring-list-heading">
             <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
             {filtersTrigger}
@@ -58,35 +62,35 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
                        aria-label="Seleziona tutti gli scontrini visibili"/>
             </label>
             <div className="bulk-action-buttons btn-group">
-              <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
-                <summary className="bulk-action-trigger">
-                    <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
-                </summary>
-                <div className="bulk-action-menu-panel">
-                    <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
-                        <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
+                    <summary className="bulk-action-trigger">
+                        <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
+                    </summary>
+                    <div className="bulk-action-menu-panel">
+                        <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
+                            <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
+                        </button>
+                    </div>
+                </details>
+                <div className="bulk-direct-actions"
+                     data-bulk-direct-actions
+                     data-bulk-form={formId}
+                     data-edit-base="/incomes/cash-register?editId="
+                     data-edit-suffix=""
+                     data-copy-base="/incomes/cash-register?copyId="
+                     data-copy-single-only="true"
+                     data-return-to={encodedReturnTo}>
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
+                        <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
+                    </a>
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
+                        <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
+                    </a>
+                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down"
+                            name="bulkAction" value="delete" data-bulk-delete disabled>
+                        <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span>
                     </button>
                 </div>
-              </details>
-              <div className="bulk-direct-actions"
-                 data-bulk-direct-actions
-                 data-bulk-form={formId}
-                 data-edit-base="/incomes/cash-register?editId="
-                 data-edit-suffix=""
-                 data-copy-base="/incomes/cash-register?copyId="
-                 data-copy-single-only="true"
-                 data-return-to={encodedReturnTo}>
-                <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
-                    <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
-                </a>
-                <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
-                    <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
-                </a>
-                <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down"
-                        name="bulkAction" value="delete" data-bulk-delete disabled>
-                    <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span>
-                </button>
-              </div>
             </div>
             <div className="bulk-inner-container">
                 <Link className="bulk-direct-link bulk-add-link btn btn-md btn-primary"
@@ -108,40 +112,42 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
                         <input type="checkbox" className="bulk-select-all" data-bulk-target={formId}
                                aria-label="Seleziona tutti gli scontrini visibili"/>
                     </th>
-                    <th data-sort-key="id" data-sort-type="number">ID</th>
-                    <th data-sort-key="date" data-sort-type="date">Data e ora</th>
-                    <th data-sort-key="channel">Canale vendita</th>
-                    <th data-sort-key="fiscal">Fiscalità</th>
-                    <th data-sort-key="vat" data-sort-type="number">IVA</th>
-                    <th data-sort-key="method">Metodo pagamento</th>
+                    <th data-sort-key="id" className="cell-id" data-sort-type="number">ID</th>
+                    <th data-sort-key="date" className="cell-date" data-sort-type="date">Data e ora</th>
+                    <th data-sort-key="channel" className="cell-channel">Canale vendita</th>
                     <th className="cell-amount" data-sort-key="amount" data-sort-type="number">Importo</th>
+                    <th data-sort-key="fiscal" className="cell-fiscal">Fiscalità</th>
+                    <th data-sort-key="method" className="cell-method">Metodo pagamento</th>
+                    <th data-sort-key="vat" data-sort-type="number" className="cell-vat">IVA</th>
                 </tr>
                 </thead>
                 <tbody>
                 {receipts.map(receipt => <tr key={receipt.id}
-                    data-sort-row
-                    data-sort-id={String(receipt.id)}
-                    data-sort-date={String(new Date(receipt.creditDate).getTime())}
-                    data-sort-channel={receipt.salesChannel}
-                    data-sort-fiscal={receipt.isFiscal ? '1' : '0'}
-                    data-sort-vat={String(receipt.isFiscal ? receipt.vatRate : 0)}
-                    data-sort-method={receipt.paymentMethod}
-                    data-sort-amount={String(receipt.amount)}>
+                                             data-sort-row
+                                             data-sort-id={String(receipt.id)}
+                                             data-sort-date={String(new Date(receipt.creditDate).getTime())}
+                                             data-sort-channel={receipt.salesChannel}
+                                             data-sort-fiscal={receipt.isFiscal ? '1' : '0'}
+                                             data-sort-vat={String(receipt.isFiscal ? receipt.vatRate : 0)}
+                                             data-sort-method={receipt.paymentMethod}
+                                             data-sort-amount={String(receipt.amount)}>
                     <td className="cell-option">
                         <input form={formId} type="checkbox" name="ids" value={receipt.id}
                                aria-label={`Seleziona scontrino ${receipt.id}`}/>
                     </td>
-                    <td>#{receipt.id}</td>
+                    <td className="text-left">#{receipt.id}</td>
                     <td>{receiptDate(receipt.creditDate, timeZone)}</td>
                     <td>{receipt.salesChannelIcon ?? '•'} {receipt.salesChannel}</td>
-                    <td><span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-no'}`}>
-                        {receipt.isFiscal ? '✓ Fiscale' : '✕ Non fiscale'}
-                    </span></td>
-                    <td>{receipt.isFiscal ? <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}</td>
-                    <td>{receipt.paymentMethodIcon ?? '•'} {receipt.paymentMethod}</td>
                     <td className="cell-amount"><strong className="text-accent">{euro(receipt.amount)}</strong></td>
+                    <td><span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-no'}`}>
+                        {receipt.isFiscal ? '✓ Fisc' : '✕ Non fisc'}
+                    </span></td>
+                    <td>{receipt.paymentMethodIcon ?? '•'} {receipt.paymentMethod}</td>
+                    <td className="text-center">{receipt.isFiscal ? <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}</td>
                 </tr>)}
-                {!receipts.length ? <tr><td colSpan={8}>Nessuno scontrino nel periodo selezionato.</td></tr> : null}
+                {!receipts.length ? <tr>
+                    <td colSpan={8}>Nessuno scontrino nel periodo selezionato.</td>
+                </tr> : null}
                 </tbody>
             </table>
         </div>
@@ -170,7 +176,8 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
                     <strong className="cash-register-receipt-amount">{euro(receipt.amount)}</strong>
                 </div>
             </article>)}
-            {!receipts.length ? <div className="record-empty-state">Nessuno scontrino nel periodo selezionato.</div> : null}
+            {!receipts.length ?
+                <div className="record-empty-state">Nessuno scontrino nel periodo selezionato.</div> : null}
         </div>
     </div>;
 }

@@ -19,6 +19,7 @@ type Props = {
   quickBillingPeriodFilter: string;
   billingPeriodFromFilter: string;
   billingPeriodToFilter: string;
+  listAction?: boolean;
 };
 
 const paymentStatusOptions = [
@@ -159,6 +160,7 @@ export default function ExpenseFiltersDrawer({
   quickBillingPeriodFilter,
   billingPeriodFromFilter,
   billingPeriodToFilter,
+  listAction = false,
 }: Props) {
   const timeZone = useCompanyTimeZone();
   const companyNow = civilDateInTimeZone(timeZone);
@@ -365,7 +367,13 @@ export default function ExpenseFiltersDrawer({
   ) : null;
 
   return <>
-    <button className="btn btn-sm btn-default app-filter-trigger" type="button" onClick={() => setOpen(true)}>
+    <button
+      className={`btn btn-sm btn-default app-filter-trigger${listAction ? " bulk-direct-link bulk-filter-action" : ""}`}
+      type="button"
+      onClick={() => setOpen(true)}
+      data-bulk-filter={listAction ? "true" : undefined}
+      aria-label="Filtri"
+    >
       <span className="btn-icon"><FilterIcon /></span> <span className="app-filter-trigger-text">Filtri</span>
     </button>
     {drawer}

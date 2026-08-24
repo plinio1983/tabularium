@@ -203,7 +203,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           </div>
         <section className="record-detail-status-strip">
           <div>
-            <span>{isVatSettlement ? 'Data ricezione' : 'Data ordine'}</span>
+            <span>{isPayroll ? 'Fine periodo lavorato' : isVatSettlement ? 'Data ricezione' : 'Data riferimento'}</span>
             <strong>{dateLabel(expense.receivedDate)}</strong>
           </div>
           <div>
@@ -235,6 +235,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <strong className="">{isPayroll && expense.employeeId ? <Link href={`/employees/${expense.employeeId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : expense.supplierId ? <Link href={`/suppliers/${expense.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{supplierName}</Link> : supplierName}</strong>
           </div>
           {isPayroll ? <>
+            <div><span>Periodo lavorato</span><strong>{expense.payrollPeriodStart && expense.payrollPeriodEnd ? `${dateLabel(expense.payrollPeriodStart)} – ${dateLabel(expense.payrollPeriodEnd)}` : 'Non indicato'}</strong></div>
             <div><span>Netto cedolino</span><strong>{euro(expense.payrollNetAmount?.toString() ?? '0')}</strong></div>
             <div><span>Compensi extra</span><strong>{euro(expense.payrollExtraCompensation?.toString() ?? '0')}</strong></div>
             <div><span>Lordo cedolino · informativo</span><strong>{expense.payrollGrossAmount != null ? euro(expense.payrollGrossAmount.toString()) : 'Non indicato'}</strong></div>

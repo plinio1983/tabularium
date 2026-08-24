@@ -8,7 +8,7 @@ import { SupplierReferenceError, resolveExistingSupplierReference } from '@/lib/
 import { AttachmentValidationError, deleteExpenseAttachmentFile, normalizeExpenseAttachmentType, saveExpenseAttachmentFiles } from '@/lib/attachments';
 import { writeAuditLog } from '@/lib/audit';
 import {yearMonthInTimeZone} from '@/lib/company-time';
-import {resolveExpenseAmounts} from '@/lib/payroll-expense';
+import {resolveExpenseAmounts, resolvePayrollPeriod} from '@/lib/payroll-expense';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 const OptionalMoneyFromForm = z.preprocess(value => value === '' || value == null ? undefined : typeof value === 'string' ? value.replace(',', '.') : value, z.coerce.number().nonnegative().optional());
@@ -28,6 +28,8 @@ const ExpenseSchema = z.object({
   payrollExtraCompensation: OptionalMoneyFromForm,
   payrollGrossAmount: OptionalMoneyFromForm,
   payrollEmployerCost: OptionalMoneyFromForm,
+  payrollPeriodStart: z.string().optional(),
+  payrollPeriodEnd: z.string().optional(),
   vatRate: z.coerce.number().default(22),
   isDeclared: BooleanFromForm.default(false),
   affectsFiscalProfit: BooleanFromForm.default(false),
@@ -208,6 +210,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
   const categoryId = isVatSettlement ? configuredCategoryId : await resolveCategoryId(data.categoryId, current.workspace.id);
   const {amount: expenseAmount, payrollNetAmount, payrollExtraCompensation} = resolveExpenseAmounts({isPayroll, amount: data.amount, payrollNetAmount: data.payrollNetAmount, payrollExtraCompensation: data.payrollExtraCompensation});
+  const {payrollPeriodStart, payrollPeriodEnd} = resolvePayrollPeriod({
+    isPayroll,
+    start: data.payrollPeriodStart,
+    end: data.payrollPeriodEnd,
+    dueDate: data.dueDate
+  });
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
   if (isPayroll && paidAmount > expenseAmount + 0.005) throw new Error('I pagamenti non possono superare il netto da corrispondere');
   const firstPayment = payments[0];
@@ -242,7 +250,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   await prisma.expense.update({
     where: { id: expenseId },
     data: {
-      receivedDate: data.receivedDate ? new Date(data.receivedDate) : null,
+      receivedDate: isPayroll ? payrollPeriodEnd : data.receivedDate ? new Date(data.receivedDate) : null,
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
       merchant: isPayroll ? `${employeeRef!.lastName} ${employeeRef!.firstName}` : isTaxContribution ? taxAuthorityRef!.name : supplierRef!.businessName,
       supplierId: supplierRef?.id ?? null,
@@ -255,6 +263,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       payrollExtraCompensation,
       payrollGrossAmount: isPayroll ? data.payrollGrossAmount ?? null : null,
       payrollEmployerCost: isPayroll ? data.payrollEmployerCost ?? null : null,
+      payrollPeriodStart,
+      payrollPeriodEnd,
       paymentDate: data.paymentStatus === 'DA_PAGARE' ? null : (firstPayment?.paymentDate ? new Date(firstPayment.paymentDate) : null),
       vatRate: isVatSettlement || isPayroll || !invoiceFields.isDeclared ? 0 : data.vatRate,
       isDeclared: invoiceFields.isDeclared,
@@ -294,7 +304,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     action: 'UPDATE',
     entityType: 'Expense',
     entityId: expenseId,
-    metadata: { amount: expenseAmount, expenseType: data.expenseType, paymentStatus: data.paymentStatus },
+    metadata: {
+      amount: expenseAmount,
+      expenseType: data.expenseType,
+      paymentStatus: data.paymentStatus,
+      ...(isPayroll ? {payrollPeriodStart: data.payrollPeriodStart, payrollPeriodEnd: data.payrollPeriodEnd} : {})
+    },
     request
   });
 

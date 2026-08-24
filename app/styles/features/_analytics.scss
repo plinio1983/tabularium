@@ -258,7 +258,7 @@
 .year-navigation-select select {
   width: auto;
   min-width: 171px;
-  min-height: 32px;
+  min-height: 36px;
   padding: 5px 28px 5px 9px;
   font-size: 16px;
 }
@@ -1049,16 +1049,6 @@ table {
   max-width: 100%;
 }
 
-.compact-incomes-table {
-  table-layout: fixed;
-  font-size: 12px;
-}
-
-.compact-incomes-table th, .compact-incomes-table td {
-  padding: 7px 6px;
-  vertical-align: middle;
-}
-
 .totals-row, .income-totals-row {
   gap: 10px;
 }
@@ -1076,12 +1066,6 @@ table {
 html, body {
   max-width: 100%;
   overflow-x: hidden;
-}
-
-.shell {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
 }
 
 .grid, .card, .toolbar-card, .record-list-card {

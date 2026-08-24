@@ -90,6 +90,8 @@ type InitialExpense = {
     payrollExtraCompensation?: string | number | { toString(): string } | null;
     payrollGrossAmount?: string | number | { toString(): string } | null;
     payrollEmployerCost?: string | number | { toString(): string } | null;
+    payrollPeriodStart?: string | Date | null;
+    payrollPeriodEnd?: string | Date | null;
     affectsFiscalProfit?: boolean;
     payments?: InitialPayment[];
     notes?: string | null;
@@ -158,6 +160,10 @@ export function lastDayOfMonthInput(value: string) {
     if (!year || !month) return "";
     const day = new Date(year, month, 0).getDate();
     return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function firstDayOfMonthInput(value: string) {
+    return /^\d{4}-\d{2}$/.test(value) ? `${value}-01` : "";
 }
 
 const cashChannel = "Cash";
@@ -567,12 +573,20 @@ export default function ExpenseForm({
             : currentBillingPeriod;
     const [orderDate, setOrderDate] = useState(initialOrderDate);
     const [billingPeriod, setBillingPeriod] = useState(initialBillingPeriod);
+    const [payrollPeriodStart, setPayrollPeriodStart] = useState(
+        toDateInput(initialExpense?.payrollPeriodStart) || (initialExpense?.id ? "" : firstDayOfMonthInput(initialBillingPeriod)),
+    );
+    const [payrollPeriodEnd, setPayrollPeriodEnd] = useState(
+        toDateInput(initialExpense?.payrollPeriodEnd) || (initialExpense?.id ? "" : lastDayOfMonthInput(initialBillingPeriod)),
+    );
     const payrollDescription = useMemo(() => {
-        const [year, month] = billingPeriod.split("-").map(Number);
-        return Number.isInteger(year) && Number.isInteger(month) && month >= 1 && month <= 12
-            ? `Competenze ${formatPeriod(month, year)}`
-            : "Competenze";
-    }, [billingPeriod]);
+        if (!payrollPeriodStart || !payrollPeriodEnd) return "Competenze";
+        const start = formatDateInputLabel(payrollPeriodStart);
+        const end = formatDateInputLabel(payrollPeriodEnd);
+        return payrollPeriodStart === payrollPeriodEnd
+            ? `Competenze del ${start}`
+            : `Competenze dal ${start} al ${end}`;
+    }, [payrollPeriodEnd, payrollPeriodStart]);
     const effectiveDescription = isPayroll ? payrollDescription : description;
     const [dueDate, setDueDate] = useState(
         initialExpense?.dueDate
@@ -985,7 +999,7 @@ export default function ExpenseForm({
                             Configura la categoria Saldo IVA nelle Impostazioni. Il fornitore di sistema deve essere inizializzato per il workspace.
                         </div> : null}
 
-                    <DateField
+                    {!isPayroll ? <DateField
                         className="app-form-wizard-step app-form-wizard-step-1"
                         label={orderDateLabel}
                         name="receivedDate"
@@ -1002,13 +1016,33 @@ export default function ExpenseForm({
                         }}
                         required
                         hint={isVatSettlement ? "Determina il periodo nel quale la spesa viene conteggiata nell’Andamento complessivo." : undefined}
-                    />
+                    /> : null}
+                    {isPayroll ? <>
+                        <DateField
+                            className="app-form-wizard-step app-form-wizard-step-1"
+                            label="Periodo lavorato dal"
+                            name="payrollPeriodStart"
+                            value={payrollPeriodStart}
+                            max={payrollPeriodEnd || undefined}
+                            onChange={setPayrollPeriodStart}
+                            required
+                        />
+                        <DateField
+                            className="app-form-wizard-step app-form-wizard-step-1"
+                            label="Periodo lavorato al"
+                            name="payrollPeriodEnd"
+                            value={payrollPeriodEnd}
+                            min={payrollPeriodStart || undefined}
+                            onChange={setPayrollPeriodEnd}
+                            required
+                        />
+                    </> : null}
                     <DateField
                         className="app-form-wizard-step app-form-wizard-step-1 expense-due-date-field"
                         label="Data scadenza"
                         name="dueDate"
                         value={dueDate}
-                        required={isVatSettlement}
+                        required={isVatSettlement || isPayroll}
                         onChange={setDueDate}
                     >
                         <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
@@ -1027,7 +1061,7 @@ export default function ExpenseForm({
 
                     {isTaxContribution || isPayroll ? <MonthField
                         className="app-form-wizard-step app-form-wizard-step-1"
-                        label="Periodo di competenza"
+                        label={isPayroll ? "Periodo contabile" : "Periodo di competenza"}
                         name="billingPeriod"
                         value={billingPeriod}
                         onChange={setBillingPeriod}
@@ -1642,16 +1676,16 @@ export default function ExpenseForm({
                 </div>
                 {isPayroll ? <div className="record-review-grid payroll-review-grid">
                     <div className="record-review-item">
-                        <i aria-hidden="true">◷</i><span>{orderDateLabel}<strong>{formatDateInputLabel(orderDate)}</strong></span>
-                    </div>
-                    <div className="record-review-item">
                         <i aria-hidden="true">◷</i><span>Scadenza<strong>{dueDate ? formatDateInputLabel(dueDate) : "Non indicata"}</strong></span>
                     </div>
                     <div className="record-review-item">
                         <i aria-hidden="true">♙</i><span>Dipendente<strong>{currentSupplierName}</strong></span>
                     </div>
                     <div className="record-review-item">
-                        <i aria-hidden="true">▦</i><span>Periodo di competenza<strong>{billingPeriod || "Non indicato"}</strong></span>
+                        <i aria-hidden="true">▦</i><span>Periodo lavorato<strong>{payrollPeriodStart && payrollPeriodEnd ? `${formatDateInputLabel(payrollPeriodStart)} – ${formatDateInputLabel(payrollPeriodEnd)}` : "Non indicato"}</strong></span>
+                    </div>
+                    <div className="record-review-item">
+                        <i aria-hidden="true">▦</i><span>Periodo contabile<strong>{billingPeriod || "Non indicato"}</strong></span>
                     </div>
                     <div className="record-review-item">
                         <i aria-hidden="true">€</i><span>Netto cedolino<strong>{formatEuro(Number(normalizedPayrollNetAmount || 0))}</strong></span>

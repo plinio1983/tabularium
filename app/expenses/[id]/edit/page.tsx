@@ -55,6 +55,8 @@ export default async function EditExpensePage({ params, searchParams }: { params
             payrollExtraCompensation: expense.payrollExtraCompensation?.toString(),
             payrollGrossAmount: expense.payrollGrossAmount?.toString(),
             payrollEmployerCost: expense.payrollEmployerCost?.toString(),
+            payrollPeriodStart: expense.payrollPeriodStart,
+            payrollPeriodEnd: expense.payrollPeriodEnd,
             vatRate: expense.vatRate.toString(),
             paymentStatus: expense.paymentStatus,
             month: expense.month,

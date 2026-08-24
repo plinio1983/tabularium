@@ -44,6 +44,8 @@ type EditExpense = {
   payrollExtraCompensation?: string | number | null;
   payrollGrossAmount?: string | number | null;
   payrollEmployerCost?: string | number | null;
+  payrollPeriodStart?: string | Date | null;
+  payrollPeriodEnd?: string | Date | null;
   affectsFiscalProfit?: boolean;
   notes?: string | null;
   attachments?: Array<{

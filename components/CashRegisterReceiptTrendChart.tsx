@@ -8,7 +8,7 @@ function dayLabel(value: string, options: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat('it-IT', options).format(new Date(`${value}T12:00:00`)).replace('.', '');
 }
 
-export default function CashRegisterReceiptTrendChart({points}: {points: DailyReceiptTrend[]}) {
+export default function CashRegisterReceiptTrendChart({points, annual = false}: {points: DailyReceiptTrend[]; annual?: boolean}) {
   const lastActiveIndex = points.reduce((last, point, index) => point.count ? index : last, 0);
   const [selectedIndex, setSelectedIndex] = useState(lastActiveIndex);
   const selected = points[selectedIndex] ?? points[0];
@@ -38,17 +38,17 @@ export default function CashRegisterReceiptTrendChart({points}: {points: DailyRe
   const areaPoints = `${left},${baseline} ${linePoints} ${x(points.length - 1)},${baseline}`;
   const labelEvery = points.length > 20 ? 3 : points.length > 12 ? 2 : 1;
 
-  return <section className="card cash-register-trend-card" aria-labelledby="cash-register-trend-title">
+  return <section className="card cash-register-trend-card fixed" aria-labelledby="cash-register-trend-title">
     <div className="cash-register-trend-heading">
       <div>
         <h2 id="cash-register-trend-title">Andamento scontrini</h2>
-        <p className="muted">Incasso giornaliero. I giorni senza movimenti restano visibili a zero.</p>
+        <p className="muted">Incasso {annual ? 'mensile' : 'giornaliero'}. {annual ? 'I mesi' : 'I giorni'} senza movimenti restano visibili a zero.</p>
       </div>
       <div className="cash-register-trend-kpis">
         <div><span>Incasso</span><strong>{euro(totals.total)}</strong></div>
         <div><span>Scontrini</span><strong>{totals.count}</strong></div>
         <div><span>Ticket medio</span><strong>{euro(totals.average)}</strong></div>
-        <div><span>Giorno migliore</span><strong>{totals.best?.count ? dayLabel(totals.best.day, {day: '2-digit', month: 'short'}) : '—'}</strong></div>
+        <div><span>{annual ? 'Mese migliore' : 'Giorno migliore'}</span><strong>{totals.best?.count ? dayLabel(totals.best.day, annual ? {month: 'short'} : {day: '2-digit', month: 'short'}) : '—'}</strong></div>
       </div>
     </div>
 
@@ -70,7 +70,7 @@ export default function CashRegisterReceiptTrendChart({points}: {points: DailyRe
           {points.map((point, index) => <g key={point.day}>
             {index % labelEvery === 0 || index === points.length - 1
               ? <text className="cash-register-trend-day-label" x={x(index)} y={height - 18} textAnchor="middle">
-                  {dayLabel(point.day, {day: '2-digit'})}
+                  {dayLabel(point.day, annual ? {month: 'short'} : {day: '2-digit'})}
                 </text>
               : null}
             <circle
@@ -84,7 +84,7 @@ export default function CashRegisterReceiptTrendChart({points}: {points: DailyRe
               r={selectedIndex === index ? 6 : point.count ? 4 : 2.5}
               tabIndex={0}
               role="button"
-              aria-label={`${dayLabel(point.day, {day: 'numeric', month: 'long'})}: ${point.count ? `${euro(point.total)}, ${point.count} scontrini` : 'nessun movimento'}`}
+              aria-label={`${dayLabel(point.day, annual ? {month: 'long', year: 'numeric'} : {day: 'numeric', month: 'long'})}: ${point.count ? `${euro(point.total)}, ${point.count} scontrini` : 'nessun movimento'}`}
               onFocus={() => setSelectedIndex(index)}
               onClick={() => setSelectedIndex(index)}
               onKeyDown={event => {
@@ -98,7 +98,7 @@ export default function CashRegisterReceiptTrendChart({points}: {points: DailyRe
         </svg>
       </div>
       {selected ? <div className={selected.count ? 'cash-register-trend-selection' : 'cash-register-trend-selection is-empty'} aria-live="polite">
-        <div><span>Data</span><strong>{dayLabel(selected.day, {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'})}</strong></div>
+        <div><span>{annual ? 'Mese' : 'Data'}</span><strong>{dayLabel(selected.day, annual ? {month: 'long', year: 'numeric'} : {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'})}</strong></div>
         <div><span>Incasso</span><strong>{selected.count ? euro(selected.total) : 'Nessun movimento'}</strong></div>
         <div><span>Scontrini</span><strong>{selected.count}</strong></div>
         <div><span>Ticket medio</span><strong>{selected.count ? euro(selected.average) : '—'}</strong></div>

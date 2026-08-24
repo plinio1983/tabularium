@@ -40,50 +40,95 @@ body:has(.detail-page-no-site-header) .shell {
   padding-left: 0;
 }
 
+.cash-register-receipt-table {
+  min-width: 706px;
+  max-width: 100%;
+
+  .cell-option {
+    width: 5% !important;
+    min-width: 46px;
+    max-width: 52px;
+    text-align: center;
+  }
+  .cell-id {
+    width: 9%;
+    min-width: 56px;
+    max-width: 64px;
+  }
+  .cell-date {
+    width: 18%;
+    min-width: 110px;
+    max-width: 127px;
+  }
+  .cell-method {
+    width: 16%;
+    min-width: 100px;
+    max-width: 130px;
+  }
+  .cell-fiscal {
+    width: 12%;
+    min-width: 64px;
+    max-width: 110px;
+  }
+  .cell-amount {
+    width: 13%;
+    min-width: 110px;
+    max-width: 170px;
+  }
+  .cell-vat {
+    width: 10%;
+    min-width: 56px;
+    max-width: 84px;
+  }
+  .cell-channel {
+    width: 17%;
+    min-width: 110px;
+    max-width: 170px;
+  }
+}
 
 table .cell-option {
-  //width: 4% !important;
   width: 46px !important;
   text-align: center;
 }
 
 table .cell-order-date {
-  width: 75px !important;
+  width: 75px;
   text-align: center;
 }
 
 table .cell-billing-period {
-  width: 80px !important;
+  width: 80px;
   text-align: left;
 }
 
-table .cell-cchannel {
-  width: 7% !important;
+table .cell-channel {
+  width: 7%;
   text-align: left;
 }
 
 table .cell-selling {
-  width: 9% !important;
+  width: 9%;
   text-align: left;
 }
 
 table .cell-category {
-  width: 122px !important;
+  width: 122px;
   text-align: center;
 }
 
 table .cell-ebilling {
-  width: 6% !important;
+  width: 6%;
   text-align: center;
 }
 
 table .cell-type {
-  width: 4% !important;
+  width: 4%;
   text-align: center;
 }
 
 table .cell-fiscal {
-  width: 56px !important;
+  width: 56px;
   text-align: center;
 }
 
@@ -1068,6 +1113,23 @@ table .cell-description {
   font-weight: 700;
 }
 
+.sales-channel-default-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+  }
+}
+
 .income-entity-settings-section {
   width: 100%;
 }
@@ -1693,11 +1755,6 @@ table .cell-description {
   .grid-4, .grid-2, .form {
     grid-template-columns: 1fr 1fr;
   }
-
-  .shell {
-    padding: 16px;
-  }
-
 }
 
 @media (max-width: 900px) {
@@ -1897,17 +1954,9 @@ table .cell-description {
   .record-filters, .compact-filters {
     grid-template-columns:1fr;
   }
-
-  .compact-incomes-table {
-    min-width: 1040px;
-  }
 }
 
 @media (max-width: 900px) {
-  .shell {
-    padding: 12px;
-  }
-
   .card {
     padding: 14px;
   }
@@ -1916,10 +1965,6 @@ table .cell-description {
     margin-left: 0;
     margin-right: 0;
     border-radius: 12px;
-  }
-
-  .compact-incomes-table {
-    min-width: 1000px;
   }
 }
 
@@ -2229,10 +2274,6 @@ table .cell-description {
   .totals-row .total-card,
   .income-totals-row .total-card {
     min-height: auto;
-  }
-
-  .compact-incomes-table {
-    min-width: 960px;
   }
 
   .income-amount-row {

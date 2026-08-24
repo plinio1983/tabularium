@@ -29,6 +29,7 @@ import {
     isExpensePastDue,
     sortExpensesByReceivedDateDesc
 } from '@/lib/expense-calculations';
+import type {ReactNode} from 'react';
 
 type ExpenseListItem = {
     id: number;
@@ -106,6 +107,7 @@ type Props = {
     employees?: EmployeeOption[];
     linkRecurringExpensesToDefinition?: boolean;
     timeZone?: string;
+    filterAction?: ReactNode;
 };
 
 function dateLabel(value?: Date | null) {
@@ -207,7 +209,8 @@ export default function ExpensesList({
                                          suppliers = [],
                                          employees = [],
                                          linkRecurringExpensesToDefinition = false,
-                                         timeZone = DEFAULT_COMPANY_TIME_ZONE
+                                         timeZone = DEFAULT_COMPANY_TIME_ZONE,
+                                         filterAction
                                      }: Props) {
     const mobileItems = mobileExpenses ?? sortExpensesByReceivedDateDesc(expenses);
     const hasBulkControls = selectable && categories.length > 0;
@@ -281,6 +284,7 @@ export default function ExpensesList({
                         <span className="btn-icon">+</span>
                         <span className="hidden-sm-down">Spesa</span>
                     </ExpenseNewTriggerButton>
+                    {filterAction}
                 </div>
             </form>
 
@@ -353,8 +357,8 @@ export default function ExpensesList({
                                     <span className="mobile-record-date date-long hidden-xs-down">• &nbsp;{formatPeriod(expense.month, expense.year)}</span>
 
                                     {/*-- Aliquota IVA -->*/}
-                                    {isVatSettlement ? <span className="badge tone-neutral">100%</span> : isTaxContribution || isPayroll ? <span className="badge tone-neutral">N/A</span> :
-                                        <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(expense.vatRate)}%</span>}
+                                    {/*{isVatSettlement ? <span className="badge tone-neutral">100%</span> : isTaxContribution || isPayroll ? <span className="badge tone-neutral">N/A</span> :*/}
+                                    {/*    <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(expense.vatRate)}%</span>}*/}
                                 </div>
                                 <div className="mobile-record-meta-right">
                                     {/*-- Icona pagamento -->*/}
@@ -409,7 +413,7 @@ export default function ExpensesList({
                         <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese"/>
                     </th> : null}
                     <th className="cell-order-date" data-sort-key="order-date" data-sort-type="date">
-                        <span className="th-wrap">Data<br/>ordine</span></th>
+                        <span className="th-wrap">Data<br/>riferimento</span></th>
                     <th className="cell-billing-period" data-sort-key="billing-period" data-sort-type="number">
                         <span className="th-wrap">Periodo<br/>Cont.</span></th>
                     <th className="cell-type" data-sort-key="type"><span className="th-wrap">Tipo</span></th>
@@ -423,7 +427,7 @@ export default function ExpensesList({
                     <th className="cell-invoice-state" data-sort-key="invoice-state">
                         <span className="th-wrap">Stato<br/>Fatt.</span></th>
                     <th className="cell-ebilling" data-sort-key="ebill" data-sort-type="number">
-                        <span className="th-wrap">E-Bill</span></th>
+                        <span className="th-wrap">Fatt.</span></th>
                     <th className="cell-residual" data-sort-key="residual" data-sort-type="number">Residuo</th>
                 </tr>
                 </thead>

@@ -4,7 +4,7 @@ import {requireWorkspace} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {orderPaymentMethods} from '@/lib/workspace-defaults';
 import CashRegisterReceiptTrendChart from '@/components/CashRegisterReceiptTrendChart';
-import {buildDailyReceiptTrend, buildDailyReceiptTrendRange} from '@/lib/cash-register-trend';
+import {buildDailyReceiptTrend, buildDailyReceiptTrendRange, buildMonthlyReceiptTrend} from '@/lib/cash-register-trend';
 import {Prisma} from '@/generated/prisma/client';
 import CashRegisterReceiptFiltersDrawer from '@/components/CashRegisterReceiptFiltersDrawer';
 import SelectedButtonGroupScroller from '@/components/SelectedButtonGroupScroller';
@@ -42,6 +42,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const dateFrom = firstDate && secondDate && firstDate > secondDate ? secondDate : firstDate;
     const dateTo = firstDate && secondDate && firstDate > secondDate ? firstDate : secondDate;
     const hasCustomDateRange = Boolean(dateFrom && dateTo);
+    const annual = !hasCustomDateRange && value(params, 'period') === 'year';
     const match = month.match(/^(\d{4})-(\d{2})$/);
     const billingYear = match ? Number(match[1]) : currentPeriod.year;
     const billingMonth = match ? Number(match[2]) : currentPeriod.month;
@@ -54,7 +55,9 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             : Prisma.empty;
     const periodSqlFilter = hasCustomDateRange
         ? Prisma.sql`AND (("creditDate" AT TIME ZONE 'UTC') AT TIME ZONE ${timeZone})::date BETWEEN ${dateFrom}::date AND ${dateTo}::date`
-        : Prisma.sql`AND "billingYear" = ${billingYear} AND "billingMonth" = ${billingMonth}`;
+        : annual
+            ? Prisma.sql`AND "billingYear" = ${billingYear}`
+            : Prisma.sql`AND "billingYear" = ${billingYear} AND "billingMonth" = ${billingMonth}`;
     const creditDateFilter = hasCustomDateRange ? {
         gte: zonedMidnightUtc(dateFrom, timeZone),
         lt: zonedMidnightUtc(addCalendarDays(dateTo, 1), timeZone),
@@ -66,7 +69,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             workspaceId: current.workspace.id,
             companyId: current.company.id,
                 incomeType: 'CASH_REGISTER',
-                ...(hasCustomDateRange ? {creditDate: creditDateFilter} : {billingYear, billingMonth}),
+                ...(hasCustomDateRange ? {creditDate: creditDateFilter} : annual ? {billingYear} : {billingYear, billingMonth}),
                 ...(methodId ? {paymentMethodId: methodId} : {}),
                 ...(channelId ? {salesChannelId: channelId} : {}),
                 ...(fiscal === 'yes' ? {isFiscal: true} : fiscal === 'no' ? {isFiscal: false} : {})
@@ -104,7 +107,9 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const aggregates = dailyAggregates.map(item => ({day: item.day, count: item.count, total: Number(item.total)}));
     const trend = hasCustomDateRange
         ? buildDailyReceiptTrendRange(dateFrom, dateTo, aggregates)
-        : buildDailyReceiptTrend(billingYear, billingMonth, aggregates);
+        : annual
+            ? buildMonthlyReceiptTrend(billingYear, aggregates)
+            : buildDailyReceiptTrend(billingYear, billingMonth, aggregates);
     const total = trend.reduce((sum, point) => sum + point.total, 0);
     const receiptCount = trend.reduce((sum, point) => sum + point.count, 0);
     const selectedMethod = orderedMethods.find(item => item.id === methodId);
@@ -112,7 +117,9 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const activeFilters = [
         {label: 'Periodo', value: hasCustomDateRange
             ? `${new Date(`${dateFrom}T12:00:00Z`).toLocaleDateString('it-IT')} – ${new Date(`${dateTo}T12:00:00Z`).toLocaleDateString('it-IT')}`
-            : new Intl.DateTimeFormat('it-IT', {month: 'long', year: 'numeric'}).format(new Date(billingYear, billingMonth - 1, 1))},
+            : annual
+                ? String(billingYear)
+                : new Intl.DateTimeFormat('it-IT', {month: 'long', year: 'numeric'}).format(new Date(billingYear, billingMonth - 1, 1))},
         ...(selectedMethod ? [{label: 'Metodo', value: `${selectedMethod.icon ? `${selectedMethod.icon} ` : ''}${selectedMethod.name}`}] : []),
         ...(selectedChannel ? [{label: 'Canale', value: `${selectedChannel.icon ? `${selectedChannel.icon} ` : ''}${selectedChannel.name}`}] : []),
         ...(fiscal === 'yes' ? [{label: 'Fiscalità', value: 'Fiscali'}] : fiscal === 'no' ? [{label: 'Fiscalità', value: 'Non fiscali'}] : []),
@@ -126,9 +133,14 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         return {
             href: `/incomes/cash-register/receipts?${query}`,
             label: label.charAt(0).toUpperCase() + label.slice(1),
-            selected: !hasCustomDateRange && index + 1 === billingMonth,
+            selected: !hasCustomDateRange && !annual && index + 1 === billingMonth,
         };
     });
+    const annualQuery = new URLSearchParams({month: `${billingYear}-01`, period: 'year'});
+    if (methodId) annualQuery.set('paymentMethodId', String(methodId));
+    if (channelId) annualQuery.set('salesChannelId', String(channelId));
+    if (fiscal === 'yes' || fiscal === 'no') annualQuery.set('fiscal', fiscal);
+    const annualHref = `/incomes/cash-register/receipts?${annualQuery}`;
     const firstAvailableYear = Math.min(
         billingYear,
         currentPeriod.year,
@@ -142,6 +154,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         .map(navYear => {
             const navMonth = navYear === currentPeriod.year ? Math.min(billingMonth, currentPeriod.month) : billingMonth;
             const query = new URLSearchParams({month: `${navYear}-${String(navMonth).padStart(2, '0')}`});
+            if (annual) query.set('period', 'year');
             if (methodId) query.set('paymentMethodId', String(methodId));
             if (channelId) query.set('salesChannelId', String(channelId));
             if (fiscal === 'yes' || fiscal === 'no') query.set('fiscal', fiscal);
@@ -149,6 +162,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         });
     const returnQuery = new URLSearchParams();
     if (month) returnQuery.set('month', month);
+    if (annual) returnQuery.set('period', 'year');
     if (rawDateFrom) returnQuery.set('dateFrom', rawDateFrom);
     if (rawDateTo) returnQuery.set('dateTo', rawDateTo);
     if (methodId) returnQuery.set('paymentMethodId', String(methodId));
@@ -164,13 +178,14 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
                 <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register">🧮 Reg. di cassa</Link>
             </div>
         </div>
-        <nav className="cash-register-receipt-period-nav" aria-label={`Mesi del ${billingYear}`}>
+        <nav className="cash-register-receipt-period-nav fixed" aria-label={`Periodi del ${billingYear}`}>
             <SelectedButtonGroupScroller className="btn-group cash-register-receipt-month-group" showControls wrapperClassName="cash-register-receipt-month-scroller">
                 {monthLinks.map(item => <Link key={item.label} className={`btn btn-sm ${item.selected ? 'btn-primary is-selected' : 'btn-default'}`} aria-current={item.selected ? 'page' : undefined} href={item.href}>{item.label}</Link>)}
+                <Link className={`btn btn-sm ${annual ? 'btn-primary is-selected' : 'btn-default'}`} aria-current={annual ? 'page' : undefined} href={annualHref}>Anno</Link>
             </SelectedButtonGroupScroller>
             <YearNavigationSelect options={yearLinks} year={billingYear}/>
         </nav>
-        <div className="recurring-active-filters">
+        <div className="recurring-active-filters fixed">
             <div>
                 <span className="recurring-active-filters-title">Filtri attivi</span>
                 <div className="recurring-active-filter-tags">{activeFilters.map(item =>
@@ -178,7 +193,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             </div>
             <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes/cash-register/receipts"><span className="btn-icon">×</span> Reset</Link>
         </div>
-        <CashRegisterReceiptTrendChart points={trend}/>
+        <CashRegisterReceiptTrendChart points={trend} annual={annual}/>
         <CashRegisterReceiptList
             returnTo={receiptListReturnTo}
             filtersTrigger={<CashRegisterReceiptFiltersDrawer month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}

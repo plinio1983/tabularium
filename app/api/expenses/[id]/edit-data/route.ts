@@ -37,6 +37,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       payrollExtraCompensation: expense.payrollExtraCompensation?.toString() ?? null,
       payrollGrossAmount: expense.payrollGrossAmount?.toString() ?? null,
       payrollEmployerCost: expense.payrollEmployerCost?.toString() ?? null,
+      payrollPeriodStart: expense.payrollPeriodStart,
+      payrollPeriodEnd: expense.payrollPeriodEnd,
       expenseType: expense.expenseType,
       vatRate: expense.vatRate.toString(),
       paymentStatus: expense.paymentStatus,

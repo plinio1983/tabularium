@@ -1034,6 +1034,12 @@ body.invoice-attachments-modal-open {
   overflow: hidden;
   border-top: 1px solid rgba(226, 232, 240, .95);
   border-bottom: 1px solid rgba(226, 232, 240, .95);
+  background: #fff;
+}
+
+.income-detail-document .record-detail-hero {
+  background: radial-gradient(circle at 12% 0%, rgba(63, 111, 255, .11), transparent 34%),
+  linear-gradient(135deg, #f8fbff 0%, #fff 62%);
 }
 
 .income-detail-document.income-row-warning {
@@ -1044,7 +1050,7 @@ body.invoice-attachments-modal-open {
   background: linear-gradient(180deg, rgba(255, 248, 223, 0.76), transparent 62%);
 }
 
-.income-detail-document.income-row-overdue {
+.income-detail-document.income-row-overdue .record-detail-hero {
   background: linear-gradient(180deg, rgba(255, 241, 241, .92) 0%, rgba(255, 247, 247, .58) 36%, rgba(255, 247, 247, 0) 100%);
 }
 
