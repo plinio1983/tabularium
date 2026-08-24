@@ -34,8 +34,17 @@ export type RecurringExpenseAvgAggregateOutputType = {
   dueMonth: number | null
   billingMonth: number | null
   supplierId: number | null
+  taxAuthorityId: number | null
+  employeeId: number | null
   categoryId: number | null
   amount: runtime.Decimal | null
+  payrollNetAmount: runtime.Decimal | null
+  payrollExtraCompensation: runtime.Decimal | null
+  payrollGrossAmount: runtime.Decimal | null
+  payrollEmployerCost: runtime.Decimal | null
+  payrollPeriodMonthOffset: number | null
+  payrollPeriodStartDay: number | null
+  payrollPeriodEndDay: number | null
   vatRate: runtime.Decimal | null
   paymentMethodId: number | null
   bankId: number | null
@@ -49,8 +58,17 @@ export type RecurringExpenseSumAggregateOutputType = {
   dueMonth: number | null
   billingMonth: number | null
   supplierId: number | null
+  taxAuthorityId: number | null
+  employeeId: number | null
   categoryId: number | null
   amount: runtime.Decimal | null
+  payrollNetAmount: runtime.Decimal | null
+  payrollExtraCompensation: runtime.Decimal | null
+  payrollGrossAmount: runtime.Decimal | null
+  payrollEmployerCost: runtime.Decimal | null
+  payrollPeriodMonthOffset: number | null
+  payrollPeriodStartDay: number | null
+  payrollPeriodEndDay: number | null
   vatRate: runtime.Decimal | null
   paymentMethodId: number | null
   bankId: number | null
@@ -67,16 +85,28 @@ export type RecurringExpenseMinAggregateOutputType = {
   dueDay: number | null
   dueMonth: number | null
   generationTiming: $Enums.RecurringExpenseGenerationTiming | null
+  expenseType: $Enums.ExpenseType | null
   isAutomaticPayment: boolean | null
   billingPeriodMode: string | null
   billingMonth: number | null
   merchant: string | null
   supplierId: number | null
+  taxAuthorityId: number | null
+  employeeId: number | null
   categoryId: number | null
   description: string | null
   amount: runtime.Decimal | null
+  payrollNetAmount: runtime.Decimal | null
+  payrollExtraCompensation: runtime.Decimal | null
+  payrollGrossAmount: runtime.Decimal | null
+  payrollEmployerCost: runtime.Decimal | null
+  payrollPeriodMode: string | null
+  payrollPeriodMonthOffset: number | null
+  payrollPeriodStartDay: number | null
+  payrollPeriodEndDay: number | null
   vatRate: runtime.Decimal | null
   isDeclared: boolean | null
+  affectsFiscalProfit: boolean | null
   hasElectronicInvoice: boolean | null
   paymentMethodId: number | null
   bankId: number | null
@@ -97,16 +127,28 @@ export type RecurringExpenseMaxAggregateOutputType = {
   dueDay: number | null
   dueMonth: number | null
   generationTiming: $Enums.RecurringExpenseGenerationTiming | null
+  expenseType: $Enums.ExpenseType | null
   isAutomaticPayment: boolean | null
   billingPeriodMode: string | null
   billingMonth: number | null
   merchant: string | null
   supplierId: number | null
+  taxAuthorityId: number | null
+  employeeId: number | null
   categoryId: number | null
   description: string | null
   amount: runtime.Decimal | null
+  payrollNetAmount: runtime.Decimal | null
+  payrollExtraCompensation: runtime.Decimal | null
+  payrollGrossAmount: runtime.Decimal | null
+  payrollEmployerCost: runtime.Decimal | null
+  payrollPeriodMode: string | null
+  payrollPeriodMonthOffset: number | null
+  payrollPeriodStartDay: number | null
+  payrollPeriodEndDay: number | null
   vatRate: runtime.Decimal | null
   isDeclared: boolean | null
+  affectsFiscalProfit: boolean | null
   hasElectronicInvoice: boolean | null
   paymentMethodId: number | null
   bankId: number | null
@@ -127,16 +169,28 @@ export type RecurringExpenseCountAggregateOutputType = {
   dueDay: number
   dueMonth: number
   generationTiming: number
+  expenseType: number
   isAutomaticPayment: number
   billingPeriodMode: number
   billingMonth: number
   merchant: number
   supplierId: number
+  taxAuthorityId: number
+  employeeId: number
   categoryId: number
   description: number
   amount: number
+  payrollNetAmount: number
+  payrollExtraCompensation: number
+  payrollGrossAmount: number
+  payrollEmployerCost: number
+  payrollPeriodMode: number
+  payrollPeriodMonthOffset: number
+  payrollPeriodStartDay: number
+  payrollPeriodEndDay: number
   vatRate: number
   isDeclared: number
+  affectsFiscalProfit: number
   hasElectronicInvoice: number
   paymentMethodId: number
   bankId: number
@@ -156,8 +210,17 @@ export type RecurringExpenseAvgAggregateInputType = {
   dueMonth?: true
   billingMonth?: true
   supplierId?: true
+  taxAuthorityId?: true
+  employeeId?: true
   categoryId?: true
   amount?: true
+  payrollNetAmount?: true
+  payrollExtraCompensation?: true
+  payrollGrossAmount?: true
+  payrollEmployerCost?: true
+  payrollPeriodMonthOffset?: true
+  payrollPeriodStartDay?: true
+  payrollPeriodEndDay?: true
   vatRate?: true
   paymentMethodId?: true
   bankId?: true
@@ -171,8 +234,17 @@ export type RecurringExpenseSumAggregateInputType = {
   dueMonth?: true
   billingMonth?: true
   supplierId?: true
+  taxAuthorityId?: true
+  employeeId?: true
   categoryId?: true
   amount?: true
+  payrollNetAmount?: true
+  payrollExtraCompensation?: true
+  payrollGrossAmount?: true
+  payrollEmployerCost?: true
+  payrollPeriodMonthOffset?: true
+  payrollPeriodStartDay?: true
+  payrollPeriodEndDay?: true
   vatRate?: true
   paymentMethodId?: true
   bankId?: true
@@ -189,16 +261,28 @@ export type RecurringExpenseMinAggregateInputType = {
   dueDay?: true
   dueMonth?: true
   generationTiming?: true
+  expenseType?: true
   isAutomaticPayment?: true
   billingPeriodMode?: true
   billingMonth?: true
   merchant?: true
   supplierId?: true
+  taxAuthorityId?: true
+  employeeId?: true
   categoryId?: true
   description?: true
   amount?: true
+  payrollNetAmount?: true
+  payrollExtraCompensation?: true
+  payrollGrossAmount?: true
+  payrollEmployerCost?: true
+  payrollPeriodMode?: true
+  payrollPeriodMonthOffset?: true
+  payrollPeriodStartDay?: true
+  payrollPeriodEndDay?: true
   vatRate?: true
   isDeclared?: true
+  affectsFiscalProfit?: true
   hasElectronicInvoice?: true
   paymentMethodId?: true
   bankId?: true
@@ -219,16 +303,28 @@ export type RecurringExpenseMaxAggregateInputType = {
   dueDay?: true
   dueMonth?: true
   generationTiming?: true
+  expenseType?: true
   isAutomaticPayment?: true
   billingPeriodMode?: true
   billingMonth?: true
   merchant?: true
   supplierId?: true
+  taxAuthorityId?: true
+  employeeId?: true
   categoryId?: true
   description?: true
   amount?: true
+  payrollNetAmount?: true
+  payrollExtraCompensation?: true
+  payrollGrossAmount?: true
+  payrollEmployerCost?: true
+  payrollPeriodMode?: true
+  payrollPeriodMonthOffset?: true
+  payrollPeriodStartDay?: true
+  payrollPeriodEndDay?: true
   vatRate?: true
   isDeclared?: true
+  affectsFiscalProfit?: true
   hasElectronicInvoice?: true
   paymentMethodId?: true
   bankId?: true
@@ -249,16 +345,28 @@ export type RecurringExpenseCountAggregateInputType = {
   dueDay?: true
   dueMonth?: true
   generationTiming?: true
+  expenseType?: true
   isAutomaticPayment?: true
   billingPeriodMode?: true
   billingMonth?: true
   merchant?: true
   supplierId?: true
+  taxAuthorityId?: true
+  employeeId?: true
   categoryId?: true
   description?: true
   amount?: true
+  payrollNetAmount?: true
+  payrollExtraCompensation?: true
+  payrollGrossAmount?: true
+  payrollEmployerCost?: true
+  payrollPeriodMode?: true
+  payrollPeriodMonthOffset?: true
+  payrollPeriodStartDay?: true
+  payrollPeriodEndDay?: true
   vatRate?: true
   isDeclared?: true
+  affectsFiscalProfit?: true
   hasElectronicInvoice?: true
   paymentMethodId?: true
   bankId?: true
@@ -366,16 +474,28 @@ export type RecurringExpenseGroupByOutputType = {
   dueDay: number | null
   dueMonth: number | null
   generationTiming: $Enums.RecurringExpenseGenerationTiming
+  expenseType: $Enums.ExpenseType
   isAutomaticPayment: boolean
   billingPeriodMode: string
   billingMonth: number | null
   merchant: string
   supplierId: number | null
+  taxAuthorityId: number | null
+  employeeId: number | null
   categoryId: number | null
   description: string | null
   amount: runtime.Decimal
+  payrollNetAmount: runtime.Decimal | null
+  payrollExtraCompensation: runtime.Decimal | null
+  payrollGrossAmount: runtime.Decimal | null
+  payrollEmployerCost: runtime.Decimal | null
+  payrollPeriodMode: string | null
+  payrollPeriodMonthOffset: number | null
+  payrollPeriodStartDay: number | null
+  payrollPeriodEndDay: number | null
   vatRate: runtime.Decimal
   isDeclared: boolean
+  affectsFiscalProfit: boolean
   hasElectronicInvoice: boolean
   paymentMethodId: number | null
   bankId: number | null
@@ -419,16 +539,28 @@ export type RecurringExpenseWhereInput = {
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFilter<"RecurringExpense"> | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFilter<"RecurringExpense"> | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   billingPeriodMode?: Prisma.StringFilter<"RecurringExpense"> | string
   billingMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   merchant?: Prisma.StringFilter<"RecurringExpense"> | string
   supplierId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  taxAuthorityId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  employeeId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   categoryId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   description?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
   amount?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
+  payrollPeriodMonthOffset?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  payrollPeriodStartDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  payrollPeriodEndDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   vatRate?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  affectsFiscalProfit?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   hasElectronicInvoice?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   paymentMethodId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   bankId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
@@ -439,6 +571,8 @@ export type RecurringExpenseWhereInput = {
   workspace?: Prisma.XOR<Prisma.WorkspaceNullableScalarRelationFilter, Prisma.WorkspaceWhereInput> | null
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   supplier?: Prisma.XOR<Prisma.SupplierNullableScalarRelationFilter, Prisma.SupplierWhereInput> | null
+  taxAuthority?: Prisma.XOR<Prisma.TaxAuthorityNullableScalarRelationFilter, Prisma.TaxAuthorityWhereInput> | null
+  employee?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   category?: Prisma.XOR<Prisma.ExpenseCategoryNullableScalarRelationFilter, Prisma.ExpenseCategoryWhereInput> | null
   paymentMethod?: Prisma.XOR<Prisma.PaymentMethodNullableScalarRelationFilter, Prisma.PaymentMethodWhereInput> | null
   bank?: Prisma.XOR<Prisma.BankNullableScalarRelationFilter, Prisma.BankWhereInput> | null
@@ -457,16 +591,28 @@ export type RecurringExpenseOrderByWithRelationInput = {
   dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
   dueMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   generationTiming?: Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
   isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   merchant?: Prisma.SortOrder
   supplierId?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxAuthorityId?: Prisma.SortOrderInput | Prisma.SortOrder
+  employeeId?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
+  payrollNetAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollExtraCompensation?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollGrossAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollEmployerCost?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollPeriodMode?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollPeriodMonthOffset?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollPeriodStartDay?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollPeriodEndDay?: Prisma.SortOrderInput | Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
+  affectsFiscalProfit?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   bankId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -477,6 +623,8 @@ export type RecurringExpenseOrderByWithRelationInput = {
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   company?: Prisma.CompanyOrderByWithRelationInput
   supplier?: Prisma.SupplierOrderByWithRelationInput
+  taxAuthority?: Prisma.TaxAuthorityOrderByWithRelationInput
+  employee?: Prisma.EmployeeOrderByWithRelationInput
   category?: Prisma.ExpenseCategoryOrderByWithRelationInput
   paymentMethod?: Prisma.PaymentMethodOrderByWithRelationInput
   bank?: Prisma.BankOrderByWithRelationInput
@@ -498,16 +646,28 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFilter<"RecurringExpense"> | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFilter<"RecurringExpense"> | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   billingPeriodMode?: Prisma.StringFilter<"RecurringExpense"> | string
   billingMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   merchant?: Prisma.StringFilter<"RecurringExpense"> | string
   supplierId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  taxAuthorityId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  employeeId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   categoryId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   description?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
   amount?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
+  payrollPeriodMonthOffset?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  payrollPeriodStartDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  payrollPeriodEndDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   vatRate?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  affectsFiscalProfit?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   hasElectronicInvoice?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   paymentMethodId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   bankId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
@@ -518,6 +678,8 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
   workspace?: Prisma.XOR<Prisma.WorkspaceNullableScalarRelationFilter, Prisma.WorkspaceWhereInput> | null
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   supplier?: Prisma.XOR<Prisma.SupplierNullableScalarRelationFilter, Prisma.SupplierWhereInput> | null
+  taxAuthority?: Prisma.XOR<Prisma.TaxAuthorityNullableScalarRelationFilter, Prisma.TaxAuthorityWhereInput> | null
+  employee?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   category?: Prisma.XOR<Prisma.ExpenseCategoryNullableScalarRelationFilter, Prisma.ExpenseCategoryWhereInput> | null
   paymentMethod?: Prisma.XOR<Prisma.PaymentMethodNullableScalarRelationFilter, Prisma.PaymentMethodWhereInput> | null
   bank?: Prisma.XOR<Prisma.BankNullableScalarRelationFilter, Prisma.BankWhereInput> | null
@@ -536,16 +698,28 @@ export type RecurringExpenseOrderByWithAggregationInput = {
   dueDay?: Prisma.SortOrderInput | Prisma.SortOrder
   dueMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   generationTiming?: Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
   isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrderInput | Prisma.SortOrder
   merchant?: Prisma.SortOrder
   supplierId?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxAuthorityId?: Prisma.SortOrderInput | Prisma.SortOrder
+  employeeId?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
+  payrollNetAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollExtraCompensation?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollGrossAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollEmployerCost?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollPeriodMode?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollPeriodMonthOffset?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollPeriodStartDay?: Prisma.SortOrderInput | Prisma.SortOrder
+  payrollPeriodEndDay?: Prisma.SortOrderInput | Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
+  affectsFiscalProfit?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   bankId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -574,16 +748,28 @@ export type RecurringExpenseScalarWhereWithAggregatesInput = {
   dueDay?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingWithAggregatesFilter<"RecurringExpense"> | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeWithAggregatesFilter<"RecurringExpense"> | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolWithAggregatesFilter<"RecurringExpense"> | boolean
   billingPeriodMode?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
   billingMonth?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   merchant?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
   supplierId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
+  taxAuthorityId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
+  employeeId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   categoryId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   description?: Prisma.StringNullableWithAggregatesFilter<"RecurringExpense"> | string | null
   amount?: Prisma.DecimalWithAggregatesFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.DecimalNullableWithAggregatesFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.DecimalNullableWithAggregatesFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.DecimalNullableWithAggregatesFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.DecimalNullableWithAggregatesFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.StringNullableWithAggregatesFilter<"RecurringExpense"> | string | null
+  payrollPeriodMonthOffset?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
+  payrollPeriodStartDay?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
+  payrollPeriodEndDay?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   vatRate?: Prisma.DecimalWithAggregatesFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolWithAggregatesFilter<"RecurringExpense"> | boolean
+  affectsFiscalProfit?: Prisma.BoolWithAggregatesFilter<"RecurringExpense"> | boolean
   hasElectronicInvoice?: Prisma.BoolWithAggregatesFilter<"RecurringExpense"> | boolean
   paymentMethodId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
   bankId?: Prisma.IntNullableWithAggregatesFilter<"RecurringExpense"> | number | null
@@ -601,14 +787,24 @@ export type RecurringExpenseCreateInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -617,6 +813,8 @@ export type RecurringExpenseCreateInput = {
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
@@ -635,16 +833,28 @@ export type RecurringExpenseUncheckedCreateInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -664,14 +874,24 @@ export type RecurringExpenseUpdateInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -680,6 +900,8 @@ export type RecurringExpenseUpdateInput = {
   workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
@@ -698,16 +920,28 @@ export type RecurringExpenseUncheckedUpdateInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -730,16 +964,28 @@ export type RecurringExpenseCreateManyInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -757,14 +1003,24 @@ export type RecurringExpenseUpdateManyMutationInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -783,16 +1039,28 @@ export type RecurringExpenseUncheckedUpdateManyInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -823,16 +1091,28 @@ export type RecurringExpenseCountOrderByAggregateInput = {
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
   generationTiming?: Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
   isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
   merchant?: Prisma.SortOrder
   supplierId?: Prisma.SortOrder
+  taxAuthorityId?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  payrollNetAmount?: Prisma.SortOrder
+  payrollExtraCompensation?: Prisma.SortOrder
+  payrollGrossAmount?: Prisma.SortOrder
+  payrollEmployerCost?: Prisma.SortOrder
+  payrollPeriodMode?: Prisma.SortOrder
+  payrollPeriodMonthOffset?: Prisma.SortOrder
+  payrollPeriodStartDay?: Prisma.SortOrder
+  payrollPeriodEndDay?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
+  affectsFiscalProfit?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
@@ -850,8 +1130,17 @@ export type RecurringExpenseAvgOrderByAggregateInput = {
   dueMonth?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
   supplierId?: Prisma.SortOrder
+  taxAuthorityId?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  payrollNetAmount?: Prisma.SortOrder
+  payrollExtraCompensation?: Prisma.SortOrder
+  payrollGrossAmount?: Prisma.SortOrder
+  payrollEmployerCost?: Prisma.SortOrder
+  payrollPeriodMonthOffset?: Prisma.SortOrder
+  payrollPeriodStartDay?: Prisma.SortOrder
+  payrollPeriodEndDay?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
@@ -868,16 +1157,28 @@ export type RecurringExpenseMaxOrderByAggregateInput = {
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
   generationTiming?: Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
   isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
   merchant?: Prisma.SortOrder
   supplierId?: Prisma.SortOrder
+  taxAuthorityId?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  payrollNetAmount?: Prisma.SortOrder
+  payrollExtraCompensation?: Prisma.SortOrder
+  payrollGrossAmount?: Prisma.SortOrder
+  payrollEmployerCost?: Prisma.SortOrder
+  payrollPeriodMode?: Prisma.SortOrder
+  payrollPeriodMonthOffset?: Prisma.SortOrder
+  payrollPeriodStartDay?: Prisma.SortOrder
+  payrollPeriodEndDay?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
+  affectsFiscalProfit?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
@@ -898,16 +1199,28 @@ export type RecurringExpenseMinOrderByAggregateInput = {
   dueDay?: Prisma.SortOrder
   dueMonth?: Prisma.SortOrder
   generationTiming?: Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
   isAutomaticPayment?: Prisma.SortOrder
   billingPeriodMode?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
   merchant?: Prisma.SortOrder
   supplierId?: Prisma.SortOrder
+  taxAuthorityId?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  payrollNetAmount?: Prisma.SortOrder
+  payrollExtraCompensation?: Prisma.SortOrder
+  payrollGrossAmount?: Prisma.SortOrder
+  payrollEmployerCost?: Prisma.SortOrder
+  payrollPeriodMode?: Prisma.SortOrder
+  payrollPeriodMonthOffset?: Prisma.SortOrder
+  payrollPeriodStartDay?: Prisma.SortOrder
+  payrollPeriodEndDay?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   isDeclared?: Prisma.SortOrder
+  affectsFiscalProfit?: Prisma.SortOrder
   hasElectronicInvoice?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
@@ -925,8 +1238,17 @@ export type RecurringExpenseSumOrderByAggregateInput = {
   dueMonth?: Prisma.SortOrder
   billingMonth?: Prisma.SortOrder
   supplierId?: Prisma.SortOrder
+  taxAuthorityId?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  payrollNetAmount?: Prisma.SortOrder
+  payrollExtraCompensation?: Prisma.SortOrder
+  payrollGrossAmount?: Prisma.SortOrder
+  payrollEmployerCost?: Prisma.SortOrder
+  payrollPeriodMonthOffset?: Prisma.SortOrder
+  payrollPeriodStartDay?: Prisma.SortOrder
+  payrollPeriodEndDay?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   paymentMethodId?: Prisma.SortOrder
   bankId?: Prisma.SortOrder
@@ -1023,6 +1345,48 @@ export type RecurringExpenseUncheckedUpdateManyWithoutCompanyNestedInput = {
   connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
   update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutCompanyInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutCompanyInput[]
   updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutCompanyInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+}
+
+export type RecurringExpenseCreateNestedManyWithoutEmployeeInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutEmployeeInput, Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput> | Prisma.RecurringExpenseCreateWithoutEmployeeInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutEmployeeInput | Prisma.RecurringExpenseCreateOrConnectWithoutEmployeeInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyEmployeeInputEnvelope
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+}
+
+export type RecurringExpenseUncheckedCreateNestedManyWithoutEmployeeInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutEmployeeInput, Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput> | Prisma.RecurringExpenseCreateWithoutEmployeeInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutEmployeeInput | Prisma.RecurringExpenseCreateOrConnectWithoutEmployeeInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyEmployeeInputEnvelope
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+}
+
+export type RecurringExpenseUpdateManyWithoutEmployeeNestedInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutEmployeeInput, Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput> | Prisma.RecurringExpenseCreateWithoutEmployeeInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutEmployeeInput | Prisma.RecurringExpenseCreateOrConnectWithoutEmployeeInput[]
+  upsert?: Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutEmployeeInput | Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutEmployeeInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyEmployeeInputEnvelope
+  set?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  disconnect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  delete?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutEmployeeInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutEmployeeInput[]
+  updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutEmployeeInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutEmployeeInput[]
+  deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+}
+
+export type RecurringExpenseUncheckedUpdateManyWithoutEmployeeNestedInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutEmployeeInput, Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput> | Prisma.RecurringExpenseCreateWithoutEmployeeInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutEmployeeInput | Prisma.RecurringExpenseCreateOrConnectWithoutEmployeeInput[]
+  upsert?: Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutEmployeeInput | Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutEmployeeInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyEmployeeInputEnvelope
+  set?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  disconnect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  delete?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutEmployeeInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutEmployeeInput[]
+  updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutEmployeeInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutEmployeeInput[]
   deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
 }
 
@@ -1194,8 +1558,54 @@ export type RecurringExpenseUncheckedUpdateManyWithoutSupplierNestedInput = {
   deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
 }
 
+export type RecurringExpenseCreateNestedManyWithoutTaxAuthorityInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput, Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput> | Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput | Prisma.RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyTaxAuthorityInputEnvelope
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+}
+
+export type RecurringExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput, Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput> | Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput | Prisma.RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyTaxAuthorityInputEnvelope
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+}
+
+export type RecurringExpenseUpdateManyWithoutTaxAuthorityNestedInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput, Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput> | Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput | Prisma.RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput[]
+  upsert?: Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutTaxAuthorityInput | Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutTaxAuthorityInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyTaxAuthorityInputEnvelope
+  set?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  disconnect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  delete?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutTaxAuthorityInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutTaxAuthorityInput[]
+  updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutTaxAuthorityInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutTaxAuthorityInput[]
+  deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+}
+
+export type RecurringExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput, Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput> | Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput | Prisma.RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput[]
+  upsert?: Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutTaxAuthorityInput | Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutTaxAuthorityInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyTaxAuthorityInputEnvelope
+  set?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  disconnect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  delete?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutTaxAuthorityInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutTaxAuthorityInput[]
+  updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutTaxAuthorityInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutTaxAuthorityInput[]
+  deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+}
+
 export type EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput = {
   set?: $Enums.RecurringExpenseGenerationTiming
+}
+
+export type EnumExpenseTypeFieldUpdateOperationsInput = {
+  set?: $Enums.ExpenseType
 }
 
 export type DecimalFieldUpdateOperationsInput = {
@@ -1244,14 +1654,24 @@ export type RecurringExpenseCreateWithoutWorkspaceInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -1259,6 +1679,8 @@ export type RecurringExpenseCreateWithoutWorkspaceInput = {
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
@@ -1276,16 +1698,28 @@ export type RecurringExpenseUncheckedCreateWithoutWorkspaceInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -1337,16 +1771,28 @@ export type RecurringExpenseScalarWhereInput = {
   dueDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   dueMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFilter<"RecurringExpense"> | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFilter<"RecurringExpense"> | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   billingPeriodMode?: Prisma.StringFilter<"RecurringExpense"> | string
   billingMonth?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   merchant?: Prisma.StringFilter<"RecurringExpense"> | string
   supplierId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  taxAuthorityId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  employeeId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   categoryId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   description?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
   amount?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.DecimalNullableFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
+  payrollPeriodMonthOffset?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  payrollPeriodStartDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
+  payrollPeriodEndDay?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   vatRate?: Prisma.DecimalFilter<"RecurringExpense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  affectsFiscalProfit?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   hasElectronicInvoice?: Prisma.BoolFilter<"RecurringExpense"> | boolean
   paymentMethodId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
   bankId?: Prisma.IntNullableFilter<"RecurringExpense"> | number | null
@@ -1364,14 +1810,24 @@ export type RecurringExpenseCreateWithoutCompanyInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -1379,6 +1835,8 @@ export type RecurringExpenseCreateWithoutCompanyInput = {
   updatedAt?: Date | string
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
@@ -1396,16 +1854,28 @@ export type RecurringExpenseUncheckedCreateWithoutCompanyInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -1443,7 +1913,7 @@ export type RecurringExpenseUpdateManyWithWhereWithoutCompanyInput = {
   data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutCompanyInput>
 }
 
-export type RecurringExpenseCreateWithoutCategoryInput = {
+export type RecurringExpenseCreateWithoutEmployeeInput = {
   startDate: Date | string
   endDate?: Date | string | null
   archivedAt?: Date | string | null
@@ -1451,14 +1921,24 @@ export type RecurringExpenseCreateWithoutCategoryInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -1467,6 +1947,119 @@ export type RecurringExpenseCreateWithoutCategoryInput = {
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
+  paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
+  bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
+  generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
+  exclusions?: Prisma.RecurringExpenseExclusionCreateNestedManyWithoutRecurringExpenseInput
+}
+
+export type RecurringExpenseUncheckedCreateWithoutEmployeeInput = {
+  id?: number
+  workspaceId?: number | null
+  companyId: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
+  isAutomaticPayment?: boolean
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  supplierId?: number | null
+  taxAuthorityId?: number | null
+  categoryId?: number | null
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  affectsFiscalProfit?: boolean
+  hasElectronicInvoice?: boolean
+  paymentMethodId?: number | null
+  bankId?: number | null
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  generatedExpenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutRecurringExpenseInput
+  exclusions?: Prisma.RecurringExpenseExclusionUncheckedCreateNestedManyWithoutRecurringExpenseInput
+}
+
+export type RecurringExpenseCreateOrConnectWithoutEmployeeInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutEmployeeInput, Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput>
+}
+
+export type RecurringExpenseCreateManyEmployeeInputEnvelope = {
+  data: Prisma.RecurringExpenseCreateManyEmployeeInput | Prisma.RecurringExpenseCreateManyEmployeeInput[]
+  skipDuplicates?: boolean
+}
+
+export type RecurringExpenseUpsertWithWhereUniqueWithoutEmployeeInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  update: Prisma.XOR<Prisma.RecurringExpenseUpdateWithoutEmployeeInput, Prisma.RecurringExpenseUncheckedUpdateWithoutEmployeeInput>
+  create: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutEmployeeInput, Prisma.RecurringExpenseUncheckedCreateWithoutEmployeeInput>
+}
+
+export type RecurringExpenseUpdateWithWhereUniqueWithoutEmployeeInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  data: Prisma.XOR<Prisma.RecurringExpenseUpdateWithoutEmployeeInput, Prisma.RecurringExpenseUncheckedUpdateWithoutEmployeeInput>
+}
+
+export type RecurringExpenseUpdateManyWithWhereWithoutEmployeeInput = {
+  where: Prisma.RecurringExpenseScalarWhereInput
+  data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutEmployeeInput>
+}
+
+export type RecurringExpenseCreateWithoutCategoryInput = {
+  startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
+  isAutomaticPayment?: boolean
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  affectsFiscalProfit?: boolean
+  hasElectronicInvoice?: boolean
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
+  company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
+  supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
   generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
@@ -1484,15 +2077,27 @@ export type RecurringExpenseUncheckedCreateWithoutCategoryInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -1538,14 +2143,24 @@ export type RecurringExpenseCreateWithoutBankInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -1554,6 +2169,8 @@ export type RecurringExpenseCreateWithoutBankInput = {
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
   generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
@@ -1571,16 +2188,28 @@ export type RecurringExpenseUncheckedCreateWithoutBankInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   notes?: string | null
@@ -1625,14 +2254,24 @@ export type RecurringExpenseCreateWithoutPaymentMethodInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -1641,6 +2280,8 @@ export type RecurringExpenseCreateWithoutPaymentMethodInput = {
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
   generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
@@ -1658,16 +2299,28 @@ export type RecurringExpenseUncheckedCreateWithoutPaymentMethodInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   bankId?: number | null
   notes?: string | null
@@ -1712,14 +2365,24 @@ export type RecurringExpenseCreateWithoutSupplierInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -1727,6 +2390,8 @@ export type RecurringExpenseCreateWithoutSupplierInput = {
   updatedAt?: Date | string
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
@@ -1745,15 +2410,27 @@ export type RecurringExpenseUncheckedCreateWithoutSupplierInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -1791,7 +2468,7 @@ export type RecurringExpenseUpdateManyWithWhereWithoutSupplierInput = {
   data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutSupplierInput>
 }
 
-export type RecurringExpenseCreateWithoutExclusionsInput = {
+export type RecurringExpenseCreateWithoutTaxAuthorityInput = {
   startDate: Date | string
   endDate?: Date | string | null
   archivedAt?: Date | string | null
@@ -1799,14 +2476,24 @@ export type RecurringExpenseCreateWithoutExclusionsInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -1815,6 +2502,119 @@ export type RecurringExpenseCreateWithoutExclusionsInput = {
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
+  category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
+  paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
+  bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
+  generatedExpenses?: Prisma.ExpenseCreateNestedManyWithoutRecurringExpenseInput
+  exclusions?: Prisma.RecurringExpenseExclusionCreateNestedManyWithoutRecurringExpenseInput
+}
+
+export type RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput = {
+  id?: number
+  workspaceId?: number | null
+  companyId: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
+  isAutomaticPayment?: boolean
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  supplierId?: number | null
+  employeeId?: number | null
+  categoryId?: number | null
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  affectsFiscalProfit?: boolean
+  hasElectronicInvoice?: boolean
+  paymentMethodId?: number | null
+  bankId?: number | null
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  generatedExpenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutRecurringExpenseInput
+  exclusions?: Prisma.RecurringExpenseExclusionUncheckedCreateNestedManyWithoutRecurringExpenseInput
+}
+
+export type RecurringExpenseCreateOrConnectWithoutTaxAuthorityInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput, Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput>
+}
+
+export type RecurringExpenseCreateManyTaxAuthorityInputEnvelope = {
+  data: Prisma.RecurringExpenseCreateManyTaxAuthorityInput | Prisma.RecurringExpenseCreateManyTaxAuthorityInput[]
+  skipDuplicates?: boolean
+}
+
+export type RecurringExpenseUpsertWithWhereUniqueWithoutTaxAuthorityInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  update: Prisma.XOR<Prisma.RecurringExpenseUpdateWithoutTaxAuthorityInput, Prisma.RecurringExpenseUncheckedUpdateWithoutTaxAuthorityInput>
+  create: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutTaxAuthorityInput, Prisma.RecurringExpenseUncheckedCreateWithoutTaxAuthorityInput>
+}
+
+export type RecurringExpenseUpdateWithWhereUniqueWithoutTaxAuthorityInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  data: Prisma.XOR<Prisma.RecurringExpenseUpdateWithoutTaxAuthorityInput, Prisma.RecurringExpenseUncheckedUpdateWithoutTaxAuthorityInput>
+}
+
+export type RecurringExpenseUpdateManyWithWhereWithoutTaxAuthorityInput = {
+  where: Prisma.RecurringExpenseScalarWhereInput
+  data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutTaxAuthorityInput>
+}
+
+export type RecurringExpenseCreateWithoutExclusionsInput = {
+  startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
+  isAutomaticPayment?: boolean
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  affectsFiscalProfit?: boolean
+  hasElectronicInvoice?: boolean
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
+  company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
+  supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
@@ -1832,16 +2632,28 @@ export type RecurringExpenseUncheckedCreateWithoutExclusionsInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -1876,14 +2688,24 @@ export type RecurringExpenseUpdateWithoutExclusionsInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1892,6 +2714,8 @@ export type RecurringExpenseUpdateWithoutExclusionsInput = {
   workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
@@ -1909,16 +2733,28 @@ export type RecurringExpenseUncheckedUpdateWithoutExclusionsInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1937,14 +2773,24 @@ export type RecurringExpenseCreateWithoutGeneratedExpensesInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   notes?: string | null
   isActive?: boolean
@@ -1953,6 +2799,8 @@ export type RecurringExpenseCreateWithoutGeneratedExpensesInput = {
   workspace?: Prisma.WorkspaceCreateNestedOneWithoutRecurringExpensesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringExpensesInput
   supplier?: Prisma.SupplierCreateNestedOneWithoutRecurringExpensesInput
+  taxAuthority?: Prisma.TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutRecurringExpensesInput
   category?: Prisma.ExpenseCategoryCreateNestedOneWithoutRecurringExpensesInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutRecurringExpensesInput
   bank?: Prisma.BankCreateNestedOneWithoutRecurringExpensesInput
@@ -1970,16 +2818,28 @@ export type RecurringExpenseUncheckedCreateWithoutGeneratedExpensesInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -2014,14 +2874,24 @@ export type RecurringExpenseUpdateWithoutGeneratedExpensesInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2030,6 +2900,8 @@ export type RecurringExpenseUpdateWithoutGeneratedExpensesInput = {
   workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
@@ -2047,16 +2919,28 @@ export type RecurringExpenseUncheckedUpdateWithoutGeneratedExpensesInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2077,16 +2961,28 @@ export type RecurringExpenseCreateManyWorkspaceInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -2104,14 +3000,24 @@ export type RecurringExpenseUpdateWithoutWorkspaceInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2119,6 +3025,8 @@ export type RecurringExpenseUpdateWithoutWorkspaceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
@@ -2136,16 +3044,28 @@ export type RecurringExpenseUncheckedUpdateWithoutWorkspaceInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2167,16 +3087,28 @@ export type RecurringExpenseUncheckedUpdateManyWithoutWorkspaceInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2196,16 +3128,28 @@ export type RecurringExpenseCreateManyCompanyInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -2223,14 +3167,24 @@ export type RecurringExpenseUpdateWithoutCompanyInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2238,6 +3192,8 @@ export type RecurringExpenseUpdateWithoutCompanyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
@@ -2255,16 +3211,28 @@ export type RecurringExpenseUncheckedUpdateWithoutCompanyInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2286,16 +3254,195 @@ export type RecurringExpenseUncheckedUpdateManyWithoutCompanyInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RecurringExpenseCreateManyEmployeeInput = {
+  id?: number
+  workspaceId?: number | null
+  companyId: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
+  isAutomaticPayment?: boolean
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  supplierId?: number | null
+  taxAuthorityId?: number | null
+  categoryId?: number | null
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  affectsFiscalProfit?: boolean
+  hasElectronicInvoice?: boolean
+  paymentMethodId?: number | null
+  bankId?: number | null
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RecurringExpenseUpdateWithoutEmployeeInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
+  company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
+  supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
+  bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
+  generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
+  exclusions?: Prisma.RecurringExpenseExclusionUpdateManyWithoutRecurringExpenseNestedInput
+}
+
+export type RecurringExpenseUncheckedUpdateWithoutEmployeeInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generatedExpenses?: Prisma.ExpenseUncheckedUpdateManyWithoutRecurringExpenseNestedInput
+  exclusions?: Prisma.RecurringExpenseExclusionUncheckedUpdateManyWithoutRecurringExpenseNestedInput
+}
+
+export type RecurringExpenseUncheckedUpdateManyWithoutEmployeeInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2316,15 +3463,27 @@ export type RecurringExpenseCreateManyCategoryInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -2342,14 +3501,24 @@ export type RecurringExpenseUpdateWithoutCategoryInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2358,6 +3527,8 @@ export type RecurringExpenseUpdateWithoutCategoryInput = {
   workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
   generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
@@ -2375,15 +3546,27 @@ export type RecurringExpenseUncheckedUpdateWithoutCategoryInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2406,15 +3589,27 @@ export type RecurringExpenseUncheckedUpdateManyWithoutCategoryInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2435,16 +3630,28 @@ export type RecurringExpenseCreateManyBankInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   notes?: string | null
@@ -2461,14 +3668,24 @@ export type RecurringExpenseUpdateWithoutBankInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2477,6 +3694,8 @@ export type RecurringExpenseUpdateWithoutBankInput = {
   workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
   generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
@@ -2494,16 +3713,28 @@ export type RecurringExpenseUncheckedUpdateWithoutBankInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2525,16 +3756,28 @@ export type RecurringExpenseUncheckedUpdateManyWithoutBankInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2554,16 +3797,28 @@ export type RecurringExpenseCreateManyPaymentMethodInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
   supplierId?: number | null
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   bankId?: number | null
   notes?: string | null
@@ -2580,14 +3835,24 @@ export type RecurringExpenseUpdateWithoutPaymentMethodInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2596,6 +3861,8 @@ export type RecurringExpenseUpdateWithoutPaymentMethodInput = {
   workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
   supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
   generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
@@ -2613,16 +3880,28 @@ export type RecurringExpenseUncheckedUpdateWithoutPaymentMethodInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2644,16 +3923,28 @@ export type RecurringExpenseUncheckedUpdateManyWithoutPaymentMethodInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2673,15 +3964,27 @@ export type RecurringExpenseCreateManySupplierInput = {
   dueDay?: number | null
   dueMonth?: number | null
   generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
   isAutomaticPayment?: boolean
   billingPeriodMode?: string
   billingMonth?: number | null
   merchant: string
+  taxAuthorityId?: number | null
+  employeeId?: number | null
   categoryId?: number | null
   description?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
   vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: number | null
   bankId?: number | null
@@ -2699,14 +4002,24 @@ export type RecurringExpenseUpdateWithoutSupplierInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2714,6 +4027,8 @@ export type RecurringExpenseUpdateWithoutSupplierInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
+  taxAuthority?: Prisma.TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
   category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
   bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
@@ -2732,15 +4047,27 @@ export type RecurringExpenseUncheckedUpdateWithoutSupplierInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2763,15 +4090,194 @@ export type RecurringExpenseUncheckedUpdateManyWithoutSupplierInput = {
   dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
   isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
   billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  taxAuthorityId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RecurringExpenseCreateManyTaxAuthorityInput = {
+  id?: number
+  workspaceId?: number | null
+  companyId: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  archivedAt?: Date | string | null
+  cadence: string
+  dueDay?: number | null
+  dueMonth?: number | null
+  generationTiming?: $Enums.RecurringExpenseGenerationTiming
+  expenseType?: $Enums.ExpenseType
+  isAutomaticPayment?: boolean
+  billingPeriodMode?: string
+  billingMonth?: number | null
+  merchant: string
+  supplierId?: number | null
+  employeeId?: number | null
+  categoryId?: number | null
+  description?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: string | null
+  payrollPeriodMonthOffset?: number | null
+  payrollPeriodStartDay?: number | null
+  payrollPeriodEndDay?: number | null
+  vatRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: boolean
+  affectsFiscalProfit?: boolean
+  hasElectronicInvoice?: boolean
+  paymentMethodId?: number | null
+  bankId?: number | null
+  notes?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RecurringExpenseUpdateWithoutTaxAuthorityInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneWithoutRecurringExpensesNestedInput
+  company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringExpensesNestedInput
+  supplier?: Prisma.SupplierUpdateOneWithoutRecurringExpensesNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutRecurringExpensesNestedInput
+  category?: Prisma.ExpenseCategoryUpdateOneWithoutRecurringExpensesNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutRecurringExpensesNestedInput
+  bank?: Prisma.BankUpdateOneWithoutRecurringExpensesNestedInput
+  generatedExpenses?: Prisma.ExpenseUpdateManyWithoutRecurringExpenseNestedInput
+  exclusions?: Prisma.RecurringExpenseExclusionUpdateManyWithoutRecurringExpenseNestedInput
+}
+
+export type RecurringExpenseUncheckedUpdateWithoutTaxAuthorityInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generatedExpenses?: Prisma.ExpenseUncheckedUpdateManyWithoutRecurringExpenseNestedInput
+  exclusions?: Prisma.RecurringExpenseExclusionUncheckedUpdateManyWithoutRecurringExpenseNestedInput
+}
+
+export type RecurringExpenseUncheckedUpdateManyWithoutTaxAuthorityInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cadence?: Prisma.StringFieldUpdateOperationsInput | string
+  dueDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dueMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  generationTiming?: Prisma.EnumRecurringExpenseGenerationTimingFieldUpdateOperationsInput | $Enums.RecurringExpenseGenerationTiming
+  expenseType?: Prisma.EnumExpenseTypeFieldUpdateOperationsInput | $Enums.ExpenseType
+  isAutomaticPayment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  billingPeriodMode?: Prisma.StringFieldUpdateOperationsInput | string
+  billingMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  merchant?: Prisma.StringFieldUpdateOperationsInput | string
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  payrollNetAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollExtraCompensation?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollGrossAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollEmployerCost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  payrollPeriodMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payrollPeriodMonthOffset?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodStartDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payrollPeriodEndDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vatRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDeclared?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  affectsFiscalProfit?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasElectronicInvoice?: Prisma.BoolFieldUpdateOperationsInput | boolean
   paymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bankId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2832,16 +4338,28 @@ export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.Inte
   dueDay?: boolean
   dueMonth?: boolean
   generationTiming?: boolean
+  expenseType?: boolean
   isAutomaticPayment?: boolean
   billingPeriodMode?: boolean
   billingMonth?: boolean
   merchant?: boolean
   supplierId?: boolean
+  taxAuthorityId?: boolean
+  employeeId?: boolean
   categoryId?: boolean
   description?: boolean
   amount?: boolean
+  payrollNetAmount?: boolean
+  payrollExtraCompensation?: boolean
+  payrollGrossAmount?: boolean
+  payrollEmployerCost?: boolean
+  payrollPeriodMode?: boolean
+  payrollPeriodMonthOffset?: boolean
+  payrollPeriodStartDay?: boolean
+  payrollPeriodEndDay?: boolean
   vatRate?: boolean
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: boolean
   bankId?: boolean
@@ -2852,6 +4370,8 @@ export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.Inte
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
+  taxAuthority?: boolean | Prisma.RecurringExpense$taxAuthorityArgs<ExtArgs>
+  employee?: boolean | Prisma.RecurringExpense$employeeArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.RecurringExpense$paymentMethodArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -2871,16 +4391,28 @@ export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   dueDay?: boolean
   dueMonth?: boolean
   generationTiming?: boolean
+  expenseType?: boolean
   isAutomaticPayment?: boolean
   billingPeriodMode?: boolean
   billingMonth?: boolean
   merchant?: boolean
   supplierId?: boolean
+  taxAuthorityId?: boolean
+  employeeId?: boolean
   categoryId?: boolean
   description?: boolean
   amount?: boolean
+  payrollNetAmount?: boolean
+  payrollExtraCompensation?: boolean
+  payrollGrossAmount?: boolean
+  payrollEmployerCost?: boolean
+  payrollPeriodMode?: boolean
+  payrollPeriodMonthOffset?: boolean
+  payrollPeriodStartDay?: boolean
+  payrollPeriodEndDay?: boolean
   vatRate?: boolean
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: boolean
   bankId?: boolean
@@ -2891,6 +4423,8 @@ export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
+  taxAuthority?: boolean | Prisma.RecurringExpense$taxAuthorityArgs<ExtArgs>
+  employee?: boolean | Prisma.RecurringExpense$employeeArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.RecurringExpense$paymentMethodArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -2907,16 +4441,28 @@ export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   dueDay?: boolean
   dueMonth?: boolean
   generationTiming?: boolean
+  expenseType?: boolean
   isAutomaticPayment?: boolean
   billingPeriodMode?: boolean
   billingMonth?: boolean
   merchant?: boolean
   supplierId?: boolean
+  taxAuthorityId?: boolean
+  employeeId?: boolean
   categoryId?: boolean
   description?: boolean
   amount?: boolean
+  payrollNetAmount?: boolean
+  payrollExtraCompensation?: boolean
+  payrollGrossAmount?: boolean
+  payrollEmployerCost?: boolean
+  payrollPeriodMode?: boolean
+  payrollPeriodMonthOffset?: boolean
+  payrollPeriodStartDay?: boolean
+  payrollPeriodEndDay?: boolean
   vatRate?: boolean
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: boolean
   bankId?: boolean
@@ -2927,6 +4473,8 @@ export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
+  taxAuthority?: boolean | Prisma.RecurringExpense$taxAuthorityArgs<ExtArgs>
+  employee?: boolean | Prisma.RecurringExpense$employeeArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.RecurringExpense$paymentMethodArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -2943,16 +4491,28 @@ export type RecurringExpenseSelectScalar = {
   dueDay?: boolean
   dueMonth?: boolean
   generationTiming?: boolean
+  expenseType?: boolean
   isAutomaticPayment?: boolean
   billingPeriodMode?: boolean
   billingMonth?: boolean
   merchant?: boolean
   supplierId?: boolean
+  taxAuthorityId?: boolean
+  employeeId?: boolean
   categoryId?: boolean
   description?: boolean
   amount?: boolean
+  payrollNetAmount?: boolean
+  payrollExtraCompensation?: boolean
+  payrollGrossAmount?: boolean
+  payrollEmployerCost?: boolean
+  payrollPeriodMode?: boolean
+  payrollPeriodMonthOffset?: boolean
+  payrollPeriodStartDay?: boolean
+  payrollPeriodEndDay?: boolean
   vatRate?: boolean
   isDeclared?: boolean
+  affectsFiscalProfit?: boolean
   hasElectronicInvoice?: boolean
   paymentMethodId?: boolean
   bankId?: boolean
@@ -2962,11 +4522,13 @@ export type RecurringExpenseSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "startDate" | "endDate" | "archivedAt" | "cadence" | "dueDay" | "dueMonth" | "generationTiming" | "isAutomaticPayment" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "categoryId" | "description" | "amount" | "vatRate" | "isDeclared" | "hasElectronicInvoice" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
+export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "startDate" | "endDate" | "archivedAt" | "cadence" | "dueDay" | "dueMonth" | "generationTiming" | "expenseType" | "isAutomaticPayment" | "billingPeriodMode" | "billingMonth" | "merchant" | "supplierId" | "taxAuthorityId" | "employeeId" | "categoryId" | "description" | "amount" | "payrollNetAmount" | "payrollExtraCompensation" | "payrollGrossAmount" | "payrollEmployerCost" | "payrollPeriodMode" | "payrollPeriodMonthOffset" | "payrollPeriodStartDay" | "payrollPeriodEndDay" | "vatRate" | "isDeclared" | "affectsFiscalProfit" | "hasElectronicInvoice" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
 export type RecurringExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
+  taxAuthority?: boolean | Prisma.RecurringExpense$taxAuthorityArgs<ExtArgs>
+  employee?: boolean | Prisma.RecurringExpense$employeeArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.RecurringExpense$paymentMethodArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -2978,6 +4540,8 @@ export type RecurringExpenseIncludeCreateManyAndReturn<ExtArgs extends runtime.T
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
+  taxAuthority?: boolean | Prisma.RecurringExpense$taxAuthorityArgs<ExtArgs>
+  employee?: boolean | Prisma.RecurringExpense$employeeArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.RecurringExpense$paymentMethodArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -2986,6 +4550,8 @@ export type RecurringExpenseIncludeUpdateManyAndReturn<ExtArgs extends runtime.T
   workspace?: boolean | Prisma.RecurringExpense$workspaceArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   supplier?: boolean | Prisma.RecurringExpense$supplierArgs<ExtArgs>
+  taxAuthority?: boolean | Prisma.RecurringExpense$taxAuthorityArgs<ExtArgs>
+  employee?: boolean | Prisma.RecurringExpense$employeeArgs<ExtArgs>
   category?: boolean | Prisma.RecurringExpense$categoryArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.RecurringExpense$paymentMethodArgs<ExtArgs>
   bank?: boolean | Prisma.RecurringExpense$bankArgs<ExtArgs>
@@ -2997,6 +4563,8 @@ export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.In
     workspace: Prisma.$WorkspacePayload<ExtArgs> | null
     company: Prisma.$CompanyPayload<ExtArgs>
     supplier: Prisma.$SupplierPayload<ExtArgs> | null
+    taxAuthority: Prisma.$TaxAuthorityPayload<ExtArgs> | null
+    employee: Prisma.$EmployeePayload<ExtArgs> | null
     category: Prisma.$ExpenseCategoryPayload<ExtArgs> | null
     paymentMethod: Prisma.$PaymentMethodPayload<ExtArgs> | null
     bank: Prisma.$BankPayload<ExtArgs> | null
@@ -3014,16 +4582,28 @@ export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.In
     dueDay: number | null
     dueMonth: number | null
     generationTiming: $Enums.RecurringExpenseGenerationTiming
+    expenseType: $Enums.ExpenseType
     isAutomaticPayment: boolean
     billingPeriodMode: string
     billingMonth: number | null
     merchant: string
     supplierId: number | null
+    taxAuthorityId: number | null
+    employeeId: number | null
     categoryId: number | null
     description: string | null
     amount: runtime.Decimal
+    payrollNetAmount: runtime.Decimal | null
+    payrollExtraCompensation: runtime.Decimal | null
+    payrollGrossAmount: runtime.Decimal | null
+    payrollEmployerCost: runtime.Decimal | null
+    payrollPeriodMode: string | null
+    payrollPeriodMonthOffset: number | null
+    payrollPeriodStartDay: number | null
+    payrollPeriodEndDay: number | null
     vatRate: runtime.Decimal
     isDeclared: boolean
+    affectsFiscalProfit: boolean
     hasElectronicInvoice: boolean
     paymentMethodId: number | null
     bankId: number | null
@@ -3428,6 +5008,8 @@ export interface Prisma__RecurringExpenseClient<T, Null = never, ExtArgs extends
   workspace<T extends Prisma.RecurringExpense$workspaceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$workspaceArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   supplier<T extends Prisma.RecurringExpense$supplierArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$supplierArgs<ExtArgs>>): Prisma.Prisma__SupplierClient<runtime.Types.Result.GetResult<Prisma.$SupplierPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  taxAuthority<T extends Prisma.RecurringExpense$taxAuthorityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$taxAuthorityArgs<ExtArgs>>): Prisma.Prisma__TaxAuthorityClient<runtime.Types.Result.GetResult<Prisma.$TaxAuthorityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  employee<T extends Prisma.RecurringExpense$employeeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$employeeArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.RecurringExpense$categoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$categoryArgs<ExtArgs>>): Prisma.Prisma__ExpenseCategoryClient<runtime.Types.Result.GetResult<Prisma.$ExpenseCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   paymentMethod<T extends Prisma.RecurringExpense$paymentMethodArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$paymentMethodArgs<ExtArgs>>): Prisma.Prisma__PaymentMethodClient<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bank<T extends Prisma.RecurringExpense$bankArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecurringExpense$bankArgs<ExtArgs>>): Prisma.Prisma__BankClient<runtime.Types.Result.GetResult<Prisma.$BankPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -3472,16 +5054,28 @@ export interface RecurringExpenseFieldRefs {
   readonly dueDay: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly dueMonth: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly generationTiming: Prisma.FieldRef<"RecurringExpense", 'RecurringExpenseGenerationTiming'>
+  readonly expenseType: Prisma.FieldRef<"RecurringExpense", 'ExpenseType'>
   readonly isAutomaticPayment: Prisma.FieldRef<"RecurringExpense", 'Boolean'>
   readonly billingPeriodMode: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly billingMonth: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly merchant: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly supplierId: Prisma.FieldRef<"RecurringExpense", 'Int'>
+  readonly taxAuthorityId: Prisma.FieldRef<"RecurringExpense", 'Int'>
+  readonly employeeId: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly categoryId: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly description: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly amount: Prisma.FieldRef<"RecurringExpense", 'Decimal'>
+  readonly payrollNetAmount: Prisma.FieldRef<"RecurringExpense", 'Decimal'>
+  readonly payrollExtraCompensation: Prisma.FieldRef<"RecurringExpense", 'Decimal'>
+  readonly payrollGrossAmount: Prisma.FieldRef<"RecurringExpense", 'Decimal'>
+  readonly payrollEmployerCost: Prisma.FieldRef<"RecurringExpense", 'Decimal'>
+  readonly payrollPeriodMode: Prisma.FieldRef<"RecurringExpense", 'String'>
+  readonly payrollPeriodMonthOffset: Prisma.FieldRef<"RecurringExpense", 'Int'>
+  readonly payrollPeriodStartDay: Prisma.FieldRef<"RecurringExpense", 'Int'>
+  readonly payrollPeriodEndDay: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly vatRate: Prisma.FieldRef<"RecurringExpense", 'Decimal'>
   readonly isDeclared: Prisma.FieldRef<"RecurringExpense", 'Boolean'>
+  readonly affectsFiscalProfit: Prisma.FieldRef<"RecurringExpense", 'Boolean'>
   readonly hasElectronicInvoice: Prisma.FieldRef<"RecurringExpense", 'Boolean'>
   readonly paymentMethodId: Prisma.FieldRef<"RecurringExpense", 'Int'>
   readonly bankId: Prisma.FieldRef<"RecurringExpense", 'Int'>
@@ -3925,6 +5519,44 @@ export type RecurringExpense$supplierArgs<ExtArgs extends runtime.Types.Extensio
    */
   include?: Prisma.SupplierInclude<ExtArgs> | null
   where?: Prisma.SupplierWhereInput
+}
+
+/**
+ * RecurringExpense.taxAuthority
+ */
+export type RecurringExpense$taxAuthorityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaxAuthority
+   */
+  select?: Prisma.TaxAuthoritySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaxAuthority
+   */
+  omit?: Prisma.TaxAuthorityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaxAuthorityInclude<ExtArgs> | null
+  where?: Prisma.TaxAuthorityWhereInput
+}
+
+/**
+ * RecurringExpense.employee
+ */
+export type RecurringExpense$employeeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Employee
+   */
+  select?: Prisma.EmployeeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Employee
+   */
+  omit?: Prisma.EmployeeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmployeeInclude<ExtArgs> | null
+  where?: Prisma.EmployeeWhereInput
 }
 
 /**

@@ -17,6 +17,7 @@ type SupplierOption = {
   defaultExpenseCategoryId?: number | null;
   defaultVatRate?: string | number | null;
 };
+type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: "ACTIVE" | "INACTIVE" };
 
 type EditRecurringExpense = {
   id: number;
@@ -41,6 +42,18 @@ type EditRecurringExpense = {
   paymentMethodId?: number | null;
   bankId?: number | null;
   notes?: string | null;
+  expenseType?: "STANDARD" | "TAX_CONTRIBUTION" | "PAYROLL";
+  taxAuthorityId?: number | null;
+  employeeId?: number | null;
+  payrollNetAmount?: string | number | null;
+  payrollExtraCompensation?: string | number | null;
+  payrollGrossAmount?: string | number | null;
+  payrollEmployerCost?: string | number | null;
+  payrollPeriodMode?: string | null;
+  payrollPeriodMonthOffset?: number | null;
+  payrollPeriodStartDay?: number | null;
+  payrollPeriodEndDay?: number | null;
+  affectsFiscalProfit?: boolean;
 };
 
 type Props = {
@@ -48,10 +61,11 @@ type Props = {
   banks: Option[];
   paymentMethods: Option[];
   suppliers: SupplierOption[];
+  employees?: EmployeeOption[];
   returnTo: string;
 };
 
-export default function RecurringExpenseDetailEditModalController({ categories, banks, paymentMethods, suppliers, returnTo }: Props) {
+export default function RecurringExpenseDetailEditModalController({ categories, banks, paymentMethods, suppliers, employees = [], returnTo }: Props) {
   const [expense, setExpense] = useState<EditRecurringExpense | null>(null);
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
@@ -109,6 +123,7 @@ export default function RecurringExpenseDetailEditModalController({ categories, 
           banks={banks}
           paymentMethods={paymentMethods}
           suppliers={suppliers}
+          employees={employees}
           action={`/api/recurring-expenses/${expense.id}?returnTo=${encodeURIComponent(returnTo)}`}
           mobileStepOffset={1}
           initialExpense={expense}

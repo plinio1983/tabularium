@@ -7,15 +7,17 @@ import { flashParamNames } from '@/lib/flash';
 
 type Option = { id: number; code?: string; name: string; icon?: string | null; isFallback?: boolean | null; kind?: string };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null; defaultExpenseCategoryId?: number | null; defaultVatRate?: string | number | null };
+type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: "ACTIVE" | "INACTIVE" };
 
 type Props = {
   categories: Option[];
   banks: Option[];
   paymentMethods: Option[];
   suppliers: SupplierOption[];
+  employees: EmployeeOption[];
 };
 
-export default function NewRecurringExpensePanel({ categories, banks, paymentMethods, suppliers }: Props) {
+export default function NewRecurringExpensePanel({ categories, banks, paymentMethods, suppliers, employees }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [action, setAction] = useState('/api/recurring-expenses');
 
@@ -59,8 +61,9 @@ export default function NewRecurringExpensePanel({ categories, banks, paymentMet
           banks={banks}
           paymentMethods={paymentMethods}
           suppliers={suppliers}
+          employees={employees}
           action={action}
-          mobileStepOffset={1}
+          mobileStepOffset={0}
           onCancel={() => setIsOpen(false)}
         />
       </div>

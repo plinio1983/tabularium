@@ -137,6 +137,25 @@ function periodKey(year: number, month: number) {
   return `${year}-${String(month).padStart(2, '0')}`;
 }
 
+function payrollPeriodFromBillingPeriod(recurringExpense: any, billingPeriod: {year: number; month: number}) {
+  const target = addMonths(billingPeriod.year, billingPeriod.month, recurringExpense.payrollPeriodMonthOffset ?? -1);
+  const lastDay = new Date(Date.UTC(target.year, target.month, 0)).getUTCDate();
+  const isRange = recurringExpense.payrollPeriodMode === 'DAY_RANGE';
+  const startDay = isRange ? Math.min(recurringExpense.payrollPeriodStartDay ?? 1, lastDay) : 1;
+  const endDay = isRange ? Math.min(recurringExpense.payrollPeriodEndDay ?? lastDay, lastDay) : lastDay;
+  return {
+    start: new Date(Date.UTC(target.year, target.month - 1, startDay)),
+    end: new Date(Date.UTC(target.year, target.month - 1, Math.max(startDay, endDay)))
+  };
+}
+
+function payrollDescription(period: {start: Date; end: Date}) {
+  const label = (date: Date) => `${String(date.getUTCDate()).padStart(2, '0')}/${String(date.getUTCMonth() + 1).padStart(2, '0')}/${date.getUTCFullYear()}`;
+  return period.start.getTime() === period.end.getTime()
+    ? `Competenze del ${label(period.end)}`
+    : `Competenze dal ${label(period.start)} al ${label(period.end)}`;
+}
+
 function isAutomaticRecurringPayment(recurringExpense: any) {
   return Boolean(recurringExpense?.isAutomaticPayment);
 }
@@ -148,6 +167,8 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
     where: { isActive: true },
     include: {
       supplier: true,
+      employee: true,
+      taxAuthority: true,
       paymentMethod: true,
       company: true
     }
@@ -174,14 +195,27 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
       }
 
       for (const dueDate of dueDates) {
-        if (!recurringExpense.supplierId || !recurringExpense.supplier) {
+        if (recurringExpense.expenseType === 'STANDARD' && (!recurringExpense.supplierId || !recurringExpense.supplier)) {
           result.errors.push({ recurringExpenseId: recurringExpense.id, message: 'Fornitore mancante' });
+          result.skipped += 1;
+          continue;
+        }
+        if (recurringExpense.expenseType === 'TAX_CONTRIBUTION' && !recurringExpense.taxAuthority) {
+          result.errors.push({ recurringExpenseId: recurringExpense.id, message: 'Ente fiscale mancante' });
+          result.skipped += 1;
+          continue;
+        }
+        if (recurringExpense.expenseType === 'PAYROLL' && !recurringExpense.employee) {
+          result.errors.push({ recurringExpenseId: recurringExpense.id, message: 'Dipendente mancante' });
           result.skipped += 1;
           continue;
         }
 
         const billingPeriod = billingPeriodFromDueDate(recurringExpense, dueDate);
         const recurringExpensePeriodKey = periodKey(billingPeriod.year, billingPeriod.month);
+        const payrollPeriod = recurringExpense.expenseType === 'PAYROLL'
+          ? payrollPeriodFromBillingPeriod(recurringExpense, billingPeriod)
+          : null;
 
         if (excludedPeriodKeys.has(recurringExpensePeriodKey)) {
           result.skipped += 1;
@@ -207,20 +241,30 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             data: {
             workspaceId: recurringExpense.workspaceId || null,
             companyId: recurringExpense.companyId,
-            receivedDate: dueDate,
+            receivedDate: payrollPeriod?.end ?? dueDate,
             dueDate,
-            merchant: recurringExpense.supplier.businessName,
-            supplierId: recurringExpense.supplierId,
+            merchant: recurringExpense.supplier?.businessName ?? recurringExpense.taxAuthority?.name ?? (recurringExpense.employee ? `${recurringExpense.employee.lastName} ${recurringExpense.employee.firstName}` : recurringExpense.merchant),
+            supplierId: recurringExpense.expenseType === 'STANDARD' ? recurringExpense.supplierId : null,
+            taxAuthorityId: recurringExpense.expenseType === 'TAX_CONTRIBUTION' ? recurringExpense.taxAuthorityId : null,
+            employeeId: recurringExpense.expenseType === 'PAYROLL' ? recurringExpense.employeeId : null,
             categoryId: recurringExpense.categoryId || null,
-            description: recurringExpense.description,
+            description: payrollPeriod ? payrollDescription(payrollPeriod) : recurringExpense.description,
             amount: recurringExpense.amount,
-            vatRate: recurringExpense.vatRate,
+            payrollNetAmount: recurringExpense.expenseType === 'PAYROLL' ? recurringExpense.payrollNetAmount : null,
+            payrollExtraCompensation: recurringExpense.expenseType === 'PAYROLL' ? recurringExpense.payrollExtraCompensation : null,
+            payrollGrossAmount: recurringExpense.expenseType === 'PAYROLL' ? recurringExpense.payrollGrossAmount : null,
+            payrollEmployerCost: recurringExpense.expenseType === 'PAYROLL' ? recurringExpense.payrollEmployerCost : null,
+            payrollPeriodStart: payrollPeriod?.start ?? null,
+            payrollPeriodEnd: payrollPeriod?.end ?? null,
+            expenseType: recurringExpense.expenseType,
+            vatRate: recurringExpense.expenseType === 'STANDARD' ? recurringExpense.vatRate : 0,
             paymentStatus: 'DA_PAGARE',
-            invoiceStatus: recurringExpense.isDeclared ? 'IN_ATTESA' : 'NON_PREVISTA',
+            invoiceStatus: recurringExpense.expenseType === 'STANDARD' && recurringExpense.isDeclared ? 'IN_ATTESA' : 'NON_PREVISTA',
             month: billingPeriod.month,
             year: billingPeriod.year,
             hasElectronicInvoice: recurringExpense.hasElectronicInvoice,
-            isDeclared: recurringExpense.isDeclared,
+            isDeclared: recurringExpense.expenseType === 'STANDARD' ? recurringExpense.isDeclared : false,
+            affectsFiscalProfit: recurringExpense.expenseType === 'STANDARD' ? false : recurringExpense.affectsFiscalProfit,
             isRecurring: true,
             isAutomaticPayment: isAutomaticRecurringPayment(recurringExpense),
             notes: recurringExpense.notes || null,
@@ -233,7 +277,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             companyId: recurringExpense.companyId,
             type: 'RECURRING_EXPENSE_CREATED',
             title: 'Spesa ricorrente creata',
-            message: `${recurringExpense.supplier.businessName}: generata la spesa ${recurringExpensePeriodKey}.`,
+            message: `${recurringExpense.supplier?.businessName ?? recurringExpense.taxAuthority?.name ?? recurringExpense.merchant}: generata la spesa ${recurringExpensePeriodKey}.`,
             actionUrl: `/expenses/${expense.id}`,
             sourceType: 'Expense',
             sourceId: expense.id,

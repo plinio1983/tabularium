@@ -315,6 +315,7 @@ export type EmployeeWhereInput = {
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   expenses?: Prisma.ExpenseListRelationFilter
+  recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
 }
 
 export type EmployeeOrderByWithRelationInput = {
@@ -337,6 +338,7 @@ export type EmployeeOrderByWithRelationInput = {
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   company?: Prisma.CompanyOrderByWithRelationInput
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
+  recurringExpenses?: Prisma.RecurringExpenseOrderByRelationAggregateInput
 }
 
 export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
@@ -363,6 +365,7 @@ export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   expenses?: Prisma.ExpenseListRelationFilter
+  recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
 }, "id" | "companyId_employeeCode">
 
 export type EmployeeOrderByWithAggregationInput = {
@@ -428,6 +431,7 @@ export type EmployeeCreateInput = {
   workspace: Prisma.WorkspaceCreateNestedOneWithoutEmployeesInput
   company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutEmployeeInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutEmployeeInput
 }
 
 export type EmployeeUncheckedCreateInput = {
@@ -448,6 +452,7 @@ export type EmployeeUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutEmployeeInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type EmployeeUpdateInput = {
@@ -467,6 +472,7 @@ export type EmployeeUpdateInput = {
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutEmployeesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutEmployeeNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateInput = {
@@ -487,6 +493,7 @@ export type EmployeeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutEmployeeNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type EmployeeCreateManyInput = {
@@ -720,6 +727,22 @@ export type EnumEmployeeStatusFieldUpdateOperationsInput = {
   set?: $Enums.EmployeeStatus
 }
 
+export type EmployeeCreateNestedOneWithoutRecurringExpensesInput = {
+  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutRecurringExpensesInput, Prisma.EmployeeUncheckedCreateWithoutRecurringExpensesInput>
+  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutRecurringExpensesInput
+  connect?: Prisma.EmployeeWhereUniqueInput
+}
+
+export type EmployeeUpdateOneWithoutRecurringExpensesNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutRecurringExpensesInput, Prisma.EmployeeUncheckedCreateWithoutRecurringExpensesInput>
+  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutRecurringExpensesInput
+  upsert?: Prisma.EmployeeUpsertWithoutRecurringExpensesInput
+  disconnect?: Prisma.EmployeeWhereInput | boolean
+  delete?: Prisma.EmployeeWhereInput | boolean
+  connect?: Prisma.EmployeeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeUpdateToOneWithWhereWithoutRecurringExpensesInput, Prisma.EmployeeUpdateWithoutRecurringExpensesInput>, Prisma.EmployeeUncheckedUpdateWithoutRecurringExpensesInput>
+}
+
 export type EmployeeCreateNestedOneWithoutExpensesInput = {
   create?: Prisma.XOR<Prisma.EmployeeCreateWithoutExpensesInput, Prisma.EmployeeUncheckedCreateWithoutExpensesInput>
   connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutExpensesInput
@@ -752,6 +775,7 @@ export type EmployeeCreateWithoutWorkspaceInput = {
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutEmployeeInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutEmployeeInput
 }
 
 export type EmployeeUncheckedCreateWithoutWorkspaceInput = {
@@ -771,6 +795,7 @@ export type EmployeeUncheckedCreateWithoutWorkspaceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutEmployeeInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type EmployeeCreateOrConnectWithoutWorkspaceInput = {
@@ -837,6 +862,7 @@ export type EmployeeCreateWithoutCompanyInput = {
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutEmployeesInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutEmployeeInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutEmployeeInput
 }
 
 export type EmployeeUncheckedCreateWithoutCompanyInput = {
@@ -856,6 +882,7 @@ export type EmployeeUncheckedCreateWithoutCompanyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutEmployeeInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type EmployeeCreateOrConnectWithoutCompanyInput = {
@@ -884,6 +911,100 @@ export type EmployeeUpdateManyWithWhereWithoutCompanyInput = {
   data: Prisma.XOR<Prisma.EmployeeUpdateManyMutationInput, Prisma.EmployeeUncheckedUpdateManyWithoutCompanyInput>
 }
 
+export type EmployeeCreateWithoutRecurringExpensesInput = {
+  firstName: string
+  lastName: string
+  taxCode?: string | null
+  employeeCode?: string | null
+  email?: string | null
+  phone?: string | null
+  iban?: string | null
+  hiredAt?: Date | string | null
+  terminatedAt?: Date | string | null
+  status?: $Enums.EmployeeStatus
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutEmployeesInput
+  company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutEmployeeInput
+}
+
+export type EmployeeUncheckedCreateWithoutRecurringExpensesInput = {
+  id?: number
+  workspaceId: number
+  companyId: number
+  firstName: string
+  lastName: string
+  taxCode?: string | null
+  employeeCode?: string | null
+  email?: string | null
+  phone?: string | null
+  iban?: string | null
+  hiredAt?: Date | string | null
+  terminatedAt?: Date | string | null
+  status?: $Enums.EmployeeStatus
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutEmployeeInput
+}
+
+export type EmployeeCreateOrConnectWithoutRecurringExpensesInput = {
+  where: Prisma.EmployeeWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmployeeCreateWithoutRecurringExpensesInput, Prisma.EmployeeUncheckedCreateWithoutRecurringExpensesInput>
+}
+
+export type EmployeeUpsertWithoutRecurringExpensesInput = {
+  update: Prisma.XOR<Prisma.EmployeeUpdateWithoutRecurringExpensesInput, Prisma.EmployeeUncheckedUpdateWithoutRecurringExpensesInput>
+  create: Prisma.XOR<Prisma.EmployeeCreateWithoutRecurringExpensesInput, Prisma.EmployeeUncheckedCreateWithoutRecurringExpensesInput>
+  where?: Prisma.EmployeeWhereInput
+}
+
+export type EmployeeUpdateToOneWithWhereWithoutRecurringExpensesInput = {
+  where?: Prisma.EmployeeWhereInput
+  data: Prisma.XOR<Prisma.EmployeeUpdateWithoutRecurringExpensesInput, Prisma.EmployeeUncheckedUpdateWithoutRecurringExpensesInput>
+}
+
+export type EmployeeUpdateWithoutRecurringExpensesInput = {
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  taxCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  terminatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumEmployeeStatusFieldUpdateOperationsInput | $Enums.EmployeeStatus
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutEmployeesNestedInput
+  company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutEmployeeNestedInput
+}
+
+export type EmployeeUncheckedUpdateWithoutRecurringExpensesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  taxCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  terminatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumEmployeeStatusFieldUpdateOperationsInput | $Enums.EmployeeStatus
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutEmployeeNestedInput
+}
+
 export type EmployeeCreateWithoutExpensesInput = {
   firstName: string
   lastName: string
@@ -900,6 +1021,7 @@ export type EmployeeCreateWithoutExpensesInput = {
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutEmployeesInput
   company: Prisma.CompanyCreateNestedOneWithoutEmployeesInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutEmployeeInput
 }
 
 export type EmployeeUncheckedCreateWithoutExpensesInput = {
@@ -919,6 +1041,7 @@ export type EmployeeUncheckedCreateWithoutExpensesInput = {
   internalNotes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type EmployeeCreateOrConnectWithoutExpensesInput = {
@@ -953,6 +1076,7 @@ export type EmployeeUpdateWithoutExpensesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutEmployeesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateWithoutExpensesInput = {
@@ -972,6 +1096,7 @@ export type EmployeeUncheckedUpdateWithoutExpensesInput = {
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type EmployeeCreateManyWorkspaceInput = {
@@ -1008,6 +1133,7 @@ export type EmployeeUpdateWithoutWorkspaceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutEmployeesNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutEmployeeNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateWithoutWorkspaceInput = {
@@ -1027,6 +1153,7 @@ export type EmployeeUncheckedUpdateWithoutWorkspaceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutEmployeeNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -1081,6 +1208,7 @@ export type EmployeeUpdateWithoutCompanyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutEmployeesNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutEmployeeNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateWithoutCompanyInput = {
@@ -1100,6 +1228,7 @@ export type EmployeeUncheckedUpdateWithoutCompanyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutEmployeeNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type EmployeeUncheckedUpdateManyWithoutCompanyInput = {
@@ -1127,10 +1256,12 @@ export type EmployeeUncheckedUpdateManyWithoutCompanyInput = {
 
 export type EmployeeCountOutputType = {
   expenses: number
+  recurringExpenses: number
 }
 
 export type EmployeeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expenses?: boolean | EmployeeCountOutputTypeCountExpensesArgs
+  recurringExpenses?: boolean | EmployeeCountOutputTypeCountRecurringExpensesArgs
 }
 
 /**
@@ -1148,6 +1279,13 @@ export type EmployeeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
  */
 export type EmployeeCountOutputTypeCountExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ExpenseWhereInput
+}
+
+/**
+ * EmployeeCountOutputType without action
+ */
+export type EmployeeCountOutputTypeCountRecurringExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurringExpenseWhereInput
 }
 
 
@@ -1171,6 +1309,7 @@ export type EmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   expenses?: boolean | Prisma.Employee$expensesArgs<ExtArgs>
+  recurringExpenses?: boolean | Prisma.Employee$recurringExpensesArgs<ExtArgs>
   _count?: boolean | Prisma.EmployeeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["employee"]>
 
@@ -1240,6 +1379,7 @@ export type EmployeeInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   expenses?: boolean | Prisma.Employee$expensesArgs<ExtArgs>
+  recurringExpenses?: boolean | Prisma.Employee$recurringExpensesArgs<ExtArgs>
   _count?: boolean | Prisma.EmployeeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EmployeeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1257,6 +1397,7 @@ export type $EmployeePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     workspace: Prisma.$WorkspacePayload<ExtArgs>
     company: Prisma.$CompanyPayload<ExtArgs>
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
+    recurringExpenses: Prisma.$RecurringExpensePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1672,6 +1813,7 @@ export interface Prisma__EmployeeClient<T, Null = never, ExtArgs extends runtime
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   expenses<T extends Prisma.Employee$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Employee$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurringExpenses<T extends Prisma.Employee$recurringExpensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Employee$recurringExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2139,6 +2281,30 @@ export type Employee$expensesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.ExpenseScalarFieldEnum | Prisma.ExpenseScalarFieldEnum[]
+}
+
+/**
+ * Employee.recurringExpenses
+ */
+export type Employee$recurringExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringExpense
+   */
+  select?: Prisma.RecurringExpenseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringExpense
+   */
+  omit?: Prisma.RecurringExpenseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringExpenseInclude<ExtArgs> | null
+  where?: Prisma.RecurringExpenseWhereInput
+  orderBy?: Prisma.RecurringExpenseOrderByWithRelationInput | Prisma.RecurringExpenseOrderByWithRelationInput[]
+  cursor?: Prisma.RecurringExpenseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurringExpenseScalarFieldEnum | Prisma.RecurringExpenseScalarFieldEnum[]
 }
 
 /**

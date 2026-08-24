@@ -43,6 +43,7 @@ const generationTimingLabels: Record<string, string> = {
   DAYS_30_BEFORE: '30 giorni prima della scadenza',
   ON_DUE_DATE: 'Il giorno di scadenza'
 };
+const expenseTypeLabels: Record<string, string> = {STANDARD: 'Singola', TAX_CONTRIBUTION: 'Imposte', PAYROLL: 'Busta paga'};
 
 const months = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 
@@ -80,11 +81,13 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const currentDetailReturnTo = `/recurring-expenses/${id}?returnTo=${encodeURIComponent(returnTo)}`;
   const encodedCurrentDetailReturnTo = encodeURIComponent(currentDetailReturnTo);
 
-  const [item, categories, banks, paymentMethods, suppliers] = await Promise.all([
+  const [item, categories, banks, paymentMethods, suppliers, employees] = await Promise.all([
     prisma.recurringExpense.findFirst({
     where: { id: Number(id), workspaceId: current.workspace.id, companyId: current.company.id },
     include: {
       supplier: true,
+      taxAuthority: true,
+      employee: true,
       category: true,
       bank: true,
       paymentMethod: true,
@@ -99,7 +102,8 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 }),
+    prisma.employee.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]})
   ]);
 
   if (!item || item.workspaceId !== current.workspace.id) notFound();
@@ -108,6 +112,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
   const vatStyle = vatStyles[vatKey(item.vatRate)] ?? vatStyles['22'];
   const generatedTotal = item.generatedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
   const merchant = item.supplier?.businessName || item.merchant;
+  const expenseTypeLabel = expenseTypeLabels[item.expenseType] ?? 'Singola';
   const activeClass = item.archivedAt ? 'tone-neutral' : item.isActive ? 'tone-yes' : 'tone-critical';
   const orderedCategories = orderExpenseCategories(categories);
   const orderedBanks = orderBanks(banks);
@@ -135,6 +140,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
       banks={orderedBanks.map(bank => ({ id: bank.id, name: bank.name, icon: bank.icon, isFallback: bank.isFallback, isPrimary: bank.id === current.company.primaryBankId }))}
       paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
       suppliers={suppliers.map(supplier => ({ id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, email: supplier.email, vatNumber: supplier.vatNumber, iban: supplier.iban, pec: supplier.pec, taxCodeSdi: supplier.taxCodeSdi, internalNotes: supplier.internalNotes, defaultExpenseCategoryId: supplier.defaultExpenseCategoryId, defaultVatRate: supplier.defaultVatRate?.toString() ?? null }))}
+      employees={employees.map(employee => ({id: employee.id, firstName: employee.firstName, lastName: employee.lastName, employeeCode: employee.employeeCode, status: employee.status}))}
       returnTo={currentDetailReturnTo}
     />
     <ActionFeedbackBanner
@@ -168,6 +174,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
             <div className="record-detail-title-block">
               <p className="record-detail-kicker">
                 <span>Spesa ricorrente #{item.id}</span>
+                <span className={badgeClass('tone-neutral')}>{expenseTypeLabel}</span>
                 <span className={badgeClass(activeClass)}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span>
               </p>
               <h1>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{merchant}</Link> : merchant}</h1>
@@ -181,7 +188,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           <aside className="record-detail-amount-panel">
             <div className="record-detail-amount-panel-header-row">
               <span className="record-detail-amount-panel-header">Importo ricorrente</span>
-              <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span>
+              {item.expenseType === 'STANDARD' ? <span className={badgeClass(vatStyle.className)}>{vatStyle.label}</span> : null}
             </div>
             <strong>{euro(item.amount.toString())}</strong>
             <div className="record-detail-badge-row">
@@ -221,7 +228,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
           <div className="record-detail-section-heading">
             <div>
               <h2>Dati ricorrenza</h2>
-              <p>Fornitore, categoria e impostazioni fiscali della regola.</p>
+              <p>Dati specifici, categoria e impostazioni della regola.</p>
             </div>
           </div>
           <div className="record-detail-status-strip">
@@ -230,7 +237,7 @@ export default async function RecurringExpenseDetailPage({ params, searchParams 
               <strong>{item.description ?? '-'}</strong>
             </div>
             <div>
-              <span>Fornitore</span>
+              <span>{item.expenseType === 'PAYROLL' ? 'Dipendente' : item.expenseType === 'TAX_CONTRIBUTION' ? 'Ente fiscale' : 'Fornitore'}</span>
               <strong>{item.supplierId ? <Link href={`/suppliers/${item.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{merchant}</Link> : merchant}</strong>
             </div>
             <div>

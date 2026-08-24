@@ -11,11 +11,12 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
   const returnTo = rawReturnTo && rawReturnTo.startsWith('/') ? rawReturnTo : '/recurring-expenses';
   const encodedReturnTo = encodeURIComponent(returnTo);
 
-  const [categories, banks, paymentMethods, suppliers] = await Promise.all([
+  const [categories, banks, paymentMethods, suppliers, employees] = await Promise.all([
     prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
+    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 }),
+    prisma.employee.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]})
   ]);
 
   const orderedBanks = orderBanks(banks);
@@ -33,8 +34,9 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
         paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null }))}
+        employees={employees.map(e => ({id: e.id, firstName: e.firstName, lastName: e.lastName, employeeCode: e.employeeCode, status: e.status}))}
         action={`/api/recurring-expenses?returnTo=${encodedReturnTo}`}
-        mobileStepOffset={1}
+        mobileStepOffset={0}
         cancelHref={returnTo}
       />
     </div>

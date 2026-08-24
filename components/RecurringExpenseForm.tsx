@@ -1,6 +1,6 @@
 "use client";
 
-import {type FormEvent, useEffect, useRef, useState} from "react";
+import {type FormEvent, type ReactNode, useEffect, useRef, useState} from "react";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
@@ -36,6 +36,8 @@ type SupplierOption = {
     defaultExpenseCategoryId?: number | null;
     defaultVatRate?: string | number | {toString(): string} | null;
 };
+type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: "ACTIVE" | "INACTIVE" };
+type TaxAuthorityOption = { id: number; name: string; shortName?: string | null; isActive?: boolean };
 type InitialRecurringExpense = {
     id?: number | null;
     startDate?: string | Date | null;
@@ -59,6 +61,18 @@ type InitialRecurringExpense = {
     paymentMethodId?: number | null;
     bankId?: number | null;
     notes?: string | null;
+    expenseType?: "STANDARD" | "TAX_CONTRIBUTION" | "PAYROLL";
+    taxAuthorityId?: number | null;
+    employeeId?: number | null;
+    payrollNetAmount?: string | number | { toString(): string } | null;
+    payrollExtraCompensation?: string | number | { toString(): string } | null;
+    payrollGrossAmount?: string | number | { toString(): string } | null;
+    payrollEmployerCost?: string | number | { toString(): string } | null;
+    payrollPeriodMode?: string | null;
+    payrollPeriodMonthOffset?: number | null;
+    payrollPeriodStartDay?: number | null;
+    payrollPeriodEndDay?: number | null;
+    affectsFiscalProfit?: boolean;
 };
 
 type Props = {
@@ -66,6 +80,7 @@ type Props = {
     banks: Option[];
     paymentMethods: Option[];
     suppliers?: SupplierOption[];
+    employees?: EmployeeOption[];
     action?: string;
     initialExpense?: InitialRecurringExpense;
     onCancel?: () => void;
@@ -78,6 +93,7 @@ type Props = {
     mobileStepOffset?: number;
     onBackToType?: () => void;
     hideMobileActions?: boolean;
+    recurrenceControl?: ReactNode;
 };
 
 const cashChannel = "Cash";
@@ -404,6 +420,8 @@ export default function RecurringExpenseForm({
                                                  mobileStepOffset = 0,
                                                  onBackToType,
                                                  hideMobileActions = false,
+                                                 employees = [],
+                                                 recurrenceControl,
                                              }: Props) {
     const isExistingExpense = Boolean(initialExpense?.id);
     const timeZone = useCompanyTimeZone();
@@ -420,6 +438,21 @@ export default function RecurringExpenseForm({
         ? cashBankIdValue
         : initialExpense?.bankId?.toString() ?? banks.find(bank => bank.isPrimary)?.id.toString() ?? "";
     const [cadence, setCadence] = useState(initialExpense?.cadence ?? "MONTHLY");
+    const [expenseType, setExpenseType] = useState<"STANDARD" | "TAX_CONTRIBUTION" | "PAYROLL">(initialExpense?.expenseType ?? "STANDARD");
+    const isTaxContribution = expenseType === "TAX_CONTRIBUTION";
+    const isPayroll = expenseType === "PAYROLL";
+    const [taxAuthorities, setTaxAuthorities] = useState<TaxAuthorityOption[]>([]);
+    const [taxAuthorityId, setTaxAuthorityId] = useState(String(initialExpense?.taxAuthorityId ?? ""));
+    const [employeeId, setEmployeeId] = useState(String(initialExpense?.employeeId ?? ""));
+    const [payrollNetAmount, setPayrollNetAmount] = useState(normalizeMoney(initialExpense?.payrollNetAmount ?? initialExpense?.amount).replace(".", ","));
+    const [payrollExtraCompensation, setPayrollExtraCompensation] = useState(normalizeMoney(initialExpense?.payrollExtraCompensation).replace(".", ","));
+    const [payrollGrossAmount, setPayrollGrossAmount] = useState(normalizeMoney(initialExpense?.payrollGrossAmount).replace(".", ","));
+    const [payrollEmployerCost, setPayrollEmployerCost] = useState(normalizeMoney(initialExpense?.payrollEmployerCost).replace(".", ","));
+    const [payrollPeriodMode, setPayrollPeriodMode] = useState(initialExpense?.payrollPeriodMode ?? "FULL_MONTH");
+    const [payrollPeriodMonthOffset, setPayrollPeriodMonthOffset] = useState(String(initialExpense?.payrollPeriodMonthOffset ?? -1));
+    const [payrollPeriodStartDay, setPayrollPeriodStartDay] = useState(String(initialExpense?.payrollPeriodStartDay ?? 1));
+    const [payrollPeriodEndDay, setPayrollPeriodEndDay] = useState(String(initialExpense?.payrollPeriodEndDay ?? 31));
+    const [affectsFiscalProfit, setAffectsFiscalProfit] = useState(initialExpense?.affectsFiscalProfit ?? (isTaxContribution || isPayroll));
     const [billingPeriodMode, setBillingPeriodMode] = useState(initialExpense?.billingPeriodMode ?? "SAME_MONTH");
     const [billingMonth, setBillingMonth] = useState(String(initialExpense?.billingMonth ?? currentMonth));
     const [isDeclared, setIsDeclared] = useState(initialExpense?.isDeclared ?? true);
@@ -455,7 +488,7 @@ export default function RecurringExpenseForm({
     const [supplierName, setSupplierName] = useState(
         suppliers.find(supplier => supplier.id === initialExpense?.supplierId)?.businessName ?? initialExpense?.merchant ?? "",
     );
-    const [description, setDescription] = useState(initialExpense?.description ?? "");
+    const [description, setDescription] = useState(initialExpense?.description ?? (initialExpense?.expenseType === "PAYROLL" ? "Competenze" : ""));
     const [notes, setNotes] = useState(initialExpense?.notes ?? "");
     const formRef = useRef<HTMLFormElement>(null);
     const amountRef = useRef<HTMLInputElement>(null);
@@ -464,10 +497,30 @@ export default function RecurringExpenseForm({
     const selectedPaymentMethodName = paymentMethods.find(method => String(method.id) === paymentMethodId)?.name ?? "";
     const cashBankLocked = isAutomaticAccrual && isCashChannel(selectedPaymentMethodName) && Boolean(cashBankIdValue);
     const isYearly = cadence === "YEARLY" || cadence === "EVERY_2_YEARS";
-    const normalizedAmount = amount.replace(",", ".");
+    const normalizedPayrollNet = payrollNetAmount.replace(",", ".");
+    const normalizedPayrollExtra = payrollExtraCompensation.replace(",", ".");
+    const normalizedAmount = isPayroll ? (Number(normalizedPayrollNet || 0) + Number(normalizedPayrollExtra || 0)).toFixed(2) : amount.replace(",", ".");
     const amountValue = Number(normalizedAmount || 0);
     const activeVatRate = isDeclared ? Number(vatRate || 0) : 0;
     const netAmount = activeVatRate > 0 ? amountValue / (1 + activeVatRate / 100) : amountValue;
+
+    useEffect(() => {
+        if (!isTaxContribution) return;
+        fetch('/api/tax-authorities', {cache: 'no-store'})
+            .then(response => response.ok ? response.json() : [])
+            .then((records: TaxAuthorityOption[]) => setTaxAuthorities(records))
+            .catch(() => setTaxAuthorities([]));
+    }, [isTaxContribution]);
+
+    useEffect(() => {
+        if (!isTaxContribution && !isPayroll) return;
+        setIsDeclared(false);
+        setHasElectronicInvoice(false);
+        setVatRate("0");
+        setBillingPeriodMode("SAME_MONTH");
+        setAffectsFiscalProfit(true);
+        if (isPayroll && !description.trim()) setDescription("Competenze");
+    }, [description, isPayroll, isTaxContribution]);
 
     useEffect(() => {
         if (!isDeclared) {
@@ -526,7 +579,11 @@ export default function RecurringExpenseForm({
 
     function goToMobileStep(step: number) {
         setMobileStep(Math.max(1, Math.min(6, step)));
-        window.requestAnimationFrame(() => formRef.current?.scrollIntoView({behavior: "smooth", block: "start"}));
+        window.requestAnimationFrame(() => {
+            const scrollContainer = formRef.current?.closest<HTMLElement>(".modal-card");
+            if (scrollContainer) scrollContainer.scrollTo({top: 0, behavior: "auto"});
+            window.scrollTo({top: 0, behavior: "auto"});
+        });
     }
 
     function nextMobileStep() {
@@ -577,7 +634,6 @@ export default function RecurringExpenseForm({
                 <div className="app-form-wizard-heading">
                     <span>Passaggio {mobileStep + mobileStepOffset} di {6 + mobileStepOffset}</span>
                     <strong>
-                        {mobileStep === 2 ? <span className="app-form-field-icon" aria-hidden="true">€</span> : null}
                         <span>{["Ricorrenza", "Importo", "Dettagli", "Fatturazione", "Pagamento", "Note"][mobileStep - 1]}</span>
                     </strong>
                 </div>
@@ -586,24 +642,23 @@ export default function RecurringExpenseForm({
                 </div>
             </div>
 
+            <input type="hidden" name="expenseType" value={expenseType}/>
             <ExpenseTypeChoice
-                selected="recurring"
+                selected={isTaxContribution ? "tax" : isPayroll ? "payroll" : "single"}
                 className="app-form-wizard-step app-form-wizard-step-1"
                 disabled={isExistingExpense}
                 onSelect={type => {
-                    if (type === "single") onSwitchToSingle?.();
-                    if (type === "vat") onSwitchToVatSettlement?.();
-                    if (type === "tax") onSwitchToTaxContribution?.();
-                    if (type === "payroll") onSwitchToPayroll?.();
+                    if (type === "single") setExpenseType("STANDARD");
+                    if (type === "tax") setExpenseType("TAX_CONTRIBUTION");
+                    if (type === "payroll") setExpenseType("PAYROLL");
                 }}
                 disabledTypes={[
-                    ...(!onSwitchToSingle ? ["single" as const] : []),
-                    ...(!onSwitchToVatSettlement ? ["vat" as const] : []),
-                    ...(!onSwitchToTaxContribution ? ["tax" as const] : []),
-                    ...(!onSwitchToPayroll ? ["payroll" as const] : []),
+                    "vat",
+                    "recurring",
                 ]}
-                onSelectCounter={() => window.location.assign("/expenses/counter")}
+                onSelectCounter={undefined}
             />
+            {recurrenceControl}
 
             <details className="form-section full recurring-form-section recurring-document-section recurring-dates-section" open>
                 <summary>
@@ -671,11 +726,11 @@ export default function RecurringExpenseForm({
 
             <details className="form-section full recurring-form-section recurring-document-section recurring-details-section app-form-wizard-step app-form-wizard-step-3" open>
                 <summary>
-                    <span>Fornitore e dettagli</span>
-                    <small>Fornitore, categoria e descrizione della spesa</small>
+                    <span>{isPayroll ? "Dipendente e competenza" : isTaxContribution ? "Ente e dettagli" : "Fornitore e dettagli"}</span>
+                    <small>Dati specifici, categoria e descrizione della spesa</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
-                    <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} categories={categories} onSupplierSelected={supplier => {
+                    {!isTaxContribution && !isPayroll ? <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} categories={categories} onSupplierSelected={supplier => {
                         if (supplier.defaultExpenseCategoryId && categories.some(category => category.id === supplier.defaultExpenseCategoryId)) {
                             setCategoryId(String(supplier.defaultExpenseCategoryId));
                         }
@@ -687,7 +742,17 @@ export default function RecurringExpenseForm({
                                 isFiscal: isDeclared,
                             }));
                         }
-                    }}/>
+                    }}/> : null}
+
+                    {isTaxContribution ? <SelectField label="Ente fiscale" icon="⌂" name="taxAuthorityId" required value={taxAuthorityId} onChange={setTaxAuthorityId} options={[
+                        {value: "", label: "Seleziona ente fiscale", disabled: true},
+                        ...taxAuthorities.filter(item => item.isActive !== false || String(item.id) === taxAuthorityId).map(item => ({value: item.id, label: item.shortName ? `${item.shortName} · ${item.name}` : item.name}))
+                    ]}/> : null}
+
+                    {isPayroll ? <SelectField label="Dipendente" icon="♙" name="employeeId" required value={employeeId} onChange={setEmployeeId} options={[
+                        {value: "", label: "Seleziona dipendente", disabled: true},
+                        ...employees.filter(item => item.status === "ACTIVE" || String(item.id) === employeeId).map(item => ({value: item.id, label: `${item.lastName} ${item.firstName}${item.employeeCode ? ` · ${item.employeeCode}` : ""}`}))
+                    ]}/> : null}
 
                     <SelectField label="Categoria" icon="◇" name="categoryId" required value={categoryId} onChange={setCategoryId} options={[
                         {value: "", label: "Seleziona categoria", disabled: true},
@@ -697,19 +762,34 @@ export default function RecurringExpenseForm({
                         }))
                     ]}/>
 
-                    <ProductServiceAutocomplete initialValue={initialExpense?.description ?? ""} onValueChange={setDescription}/>
+                    <ProductServiceAutocomplete initialValue={initialExpense?.description ?? (isPayroll ? "Competenze" : "")} onValueChange={setDescription}/>
+
+                    {isPayroll ? <>
+                        <SelectField label="Mese di competenza" icon="▦" name="payrollPeriodMonthOffset" value={payrollPeriodMonthOffset} onChange={setPayrollPeriodMonthOffset} options={[
+                            {value: -1, label: "Mese precedente"},
+                            {value: 0, label: "Stesso mese contabile"},
+                        ]}/>
+                        <SelectField label="Durata competenza" icon="↔" name="payrollPeriodMode" value={payrollPeriodMode} onChange={setPayrollPeriodMode} options={[
+                            {value: "FULL_MONTH", label: "Intero mese"},
+                            {value: "DAY_RANGE", label: "Intervallo di giorni"},
+                        ]}/>
+                        {payrollPeriodMode === "DAY_RANGE" ? <>
+                            <FormField label="Dal giorno" icon="№"><input type="number" name="payrollPeriodStartDay" min="1" max="31" required value={payrollPeriodStartDay} onChange={event => setPayrollPeriodStartDay(event.currentTarget.value)}/></FormField>
+                            <FormField label="Al giorno" icon="№"><input type="number" name="payrollPeriodEndDay" min="1" max="31" required value={payrollPeriodEndDay} onChange={event => setPayrollPeriodEndDay(event.currentTarget.value)}/></FormField>
+                        </> : null}
+                    </> : null}
                 </div>
             </details>
 
             <details className="form-section full recurring-form-section recurring-document-section recurring-amount-section" open>
                 <summary>
-                    <span>Importo e IVA</span>
-                    <small>Fiscalità, importo e aliquota IVA</small>
+                    <span>{isPayroll ? "Importi busta paga" : isTaxContribution ? "Importo imposta" : "Importo e IVA"}</span>
+                    <small>{isPayroll ? "Netto, compensi e costo aziendale" : "Fiscalità e importo della spesa"}</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
                     <div className="amount-vat-row app-form-wizard-step app-form-wizard-step-2 recurring-wizard-amount">
                         <div className="recurring-wizard-amount-entry full">
-                            <div className="switch-toggle-field recurring-switch-control recurring-fiscal-switch">
+                            {!isTaxContribution && !isPayroll ? <div className="switch-toggle-field recurring-switch-control recurring-fiscal-switch">
                                 <div className="app-form-field-label switch-toggle-field-label">
                                     <span className="app-form-field-icon">⇆</span>
                                     <span>Fiscale</span>
@@ -722,42 +802,50 @@ export default function RecurringExpenseForm({
                                     <span className="slider"/>
                                     <small className="text-muted hidden-md-down">{isDeclared ? "Fiscale" : "Non Fiscale"}</small>
                                 </label>
-                            </div>
+                            </div> : null}
                             <div className="recurring-amount-control flex-grow">
                                 <label className="recurring-wizard-amount-field">
                                     <div className="app-form-field-label switch-toggle-field-label">
                                         <span className="app-form-field-icon">€</span>
-                                        <span>Costo IVA inclusa</span>
-                                        <span className="recurring-expense-amount-vat-excluded" aria-live="polite">
+                                        <span>{isPayroll ? "Netto da pagare" : "Costo IVA inclusa"}</span>
+                                        {!isPayroll && !isTaxContribution ? <span className="recurring-expense-amount-vat-excluded" aria-live="polite">
                                             <strong>€ {netAmount.toLocaleString("it-IT", {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2,
                                             })}</strong>
-                                        </span>
+                                        </span> : null}
                                     </div>
-                                    <MoneyInput inputRef={amountRef} value={amount} onValueChange={handleAmountChange}
+                                    <MoneyInput inputRef={amountRef} value={isPayroll ? payrollNetAmount : amount} onValueChange={isPayroll ? value => setPayrollNetAmount(formatCurrencyInput(value)) : handleAmountChange}
                                                 onClear={() => resetCurrencyInput(amountKeyStateRef.current)} required suppressSoftKeyboard/>
                                     <input type="hidden" name="amount" value={normalizedAmount}/>
+                                    {isPayroll ? <input type="hidden" name="payrollNetAmount" value={normalizedPayrollNet}/> : null}
                                 </label>
-                                <div className="app-vat-rate-buttons recurring-vat-buttons-desktop vat-buttons-desktop" aria-label="Selezione rapida IVA">
+                                {!isTaxContribution && !isPayroll ? <div className="app-vat-rate-buttons recurring-vat-buttons-desktop vat-buttons-desktop" aria-label="Selezione rapida IVA">
                                     {["0", "4", "10", "22"].map(rate =>
                                         <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onMouseDown={event => event.preventDefault()} onClick={() => {
                                             vatRateTouchedRef.current = true;
                                             setVatRate(rate);
                                             focusAmount();
                                         }}>{rate}%</button>)}
-                                </div>
+                                </div> : null}
                             </div>
                         </div>
-                        <div className="app-vat-rate-buttons recurring-vat-buttons-mobile vat-buttons-mobile" aria-label="Selezione rapida IVA">
+                        {!isTaxContribution && !isPayroll ? <div className="app-vat-rate-buttons recurring-vat-buttons-mobile vat-buttons-mobile" aria-label="Selezione rapida IVA">
                             {["0", "4", "10", "22"].map(rate =>
                                 <button type="button" key={rate} className={vatRate === rate ? "is-selected" : ""} disabled={!isDeclared} onMouseDown={event => event.preventDefault()} onClick={() => {
                                     vatRateTouchedRef.current = true;
                                     setVatRate(rate);
                                     focusAmount();
                                 }}>{rate}%</button>)}
-                        </div>
+                        </div> : null}
                         <input type="hidden" name="vatRate" value={isDeclared ? vatRate : "0"}/>
+                        {isTaxContribution || isPayroll ? <input type="hidden" name="isDeclared" value="false"/> : null}
+                        {isTaxContribution || isPayroll ? <input type="hidden" name="affectsFiscalProfit" value={affectsFiscalProfit ? "true" : "false"}/> : null}
+                        {isPayroll ? <div className="form-section-grid full payroll-money-fields">
+                            <FormField label="Compensi extra" icon="+"><MoneyInput name="payrollExtraCompensation" value={payrollExtraCompensation} onValueChange={setPayrollExtraCompensation}/></FormField>
+                            <FormField label="Lordo cedolino" icon="€"><MoneyInput name="payrollGrossAmount" value={payrollGrossAmount} onValueChange={setPayrollGrossAmount}/></FormField>
+                            <FormField label="Costo complessivo aziendale" icon="€"><MoneyInput name="payrollEmployerCost" value={payrollEmployerCost} onValueChange={setPayrollEmployerCost}/></FormField>
+                        </div> : null}
                         <div className="app-amount-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key =>
                                 <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
@@ -766,7 +854,7 @@ export default function RecurringExpenseForm({
                 </div>
             </details>
 
-            <details className="form-section full recurring-form-section recurring-fiscal-section app-form-wizard-step app-form-wizard-step-4" open>
+            {!isTaxContribution && !isPayroll ? <details className="form-section full recurring-form-section recurring-fiscal-section app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
                     <span>Fatturazione</span>
                     <small>Fattura elettronica e periodo fatturazione</small>
@@ -823,7 +911,7 @@ export default function RecurringExpenseForm({
                             label
                         }))}/> : null}
                 </div>
-            </details>
+            </details> : null}
 
             <details className="form-section full recurring-form-section recurring-payment-section app-form-wizard-step app-form-wizard-step-5" open>
                 <summary>

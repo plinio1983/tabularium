@@ -450,8 +450,6 @@ button {
   pointer-events: none;
 }
 
-/* Gruppo riutilizzabile di controlli adiacenti, equivalente al pattern
-   `.btn-group`: un solo profilo esterno e bordi interni condivisi. */
 .btn-group {
   display: inline-flex;
   align-items: stretch;
@@ -534,7 +532,6 @@ button {
   border-radius: inherit;
 }
 
-/* Responsive rules migrated from the former viewport-specific stylesheets. */
 @media (max-width: 760px) {
   .compact-mobile-header-path {
     display: none;

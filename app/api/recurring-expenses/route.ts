@@ -10,6 +10,7 @@ import { writeAuditLog } from '@/lib/audit';
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 
 const RecurringExpenseSchema = z.object({
+  expenseType: z.enum(['STANDARD', 'TAX_CONTRIBUTION', 'PAYROLL']).default('STANDARD'),
   startDate: z.string().min(1),
   endDate: z.string().optional().transform(value => value || null),
   cadence: z.enum(['MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
@@ -30,8 +31,23 @@ const RecurringExpenseSchema = z.object({
   paymentMethodId: z.coerce.number().optional().nullable(),
   bankId: z.coerce.number().optional().nullable(),
   notes: z.string().optional()
+  ,taxAuthorityId: z.coerce.number().positive().optional().nullable()
+  ,employeeId: z.coerce.number().positive().optional().nullable()
+  ,payrollNetAmount: z.coerce.number().nonnegative().optional().nullable()
+  ,payrollExtraCompensation: z.coerce.number().nonnegative().optional().nullable()
+  ,payrollGrossAmount: z.coerce.number().nonnegative().optional().nullable()
+  ,payrollEmployerCost: z.coerce.number().nonnegative().optional().nullable()
+  ,payrollPeriodMode: z.enum(['FULL_MONTH', 'DAY_RANGE']).optional().nullable()
+  ,payrollPeriodMonthOffset: z.coerce.number().min(-1).max(0).optional().nullable()
+  ,payrollPeriodStartDay: z.coerce.number().min(1).max(31).optional().nullable()
+  ,payrollPeriodEndDay: z.coerce.number().min(1).max(31).optional().nullable()
+  ,affectsFiscalProfit: BooleanFromForm.default(false)
 }).superRefine((data, context) => {
   if (data.endDate && data.endDate < data.startDate) context.addIssue({code: 'custom', path: ['endDate'], message: 'La data di fine non può precedere la data iniziale'});
+  if (data.expenseType === 'STANDARD' && !data.supplierId) context.addIssue({code: 'custom', path: ['supplierId'], message: 'Seleziona un fornitore'});
+  if (data.expenseType === 'TAX_CONTRIBUTION' && !data.taxAuthorityId) context.addIssue({code: 'custom', path: ['taxAuthorityId'], message: 'Seleziona un ente fiscale'});
+  if (data.expenseType === 'PAYROLL' && !data.employeeId) context.addIssue({code: 'custom', path: ['employeeId'], message: 'Seleziona un dipendente'});
+  if (data.expenseType === 'PAYROLL' && data.payrollPeriodMode === 'DAY_RANGE' && (data.payrollPeriodStartDay ?? 1) > (data.payrollPeriodEndDay ?? 31)) context.addIssue({code: 'custom', path: ['payrollPeriodEndDay'], message: 'Il giorno finale non può precedere quello iniziale'});
 });
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
@@ -66,9 +82,9 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const raw = Object.fromEntries(formData.entries());
   const data = RecurringExpenseSchema.parse(raw);
-  let supplierRef;
+  let supplierRef: {id: number; businessName: string} | null = null;
   try {
-    supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
+    if (data.expenseType === 'STANDARD') supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
   } catch (error) {
     if (error instanceof SupplierReferenceError) {
       return wantsJson
@@ -78,6 +94,10 @@ export async function POST(request: Request) {
     throw error;
   }
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
+  const taxAuthority = data.expenseType === 'TAX_CONTRIBUTION' ? await prisma.taxAuthority.findFirst({where: {id: data.taxAuthorityId!, workspaceId: current.workspace.id}}) : null;
+  const employee = data.expenseType === 'PAYROLL' ? await prisma.employee.findFirst({where: {id: data.employeeId!, workspaceId: current.workspace.id}}) : null;
+  if (data.expenseType === 'TAX_CONTRIBUTION' && !taxAuthority) return NextResponse.json({error: 'Ente fiscale non valido'}, {status: 400});
+  if (data.expenseType === 'PAYROLL' && !employee) return NextResponse.json({error: 'Dipendente non valido'}, {status: 400});
   const paymentMethod = await resolvePaymentMethod(data.paymentMethodId, current.workspace.id);
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
   const recurringExpense = await prisma.recurringExpense.create({
@@ -90,17 +110,29 @@ export async function POST(request: Request) {
       dueDay: data.dueDay || null,
       dueMonth: isYearly ? (data.dueMonth || null) : null,
       generationTiming: data.generationTiming,
+      expenseType: data.expenseType,
       isAutomaticPayment: data.isAutomaticPayment,
       billingPeriodMode: data.billingPeriodMode,
       billingMonth: data.billingPeriodMode === 'CUSTOM_MONTH' ? (data.billingMonth || null) : null,
-      merchant: supplierRef.businessName,
-      supplierId: supplierRef.id,
+      merchant: supplierRef?.businessName ?? taxAuthority?.name ?? (employee ? `${employee.lastName} ${employee.firstName}` : data.merchant),
+      supplierId: supplierRef?.id ?? null,
+      taxAuthorityId: taxAuthority?.id ?? null,
+      employeeId: employee?.id ?? null,
       categoryId,
       description: data.description,
-      amount: data.amount,
-      vatRate: data.vatRate,
-      isDeclared: data.isDeclared,
-      hasElectronicInvoice: data.isDeclared ? data.hasElectronicInvoice : false,
+      amount: data.expenseType === 'PAYROLL' ? (data.payrollNetAmount ?? data.amount) + (data.payrollExtraCompensation ?? 0) : data.amount,
+      payrollNetAmount: data.expenseType === 'PAYROLL' ? (data.payrollNetAmount ?? data.amount) : null,
+      payrollExtraCompensation: data.expenseType === 'PAYROLL' ? (data.payrollExtraCompensation ?? 0) : null,
+      payrollGrossAmount: data.expenseType === 'PAYROLL' ? data.payrollGrossAmount : null,
+      payrollEmployerCost: data.expenseType === 'PAYROLL' ? data.payrollEmployerCost : null,
+      payrollPeriodMode: data.expenseType === 'PAYROLL' ? (data.payrollPeriodMode ?? 'FULL_MONTH') : null,
+      payrollPeriodMonthOffset: data.expenseType === 'PAYROLL' ? (data.payrollPeriodMonthOffset ?? -1) : null,
+      payrollPeriodStartDay: data.expenseType === 'PAYROLL' && data.payrollPeriodMode === 'DAY_RANGE' ? data.payrollPeriodStartDay : null,
+      payrollPeriodEndDay: data.expenseType === 'PAYROLL' && data.payrollPeriodMode === 'DAY_RANGE' ? data.payrollPeriodEndDay : null,
+      vatRate: data.expenseType === 'STANDARD' ? data.vatRate : 0,
+      isDeclared: data.expenseType === 'STANDARD' ? data.isDeclared : false,
+      affectsFiscalProfit: data.expenseType === 'STANDARD' ? false : data.affectsFiscalProfit,
+      hasElectronicInvoice: data.expenseType === 'STANDARD' && data.isDeclared ? data.hasElectronicInvoice : false,
       paymentMethodId: data.isAutomaticPayment ? (paymentMethod?.id ?? null) : null,
       bankId: data.isAutomaticPayment ? (data.bankId || null) : null,
       notes: data.notes || null

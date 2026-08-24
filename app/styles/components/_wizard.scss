@@ -1080,6 +1080,10 @@
   .expense-type-step-external > .entry-type-choice {
     display: none;
   }
+
+  .app-form-wizard.expense-type-step-external > .expense-recurring-definition-toggle-internal {
+    display: none !important;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1160,6 +1164,7 @@
     border-bottom: 1px solid var(--line);
     background: rgba(255, 255, 255, .97);
     backdrop-filter: blur(10px);
+    box-sizing: border-box;
   }
 }
 
@@ -1173,7 +1178,7 @@
 }
 
 @media (max-width: 900px) {
-  .app-form-wizard-heading span {
+  .app-form-wizard-heading > span {
     color: var(--muted);
     font-size: 12px;
     font-weight: 800;

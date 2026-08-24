@@ -1,6 +1,6 @@
 "use client";
 
-import {type FormEvent, useEffect, useMemo, useRef, useState} from "react";
+import {type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState} from "react";
 import {categoryIcon, formatPeriod} from "@/lib/expense-ui";
 import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
@@ -133,6 +133,7 @@ type Props = {
     initialOpenPaymentId?: number;
     focusAttachments?: boolean;
     hideMobileActions?: boolean;
+    recurrenceControl?: ReactNode;
 };
 
 function toDateInput(value?: string | Date | null) {
@@ -468,6 +469,7 @@ export default function ExpenseForm({
                                         initialOpenPaymentId,
                                         focusAttachments = false,
                                         hideMobileActions = false,
+                                        recurrenceControl,
                                     }: Props) {
     const timeZone = useCompanyTimeZone();
     const today = dateInputInTimeZone(timeZone);
@@ -714,7 +716,11 @@ export default function ExpenseForm({
 
     function goToMobileStep(nextStep: number) {
         setMobileStep(Math.max(1, Math.min(7, nextStep)));
-        window.requestAnimationFrame(() => formRef.current?.scrollIntoView({behavior: "smooth", block: "start"}));
+        window.requestAnimationFrame(() => {
+            const scrollContainer = formRef.current?.closest<HTMLElement>(".modal-card");
+            if (scrollContainer) scrollContainer.scrollTo({top: 0, behavior: "auto"});
+            window.scrollTo({top: 0, behavior: "auto"});
+        });
     }
 
     function validateMobileStep() {
@@ -953,7 +959,6 @@ export default function ExpenseForm({
                         ? `Passaggio ${isNoVatExpense ? 5 + mobileStepOffset : 6 + mobileStepOffset}bis`
                         : `Passaggio ${(isNoVatExpense && mobileStep === 6 ? 5 : mobileStep) + mobileStepOffset} di ${(isNoVatExpense ? 5 : 6) + mobileStepOffset}`}</span>
                     <strong>
-                        {mobileStep === 2 ? <span className="app-form-field-icon" aria-hidden="true">€</span> : null}
                         <span>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</span>
                     </strong>
                 </div>
@@ -985,6 +990,7 @@ export default function ExpenseForm({
                     disabled={!canEditExpenseType}
                     disabledTypes={!onSwitchToRecurring ? ["recurring"] : []}
                 />
+                {recurrenceControl}
             </>
 
             <details className="form-section full app-form-wizard-split-section expense-wizard-document-section expense-wizard-dates-section" open>

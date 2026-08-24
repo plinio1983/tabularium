@@ -10,6 +10,7 @@ import { compareDate, compareNumber, compareText } from '@/lib/mobile-sort';
 
 const cadenceLabels: Record<string, string> = { MONTHLY:'Ogni mese', EVERY_2_MONTHS:'Ogni 2 mesi', EVERY_3_MONTHS:'Ogni 3 mesi', EVERY_6_MONTHS:'Ogni 6 mesi', YEARLY:'Annuale', EVERY_2_YEARS:'Ogni 2 anni' };
 const billingLabels: Record<string, string> = { SAME_MONTH:'Stesso mese', NEXT_MONTH:'Mese successivo', CUSTOM_MONTH:'Mese impostato' };
+const expenseTypeLabels: Record<string, string> = {STANDARD: 'Singola', TAX_CONTRIBUTION: 'Imposte', PAYROLL: 'Busta paga'};
 const months = ['', 'Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 const cadenceStyles: Record<string, { icon: string; className: string }> = {
   MONTHLY: { icon: '↻', className: 'tone-paid' },
@@ -83,6 +84,7 @@ const activeLabels: Record<string, string> = {
 type FilterOption = { id: number; name: string; icon?: string | null; kind?: string; isFallback?: boolean | null };
 type CategoryOption = { id: number; code?: string; name: string; icon?: string | null };
 type SupplierOption = { id: number; businessName: string; alias?: string | null; email?: string | null; vatNumber?: string | null; iban?: string | null; pec?: string | null; taxCodeSdi?: string | null; internalNotes?: string | null; defaultExpenseCategoryId?: number | null; defaultVatRate?: string | number | null };
+type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: "ACTIVE" | "INACTIVE" };
 
 export default function RecurringExpensesList({
   items,
@@ -91,6 +93,7 @@ export default function RecurringExpensesList({
   banks,
   paymentMethods,
   suppliers,
+  employees = [],
 }: {
   items: any[];
   filters?: Record<string, string | string[] | undefined>;
@@ -98,6 +101,7 @@ export default function RecurringExpensesList({
   banks: FilterOption[];
   paymentMethods: FilterOption[];
   suppliers: SupplierOption[];
+  employees?: EmployeeOption[];
 }) {
   const itemCount = items.length;
   const currentFilters = filters ?? {};
@@ -151,7 +155,7 @@ export default function RecurringExpensesList({
     inputDefault(currentFilters, 'amountMax') ? `Importo max: ${inputDefault(currentFilters, 'amountMax')}` : '',
   ].filter(Boolean);
   return <div className="card recurring-expenses-card">
-    <RecurringExpenseDetailEditModalController categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} returnTo="/recurring-expenses" />
+    <RecurringExpenseDetailEditModalController categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} employees={employees} returnTo="/recurring-expenses" />
     <div className="list-heading recurring-list-heading">
       <div>
         <h2>Lista spese</h2>
@@ -230,7 +234,7 @@ export default function RecurringExpensesList({
           <thead><tr>
             <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le uscite ricorrenti" /></th>
             <th className="cell-left">Stato</th>
-            <th className="cell-left">Fornitore</th>
+            <th className="cell-left">Riferimento</th>
             <th className="cell-left">Descrizione</th>
             <th className="cell-left">Categoria</th>
             <th className="cell-right">Importo</th>
@@ -253,7 +257,7 @@ export default function RecurringExpensesList({
               return <tr className="clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}`} tabIndex={0} key={item.id}>
                 <td className="cell-center"><input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`} /></td>
                 <td className="cell-left"><span className={badgeClass(statusStyle.className)}>{statusStyle.icon} {statusStyle.label}</span></td>
-                <td className="cell-left recurring-supplier-cell" title={supplier}><span className="recurring-table-supplier-icon">↻</span>{supplier}</td>
+                <td className="cell-left recurring-supplier-cell" title={supplier}><span className={badgeClass('tone-neutral')}>{expenseTypeLabels[item.expenseType] ?? 'Singola'}</span> {supplier}</td>
                 <td className="cell-left recurring-description-cell" title={item.description ?? ''}>{item.description || '-'}</td>
                 <td className="cell-left">{item.category ? <span title={item.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(item.category, item.category.code)}</span> : <span className={badgeClass('tone-neutral')}>  •   ND</span>}</td>
                 <td className="cell-right nowrap-cell"><strong className="recurring-table-amount">€ {euro(item.amount.toString()).replace('€', '').trim()}</strong></td>
@@ -286,6 +290,7 @@ export default function RecurringExpensesList({
               <div className="recurring-mobile-main-title">
                 <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span>
                 <span className="badge tone-insurance">{cadence}</span>
+                <span className="badge">{expenseTypeLabels[item.expenseType] ?? 'Singola'}</span>
                 <span className="badge">{dueLabel(item)}</span>
               </div>
               <strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong>

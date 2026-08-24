@@ -283,6 +283,7 @@ export type TaxAuthorityWhereInput = {
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   defaultExpenseCategory?: Prisma.XOR<Prisma.ExpenseCategoryNullableScalarRelationFilter, Prisma.ExpenseCategoryWhereInput> | null
   expenses?: Prisma.ExpenseListRelationFilter
+  recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
 }
 
 export type TaxAuthorityOrderByWithRelationInput = {
@@ -301,6 +302,7 @@ export type TaxAuthorityOrderByWithRelationInput = {
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   defaultExpenseCategory?: Prisma.ExpenseCategoryOrderByWithRelationInput
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
+  recurringExpenses?: Prisma.RecurringExpenseOrderByRelationAggregateInput
 }
 
 export type TaxAuthorityWhereUniqueInput = Prisma.AtLeast<{
@@ -323,6 +325,7 @@ export type TaxAuthorityWhereUniqueInput = Prisma.AtLeast<{
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   defaultExpenseCategory?: Prisma.XOR<Prisma.ExpenseCategoryNullableScalarRelationFilter, Prisma.ExpenseCategoryWhereInput> | null
   expenses?: Prisma.ExpenseListRelationFilter
+  recurringExpenses?: Prisma.RecurringExpenseListRelationFilter
 }, "id" | "workspaceId_name">
 
 export type TaxAuthorityOrderByWithAggregationInput = {
@@ -376,6 +379,7 @@ export type TaxAuthorityCreateInput = {
   workspace: Prisma.WorkspaceCreateNestedOneWithoutTaxAuthoritiesInput
   defaultExpenseCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutDefaultForTaxAuthoritiesInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutTaxAuthorityInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutTaxAuthorityInput
 }
 
 export type TaxAuthorityUncheckedCreateInput = {
@@ -392,6 +396,7 @@ export type TaxAuthorityUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput
 }
 
 export type TaxAuthorityUpdateInput = {
@@ -407,6 +412,7 @@ export type TaxAuthorityUpdateInput = {
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutTaxAuthoritiesNestedInput
   defaultExpenseCategory?: Prisma.ExpenseCategoryUpdateOneWithoutDefaultForTaxAuthoritiesNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutTaxAuthorityNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutTaxAuthorityNestedInput
 }
 
 export type TaxAuthorityUncheckedUpdateInput = {
@@ -423,6 +429,7 @@ export type TaxAuthorityUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput
 }
 
 export type TaxAuthorityCreateManyInput = {
@@ -628,6 +635,22 @@ export type TaxAuthorityUncheckedUpdateManyWithoutDefaultExpenseCategoryNestedIn
   deleteMany?: Prisma.TaxAuthorityScalarWhereInput | Prisma.TaxAuthorityScalarWhereInput[]
 }
 
+export type TaxAuthorityCreateNestedOneWithoutRecurringExpensesInput = {
+  create?: Prisma.XOR<Prisma.TaxAuthorityCreateWithoutRecurringExpensesInput, Prisma.TaxAuthorityUncheckedCreateWithoutRecurringExpensesInput>
+  connectOrCreate?: Prisma.TaxAuthorityCreateOrConnectWithoutRecurringExpensesInput
+  connect?: Prisma.TaxAuthorityWhereUniqueInput
+}
+
+export type TaxAuthorityUpdateOneWithoutRecurringExpensesNestedInput = {
+  create?: Prisma.XOR<Prisma.TaxAuthorityCreateWithoutRecurringExpensesInput, Prisma.TaxAuthorityUncheckedCreateWithoutRecurringExpensesInput>
+  connectOrCreate?: Prisma.TaxAuthorityCreateOrConnectWithoutRecurringExpensesInput
+  upsert?: Prisma.TaxAuthorityUpsertWithoutRecurringExpensesInput
+  disconnect?: Prisma.TaxAuthorityWhereInput | boolean
+  delete?: Prisma.TaxAuthorityWhereInput | boolean
+  connect?: Prisma.TaxAuthorityWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TaxAuthorityUpdateToOneWithWhereWithoutRecurringExpensesInput, Prisma.TaxAuthorityUpdateWithoutRecurringExpensesInput>, Prisma.TaxAuthorityUncheckedUpdateWithoutRecurringExpensesInput>
+}
+
 export type TaxAuthorityCreateNestedOneWithoutExpensesInput = {
   create?: Prisma.XOR<Prisma.TaxAuthorityCreateWithoutExpensesInput, Prisma.TaxAuthorityUncheckedCreateWithoutExpensesInput>
   connectOrCreate?: Prisma.TaxAuthorityCreateOrConnectWithoutExpensesInput
@@ -656,6 +679,7 @@ export type TaxAuthorityCreateWithoutWorkspaceInput = {
   updatedAt?: Date | string
   defaultExpenseCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutDefaultForTaxAuthoritiesInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutTaxAuthorityInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutTaxAuthorityInput
 }
 
 export type TaxAuthorityUncheckedCreateWithoutWorkspaceInput = {
@@ -671,6 +695,7 @@ export type TaxAuthorityUncheckedCreateWithoutWorkspaceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput
 }
 
 export type TaxAuthorityCreateOrConnectWithoutWorkspaceInput = {
@@ -729,6 +754,7 @@ export type TaxAuthorityCreateWithoutDefaultExpenseCategoryInput = {
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutTaxAuthoritiesInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutTaxAuthorityInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutTaxAuthorityInput
 }
 
 export type TaxAuthorityUncheckedCreateWithoutDefaultExpenseCategoryInput = {
@@ -744,6 +770,7 @@ export type TaxAuthorityUncheckedCreateWithoutDefaultExpenseCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput
 }
 
 export type TaxAuthorityCreateOrConnectWithoutDefaultExpenseCategoryInput = {
@@ -772,6 +799,84 @@ export type TaxAuthorityUpdateManyWithWhereWithoutDefaultExpenseCategoryInput = 
   data: Prisma.XOR<Prisma.TaxAuthorityUpdateManyMutationInput, Prisma.TaxAuthorityUncheckedUpdateManyWithoutDefaultExpenseCategoryInput>
 }
 
+export type TaxAuthorityCreateWithoutRecurringExpensesInput = {
+  name: string
+  kind?: string
+  defaultDescription?: string | null
+  iban?: string | null
+  notes?: string | null
+  isActive?: boolean
+  isSystemDefault?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutTaxAuthoritiesInput
+  defaultExpenseCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutDefaultForTaxAuthoritiesInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutTaxAuthorityInput
+}
+
+export type TaxAuthorityUncheckedCreateWithoutRecurringExpensesInput = {
+  id?: number
+  workspaceId: number
+  name: string
+  kind?: string
+  defaultDescription?: string | null
+  defaultExpenseCategoryId?: number | null
+  iban?: string | null
+  notes?: string | null
+  isActive?: boolean
+  isSystemDefault?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput
+}
+
+export type TaxAuthorityCreateOrConnectWithoutRecurringExpensesInput = {
+  where: Prisma.TaxAuthorityWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaxAuthorityCreateWithoutRecurringExpensesInput, Prisma.TaxAuthorityUncheckedCreateWithoutRecurringExpensesInput>
+}
+
+export type TaxAuthorityUpsertWithoutRecurringExpensesInput = {
+  update: Prisma.XOR<Prisma.TaxAuthorityUpdateWithoutRecurringExpensesInput, Prisma.TaxAuthorityUncheckedUpdateWithoutRecurringExpensesInput>
+  create: Prisma.XOR<Prisma.TaxAuthorityCreateWithoutRecurringExpensesInput, Prisma.TaxAuthorityUncheckedCreateWithoutRecurringExpensesInput>
+  where?: Prisma.TaxAuthorityWhereInput
+}
+
+export type TaxAuthorityUpdateToOneWithWhereWithoutRecurringExpensesInput = {
+  where?: Prisma.TaxAuthorityWhereInput
+  data: Prisma.XOR<Prisma.TaxAuthorityUpdateWithoutRecurringExpensesInput, Prisma.TaxAuthorityUncheckedUpdateWithoutRecurringExpensesInput>
+}
+
+export type TaxAuthorityUpdateWithoutRecurringExpensesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  defaultDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystemDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutTaxAuthoritiesNestedInput
+  defaultExpenseCategory?: Prisma.ExpenseCategoryUpdateOneWithoutDefaultForTaxAuthoritiesNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutTaxAuthorityNestedInput
+}
+
+export type TaxAuthorityUncheckedUpdateWithoutRecurringExpensesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  defaultDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  defaultExpenseCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  iban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystemDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput
+}
+
 export type TaxAuthorityCreateWithoutExpensesInput = {
   name: string
   kind?: string
@@ -784,6 +889,7 @@ export type TaxAuthorityCreateWithoutExpensesInput = {
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutTaxAuthoritiesInput
   defaultExpenseCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutDefaultForTaxAuthoritiesInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutTaxAuthorityInput
 }
 
 export type TaxAuthorityUncheckedCreateWithoutExpensesInput = {
@@ -799,6 +905,7 @@ export type TaxAuthorityUncheckedCreateWithoutExpensesInput = {
   isSystemDefault?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutTaxAuthorityInput
 }
 
 export type TaxAuthorityCreateOrConnectWithoutExpensesInput = {
@@ -829,6 +936,7 @@ export type TaxAuthorityUpdateWithoutExpensesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutTaxAuthoritiesNestedInput
   defaultExpenseCategory?: Prisma.ExpenseCategoryUpdateOneWithoutDefaultForTaxAuthoritiesNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutTaxAuthorityNestedInput
 }
 
 export type TaxAuthorityUncheckedUpdateWithoutExpensesInput = {
@@ -844,6 +952,7 @@ export type TaxAuthorityUncheckedUpdateWithoutExpensesInput = {
   isSystemDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput
 }
 
 export type TaxAuthorityCreateManyWorkspaceInput = {
@@ -872,6 +981,7 @@ export type TaxAuthorityUpdateWithoutWorkspaceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   defaultExpenseCategory?: Prisma.ExpenseCategoryUpdateOneWithoutDefaultForTaxAuthoritiesNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutTaxAuthorityNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutTaxAuthorityNestedInput
 }
 
 export type TaxAuthorityUncheckedUpdateWithoutWorkspaceInput = {
@@ -887,6 +997,7 @@ export type TaxAuthorityUncheckedUpdateWithoutWorkspaceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput
 }
 
 export type TaxAuthorityUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -929,6 +1040,7 @@ export type TaxAuthorityUpdateWithoutDefaultExpenseCategoryInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutTaxAuthoritiesNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutTaxAuthorityNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutTaxAuthorityNestedInput
 }
 
 export type TaxAuthorityUncheckedUpdateWithoutDefaultExpenseCategoryInput = {
@@ -944,6 +1056,7 @@ export type TaxAuthorityUncheckedUpdateWithoutDefaultExpenseCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutTaxAuthorityNestedInput
 }
 
 export type TaxAuthorityUncheckedUpdateManyWithoutDefaultExpenseCategoryInput = {
@@ -967,10 +1080,12 @@ export type TaxAuthorityUncheckedUpdateManyWithoutDefaultExpenseCategoryInput = 
 
 export type TaxAuthorityCountOutputType = {
   expenses: number
+  recurringExpenses: number
 }
 
 export type TaxAuthorityCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expenses?: boolean | TaxAuthorityCountOutputTypeCountExpensesArgs
+  recurringExpenses?: boolean | TaxAuthorityCountOutputTypeCountRecurringExpensesArgs
 }
 
 /**
@@ -990,6 +1105,13 @@ export type TaxAuthorityCountOutputTypeCountExpensesArgs<ExtArgs extends runtime
   where?: Prisma.ExpenseWhereInput
 }
 
+/**
+ * TaxAuthorityCountOutputType without action
+ */
+export type TaxAuthorityCountOutputTypeCountRecurringExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurringExpenseWhereInput
+}
+
 
 export type TaxAuthoritySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1007,6 +1129,7 @@ export type TaxAuthoritySelect<ExtArgs extends runtime.Types.Extensions.Internal
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   defaultExpenseCategory?: boolean | Prisma.TaxAuthority$defaultExpenseCategoryArgs<ExtArgs>
   expenses?: boolean | Prisma.TaxAuthority$expensesArgs<ExtArgs>
+  recurringExpenses?: boolean | Prisma.TaxAuthority$recurringExpensesArgs<ExtArgs>
   _count?: boolean | Prisma.TaxAuthorityCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taxAuthority"]>
 
@@ -1064,6 +1187,7 @@ export type TaxAuthorityInclude<ExtArgs extends runtime.Types.Extensions.Interna
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   defaultExpenseCategory?: boolean | Prisma.TaxAuthority$defaultExpenseCategoryArgs<ExtArgs>
   expenses?: boolean | Prisma.TaxAuthority$expensesArgs<ExtArgs>
+  recurringExpenses?: boolean | Prisma.TaxAuthority$recurringExpensesArgs<ExtArgs>
   _count?: boolean | Prisma.TaxAuthorityCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaxAuthorityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1081,6 +1205,7 @@ export type $TaxAuthorityPayload<ExtArgs extends runtime.Types.Extensions.Intern
     workspace: Prisma.$WorkspacePayload<ExtArgs>
     defaultExpenseCategory: Prisma.$ExpenseCategoryPayload<ExtArgs> | null
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
+    recurringExpenses: Prisma.$RecurringExpensePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1492,6 +1617,7 @@ export interface Prisma__TaxAuthorityClient<T, Null = never, ExtArgs extends run
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   defaultExpenseCategory<T extends Prisma.TaxAuthority$defaultExpenseCategoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaxAuthority$defaultExpenseCategoryArgs<ExtArgs>>): Prisma.Prisma__ExpenseCategoryClient<runtime.Types.Result.GetResult<Prisma.$ExpenseCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   expenses<T extends Prisma.TaxAuthority$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaxAuthority$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurringExpenses<T extends Prisma.TaxAuthority$recurringExpensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaxAuthority$recurringExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1974,6 +2100,30 @@ export type TaxAuthority$expensesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ExpenseScalarFieldEnum | Prisma.ExpenseScalarFieldEnum[]
+}
+
+/**
+ * TaxAuthority.recurringExpenses
+ */
+export type TaxAuthority$recurringExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringExpense
+   */
+  select?: Prisma.RecurringExpenseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringExpense
+   */
+  omit?: Prisma.RecurringExpenseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringExpenseInclude<ExtArgs> | null
+  where?: Prisma.RecurringExpenseWhereInput
+  orderBy?: Prisma.RecurringExpenseOrderByWithRelationInput | Prisma.RecurringExpenseOrderByWithRelationInput[]
+  cursor?: Prisma.RecurringExpenseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurringExpenseScalarFieldEnum | Prisma.RecurringExpenseScalarFieldEnum[]
 }
 
 /**
