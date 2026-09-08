@@ -406,7 +406,7 @@ function matchesIsoDate(value: Date | null | undefined, from: string, to: string
 
 function fiscalBadge(value: boolean) {
     const item = value ? fiscalStyles.yes : fiscalStyles.no;
-    const label = value ? '✓ Fis' : '✕ NF';
+    const label = value ? '✓ Fis' : '✕ Nf';
     return <span className={`${badgeClass(item.className)} income-badge-compact`}>{label}</span>;
 }
 
@@ -953,7 +953,7 @@ export default async function IncomesPage({searchParams}: {
             {/*    <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>*/}
             {/*</div>*/}
         </div>
-        <div className="card record-list-card fixed">
+        <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista incassi</h2>

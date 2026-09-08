@@ -98,7 +98,7 @@ function creditStatus(income: IncomeItem, timeZone: string) {
 
 function fiscalBadge(value: boolean) {
     const style = value ? fiscalStyles.yes : fiscalStyles.no;
-    return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ Fis' : '✕ NF'}</span>;
+    return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ Fis' : '✕ Nf'}</span>;
 }
 
 function MobileInvoiceBadge(value: boolean, invoiceStatus?: string | null) {
@@ -249,7 +249,7 @@ export default function IncomesList({
                                 </div>
                             </div>
                             <div className="mobile-record-title-row income-mobile-status-row">
-                                <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ NF'}</span>
+                                <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ Nf'}</span>
                                 <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>
                                 {/*<span className="badge">IVA &nbsp;{aggregateVatLabel(group)}</span>*/}
                                 <small className="text-muted">•&nbsp; {formatPeriod(group.billingMonth, group.billingYear)}</small>
@@ -343,7 +343,7 @@ export default function IncomesList({
                     <th data-sort-key="fiscal" className="cell-fiscal">Fisc.</th>
                     <th data-sort-key="amount" data-sort-type="number" className="cell-amount">Importo</th>
                     <th data-sort-key="description" className="cell-description">Descrizione</th>
-                    <th data-sort-key="vat" data-sort-type="number" className="cell-vat">IVA</th>
+                    {/*<th data-sort-key="vat" data-sort-type="number" className="cell-vat">IVA</th>*/}
                     <th data-sort-key="credit-status"  className="cell-credit-state">Accr.</th>
                     <th data-sort-key="invoice-status" className="cell-invoice-state">Stato fatt.</th>
                     <th data-sort-key="credit-date" data-sort-type="date" className="cell-order-date">Data accr.</th>
@@ -380,11 +380,11 @@ export default function IncomesList({
                             <span className="income-table-payment-icon" title={group.paymentMethod} aria-label={`Metodo di pagamento: ${group.paymentMethod}`}>{group.paymentMethodIcon ?? '•'}</span>
                         </td>
                         <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
-                        <td>{aggregateVatBadge(group)}</td>
+                        {/*<td>{aggregateVatBadge(group)}</td>*/}
                         <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span>
                         </td>
                         <td className="text-center"><span className="badge badge-color tone-muted">✕</span></td>
-                        <td>{compactDateTableLabel(group.latestCreditDate)}</td>
+                        <td className="text-center">{compactDateTableLabel(group.latestCreditDate)}</td>
                     </tr>;
                 })}
                 {incomes.map(income => {

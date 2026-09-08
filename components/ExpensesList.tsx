@@ -133,7 +133,7 @@ function mobileDateLabel(value?: Date | null) {
 
 function fiscalBadgeMobile(value: boolean) {
     const item = value ? {className: ''} : invoiceStatusStyles.NON_PREVISTA;
-    const label = value ? '✓ Fis' : '✕ NF';
+    const label = value ? '✓ Fis' : ' Nf';
     return <span className={badgeClass(item.className)}>{label}</span>;
 }
 

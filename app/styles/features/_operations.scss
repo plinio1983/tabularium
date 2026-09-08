@@ -1770,11 +1770,7 @@ a.record-top-summary-item.is-invoice-waiting:hover {
   }
 }
 
-@media (max-width: 760px) {
-  .floating-bulk-actions-inner {
-    overflow-y: visible;
-  }
-}
+
 
 @media (max-width: 760px) {
   .floating-bulk-button {
@@ -1816,13 +1812,6 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     max-width: initial;
     flex-grow: 1;
     padding: 10px 7px;
-  }
-}
-
-@media (max-width: 760px) {
-  .floating-bulk-actions-inner {
-    justify-content: flex-start;
-    max-width: 100%;
   }
 }
 
@@ -1999,12 +1988,6 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     box-shadow: -18px 0 44px rgba(15, 23, 42, .18);
     transform: translateX(100%);
     transition: transform .22s ease;
-  }
-}
-
-@media (min-width: 761px) {
-  form.record-filters {
-    grid-template-columns: repeat(1, minmax(130px, 1fr));
   }
 }
 

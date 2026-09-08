@@ -222,6 +222,7 @@ button {
   text-decoration: none;
   cursor: pointer;
   transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+  border-style: solid;
 }
 
 .btn.wide {
