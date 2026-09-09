@@ -49,6 +49,7 @@ type ExpenseListItem = {
     vatRate: unknown;
     description?: string | null;
     supplierId?: number | null;
+    employeeId?: number | null;
     supplier?: { businessName: string } | null;
     merchant?: string | null;
     category?: { code: string; name: string; icon?: string | null } | null;
@@ -492,7 +493,8 @@ export default function ExpensesList({
                         <td className="cell-category">{expense.category ?
                             <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
                         {showSupplierColumn ?
-                            <td className="cell-supplier cell-compact" title={supplierName}>{expense.supplierId ?
+                            <td className="cell-supplier cell-compact" title={supplierName}>{isPayroll && expense.employeeId ?
+                                <Link className="supplier-table-link" href={`/employees/${expense.employeeId}?returnTo=${returnTo}`}>{supplierName}</Link> : expense.supplierId ?
                                 <Link className="supplier-table-link" href={`/suppliers/${expense.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td> : null}
                         <td className="cell-amount">
                             <strong className={moneyTone(amount)}>{euro(expense.amount as string | number)} &nbsp; {expensePaymentIcon(expense)}</strong>
