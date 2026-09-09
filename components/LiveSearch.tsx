@@ -81,7 +81,7 @@ export default function LiveSearch({name, label, placeholder}: Props) {
     } catch { /* Search also works when browser storage is unavailable. */ }
   }, [query, pathname, name, router]);
 
-  return <form className="entity-quick-search app-quick-search-form" action={pathname} method="get" role="search"
+  return <form className="entity-quick-search app-quick-search-form" action={pathname} method="get" role="search" data-in-place-submit="true"
     onSubmit={event => { event.preventDefault(); navigate(value); }}>
     {Array.from(searchParams.entries()).filter(([key]) => key !== name).map(([key, item], index) =>
       <input type="hidden" name={key} value={item} key={`${key}-${index}`}/>)}
@@ -99,6 +99,6 @@ export default function LiveSearch({name, label, placeholder}: Props) {
         onCompositionEnd={event => { const next = event.currentTarget.value; cancelTimer(); timer.current = setTimeout(() => navigate(next), 300); }}/>
       <button className="btn btn-sm btn-main" type="submit" aria-label={label}><SearchIcon/></button>
     </div>
-    <span role="status" aria-live="polite" className="muted">{pending || waiting ? 'Ricerca in corso…' : ''}</span>
+    <span role="status" aria-live="polite" className="muted" style={{minHeight: '1.25em'}}>{pending || waiting ? 'Ricerca in corso…' : ''}</span>
   </form>;
 }
