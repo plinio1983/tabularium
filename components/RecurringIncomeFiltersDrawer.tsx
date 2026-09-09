@@ -42,6 +42,7 @@ export default function RecurringIncomeFiltersDrawer({filters}: {filters: Filter
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi filtri" onClick={() => setOpen(false)}>×</button>
         </div>
         <form className="record-filters recurring-drawer-filters" action="/recurring-incomes" method="get">
+          <input type="hidden" name="search" value={value('search')}/>
           {value('mobileSort') ? <input type="hidden" name="mobileSort" value={value('mobileSort')}/> : null}
           <label>Cliente<input name="customer" defaultValue={value('customer')} placeholder="Nome cliente"/></label>
           <label>Descrizione<input name="description" defaultValue={value('description')} placeholder="Descrizione ricorrenza"/></label>

@@ -8,6 +8,7 @@ import FilterIcon from "@/components/FilterIcon";
 type Option = {id: number; name: string; icon?: string | null};
 
 type Props = {
+    search?: string;
     month: string;
     dateFrom: string;
     dateTo: string;
@@ -26,6 +27,7 @@ function FilterField({label, icon, children}: {label: string; icon: string; chil
 }
 
 export default function CashRegisterReceiptFiltersDrawer({
+    search = '',
     month,
     dateFrom,
     dateTo,
@@ -62,6 +64,7 @@ export default function CashRegisterReceiptFiltersDrawer({
                 </div>
 
                 <form className="record-filters recurring-drawer-filters record-styled-drawer-filters" action="/incomes/cash-register/receipts" method="get">
+                    <input type="hidden" name="search" value={search}/>
                     <fieldset className="filter-group filter-group-fiscal cash-register-receipt-period-filter-group">
                         <legend>Periodo</legend>
                         <FilterField label="Mese del report" icon="▦">

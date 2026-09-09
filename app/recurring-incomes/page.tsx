@@ -17,6 +17,7 @@ export default async function RecurringIncomesPage({searchParams}: {
         const value = filters[key];
         return (Array.isArray(value) ? value[0] ?? '' : value ?? '').trim();
     };
+    const search = filterValue('search');
     const customer = filterValue('customer');
     const description = filterValue('description');
     const isActive = filterValue('isActive');
@@ -27,6 +28,10 @@ export default async function RecurringIncomesPage({searchParams}: {
             where: {
                 workspaceId,
                 companyId: current.company.id,
+                ...(search ? {OR: [
+                    {customer: {businessName: {contains: search, mode: 'insensitive' as const}}},
+                    {description: {contains: search, mode: 'insensitive' as const}}
+                ]} : {}),
                 ...(customer ? {customer: {businessName: {contains: customer, mode: 'insensitive' as const}}} : {}),
                 ...(description ? {description: {contains: description, mode: 'insensitive' as const}} : {}),
                 ...(['true', 'false'].includes(isActive) ? {isActive: isActive === 'true'} : {}),

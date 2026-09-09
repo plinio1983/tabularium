@@ -1,3 +1,4 @@
+import {employeeNameSearch} from '@/lib/live-search';
 import { prisma } from '@/lib/prisma';
 import RecurringExpensesList from '@/components/RecurringExpensesList';
 import NewRecurringExpensePanel from '@/components/NewRecurringExpensePanel';
@@ -43,6 +44,13 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       { supplier: { businessName: { contains: merchantFilter, mode: 'insensitive' } } }
     ];
   }
+  const search = inputDefault(filters, 'search').trim();
+  if (search) where.AND = [{OR: [
+    {merchant: {contains: search, mode: 'insensitive'}},
+    {supplier: {businessName: {contains: search, mode: 'insensitive'}}},
+    {description: {contains: search, mode: 'insensitive'}},
+    {employee: {AND: employeeNameSearch(search)}}
+  ]}];
   if (descriptionFilter) where.description = { contains: descriptionFilter, mode: 'insensitive' };
   if (categoryFilter) where.categoryId = Number(categoryFilter);
   if (activeFilter === 'true') where.isActive = true;

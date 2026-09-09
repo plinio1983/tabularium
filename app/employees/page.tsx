@@ -1,3 +1,4 @@
+import {employeeNameSearch} from '@/lib/live-search';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspaceRole, workspaceOperationalRoles} from '@/lib/auth';
@@ -7,7 +8,7 @@ import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import MobileSortControl from '@/components/MobileSortControl';
 import {stripFlashRecord} from '@/lib/flash';
 import EmployeeFiltersDrawer from '@/components/EmployeeFiltersDrawer';
-import SearchIcon from '@/components/SearchIcon';
+import LiveSearch from '@/components/LiveSearch';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 
@@ -50,7 +51,7 @@ export default async function EmployeesPage({searchParams}: {searchParams?: Prom
       ...(iban ? {iban: {contains: iban, mode: 'insensitive'}} : {}),
       ...(hiredFrom || hiredTo ? {hiredAt: {...filterDate(hiredFrom) && {gte: filterDate(hiredFrom)}, ...filterDate(hiredTo, true) && {lte: filterDate(hiredTo, true)}}} : {}),
       ...(terminatedFrom || terminatedTo ? {terminatedAt: {...filterDate(terminatedFrom) && {gte: filterDate(terminatedFrom)}, ...filterDate(terminatedTo, true) && {lte: filterDate(terminatedTo, true)}}} : {}),
-      ...(search ? {OR: [{firstName: {contains: search, mode: 'insensitive'}}, {lastName: {contains: search, mode: 'insensitive'}}, {employeeCode: {contains: search, mode: 'insensitive'}}, {taxCode: {contains: search, mode: 'insensitive'}}]} : {})},
+      ...(search ? {AND: employeeNameSearch(search)} : {})},
     orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]
   });
   employees.sort((a, b) => {
@@ -61,6 +62,7 @@ export default async function EmployeesPage({searchParams}: {searchParams?: Prom
   });
   const currentQuery = new URLSearchParams();
   if (search) currentQuery.set('search', search);
+  if (text(filters.mobileSort)) currentQuery.set('mobileSort', sort);
   filterKeys.forEach(key => { const item = text(filters[key]); if (item) currentQuery.set(key, item); });
   const returnTo = `/employees${currentQuery.size ? `?${currentQuery}` : ''}`;
   const activeFilters = [
@@ -79,14 +81,7 @@ export default async function EmployeesPage({searchParams}: {searchParams?: Prom
     <ActionFeedbackBanner searchParams={raw} savedMessages={{created: 'Dipendente creato.', updated: 'Dipendente aggiornato.', deleted: 'Dipendente eliminato.', bulk_deleted: 'Dipendenti eliminati.', activated: 'Dipendente riattivato.', deactivated: 'Dipendente disattivato.'}} errorMessages={{invalid: 'Controlla i dati inseriti.', not_found: 'Dipendente non trovato.', duplicate_code: 'La matricola è già utilizzata.'}} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
     <div className="card record-list-card">
       <div className="list-heading recurring-list-heading"><div><h2>Lista dipendenti</h2><p className="muted">Risultati mostrati: {employees.length}</p></div></div>
-      <form className="entity-quick-search app-quick-search-form" action="/employees" method="get" role="search">
-        {filterKeys.map(key => text(filters[key]) ? <input type="hidden" name={key} value={text(filters[key])} key={key}/> : null)}
-        <label className="app-form-field-label" htmlFor="employeeSearch"><span className="app-form-field-icon" aria-hidden="true">⌕</span><span>Ricerca dipendente</span></label>
-        <div className="entity-quick-search-field app-quick-search-field input-group">
-          <input id="employeeSearch" name="search" defaultValue={search} placeholder="Nome, matricola o codice fiscale" autoComplete="off"/>
-          <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca dipendente"><SearchIcon/></button>
-        </div>
-      </form>
+      <LiveSearch name="search" label="Ricerca dipendente" placeholder="Nome, cognome, matricola o codice fiscale"/>
       <MobileSortControl action="/employees" currentValue={sort} options={sortOptions} searchParams={filters}/>
       {activeFilters.length ? <div className="recurring-active-filters"><div><span className="recurring-active-filters-title">Filtri attivi</span><div className="recurring-active-filter-tags">{activeFilters.map(item => <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div></div><Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/employees">× Reset</Link></div> : null}
       <form id="employeeBulkForm" action={`/api/employees/bulk?returnTo=${encodeURIComponent(returnTo)}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar party-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">

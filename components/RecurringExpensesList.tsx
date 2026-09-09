@@ -1,3 +1,4 @@
+import LiveSearch from '@/components/LiveSearch';
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
@@ -208,6 +209,7 @@ export default function RecurringExpensesList({
         }
     });
     const activeFilterItems = [
+        inputDefault(currentFilters, 'search') ? `Ricerca: ${inputDefault(currentFilters, 'search')}` : '',
         inputDefault(currentFilters, 'merchant') ? `Fornitore: ${inputDefault(currentFilters, 'merchant')}` : '',
         inputDefault(currentFilters, 'description') ? `Descrizione: ${inputDefault(currentFilters, 'description')}` : '',
         inputDefault(currentFilters, 'categoryId') ? `Categoria: ${optionLabel(categories, inputDefault(currentFilters, 'categoryId'))}` : '',
@@ -226,6 +228,7 @@ export default function RecurringExpensesList({
                 <h2>Lista spese</h2>
             </div>
         </div>
+        <LiveSearch name="search" label="Ricerca spesa ricorrente" placeholder="Fornitore, esercente, dipendente o descrizione"/>
         {activeFilterItems.length ? <div className="recurring-active-filters">
             <div>
                 <span className="recurring-active-filters-title">Filtri attivi</span>

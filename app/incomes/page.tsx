@@ -13,7 +13,7 @@ import {calendarDateInput, civilDateInTimeZone, dateInputInTimeZone} from '@/lib
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
-import SearchIcon from '@/components/SearchIcon';
+import LiveSearch from '@/components/LiveSearch';
 import {incomeCreditState} from '@/lib/income-status';
 import {matchesEntityQuickSearch} from '@/lib/entity-quick-search';
 
@@ -972,20 +972,7 @@ export default async function IncomesPage({searchParams}: {
                 <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
             </div> : null}
 
-            <form className="entity-quick-search app-quick-search-form" action="/incomes" method="get" role="search">
-                {Object.entries(filters).flatMap(([key, value]) => key === 'customerQuick' || key === 'mobileSort' ? [] : (Array.isArray(value) ? value.map(item =>
-                    <input type="hidden" name={key} value={item} key={`${key}-${item}`}/>) : value ? [
-                    <input type="hidden" name={key} value={value} key={key}/>] : []))}
-                <label className="app-form-field-label" htmlFor="incomeCustomerQuickSearch">
-                    <span className="app-form-field-icon" aria-hidden="true">⌕</span>
-                    <span>Ricerca incasso</span>
-                </label>
-                <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input id="incomeCustomerQuickSearch" name="customerQuick" defaultValue={inputDefault(filters, 'customerQuick')} placeholder="Cliente o descrizione" autoComplete="off"/>
-                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca incasso"><SearchIcon/>
-                    </button>
-                </div>
-            </form>
+            <LiveSearch name="customerQuick" label="Ricerca incasso" placeholder="Cliente o descrizione"/>
 
             <script dangerouslySetInnerHTML={{
                 __html: `
@@ -1006,64 +993,8 @@ export default async function IncomesPage({searchParams}: {
                   const href = row.getAttribute('data-row-href');
                   if (href) window.location.href = href;
                 });
-                (() => {
-                  const storageKey = 'dmsAccounting.incomes.filters';
-                  const filterMaxAgeMs = 24 * 60 * 60 * 1000;
-                  const resetLink = document.querySelector('a[href="/incomes"].reset-button');
-                  const readStoredFilter = () => {
-                    const raw = localStorage.getItem(storageKey);
-                    if (!raw) return '';
-                    try {
-                      const parsed = JSON.parse(raw);
-                      if (!parsed || typeof parsed.value !== 'string' || typeof parsed.savedAt !== 'number') {
-                        localStorage.removeItem(storageKey);
-                        return '';
-                      }
-                      if (Date.now() - parsed.savedAt > filterMaxAgeMs) {
-                        localStorage.removeItem(storageKey);
-                        return '';
-                      }
-                      return parsed.value;
-                    } catch (error) {
-                      localStorage.removeItem(storageKey);
-                      return '';
-                    }
-                  };
-                  const writeStoredFilter = (value) => localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }));
-                  const sanitizedSearch = (search) => {
-                    const params = new URLSearchParams(search || '');
-                    ['new', 'saved', 'error', 'usage'].forEach(key => params.delete(key));
-                    const clean = params.toString();
-                    return clean ? '?' + clean : '';
-                  };
-                  if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
-                  const query = sanitizedSearch(window.location.search);
-                  const form = document.querySelector('form.record-filters');
-                  if (query && query !== '?') writeStoredFilter(query);
-                  else {
-                    const saved = sanitizedSearch(readStoredFilter());
-                    if (saved) {
-                      writeStoredFilter(saved);
-                      window.location.replace('/incomes' + saved);
-                    } else {
-                      localStorage.removeItem(storageKey);
-                    }
-                  }
-                  if (form) form.addEventListener('submit', () => {
-                    const billingFields = ['billingPeriodFrom', 'billingPeriodTo', 'billingPeriodQuick', 'billingPeriodYear'].map(name => form.elements.namedItem(name)).filter(Boolean);
-                    const dateFields = ['creditDateFrom', 'creditDateTo', 'dateQuick', 'dateYear'].map(name => form.elements.namedItem(name)).filter(Boolean);
-                    const hasBilling = billingFields.some(field => field.value);
-                    const hasDate = dateFields.some(field => field.value);
-                    if (hasBilling) dateFields.forEach(field => { field.value = ''; });
-                    else if (hasDate) billingFields.forEach(field => { field.value = ''; });
-                    setTimeout(() => {
-                      const clean = sanitizedSearch(window.location.search);
-                      if (clean) writeStoredFilter(clean);
-                      else localStorage.removeItem(storageKey);
-                    }, 0);
-                  });
-                })();
-        
+
+
                 (() => {
                   const quick = document.getElementById('incomeBillingPeriodQuick');
                   const from = document.getElementById('incomeBillingPeriodFrom');

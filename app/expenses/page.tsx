@@ -14,7 +14,7 @@ import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/wor
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
-import SearchIcon from '@/components/SearchIcon';
+import LiveSearch from '@/components/LiveSearch';
 import {expenseAffectsFiscalProfit} from '@/lib/reports';
 import {matchesExpenseQuickSearch, matchesExpenseType} from '@/lib/expense-list-filters';
 
@@ -1083,20 +1083,7 @@ export default async function ExpensesPage({searchParams}: {
                 </div>
             </div> : null}
 
-            <form className="entity-quick-search app-quick-search-form" action="/expenses" method="get" role="search">
-                {Object.entries(filters).flatMap(([key, value]) => key === 'supplierQuick' || key === 'mobileSort' ? [] : (Array.isArray(value) ? value.map(item =>
-                    <input type="hidden" name={key} value={item} key={`${key}-${item}`}/>) : value ? [
-                    <input type="hidden" name={key} value={value} key={key}/>] : []))}
-                <label className="app-form-field-label" htmlFor="expenseSupplierQuickSearch">
-                    <span className="app-form-field-icon" aria-hidden="true">⌕</span>
-                    <span>Ricerca spesa</span>
-                </label>
-                <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Fornitore, esercente, dipendente o descrizione" autoComplete="off"/>
-                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca spesa"><SearchIcon/>
-                    </button>
-                </div>
-            </form>
+            <LiveSearch name="supplierQuick" label="Ricerca spesa" placeholder="Fornitore, esercente, dipendente o descrizione"/>
 
             <script dangerouslySetInnerHTML={{
                 __html: `
@@ -1117,63 +1104,7 @@ export default async function ExpensesPage({searchParams}: {
           const href = row.getAttribute('data-row-href');
           if (href) window.location.href = href;
         });
-        (() => {
-          const storageKey = 'dmsAccounting.expenses.filters';
-          const filterMaxAgeMs = 24 * 60 * 60 * 1000;
-          const resetLink = document.querySelector('a[href="/expenses"].reset-button');
-          const readStoredFilter = () => {
-            const raw = localStorage.getItem(storageKey);
-            if (!raw) return '';
-            try {
-              const parsed = JSON.parse(raw);
-              if (!parsed || typeof parsed.value !== 'string' || typeof parsed.savedAt !== 'number') {
-                localStorage.removeItem(storageKey);
-                return '';
-              }
-              if (Date.now() - parsed.savedAt > filterMaxAgeMs) {
-                localStorage.removeItem(storageKey);
-                return '';
-              }
-              return parsed.value;
-            } catch (error) {
-              localStorage.removeItem(storageKey);
-              return '';
-            }
-          };
-          const writeStoredFilter = (value) => localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }));
-          const sanitizedSearch = (search) => {
-            const params = new URLSearchParams(search || '');
-            ['new', 'saved', 'error', 'usage'].forEach(key => params.delete(key));
-            const clean = params.toString();
-            return clean ? '?' + clean : '';
-          };
-          if (resetLink) resetLink.addEventListener('click', () => localStorage.removeItem(storageKey));
-          const query = sanitizedSearch(window.location.search);
-          const form = document.querySelector('form.record-filters');
-          if (query && query !== '?') writeStoredFilter(query);
-          else {
-            const saved = sanitizedSearch(readStoredFilter());
-            if (saved) {
-              writeStoredFilter(saved);
-              window.location.replace('/expenses' + saved);
-            } else {
-              localStorage.removeItem(storageKey);
-            }
-          }
-          if (form) form.addEventListener('submit', () => {
-            const billingFields = ['billingPeriodFrom', 'billingPeriodTo', 'billingPeriodQuick'].map(name => form.elements.namedItem(name)).filter(Boolean);
-            const dateFields = ['orderDateFrom', 'orderDateTo', 'dateQuick'].map(name => form.elements.namedItem(name)).filter(Boolean);
-            const hasBilling = billingFields.some(field => field.value);
-            const hasDate = dateFields.some(field => field.value);
-            if (hasBilling) dateFields.forEach(field => { field.value = ''; });
-            else if (hasDate) billingFields.forEach(field => { field.value = ''; });
-            setTimeout(() => {
-              const clean = sanitizedSearch(window.location.search);
-              if (clean) writeStoredFilter(clean);
-              else localStorage.removeItem(storageKey);
-            }, 0);
-          });
-        })();
+
         document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });
         document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-bulk-form')) { const selected = form.querySelectorAll('input[name="ids"]:checked').length || document.querySelectorAll('input[form="' + form.id + '"][name="ids"]:checked').length; if (!selected) { alert('Seleziona almeno una riga.'); event.preventDefault(); return; } const submitter = event.submitter; const action = submitter && submitter.getAttribute ? submitter.getAttribute('value') : ''; if (!action) { alert('Seleziona un’azione bulk.'); event.preventDefault(); return; } const label = submitter && submitter.textContent ? submitter.textContent.trim() : 'questa azione'; const message = 'Confermi di eseguire "' + label + '" sui record selezionati?'; if (!confirm(message)) event.preventDefault(); } });
         (() => {

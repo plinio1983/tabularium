@@ -284,6 +284,8 @@ export default function ExpenseFiltersDrawer({
         </div>
 
         <form className="record-filters recurring-drawer-filters record-styled-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+          <input type="hidden" name="supplierQuick" value={inputDefault(filters, "supplierQuick")}/>
+          <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
           <fieldset className="filter-group filter-group-fiscal">
             <legend>Periodo fiscale</legend>
             <FilterField label="Periodo fiscale rapido" icon="▦"><select id="billingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>

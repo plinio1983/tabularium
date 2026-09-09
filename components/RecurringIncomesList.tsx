@@ -1,3 +1,4 @@
+import LiveSearch from '@/components/LiveSearch';
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import RecurringIncomeFiltersDrawer from '@/components/RecurringIncomeFiltersDrawer';
@@ -85,6 +86,7 @@ export default function RecurringIncomesList({ items, filters = {} }: { items: a
         if (href) window.location.href = href;
       });
     ` }} />
+        <LiveSearch name="search" label="Ricerca incasso ricorrente" placeholder="Cliente o descrizione"/>
     <p className="muted">Risultati mostrati: {items.length}</p>
     <MobileSortControl action="/recurring-incomes" currentValue={mobileSort} options={sortOptions} searchParams={filters} />
     <div className="bulk-actions-bar recurring-bulk-actions-bar">

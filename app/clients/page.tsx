@@ -11,7 +11,7 @@ import MobileSortControl from '@/components/MobileSortControl';
 import SortableTableController from '@/components/SortableTableController';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
-import SearchIcon from '@/components/SearchIcon';
+import LiveSearch from '@/components/LiveSearch';
 import {incomeCreditSummary} from '@/lib/income-credits';
 import {yearMonthInTimeZone} from '@/lib/company-time';
 
@@ -46,7 +46,8 @@ export default async function ClientsPage({searchParams}: {
     const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
     const [customers, salesChannels] = await Promise.all([
         prisma.customer.findMany({
-            where: {workspaceId: current.workspace.id},
+            where: {workspaceId: current.workspace.id,
+                ...(input(filters, 'businessName').trim() ? {businessName: {contains: input(filters, 'businessName').trim(), mode: 'insensitive' as const}} : {})},
             include: {incomes: {where: {companyId: current.company.id}, include: {credits: true}}},
             orderBy: {businessName: 'asc'}
         }),
@@ -107,17 +108,7 @@ export default async function ClientsPage({searchParams}: {
             <div className="list-heading recurring-list-heading">
                 <div><h2>Lista clienti</h2><p className="muted">Risultati mostrati: {rows.length}</p></div>
             </div>
-            <form className="entity-quick-search app-quick-search-form" action="/clients" method="get" role="search">
-                <label className="app-form-field-label" htmlFor="clientQuickSearch">
-                    <span className="app-form-field-icon" aria-hidden="true">⌕</span>
-                    <span>Ricerca cliente</span>
-                </label>
-                <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input id="clientQuickSearch" name="businessName" defaultValue={input(filters, 'businessName')} placeholder="Nome o ragione sociale" autoComplete="off"/>
-                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca cliente"><SearchIcon/>
-                    </button>
-                </div>
-            </form>
+            <LiveSearch name="businessName" label="Ricerca cliente" placeholder="Nome o ragione sociale"/>
             <MobileSortControl action="/clients" currentValue={mobileSort} options={mobileSortOptions} searchParams={filters}/>
             {active.length ? <div className="recurring-active-filters">
                 <div><span className="recurring-active-filters-title">Filtri attivi</span>

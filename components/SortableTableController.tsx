@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import {useSearchParams} from 'next/navigation';
 
 function sortableRows(table: HTMLTableElement) {
   const body = table.tBodies.item(0);
@@ -67,8 +68,10 @@ function isInteractiveTarget(target: EventTarget | null) {
 }
 
 export default function SortableTableController() {
+  const query = useSearchParams().toString();
+  const sorts = useRef<Array<{key: string; direction: 'asc' | 'desc'}>>([]);
   useEffect(() => {
-    document.querySelectorAll<HTMLTableElement>('table[data-sortable-table]').forEach(table => {
+    document.querySelectorAll<HTMLTableElement>('table[data-sortable-table]').forEach((table, index) => {
       table.querySelectorAll<HTMLElement>('[data-sort-key]').forEach(header => {
         header.classList.add('sortable-th');
         header.tabIndex = 0;
@@ -76,8 +79,8 @@ export default function SortableTableController() {
         header.setAttribute('aria-sort', 'none');
       });
 
-      const defaultSort = table.dataset.defaultSort;
-      const defaultDirection = table.dataset.defaultSortDir === 'asc' ? 'asc' : 'desc';
+      const defaultSort = sorts.current[index]?.key ?? table.dataset.currentSort ?? table.dataset.defaultSort;
+      const defaultDirection = sorts.current[index]?.direction ?? (table.dataset.currentSortDir === 'asc' || (!table.dataset.currentSortDir && table.dataset.defaultSortDir === 'asc') ? 'asc' : 'desc');
       if (defaultSort) applySort(table, defaultSort, defaultDirection);
     });
 
@@ -99,10 +102,13 @@ export default function SortableTableController() {
     document.addEventListener('click', onClick);
     document.addEventListener('keydown', onKeyDown);
     return () => {
+      document.querySelectorAll<HTMLTableElement>('table[data-sortable-table]').forEach((table, index) => {
+        if (table.dataset.currentSort) sorts.current[index] = {key: table.dataset.currentSort, direction: table.dataset.currentSortDir === 'asc' ? 'asc' : 'desc'};
+      });
       document.removeEventListener('click', onClick);
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, []);
+  }, [query]);
 
   return null;
 }

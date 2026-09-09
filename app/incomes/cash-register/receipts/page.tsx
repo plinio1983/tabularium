@@ -1,3 +1,4 @@
+import LiveSearch from '@/components/LiveSearch';
 import Link from 'next/link';
 import CashRegisterReceiptList from '@/components/CashRegisterReceiptList';
 import {requireWorkspace} from '@/lib/auth';
@@ -29,6 +30,8 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
 }) {
     const current = await requireWorkspace('/incomes/cash-register/receipts');
     const params = (await searchParams) ?? {};
+    const search = value(params, 'search').trim();
+    const searchSqlFilter = search ? Prisma.sql`AND strpos(lower(coalesce(description, '')), lower(${search})) > 0` : Prisma.empty;
     const timeZone = current.company.timeZone;
     const currentPeriod = yearMonthInTimeZone(timeZone);
     const month = value(params, 'month') || monthInputInTimeZone(timeZone);
@@ -69,6 +72,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             workspaceId: current.workspace.id,
             companyId: current.company.id,
                 incomeType: 'CASH_REGISTER',
+                ...(search ? {description: {contains: search.replace(/[\\%_]/g, '\\$&'), mode: 'insensitive' as const}} : {}),
                 ...(hasCustomDateRange ? {creditDate: creditDateFilter} : annual ? {billingYear} : {billingYear, billingMonth}),
                 ...(methodId ? {paymentMethodId: methodId} : {}),
                 ...(channelId ? {salesChannelId: channelId} : {}),
@@ -95,6 +99,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
               ${methodFilter}
               ${channelFilter}
               ${fiscalFilter}
+              ${searchSqlFilter}
             GROUP BY 1
             ORDER BY 1
         `),
@@ -115,6 +120,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const selectedMethod = orderedMethods.find(item => item.id === methodId);
     const selectedChannel = channels.find(item => item.id === channelId);
     const activeFilters = [
+        ...(search ? [{label: 'Ricerca', value: search}] : []),
         {label: 'Periodo', value: hasCustomDateRange
             ? `${new Date(`${dateFrom}T12:00:00Z`).toLocaleDateString('it-IT')} – ${new Date(`${dateTo}T12:00:00Z`).toLocaleDateString('it-IT')}`
             : annual
@@ -126,6 +132,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     ];
     const monthLinks = Array.from({length: 12}, (_, index) => {
         const query = new URLSearchParams({month: `${billingYear}-${String(index + 1).padStart(2, '0')}`});
+        if (search) query.set('search', search);
         if (methodId) query.set('paymentMethodId', String(methodId));
         if (channelId) query.set('salesChannelId', String(channelId));
         if (fiscal === 'yes' || fiscal === 'no') query.set('fiscal', fiscal);
@@ -137,6 +144,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         };
     });
     const annualQuery = new URLSearchParams({month: `${billingYear}-01`, period: 'year'});
+    if (search) annualQuery.set('search', search);
     if (methodId) annualQuery.set('paymentMethodId', String(methodId));
     if (channelId) annualQuery.set('salesChannelId', String(channelId));
     if (fiscal === 'yes' || fiscal === 'no') annualQuery.set('fiscal', fiscal);
@@ -155,12 +163,14 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             const navMonth = navYear === currentPeriod.year ? Math.min(billingMonth, currentPeriod.month) : billingMonth;
             const query = new URLSearchParams({month: `${navYear}-${String(navMonth).padStart(2, '0')}`});
             if (annual) query.set('period', 'year');
-            if (methodId) query.set('paymentMethodId', String(methodId));
+            if (search) query.set('search', search);
+        if (methodId) query.set('paymentMethodId', String(methodId));
             if (channelId) query.set('salesChannelId', String(channelId));
             if (fiscal === 'yes' || fiscal === 'no') query.set('fiscal', fiscal);
             return {year: navYear, href: `/incomes/cash-register/receipts?${query}`};
         });
     const returnQuery = new URLSearchParams();
+    if (search) returnQuery.set('search', search);
     if (month) returnQuery.set('month', month);
     if (annual) returnQuery.set('period', 'year');
     if (rawDateFrom) returnQuery.set('dateFrom', rawDateFrom);
@@ -194,9 +204,10 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes/cash-register/receipts"><span className="btn-icon">×</span> Reset</Link>
         </div>
         <CashRegisterReceiptTrendChart points={trend} annual={annual}/>
+        <LiveSearch name="search" label="Ricerca scontrino" placeholder="Descrizione scontrino"/>
         <CashRegisterReceiptList
             returnTo={receiptListReturnTo}
-            filtersTrigger={<CashRegisterReceiptFiltersDrawer month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}
+            filtersTrigger={<CashRegisterReceiptFiltersDrawer search={search} month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}
             receipts={receipts.map(receipt => ({
                 id: receipt.id,
                 description: receipt.description,

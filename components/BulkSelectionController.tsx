@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import {useSearchParams} from "next/navigation";
 
 function selectedInputsForForm(formId: string) {
   const inputs = Array.from(
@@ -454,7 +455,12 @@ function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
 }
 
 export default function BulkSelectionController() {
+  const query = useSearchParams().toString();
   useEffect(() => {
+    document.querySelectorAll<HTMLInputElement>('input[name="ids"], input[data-bulk-target]').forEach(input => {
+      input.checked = false;
+      input.indeterminate = false;
+    });
     const floatingBySource = new WeakMap<HTMLElement, HTMLElement>();
 
     const syncBulkControls = () => {
@@ -634,12 +640,13 @@ export default function BulkSelectionController() {
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
     window.addEventListener("resize", onScrollOrResize);
 
-    window.requestAnimationFrame(() => {
+    const frame = window.requestAnimationFrame(() => {
       syncBulkControls();
       updateFloatingVisibility();
     });
 
     return () => {
+      window.cancelAnimationFrame(frame);
       document.removeEventListener("change", onChange);
       document.removeEventListener("click", onClick);
       document.removeEventListener("submit", onSubmit, true);
@@ -650,7 +657,7 @@ export default function BulkSelectionController() {
       document.querySelectorAll(".floating-bulk-actions-bar").forEach((bar) => bar.remove());
       closeBulkActionModal();
     };
-  }, []);
+  }, [query]);
 
   return null;
 }

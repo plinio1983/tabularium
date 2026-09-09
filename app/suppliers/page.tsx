@@ -11,7 +11,7 @@ import SupplierEditModalController from '@/components/SupplierEditModalControlle
 import {requireWorkspace} from '@/lib/auth';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
-import SearchIcon from '@/components/SearchIcon';
+import LiveSearch from '@/components/LiveSearch';
 import {yearMonthInTimeZone} from '@/lib/company-time';
 
 const supplierMobileSortOptions = [
@@ -77,7 +77,8 @@ export default async function SuppliersPage({searchParams}: {
 
     const [suppliers, categories] = await Promise.all([
         prisma.supplier.findMany({
-            where: {workspaceId: current.workspace.id},
+            where: {workspaceId: current.workspace.id,
+                ...(inputDefault(filters, 'businessName').trim() ? {businessName: {contains: inputDefault(filters, 'businessName').trim(), mode: 'insensitive' as const}} : {})},
             orderBy: {businessName: 'asc'},
             include: {expenses: {where: {companyId: current.company.id}, include: {payments: true}}}
         }),
@@ -232,24 +233,7 @@ export default async function SuppliersPage({searchParams}: {
                     <p className="muted">Risultati mostrati: {filteredSupplierRows.length}</p>
                 </div>
             </div>
-            <form className="entity-quick-search app-quick-search-form" action="/suppliers" method="get" role="search">
-                <label className="app-form-field-label" htmlFor="supplierQuickSearch">
-                    <span className="app-form-field-icon" aria-hidden="true">⌕</span>
-                    <span>Ricerca fornitore</span>
-                </label>
-                <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input
-                        id="supplierQuickSearch"
-                        name="businessName"
-                        type="text"
-                        defaultValue={inputDefault(filters, 'businessName')}
-                        placeholder="Nome o ragione sociale"
-                        autoComplete="off"
-                    />
-                    <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca fornitore"><SearchIcon/>
-                    </button>
-                </div>
-            </form>
+            <LiveSearch name="businessName" label="Ricerca fornitore" placeholder="Nome o ragione sociale"/>
             <MobileSortControl action="/suppliers" currentValue={mobileSort} options={supplierMobileSortOptions} searchParams={filters}/>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">
@@ -265,55 +249,7 @@ export default async function SuppliersPage({searchParams}: {
 
             <script dangerouslySetInnerHTML={{
                 __html: `
-        (() => {
-          const storageKey = 'dmsAccounting.suppliers.filters';
-          const sanitizedSearch = (search) => {
-            const params = new URLSearchParams(search || '');
-            ['new', 'saved', 'error', 'usage'].forEach(key => params.delete(key));
-            Array.from(params.keys()).forEach(key => {
-              if (!params.get(key)) params.delete(key);
-            });
-            const clean = params.toString();
-            return clean ? '?' + clean : '';
-          };
-          document.addEventListener('click', (event) => {
-            const resetLink = event.target instanceof Element
-              ? event.target.closest('a.reset-button, a.reset-btn, a.recurring-active-filters-reset')
-              : null;
-            if (resetLink && resetLink.getAttribute('href') === '/suppliers') {
-              localStorage.removeItem(storageKey);
-            }
-          });
-          const query = sanitizedSearch(window.location.search);
-          const form = document.querySelector('form.party-filters');
-          const quickSearchForm = document.querySelector('form.entity-quick-search');
-          if (query && query !== '?') localStorage.setItem(storageKey, query);
-          else {
-            const saved = sanitizedSearch(localStorage.getItem(storageKey) || '');
-            if (saved) {
-              localStorage.setItem(storageKey, saved);
-              window.location.replace('/suppliers' + saved);
-            } else {
-              localStorage.removeItem(storageKey);
-            }
-          }
-          if (form) form.addEventListener('submit', () => {
-            Array.from(form.elements).forEach(field => {
-              if (field && field.name && 'value' in field && !field.value) field.disabled = true;
-            });
-            setTimeout(() => {
-              const clean = sanitizedSearch(window.location.search);
-              if (clean) localStorage.setItem(storageKey, clean);
-              else localStorage.removeItem(storageKey);
-            }, 0);
-          });
-          if (quickSearchForm) quickSearchForm.addEventListener('submit', () => {
-            const params = new URLSearchParams(new FormData(quickSearchForm));
-            const clean = sanitizedSearch('?' + params.toString());
-            if (clean) localStorage.setItem(storageKey, clean);
-            else localStorage.removeItem(storageKey);
-          });
-        })();
+
       `
             }}/>
 

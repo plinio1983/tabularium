@@ -276,6 +276,8 @@ export default function IncomeFiltersDrawer({
         </div>
 
         <form className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+          <input type="hidden" name="customerQuick" value={inputDefault(filters, "customerQuick")}/>
+          <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
           <fieldset className="filter-group filter-group-order-date">
             <legend>Data ordine</legend>
             <FilterField label="Data ordine da" icon="◷"><input name="orderDateFrom" type="date" defaultValue={inputDefault(filters, "orderDateFrom")} /></FilterField>

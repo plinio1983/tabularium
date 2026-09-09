@@ -69,6 +69,7 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
         </div>
 
         <form className="record-filters recurring-drawer-filters" action="/recurring-expenses" method="get">
+          <input type="hidden" name="search" value={inputDefault(filters, 'search')}/>
           <label>
             Fornitore / esercente
             <input name="merchant" defaultValue={inputDefault(filters, "merchant")} placeholder="Nome fornitore" />
