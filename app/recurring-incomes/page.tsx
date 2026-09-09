@@ -13,9 +13,26 @@ export default async function RecurringIncomesPage({searchParams}: {
     const query = (await searchParams) ?? {};
     const filters = stripFlashRecord(query);
     const workspaceId = current.workspace.id;
+    const filterValue = (key: string) => {
+        const value = filters[key];
+        return (Array.isArray(value) ? value[0] ?? '' : value ?? '').trim();
+    };
+    const customer = filterValue('customer');
+    const description = filterValue('description');
+    const isActive = filterValue('isActive');
+    const cadence = filterValue('cadence');
+    const isAutomaticCredit = filterValue('isAutomaticCredit');
     const [items, channels, customers, rawMethods, rawBanks] = await Promise.all([
         prisma.recurringIncome.findMany({
-            where: {workspaceId, companyId: current.company.id},
+            where: {
+                workspaceId,
+                companyId: current.company.id,
+                ...(customer ? {customer: {businessName: {contains: customer, mode: 'insensitive' as const}}} : {}),
+                ...(description ? {description: {contains: description, mode: 'insensitive' as const}} : {}),
+                ...(['true', 'false'].includes(isActive) ? {isActive: isActive === 'true'} : {}),
+                ...(cadence ? {cadence} : {}),
+                ...(['true', 'false'].includes(isAutomaticCredit) ? {isAutomaticCredit: isAutomaticCredit === 'true'} : {}),
+            },
             include: {customer: true, salesChannel: true, paymentMethod: true, bank: true},
             orderBy: [{isActive: 'desc'}, {startDate: 'asc'}]
         }),
@@ -33,9 +50,6 @@ export default async function RecurringIncomesPage({searchParams}: {
         <div className="toolbar-card record-toolbar-card">
             <div><h2>Entrate ricorrenti</h2>
                 <p className="muted">Gestisci le regole che generano periodicamente gli incassi.</p></div>
-            <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new data-income-new-type="recurring">
-                <span className="btn-icon">＋</span>Nuova entrata ricorrente
-            </button>
         </div>
         <ActionFeedbackBanner searchParams={query} savedMessages={{
             created: 'Entrata ricorrente creata.',

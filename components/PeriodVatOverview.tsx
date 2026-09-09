@@ -12,7 +12,7 @@ type MonthVatTotals = {
 type MonthVatData = {year: number; month: number; totals: MonthVatTotals};
 
 function euro(value: number) {
-  return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0}).format(value);
+  return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2}).format(value);
 }
 
 function monthLabel(month: number) {
@@ -21,11 +21,9 @@ function monthLabel(month: number) {
 }
 
 function periodHref(path: '/expenses' | '/incomes', from: MonthVatData, to: MonthVatData) {
-  const query = new URLSearchParams({
-    billingPeriodFrom: `${from.year}-${String(from.month).padStart(2, '0')}`,
-    billingPeriodTo: `${to.year}-${String(to.month).padStart(2, '0')}`
-  });
-  return `${path}?${query}`;
+  const query = new URLSearchParams({mode: 'fiscal'});
+  if (from.month !== to.month) query.set('period', 'quarter');
+  return `/months/${from.year}/${from.month}?${query}#report-${path === '/expenses' ? 'expense' : 'income'}-movements`;
 }
 
 export default function PeriodVatOverview({months, periodType}: {months: MonthVatData[]; periodType: 'quarter' | 'year'}) {

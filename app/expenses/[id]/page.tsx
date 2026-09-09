@@ -5,8 +5,10 @@ import ExpenseDetailEditModalController from '@/components/ExpenseDetailEditModa
 import DetailBackButton from '@/components/DetailBackButton';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import DeleteActionButton from '@/components/DeleteActionButton';
+import ExpenseInvoiceEmittedButton from '@/components/ExpenseInvoiceEmittedButton';
 import { euro } from '@/lib/money';
-import { requireWorkspace } from '@/lib/auth';
+import { hasWorkspaceRole, requireWorkspace, workspaceOperationalRoles } from '@/lib/auth';
+import {canMarkExpenseInvoiceEmitted} from '@/lib/expense-invoice';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import { detailBackHref } from '@/lib/detail-navigation';
 import { calendarDayNumber } from '@/lib/company-time';
@@ -106,10 +108,12 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     savedMessages: {
       created: 'Spesa creata.',
       updated: 'Spesa aggiornata.',
+      invoice_emitted: 'Fattura impostata come emessa.',
       deleted: 'Spesa rimossa.'
     },
     errorMessages: {
       invalid: 'Controlla i campi della spesa.',
+      invoice_not_eligible: 'Lo stato attuale della spesa non consente di impostare la fattura come emessa.',
       invalid_attachment: 'Allegato non valido. Usa PDF, JPG, PNG, WebP, XML o P7M fino a 10 MB.',
       supplier_not_found: 'Fornitore non trovato. Aggiungilo prima con il pulsante Nuovo nel campo Esercente, poi salva la spesa.',
       not_found: 'Spesa non trovata.',
@@ -213,6 +217,9 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           {!isNoVatExpense ? <div>
             <span>Stato fattura</span>
             <strong>{invoiceStyle.icon} {invoiceStyle.label}</strong>
+            {hasWorkspaceRole(current.membership.role, workspaceOperationalRoles) && canMarkExpenseInvoiceEmitted(expense)
+              ? <ExpenseInvoiceEmittedButton action={`/api/expenses/${expense.id}?returnTo=${encodedCurrentDetailReturnTo}`}/>
+              : null}
           </div> : null}
           <div>
             <span>Periodo contabile</span>

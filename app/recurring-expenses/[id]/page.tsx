@@ -323,12 +323,12 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                         </div>
                         <div>
                             <span>Detrazione</span>
-                            {item.isDeclared ? '✓ Si' : '✕ No' }
+                            <strong>{item.isDeclared ? '✓ Si' : '✕ No' }</strong>
                             {/*<strong>{booleanBadge(item.isDeclared)}</strong>*/}
                         </div>
                         <div>
                             <span>F. elettronica</span>
-                            {item.hasElectronicInvoice ? '✓ Si' : '✕ No' }
+                            <strong>{item.hasElectronicInvoice ? '✓ Si' : '✕ No' }</strong>
                             {/*<strong>{booleanBadge(item.hasElectronicInvoice)}</strong>*/}
                         </div>
                     </div>

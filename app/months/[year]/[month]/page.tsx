@@ -3,7 +3,8 @@ import NewExpensePanel from '@/components/NewExpensePanel';
 import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
 import YearNavigationSelect from '@/components/YearNavigationSelect';
 import {prisma} from '@/lib/prisma';
-import {getMonthlyReport, getOrderDatePeriodSummary, getPeriodReport, getPeriodSummary} from '@/lib/reports';
+import {getMonthlyReport, getPeriodReport} from '@/lib/reports';
+import PeriodReportMovements from '@/components/PeriodReportMovements';
 import {monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {lastCompletedMonthInTimeZone, yearMonthInTimeZone} from '@/lib/company-time';
@@ -18,7 +19,7 @@ function capitalize(value: string) {
 
 function euroInt(value: number | string | null | undefined) {
     const n = Number(value ?? 0);
-    return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0}).format(n);
+    return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2}).format(n);
 }
 
 function revenuePercentage(value: number, revenue: number) {
@@ -29,22 +30,6 @@ function monthValue(period: {year: number; month: number}) {
     return `${period.year}-${String(period.month).padStart(2, '0')}`;
 }
 
-function periodListHref(path: '/expenses' | '/incomes', periods: Array<{year: number; month: number}>, mode: 'overall' | 'fiscal') {
-    const first = periods[0];
-    const last = periods[periods.length - 1];
-    const query = new URLSearchParams();
-    if (mode === 'fiscal') {
-        query.set('billingPeriodFrom', monthValue(first));
-        query.set('billingPeriodTo', monthValue(last));
-    } else {
-        const from = `${monthValue(first)}-01`;
-        const lastDay = new Date(Date.UTC(last.year, last.month, 0)).getUTCDate();
-        const to = `${monthValue(last)}-${String(lastDay).padStart(2, '0')}`;
-        query.set(path === '/expenses' ? 'orderDateFrom' : 'creditDateFrom', from);
-        query.set(path === '/expenses' ? 'orderDateTo' : 'creditDateTo', to);
-    }
-    return `${path}?${query}`;
-}
 
 function safeReturnTo(value: string | string[] | undefined) {
     const raw = Array.isArray(value) ? value[0] : value;
@@ -81,12 +66,9 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const lastCompletedMonth = lastCompletedMonthInTimeZone(current.company.timeZone);
     const currentYear = currentPeriod.year;
     const currentMonth = currentPeriod.month;
-    const [report, comparisonReport, fiscalTotals, categories, banks, paymentMethods, suppliers, expenseYearBounds, incomeYearBounds] = await Promise.all([
+    const [report, comparisonReport, categories, banks, paymentMethods, suppliers, expenseYearBounds, incomeYearBounds, paymentYearBounds, creditYearBounds] = await Promise.all([
         getPeriodReport(reportPeriods, current.workspace.id, mode, current.company.id, current.company.timeZone),
         periodType === 'month' ? getMonthlyReport(comparedPeriod.year, comparedPeriod.month, current.workspace.id, mode, current.company.id, current.company.timeZone) : Promise.resolve(null),
-        mode === 'fiscal'
-            ? getPeriodSummary(reportPeriods, {workspaceId: current.workspace.id, companyId: current.company.id, timeZone: current.company.timeZone, fiscalOnly: true})
-            : getOrderDatePeriodSummary(reportPeriods, current.workspace.id, current.company.id, current.company.timeZone),
         prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
@@ -102,7 +84,15 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         prisma.income.aggregate({
             where: {workspaceId: current.workspace.id, companyId: current.company.id},
             _min: {billingYear: true, orderDate: true}
-        })
+        }),
+        prisma.expensePayment.aggregate({
+            where: {expense: {workspaceId: current.workspace.id, companyId: current.company.id}},
+            _min: {paymentDate: true}
+        }),
+        prisma.incomeCredit.aggregate({
+            where: {income: {workspaceId: current.workspace.id, companyId: current.company.id}},
+            _min: {creditDate: true}
+        }),
     ]);
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
@@ -110,8 +100,15 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const periodQuery = periodType === 'month' ? '' : `&period=${periodType}`;
     const currentReportHref = `/months/${year}/${month}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}`;
     const periodLabel = periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno';
-    const expensesHref = periodListHref('/expenses', reportPeriods, mode);
-    const incomesHref = periodListHref('/incomes', reportPeriods, mode);
+    const fiscalTotals = report.summary;
+    const metrics = [
+        {label: mode === 'overall' ? 'Entrate' : 'Entrate fiscali', value: report.totals.totalRevenue},
+        {label: mode === 'overall' ? 'Uscite' : 'Uscite fiscali', value: report.totals.totalExpenses},
+        ...(mode === 'overall' ? [
+            {label: 'Margin lordo', value: report.totals.grossProfit},
+            {label: 'Risultato al netto IVA', value: report.totals.estimatedNetProfit},
+        ] : [{label: 'Utile fiscale', value: report.totals.declaredProfit}]),
+    ];
     const monthNavOptions = monthNavLabels.map((label, index) => {
         const navMonth = index + 1;
         const href = `/months/${year}/${navMonth}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
@@ -140,7 +137,9 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             expenseYearBounds._min.year,
             expenseYearBounds._min.receivedDate?.getUTCFullYear(),
             incomeYearBounds._min.billingYear,
-            incomeYearBounds._min.orderDate?.getUTCFullYear()
+            incomeYearBounds._min.orderDate?.getUTCFullYear(),
+            paymentYearBounds._min.paymentDate?.getUTCFullYear(),
+            creditYearBounds._min.creditDate ? yearMonthInTimeZone(current.company.timeZone, creditYearBounds._min.creditDate).year : null,
         ].filter((value): value is number => Number.isInteger(value))
     );
     const lastAvailableYear = Math.max(year, currentYear);
@@ -217,7 +216,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     value={currentReportHref}
                     ariaLabel="Seleziona mese"
                 /> : null}
-                {periodType !== 'year' ? <div className={periodType === 'quarter' ? 'btn-group month-report-month-nav month-report-quarter-nav' : 'month-report-month-nav'} aria-label={periodType === 'month' ? 'Seleziona mese' : 'Seleziona trimestre'}>
+                {periodType !== 'year' ? <div className={periodType === 'quarter' ? 'btn-group month-report-month-nav month-report-quarter-nav' : 'btn-group month-report-month-nav'} aria-label={periodType === 'month' ? 'Seleziona mese' : 'Seleziona trimestre'}>
                     {(periodType === 'month' ? monthNavOptions : quarterNavOptions).map((option) => {
                         const optionValue = 'month' in option ? option.month : option.quarter;
                         const isActive = optionValue === (periodType === 'month' ? month : quarter);
@@ -244,31 +243,18 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     >Fiscale</Link>
                 </div>
             </div>
-            <div className="month-report-metrics">
-                <div className="month-report-value"><span>{mode === 'fiscal' ? 'Entrate fiscali' : 'Entrate'}</span><strong
-                    className="month-report-positive">{euroInt(report.totals.totalRevenue)} <small
-                    className="month-report-metric-percentage"
-                    aria-label="Base percentuale degli incassi">{report.totals.totalRevenue ? '100,0%' : '—'}</small></strong></div>
-                <div className="month-report-value">
-                    <span>{mode === 'fiscal' ? 'Uscite rilevanti' : 'Uscite'}</span><strong>{euroInt(report.totals.totalExpenses)} <small
-                    className="month-report-metric-percentage"
-                    aria-label="Percentuale delle uscite sugli incassi">{revenuePercentage(report.totals.totalExpenses, report.totals.totalRevenue)}</small></strong></div>
-                <div className="month-report-value"><span>Margine lordo</span><strong
-                    className="month-report-positive">{euroInt(report.totals.grossProfit)} <small
-                    className="month-report-metric-percentage"
-                    aria-label="Percentuale del margine lordo sugli incassi">{revenuePercentage(report.totals.grossProfit, report.totals.totalRevenue)}</small></strong></div>
-                <div className="month-report-value"><span>Utile netto</span><strong
-                    className="month-report-positive">{euroInt(report.totals.estimatedNetProfit)} <small
-                    className="month-report-metric-percentage"
-                    aria-label="Percentuale dell'utile netto sugli incassi">{revenuePercentage(report.totals.estimatedNetProfit, report.totals.totalRevenue)}</small></strong></div>
-                <div className="month-report-value"><span>Utile fiscale</span><strong
-                    className="month-report-positive">{euroInt(report.totals.declaredProfit)} <small
-                    className="month-report-metric-percentage"
-                    aria-label="Percentuale dell'utile fiscale sugli incassi">{revenuePercentage(report.totals.declaredProfit, report.totals.totalRevenue)}</small></strong></div>
-                <div className="month-report-value"><span>Imposte previste</span><strong
-                    className="month-report-positive">{euroInt(report.totals.estimatedTax)} <small
-                    className="month-report-metric-percentage"
-                    aria-label="Percentuale delle imposte previste sugli incassi">{revenuePercentage(report.totals.estimatedTax, report.totals.totalRevenue)}</small></strong></div>
+            <p className="muted">{mode === 'overall'
+                ? 'Accrediti e pagamenti effettivi del periodo, inclusi i movimenti non fiscali. Il risultato al netto IVA rettifica il margine lordo per l’IVA sugli incassi e sulle spese pagate, senza contare due volte i versamenti IVA.'
+                : 'Entrate e uscite fiscali del periodo di fatturazione, indipendentemente dalle date di accredito e pagamento. L’utile fiscale esclude l’IVA; i versamenti IVA sono separati dai costi.'}</p>
+            <div className={`month-report-metrics month-report-metrics-${mode}`}>
+                {metrics.map(metric => <div className="month-report-value" key={metric.label}>
+                    <span>{metric.label}</span>
+                    <strong className={metric.value < 0 ? 'text-warning' : 'month-report-positive'}>
+                        {euroInt(metric.value)} <small className="month-report-metric-percentage" aria-label={`Percentuale ${metric.label.toLowerCase()} sulle entrate`}>
+                            {revenuePercentage(metric.value, report.totals.totalRevenue)}
+                        </small>
+                    </strong>
+                </div>)}
             </div>
         </section>
 
@@ -280,7 +266,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             <div className="quarter-report-legend" aria-hidden="true"><span className="is-income">Entrate</span><span className="is-expense">Uscite</span></div>
             <div className="quarter-report-chart">
                 {report.monthlyBreakdown.map(item => {
-                    const result = item.totals.incassoTotale - item.totals.speseTotali;
+                    const result = mode === 'fiscal' ? item.totals.utileFiscale : item.totals.utileLordo;
                     return <Link className="quarter-report-month" key={item.month} href={`/months/${item.year}/${item.month}?mode=${mode}&returnTo=${encodeURIComponent(currentReportHref)}`}>
                         <div className="quarter-report-bars" aria-label={`Entrate ${euroInt(item.totals.incassoTotale)}, uscite ${euroInt(item.totals.speseTotali)}`}>
                             <i className="is-income" style={{height: `${Math.max(3, item.totals.incassoTotale / quarterChartMaximum * 100)}%`}}/>
@@ -293,39 +279,37 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             </div>
         </section>}
 
-        <section className="month-report-section">
+        {mode === 'fiscal' ? <section className="month-report-section">
             <h3>Indicatori fiscali</h3>
             <div className="month-report-fiscal-metrics">
-                <div className="month-report-value"><span>Utile fiscale</span><strong
-                    className="month-report-positive">{euroInt(fiscalTotals.utileFiscale)}</strong></div>
-                <div className="month-report-value"><span>Imponibile</span><strong
-                    className="month-report-positive">{euroInt(report.totals.taxableIncome)}</strong></div>
-                <div className="month-report-value"><span>Fatture non ricevute</span><strong
-                    className="month-report-warning">{fiscalTotals.fattureNonRicevute}</strong></div>
-                <div className="month-report-value"><span>Fatture da inviare</span><strong
-                    className="month-report-warning">{fiscalTotals.fattureNonInviate}</strong></div>
-                {mode === 'overall' ? <div className="month-report-value"><span>Uscite non fiscali</span><strong
-                    className="month-report-muted-value">{euroInt(fiscalTotals.usciteNonFiscali)}</strong></div> : null}
+                <div className="month-report-value"><span>Imponibile entrate</span><strong>{euroInt(report.totals.taxableIncome)}</strong></div>
+                <div className="month-report-value"><span>Fatture non ricevute</span><strong className="month-report-warning">{fiscalTotals.fattureNonRicevute}</strong></div>
+                <div className="month-report-value"><span>Fatture da inviare</span><strong className="month-report-warning">{fiscalTotals.fattureNonInviate}</strong></div>
             </div>
-        </section>
+        </section> : null}
 
         <div className="grid grid-2 month-report-panels">
             <section className="card month-report-section"><h3>IVA</h3>
                 <dl className="month-report-summary-grid">
                     <div><dt>IVA vendite</dt><dd>{euroInt(report.totals.vatToPay)}</dd></div>
-                    <div><dt>IVA spese</dt><dd>{euroInt(report.totals.paidVat)}</dd></div>
-                    <div><dt>IVA da versare</dt><dd>{euroInt(report.totals.remainingVat)}</dd></div>
+                    <div><dt>IVA detraibile sulle spese</dt><dd>{euroInt(report.totals.totalVatOnExpenses)}</dd></div>
+                    <div><dt>Versamenti IVA registrati</dt><dd>{euroInt(report.totals.paidVat)}</dd></div>
+                    <div><dt>{report.totals.remainingVat > 0 ? 'Saldo IVA a debito' : report.totals.remainingVat < 0 ? 'Saldo IVA a credito' : 'Saldo IVA'}</dt><dd>{euroInt(Math.abs(report.totals.remainingVat))}</dd></div>
                 </dl>
+                {mode === 'overall' ? <p className="muted">IVA riferita ai movimenti di cassa del periodo. Per il riepilogo per periodo contabile consulta la modalità Fiscale.</p> : null}
                 {mode === 'overall' && periodType !== 'month' ? <Link
                     className="month-report-vat-detail-link"
                     href={`/months/${year}/${month}?mode=fiscal${periodQuery}&returnTo=${encodeURIComponent(backHref)}#iva`}
                 >Apri il prospetto IVA dettagliato in modalità Fiscale →</Link> : null}
             </section>
-            <section className="card month-report-section"><h3>Entrate</h3>
+            <section className="card month-report-section"><h3>Composizione dei movimenti</h3>
                 <dl className="month-report-summary-grid">
                     <div><dt>Totale incassi</dt><dd>{euroInt(report.totals.totalRevenue)}</dd></div>
                     <div><dt>Incassi fiscali</dt><dd>{euroInt(fiscalTotals.incassoFiscale)}</dd></div>
-                    {mode === 'overall' ? <div><dt>Incassi non fiscali</dt><dd>{euroInt(fiscalTotals.incassoNonFiscale)}</dd></div> : null}
+                    {mode === 'overall' ? <>
+                        <div><dt>Incassi non fiscali</dt><dd>{euroInt(fiscalTotals.incassoNonFiscale)}</dd></div>
+                        <div><dt>Uscite non fiscali</dt><dd>{euroInt(fiscalTotals.usciteNonFiscali)}</dd></div>
+                    </> : null}
                 </dl>
             </section>
         </div>
@@ -348,13 +332,15 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             isCurrentMonth={year === currentYear && month === currentMonth}
         /> : null}
         <nav className="month-report-record-links" aria-label={`Movimenti del ${periodLabel}`}>
-            <Link className="card month-report-record-link is-expense" href={expensesHref}>
-                <span>Spese del {periodLabel}</span><strong aria-hidden="true">→</strong>
+            <Link className="card month-report-record-link is-expense" href="#report-expense-movements">
+                <span>{mode === 'overall' ? 'Pagamenti' : 'Uscite fiscali'} del {periodLabel}</span><strong aria-hidden="true">→</strong>
             </Link>
-            <Link className="card month-report-record-link is-income" href={incomesHref}>
-                <span>Incassi del {periodLabel}</span><strong aria-hidden="true">→</strong>
+            <Link className="card month-report-record-link is-income" href="#report-income-movements">
+                <span>{mode === 'overall' ? 'Accrediti' : 'Entrate fiscali'} del {periodLabel}</span><strong aria-hidden="true">→</strong>
             </Link>
         </nav>
+        {/*<PeriodReportMovements kind="expense" mode={mode} movements={report.expenseMovements} total={report.totals.totalExpenses} timeZone={current.company.timeZone} returnTo={currentReportHref}/>*/}
+        {/*<PeriodReportMovements kind="income" mode={mode} movements={report.incomeMovements} total={report.totals.totalRevenue} timeZone={current.company.timeZone} returnTo={currentReportHref}/>*/}
         {mode === 'fiscal' && periodType !== 'month' ? <PeriodVatOverview
             months={report.monthlyBreakdown}
             periodType={periodType}

@@ -66,7 +66,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const uninvoicedExpenses = supplier.expenses.filter(isExpenseInvoiceNotReceived);
   const uninvoicedAmount = uninvoicedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
-  return <div className="grid record-detail-page party-detail-page">
+  return <div className="grid record-detail-page party-detail-page supplier-detail-page">
     <SupplierEditModalController categories={orderedCategories.map(category => ({ id: category.id, name: category.name, icon: category.icon }))}/>
     <NewExpensePanel
       categories={orderedCategories.map(c => ({
@@ -220,7 +220,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       </article>
     </div>
 
-    <div className="card record-list-card">
+    <div className="card record-list-card supplier-linked-expenses-list">
       <div className="list-heading">
         <div>
           <h2>Spese collegate</h2>

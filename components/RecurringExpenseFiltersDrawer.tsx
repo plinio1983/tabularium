@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import FilterIcon from "@/components/FilterIcon";
 
@@ -34,6 +35,8 @@ function inputDefault(filters: Record<string, string | string[] | undefined>, ke
 
 export default function RecurringExpenseFiltersDrawer({ filters, categories, banks, paymentMethods }: Props) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -51,11 +54,11 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
   }, [open]);
 
   return <>
-    <button className="btn btn-sm btn-default app-filter-trigger" type="button" onClick={() => setOpen(true)}>
+    <button className="btn btn-sm btn-default app-filter-trigger bulk-direct-link bulk-filter-action" data-bulk-filter="true" type="button" onClick={() => setOpen(true)}>
       <span className="btn-icon"><FilterIcon /></span> <span className="app-filter-trigger-text">Filtri</span>
     </button>
 
-    <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
+    {mounted ? createPortal(<div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
       <aside className="filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri uscite ricorrenti" onMouseDown={(event) => event.stopPropagation()}>
         <div className="filter-drawer-header">
           <div>
@@ -141,6 +144,6 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
           </div>
         </form>
       </aside>
-    </div>
+    </div>, document.body) : null}
   </>;
 }

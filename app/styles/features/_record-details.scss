@@ -126,6 +126,11 @@
   display: block;
 }
 
+// I form modali sospendono la barra della lista, anche se montati dentro una card.
+body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdrop) .floating-bulk-actions-bar {
+  display: none;
+}
+
 .floating-bulk-actions-inner {
   width: 100%;
   max-width: calc(100vw - 36px);
@@ -357,6 +362,20 @@
   margin: 0 auto;
 }
 
+.recurring-record-detail-page,
+.supplier-detail-page {
+  // La larghezza minima della tabella non deve allargare la colonna del dettaglio.
+  grid-template-columns: minmax(0, 1fr);
+
+  .record-detail-shell {
+    min-width: 0;
+  }
+}
+
+.supplier-linked-expenses-list .table-scroll {
+  border-radius: 0;
+}
+
 .record-detail-document {
   overflow: hidden;
   border: 1px solid rgba(226, 232, 240, .95);
@@ -533,13 +552,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 0;
+  padding: 12px;
 
   @media (max-width: 760px) {
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 12px;
+    padding: 12px 0;
   }
 }
 
@@ -587,6 +606,15 @@
   white-space: nowrap;
 }
 
+.expense-invoice-quick-action {
+  margin-top: 8px;
+
+  .btn {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
 .expense-detail-page {
   .expense-detail-title strong,
   .record-detail-meta-line strong,
@@ -632,7 +660,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 26px 28px;
+  padding: 18px;
 }
 
 .record-detail-section:last-child {

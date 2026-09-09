@@ -484,7 +484,7 @@ export default function BulkSelectionController() {
 
     const updateFloatingVisibility = () => {
       document.querySelectorAll<HTMLElement>(".bulk-actions-bar").forEach((bar) => {
-        if (!bar.querySelector("[data-bulk-menu], [data-bulk-direct-actions]")) return;
+        if (!bar.querySelector("[data-bulk-menu], [data-bulk-direct-actions], [data-bulk-filter]")) return;
 
         let floating = floatingBySource.get(bar);
         if (!floating) {

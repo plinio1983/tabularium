@@ -9,7 +9,6 @@ type Totals = {
   grossProfit: number;
   estimatedNetProfit: number;
   declaredProfit: number;
-  estimatedTax: number;
 };
 
 type Metric = {
@@ -36,7 +35,8 @@ function euro(value: number) {
   return new Intl.NumberFormat('it-IT', {
     style: 'currency',
     currency: 'EUR',
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(value);
 }
 
@@ -55,14 +55,13 @@ export default function MonthComparisonPanel({
 }: Props) {
   const metrics: Metric[] = mode === 'fiscal' ? [
     {label: 'Entrate fiscali', key: 'totalRevenue', positiveDirection: 1},
-    {label: 'Uscite rilevanti', key: 'totalExpenses', positiveDirection: -1},
-    {label: 'Utile fiscale', key: 'declaredProfit', positiveDirection: 1},
-    {label: 'Imposte previste', key: 'estimatedTax', positiveDirection: -1}
+    {label: 'Uscite fiscali', key: 'totalExpenses', positiveDirection: -1},
+    {label: 'Utile fiscale', key: 'declaredProfit', positiveDirection: 1}
   ] : [
     {label: 'Entrate', key: 'totalRevenue', positiveDirection: 1},
     {label: 'Uscite', key: 'totalExpenses', positiveDirection: -1},
-    {label: 'Utile lordo', key: 'grossProfit', positiveDirection: 1},
-    {label: 'Netto previsto', key: 'estimatedNetProfit', positiveDirection: 1}
+    {label: 'Margine lordo', key: 'grossProfit', positiveDirection: 1},
+    {label: 'Risultato al netto IVA', key: 'estimatedNetProfit', positiveDirection: 1}
   ];
   const customValue = `${comparison.year}-${String(comparison.month).padStart(2, '0')}`;
 
@@ -91,7 +90,7 @@ export default function MonthComparisonPanel({
       Nessun movimento registrato in {periodLabel(comparison)}. Le differenze percentuali non sono disponibili.
     </div> : null}
 
-    <div className="month-comparison-grid">
+    <div className={`month-comparison-grid month-comparison-grid-${mode}`}>
       {metrics.map(metric => {
         const currentValue = current.totals[metric.key];
         const comparisonValue = comparison.totals[metric.key];

@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import BulkSelectionController from '@/components/BulkSelectionController';
+import RecurringIncomeFiltersDrawer from '@/components/RecurringIncomeFiltersDrawer';
 import MobileSortControl from '@/components/MobileSortControl';
 import { euro } from '@/lib/money';
 import { badgeClass } from '@/lib/expense-ui';
@@ -63,7 +65,8 @@ export default function RecurringIncomesList({ items, filters = {} }: { items: a
     }
   });
 
-  return <section className="card recurring-expenses-card">
+  return <section className="card record-list-card recurring-expenses-card">
+    <BulkSelectionController/>
     <div className="list-heading recurring-list-heading"><div><h2>Lista entrate</h2></div></div>
     <script dangerouslySetInnerHTML={{ __html: `
       document.addEventListener('click', function(event) {
@@ -84,6 +87,14 @@ export default function RecurringIncomesList({ items, filters = {} }: { items: a
     ` }} />
     <p className="muted">Risultati mostrati: {items.length}</p>
     <MobileSortControl action="/recurring-incomes" currentValue={mobileSort} options={sortOptions} searchParams={filters} />
+    <div className="bulk-actions-bar recurring-bulk-actions-bar">
+      <div className="bulk-inner-container">
+        <button className="bulk-direct-link bulk-add-link btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-income-new-type="recurring" data-floating-label="Incasso ricorrente">
+          <span className="btn-icon">+</span><span className="hidden-sm-down">Incasso ricorrente</span>
+        </button>
+        <RecurringIncomeFiltersDrawer filters={filters}/>
+      </div>
+    </div>
     {items.length ? <>
       <div className="table-scroll recurring-expenses-desktop-table-scroll">
         <table className="expenses-table compact-recurring-expenses-table">

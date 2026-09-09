@@ -344,6 +344,11 @@ body.drawer-open {
   align-items: center;
 }
 
+.recurring-mobile-top-middle {
+  display: flex;
+  //grid-template-columns: .2fr auto auto;
+}
+
 .recurring-mobile-main-title {
   display: flex;
   gap: 2px;

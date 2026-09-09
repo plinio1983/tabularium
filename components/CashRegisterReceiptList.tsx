@@ -47,7 +47,6 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
     return <div className="card record-list-card cash-register-receipt-list-card fixed">
         <div className="list-heading recurring-list-heading">
             <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
-            {filtersTrigger}
         </div>
         <BulkSelectionController/>
         <SortableTableController/>
@@ -100,6 +99,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
                       data-floating-icon="+">
                     <span className="btn-icon">+</span><span className="bulk-label">Scontrino</span>
                 </Link>
+                {filtersTrigger}
             </div>
         </form>
 

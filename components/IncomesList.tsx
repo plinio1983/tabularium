@@ -153,7 +153,13 @@ export default function IncomesList({
     banks: SimpleOption[];
     paymentMethods: SimpleOption[];
     salesChannels: EntityOption[];
-    customers: Array<{ id: number; businessName: string; alias?: string | null; systemRole?: string | null; defaultSalesChannelId?: number | null }>;
+    customers: Array<{
+        id: number;
+        businessName: string;
+        alias?: string | null;
+        systemRole?: string | null;
+        defaultSalesChannelId?: number | null
+    }>;
     initialCustomerId?: number;
     initialOpen?: boolean;
     timeZone?: string;
@@ -206,7 +212,9 @@ export default function IncomesList({
                 </details>
                 <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-credit aria-disabled="true" disabled><span className="btn-icon" aria-hidden="true">€</span><span className="hidden-sm-down">Inserisci accredito</span></button>
+                    <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-credit aria-disabled="true" disabled>
+                        <span className="btn-icon" aria-hidden="true">€</span><span className="hidden-sm-down">Inserisci accredito</span>
+                    </button>
                     <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
                         <span className="btn-icon icon-small">🗑</span><span className="hidden-sm-down">Elimina</span>
                     </button>
@@ -306,7 +314,8 @@ export default function IncomesList({
                             <div className="mobile-record-title-row">
                                 <div className="left-side flex-grow pl-6">
                                     <span>{hideCustomer ? (income.description || 'Incasso senza descrizione') : income.customer?.businessName}</span>
-                                    {!hideCustomer ? <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div> : null}
+                                    {!hideCustomer ?
+                                        <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div> : null}
                                 </div>
                                 <div className="right-side">
                                     <span className={moneyTone(amount)}>{euro(amount)}</span>
@@ -344,7 +353,7 @@ export default function IncomesList({
                     <th data-sort-key="amount" data-sort-type="number" className="cell-amount">Importo</th>
                     <th data-sort-key="description" className="cell-description">Descrizione</th>
                     {/*<th data-sort-key="vat" data-sort-type="number" className="cell-vat">IVA</th>*/}
-                    <th data-sort-key="credit-status"  className="cell-credit-state">Accr.</th>
+                    <th data-sort-key="credit-status" className="cell-credit-state">Accr.</th>
                     <th data-sort-key="invoice-status" className="cell-invoice-state">Stato fatt.</th>
                     <th data-sort-key="credit-date" data-sort-type="date" className="cell-order-date">Data accr.</th>
                 </tr>
@@ -381,7 +390,8 @@ export default function IncomesList({
                         </td>
                         <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
                         {/*<td>{aggregateVatBadge(group)}</td>*/}
-                        <td><span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span>
+                        <td>
+                            <span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span>
                         </td>
                         <td className="text-center"><span className="badge badge-color tone-muted">✕</span></td>
                         <td className="text-center">{compactDateTableLabel(group.latestCreditDate)}</td>
@@ -418,15 +428,17 @@ export default function IncomesList({
                         {!hideCustomer ? <td>{income.customer ?
                             <Link href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td> : null}
                         <td>{fiscalBadge(income.isFiscal)}</td>
-                        <td><strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
+                        <td className="cell-amount">
+                            <strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
                             <span className="income-table-payment-icon" title={income.paymentMethodRef.name} aria-label={`Metodo di pagamento: ${income.paymentMethodRef.name}`}>{income.paymentMethodRef.icon ?? '•'}</span>
                         </td>
                         <td>{income.description ?? '-'}</td>
-                        <td>{vatBadge(income.vatRate)}</td>
-                        <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
+                        {/*<td>{vatBadge(income.vatRate)}</td>*/}
+                         <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
                         <td className="text-center">{income.isFiscal ?
                             <span className="expense-invoice-indicator"><span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/></span> :
-                            <span className="badge tone-muted">✕</span>}</td>
+                            <span className="badge tone-muted">✕</span>}
+                        </td>
                         <td className="text-center">{compactDateTableLabel(income.creditDate)}</td>
                     </tr>;
                 })}

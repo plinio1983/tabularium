@@ -355,7 +355,7 @@
     border-radius: 12px;
     background: #f8fafc;
 
-    @media (min-width: 577px) {
+    @media (min-width: 760px) {
       display: flex;
       align-items: end;
       justify-content: space-between;
@@ -364,6 +364,7 @@
     @media (max-width: 448px) {
       background: transparent;
       border-bottom: 1px solid var(--line);
+      border-radius: 0;
       padding: 6px 0 12px;
     }
   }
@@ -449,6 +450,34 @@
   gap: 18px;
   border-top: 1px solid var(--line);
   padding-top: 16px;
+
+  &.month-report-metrics-overall {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    @media (max-width: 1100px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+.period-report-movements {
+  min-width: 0;
+  scroll-margin-top: 18px;
+}
+
+.period-report-movements-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 0;
+
+  table {
+    min-width: 640px;
+  }
+
+  td:first-child,
+  .cell-right {
+    white-space: nowrap;
+  }
 }
 
 .month-report-section > .grid-4 {
@@ -460,7 +489,7 @@
 .month-report-fiscal-metrics {
   display: grid;
   //grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -3545,8 +3574,15 @@ html, body {
   font-size: 23px;
 }
 
-.report-vat-balance.is-debit { background: #fff1f2; color: #be123c; }
-.report-vat-balance.is-credit { background: #ecfdf5; color: #047857; }
+.report-vat-balance.is-debit {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.report-vat-balance.is-credit {
+  background: #ecfdf5;
+  color: #047857;
+}
 
 .report-vat-foundation {
   display: grid;
@@ -3574,8 +3610,14 @@ html, body {
   text-transform: uppercase;
 }
 
-.report-vat-foundation strong { font-size: 20px; }
-.report-vat-foundation small { color: var(--muted); font-size: 10px; }
+.report-vat-foundation strong {
+  font-size: 20px;
+}
+
+.report-vat-foundation small {
+  color: var(--muted);
+  font-size: 10px;
+}
 
 .report-vat-equation {
   display: grid;
@@ -3598,18 +3640,55 @@ html, body {
   background: #fff;
 }
 
-.report-vat-equation > b { align-self: center; color: #94a3b8; font-size: 20px; }
-.report-vat-equation span { color: #64748b; font-size: 10px; font-weight: 850; text-transform: uppercase; }
-.report-vat-equation strong { overflow-wrap: anywhere; font-size: 18px; }
-.report-vat-equation .is-generated { border-left-color: #7c3aed; }
-.report-vat-equation .is-deductible { border-left-color: #0d9488; }
-.report-vat-equation .is-settled { border-left-color: #f59e0b; }
-.report-vat-equation .is-balance { border-left-color: #3657c8; background: #f5f3ff; }
+.report-vat-equation > b {
+  align-self: center;
+  color: #94a3b8;
+  font-size: 20px;
+}
 
-.report-vat-periods-heading { padding-top: 4px; border-top: 1px solid var(--line); }
-.report-vat-periods-heading h3 { margin-top: 18px; font-size: 17px; }
+.report-vat-equation span {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
 
-.report-vat-period-list { display: grid; gap: 12px; }
+.report-vat-equation strong {
+  overflow-wrap: anywhere;
+  font-size: 18px;
+}
+
+.report-vat-equation .is-generated {
+  border-left-color: #7c3aed;
+}
+
+.report-vat-equation .is-deductible {
+  border-left-color: #0d9488;
+}
+
+.report-vat-equation .is-settled {
+  border-left-color: #f59e0b;
+}
+
+.report-vat-equation .is-balance {
+  border-left-color: #3657c8;
+  background: #f5f3ff;
+}
+
+.report-vat-periods-heading {
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.report-vat-periods-heading h3 {
+  margin-top: 18px;
+  font-size: 17px;
+}
+
+.report-vat-period-list {
+  display: grid;
+  gap: 12px;
+}
 
 .report-vat-period {
   min-width: 0;
@@ -3629,9 +3708,20 @@ html, body {
   background: #f8fafc;
 }
 
-.report-vat-period h4 { margin-top: 3px; font-size: 17px; }
-.report-vat-period-balance { display: grid; gap: 2px; text-align: right; }
-.report-vat-period-balance strong { font-size: 17px; }
+.report-vat-period h4 {
+  margin-top: 3px;
+  font-size: 17px;
+}
+
+.report-vat-period-balance {
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.report-vat-period-balance strong {
+  font-size: 17px;
+}
 
 .report-vat-period-values {
   display: grid;
@@ -3646,41 +3736,133 @@ html, body {
   min-width: 0;
   padding: 2px 13px;
   border-right: 1px solid var(--line);
+
+  @media (max-width: 576px) {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
 }
 
-.report-vat-period-values > div:first-child { padding-left: 0; }
-.report-vat-period-values > div:last-child { padding-right: 0; border-right: 0; }
-.report-vat-period-values strong { overflow-wrap: anywhere; font-size: 16px; }
-.report-vat-period-values .is-generated strong { color: #6d28d9; }
-.report-vat-period-values .is-deductible strong { color: #0f766e; }
-.report-vat-period-values .is-settled strong { color: #b45309; }
+.report-vat-period-values > div:first-child {
+  padding-left: 0;
+}
 
-.report-vat-period footer { border-top: 1px solid var(--line); }
-.report-vat-period footer nav { display: flex; flex-wrap: wrap; gap: 8px 14px; }
-.report-vat-period footer a { color: var(--accent); font-size: 11px; font-weight: 850; }
-.report-vat-period footer > div { display: flex; align-items: baseline; gap: 8px; }
-.report-vat-period footer > div strong { font-size: 16px; }
-.report-vat-note { margin: 0; font-size: 11px; }
+.report-vat-period-values > div:last-child {
+  padding-right: 0;
+  border-right: 0;
+}
+
+.report-vat-period-values > div > span {
+  @media (max-width: 576px) {
+    width: 50%;
+  }
+}
+
+.report-vat-period-values strong {
+  overflow-wrap: anywhere;
+  font-size: 16px;
+}
+
+.report-vat-period-values .is-generated strong {
+  color: #6d28d9;
+}
+
+.report-vat-period-values .is-deductible strong {
+  color: #0f766e;
+}
+
+.report-vat-period-values .is-settled strong {
+  color: #b45309;
+}
+
+.report-vat-period footer {
+  border-top: 1px solid var(--line);
+}
+
+.report-vat-period footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.report-vat-period footer a {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.report-vat-period footer > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.report-vat-period footer > div strong {
+  font-size: 16px;
+}
+
+.report-vat-note {
+  margin: 0;
+  font-size: 11px;
+}
 
 @media (max-width: 900px) {
-  .report-vat-equation { grid-template-columns: 1fr; }
-  .report-vat-equation > b { justify-self: center; line-height: 1; }
-  .report-vat-period-values { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .report-vat-equation {
+    grid-template-columns: 1fr;
+  }
+  .report-vat-equation > b {
+    justify-self: center;
+    line-height: 1;
+  }
+  .report-vat-period-values {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
   .report-vat-period-values > div,
   .report-vat-period-values > div:first-child,
-  .report-vat-period-values > div:last-child { padding: 0; border-right: 0; }
+  .report-vat-period-values > div:last-child {
+    padding: 0;
+    border-right: 0;
+  }
 }
 
 @media (max-width: 576px) {
-  .report-vat-statement { gap: 16px; padding: 15px; }
-  .report-vat-statement-heading { display: grid; }
-  .report-vat-balance { width: 100%; min-width: 0; text-align: left; }
-  .report-vat-foundation { grid-template-columns: 1fr; }
+  .report-vat-statement {
+    gap: 16px;
+    padding: 15px;
+  }
+
+  .report-vat-statement-heading {
+    display: grid;
+  }
+
+  .report-vat-balance {
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .report-vat-foundation {
+    grid-template-columns: 1fr;
+  }
+
   .report-vat-period > header,
-  .report-vat-period > footer { align-items: flex-start; }
-  .report-vat-period-values { grid-template-columns: 1fr; }
-  .report-vat-period footer { display: grid; }
-  .report-vat-period footer > div { justify-content: space-between; }
+  .report-vat-period > footer {
+    align-items: flex-start;
+  }
+
+  .report-vat-period-values {
+    grid-template-columns: 1fr;
+  }
+
+  .report-vat-period footer {
+    display: grid;
+  }
+
+  .report-vat-period footer > div {
+    justify-content: space-between;
+  }
 }
 
 .composition-pie-layout {
@@ -5296,7 +5478,6 @@ html, body {
     border-bottom: 0;
   }
 }
-
 
 
 @media (max-width: 900px) {

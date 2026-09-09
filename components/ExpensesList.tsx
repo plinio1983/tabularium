@@ -111,14 +111,15 @@ type Props = {
 };
 
 function dateLabel(value?: Date | null) {
-    return value
-        ? new Intl.DateTimeFormat('it-IT', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            timeZone: 'UTC'
-        }).format(value)
-        : '-';
+    if (!value) return '-';
+    const parts = new Intl.DateTimeFormat('it-IT', {
+        day: '2-digit',
+        month: 'short',
+        timeZone: 'UTC'
+    }).formatToParts(value);
+    const day = parts.find(part => part.type === 'day')?.value ?? '';
+    const month = (parts.find(part => part.type === 'month')?.value ?? '').replace('.', '');
+    return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)}`;
 }
 
 function mobileDateLabel(value?: Date | null) {

@@ -44,5 +44,5 @@ export default function EmployeeFiltersDrawer({filters}: {filters: Filters}) {
       </form>
     </aside>
   </div>, document.body) : null;
-  return <><button className="btn btn-sm btn-default app-filter-trigger" type="button" onClick={() => setOpen(true)}><span className="btn-icon"><FilterIcon/></span><span className="app-filter-trigger-text">Filtri</span></button>{drawer}</>;
+  return <><button className="btn btn-sm btn-default app-filter-trigger bulk-direct-link bulk-filter-action" data-bulk-filter="true" type="button" onClick={() => setOpen(true)}><span className="btn-icon"><FilterIcon/></span><span className="app-filter-trigger-text">Filtri</span></button>{drawer}</>;
 }

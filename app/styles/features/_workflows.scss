@@ -2240,6 +2240,7 @@ body.bulk-attachments-modal-open {
 
 .recurring-generated-expenses-list .table-scroll {
   display: block;
+  border-radius: 0;
 }
 
 
@@ -2455,20 +2456,14 @@ body.bulk-attachments-modal-open {
 .app-quick-search-field > input {
   flex: 1 1 0;
   min-width: 0;
-  min-height: 54px;
-  height: 54px;
+  min-height: 42px;
+  height: 42px;
 }
-
-//.app-quick-search-field input {
-//  min-height: 42px;
-//  border-radius: 10px;
-//  background: var(--card);
-//}
 
 .app-quick-search-field .btn {
   min-width: 44px;
-  min-height: 54px;
-  height: 54px;
+  min-height: 42px;
+  height: 42px;
 }
 
 .annual-income-trend-card {

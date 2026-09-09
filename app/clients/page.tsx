@@ -106,7 +106,7 @@ export default async function ClientsPage({searchParams}: {
         <div className="card record-list-card fixed">
             <div className="list-heading recurring-list-heading">
                 <div><h2>Lista clienti</h2><p className="muted">Risultati mostrati: {rows.length}</p></div>
-                <ClientFiltersDrawer filters={filters}/></div>
+            </div>
             <form className="entity-quick-search app-quick-search-form" action="/clients" method="get" role="search">
                 <label className="app-form-field-label" htmlFor="clientQuickSearch">
                     <span className="app-form-field-icon" aria-hidden="true">⌕</span>
@@ -159,6 +159,7 @@ export default async function ClientsPage({searchParams}: {
                     <button className="bulk-direct-link btn btn-md bulk-add-link btn-primary" type="button" data-bulk-new data-client-new data-floating-label="Cliente">
                         <span className="btn-icon">+</span><span className="hidden-sm-down">Cliente</span>
                     </button>
+                    <ClientFiltersDrawer filters={filters}/>
                 </div>
             </form>
             <SortableTableController/>

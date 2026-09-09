@@ -231,9 +231,6 @@ export default async function SuppliersPage({searchParams}: {
                     <h2>Lista fornitori</h2>
                     <p className="muted">Risultati mostrati: {filteredSupplierRows.length}</p>
                 </div>
-                <div>
-                    <SupplierFiltersDrawer filters={filters}/>
-                </div>
             </div>
             <form className="entity-quick-search app-quick-search-form" action="/suppliers" method="get" role="search">
                 <label className="app-form-field-label" htmlFor="supplierQuickSearch">
@@ -356,6 +353,7 @@ export default async function SuppliersPage({searchParams}: {
                         <span className="btn-icon">+</span>
                         <span className="hidden-sm-down">Fornitore</span>
                     </button>
+                    <SupplierFiltersDrawer filters={filters}/>
                 </div>
             </form>
             <SortableTableController/>

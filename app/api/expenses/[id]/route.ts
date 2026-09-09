@@ -9,6 +9,7 @@ import { AttachmentValidationError, deleteExpenseAttachmentFile, normalizeExpens
 import { writeAuditLog } from '@/lib/audit';
 import {yearMonthInTimeZone} from '@/lib/company-time';
 import {resolveExpenseAmounts, resolvePayrollPeriod} from '@/lib/payroll-expense';
+import {emittableExpenseInvoiceStatuses} from '@/lib/expense-invoice';
 
 const BooleanFromForm = z.preprocess((value) => value === true || value === 'true' || value === 'on' || value === '1', z.boolean());
 const OptionalMoneyFromForm = z.preprocess(value => value === '' || value == null ? undefined : typeof value === 'string' ? value.replace(',', '.') : value, z.coerce.number().nonnegative().optional());
@@ -128,6 +129,37 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const raw = Object.fromEntries(formData.entries());
   const action = String(raw._action || 'update');
   const returnTo = new URL(request.url).searchParams.get('returnTo');
+  if (action === 'invoice_emitted') {
+    const target = safePath(returnTo, `/expenses/${id}`, request.url);
+    if (!Number.isSafeInteger(expenseId) || expenseId <= 0) {
+      return redirectToPath(appendFlash(target, {error: 'not_found'}));
+    }
+    // Verifica l'idoneità nello stesso aggiornamento, anche in caso di richieste concorrenti.
+    const updated = await prisma.expense.updateMany({
+      where: {
+        id: expenseId,
+        workspaceId: current.workspace.id,
+        companyId: current.company.id,
+        expenseType: 'STANDARD',
+        isDeclared: true,
+        invoiceStatus: {in: [...emittableExpenseInvoiceStatuses]},
+      },
+      data: {invoiceStatus: 'RICEVUTA'},
+    });
+    if (!updated.count) {
+      return redirectToPath(appendFlash(target, {error: 'invoice_not_eligible'}));
+    }
+    await writeAuditLog({
+      workspaceId: current.workspace.id,
+      userId: current.user.id,
+      action: 'UPDATE',
+      entityType: 'Expense',
+      entityId: expenseId,
+      metadata: {operation: 'invoice_emitted', invoiceStatus: 'RICEVUTA'},
+      request,
+    });
+    return redirectToPath(appendFlash(target, {saved: 'invoice_emitted'}));
+  }
   if (action === 'delete') {
     const expense = await prisma.expense.findFirst({
       where: {id: expenseId, workspaceId: current.workspace.id, companyId: current.company.id},

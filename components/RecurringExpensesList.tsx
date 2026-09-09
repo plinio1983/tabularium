@@ -225,9 +225,6 @@ export default function RecurringExpensesList({
             <div>
                 <h2>Lista spese</h2>
             </div>
-            <div>
-                <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} paymentMethods={paymentMethods}/>
-            </div>
         </div>
         {activeFilterItems.length ? <div className="recurring-active-filters">
             <div>
@@ -301,6 +298,7 @@ export default function RecurringExpensesList({
                     <span className="btn-icon">+</span>
                     <span className="hidden-sm-down">Spesa ricorrente</span>
                 </button>
+                <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} paymentMethods={paymentMethods}/>
             </div>
         </form>
         {items.length ? <>
@@ -401,11 +399,10 @@ export default function RecurringExpensesList({
                                     </div>
                                     <strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong>
                                 </div>
-                                <div className="recurring-mobile-top">
+                                <div className="recurring-mobile-top-middle">
                                     <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span>
                                     <strong>{supplier}</strong>
                                     <div className="recurring-mobile-right"><strong>{payment}</strong></div>
-
                                 </div>
 
                                 <div className="recurring-mobile-middle">
