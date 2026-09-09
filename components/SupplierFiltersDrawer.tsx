@@ -55,7 +55,7 @@ export default function SupplierFiltersDrawer({ filters }: Props) {
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/suppliers" method="get">
+        <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/suppliers" method="get">
           <FilterField label="Ragione sociale" icon="◇"><input name="businessName" defaultValue={inputDefault(filters, "businessName")} /></FilterField>
           <FilterField label="Referente" icon="♙"><input name="alias" defaultValue={inputDefault(filters, "alias")} /></FilterField>
           <FilterField label="Email" icon="@"><input name="email" type="email" defaultValue={inputDefault(filters, "email")} /></FilterField>

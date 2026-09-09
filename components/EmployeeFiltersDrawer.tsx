@@ -26,7 +26,7 @@ export default function EmployeeFiltersDrawer({filters}: {filters: Filters}) {
   const drawer = mounted ? createPortal(<div className={open ? 'filter-drawer-backdrop is-open' : 'filter-drawer-backdrop'} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
     <aside className="filter-drawer-panel record-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri dipendenti" onMouseDown={event => event.stopPropagation()}>
       <div className="filter-drawer-header"><h3>Filtri dipendenti</h3><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button></div>
-      <form className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/employees" method="get">
+      <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/employees" method="get">
         {value(filters, 'search') ? <input type="hidden" name="search" value={value(filters, 'search')}/> : null}
         <FilterField label="Nome" icon="♙"><input name="firstName" defaultValue={value(filters, 'firstName')} placeholder="Nome"/></FilterField>
         <FilterField label="Cognome" icon="♙"><input name="lastName" defaultValue={value(filters, 'lastName')} placeholder="Cognome"/></FilterField>

@@ -49,6 +49,10 @@ export default function LiveSearch({name, label, placeholder}: Props) {
   useEffect(() => () => cancelTimer(), []);
 
   useEffect(() => {
+    if (!pending) requested.current.clear();
+  }, [pending]);
+
+  useEffect(() => {
     if (!storagePaths.has(pathname)) return;
     const storageKey = `dmsAccounting.${pathname.slice(1)}.filters`;
     const params = liveSearchParams(query, name, new URLSearchParams(query).get(name) ?? '');

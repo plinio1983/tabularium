@@ -19,3 +19,13 @@ export function employeeNameSearch(query: string) {
     ],
   }));
 }
+
+export function filteredListHref(pathname: string, filters: Record<string, string | string[] | undefined>) {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    for (const item of Array.isArray(value) ? value : [value]) if (item) params.append(key, item);
+  });
+  stripFlashSearchParams(params);
+  params.delete('new');
+  return `${pathname}${params.size ? `?${params}` : ''}`;
+}

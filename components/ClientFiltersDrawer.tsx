@@ -22,7 +22,7 @@ export default function ClientFiltersDrawer({ filters }: Props) {
   const drawer = mounted ? createPortal(<div className={open ? 'filter-drawer-backdrop is-open' : 'filter-drawer-backdrop'} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
     <aside className="filter-drawer-panel record-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri clienti" onMouseDown={event => event.stopPropagation()}>
       <div className="filter-drawer-header"><h3>Filtri clienti</h3><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button></div>
-      <form className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/clients" method="get">
+      <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/clients" method="get">
         <FilterField label="Ragione sociale" icon="◇"><input name="businessName" defaultValue={value(filters, 'businessName')} /></FilterField>
         <FilterField label="Referente" icon="♙"><input name="alias" defaultValue={value(filters, 'alias')} /></FilterField>
         <FilterField label="Email" icon="@"><input type="email" name="email" defaultValue={value(filters, 'email')} /></FilterField>

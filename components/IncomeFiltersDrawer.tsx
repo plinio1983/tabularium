@@ -275,7 +275,7 @@ export default function IncomeFiltersDrawer({
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
           <input type="hidden" name="customerQuick" value={inputDefault(filters, "customerQuick")}/>
           <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
           <fieldset className="filter-group filter-group-order-date">

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {liveSearchParams, employeeNameSearch} from '../lib/live-search';
+import {liveSearchParams, employeeNameSearch, filteredListHref} from '../lib/live-search';
 import {matchesExpenseQuickSearch} from '../lib/expense-list-filters';
 
 test('live search preserves combined filters and sorting and removes transient parameters', () => {
@@ -30,4 +30,14 @@ test('payroll search uses the current employee name even when stored merchant te
   assert.equal(matchesExpenseQuickSearch(expense, 'Mario Rossi'), true);
   assert.equal(matchesExpenseQuickSearch(expense, 'Rossi Mario'), true);
   assert.equal(matchesExpenseQuickSearch(expense, 'Bianchi'), false);
+});
+
+test('return URLs preserve search and repeated filters without action feedback', () => {
+  const href = filteredListHref('/recurring-expenses', {search: 'Rossi & figli', categoryId: ['1', '2'], saved: 'updated', new: '1'});
+  const url = new URL(href, 'http://localhost');
+  assert.equal(url.pathname, '/recurring-expenses');
+  assert.equal(url.searchParams.get('search'), 'Rossi & figli');
+  assert.deepEqual(url.searchParams.getAll('categoryId'), ['1', '2']);
+  assert.equal(url.searchParams.has('saved'), false);
+  assert.equal(url.searchParams.has('new'), false);
 });

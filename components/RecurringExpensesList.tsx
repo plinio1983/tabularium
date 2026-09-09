@@ -1,3 +1,4 @@
+import {filteredListHref} from '@/lib/live-search';
 import LiveSearch from '@/components/LiveSearch';
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
@@ -144,6 +145,8 @@ export default function RecurringExpensesList({
 }) {
     const itemCount = items.length;
     const currentFilters = filters ?? {};
+    const listHref = filteredListHref('/recurring-expenses', currentFilters);
+    const returnTo = encodeURIComponent(listHref);
     const mobileSort = inputDefault(currentFilters, 'mobileSort') || recurringMobileSortOptions[0].value;
     const mobileSortedItems = [...items].sort((a, b) => {
         const supplierA = a.supplier?.businessName || a.merchant;
@@ -222,7 +225,7 @@ export default function RecurringExpensesList({
         inputDefault(currentFilters, 'amountMax') ? `Importo max: ${inputDefault(currentFilters, 'amountMax')}` : '',
     ].filter(Boolean);
     return <div className="card recurring-expenses-card">
-        <RecurringExpenseDetailEditModalController categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} employees={employees} returnTo="/recurring-expenses"/>
+        <RecurringExpenseDetailEditModalController categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} employees={employees} returnTo={listHref}/>
         <div className="list-heading recurring-list-heading">
             <div>
                 <h2>Lista spese</h2>
@@ -263,7 +266,7 @@ export default function RecurringExpensesList({
         }}/>
         <p className="muted">Risultati mostrati: {itemCount}</p>
         <MobileSortControl action="/recurring-expenses" currentValue={mobileSort} options={recurringMobileSortOptions} searchParams={currentFilters}/>
-        <form id="recurringExpenseBulkForm" action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses" method="post" className="bulk-actions-bar grouped-bulk-actions-bar recurring-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
+        <form id="recurringExpenseBulkForm" action={`/api/recurring-expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar recurring-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
             <label className="bulk-select-all-inline">
                 <input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le uscite ricorrenti visibili"/>
             </label>
@@ -279,7 +282,7 @@ export default function RecurringExpensesList({
                         </button>
                         <BulkChangeCategoryModal
                             formId="recurringExpenseBulkForm"
-                            action="/api/recurring-expenses/bulk?returnTo=/recurring-expenses"
+                            action={`/api/recurring-expenses/bulk?returnTo=${returnTo}`}
                             fieldName="categoryId"
                             categories={categories.map(category => ({
                                 value: String(category.id),
@@ -289,7 +292,7 @@ export default function RecurringExpensesList({
                         />
                     </div>
                 </details>
-                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to="%2Frecurring-expenses">
+                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
                     <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
                         <span className="btn-icon icon-small">🗑</span><span className="hidden-sm-down">Elimina</span>
@@ -345,7 +348,7 @@ export default function RecurringExpensesList({
                             label: 'Off',
                             className: 'tone-critical'
                         };
-                        return <tr className="clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}`} tabIndex={0} key={item.id}>
+                        return <tr className="clickable-desktop-row" data-row-href={`/recurring-expenses/${item.id}?returnTo=${returnTo}`} tabIndex={0} key={item.id}>
                             <td className="cell-center">
                                 <input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`}/>
                             </td>
@@ -392,7 +395,7 @@ export default function RecurringExpensesList({
                         <div className="recurring-mobile-select">
                             <input form="recurringExpenseBulkForm" type="checkbox" name="ids" value={item.id} aria-label={`Seleziona spesa ricorrente ${item.id}`}/>
                         </div>
-                        <Link className="recurring-mobile-item-link" href={`/recurring-expenses/${item.id}`}>
+                        <Link className="recurring-mobile-item-link" href={`/recurring-expenses/${item.id}?returnTo=${returnTo}`}>
                             <article className={item.isActive ? "recurring-mobile-item recurring-mobile-item-active" : "recurring-mobile-item recurring-mobile-item-disabled"}>
                                 <div className="recurring-mobile-top">
                                     <div className="recurring-mobile-main-title">

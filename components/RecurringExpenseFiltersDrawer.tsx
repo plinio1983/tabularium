@@ -68,7 +68,7 @@ export default function RecurringExpenseFiltersDrawer({ filters, categories, ban
           <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
         </div>
 
-        <form className="record-filters recurring-drawer-filters" action="/recurring-expenses" method="get">
+        <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters" action="/recurring-expenses" method="get">
           <input type="hidden" name="search" value={inputDefault(filters, 'search')}/>
           <label>
             Fornitore / esercente
