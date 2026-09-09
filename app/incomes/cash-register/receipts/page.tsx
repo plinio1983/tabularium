@@ -185,7 +185,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             </SelectedButtonGroupScroller>
             <YearNavigationSelect options={yearLinks} year={billingYear}/>
         </nav>
-        <div className="recurring-active-filters fixed">
+        <div className="recurring-active-filters">
             <div>
                 <span className="recurring-active-filters-title">Filtri attivi</span>
                 <div className="recurring-active-filter-tags">{activeFilters.map(item =>
@@ -199,6 +199,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             filtersTrigger={<CashRegisterReceiptFiltersDrawer month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}
             receipts={receipts.map(receipt => ({
                 id: receipt.id,
+                description: receipt.description,
                 amount: Number(receipt.amount),
                 creditDate: receipt.creditDate.toISOString(),
                 isFiscal: receipt.isFiscal,

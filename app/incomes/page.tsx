@@ -877,8 +877,8 @@ export default async function IncomesPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
-        <div className="card record-list-card fixed">
-            <div className="filter-drawer-wrapper">
+        <div className="card record-list-card">
+            <div className="filter-drawer-wrapper period-filter-drawer-wrapper">
                 <IncomeFiltersDrawer
                     filters={filters}
                     quickDateFilter={quickDateFilter}

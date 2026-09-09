@@ -1,6 +1,6 @@
 import {NextResponse} from 'next/server';
 import {z} from 'zod';
-import {getWorkspaceApiAccess, workspaceOperationalRoles} from '@/lib/auth';
+import {getWorkspaceApiAccess, getWorkspaceContext, workspaceOperationalRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {writeAuditLog} from '@/lib/audit';
 import {yearMonthInTimeZone} from '@/lib/company-time';
@@ -15,6 +15,29 @@ const UpdateSchema = z.object({
     paymentMethodId: z.coerce.number().int().positive(),
     bankId: z.coerce.number().int().positive()
 });
+
+export async function GET(_request: Request, {params}: {params: Promise<{id: string}>}) {
+    const current = await getWorkspaceContext();
+    if (!current) return NextResponse.json({error: 'Autenticazione richiesta'}, {status: 401});
+    const id = Number((await params).id);
+    if (!Number.isInteger(id) || id <= 0) return NextResponse.json({error: 'ID non valido'}, {status: 400});
+    const receipt = await prisma.income.findFirst({
+        where: {id, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'},
+        select: {
+            id: true, description: true, amount: true, creditDate: true, isFiscal: true, vatRate: true,
+            salesChannelRef: {select: {name: true}},
+            paymentMethodRef: {select: {name: true}},
+            creditBank: {select: {name: true}}
+        }
+    });
+    if (!receipt) return NextResponse.json({error: 'Scontrino non trovato'}, {status: 404});
+    return NextResponse.json({receipt: {
+        id: receipt.id, description: receipt.description, amount: Number(receipt.amount),
+        creditDate: receipt.creditDate.toISOString(), isFiscal: receipt.isFiscal, vatRate: Number(receipt.vatRate),
+        salesChannel: receipt.salesChannelRef.name, paymentMethod: receipt.paymentMethodRef.name,
+        bank: receipt.creditBank.name
+    }}, {headers: {'Cache-Control': 'no-store'}});
+}
 
 export async function PATCH(request: Request, {params}: { params: Promise<{ id: string }> }) {
     const access = await getWorkspaceApiAccess(workspaceOperationalRoles);

@@ -16,7 +16,7 @@
   min-width: 0;
 }
 
-.trend-selectors span {
+.trend-selectors span:not(.btn-icon):not(.app-filter-trigger-text) {
   color: var(--muted);
   font-size: 12px;
   font-weight: 900;
@@ -2478,5 +2478,28 @@ table th, table td {
 @media (max-width: 760px) {
   .entity-quick-search {
     width: 100%;
+  }
+}
+
+.trend-selectors .trend-filter-trigger {
+  display: none;
+}
+
+@media (min-width: 760px) {
+  .period-filter-drawer-wrapper > .app-filter-trigger {
+    display: none;
+  }
+
+  .trend-period-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .trend-selectors .trend-filter-trigger {
+    display: inline-flex;
+    flex: 0 0 auto;
+    margin: 0;
   }
 }

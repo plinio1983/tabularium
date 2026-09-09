@@ -316,6 +316,7 @@ export default function ExpenseFiltersDrawer({
             <option value="vat_settlement">Saldo IVA</option>
             <option value="tax_contribution">Imposte - non IVA</option>
             <option value="payroll">Busta paga</option>
+            <option value="counter">Banco</option>
           </select></FilterField>
 
           <SupplierFilterInput initialValue={inputDefault(filters, "merchant")} />
@@ -371,6 +372,7 @@ export default function ExpenseFiltersDrawer({
       className={`btn btn-sm btn-default app-filter-trigger${listAction ? " bulk-direct-link bulk-filter-action" : ""}`}
       type="button"
       onClick={() => setOpen(true)}
+      data-period-filter-source={!listAction ? "expense" : undefined}
       data-bulk-filter={listAction ? "true" : undefined}
       aria-label="Filtri"
     >

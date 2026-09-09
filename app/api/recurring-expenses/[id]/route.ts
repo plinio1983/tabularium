@@ -39,7 +39,7 @@ const RecurringExpenseSchema = z.object({
   payrollGrossAmount: z.coerce.number().nonnegative().optional().nullable(),
   payrollEmployerCost: z.coerce.number().nonnegative().optional().nullable(),
   payrollPeriodMode: z.enum(['FULL_MONTH', 'DAY_RANGE']).optional().nullable(),
-  payrollPeriodMonthOffset: z.coerce.number().min(-1).max(0).optional().nullable(),
+  payrollPeriodMonthOffset: z.coerce.number().int().min(-1).max(1).optional().nullable(),
   payrollPeriodStartDay: z.coerce.number().min(1).max(31).optional().nullable(),
   payrollPeriodEndDay: z.coerce.number().min(1).max(31).optional().nullable(),
   affectsFiscalProfit: BooleanFromForm.default(false)

@@ -1944,7 +1944,7 @@ export default async function Dashboard({searchParams}: {
         if (dueDay !== null && todayDay !== null && dueDay < todayDay) item.overdue += residual;
     });
 
-    return <div className="grid dashboard-grid fixed">
+    return <div className="grid dashboard-grid">
 
         <NewExpensePanel
             categories={orderedExpenseCategories.map(c => ({

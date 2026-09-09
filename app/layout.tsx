@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return <html lang="it"><body><main className="shell">
     <CompanyTimeZoneProvider timeZone={current?.company?.timeZone}>
     <Suspense fallback={null}><NavigationProgress /></Suspense>
-    <ShellChrome slot="header" />
+    <ShellChrome slot="header" userName={current?.user.name} />
     <ClickableDesktopRows />
 
     <script dangerouslySetInnerHTML={{ __html: `
@@ -56,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           .catch(function () {});
       }
     ` }} />
-    <div className="app-content">{children}{/* dms-root-suspense-boundary */}</div>
+    <div className="app-content fixed">{children}{/* dms-root-suspense-boundary */}</div>
     <ShellChrome slot="footer" />
     </CompanyTimeZoneProvider>
   </main></body></html>;

@@ -1053,10 +1053,11 @@ export default function ExpenseForm({
                     >
                         <span className="app-due-date-shortcuts" aria-label="Selezione rapida data scadenza">
                             {[0, 7, 15, 30].map(days => {
-                                const value = addDaysToDateInput(isVatSettlement ? today : orderDate, days, today);
+                                const value = addDaysToDateInput(isPayroll ? payrollPeriodEnd : isVatSettlement ? today : orderDate, days, today);
                                 return <button
                                     type="button"
                                     key={days}
+                                    disabled={isPayroll && !payrollPeriodEnd}
                                     className={dueDate === value ? "is-selected" : ""}
                                     aria-pressed={dueDate === value}
                                     onClick={() => setDueDate(value)}

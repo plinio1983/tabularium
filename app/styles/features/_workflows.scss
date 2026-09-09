@@ -43,8 +43,8 @@
 }
 
 .nav > div:first-child {
-  min-width: 220px;
-  flex: 1 1 320px;
+  //min-width: 220px;
+  //flex: 1 1 320px;
 }
 
 .nav-links a {
@@ -2390,7 +2390,7 @@ body.bulk-attachments-modal-open {
 
 /* v073 suppliers + dashboard mobile refinements */
 .party-filters {
-  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
 }
 
 .entity-quick-search {

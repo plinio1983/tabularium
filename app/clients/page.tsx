@@ -103,7 +103,7 @@ export default async function ClientsPage({searchParams}: {
             system_protected: 'Il cliente predefinito non può essere eliminato.',
             invalid_sales_channel: 'Il canale di vendita selezionato non è valido.'
         }} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
-        <div className="card record-list-card fixed">
+        <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
                 <div><h2>Lista clienti</h2><p className="muted">Risultati mostrati: {rows.length}</p></div>
             </div>

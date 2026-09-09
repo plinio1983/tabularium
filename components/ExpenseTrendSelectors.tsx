@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import FilterIcon from "@/components/FilterIcon";
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {civilDateInTimeZone} from '@/lib/company-time';
 
@@ -105,7 +106,7 @@ function yearOptions(now: Date) {
 }
 
 function openFiltersDrawer() {
-  const trigger = document.querySelector<HTMLButtonElement>(".app-filter-trigger");
+  const trigger = document.querySelector<HTMLButtonElement>('[data-period-filter-source="expense"]');
   if (trigger) trigger.click();
 }
 
@@ -158,7 +159,7 @@ export default function ExpenseTrendSelectors({ dateQuick, dateYear, useFiscalPe
         </select>
       </div>
     </label>
-    <section>
+    <section className="trend-period-actions">
     <div className="trend-quick-date btn-group" role="group" aria-label="Scorciatoie periodo">
       {quickDateButtons.map((value) => {
           const target = quickButtonTarget(value, companyNow);
@@ -184,6 +185,10 @@ export default function ExpenseTrendSelectors({ dateQuick, dateYear, useFiscalPe
         </button>;
       })}
     </div>
+      <button className="btn btn-sm btn-default app-filter-trigger bulk-direct-link bulk-filter-action trend-filter-trigger"
+              type="button" onClick={openFiltersDrawer} aria-label="Filtri">
+        <span className="btn-icon"><FilterIcon /></span><span className="app-filter-trigger-text">Filtri</span>
+      </button>
     </section>
   </div>;
 }

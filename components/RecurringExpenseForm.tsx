@@ -1,6 +1,6 @@
 "use client";
 
-import {type FormEvent, type ReactNode, useEffect, useRef, useState} from "react";
+import {type FormEvent, type ReactNode, useEffect, useId, useRef, useState} from "react";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, SelectField} from "@/components/FormControls";
 import {CurrencyInput} from "@/components/CurrencyInput";
@@ -310,7 +310,8 @@ function ProductServiceAutocomplete({initialValue = "", onValueChange}: {
     const [results, setResults] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
-    const containerRef = useRef<HTMLLabelElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const inputId = useId();
 
     useEffect(() => {
         const handler = (event: MouseEvent) => {
@@ -361,13 +362,13 @@ function ProductServiceAutocomplete({initialValue = "", onValueChange}: {
     }
 
     return (
-        <div className="app-form-field full">
-            <label className="span-2 product-suggestion-picker app-form-field-label" ref={containerRef}>
+        <div className="app-form-field full product-suggestion-picker" ref={containerRef}>
+            <label className="app-form-field-label" htmlFor={inputId}>
                 Prodotto/servizio
             </label>
             <input
+                id={inputId}
                 name="description"
-                className="span-2"
                 required
                 placeholder="Descrizione libera della spesa ricorrente"
                 value={query}
@@ -713,7 +714,7 @@ export default function RecurringExpenseForm({
                         required
                         options={[...generationTimingOptions]}
                     />
-                    <div className="app-form-field app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide push-down">
+                    <div className="app-form-field app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide">
                         <div className="switch-toggle-field-label app-form-field-label">
                             <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
                         </div>
@@ -768,6 +769,7 @@ export default function RecurringExpenseForm({
                         <SelectField label="Mese di competenza" icon="▦" name="payrollPeriodMonthOffset" value={payrollPeriodMonthOffset} onChange={setPayrollPeriodMonthOffset} options={[
                             {value: -1, label: "Mese precedente"},
                             {value: 0, label: "Stesso mese contabile"},
+                            {value: 1, label: "Mese successivo"},
                         ]}/>
                         <SelectField label="Durata competenza" icon="↔" name="payrollPeriodMode" value={payrollPeriodMode} onChange={setPayrollPeriodMode} options={[
                             {value: "FULL_MONTH", label: "Intero mese"},

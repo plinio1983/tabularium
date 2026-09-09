@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import type {ReactNode} from 'react';
+import {useCallback, useState, type MouseEvent, type ReactNode} from 'react';
+import CashRegisterReceiptDetailModal from '@/components/CashRegisterReceiptDetailModal';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import SortableTableController from '@/components/SortableTableController';
 import {euro} from '@/lib/money';
@@ -9,6 +10,7 @@ import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 
 type Receipt = {
     id: number;
+    description: string | null;
     amount: number;
     creditDate: string;
     isFiscal: boolean;
@@ -42,6 +44,26 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
     returnTo: string
 }) {
     const timeZone = useCompanyTimeZone();
+    const [detailId, setDetailId] = useState<number | null>(null);
+    const closeDetail = useCallback(() => setDetailId(null), []);
+    function openDetail(event: MouseEvent<HTMLElement>, id: number) {
+        if ((event.target as Element).closest('input, button, a, label, select, textarea')) return;
+        event.currentTarget.focus({preventScroll: true});
+        setDetailId(id);
+    }
+    function detailTrigger(id: number) {
+        return {
+            tabIndex: 0,
+            'aria-label': `Apri dettaglio scontrino ${id}`,
+            'aria-haspopup': 'dialog' as const,
+            onClick: (event: MouseEvent<HTMLElement>) => openDetail(event, id),
+            onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
+                if (event.target !== event.currentTarget || !['Enter', ' '].includes(event.key)) return;
+                event.preventDefault();
+                setDetailId(id);
+            }
+        };
+    }
     const formId = 'cashRegisterReceiptBulkForm';
     const encodedReturnTo = encodeURIComponent(returnTo);
     return <div className="card record-list-card cash-register-receipt-list-card fixed">
@@ -114,6 +136,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
                     </th>
                     <th data-sort-key="id" className="cell-id" data-sort-type="number">ID</th>
                     <th data-sort-key="date" className="cell-date" data-sort-type="date">Data e ora</th>
+                    <th data-sort-key="description">Descrizione</th>
                     <th data-sort-key="channel" className="cell-channel">Canale vendita</th>
                     <th className="cell-amount" data-sort-key="amount" data-sort-type="number">Importo</th>
                     <th data-sort-key="fiscal" className="cell-fiscal">Fiscalità</th>
@@ -122,10 +145,11 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
                 </tr>
                 </thead>
                 <tbody>
-                {receipts.map(receipt => <tr key={receipt.id}
+                {receipts.map(receipt => <tr key={receipt.id} {...detailTrigger(receipt.id)}
                                              data-sort-row
                                              data-sort-id={String(receipt.id)}
                                              data-sort-date={String(new Date(receipt.creditDate).getTime())}
+                                             data-sort-description={receipt.description ?? ''}
                                              data-sort-channel={receipt.salesChannel}
                                              data-sort-fiscal={receipt.isFiscal ? '1' : '0'}
                                              data-sort-vat={String(receipt.isFiscal ? receipt.vatRate : 0)}
@@ -137,6 +161,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
                     </td>
                     <td className="text-left">#{receipt.id}</td>
                     <td>{receiptDate(receipt.creditDate, timeZone)}</td>
+                    <td><span className="cash-register-receipt-description" title={receipt.description || undefined}>{receipt.description || '—'}</span></td>
                     <td>{receipt.salesChannelIcon ?? '•'} {receipt.salesChannel}</td>
                     <td className="cell-amount"><strong className="text-accent">{euro(receipt.amount)}</strong></td>
                     <td><span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-no'}`}>
@@ -146,14 +171,14 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
                     <td className="text-center">{receipt.isFiscal ? <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}</td>
                 </tr>)}
                 {!receipts.length ? <tr>
-                    <td colSpan={8}>Nessuno scontrino nel periodo selezionato.</td>
+                    <td colSpan={9}>Nessuno scontrino nel periodo selezionato.</td>
                 </tr> : null}
                 </tbody>
             </table>
         </div>
 
         <div className="cash-register-receipt-list cash-register-receipt-mobile-list" aria-label="Lista scontrini">
-            {receipts.map(receipt => <article className="cash-register-receipt-row" key={receipt.id}>
+            {receipts.map(receipt => <article className="cash-register-receipt-row" key={receipt.id} {...detailTrigger(receipt.id)}>
                 <div className="mobile-record-select cash-register-receipt-select">
                     <input form={formId} type="checkbox" name="ids" value={receipt.id}
                            aria-label={`Seleziona scontrino ${receipt.id}`}/>
@@ -179,5 +204,6 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
             {!receipts.length ?
                 <div className="record-empty-state">Nessuno scontrino nel periodo selezionato.</div> : null}
         </div>
+        {detailId !== null ? <CashRegisterReceiptDetailModal key={detailId} receiptId={detailId} onClose={closeDetail}/> : null}
     </div>;
 }

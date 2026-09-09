@@ -16,7 +16,7 @@ import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 import SearchIcon from '@/components/SearchIcon';
 import {expenseAffectsFiscalProfit} from '@/lib/reports';
-import {matchesEntityQuickSearch} from '@/lib/entity-quick-search';
+import {matchesExpenseQuickSearch, matchesExpenseType} from '@/lib/expense-list-filters';
 
 const paymentStatusOptions = [
     ['overdue', 'Scaduto'],
@@ -746,13 +746,9 @@ export default async function ExpensesPage({searchParams}: {
         if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
         if (useFiscalPeriodFilter && !affectsFiscalResult) return false;
         if (categoryFilter && expense.category?.name !== categoryFilter) return false;
-        if (expenseTypeFilter === 'single' && (expense.expenseType !== 'STANDARD' || expense.isRecurring)) return false;
-        if (expenseTypeFilter === 'recurring' && (expense.expenseType !== 'STANDARD' || !expense.isRecurring)) return false;
-        if (expenseTypeFilter === 'vat_settlement' && expense.expenseType !== 'VAT_SETTLEMENT') return false;
-        if (expenseTypeFilter === 'tax_contribution' && expense.expenseType !== 'TAX_CONTRIBUTION') return false;
-        if (expenseTypeFilter === 'payroll' && expense.expenseType !== 'PAYROLL') return false;
+        if (!matchesExpenseType(expense, expenseTypeFilter)) return false;
         if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
-        if (!matchesEntityQuickSearch(supplierQuickFilter, expense.supplier?.businessName, expense.description)) return false;
+        if (!matchesExpenseQuickSearch(expense, supplierQuickFilter)) return false;
         if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
         if (!amountMatchesFilter(amount, amountFilterValue)) return false;
         if (paymentStatusFilter === 'not_complete' && expense.paymentStatus === 'COMPLETATO') return false;
@@ -921,7 +917,7 @@ export default async function ExpensesPage({searchParams}: {
         categoryFilter && {label: 'Categoria', value: categoryFilter},
         expenseTypeFilter && {
             label: 'Tipo spesa',
-            value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : expenseTypeFilter === 'tax_contribution' ? 'Imposte - non IVA' : expenseTypeFilter === 'payroll' ? 'Busta paga' : 'Singola'
+            value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : expenseTypeFilter === 'tax_contribution' ? 'Imposte - non IVA' : expenseTypeFilter === 'payroll' ? 'Busta paga' : expenseTypeFilter === 'counter' ? 'Banco' : 'Singola'
         },
         inputDefault(filters, 'merchant') && {label: 'Esercente', value: inputDefault(filters, 'merchant')},
         inputDefault(filters, 'supplierQuick') && {label: 'Ricerca spesa', value: inputDefault(filters, 'supplierQuick')},
@@ -991,8 +987,8 @@ export default async function ExpensesPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
-        <div className="card record-list-card fixed">
-            <div className="filter-drawer-wrapper">
+        <div className="card record-list-card">
+            <div className="filter-drawer-wrapper period-filter-drawer-wrapper">
                 <ExpenseFiltersDrawer
                     filters={filters}
                     categories={orderedCategories.map(category => ({
@@ -1096,7 +1092,7 @@ export default async function ExpensesPage({searchParams}: {
                     <span>Ricerca spesa</span>
                 </label>
                 <div className="entity-quick-search-field app-quick-search-field input-group">
-                    <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Fornitore o descrizione" autoComplete="off"/>
+                    <input id="expenseSupplierQuickSearch" name="supplierQuick" defaultValue={inputDefault(filters, 'supplierQuick')} placeholder="Fornitore, esercente, dipendente o descrizione" autoComplete="off"/>
                     <button className="btn btn-sm btn-main" type="submit" aria-label="Cerca spesa"><SearchIcon/>
                     </button>
                 </div>

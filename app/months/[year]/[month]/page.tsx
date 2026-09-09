@@ -157,7 +157,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         });
     const quarterChartMaximum = Math.max(1, ...report.monthlyBreakdown.flatMap(item => [item.totals.incassoTotale, item.totals.speseTotali]));
 
-    return <div className="grid month-report-page fixed">
+    return <div className="grid month-report-page">
         <NewExpensePanel
             categories={orderedCategories.map(category => ({
                 id: category.id,

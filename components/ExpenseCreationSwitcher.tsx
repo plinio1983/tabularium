@@ -75,7 +75,8 @@ export default function ExpenseCreationSwitcher(props: Props) {
     }
 
     function recurrenceControl(location: "external" | "internal") {
-        return <div className={`app-form-field full app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide expense-recurring-definition-toggle expense-recurring-definition-toggle-${location}`}>
+        //return <div className={`app-form-field full app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide expense-recurring-definition-toggle expense-recurring-definition-toggle-${location}`}>
+        return <div className={`app-form-field full app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide`}>
             <div className="switch-toggle-field-label app-form-field-label">
                 <span className="app-form-field-icon" aria-hidden="true">↻</span>
                 <span className="app-form-label">Definizione ricorrente</span>

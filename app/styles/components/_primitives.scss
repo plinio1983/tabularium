@@ -223,6 +223,7 @@ button {
   cursor: pointer;
   transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
   border-style: solid;
+  border-width: 1px;
 }
 
 .btn.wide {
@@ -537,6 +538,10 @@ button {
   .compact-mobile-header-path {
     display: none;
   }
+}
+
+.hidden {
+  display: none !important;
 }
 
 @media (max-width: 576px) {

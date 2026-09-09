@@ -367,6 +367,7 @@ export default function IncomeFiltersDrawer({
       className={`btn btn-sm btn-default app-filter-trigger${listAction ? " bulk-direct-link bulk-filter-action" : ""}`}
       type="button"
       onClick={() => setOpen(true)}
+      data-period-filter-source={!listAction ? "income" : undefined}
       data-bulk-filter={listAction ? "true" : undefined}
       aria-label="Filtri"
     >

@@ -9,6 +9,7 @@ export async function POST(request: Request) {
     if (!current) return NextResponse.json({error: 'Autenticazione richiesta'}, {status: 401});
     const formData = await request.formData();
     const companyId = Number(formData.get('companyId'));
+    if (!Number.isInteger(companyId) || companyId <= 0) return NextResponse.json({error: 'Società non valida'}, {status: 400});
     const company = await prisma.company.findFirst({
         where: {id: companyId, workspaceId: current.workspace.id, isActive: true}
     });
@@ -31,5 +32,8 @@ export async function POST(request: Request) {
         request
     });
     const returnTo = pathFromUrl(String(formData.get('returnTo') || '/'), '/');
+    if (request.headers.get('accept')?.includes('application/json')) {
+        return NextResponse.json({ok: true, activeCompanyId: company.id}, {headers: {'Cache-Control': 'no-store'}});
+    }
     return NextResponse.redirect(new URL(returnTo, request.url), 303);
 }

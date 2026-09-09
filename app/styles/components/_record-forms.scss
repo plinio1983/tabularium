@@ -3,13 +3,13 @@
   display: none;
 }
 
-.expense-recurring-definition-toggle {
-  @media (max-width: 900px) {
-    &-internal {
-      display: none !important;
-    }
-  }
-}
+//.expense-recurring-definition-toggle {
+//  @media (max-width: 900px) {
+//    &-internal {
+//      display: none !important;
+//    }
+//  }
+//}
 
 .form-section {
   grid-column: 1 / -1;
@@ -1889,9 +1889,12 @@
 @media (min-width: 761px) {
   .app-form-modal .app-record-form .form-actions-row,
     .app-form-modal .app-record-form .form-sticky-actions {
-      position: initial;
-      transform: initial;
-      width: auto;
+      // Override the fixed modal action bar, including its !important offsets.
+      position: static !important;
+      inset: auto !important;
+      transform: none !important;
+      width: auto !important;
+      margin: 0;
       box-shadow: none;
       background: none;
       border: none;

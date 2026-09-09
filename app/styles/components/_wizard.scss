@@ -46,10 +46,6 @@
   color: #fff;
 }
 
-//.app-record-form .app-form-wizard-mobile-switch {
-//  display: none;
-//}
-
 .entity-autocomplete-empty {
   padding: 12px;
   color: var(--muted);
@@ -638,7 +634,6 @@
   display: none;
 }
 
-/* Responsive rules migrated from the former viewport-specific stylesheets. */
 @media (max-width: 576px) {
   .income-form .income-form-section-grid,
   .income-form .income-amount-vat-row {
