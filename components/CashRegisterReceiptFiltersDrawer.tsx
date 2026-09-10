@@ -5,11 +5,18 @@ import {createPortal} from "react-dom";
 import Link from "next/link";
 import FilterIcon from "@/components/FilterIcon";
 
+import {periodOptions, isRollingPeriod} from '@/lib/period-selector';
+import {resolveReceiptPeriod} from '@/lib/receipt-period';
+import {dateInputInTimeZone} from '@/lib/company-time';
+import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
+
 type Option = {id: number; name: string; icon?: string | null};
 
 type Props = {
     search?: string;
-    month: string;
+    dateQuick: string;
+    dateYear: string;
+    years: string[];
     dateFrom: string;
     dateTo: string;
     paymentMethodId: number | null;
@@ -28,7 +35,9 @@ function FilterField({label, icon, children}: {label: string; icon: string; chil
 
 export default function CashRegisterReceiptFiltersDrawer({
     search = '',
-    month,
+    dateQuick,
+    dateYear,
+    years,
     dateFrom,
     dateTo,
     paymentMethodId,
@@ -37,6 +46,14 @@ export default function CashRegisterReceiptFiltersDrawer({
     paymentMethods,
     salesChannels,
 }: Props) {
+    const timeZone = useCompanyTimeZone();
+    const [selection, setSelection] = useState({quick: dateQuick, year: dateYear, from: dateFrom, to: dateTo});
+    useEffect(() => setSelection({quick: dateQuick, year: dateYear, from: dateFrom, to: dateTo}), [dateQuick, dateYear, dateFrom, dateTo]);
+    function selectPeriod(quick: string, year: string) {
+        if (quick === 'custom') { setSelection(current => ({...current, quick})); return; }
+        const period = resolveReceiptPeriod({dateQuick: quick, dateYear: year}, dateInputInTimeZone(timeZone));
+        setSelection({quick: period.quick, year: String(period.year), from: period.from, to: period.to});
+    }
     const [open, setOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
 
@@ -63,20 +80,27 @@ export default function CashRegisterReceiptFiltersDrawer({
                     <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)} aria-label="Chiudi filtri">×</button>
                 </div>
 
-                <form className="record-filters recurring-drawer-filters record-styled-drawer-filters" action="/incomes/cash-register/receipts" method="get">
+                <form className="record-filters recurring-drawer-filters record-styled-drawer-filters receipt-drawer-filters" action="/incomes/cash-register/receipts" method="get">
                     <input type="hidden" name="search" value={search}/>
-                    <fieldset className="filter-group filter-group-fiscal cash-register-receipt-period-filter-group">
+                    <fieldset className="filter-group cash-register-receipt-period-filter-group">
                         <legend>Periodo</legend>
-                        <FilterField label="Mese del report" icon="▦">
-                            <input type="month" name="month" defaultValue={month}/>
+                        <FilterField label="Periodo rapido" icon="▦">
+                            <select name="dateQuick" value={selection.quick} onChange={event => selectPeriod(event.target.value, selection.year)}>
+                                {periodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                            </select>
+                        </FilterField>
+                        <FilterField label="Anno" icon="▦">
+                            <select name="dateYear" value={selection.year} disabled={selection.quick === 'custom' || isRollingPeriod(selection.quick)} onChange={event => selectPeriod(selection.quick, event.target.value)}>
+                                {Array.from(new Set([...years, selection.year])).sort((a, b) => Number(b) - Number(a)).map(year => <option key={year} value={year}>{year}</option>)}
+                            </select>
                         </FilterField>
                         <FilterField label="Data inizio" icon="◷">
-                            <input type="date" name="dateFrom" defaultValue={dateFrom}/>
+                            <input type="date" name={selection.quick === 'custom' ? 'dateFrom' : undefined} value={selection.from} onChange={event => setSelection(current => ({...current, quick: 'custom', from: event.target.value}))}/>
                         </FilterField>
                         <FilterField label="Data fine" icon="◷">
-                            <input type="date" name="dateTo" defaultValue={dateTo}/>
+                            <input type="date" name={selection.quick === 'custom' ? 'dateTo' : undefined} value={selection.to} onChange={event => setSelection(current => ({...current, quick: 'custom', to: event.target.value}))}/>
                         </FilterField>
-                        <small className="muted filter-group-hint">Se imposti una data, l’intervallo libero sostituisce il mese selezionato.</small>
+                        <small className="muted filter-group-hint">Modificando le date imposti un periodo personalizzato.</small>
                     </fieldset>
 
                     <FilterField label="Metodo di pagamento" icon="●">
@@ -112,7 +136,7 @@ export default function CashRegisterReceiptFiltersDrawer({
     ) : null;
 
     return <>
-        <button className="btn btn-sm btn-default app-filter-trigger bulk-direct-link bulk-filter-action" data-bulk-filter="true" type="button" onClick={() => setOpen(true)}>
+        <button className="btn btn-sm btn-default app-filter-trigger bulk-direct-link bulk-filter-action" data-bulk-filter="true" data-period-filter-source="receipt" type="button" onClick={() => setOpen(true)}>
             <span className="btn-icon"><FilterIcon/></span><span className="app-filter-trigger-text">Filtri</span>
         </button>
         {drawer}

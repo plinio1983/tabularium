@@ -343,7 +343,30 @@
 }
 
 .record-styled-drawer-filters .cash-register-receipt-period-filter-group {
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  margin: 0;
+  align-items: end;
+
+  .record-filter-field {
+    min-width: 0;
+  }
+
+  .record-filter-field > input,
+  .record-filter-field > select {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .filter-group-hint {
+    grid-column: 1 / -1;
+  }
+
+  @media (width < 520px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .record-styled-drawer-filters .filter-group-hint {
@@ -351,6 +374,11 @@
   width: 100%;
   white-space: normal;
   overflow-wrap: anywhere;
+}
+
+.record-styled-drawer-filters.receipt-drawer-filters .filter-drawer-actions {
+  margin-inline: 0;
+  padding-inline: 0;
 }
 
 .record-styled-drawer-filters {
@@ -913,4 +941,103 @@
   .section-title {
         flex-direction: column;
       }
+}
+
+// Compact layout for the expense and income filter drawers only.
+@media (width < 670px) {
+  .filter-drawer-panel.transaction-filter-drawer-panel {
+    width: 100%;
+    max-width: 100vw;
+    min-width: 0;
+
+    .filter-drawer-header {
+      align-items: center;
+      padding: 10px 12px;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+
+      h3 { font-size: 18px; }
+      .modal-close-button { min-width: 44px; width: 44px; height: 44px; }
+    }
+
+    .record-styled-drawer-filters {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px;
+      min-width: 0;
+      overscroll-behavior: contain;
+
+      .filter-group {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-row: auto;
+        min-width: 0;
+        margin: 0;
+        padding: 10px;
+        gap: 10px;
+        box-shadow: none;
+        background: #fff;
+
+        legend { font-size: 12px; }
+      }
+
+      .record-filter-field {
+        min-width: 0;
+        gap: 5px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .app-form-field-label {
+        font-size: 13px;
+        line-height: 1.3;
+        white-space: normal;
+      }
+
+      .record-filter-field > input,
+      .record-filter-field > select,
+      .filter-entity-autocomplete,
+      .record-filter-field .filter-entity-autocomplete > input {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .record-filter-field > input,
+      .record-filter-field > select,
+      .record-filter-field .filter-entity-autocomplete > input {
+        min-height: 44px;
+        padding: 8px 10px;
+        font-size: 16px;
+        border-radius: 8px;
+      }
+
+      .filter-drawer-actions {
+        grid-column: 1 / -1;
+        bottom: -12px;
+        margin: 0 -12px -12px;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+        background: #fff;
+
+        .btn { min-height: 44px; min-width: 0; flex: 1; }
+      }
+    }
+  }
+}
+
+@media (400px <= width < 670px) {
+  .filter-drawer-panel.transaction-filter-drawer-panel .record-styled-drawer-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .filter-group {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      .record-filter-field:has(select) { grid-column: 1 / -1; }
+    }
+  }
 }

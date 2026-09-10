@@ -4,6 +4,8 @@ import DetailBackButton from '@/components/DetailBackButton';
 import CompanyCreatePanel from './CompanyCreatePanel';
 import {saveCompanyAction, setDefaultCompanyAction, toggleCompanyAction} from './actions';
 import CompanyFormFields from '@/components/CompanyFormFields';
+import {Suspense} from 'react';
+import ActiveCompanySwitcher from '@/components/ActiveCompanySwitcher';
 
 export default async function CompanyConfigurationPage({searchParams}: {searchParams?: Promise<Record<string, string | string[] | undefined>>}) {
   const current = await requireWorkspaceRole(workspaceManagementRoles, '/settings/company-settings');
@@ -29,7 +31,10 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
   return <div className="grid admin-page settings-admin-page categories-settings-page company-settings-page">
     <div className="toolbar-card">
       <div><h2>Società</h2><p className="muted">Gestisci le entità contabili del workspace. La società attiva determina movimenti e report visualizzati.</p></div>
-      <DetailBackButton href="/settings"/>
+      <div className="settings-hub-toolbar-actions">
+        <DetailBackButton href="/settings"/>
+        <Suspense fallback={null}><ActiveCompanySwitcher returnTo="/settings/company-settings"/></Suspense>
+      </div>
     </div>
     {saved ? <div className="form-summary full"><strong>{savedMessages[saved] ?? 'Configurazione aggiornata.'}</strong></div> : null}
     {error ? <div className="inline-form-error full">{errors[error] ?? 'Operazione non riuscita.'}</div> : null}

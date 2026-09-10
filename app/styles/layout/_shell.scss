@@ -65,9 +65,14 @@
 
 .site-header-logo {
   display: block;
-  width: min(280px, 63vw);
+  //width: min(280px, 63vw);
+  width: 250px;
   height: auto;
   border-radius: 12px;
+
+  @media (max-width: 760px) {
+    width: 206px;
+  }
 }
 
 .nav-links {

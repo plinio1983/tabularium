@@ -37,10 +37,10 @@ function DesktopHeader({ compactOnMobile = false, userName }: { compactOnMobile?
   const className = compactOnMobile ? "nav compact-mobile-header-path" : "nav fixed";
 
   return <div className={className}>
-      <div className="site-header-brand compact hidden-md-up">
-          <img className="site-header-logo" src={logoIcon.src} alt="Tabularium" width={logoIcon.width} height={logoIcon.height} />
-      </div>
-    <div className="site-header-brand hidden-md-down">
+      {/*<div className="site-header-brand compact hidden-md-up">*/}
+      {/*    <img className="site-header-logo" src={logoIcon.src} alt="Tabularium" width={logoIcon.width} height={logoIcon.height} />*/}
+      {/*</div>*/}
+    <div className="site-header-brand">
       <img className="site-header-logo" src={logoHorizontal.src} alt="Tabularium" width={logoHorizontal.width} height={logoHorizontal.height} />
     </div>
     <div className="site-header-actions">

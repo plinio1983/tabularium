@@ -1,7 +1,5 @@
 import Link from 'next/link';
-import {Suspense} from 'react';
 import DetailBackButton from '@/components/DetailBackButton';
-import ActiveCompanySwitcher from '@/components/ActiveCompanySwitcher';
 import {requireWorkspace} from '@/lib/auth';
 
 const settingsSections = [
@@ -60,7 +58,6 @@ export default async function SettingsPage() {
             </div>
             <div className="settings-hub-toolbar-actions">
                 <DetailBackButton href="/"/>
-                <Suspense fallback={null}><ActiveCompanySwitcher returnTo="/settings"/></Suspense>
             </div>
         </div>
 

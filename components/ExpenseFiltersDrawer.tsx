@@ -274,7 +274,7 @@ export default function ExpenseFiltersDrawer({
 
   const drawer = mounted ? createPortal(
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel record-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri spese" onMouseDown={(event) => event.stopPropagation()}>
+      <aside className="filter-drawer-panel record-filter-drawer-panel transaction-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri spese" onMouseDown={(event) => event.stopPropagation()}>
         <div className="filter-drawer-header">
           <div>
             <h3>Filtri spese</h3>

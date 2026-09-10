@@ -139,8 +139,21 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     />
 
     <div className="record-detail-shell">
+      <div className="record-detail-action-row pt-0 hidden-sm-up">
+            <div className="left-side">
+                <DetailBackButton href={returnTo} />
+            </div>
+            <div className="right-side">
+                <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
+                    <span className="--hidden-mobile"> Copia</span>
+                </button>
+                <Link className="btn btn-sm btn-default" href="#" data-expense-detail-edit-id={expense.id}>✎
+                    <span className="--hidden-mobile"> Modifica</span>
+                </Link>
+            </div>
+        </div>
       <article className="record-detail-document">
-        <div className="record-detail-action-row">
+        <div className="record-detail-action-row hidden-sm-down">
           <div className="left-side">
             <DetailBackButton href={returnTo} />
           </div>

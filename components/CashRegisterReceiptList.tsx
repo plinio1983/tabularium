@@ -138,9 +138,9 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     </th>
                     <th data-sort-key="id" className="cell-id" data-sort-type="number">ID</th>
                     <th data-sort-key="date" className="cell-date" data-sort-type="date">Data e ora</th>
-                    <th data-sort-key="description">Descrizione</th>
+                    <th data-sort-key="description" className="cell-description" >Descrizione</th>
                     <th data-sort-key="channel" className="cell-channel">Canale vendita</th>
-                    <th className="cell-amount" data-sort-key="amount" data-sort-type="number">Importo</th>
+                    <th data-sort-key="amount" data-sort-type="number" className="cell-amount">Importo</th>
                     <th data-sort-key="fiscal" className="cell-fiscal">Fiscalità</th>
                     <th data-sort-key="method" className="cell-method">Metodo pagamento</th>
                     <th data-sort-key="vat" data-sort-type="number" className="cell-vat">IVA</th>

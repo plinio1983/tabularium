@@ -116,7 +116,7 @@ function quickBillingPeriodRange(value: string, now: Date) {
   return null;
 }
 
-function quickCreditDateRange(value: string, now: Date) {
+function quickDateRange(value: string, now: Date) {
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
@@ -244,13 +244,29 @@ export default function IncomeFiltersDrawer({
   function handleCreditDateQuickChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const form = event.currentTarget.form;
     if (!form) return;
-    const range = quickCreditDateRange(event.currentTarget.value, companyNow);
+    const range = quickDateRange(event.currentTarget.value, companyNow);
     if (!range) return;
     const from = form.elements.namedItem("creditDateFrom") as HTMLInputElement | null;
     const to = form.elements.namedItem("creditDateTo") as HTMLInputElement | null;
     if (from) from.value = range.from;
     if (to) to.value = range.to;
     clearFields(form, ["billingPeriodFrom", "billingPeriodTo", "billingPeriodQuick"]);
+  }
+
+  function handleOrderDateQuickChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const form = event.currentTarget.form;
+    if (!form) return;
+    const range = quickDateRange(event.currentTarget.value, companyNow);
+    if (!range) return;
+    const from = form.elements.namedItem("orderDateFrom") as HTMLInputElement | null;
+    const to = form.elements.namedItem("orderDateTo") as HTMLInputElement | null;
+    if (from) from.value = range.from;
+    if (to) to.value = range.to;
+  }
+
+  function handleOrderDateInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const form = event.currentTarget.form;
+    if (form) clearFields(form, ["orderDateQuick"]);
   }
 
   function handleBillingPeriodInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -267,7 +283,7 @@ export default function IncomeFiltersDrawer({
 
   const drawer = mounted ? createPortal(
     <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel record-filter-drawer-panel income-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri incassi" onMouseDown={(event) => event.stopPropagation()}>
+      <aside className="filter-drawer-panel record-filter-drawer-panel transaction-filter-drawer-panel income-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri incassi" onMouseDown={(event) => event.stopPropagation()}>
         <div className="filter-drawer-header">
           <div>
             <h3>Filtri incassi</h3>
@@ -280,8 +296,12 @@ export default function IncomeFiltersDrawer({
           <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
           <fieldset className="filter-group filter-group-order-date">
             <legend>Data ordine</legend>
-            <FilterField label="Data ordine da" icon="◷"><input name="orderDateFrom" type="date" defaultValue={inputDefault(filters, "orderDateFrom")} /></FilterField>
-            <FilterField label="Data ordine a" icon="◷"><input name="orderDateTo" type="date" defaultValue={inputDefault(filters, "orderDateTo")} /></FilterField>
+            <FilterField label="Selezione rapida data" icon="⌁"><select name="orderDateQuick" defaultValue={inputDefault(filters, "orderDateQuick")} onChange={handleOrderDateQuickChange}>
+              <option value="">Periodo personalizzato</option>
+              {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select></FilterField>
+            <FilterField label="Data ordine da" icon="◷"><input name="orderDateFrom" type="date" defaultValue={inputDefault(filters, "orderDateFrom")} onChange={handleOrderDateInputChange}/></FilterField>
+            <FilterField label="Data ordine a" icon="◷"><input name="orderDateTo" type="date" defaultValue={inputDefault(filters, "orderDateTo")} onChange={handleOrderDateInputChange}/></FilterField>
           </fieldset>
 
           <fieldset className="filter-group filter-group-fiscal">

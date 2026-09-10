@@ -391,7 +391,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
   gap: 16px;
   align-items: stretch;
-  padding: 28px;
+  padding: 12px 28px 28px;
   border-bottom: 1px solid rgba(226, 232, 240, .9);
 }
 

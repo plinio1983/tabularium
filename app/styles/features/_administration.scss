@@ -50,32 +50,37 @@ body:has(.detail-page-no-site-header) .shell {
     text-align: center;
   }
   .cell-id {
-    width: 9%;
+    width: 7%;
     min-width: 56px;
     max-width: 64px;
   }
   .cell-date {
-    width: 18%;
+    width: 12%;
+    min-width: 110px;
+    max-width: 127px;
+  }
+  .cell-description {
+    width: 17%;
     min-width: 110px;
     max-width: 127px;
   }
   .cell-method {
-    width: 16%;
+    width: 10%;
     min-width: 100px;
     max-width: 130px;
   }
   .cell-fiscal {
-    width: 12%;
+    width: 10%;
     min-width: 64px;
     max-width: 110px;
   }
   .cell-amount {
-    width: 13%;
+    width: 12%;
     min-width: 110px;
     max-width: 170px;
   }
   .cell-vat {
-    width: 10%;
+    width: 7%;
     min-width: 56px;
     max-width: 84px;
   }
@@ -958,7 +963,7 @@ table {
   display: none;
 }
 
-.payment-credit-collapsible[open] > summary span:last-child {
+.payment-credit-collapsible[open] > summary > span:last-child {
   transform: rotate(45deg);
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import {useMemo, useState} from 'react';
+import {useMemo, useState, type ReactNode} from 'react';
 import type {DailyReceiptTrend} from '@/lib/cash-register-trend';
 import {euro} from '@/lib/money';
 
@@ -8,7 +8,7 @@ function dayLabel(value: string, options: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat('it-IT', options).format(new Date(`${value}T12:00:00`)).replace('.', '');
 }
 
-export default function CashRegisterReceiptTrendChart({points, annual = false}: {points: DailyReceiptTrend[]; annual?: boolean}) {
+export default function CashRegisterReceiptTrendChart({points, annual = false, periodSelector}: {points: DailyReceiptTrend[]; annual?: boolean; periodSelector?: ReactNode}) {
   const lastActiveIndex = points.reduce((last, point, index) => point.count ? index : last, 0);
   const [selectedIndex, setSelectedIndex] = useState(lastActiveIndex);
   const selected = points[selectedIndex] ?? points[0];
@@ -36,9 +36,11 @@ export default function CashRegisterReceiptTrendChart({points, annual = false}: 
   const baseline = top + chartHeight;
   const linePoints = points.map((point, index) => `${x(index)},${y(point.total)}`).join(' ');
   const areaPoints = `${left},${baseline} ${linePoints} ${x(points.length - 1)},${baseline}`;
+  const spansMonths = new Set(points.map(point => point.day.slice(0, 7))).size > 1;
   const labelEvery = points.length > 20 ? 3 : points.length > 12 ? 2 : 1;
 
   return <section className="card cash-register-trend-card fixed" aria-labelledby="cash-register-trend-title">
+    {periodSelector}
     <div className="cash-register-trend-heading">
       <div>
         <h2 id="cash-register-trend-title">Andamento scontrini</h2>
@@ -55,7 +57,7 @@ export default function CashRegisterReceiptTrendChart({points, annual = false}: 
     {points.length ? <>
       <div className="cash-register-trend-chart-scroll">
         <svg className="cash-register-trend-chart" viewBox={`0 0 ${width} ${height}`} role="img"
-             aria-label="Grafico dell’incasso giornaliero degli scontrini">
+             aria-label={`Grafico dell’incasso ${annual ? 'mensile' : 'giornaliero'} degli scontrini`}>
           <polygon className="cash-register-trend-area" points={areaPoints}/>
           {[0, maxValue / 2, maxValue].map((value, index) => {
             const gridY = y(value);
@@ -70,7 +72,7 @@ export default function CashRegisterReceiptTrendChart({points, annual = false}: 
           {points.map((point, index) => <g key={point.day}>
             {index % labelEvery === 0 || index === points.length - 1
               ? <text className="cash-register-trend-day-label" x={x(index)} y={height - 18} textAnchor="middle">
-                  {dayLabel(point.day, annual ? {month: 'short'} : {day: '2-digit'})}
+                  {dayLabel(point.day, annual ? {month: 'short'} : spansMonths ? {day: '2-digit', month: 'short'} : {day: '2-digit'})}
                 </text>
               : null}
             <circle

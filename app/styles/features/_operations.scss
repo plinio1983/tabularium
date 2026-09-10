@@ -61,10 +61,10 @@
 
 .cash-register-header > div {
   display: flex;
-  align-items: baseline;
   gap: 24px;
   row-gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .cash-register-header .btn {
@@ -856,6 +856,10 @@
   display: grid;
   gap: 16px;
   padding: 18px;
+}
+
+.cash-register-trend-card .trend-selectors {
+  margin-bottom: 28px;
 }
 
 .cash-register-trend-heading {
