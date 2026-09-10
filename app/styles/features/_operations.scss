@@ -1466,12 +1466,6 @@ a.record-top-summary-item.is-invoice-waiting:hover {
   }
 }
 
-@media (max-width: 576px) {
-  .filter-drawer-actions {
-    bottom: -14px;
-  }
-}
-
 @media (max-width: 760px) {
   .toolbar-card {
     align-items: stretch;
@@ -1991,19 +1985,6 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 }
 
 @media (min-width: 761px) {
-  .filter-drawer-panel {
-    width: min(646px, calc(100vw - 28px));
-    height: 100%;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    background: var(--card);
-    box-shadow: -18px 0 44px rgba(15, 23, 42, .18);
-    transform: translateX(100%);
-    transition: transform .22s ease;
-  }
-}
-
-@media (min-width: 761px) {
   .supplier-toolbar-card {
     display: flex;
     flex-direction: row-reverse;
@@ -2049,39 +2030,11 @@ a.record-top-summary-item.is-invoice-waiting:hover {
   }
 }
 
-.cash-register-receipt-detail-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-
-  .record-detail-item {
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-
-  @media (max-width: 576px) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.cash-register-receipt-detail-modal .modal-card.cash-register-receipt-detail-card {
-  width: min(840px, 100%);
+// Use the shared full-screen modal and compact detail rows on mobile.
+.cash-register-receipt-detail-modal .cash-register-receipt-detail-card {
   padding: 0;
-  overflow-y: auto;
 
-  .record-detail-action-row {
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .record-detail-action-row .record-detail-kicker {
-    margin: 0;
-  }
-
-  .record-detail-hero {
-    grid-template-columns: minmax(0, 1fr) minmax(220px, .7fr);
-    padding: 24px;
-  }
+  .record-detail-section-actions { margin-top: auto; }
 
   .record-detail-hero h2 {
     padding-top: 0;
@@ -2089,18 +2042,9 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     overflow-wrap: anywhere;
   }
 
-  @media (max-width: 600px) {
-    .record-detail-hero {
-      grid-template-columns: minmax(0, 1fr);
-      padding: 18px;
-    }
+  @media (min-width: 761px) { width: min(840px, 100%); }
 
-    .record-detail-amount-panel {
-      padding: 12px 0 0;
-    }
-
-    .record-detail-action-row {
-      gap: 8px;
-    }
+  @media (max-width: 760px) {
+    .record-detail-hero { grid-template-columns: minmax(0, 1fr); }
   }
 }

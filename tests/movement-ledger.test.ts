@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {ledgerFilters, ledgerWhere} from '../lib/movement-ledger';
+import {ledgerFilters, ledgerOrder, ledgerWhere} from '../lib/movement-ledger';
 import {loadMovementLedger} from '../lib/movement-ledger-data';
+
+test('ledger sorting only uses allowed columns and directions', () => {
+  const filters = ledgerFilters({sort: 'amount; DROP TABLE x', direction: 'asc; --'}, '2026-09-10');
+  assert.equal(filters.sort, 'date');
+  assert.equal(filters.direction, 'desc');
+  assert.equal(ledgerOrder(filters).sql, 'ORDER BY date DESC NULLS LAST, id DESC');
+});
 
 test('ledger filters validate page and ids and use company date boundaries', () => {
   const filters = ledgerFilters({page: '-1', methodId: 'bad', bankId: 'none', dateFrom: '2026-03-29', dateTo: '2026-03-29'}, '2026-09-10');
@@ -34,7 +41,7 @@ test('PostgreSQL: partial payments, payroll, credits, isolation, totals and pagi
     await prisma.$transaction(async db => {
       // Temporary tables shadow the real tables for this connection only.
       const definitions = [
-        '"PaymentMethod" (id int, name text)', '"Bank" (id int, name text)',
+        '"PaymentMethod" (id int, name text, icon text)', '"Bank" (id int, name text)',
         '"Supplier" (id int, "businessName" text)', '"Employee" (id int, "firstName" text, "lastName" text)',
         '"Customer" (id int, "businessName" text)', '"IncomeSalesChannel" (id int, name text, "workspaceId" int)',
         '"Expense" (id int, "workspaceId" int, "companyId" int, "employeeId" int, "supplierId" int, merchant text, description text, "expenseType" text)',
@@ -44,7 +51,7 @@ test('PostgreSQL: partial payments, payroll, credits, isolation, totals and pagi
       ];
       for (const definition of definitions) await db.$executeRawUnsafe(`CREATE TEMP TABLE ${definition} ON COMMIT DROP`);
       const inserts = [
-        `INSERT INTO "PaymentMethod" VALUES (1,'Bonifico'),(2,'Carta')`,
+        `INSERT INTO "PaymentMethod" VALUES (1,'Bonifico','🏦'),(2,'Carta','💳')`,
         `INSERT INTO "Bank" VALUES (1,'Conto A'),(2,'Conto B')`,
         `INSERT INTO "Supplier" VALUES (1,'Fornitore Uno')`,
         `INSERT INTO "Employee" VALUES (1,'Ada','Rossi')`,
@@ -84,6 +91,17 @@ test('PostgreSQL: partial payments, payroll, credits, isolation, totals and pagi
       assert.equal(paged.page,2);
       assert.equal(paged.rows.length,13);
       assert.equal(paged.total,1160);
+      const amountAsc = await loadMovementLedger(db, 'payments', 1, 1, 'Europe/Rome', ledgerFilters({sort:'amount',direction:'asc'}, '2026-09-10'));
+      const amountNext = await loadMovementLedger(db, 'payments', 1, 1, 'Europe/Rome', ledgerFilters({sort:'amount',direction:'asc',page:'2'}, '2026-09-10'));
+      assert.equal(amountAsc.rows.length,50);
+      assert.deepEqual(amountNext.rows.slice(-3).map(row => row.amount), ['40.00','60.00','1000.00']);
+      assert.equal(amountAsc.total,paged.total);
+      const amountDesc = await loadMovementLedger(db, 'credits', 1, 1, 'Europe/Rome', ledgerFilters({sort:'amount',direction:'desc'}, '2026-09-10'));
+      assert.deepEqual(amountDesc.rows.map(row => Number(row.amount)), [70,50,30]);
+      for (const direction of ['asc','desc']) {
+        const dates = await loadMovementLedger(db, 'payments', 1, 1, 'Europe/Rome', ledgerFilters({sort:'date',direction,dateMode:'all',page:'2'}, '2026-09-10'));
+        assert.equal(dates.rows.at(-1)?.date,null);
+      }
       const empty = await loadMovementLedger(db, 'payments', 1, 1, 'Europe/Rome', ledgerFilters({search:'unmatched'}, '2026-09-10'));
       assert.equal(empty.total,0);
       assert.equal(empty.rows.length,0);

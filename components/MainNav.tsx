@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import MonthlyReportIcon from '@/components/MonthlyReportIcon';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {lastCompletedMonthInTimeZone} from '@/lib/company-time';
+import {isDocumentNavigationActive} from '@/lib/navigation';
 
 const persistedFilterKeys: Record<string, string> = {
   '/expenses': 'dmsAccounting.expenses.filters',
@@ -65,10 +66,10 @@ function MainNavContent() {
   const currentMonthHref = `/months/${reportPeriod.year}/${reportPeriod.month}?mode=overall&returnTo=${encodeURIComponent('/')}`;
   const navigationLinks = [
       { href: '/', label: 'Dashboard', shortLabel: 'Home', icon: '⌂', match: (pathname: string) => pathname === '/' },
-      { href: '/expenses', label: 'Spese', shortLabel: 'Spese', icon: '−', match: (pathname: string) => pathname.startsWith('/expenses') },
-      { href: '/incomes', label: 'Incassi', shortLabel: 'Incassi', icon: '+', match: (pathname: string) => pathname.startsWith('/incomes') },
+      { href: '/expenses', label: 'Spese', shortLabel: 'Spese', icon: '−', match: (pathname: string) => isDocumentNavigationActive(pathname, '/expenses') },
+      { href: '/incomes', label: 'Incassi', shortLabel: 'Incassi', icon: '+', match: (pathname: string) => isDocumentNavigationActive(pathname, '/incomes') },
       { href: currentMonthHref, label: 'Report', shortLabel: 'Report', icon: <MonthlyReportIcon/>, match: (currentPathname: string) => currentPathname.startsWith('/months/') },
-      { href: '/suppliers', label: 'Fornitori', shortLabel: 'Fornitori', icon: '◇', match: (pathname: string) => pathname.startsWith('/suppliers'), isMonthLink: true },
+      { href: '/suppliers', label: 'Fornitori', shortLabel: 'Fornitori', icon: '◇', match: (pathname: string) => isDocumentNavigationActive(pathname, '/suppliers'), isMonthLink: true },
   ];
   const navigationMobileLinks = [
       navigationLinks[0],

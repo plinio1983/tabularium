@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
-import Link from "next/link";
+import { useId, useState, type ReactNode } from "react";
+import FilterDrawer from "./FilterDrawer";
+import EntityFormActions from "./EntityFormActions";
+import {useRouter} from "next/navigation";
 import FilterIcon from "@/components/FilterIcon";
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {civilDateInTimeZone} from '@/lib/company-time';
@@ -165,26 +166,8 @@ export default function ExpenseFiltersDrawer({
   const timeZone = useCompanyTimeZone();
   const companyNow = civilDateInTimeZone(timeZone);
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-
-    document.body.classList.add("drawer-open");
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.classList.remove("drawer-open");
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
+  const formId = useId();
+  const router = useRouter();
 
   function handleFiltersSubmit(event: React.FormEvent<HTMLFormElement>) {
     const form = event.currentTarget;
@@ -272,102 +255,86 @@ export default function ExpenseFiltersDrawer({
     clearFields(form, ["dateQuick", "billingPeriodFrom", "billingPeriodTo", "billingPeriodQuick"]);
   }
 
-  const drawer = mounted ? createPortal(
-    <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel record-filter-drawer-panel transaction-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri spese" onMouseDown={(event) => event.stopPropagation()}>
-        <div className="filter-drawer-header">
-          <div>
-            <h3>Filtri spese</h3>
-            {/*<p className="muted">Cerca per periodo, fornitore, stato pagamento, fattura e importo.</p>*/}
-          </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
-        </div>
-
-        <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
-          <input type="hidden" name="supplierQuick" value={inputDefault(filters, "supplierQuick")}/>
-          <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
-          <fieldset className="filter-group filter-group-fiscal">
-            <legend>Periodo fiscale</legend>
-            <FilterField label="Periodo fiscale rapido" icon="▦"><select id="billingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>
-              <option value="">Periodo personalizzato</option>
-              {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select></FilterField>
-            <FilterField label="Periodo fatturazione da" icon="◷"><input id="billingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
-            <FilterField label="Periodo fatturazione a" icon="◷"><input id="billingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
-          </fieldset>
-
-          <fieldset className="filter-group filter-group-order-date">
-            <legend>Date ordine</legend>
-            <FilterField label="Selezione rapida data" icon="⌁"><select id="dateQuick" name="dateQuick" defaultValue={quickDateFilter} onChange={handleOrderDateQuickChange}>
-              <option value="">Periodo personalizzato</option>
-              {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select></FilterField>
-            <FilterField label="Data ordine da" icon="◷"><input id="orderDateFrom" name="orderDateFrom" type="date" defaultValue={orderDateFromDefault} onChange={handleOrderDateInputChange} /></FilterField>
-            <FilterField label="Data ordine a" icon="◷"><input id="orderDateTo" name="orderDateTo" type="date" defaultValue={orderDateToDefault} onChange={handleOrderDateInputChange} /></FilterField>
-          </fieldset>
-
-          <FilterField label="Categoria" icon="◇"><select name="category" defaultValue={inputDefault(filters, "category")}>
-            <option value="">Tutte</option>
-            {categories.map(category => <option key={category.id} value={category.name}>{category.code} - {category.name}</option>)}
+  const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri spese"
+    actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push('/expenses');}}/>}>
+      <form id={formId} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        <input type="hidden" name="supplierQuick" value={inputDefault(filters, "supplierQuick")}/>
+        <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
+        <fieldset className="filter-group filter-group-fiscal">
+          <legend>Periodo fiscale</legend>
+          <FilterField label="Periodo fiscale rapido" icon="▦"><select id="billingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>
+            <option value="">Periodo personalizzato</option>
+            {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select></FilterField>
+          <FilterField label="Periodo fatturazione da" icon="◷"><input id="billingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
+          <FilterField label="Periodo fatturazione a" icon="◷"><input id="billingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
+        </fieldset>
 
-          <FilterField label="Tipo spesa" icon="●"><select name="expenseType" defaultValue={inputDefault(filters, "expenseType")}>
-            <option value="">Tutte</option>
-            <option value="single">Singola</option>
-            <option value="recurring">Ricorrente</option>
-            <option value="vat_settlement">Saldo IVA</option>
-            <option value="tax_contribution">Imposte - non IVA</option>
-            <option value="payroll">Busta paga</option>
-            <option value="counter">Banco</option>
+        <fieldset className="filter-group filter-group-order-date">
+          <legend>Date ordine</legend>
+          <FilterField label="Selezione rapida data" icon="⌁"><select id="dateQuick" name="dateQuick" defaultValue={quickDateFilter} onChange={handleOrderDateQuickChange}>
+            <option value="">Periodo personalizzato</option>
+            {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select></FilterField>
+          <FilterField label="Data ordine da" icon="◷"><input id="orderDateFrom" name="orderDateFrom" type="date" defaultValue={orderDateFromDefault} onChange={handleOrderDateInputChange} /></FilterField>
+          <FilterField label="Data ordine a" icon="◷"><input id="orderDateTo" name="orderDateTo" type="date" defaultValue={orderDateToDefault} onChange={handleOrderDateInputChange} /></FilterField>
+        </fieldset>
 
-          <SupplierFilterInput initialValue={inputDefault(filters, "merchant")} />
-          <FilterField label="Descrizione" icon="≡"><input name="product" defaultValue={inputDefault(filters, "product")} /></FilterField>
-          <FilterField label="Importo" icon="€"><input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></FilterField>
+        <FilterField label="Categoria" icon="◇"><select name="category" defaultValue={inputDefault(filters, "category")}>
+          <option value="">Tutte</option>
+          {categories.map(category => <option key={category.id} value={category.name}>{category.code} - {category.name}</option>)}
+        </select></FilterField>
 
-          <FilterField label="Stato pagamento" icon="✓"><select name="paymentStatus" defaultValue={inputDefault(filters, "paymentStatus")}>
-            <option value="">Tutti</option>
-            {paymentStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select></FilterField>
+        <FilterField label="Tipo spesa" icon="●"><select name="expenseType" defaultValue={inputDefault(filters, "expenseType")}>
+          <option value="">Tutte</option>
+          <option value="single">Singola</option>
+          <option value="recurring">Ricorrente</option>
+          <option value="vat_settlement">Saldo IVA</option>
+          <option value="tax_contribution">Imposte - non IVA</option>
+          <option value="payroll">Busta paga</option>
+          <option value="counter">Banco</option>
+        </select></FilterField>
 
-          <FilterField label="Residuo" icon="◐"><select name="residual" defaultValue={inputDefault(filters, "residual")}>
-            <option value="">Tutti</option>
-            <option value="open">Con residuo</option>
-            <option value="closed">Saldato</option>
-          </select></FilterField>
+        <SupplierFilterInput initialValue={inputDefault(filters, "merchant")} />
+        <FilterField label="Descrizione" icon="≡"><input name="product" defaultValue={inputDefault(filters, "product")} /></FilterField>
+        <FilterField label="Importo" icon="€"><input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></FilterField>
 
-          <FilterField label="Fattura elettronica" icon="▤"><select name="electronicInvoice" defaultValue={inputDefault(filters, "electronicInvoice")}>
-            <option value="">Tutte</option>
-            <option value="yes">Si</option>
-            <option value="no">No</option>
-          </select></FilterField>
+        <FilterField label="Stato pagamento" icon="✓"><select name="paymentStatus" defaultValue={inputDefault(filters, "paymentStatus")}>
+          <option value="">Tutti</option>
+          {paymentStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select></FilterField>
 
-          <FilterField label="Stato fattura" icon="▣"><select name="invoiceStatus" defaultValue={inputDefault(filters, "invoiceStatus") || inputDefault(filters, "invoiceStatusMode")}>
-            <option value="">Tutti</option>
-            {invoiceStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select></FilterField>
+        <FilterField label="Residuo" icon="◐"><select name="residual" defaultValue={inputDefault(filters, "residual")}>
+          <option value="">Tutti</option>
+          <option value="open">Con residuo</option>
+          <option value="closed">Saldato</option>
+        </select></FilterField>
 
-          <FilterField label="Incidenza utile fiscale" icon="%"><select name="declared" defaultValue={inputDefault(filters, "declared")}>
-            <option value="">Tutte</option>
-            <option value="yes">Incide</option>
-            <option value="no">Non incide</option>
-          </select></FilterField>
+        <FilterField label="Fattura elettronica" icon="▤"><select name="electronicInvoice" defaultValue={inputDefault(filters, "electronicInvoice")}>
+          <option value="">Tutte</option>
+          <option value="yes">Si</option>
+          <option value="no">No</option>
+        </select></FilterField>
 
-          <FilterField label="Allegati" icon="⌕"><select name="attachments" defaultValue={inputDefault(filters, "attachments")}>
-            <option value="">Tutti</option>
-            <option value="with">Con allegati</option>
-            <option value="without">Senza allegati</option>
-          </select></FilterField>
+        <FilterField label="Stato fattura" icon="▣"><select name="invoiceStatus" defaultValue={inputDefault(filters, "invoiceStatus") || inputDefault(filters, "invoiceStatusMode")}>
+          <option value="">Tutti</option>
+          {invoiceStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select></FilterField>
 
-          <div className="filter-drawer-actions">
-            <Link className="btn btn-md btn-default reset-button" href="/expenses" onClick={() => setOpen(false)}><span className="btn-icon">↺</span> Reset</Link>
-            <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">🔎</span> Filtra</button>
-          </div>
-        </form>
-      </aside>
-    </div>,
-    document.body
-  ) : null;
+        <FilterField label="Incidenza utile fiscale" icon="%"><select name="declared" defaultValue={inputDefault(filters, "declared")}>
+          <option value="">Tutte</option>
+          <option value="yes">Incide</option>
+          <option value="no">Non incide</option>
+        </select></FilterField>
+
+        <FilterField label="Allegati" icon="⌕"><select name="attachments" defaultValue={inputDefault(filters, "attachments")}>
+          <option value="">Tutti</option>
+          <option value="with">Con allegati</option>
+          <option value="without">Senza allegati</option>
+        </select></FilterField>
+
+      </form>
+    </FilterDrawer>;
 
   return <>
     <button

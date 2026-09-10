@@ -1,7 +1,7 @@
 import {Prisma} from '@/generated/prisma/client';
-import {ledgerPageSize, ledgerSource, ledgerWhere, type LedgerKind, type ledgerFilters} from './movement-ledger';
+import {ledgerOrder, ledgerPageSize, ledgerSource, ledgerWhere, type LedgerKind, type ledgerFilters} from './movement-ledger';
 
-export type Movement = {id: number; documentId: number; date: Date | null; amount: string; party: string; description: string; method: string; bank: string; type: string};
+export type Movement = {id: number; documentId: number; date: Date | null; amount: string; party: string; description: string; method: string; methodIcon: string | null; bank: string; type: string};
 export type Group = {dimension: string; id: number | null; name: string; count: number; total: string};
 type Summary = {count: number; total: string};
 
@@ -25,6 +25,6 @@ export async function loadMovementLedger(db: Prisma.TransactionClient, kind: Led
   const total = Number(summary.total);
   const pages = Math.max(1, Math.ceil(summary.count / ledgerPageSize));
   const page = Math.min(filters.page, pages);
-  const rows = await db.$queryRaw<Movement[]>(Prisma.sql`${filtered} SELECT id, "documentId", date, amount::text, party, description, method, bank, type FROM filtered ORDER BY date DESC NULLS LAST, id DESC LIMIT ${ledgerPageSize} OFFSET ${(page - 1) * ledgerPageSize}`);
+  const rows = await db.$queryRaw<Movement[]>(Prisma.sql`${filtered} SELECT id, "documentId", date, amount::text, party, description, method, "methodIcon", bank, type FROM filtered ${ledgerOrder(filters)} LIMIT ${ledgerPageSize} OFFSET ${(page - 1) * ledgerPageSize}`);
   return {summary, total, groups, options, channels, rows, page, pages};
 }

@@ -5,6 +5,8 @@ import {addCalendarDays, zonedMidnightUtc} from './company-time';
 export type LedgerKind = 'payments' | 'credits';
 export type LedgerParams = Record<string, string | string[] | undefined>;
 export const ledgerPageSize = 50;
+export const ledgerSortColumns = ['date', 'party', 'description', 'method', 'bank', 'amount', 'documentId'] as const;
+export type LedgerSortColumn = typeof ledgerSortColumns[number];
 export const paramValue = (params: LedgerParams, name: string) => {
   const value = params[name];
   return (Array.isArray(value) ? value[0] : value) ?? '';
@@ -15,6 +17,8 @@ export function ledgerFilters(params: LedgerParams, today: string) {
     return Number.isSafeInteger(value) && value > 0 ? value : null;
   };
   const page = Number(paramValue(params, 'page'));
+  const requestedSort = paramValue(params, 'sort');
+  const sort: LedgerSortColumn = ledgerSortColumns.includes(requestedSort as LedgerSortColumn) ? requestedSort as LedgerSortColumn : 'date';
   return {
     period: resolveReceiptPeriod(params, today),
     search: paramValue(params, 'search').trim(),
@@ -25,13 +29,24 @@ export function ledgerFilters(params: LedgerParams, today: string) {
     type: paramValue(params, 'type'),
     salesChannelId: id('salesChannelId'),
     page: Number.isSafeInteger(page) && page > 0 ? Math.min(page, 1000000) : 1,
+    sort,
+    direction: paramValue(params, 'direction') === 'asc' ? 'asc' as const : 'desc' as const,
   };
+}
+
+export function ledgerOrder(filters: ReturnType<typeof ledgerFilters>) {
+  const columns: Record<LedgerSortColumn, Prisma.Sql> = {
+    date: Prisma.sql`date`, party: Prisma.sql`lower(party)`, description: Prisma.sql`lower(description)`,
+    method: Prisma.sql`lower(method)`, bank: Prisma.sql`lower(bank)`, amount: Prisma.sql`filtered.amount`, documentId: Prisma.sql`"documentId"`,
+  };
+  const direction = filters.direction === 'asc' ? Prisma.sql`ASC` : Prisma.sql`DESC`;
+  return Prisma.sql`ORDER BY ${columns[filters.sort]} ${direction} NULLS LAST, id DESC`;
 }
 
 export function ledgerSource(kind: LedgerKind, workspaceId: number, companyId: number) {
   if (kind === 'payments') return Prisma.sql`
     SELECT p.id, p."expenseId" AS "documentId", p."paymentDate" AS date, p.amount,
-      p."paymentMethodId" AS "methodId", p."bankId", m.name AS method,
+      p."paymentMethodId" AS "methodId", p."bankId", m.name AS method, m.icon AS "methodIcon",
       coalesce(b.name, 'Non specificato') AS bank,
       coalesce(nullif(concat_ws(' ', e."firstName", e."lastName"), ''), s."businessName", d.merchant) AS party,
       coalesce(d.description, '') AS description, d."expenseType"::text AS type,
@@ -44,7 +59,7 @@ export function ledgerSource(kind: LedgerKind, workspaceId: number, companyId: n
     WHERE d."workspaceId" = ${workspaceId} AND d."companyId" = ${companyId}`;
   return Prisma.sql`
     SELECT p.id, p."incomeId" AS "documentId", p."creditDate" AS date, p.amount,
-      p."paymentMethodId" AS "methodId", p."bankId", m.name AS method, b.name AS bank,
+      p."paymentMethodId" AS "methodId", p."bankId", m.name AS method, m.icon AS "methodIcon", b.name AS bank,
       coalesce(c."businessName", ch.name) AS party,
       coalesce(d.description, '') AS description, d."incomeType"::text AS type,
       d."salesChannelId"

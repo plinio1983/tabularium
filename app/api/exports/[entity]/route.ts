@@ -2,8 +2,10 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { createCsv, csvDownload } from '@/lib/csv-export';
+import {exportReceiptCsv, parseReceiptCsv, receiptCsvLimit} from '@/lib/receipt-csv';
+import {receiptInclude, receiptToCsvRow} from '@/lib/receipt-import';
 
-const supportedEntities = ['incomes', 'expenses', 'suppliers', 'clients', 'recurring-expenses'] as const;
+const supportedEntities = ['incomes', 'expenses', 'suppliers', 'clients', 'recurring-expenses', 'receipts'] as const;
 type ExportEntity = typeof supportedEntities[number];
 
 function selectedIds(formData: FormData) {
@@ -11,7 +13,7 @@ function selectedIds(formData: FormData) {
     formData.getAll('ids')
       .map(value => Number(value))
       .filter(value => Number.isInteger(value) && value > 0)
-  )].slice(0, 5000);
+  )];
 }
 
 function filename(entity: ExportEntity) {
@@ -32,8 +34,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
   const entity = rawEntity as ExportEntity;
   const ids = selectedIds(await request.formData());
   if (!ids.length) return NextResponse.json({ error: 'Seleziona almeno un record' }, { status: 400 });
+  if (ids.length > (entity === 'receipts' ? receiptCsvLimit : 5000)) return NextResponse.json({error: `Seleziona al massimo ${entity === 'receipts' ? receiptCsvLimit : 5000} record.`}, {status: 400});
   const workspaceId = access.current.workspace.id;
   const companyId = access.current.company.id;
+
+  if (entity === 'receipts') {
+    const records = await prisma.income.findMany({where: {id: {in: ids}, workspaceId, companyId, incomeType: 'CASH_REGISTER'}, include: receiptInclude, orderBy: [{creditDate: 'desc'}, {id: 'desc'}]});
+    if (records.length !== ids.length) return NextResponse.json({error: 'Uno o più scontrini selezionati non sono disponibili nella società corrente.'}, {status: 404});
+    try {
+      const csv = exportReceiptCsv(records.map(receiptToCsvRow));
+      const parsed = parseReceiptCsv(csv);
+      const invalidIndex = parsed.findIndex(row => row.error);
+      if (invalidIndex !== -1) throw new Error(`Scontrino #${records[invalidIndex].id}: ${parsed[invalidIndex].error}`);
+      return csvDownload(csv, filename(entity));
+    }
+    catch (error) {return NextResponse.json({error: error instanceof Error ? error.message : 'Esportazione non completata'}, {status: 409});}
+  }
 
   if (entity === 'incomes') {
     const records = await prisma.income.findMany({

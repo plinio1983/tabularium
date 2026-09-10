@@ -1,8 +1,9 @@
 'use client';
 
-import {useEffect, useState, type ReactNode} from 'react';
-import {createPortal} from 'react-dom';
-import Link from 'next/link';
+import {useId, useState, type ReactNode} from 'react';
+import FilterDrawer from "./FilterDrawer";
+import EntityFormActions from "./EntityFormActions";
+import {useRouter} from "next/navigation";
 import FilterIcon from '@/components/FilterIcon';
 
 type Filters = Record<string, string | string[] | undefined>;
@@ -14,19 +15,12 @@ function FilterField({label, icon, children}: {label: string; icon: string; chil
 
 export default function EmployeeFiltersDrawer({filters}: {filters: Filters}) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  useEffect(() => {
-    if (!open) return;
-    const keydown = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false);
-    document.body.classList.add('drawer-open'); document.addEventListener('keydown', keydown);
-    return () => { document.body.classList.remove('drawer-open'); document.removeEventListener('keydown', keydown); };
-  }, [open]);
+  const formId = useId();
+  const router = useRouter();
 
-  const drawer = mounted ? createPortal(<div className={open ? 'filter-drawer-backdrop is-open' : 'filter-drawer-backdrop'} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-    <aside className="filter-drawer-panel record-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri dipendenti" onMouseDown={event => event.stopPropagation()}>
-      <div className="filter-drawer-header"><h3>Filtri dipendenti</h3><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button></div>
-      <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/employees" method="get">
+  const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri dipendenti" panelClassName="record-filter-drawer-panel"
+      actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push('/employees');}}/>}>
+      <form id={formId} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/employees" method="get">
         {value(filters, 'search') ? <input type="hidden" name="search" value={value(filters, 'search')}/> : null}
         <FilterField label="Nome" icon="♙"><input name="firstName" defaultValue={value(filters, 'firstName')} placeholder="Nome"/></FilterField>
         <FilterField label="Cognome" icon="♙"><input name="lastName" defaultValue={value(filters, 'lastName')} placeholder="Cognome"/></FilterField>
@@ -40,9 +34,7 @@ export default function EmployeeFiltersDrawer({filters}: {filters: Filters}) {
         <FilterField label="Assunzione a" icon="◷"><input type="date" name="hiredTo" defaultValue={value(filters, 'hiredTo')}/></FilterField>
         <FilterField label="Cessazione da" icon="◷"><input type="date" name="terminatedFrom" defaultValue={value(filters, 'terminatedFrom')}/></FilterField>
         <FilterField label="Cessazione a" icon="◷"><input type="date" name="terminatedTo" defaultValue={value(filters, 'terminatedTo')}/></FilterField>
-        <div className="filter-drawer-actions"><Link className="btn btn-md btn-default reset-button" href="/employees" onClick={() => setOpen(false)}>↺ Reset</Link><button className="btn btn-md btn-primary" type="submit">🔎 Filtra</button></div>
       </form>
-    </aside>
-  </div>, document.body) : null;
+    </FilterDrawer>;
   return <><button className="btn btn-sm btn-default app-filter-trigger bulk-direct-link bulk-filter-action" data-bulk-filter="true" type="button" onClick={() => setOpen(true)}><span className="btn-icon"><FilterIcon/></span><span className="app-filter-trigger-text">Filtri</span></button>{drawer}</>;
 }

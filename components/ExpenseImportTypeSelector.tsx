@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {useRouter} from "next/navigation";
 
 const importTypes = {
+  receipts: {label: "Scontrini (CSV)", fileName: "import-scontrini-template.csv", href: "/api/cash-register/receipts/import", note: "Importa scontrini con anteprima e controllo duplicati."},
   single_expenses: {
     label: "Lista spese singole",
     fileName: "import-spese-template.xlsx",
@@ -42,13 +44,14 @@ function validImportType(value?: string): value is ImportType {
 }
 
 export default function ExpenseImportTypeSelector({initialType}: {initialType?: string}) {
+  const router = useRouter();
   const [importType, setImportType] = useState<ImportType>(validImportType(initialType) ? initialType : "single_expenses");
   const current = importTypes[importType];
 
   useEffect(() => {
     const clearInput = document.querySelector<HTMLInputElement>('#expenseImportForm input[name="clearBeforeImport"]');
     if (!clearInput) return;
-    const disabled = importType === 'customers' || importType === 'suppliers';
+    const disabled = importType === 'receipts' || importType === 'customers' || importType === 'suppliers';
     clearInput.disabled = disabled;
     if (disabled) clearInput.checked = false;
   }, [importType]);
@@ -56,10 +59,15 @@ export default function ExpenseImportTypeSelector({initialType}: {initialType?: 
   return <div className="import-type-selector">
     <label>
       Tipo importazione
-      <select form="expenseImportForm" name="importType" value={importType} onChange={(event) => setImportType(event.currentTarget.value as ImportType)}>
+      <select form="expenseImportForm" name="importType" value={importType} onChange={(event) => {
+        const next = event.currentTarget.value as ImportType;
+        setImportType(next);
+        if (next === 'receipts' || importType === 'receipts') router.push(`/expenses/import?type=${next}`);
+      }}>
         <option value="single_expenses">Lista spese singole</option>
         <option value="recurring_definitions">Definizioni uscite ricorrenti</option>
         <option value="incomes">Incassi</option>
+        <option value="receipts">Scontrini (CSV)</option>
         <option value="customers">Clienti</option>
         <option value="suppliers">Fornitori</option>
       </select>

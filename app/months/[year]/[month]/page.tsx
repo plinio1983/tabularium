@@ -199,11 +199,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         />
         <section className="month-report-header">
             <div className="month-report-navigation">
-                <span>
-                    <Link className="btn btn-sm btn-default" href={backHref}>
-                        <span className="btn-icon">↩</span><span className="hidden-mobile"> Indietro</span>
-                    </Link>
-                </span>
+                {/*<span>*/}
+                {/*    <Link className="btn btn-sm btn-default" href={backHref}>*/}
+                {/*        <span className="btn-icon">↩</span><span className="hidden-mobile"> Indietro</span>*/}
+                {/*    </Link>*/}
+                {/*</span>*/}
 
                 <div className="trend-mode-toggle report-period-type-toggle" role="group" aria-label="Tipo di periodo">
                     <Link className={periodType === 'month' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${lastCompletedMonth.year}/${lastCompletedMonth.month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>Mese</Link>

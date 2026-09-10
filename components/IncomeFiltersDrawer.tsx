@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
-import Link from "next/link";
+import { useId, useState, type ReactNode } from "react";
+import FilterDrawer from "./FilterDrawer";
+import EntityFormActions from "./EntityFormActions";
+import {useRouter} from "next/navigation";
 import FilterIcon from "@/components/FilterIcon";
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {civilDateInTimeZone} from '@/lib/company-time';
@@ -158,26 +159,8 @@ export default function IncomeFiltersDrawer({
   const timeZone = useCompanyTimeZone();
   const companyNow = civilDateInTimeZone(timeZone);
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-
-    document.body.classList.add("drawer-open");
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.classList.remove("drawer-open");
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
+  const formId = useId();
+  const router = useRouter();
 
   function handleFiltersSubmit(event: React.FormEvent<HTMLFormElement>) {
     const form = event.currentTarget;
@@ -281,108 +264,93 @@ export default function IncomeFiltersDrawer({
     clearFields(form, ["dateQuick", "billingPeriodFrom", "billingPeriodTo", "billingPeriodQuick"]);
   }
 
-  const drawer = mounted ? createPortal(
-    <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel record-filter-drawer-panel transaction-filter-drawer-panel income-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri incassi" onMouseDown={(event) => event.stopPropagation()}>
-        <div className="filter-drawer-header">
-          <div>
-            <h3>Filtri incassi</h3>
-          </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
-        </div>
-
-        <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
-          <input type="hidden" name="customerQuick" value={inputDefault(filters, "customerQuick")}/>
-          <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
-          <fieldset className="filter-group filter-group-order-date">
-            <legend>Data ordine</legend>
-            <FilterField label="Selezione rapida data" icon="⌁"><select name="orderDateQuick" defaultValue={inputDefault(filters, "orderDateQuick")} onChange={handleOrderDateQuickChange}>
-              <option value="">Periodo personalizzato</option>
-              {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select></FilterField>
-            <FilterField label="Data ordine da" icon="◷"><input name="orderDateFrom" type="date" defaultValue={inputDefault(filters, "orderDateFrom")} onChange={handleOrderDateInputChange}/></FilterField>
-            <FilterField label="Data ordine a" icon="◷"><input name="orderDateTo" type="date" defaultValue={inputDefault(filters, "orderDateTo")} onChange={handleOrderDateInputChange}/></FilterField>
-          </fieldset>
-
-          <fieldset className="filter-group filter-group-fiscal">
-            <legend>Periodo fiscale</legend>
-            <FilterField label="Periodo fiscale rapido" icon="▦"><select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>
-              <option value="">Periodo personalizzato</option>
-              {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select></FilterField>
-            <FilterField label="Periodo fatturazione da" icon="◷"><input id="incomeBillingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
-            <FilterField label="Periodo fatturazione a" icon="◷"><input id="incomeBillingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
-          </fieldset>
-
-          <fieldset className="filter-group filter-group-order-date">
-            <legend>Scadenza</legend>
-            <FilterField label="Data scadenza da" icon="◷"><input name="dueDateFrom" type="date" defaultValue={inputDefault(filters, "dueDateFrom")} /></FilterField>
-            <FilterField label="Data scadenza a" icon="◷"><input name="dueDateTo" type="date" defaultValue={inputDefault(filters, "dueDateTo")} /></FilterField>
-          </fieldset>
-
-          <fieldset className="filter-group filter-group-order-date">
-            <legend>Date accredito</legend>
-            <FilterField label="Selezione rapida data" icon="⌁"><select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter} onChange={handleCreditDateQuickChange}>
-              <option value="">Periodo personalizzato</option>
-              {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select></FilterField>
-            <FilterField label="Data accredito da" icon="◷"><input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} onChange={handleCreditDateInputChange} /></FilterField>
-            <FilterField label="Data accredito a" icon="◷"><input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} onChange={handleCreditDateInputChange} /></FilterField>
-          </fieldset>
-
-          <FilterField label="Canale vendita" icon="◇"><select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>
-            <option value="">Tutti</option>
-            {salesChannels.map(value => <option key={value.id} value={value.name}>{value.icon ? `${value.icon} ` : ''}{value.name}</option>)}
+  const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri incassi" panelClassName="record-filter-drawer-panel transaction-filter-drawer-panel income-filter-drawer-panel"
+    actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push('/incomes');}}/>}>
+      <form id={formId} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        <input type="hidden" name="customerQuick" value={inputDefault(filters, "customerQuick")}/>
+        <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
+        <fieldset className="filter-group filter-group-order-date">
+          <legend>Data ordine</legend>
+          <FilterField label="Selezione rapida data" icon="⌁"><select name="orderDateQuick" defaultValue={inputDefault(filters, "orderDateQuick")} onChange={handleOrderDateQuickChange}>
+            <option value="">Periodo personalizzato</option>
+            {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select></FilterField>
+          <FilterField label="Data ordine da" icon="◷"><input name="orderDateFrom" type="date" defaultValue={inputDefault(filters, "orderDateFrom")} onChange={handleOrderDateInputChange}/></FilterField>
+          <FilterField label="Data ordine a" icon="◷"><input name="orderDateTo" type="date" defaultValue={inputDefault(filters, "orderDateTo")} onChange={handleOrderDateInputChange}/></FilterField>
+        </fieldset>
 
-          <FilterField label="Importo" icon="€"><input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></FilterField>
-
-          <FilterField label="Metodo pagamento" icon="●"><select name="paymentMethod" defaultValue={inputDefault(filters, "paymentMethod")}>
-            <option value="">Tutti</option>
-            {paymentMethods.map(value => <option key={value.id} value={value.name}>{value.icon ?? '  •  '} {value.name}</option>)}
+        <fieldset className="filter-group filter-group-fiscal">
+          <legend>Periodo fiscale</legend>
+          <FilterField label="Periodo fiscale rapido" icon="▦"><select id="incomeBillingPeriodQuick" name="billingPeriodQuick" defaultValue={quickBillingPeriodFilter} onChange={handleBillingQuickChange}>
+            <option value="">Periodo personalizzato</option>
+            {quickBillingPeriodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select></FilterField>
+          <FilterField label="Periodo fatturazione da" icon="◷"><input id="incomeBillingPeriodFrom" name="billingPeriodFrom" type="month" defaultValue={billingPeriodFromFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
+          <FilterField label="Periodo fatturazione a" icon="◷"><input id="incomeBillingPeriodTo" name="billingPeriodTo" type="month" defaultValue={billingPeriodToFilter} onChange={handleBillingPeriodInputChange} /></FilterField>
+        </fieldset>
 
-          <FilterField label="Canale accredito" icon="▣"><select name="creditChannel" defaultValue={inputDefault(filters, "creditChannel")}>
-            <option value="">Tutti</option>
-            {banks.map(value => <option key={value.id} value={value.name}>{value.name}</option>)}
+        <fieldset className="filter-group filter-group-order-date">
+          <legend>Scadenza</legend>
+          <FilterField label="Data scadenza da" icon="◷"><input name="dueDateFrom" type="date" defaultValue={inputDefault(filters, "dueDateFrom")} /></FilterField>
+          <FilterField label="Data scadenza a" icon="◷"><input name="dueDateTo" type="date" defaultValue={inputDefault(filters, "dueDateTo")} /></FilterField>
+        </fieldset>
+
+        <fieldset className="filter-group filter-group-order-date">
+          <legend>Date accredito</legend>
+          <FilterField label="Selezione rapida data" icon="⌁"><select id="incomeDateQuick" name="dateQuick" defaultValue={quickDateFilter} onChange={handleCreditDateQuickChange}>
+            <option value="">Periodo personalizzato</option>
+            {quickDateOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select></FilterField>
+          <FilterField label="Data accredito da" icon="◷"><input id="creditDateFrom" name="creditDateFrom" type="date" defaultValue={creditDateFromDefault} onChange={handleCreditDateInputChange} /></FilterField>
+          <FilterField label="Data accredito a" icon="◷"><input id="creditDateTo" name="creditDateTo" type="date" defaultValue={creditDateToDefault} onChange={handleCreditDateInputChange} /></FilterField>
+        </fieldset>
 
-          <FilterField label="Fiscale" icon="%"><select name="fiscal" defaultValue={inputDefault(filters, "fiscal")}>
-            <option value="">Tutti</option>
-            <option value="yes">Si</option>
-            <option value="no">No</option>
-          </select></FilterField>
+        <FilterField label="Canale vendita" icon="◇"><select name="salesChannel" defaultValue={inputDefault(filters, "salesChannel")}>
+          <option value="">Tutti</option>
+          {salesChannels.map(value => <option key={value.id} value={value.name}>{value.icon ? `${value.icon} ` : ''}{value.name}</option>)}
+        </select></FilterField>
 
-          <FilterField label="Stato accredito" icon="✓"><select name="creditStatus" defaultValue={inputDefault(filters, "creditStatus")}>
-            <option value="">Tutti</option>
-            <option value="DA_ACCREDITARE">Da accreditare</option>
-            <option value="PARZIALE">Accreditato parzialmente</option>
-            <option value="SCADUTO">Scaduto</option>
-            <option value="ACCREDITATO">Accreditato</option>
-          </select></FilterField>
+        <FilterField label="Importo" icon="€"><input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></FilterField>
 
-          <FilterField label="Stato fattura" icon="▤"><select name="invoiceStatus" defaultValue={inputDefault(filters, "invoiceStatus") || inputDefault(filters, "invoiceStatusMode")}>
-            <option value="">Tutti</option>
-            {invoiceStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select></FilterField>
+        <FilterField label="Metodo pagamento" icon="●"><select name="paymentMethod" defaultValue={inputDefault(filters, "paymentMethod")}>
+          <option value="">Tutti</option>
+          {paymentMethods.map(value => <option key={value.id} value={value.name}>{value.icon ?? '  •  '} {value.name}</option>)}
+        </select></FilterField>
 
-          <FilterField label="IVA" icon="%"><select name="vatRate" defaultValue={inputDefault(filters, "vatRate")}>
-            <option value="">Tutte</option>
-            <option value="0">0%</option>
-            <option value="4">4%</option>
-            <option value="10">10%</option>
-            <option value="22">22%</option>
-          </select></FilterField>
+        <FilterField label="Canale accredito" icon="▣"><select name="creditChannel" defaultValue={inputDefault(filters, "creditChannel")}>
+          <option value="">Tutti</option>
+          {banks.map(value => <option key={value.id} value={value.name}>{value.name}</option>)}
+        </select></FilterField>
 
-          <div className="filter-drawer-actions">
-            <Link className="btn btn-md btn-default reset-button" href="/incomes" onClick={() => setOpen(false)}><span className="btn-icon">↺</span> Reset</Link>
-            <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">🔎</span> Filtra</button>
-          </div>
-        </form>
-      </aside>
-    </div>,
-    document.body
-  ) : null;
+        <FilterField label="Fiscale" icon="%"><select name="fiscal" defaultValue={inputDefault(filters, "fiscal")}>
+          <option value="">Tutti</option>
+          <option value="yes">Si</option>
+          <option value="no">No</option>
+        </select></FilterField>
+
+        <FilterField label="Stato accredito" icon="✓"><select name="creditStatus" defaultValue={inputDefault(filters, "creditStatus")}>
+          <option value="">Tutti</option>
+          <option value="DA_ACCREDITARE">Da accreditare</option>
+          <option value="PARZIALE">Accreditato parzialmente</option>
+          <option value="SCADUTO">Scaduto</option>
+          <option value="ACCREDITATO">Accreditato</option>
+        </select></FilterField>
+
+        <FilterField label="Stato fattura" icon="▤"><select name="invoiceStatus" defaultValue={inputDefault(filters, "invoiceStatus") || inputDefault(filters, "invoiceStatusMode")}>
+          <option value="">Tutti</option>
+          {invoiceStatusOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select></FilterField>
+
+        <FilterField label="IVA" icon="%"><select name="vatRate" defaultValue={inputDefault(filters, "vatRate")}>
+          <option value="">Tutte</option>
+          <option value="0">0%</option>
+          <option value="4">4%</option>
+          <option value="10">10%</option>
+          <option value="22">22%</option>
+        </select></FilterField>
+
+      </form>
+    </FilterDrawer>;
 
   return <>
     <button

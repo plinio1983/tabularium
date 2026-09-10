@@ -240,18 +240,33 @@ body.drawer-open {
 }
 
 .filter-drawer-actions {
-  position: sticky;
-  bottom: -12px;
   display: flex;
   gap: 10px;
-  padding: 14px 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .70), #fff 34%);
 }
 
 .filter-drawer-actions .btn {
   flex: 1 1 auto;
   justify-content: center;
   text-align: center;
+}
+
+// The fields scroll independently; the shared action bar always occupies the last row.
+.filter-drawer-panel.filter-drawer-with-footer {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+
+  > form { min-height: 0; }
+
+  > .filter-drawer-actions {
+    position: static;
+    margin: 0;
+    padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--card);
+
+    .btn { min-height: 44px; min-width: 0; }
+  }
 }
 
 .recurring-expenses-mobile-list {
@@ -1790,13 +1805,6 @@ body.drawer-open {
   font-size: 13px;
   font-weight: 800;
 }
-
-//.filter-drawer-actions {
-//  .reset-button {
-//    width: 100%;
-//    max-width: none;
-//  }
-//}
 
 .compact-expenses-table {
   font-size: 12px;

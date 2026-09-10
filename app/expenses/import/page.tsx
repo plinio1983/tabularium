@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import ReceiptCsvImport from '@/components/ReceiptCsvImport';
 import ExpenseImportTypeSelector from '@/components/ExpenseImportTypeSelector';
 
 function param(params: Record<string, string | string[] | undefined>, key: string) {
@@ -28,6 +29,11 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
     suppliers: { singular: 'fornitore', plural: 'Fornitori', listHref: '/suppliers' }
   };
   const entity = entityLabels[importType] ?? entityLabels.single_expenses;
+  if (importType === 'receipts') return <div className="grid import-page">
+    <div className="toolbar-card import-hero-card"><div><h2>Importa dati</h2><p className="muted">Importazione scontrini con anteprima.</p></div><ExpenseImportTypeSelector initialType="receipts"/></div>
+    <ReceiptCsvImport/>
+  </div>;
+
 
   return <div className="grid import-page">
     <div className="toolbar-card import-hero-card">
@@ -101,7 +107,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
           <input type="checkbox" name="clearBeforeImport" />
           <span>
             <strong>Elimina i record esistenti prima di importare</strong>
-            <small className="muted">Si applica a spese, definizioni ricorrenti e incassi. Clienti e fornitori vengono sempre aggiornati senza eliminazioni.</small>
+            <small className="muted">Si applica a spese, definizioni ricorrenti e incassi standard. Gli scontrini vengono conservati. Clienti e fornitori vengono sempre aggiornati senza eliminazioni.</small>
           </span>
         </label>
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
-import Link from "next/link";
+import { useId, useState, type ReactNode } from "react";
+import FilterDrawer from "./FilterDrawer";
+import EntityFormActions from "./EntityFormActions";
+import {useRouter} from "next/navigation";
 import FilterIcon from "@/components/FilterIcon";
 
 type Props = {
@@ -23,56 +24,22 @@ function FilterField({label, icon, children}: {label: string; icon: string; chil
 
 export default function SupplierFiltersDrawer({ filters }: Props) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const formId = useId();
+  const router = useRouter();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri fornitori" panelClassName="record-filter-drawer-panel"
+      actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push('/suppliers');}}/>}>
+      <form id={formId} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/suppliers" method="get">
+        <FilterField label="Ragione sociale" icon="◇"><input name="businessName" defaultValue={inputDefault(filters, "businessName")} /></FilterField>
+        <FilterField label="Referente" icon="♙"><input name="alias" defaultValue={inputDefault(filters, "alias")} /></FilterField>
+        <FilterField label="Email" icon="@"><input name="email" type="email" defaultValue={inputDefault(filters, "email")} /></FilterField>
+        <FilterField label="P.IVA / C.F." icon="▤"><input name="vatNumber" defaultValue={inputDefault(filters, "vatNumber")} /></FilterField>
+        <FilterField label="IBAN" icon="▣"><input name="iban" defaultValue={inputDefault(filters, "iban")} /></FilterField>
+        <FilterField label="PEC" icon="✉"><input name="pec" type="email" defaultValue={inputDefault(filters, "pec")} /></FilterField>
+        <FilterField label="Cod. SDI" icon="#"><input name="taxCodeSdi" defaultValue={inputDefault(filters, "taxCodeSdi")} /></FilterField>
 
-  useEffect(() => {
-    if (!open) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-
-    document.body.classList.add("drawer-open");
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.classList.remove("drawer-open");
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
-
-  const drawer = mounted ? createPortal(
-    <div className={open ? "filter-drawer-backdrop is-open" : "filter-drawer-backdrop"} onMouseDown={() => setOpen(false)} aria-hidden={!open}>
-      <aside className="filter-drawer-panel record-filter-drawer-panel" role="dialog" aria-modal="true" aria-label="Filtri fornitori" onMouseDown={(event) => event.stopPropagation()}>
-        <div className="filter-drawer-header">
-          <div>
-            <h3>Filtri fornitori</h3>
-            {/*<p className="muted">Cerca per ragione sociale, alias, contatti e codice fiscale/SDI.</p>*/}
-          </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button>
-        </div>
-
-        <form key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/suppliers" method="get">
-          <FilterField label="Ragione sociale" icon="◇"><input name="businessName" defaultValue={inputDefault(filters, "businessName")} /></FilterField>
-          <FilterField label="Referente" icon="♙"><input name="alias" defaultValue={inputDefault(filters, "alias")} /></FilterField>
-          <FilterField label="Email" icon="@"><input name="email" type="email" defaultValue={inputDefault(filters, "email")} /></FilterField>
-          <FilterField label="P.IVA / C.F." icon="▤"><input name="vatNumber" defaultValue={inputDefault(filters, "vatNumber")} /></FilterField>
-          <FilterField label="IBAN" icon="▣"><input name="iban" defaultValue={inputDefault(filters, "iban")} /></FilterField>
-          <FilterField label="PEC" icon="✉"><input name="pec" type="email" defaultValue={inputDefault(filters, "pec")} /></FilterField>
-          <FilterField label="Cod. SDI" icon="#"><input name="taxCodeSdi" defaultValue={inputDefault(filters, "taxCodeSdi")} /></FilterField>
-
-          <div className="filter-drawer-actions">
-            <Link className="btn btn-md btn-default reset-button" href="/suppliers" onClick={() => setOpen(false)}><span className="btn-icon">↺</span> Reset</Link>
-            <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">🔎</span> Filtra</button>
-          </div>
-        </form>
-      </aside>
-    </div>,
-    document.body
-  ) : null;
+      </form>
+    </FilterDrawer>;
 
   return <>
     <button className="btn btn-sm btn-default app-filter-trigger bulk-direct-link bulk-filter-action" data-bulk-filter="true" type="button" onClick={() => setOpen(true)}>

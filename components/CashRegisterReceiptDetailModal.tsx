@@ -70,16 +70,13 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
             if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last.focus();}
             if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first.focus();}
         }}>
-        <div className="modal-card modal-card-wide record-detail-document cash-register-receipt-detail-card" ref={cardRef}>
-            <div className="record-detail-action-row">
-                <div className="left-side"><h3 id={titleId} className="record-detail-kicker">Scontrino #{receiptId}</h3></div>
-                <div className="right-side">
-                    {receipt ? <Link className="btn btn-sm btn-default" href={`/incomes/cash-register?editId=${receipt.id}&returnTo=${encodeURIComponent(returnTo)}`}>
-                        <span aria-hidden="true">✎</span> Modifica
-                    </Link> : null}
-                    <button ref={closeRef} className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}>×</button>
+        <div className="modal-card record-detail-document cash-register-receipt-detail-card" ref={cardRef}>
+            <header className="record-detail-section">
+                <div className="modal-title">
+                    <h3 id={titleId} className="record-detail-kicker">Scontrino #{receiptId}</h3>
+                    <button ref={closeRef} className="btn btn-default modal-close-button" type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}>×</button>
                 </div>
-            </div>
+            </header>
             {!receipt && !error ? <div className="record-detail-section"><p role="status">Caricamento scontrino…</p></div> : null}
             {error ? <div className="record-detail-section" role="alert"><p className="inline-form-error">{error}</p><button className="btn btn-sm btn-default" type="button" onClick={() => setRetry(value => value + 1)}>Riprova</button></div> : null}
             {receipt ? <>
@@ -102,16 +99,22 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
                 </section>
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading"><div><h2>Dati incasso</h2><p>Data, canale e accredito dello scontrino.</p></div></div>
-                    <div className="cash-register-receipt-detail-grid">
+                    <div>
                         {[
                             ['Data e ora', new Intl.DateTimeFormat('it-IT', {dateStyle: 'long', timeStyle: 'short', timeZone}).format(new Date(receipt.creditDate))],
                             ['Canale di vendita', receipt.salesChannel],
                             ['Metodo di pagamento', receipt.paymentMethod],
                             ['Banca / conto di accredito', receipt.bank]
-                        ].map(([label, value]) => <div className="record-detail-item" key={label}><span>{label}</span><strong>{value || '—'}</strong></div>)}
+                        ].map(([label, value]) => <div className="record-detail-item compact" key={label}><span>{label}</span><strong>{value || '—'}</strong></div>)}
                     </div>
                 </section>
             </> : null}
+            <footer className="record-detail-section record-detail-section-actions">
+                <div className="actions-row form-actions-row">
+                    {receipt ? <Link className="btn btn-md btn-primary" href={`/incomes/cash-register?editId=${receipt.id}&returnTo=${encodeURIComponent(returnTo)}`}><span className="btn-icon" aria-hidden="true">✎</span> Modifica</Link> : null}
+                    <button className="btn btn-md btn-default" type="button" onClick={onClose}><span className="btn-icon" aria-hidden="true">✕</span> Chiudi</button>
+                </div>
+            </footer>
         </div>
     </div>, document.body);
 }

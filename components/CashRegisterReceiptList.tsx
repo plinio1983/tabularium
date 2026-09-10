@@ -72,6 +72,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
             <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
         </div>
         {headerContent}
+        <p className="muted">Esporta CSV dalle azioni dopo aver selezionato gli scontrini. La lista mostra al massimo 1.000 record: restringi il periodo per gli archivi più grandi.</p>
         <BulkSelectionController/>
         <SortableTableController/>
         <form id={formId}
@@ -90,6 +91,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                         <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
+                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv" formAction="/api/exports/receipts" formMethod="post" data-confirm-label="Esporta CSV">⇩ Esporta CSV</button>
                         <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
                             <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
                         </button>
@@ -116,6 +118,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                 </div>
             </div>
             <div className="bulk-inner-container">
+                <Link className="btn btn-sm btn-default" href="/expenses/import?type=receipts">Importa CSV</Link>
                 <Link className="bulk-direct-link bulk-add-link btn btn-md btn-primary"
                       href="/incomes/cash-register"
                       data-bulk-new

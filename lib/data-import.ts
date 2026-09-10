@@ -255,7 +255,7 @@ export async function importIncomesWorkbook(buffer: Buffer, options: ImportOptio
     return Boolean(customer && amount > 0 && date);
   });
   if (options.clearBeforeImport && hasImportableRow) {
-    const deleted = await prisma.income.deleteMany({ where: { workspaceId: options.workspaceId, companyId: options.companyId } });
+    const deleted = await prisma.income.deleteMany({ where: { workspaceId: options.workspaceId, companyId: options.companyId, incomeType: 'STANDARD' } });
     result.deleted = deleted.count;
   }
 
