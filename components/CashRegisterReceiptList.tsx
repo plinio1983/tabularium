@@ -38,9 +38,10 @@ function receiptDate(value: string, timeZone: string) {
     return `${part('day')} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${part('hour')}:${part('minute')}`;
 }
 
-export default function CashRegisterReceiptList({receipts, filtersTrigger, returnTo}: {
+export default function CashRegisterReceiptList({receipts, filtersTrigger, headerContent, returnTo}: {
     receipts: Receipt[];
     filtersTrigger?: ReactNode;
+    headerContent?: ReactNode;
     returnTo: string
 }) {
     const timeZone = useCompanyTimeZone();
@@ -70,6 +71,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
         <div className="list-heading recurring-list-heading">
             <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
         </div>
+        {headerContent}
         <BulkSelectionController/>
         <SortableTableController/>
         <form id={formId}
@@ -204,6 +206,6 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, retur
             {!receipts.length ?
                 <div className="record-empty-state">Nessuno scontrino nel periodo selezionato.</div> : null}
         </div>
-        {detailId !== null ? <CashRegisterReceiptDetailModal key={detailId} receiptId={detailId} onClose={closeDetail}/> : null}
+        {detailId !== null ? <CashRegisterReceiptDetailModal key={detailId} receiptId={detailId} returnTo={returnTo} onClose={closeDetail}/> : null}
     </div>;
 }

@@ -195,17 +195,19 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             </SelectedButtonGroupScroller>
             <YearNavigationSelect options={yearLinks} year={billingYear}/>
         </nav>
-        <div className="recurring-active-filters">
-            <div>
-                <span className="recurring-active-filters-title">Filtri attivi</span>
-                <div className="recurring-active-filter-tags">{activeFilters.map(item =>
-                    <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div>
-            </div>
-            <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes/cash-register/receipts"><span className="btn-icon">×</span> Reset</Link>
-        </div>
         <CashRegisterReceiptTrendChart points={trend} annual={annual}/>
-        <LiveSearch name="search" label="Ricerca scontrino" placeholder="Descrizione scontrino"/>
         <CashRegisterReceiptList
+            headerContent={<>
+                <div className="recurring-active-filters">
+                    <div>
+                        <span className="recurring-active-filters-title">Filtri attivi</span>
+                        <div className="recurring-active-filter-tags">{activeFilters.map(item =>
+                            <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div>
+                    </div>
+                    <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes/cash-register/receipts"><span className="btn-icon">×</span> Reset</Link>
+                </div>
+                <LiveSearch name="search" label="Ricerca scontrino" placeholder="Descrizione scontrino"/>
+            </>}
             returnTo={receiptListReturnTo}
             filtersTrigger={<CashRegisterReceiptFiltersDrawer search={search} month={month} dateFrom={rawDateFrom} dateTo={rawDateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}
             receipts={receipts.map(receipt => ({

@@ -103,6 +103,6 @@ export default function LiveSearch({name, label, placeholder}: Props) {
         onCompositionEnd={event => { const next = event.currentTarget.value; cancelTimer(); timer.current = setTimeout(() => navigate(next), 300); }}/>
       <button className="btn btn-sm btn-main" type="submit" aria-label={label}><SearchIcon/></button>
     </div>
-    <span role="status" aria-live="polite" className="muted" style={{minHeight: '1.25em'}}>{pending || waiting ? 'Ricerca in corso…' : ''}</span>
+    <span role="status" aria-live="polite" className={pending || waiting ? 'muted' : 'sr-only'}>{pending || waiting ? 'Ricerca in corso…' : ''}</span>
   </form>;
 }

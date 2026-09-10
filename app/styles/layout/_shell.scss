@@ -1447,6 +1447,7 @@ body:has(.admin-login-page) .app-footer {
 }
 
 .user-menu-links a,
+.user-menu-links button,
 .user-menu-companies > button {
   display: flex;
   align-items: center;
@@ -1481,7 +1482,8 @@ body:has(.admin-login-page) .app-footer {
   }
 }
 
-.user-menu-links a {
+.user-menu-links a,
+.user-menu-links button {
   justify-content: flex-start;
 
   > svg {
@@ -1493,6 +1495,10 @@ body:has(.admin-login-page) .app-footer {
     min-width: 0;
     overflow-wrap: anywhere;
   }
+}
+
+.user-menu-logout {
+  margin: 0;
 }
 
 .user-menu-company-name {

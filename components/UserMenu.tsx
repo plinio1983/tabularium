@@ -109,6 +109,12 @@ export default function UserMenu({userName}: {userName?: string | null}) {
                 </Link>
                 <Link href="/settings/company-settings" onClick={() => setOpen(false)}>
                     <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 21V7h8v14M11 21V3h10v18M1 21h22M6 11h2m-2 4h2m6-8h3m-3 4h3m-3 4h3"/>
+                    </svg>
+                    <span>Società</span>
+                </Link>
+                <Link href="/settings/company-settings" onClick={() => setOpen(false)}>
+                    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 21v-4h6v4M9 7h1m4 0h1M9 11h1m4 0h1"/>
                     </svg>
                     <span>Dati Azienda</span>
@@ -130,6 +136,15 @@ export default function UserMenu({userName}: {userName?: string | null}) {
                     {!data ? <button type="button" onClick={() => setRetry(value => value + 1)}>Riprova</button> : null}
                 </div> : null}
             </div>
+            <hr/>
+            <form action="/logout" method="post" className="user-menu-links user-menu-logout">
+                <button type="submit">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                    </svg>
+                    <span>Logout</span>
+                </button>
+            </form>
         </div> : null}
     </div>;
 }

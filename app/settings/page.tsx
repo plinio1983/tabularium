@@ -76,11 +76,5 @@ export default async function SettingsPage() {
                 </Link>)}
         </nav>
 
-        <form action="/logout" method="post" className="settings-logout-form">
-            <button type="submit" className="btn btn-md btn-danger">
-                <span aria-hidden="true">↪</span>
-                Logout
-            </button>
-        </form>
     </div>;
 }

@@ -1,3 +1,4 @@
+import {OptionalPayrollMoneyFromForm} from '@/lib/payroll-money-schema';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
@@ -33,10 +34,10 @@ const RecurringExpenseSchema = z.object({
   notes: z.string().optional()
   ,taxAuthorityId: z.coerce.number().positive().optional().nullable()
   ,employeeId: z.coerce.number().positive().optional().nullable()
-  ,payrollNetAmount: z.coerce.number().nonnegative().optional().nullable()
-  ,payrollExtraCompensation: z.coerce.number().nonnegative().optional().nullable()
-  ,payrollGrossAmount: z.coerce.number().nonnegative().optional().nullable()
-  ,payrollEmployerCost: z.coerce.number().nonnegative().optional().nullable()
+  ,payrollNetAmount: OptionalPayrollMoneyFromForm
+  ,payrollExtraCompensation: OptionalPayrollMoneyFromForm
+  ,payrollGrossAmount: OptionalPayrollMoneyFromForm
+  ,payrollEmployerCost: OptionalPayrollMoneyFromForm
   ,payrollPeriodMode: z.enum(['FULL_MONTH', 'DAY_RANGE']).optional().nullable()
   ,payrollPeriodMonthOffset: z.coerce.number().int().min(-1).max(1).optional().nullable()
   ,payrollPeriodStartDay: z.coerce.number().min(1).max(31).optional().nullable()
@@ -81,7 +82,13 @@ export async function POST(request: Request) {
   const wantsJson = request.headers.get('accept')?.includes('application/json') || request.headers.get('x-requested-with') === 'fetch';
   const formData = await request.formData();
   const raw = Object.fromEntries(formData.entries());
-  const data = RecurringExpenseSchema.parse(raw);
+  const parsed = RecurringExpenseSchema.safeParse(raw);
+  if (!parsed.success) {
+    return wantsJson
+      ? NextResponse.json({error: parsed.error.issues[0]?.message || 'Controlla i dati della spesa ricorrente.', fields: parsed.error.flatten().fieldErrors}, {status: 400})
+      : redirectToPath(appendFlash(redirectTarget(request, '/recurring-expenses'), {error: 'invalid'}));
+  }
+  const data = parsed.data;
   let supplierRef: {id: number; businessName: string} | null = null;
   try {
     if (data.expenseType === 'STANDARD') supplierRef = await resolveExistingSupplierReference(data, current.workspace.id);
