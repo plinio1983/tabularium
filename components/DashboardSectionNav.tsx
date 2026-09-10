@@ -3,12 +3,9 @@
 import {useEffect, useRef, useState} from 'react';
 
 const sections = [
+  {id: 'da-gestire', label: 'Da gestire', icon: '!'},
   {id: 'sintesi', label: 'Sintesi', icon: '▦'},
-  {id: 'fiscale', label: 'Fiscale', icon: '%'},
   {id: 'andamento', label: 'Andamento', icon: '↗'},
-  {id: 'incassi', label: 'Incassi', icon: '€'},
-  {id: 'spese', label: 'Spese', icon: '◇'},
-  {id: 'mensile', label: 'Report mesi', icon: '▤'},
   {id: 'scadenze', label: 'Scadenze', icon: '◷'},
   {id: 'iva', label: 'IVA', icon: 'IVA'}
 ] as const;

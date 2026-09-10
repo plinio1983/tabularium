@@ -258,6 +258,7 @@ export default function ExpenseFiltersDrawer({
   const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri spese"
     actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push('/expenses');}}/>}>
       <form id={formId} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        {inputDefault(filters, "pending") ? <input type="hidden" name="pending" value={inputDefault(filters, "pending")}/> : null}
         <input type="hidden" name="supplierQuick" value={inputDefault(filters, "supplierQuick")}/>
         <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
         <fieldset className="filter-group filter-group-fiscal">

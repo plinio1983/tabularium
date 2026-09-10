@@ -267,6 +267,7 @@ export default function IncomeFiltersDrawer({
   const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri incassi" panelClassName="record-filter-drawer-panel transaction-filter-drawer-panel income-filter-drawer-panel"
     actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push('/incomes');}}/>}>
       <form id={formId} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
+        {inputDefault(filters, "pending") ? <input type="hidden" name="pending" value={inputDefault(filters, "pending")}/> : null}
         <input type="hidden" name="customerQuick" value={inputDefault(filters, "customerQuick")}/>
         <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
         <fieldset className="filter-group filter-group-order-date">

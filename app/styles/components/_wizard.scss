@@ -2109,6 +2109,7 @@
     flex: 1 1 auto;
     min-height: 0;
     max-height: 100%;
+    padding-top: 0;
     padding-bottom: calc(180px + env(safe-area-inset-bottom));
     overflow-x: hidden;
     overflow-y: auto;
@@ -2128,6 +2129,12 @@
 @media (max-width: 900px) {
   .app-wizard-modal-card:has(> .income-mobile-wizard) > .modal-title {
     flex: 0 0 auto;
+    margin-bottom: 10px;
+  }
+
+  .app-wizard-modal-card:has(> .income-mobile-wizard) > .modal-title p {
+    min-height: 0;
+    margin: 4px 0 0;
   }
 }
 

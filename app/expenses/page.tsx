@@ -1,3 +1,4 @@
+import {parseExpenseTask, matchesExpenseTask, expenseTaskLabels} from '@/lib/dashboard-tasks';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
 import {euro, moneyTone} from '@/lib/money';
@@ -596,6 +597,8 @@ export default async function ExpensesPage({searchParams}: {
     const companyNow = civilDateInTimeZone(current.company.timeZone);
     const rawFilters = (await searchParams) ?? {};
     const filters = stripFlashRecord(rawFilters);
+    const pendingTask = parseExpenseTask(inputDefault(filters, 'pending'));
+    const pendingNow = new Date();
     const currentQuery = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
         if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
@@ -614,14 +617,14 @@ export default async function ExpensesPage({searchParams}: {
     const useOrderDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useOrderDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomOrderDateFilter = useOrderDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo'));
-    const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasOrderDateFilter ? 'last_90_days' : '')) : '';
+    const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasOrderDateFilter && !pendingTask ? 'last_90_days' : '')) : '';
     const dateQuickSelectorValue = hasCustomOrderDateFilter ? 'custom' : quickDateFilter;
     const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
     const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom')) : '';
     const orderDateToDefault = useOrderDateFilter ? (quickDateRange?.to || inputDefault(filters, 'orderDateTo')) : '';
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || (
         !inputDefault(filters, 'billingPeriodFrom') && !inputDefault(filters, 'billingPeriodTo') && !inputDefault(filters, 'period')
-            ? 'last_90_days'
+            && !pendingTask ? 'last_90_days'
             : ''
     )) : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
@@ -680,6 +683,7 @@ export default async function ExpensesPage({searchParams}: {
     const attachmentsFilter = inputDefault(filters, 'attachments');
     const totalsFilterHref = (extraFilters: Record<string, string>) => {
         const query = new URLSearchParams();
+        if (pendingTask) query.set('pending', pendingTask);
         if (useFiscalPeriodFilter) {
             if (billingPeriodFromFilter) query.set('billingPeriodFrom', billingPeriodFromFilter);
             if (billingPeriodToFilter) query.set('billingPeriodTo', billingPeriodToFilter);
@@ -731,6 +735,7 @@ export default async function ExpensesPage({searchParams}: {
     };
 
     const periodExpenses = expenses.filter(expense => {
+        if (pendingTask && !matchesExpenseTask(expense, pendingTask, pendingNow, current.company.timeZone)) return false;
         if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
         if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
         return true;
@@ -986,6 +991,11 @@ export default async function ExpensesPage({searchParams}: {
             defaultSavedMessage="Operazione completata."
             defaultErrorMessage="Impossibile completare l’operazione."
         />
+
+        {pendingTask ? <div className="card pending-list-banner" role="status">
+            <div><strong>Da gestire · {expenseTaskLabels[pendingTask]}</strong><p className="muted">Tutti i periodi, salvo ulteriori filtri selezionati.</p></div>
+            <Link className="btn btn-sm btn-default" href="/expenses">Rimuovi filtro pendenze</Link>
+        </div> : null}
 
         <div className="card record-list-card">
             <div className="filter-drawer-wrapper period-filter-drawer-wrapper">

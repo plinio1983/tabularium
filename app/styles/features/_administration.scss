@@ -98,12 +98,14 @@ table {
   }
 
   .cell-order-date {
-    width: 75px;
+    //width: 75px;
+    width: 8%;
     text-align: center;
   }
 
   .cell-billing-period {
-    width: 80px;
+    //width: 80px;
+    width: 8%;
     text-align: left;
   }
 
@@ -145,6 +147,7 @@ table {
   }
 
   .cell-residual {
+    width: 8%;
     text-align: right;
   }
 
@@ -173,7 +176,7 @@ table {
   }
 
   .cell-payment-state {
-    width: 10%;
+    width: 13%;
     text-align: center;
   }
 

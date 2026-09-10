@@ -2,6 +2,7 @@
 
 import {useMemo, useState} from 'react';
 import Link from 'next/link';
+import {reportChartMonthHref, type ReportChartPeriod} from '@/lib/report-analysis';
 import {
   buildIncomeChannelComparisonSeries,
   incomeChannelComparisonDomain,
@@ -92,14 +93,18 @@ function ChannelComparisonPlot({buckets, series, channelColors, mode, selectedIn
   </div>;
 }
 
-export default function IncomeSalesChannelTrendChart({initialData, availableYears}: {
+export default function IncomeSalesChannelTrendChart({initialData, availableYears, reportPeriod}: {
   initialData: IncomeChannelTrendData;
   availableYears: number[];
+  reportPeriod?: ReportChartPeriod;
 }) {
   const [data, setData] = useState(initialData);
   const [view, setView] = useState<View>('channels');
   const [comparisonMode, setComparisonMode] = useState<ComparisonMode>('index');
-  const [period, setPeriod] = useState<Period>('year');
+  const [localPeriod, setPeriod] = useState<Period>('year');
+  const period: Period = reportPeriod ? (reportPeriod.type === 'year' ? 'year' : `q${reportPeriod.quarter}` as Period) : localPeriod;
+  const monthlyBuckets = Boolean(reportPeriod) || period === 'year';
+  const detailHref = (from: string, to: string, channel?: string) => reportPeriod ? reportChartMonthHref(from, reportPeriod) : rangeHref(from, to, channel);
   const [selectedChannelIds, setSelectedChannelIds] = useState(() => new Set(initialData.channels.slice(0, 5).map(channel => channel.id)));
   const [selectedBucketIndex, setSelectedBucketIndex] = useState<number | null>(null);
   const [pinnedBucketIndex, setPinnedBucketIndex] = useState<number | null>(null);
@@ -107,10 +112,10 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
   const [error, setError] = useState('');
 
   const channelColors = useMemo(() => new Map(data.channels.map((channel, index) => [channel.id, colors[index % colors.length]])), [data.channels]);
-  const rawBuckets = period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
+  const rawBuckets = reportPeriod ? data.months.filter(bucket => reportPeriod.type === 'year' || Math.ceil(bucket.month / 3) === reportPeriod.quarter) : period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
   const today = new Date().toISOString().slice(0, 10);
   const currentYear = Number(today.slice(0, 4));
-  const buckets = data.year === currentYear ? rawBuckets.filter(bucket => bucket.from <= today) : rawBuckets;
+  const buckets = !reportPeriod && data.year === currentYear ? rawBuckets.filter(bucket => bucket.from <= today) : rawBuckets;
   const periodTotal = buckets.reduce((sum, bucket) => sum + bucket.total, 0);
   const periodCount = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
   const max = Math.max(...buckets.map(bucket => bucket.total), 1);
@@ -167,16 +172,16 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
   return <section id="incassi" className="income-channel-trend-card dashboard-anchor-section" aria-labelledby="income-channel-trend-title">
     <div className="income-channel-trend-heading">
       <div><h2 id="income-channel-trend-title">Andamento incassi per canale di vendita</h2>
-        <p className="muted">Confronto mensile degli incassi registrati per data di accredito.</p></div>
+        <p className="muted">{reportPeriod ? (reportPeriod.mode === 'fiscal' ? 'Entrate fiscali per mese di fatturazione.' : 'Accrediti effettivi per mese, coerenti con il totale del report.') : 'Confronto mensile degli incassi registrati per data di accredito.'}</p></div>
       <div className="income-channel-trend-controls">
         <div className="trend-mode-toggle" role="group" aria-label="Visualizzazione grafico">
           <button type="button" className={`trend-mode-button ${view === 'total' ? 'is-active' : ''}`} onClick={() => setView('total')}>Totale</button>
           <button type="button" className={`trend-mode-button ${view === 'channels' ? 'is-active' : ''}`} onClick={() => setView('channels')}>Per canale</button>
         </div>
-        <div className="trend-mode-toggle income-channel-period-toggle" role="group" aria-label="Periodo grafico">
+        {!reportPeriod ? <div className="trend-mode-toggle income-channel-period-toggle" role="group" aria-label="Periodo grafico">
           {([['year', 'Anno'], ['q1', 'Tri 1'], ['q2', 'Tri 2'], ['q3', 'Tri 3'], ['q4', 'Tri 4']] as const).map(([value, label]) =>
             <button type="button" key={value} className={`trend-mode-button ${period === value ? 'is-active' : ''}`} onClick={() => {setPeriod(value); setSelectedBucketIndex(null); setPinnedBucketIndex(null);}}>{label}</button>)}
-        </div>
+        </div> : null}
         {availableYears.length > 1 ? <select aria-label="Anno del grafico" value={data.year} disabled={loading} onChange={event => void changeYear(Number(event.currentTarget.value))}>
           {availableYears.map(year => <option value={year} key={year}>{year}</option>)}
         </select> : null}
@@ -187,7 +192,7 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
       <div><span>Totale periodo</span><strong>{money.format(periodTotal)}</strong></div>
       <div><span>Numero incassi</span><strong>{periodCount}</strong></div>
       <div><span>Canale principale</span><strong>{leading ? `${leading.icon ?? '•'} ${leading.name}` : '—'}</strong></div>
-      <div><span>{period === 'year' ? 'Mese migliore' : 'Settimana migliore'}</span><strong>{peak && peak.total > 0 ? `${peak.label} · ${money.format(peak.total)}` : '—'}</strong></div>
+      <div><span>{monthlyBuckets ? 'Mese migliore' : 'Settimana migliore'}</span><strong>{peak && peak.total > 0 ? `${peak.label} · ${money.format(peak.total)}` : '—'}</strong></div>
     </div>
 
     {error ? <p className="inline-warning">{error}</p> : null}
@@ -212,7 +217,7 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
           </div>
           <div className="income-channel-comparison-detail-list">{visibleSeries.map(channel => {
             const point = channel.points[displayedBucketIndex ?? 0];
-            return <Link href={rangeHref(selectedBucket.from, selectedBucket.to, channel.name)} key={channel.id}>
+            return <Link href={detailHref(selectedBucket.from, selectedBucket.to, channel.name)} key={channel.id}>
               <i style={{background: channelColors.get(channel.id)}}/><span>{channel.icon ?? '•'} {channel.name}</span><strong>{money.format(point?.amount ?? 0)}</strong>
               <small className={point?.previousChange != null && point.previousChange < 0 ? 'is-negative' : undefined}>{point?.indexValue == null ? 'Indice n.d.' : `Indice ${point.indexValue.toFixed(0)}`} · {point?.previousChange == null ? 'var. —' : `${percent.format(point.previousChange)}%`}</small>
             </Link>;
@@ -238,10 +243,10 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
         })}
       </div>
     </> : <div className={`income-channel-trend-scroll ${loading ? 'is-loading' : ''}`}>
-      <div className={`income-channel-trend-plot ${period === 'year' ? '' : 'is-quarter'}`} role="img" aria-label={`Andamento incassi ${data.year}, ${period === 'year' ? 'anno' : period}`}>
+      <div className={`income-channel-trend-plot ${monthlyBuckets ? '' : 'is-quarter'} ${reportPeriod?.type === 'quarter' ? 'is-report-quarter' : ''}`} role="img" aria-label={`Andamento incassi ${data.year}, ${period === 'year' ? 'anno' : period}`}>
         {buckets.map(bucket => <div className="income-channel-month" key={bucket.from}>
           <strong className="income-channel-month-value">{money.format(bucket.total)}</strong>
-          <div className="income-channel-bar-stage">{bucket.total > 0 ? <Link href={rangeHref(bucket.from, bucket.to)} className="income-channel-total-bar" style={{height: `${bucket.total / max * 100}%`}} title={`${bucket.label}: ${money.format(bucket.total)}`}/> : null}</div>
+          <div className="income-channel-bar-stage">{bucket.total > 0 ? <Link href={detailHref(bucket.from, bucket.to)} className="income-channel-total-bar" style={{height: `${bucket.total / max * 100}%`}} title={`${bucket.label}: ${money.format(bucket.total)}`}/> : null}</div>
           <span>{bucket.label}</span><small>{bucket.count} mov.</small>
         </div>)}
       </div>

@@ -1,3 +1,4 @@
+import {parseIncomeTask, matchesIncomeTask, incomeTaskLabels} from '@/lib/dashboard-tasks';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
 import {euro, moneyTone} from '@/lib/money';
@@ -558,6 +559,7 @@ export default async function IncomesPage({searchParams}: {
     const companyNow = civilDateInTimeZone(current.company.timeZone);
     const rawFilters = (await searchParams) ?? {};
     const filters = stripFlashRecord(rawFilters);
+    const pendingTask = parseIncomeTask(inputDefault(filters, 'pending'));
     const currentQuery = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
         if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
@@ -576,14 +578,14 @@ export default async function IncomesPage({searchParams}: {
     const useCreditDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
-    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasCreditDateFilter ? 'last_90_days' : '')) : '';
+    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasCreditDateFilter && !pendingTask ? 'last_90_days' : '')) : '';
     const dateQuickSelectorValue = hasCustomCreditDateFilter ? 'custom' : quickDateFilter;
     const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
     const creditDateFromDefault = useCreditDateFilter ? (quickDateRange?.from || inputDefault(filters, 'creditDateFrom')) : '';
     const creditDateToDefault = useCreditDateFilter ? (quickDateRange?.to || inputDefault(filters, 'creditDateTo')) : '';
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || (
         !inputDefault(filters, 'billingPeriodFrom') && !inputDefault(filters, 'billingPeriodTo') && !inputDefault(filters, 'billingPeriod')
-            ? 'last_90_days'
+            && !pendingTask ? 'last_90_days'
             : ''
     )) : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
@@ -638,6 +640,7 @@ export default async function IncomesPage({searchParams}: {
     const creditStatusFilter = inputDefault(filters, 'creditStatus');
     const totalsFilterHref = (extraFilters: Record<string, string>) => {
         const query = new URLSearchParams();
+        if (pendingTask) query.set('pending', pendingTask);
         if (useFiscalPeriodFilter) {
             if (billingPeriodFromFilter) query.set('billingPeriodFrom', billingPeriodFromFilter);
             if (billingPeriodToFilter) query.set('billingPeriodTo', billingPeriodToFilter);
@@ -669,6 +672,7 @@ export default async function IncomesPage({searchParams}: {
         return matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter, current.company.timeZone, true);
     };
     const periodIncomes = incomes.filter(income => {
+        if (pendingTask && !matchesIncomeTask(income, pendingTask)) return false;
         if (!matchesCreditDate(income)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
         return true;
@@ -860,7 +864,7 @@ export default async function IncomesPage({searchParams}: {
                 <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
             </div>
             <div className="toolbar-actions">
-                <Link className="btn btn-sm btn-default" href="/incomes/credits">Accrediti</Link>
+                {/*<Link className="btn btn-sm btn-default" href="/incomes/credits">Accrediti</Link>*/}
                 <Link className="btn btn-sm btn-ghost" href="/recurring-incomes">
                     <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti
                 </Link>
@@ -877,6 +881,11 @@ export default async function IncomesPage({searchParams}: {
             defaultSavedMessage="Operazione completata."
             defaultErrorMessage="Impossibile completare l’operazione."
         />
+
+        {pendingTask ? <div className="card pending-list-banner" role="status">
+            <div><strong>Da gestire · {incomeTaskLabels[pendingTask]}</strong><p className="muted">Tutti i periodi, salvo ulteriori filtri selezionati.</p></div>
+            <Link className="btn btn-sm btn-default" href="/incomes">Rimuovi filtro pendenze</Link>
+        </div> : null}
 
         <div className="card record-list-card">
             <div className="filter-drawer-wrapper period-filter-drawer-wrapper">

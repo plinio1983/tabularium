@@ -2029,22 +2029,3 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     outline-offset: -2px;
   }
 }
-
-// Use the shared full-screen modal and compact detail rows on mobile.
-.cash-register-receipt-detail-modal .cash-register-receipt-detail-card {
-  padding: 0;
-
-  .record-detail-section-actions { margin-top: auto; }
-
-  .record-detail-hero h2 {
-    padding-top: 0;
-    font-size: clamp(22px, 3vw, 30px);
-    overflow-wrap: anywhere;
-  }
-
-  @media (min-width: 761px) { width: min(840px, 100%); }
-
-  @media (max-width: 760px) {
-    .record-detail-hero { grid-template-columns: minmax(0, 1fr); }
-  }
-}

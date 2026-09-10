@@ -70,51 +70,74 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
             if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last.focus();}
             if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first.focus();}
         }}>
-        <div className="modal-card record-detail-document cash-register-receipt-detail-card" ref={cardRef}>
-            <header className="record-detail-section">
-                <div className="modal-title">
-                    <h3 id={titleId} className="record-detail-kicker">Scontrino #{receiptId}</h3>
-                    <button ref={closeRef} className="btn btn-default modal-close-button" type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}>×</button>
-                </div>
+        <div className="modal-card cash-register-receipt-detail-card" ref={cardRef}>
+            <header className="receipt-detail-header">
+                <span className="receipt-detail-symbol" aria-hidden="true"><ReceiptDetailIcon kind="receipt"/></span>
+                <div><p>Registratore di cassa</p><h2 id={titleId}>Scontrino <span>#{receiptId}</span></h2></div>
+                <button ref={closeRef} className="receipt-detail-close" type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
             </header>
-            {!receipt && !error ? <div className="record-detail-section"><p role="status">Caricamento scontrino…</p></div> : null}
-            {error ? <div className="record-detail-section" role="alert"><p className="inline-form-error">{error}</p><button className="btn btn-sm btn-default" type="button" onClick={() => setRetry(value => value + 1)}>Riprova</button></div> : null}
-            {receipt ? <>
-                <section className="record-detail-hero">
-                    <div className="record-detail-title-block">
-                        <p className="record-detail-kicker">Incasso da registratore di cassa</p>
-                        <h2>{receipt.description?.trim() || 'Scontrino senza descrizione'}</h2>
-                        <div className="record-detail-badge-row">
-                            <span className={`badge ${receipt.isFiscal ? 'tone-ok' : 'tone-neutral'}`}>{receipt.isFiscal ? 'Fiscale' : 'Non fiscale'}</span>
+            <div className="receipt-detail-body" aria-busy={!receipt && !error}>
+                {!receipt && !error ? <div className="receipt-detail-loading" role="status">
+                    <span className="receipt-detail-skeleton"/><span className="receipt-detail-skeleton"/>
+                    <p>Caricamento scontrino…</p>
+                </div> : null}
+                {error ? <div className="receipt-detail-error" role="alert">
+                    <span className="receipt-detail-error-icon" aria-hidden="true">!</span>
+                    <h3>Dettaglio non disponibile</h3><p>{error}</p>
+                    <button className="btn btn-md btn-default" type="button" onClick={() => setRetry(value => value + 1)}>Riprova</button>
+                </div> : null}
+                {receipt ? <>
+                    <section className="receipt-detail-total" aria-label="Importo e fiscalità">
+                        <div className="receipt-detail-status-row">
+                            <span className={`receipt-detail-status ${receipt.isFiscal ? 'is-fiscal' : 'is-non-fiscal'}`}>
+                                <span aria-hidden="true">{receipt.isFiscal ? '✓' : '—'}</span> {receipt.isFiscal ? 'Fiscale' : 'Non fiscale'}
+                            </span>
+                            <span className="receipt-detail-tax">{receipt.isFiscal ? `IVA ${receipt.vatRate}% inclusa` : 'IVA non applicabile'}</span>
                         </div>
-                    </div>
-                    <aside className="record-detail-amount-panel">
-                        <div className="record-detail-amount-panel-header-row">
-                            <span>{receipt.isFiscal ? 'IVA inclusa' : 'Importo incassato'}</span>
-                            {receipt.isFiscal ? <span className="badge">{receipt.vatRate}%</span> : null}
+                        <p className="receipt-detail-amount-label">Totale incassato</p>
+                        <strong className="receipt-detail-amount">{euro(receipt.amount)}</strong>
+                        <time className="receipt-detail-date" dateTime={receipt.creditDate}>
+                            {new Intl.DateTimeFormat('it-IT', {dateStyle: 'long', timeZone}).format(new Date(receipt.creditDate))}
+                            <span aria-hidden="true">·</span>
+                            <span>ore {new Intl.DateTimeFormat('it-IT', {hour: '2-digit', minute: '2-digit', timeZone}).format(new Date(receipt.creditDate))}</span>
+                        </time>
+                    </section>
+                    <section className="receipt-detail-information" aria-label="Dati dello scontrino">
+                        <div className="receipt-detail-description">
+                            <h3>Descrizione</h3>
+                            <p className={!receipt.description?.trim() ? 'is-empty' : undefined}>{receipt.description?.trim() || 'Nessuna descrizione inserita'}</p>
                         </div>
-                        <strong>{euro(receipt.amount)}</strong>
-                        {!receipt.isFiscal ? <span>IVA non applicabile</span> : null}
-                    </aside>
-                </section>
-                <section className="record-detail-section">
-                    <div className="record-detail-section-heading"><div><h2>Dati incasso</h2><p>Data, canale e accredito dello scontrino.</p></div></div>
-                    <div>
-                        {[
-                            ['Data e ora', new Intl.DateTimeFormat('it-IT', {dateStyle: 'long', timeStyle: 'short', timeZone}).format(new Date(receipt.creditDate))],
-                            ['Canale di vendita', receipt.salesChannel],
-                            ['Metodo di pagamento', receipt.paymentMethod],
-                            ['Banca / conto di accredito', receipt.bank]
-                        ].map(([label, value]) => <div className="record-detail-item compact" key={label}><span>{label}</span><strong>{value || '—'}</strong></div>)}
-                    </div>
-                </section>
-            </> : null}
-            <footer className="record-detail-section record-detail-section-actions">
-                <div className="actions-row form-actions-row">
-                    {receipt ? <Link className="btn btn-md btn-primary" href={`/incomes/cash-register?editId=${receipt.id}&returnTo=${encodeURIComponent(returnTo)}`}><span className="btn-icon" aria-hidden="true">✎</span> Modifica</Link> : null}
-                    <button className="btn btn-md btn-default" type="button" onClick={onClose}><span className="btn-icon" aria-hidden="true">✕</span> Chiudi</button>
-                </div>
+                        <dl className="receipt-detail-facts">
+                            {([
+                                ['channel', 'Canale di vendita', receipt.salesChannel],
+                                ['payment', 'Metodo di pagamento', receipt.paymentMethod],
+                                ['bank', 'Conto di accredito', receipt.bank]
+                            ] as const).map(([kind, label, value]) => <div className={`receipt-detail-fact is-${kind}`} key={kind}>
+                                <dt><span className="receipt-detail-fact-icon" aria-hidden="true"><ReceiptDetailIcon kind={kind}/></span>{label}</dt>
+                                <dd>{value?.trim() || 'Non specificato'}</dd>
+                            </div>)}
+                        </dl>
+                    </section>
+                </> : null}
+            </div>
+            <footer className="receipt-detail-footer">
+                <button className="btn btn-md btn-default" type="button" onClick={onClose}>Chiudi</button>
+                {receipt ? <Link className="btn btn-md btn-primary" href={`/incomes/cash-register?editId=${receipt.id}&returnTo=${encodeURIComponent(returnTo)}`}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m16 4 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/></svg>
+                    Modifica scontrino
+                </Link> : null}
             </footer>
         </div>
     </div>, document.body);
+}
+
+function ReceiptDetailIcon({kind}: {kind: 'receipt' | 'channel' | 'payment' | 'bank'}) {
+    return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        {kind === 'receipt' ? <><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 7h6M9 11h6M9 15h3"/></> : null}
+        {kind === 'channel' ? <><path d="m3 9 2-5h14l2 5M4 13v7h16v-7M9 20v-6h6v6"/><path d="M3 9v1a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0V9H3Z"/></> : null}
+        {kind === 'payment' ? <><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h3"/></> : null}
+        {kind === 'bank' ? <><path d="m3 8 9-5 9 5H3ZM5 11v6m7-6v6m7-6v6M3 21h18M4 18h16"/></> : null}
+    </svg>;
 }

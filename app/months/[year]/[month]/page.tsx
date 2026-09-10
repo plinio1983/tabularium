@@ -4,13 +4,13 @@ import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
 import YearNavigationSelect from '@/components/YearNavigationSelect';
 import {prisma} from '@/lib/prisma';
 import {getMonthlyReport, getPeriodReport} from '@/lib/reports';
-import PeriodReportMovements from '@/components/PeriodReportMovements';
 import {monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {lastCompletedMonthInTimeZone, yearMonthInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import MonthComparisonPanel from '@/components/MonthComparisonPanel';
 import PeriodVatOverview from '@/components/PeriodVatOverview';
+import PeriodReportCharts from '@/components/PeriodReportCharts';
 import {comparisonPeriod, type MonthComparisonKind} from '@/lib/month-comparison';
 
 function capitalize(value: string) {
@@ -100,6 +100,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const periodQuery = periodType === 'month' ? '' : `&period=${periodType}`;
     const currentReportHref = `/months/${year}/${month}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}`;
     const periodLabel = periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno';
+    const periodTitle = periodType === 'year' ? 'dell’anno' : `del ${periodLabel}`;
+    const recordListQuery = new URLSearchParams({
+        billingPeriodFrom: monthValue(reportPeriods[0]),
+        billingPeriodTo: monthValue(reportPeriods[reportPeriods.length - 1])
+    }).toString();
     const fiscalTotals = report.summary;
     const metrics = [
         {label: mode === 'overall' ? 'Entrate' : 'Entrate fiscali', value: report.totals.totalRevenue},
@@ -331,16 +336,16 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             returnTo={backHref}
             isCurrentMonth={year === currentYear && month === currentMonth}
         /> : null}
-        <nav className="month-report-record-links" aria-label={`Movimenti del ${periodLabel}`}>
-            <Link className="card month-report-record-link is-expense" href="#report-expense-movements">
-                <span>{mode === 'overall' ? 'Pagamenti' : 'Uscite fiscali'} del {periodLabel}</span><strong aria-hidden="true">→</strong>
+        <nav className="month-report-record-links" aria-label={`Movimenti ${periodTitle}`}>
+            <Link className="card month-report-record-link is-expense" href={`/expenses?${recordListQuery}`}>
+                <span>Spese {periodTitle}</span><strong aria-hidden="true">→</strong>
             </Link>
-            <Link className="card month-report-record-link is-income" href="#report-income-movements">
-                <span>{mode === 'overall' ? 'Accrediti' : 'Entrate fiscali'} del {periodLabel}</span><strong aria-hidden="true">→</strong>
+            <Link className="card month-report-record-link is-income" href={`/incomes?${recordListQuery}`}>
+                <span>Incassi {periodTitle}</span><strong aria-hidden="true">→</strong>
             </Link>
         </nav>
-        {/*<PeriodReportMovements kind="expense" mode={mode} movements={report.expenseMovements} total={report.totals.totalExpenses} timeZone={current.company.timeZone} returnTo={currentReportHref}/>*/}
-        {/*<PeriodReportMovements kind="income" mode={mode} movements={report.incomeMovements} total={report.totals.totalRevenue} timeZone={current.company.timeZone} returnTo={currentReportHref}/>*/}
+        {periodType !== 'month' ? <PeriodReportCharts report={report} timeZone={current.company.timeZone}
+            period={{type: periodType, quarter, mode, returnTo: currentReportHref}}/> : null}
         {mode === 'fiscal' && periodType !== 'month' ? <PeriodVatOverview
             months={report.monthlyBreakdown}
             periodType={periodType}

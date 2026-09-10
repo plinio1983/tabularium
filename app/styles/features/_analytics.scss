@@ -26,7 +26,7 @@
   border-radius: 18px;
 
   @media (max-width: 576px) {
-    padding: 18px 12px;
+    padding: 18px 6px;
   }
 }
 
@@ -237,6 +237,15 @@
 
 .month-report-navigation > .year-navigation-select {
   justify-self: end;
+
+  @media (max-width: 760px) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    justify-self: stretch;
+    flex-direction: column;
+    align-items: self-start;
+  }
 }
 
 .month-report-month-button {
@@ -348,7 +357,6 @@
 }
 
 .month-report-page {
-
   .month-report-summary-grid > div {
     min-width: 0;
     padding: 12px 14px;
@@ -647,6 +655,16 @@
   margin-top: 0;
   font-size: 24px;
   line-height: 1.05;
+
+  @media (max-width: 760px) {
+    font-size: 22px;
+    text-align: right;
+  }
+  @media (max-width: 452px) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 .month-report-metric-percentage {
@@ -1533,6 +1551,11 @@ html, body {
   grid-auto-flow: column;
   grid-auto-columns: minmax(62px, 1fr);
   min-width: 920px;
+}
+
+.income-channel-trend-plot.is-report-quarter {
+  grid-template-columns: repeat(3, minmax(64px, 1fr));
+  min-width: 280px;
 }
 
 .income-channel-month {
@@ -5044,15 +5067,6 @@ html, body {
 }
 
 @media (max-width: 760px) {
-  .month-report-navigation > .year-navigation-select {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    width: 100%;
-    justify-self: stretch;
-  }
-}
-
-@media (max-width: 760px) {
   .month-report-navigation > .year-navigation-select select {
     width: 100%;
     height: 42px;
@@ -5086,13 +5100,6 @@ html, body {
 @media (max-width: 760px) {
   .month-report-metrics .month-report-value span {
     min-height: 0;
-  }
-}
-
-@media (max-width: 760px) {
-  .month-report-metrics .month-report-value strong {
-    font-size: 22px;
-    text-align: right;
   }
 }
 
@@ -5542,5 +5549,118 @@ html, body {
 
   .month-comparison-delta > span {
     grid-column: 1 / -1;
+  }
+}
+
+.dashboard-tasks h2 {
+  margin: 0;
+}
+
+.dashboard-tasks > div > p {
+  margin: 6px 0 16px;
+}
+
+.dashboard-task-list {
+  display: grid;
+}
+
+.dashboard-task-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(150px, auto) 20px;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 4px;
+  border-top: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.dashboard-task-row:hover {
+  background: #f8fafc;
+}
+
+.dashboard-task-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.dashboard-task-label {
+  font-weight: 750;
+}
+
+.dashboard-task-row small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.dashboard-task-count {
+  min-width: 38px;
+  padding: 5px 9px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 800;
+  background: #f1f5f9;
+}
+
+.dashboard-task-row.is-critical .dashboard-task-count {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.dashboard-task-row.is-pending .dashboard-task-count {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.dashboard-task-amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-tasks-note {
+  font-size: 12px;
+  margin: 14px 0 0;
+}
+
+.pending-list-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pending-list-banner p {
+  margin: 4px 0 0;
+}
+
+@media (max-width: 576px) {
+  .dashboard-task-row {
+    grid-template-columns: minmax(0, 1fr) auto 16px;
+    gap: 10px;
+  }
+  .dashboard-task-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .dashboard-task-count {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .dashboard-task-row > span:last-child {
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+  .dashboard-task-amount {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    text-align: left;
   }
 }

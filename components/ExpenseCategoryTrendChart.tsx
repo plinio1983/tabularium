@@ -2,6 +2,7 @@
 
 import {useMemo, useState} from 'react';
 import Link from 'next/link';
+import {reportChartMonthHref, type ReportChartPeriod} from '@/lib/report-analysis';
 import type {IncomeChannelTrendData} from '@/lib/income-channel-trend';
 
 type View = 'total' | 'categories';
@@ -24,11 +25,14 @@ function rangeHref(from: string, to: string, category?: string) {
   return `/expenses?${params.toString()}`;
 }
 
-export default function ExpenseCategoryTrendChart({data}: {data: IncomeChannelTrendData}) {
+export default function ExpenseCategoryTrendChart({data, reportPeriod}: {data: IncomeChannelTrendData; reportPeriod?: ReportChartPeriod}) {
   const [view, setView] = useState<View>('categories');
-  const [period, setPeriod] = useState<Period>('year');
+  const [localPeriod, setPeriod] = useState<Period>('year');
+  const period: Period = reportPeriod ? (reportPeriod.type === 'year' ? 'year' : `q${reportPeriod.quarter}` as Period) : localPeriod;
+  const monthlyBuckets = Boolean(reportPeriod) || period === 'year';
+  const detailHref = (from: string, to: string, category?: string) => reportPeriod ? reportChartMonthHref(from, reportPeriod) : rangeHref(from, to, category);
   const seriesColors = useMemo(() => new Map(data.channels.map((category, index) => [category.id, colors[index % colors.length]])), [data.channels]);
-  const buckets = period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
+  const buckets = reportPeriod ? data.months.filter(bucket => reportPeriod.type === 'year' || Math.ceil(bucket.month / 3) === reportPeriod.quarter) : period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
   const periodTotal = buckets.reduce((sum, bucket) => sum + bucket.total, 0);
   const periodCount = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
   const max = Math.max(...buckets.map(bucket => bucket.total), 1);
@@ -38,30 +42,30 @@ export default function ExpenseCategoryTrendChart({data}: {data: IncomeChannelTr
 
   return <section id="spese" className="income-channel-trend-card expense-category-trend-card dashboard-anchor-section" aria-labelledby="expense-category-trend-title">
     <div className="income-channel-trend-heading">
-      <div><h2 id="expense-category-trend-title">Andamento spese per categoria</h2><p className="muted">Confronto degli importi registrati per data della spesa.</p></div>
+      <div><h2 id="expense-category-trend-title">Andamento spese per categoria</h2><p className="muted">{reportPeriod ? (reportPeriod.mode === 'fiscal' ? 'Costi fiscali per mese di fatturazione.' : 'Pagamenti effettivi per mese, coerenti con il totale del report.') : 'Confronto degli importi registrati per data della spesa.'}</p></div>
       <div className="income-channel-trend-controls">
         <div className="trend-mode-toggle" role="group" aria-label="Visualizzazione grafico spese">
           <button type="button" className={`trend-mode-button ${view === 'total' ? 'is-active' : ''}`} onClick={() => setView('total')}>Totale</button>
           <button type="button" className={`trend-mode-button ${view === 'categories' ? 'is-active' : ''}`} onClick={() => setView('categories')}>Per categoria</button>
         </div>
-        <div className="trend-mode-toggle income-channel-period-toggle" role="group" aria-label="Periodo grafico spese">
+        {!reportPeriod ? <div className="trend-mode-toggle income-channel-period-toggle" role="group" aria-label="Periodo grafico spese">
           {([['year', 'Anno'], ['q1', 'Tri 1'], ['q2', 'Tri 2'], ['q3', 'Tri 3'], ['q4', 'Tri 4']] as const).map(([value, label]) => <button type="button" key={value} className={`trend-mode-button ${period === value ? 'is-active' : ''}`} onClick={() => setPeriod(value)}>{label}</button>)}
-        </div>
+        </div> : null}
       </div>
     </div>
     <div className="income-channel-trend-kpis">
       <div><span>Totale periodo</span><strong>{money.format(periodTotal)}</strong></div>
       <div><span>Numero spese</span><strong>{periodCount}</strong></div>
       <div><span>Categoria principale</span><strong>{leading ? `${leading.icon ?? '•'} ${leading.name}` : '—'}</strong></div>
-      <div><span>{period === 'year' ? 'Mese più oneroso' : 'Settimana più onerosa'}</span><strong>{peak && peak.total > 0 ? `${peak.label} · ${money.format(peak.total)}` : '—'}</strong></div>
+      <div><span>{monthlyBuckets ? 'Mese più oneroso' : 'Settimana più onerosa'}</span><strong>{peak && peak.total > 0 ? `${peak.label} · ${money.format(peak.total)}` : '—'}</strong></div>
     </div>
     <div className="income-channel-trend-scroll">
-      <div className={`income-channel-trend-plot ${period === 'year' ? '' : 'is-quarter'}`} role="img" aria-label={`Andamento spese ${data.year}, ${period === 'year' ? 'anno' : period}`}>
+      <div className={`income-channel-trend-plot ${monthlyBuckets ? '' : 'is-quarter'} ${reportPeriod?.type === 'quarter' ? 'is-report-quarter' : ''}`} role="img" aria-label={`Andamento spese ${data.year}, ${period === 'year' ? 'anno' : period}`}>
         {buckets.map(bucket => <div className="income-channel-month" key={bucket.from}>
           <strong className="income-channel-month-value">{money.format(bucket.total)}</strong>
           <div className="income-channel-bar-stage">
-            {bucket.total > 0 ? view === 'total' ? <Link href={rangeHref(bucket.from, bucket.to)} className="income-channel-total-bar expense-category-total-bar" style={{height: `${bucket.total / max * 100}%`}} title={`${bucket.label}: ${money.format(bucket.total)}`}/> :
-              <div className="income-channel-stacked-bar" style={{height: `${bucket.total / max * 100}%`}}>{bucket.channels.map(category => <Link key={category.id} href={rangeHref(bucket.from, bucket.to, category.name)} style={{height: `${category.total / bucket.total * 100}%`, background: seriesColors.get(category.id)}} title={`${category.name}, ${bucket.label}: ${money.format(category.total)}`}/>)}</div> : null}
+            {bucket.total > 0 ? view === 'total' ? <Link href={detailHref(bucket.from, bucket.to)} className="income-channel-total-bar expense-category-total-bar" style={{height: `${bucket.total / max * 100}%`}} title={`${bucket.label}: ${money.format(bucket.total)}`}/> :
+              <div className="income-channel-stacked-bar" style={{height: `${bucket.total / max * 100}%`}}>{bucket.channels.map(category => <Link key={category.id} href={detailHref(bucket.from, bucket.to, category.name)} style={{height: `${category.total / bucket.total * 100}%`, background: seriesColors.get(category.id)}} title={`${category.name}, ${bucket.label}: ${money.format(category.total)}`}/>)}</div> : null}
           </div>
           <span>{bucket.label}</span><small>{bucket.count} mov.</small>
         </div>)}
