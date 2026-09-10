@@ -71,23 +71,6 @@ export default function RecurringIncomesList({ items, filters = {} }: { items: a
   return <section className="card record-list-card recurring-expenses-card">
     <BulkSelectionController/>
     <div className="list-heading recurring-list-heading"><div><h2>Lista entrate</h2></div></div>
-    <script dangerouslySetInnerHTML={{ __html: `
-      document.addEventListener('click', function(event) {
-        const row = event.target.closest && event.target.closest('[data-recurring-income-row]');
-        if (!row || (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches)) return;
-        if (event.target.closest('a, button, input, select, textarea, label, summary, details')) return;
-        const href = row.getAttribute('data-row-href');
-        if (href) window.location.href = href;
-      });
-      document.addEventListener('keydown', function(event) {
-        if (event.key !== 'Enter' && event.key !== ' ') return;
-        const row = event.target && event.target.matches && event.target.matches('[data-recurring-income-row]') ? event.target : null;
-        if (!row || (window.matchMedia && !window.matchMedia('(min-width: 761px)').matches)) return;
-        event.preventDefault();
-        const href = row.getAttribute('data-row-href');
-        if (href) window.location.href = href;
-      });
-    ` }} />
         <LiveSearch name="search" label="Ricerca incasso ricorrente" placeholder="Cliente o descrizione"/>
     <p className="muted">Risultati mostrati: {items.length}</p>
     <MobileSortControl action="/recurring-incomes" currentValue={mobileSort} options={sortOptions} searchParams={filters} />
@@ -108,7 +91,7 @@ export default function RecurringIncomesList({ items, filters = {} }: { items: a
             const cadence = cadenceStyles[item.cadence] ?? { icon: '↻', className: 'tone-neutral' };
             const billingStyle = billingStyles[item.billingPeriodMode] ?? { icon: 'CAL', className: 'tone-neutral' };
             const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
-            return <tr key={item.id} className="clickable-desktop-row" data-recurring-income-row data-row-href={`/recurring-incomes/${item.id}/edit?returnTo=${returnTo}`} tabIndex={0}>
+            return <tr key={item.id} className="clickable-desktop-row" data-recurring-income-edit-id={item.id} aria-haspopup="dialog" aria-label={`Modifica entrata ricorrente ${item.id}`} tabIndex={0}>
               <td><span className={badgeClass(status.tone)}>{status.icon} {status.label}</span></td>
               <td className="recurring-supplier-cell" title={item.customer?.businessName ?? ''}><span className="recurring-table-supplier-icon">↻</span>{item.customer?.businessName ?? 'Nessun cliente'}</td>
               <td className="recurring-description-cell" title={item.description}>{item.description}</td>
@@ -126,7 +109,7 @@ export default function RecurringIncomesList({ items, filters = {} }: { items: a
         {mobileSortedItems.map(item => {
           const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
           const credit = item.isAutomaticCredit ? `${item.paymentMethod?.icon ?? '•'} ${item.paymentMethod?.name ?? 'Automatico'}` : 'Manuale';
-          return <Link className="recurring-mobile-item-shell recurring-income-mobile-item-shell recurring-mobile-item-link" href={`/recurring-incomes/${item.id}/edit?returnTo=${returnTo}`} key={item.id}>
+          return <Link data-recurring-income-edit-id={item.id} aria-haspopup="dialog" className="recurring-mobile-item-shell recurring-income-mobile-item-shell recurring-mobile-item-link" href={`/recurring-incomes/${item.id}/edit?returnTo=${returnTo}`} key={item.id}>
             <article className={item.isActive ? 'recurring-mobile-item recurring-mobile-item-active' : 'recurring-mobile-item recurring-mobile-item-disabled'}>
               <div className="recurring-mobile-top"><div className="recurring-mobile-main-title"><span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span><span className="badge tone-insurance">{cadenceLabels[item.cadence] ?? item.cadence}</span><span className="badge">{creditLabel(item)}</span></div><strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong></div>
               <div className="recurring-mobile-top"><strong>{item.customer?.businessName ?? 'Nessun cliente'}</strong><div className="recurring-mobile-right"><strong>{credit}</strong></div></div>

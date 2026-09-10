@@ -3,6 +3,7 @@ import {requireWorkspace} from '@/lib/auth';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import NewIncomePanel from '@/components/NewIncomePanel';
 import RecurringIncomesList from '@/components/RecurringIncomesList';
+import RecurringIncomeEditModal from '@/components/RecurringIncomeEditModal';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {stripFlashRecord} from '@/lib/flash';
 
@@ -60,6 +61,9 @@ export default async function RecurringIncomesPage({searchParams}: {
             created: 'Entrata ricorrente creata.',
             updated: 'Entrata ricorrente aggiornata.'
         }} errorMessages={{invalid: 'Controlla i dati inseriti.', not_found: 'Entrata ricorrente non trovata.'}}/>
-        <RecurringIncomesList items={items} filters={filters}/>
+        <RecurringIncomeEditModal items={items.map(({customer, salesChannel, paymentMethod, bank, ...item}) => ({...item, amount: item.amount.toString(), vatRate: item.vatRate.toString()}))}
+            channels={channels} customers={customers} methods={methods} banks={banks}>
+            <RecurringIncomesList items={items} filters={filters}/>
+        </RecurringIncomeEditModal>
     </div>;
 }

@@ -25,6 +25,7 @@ export default function RecurringIncomeForm({
                                                 action,
                                                 cancelHref,
                                                 onCancel,
+                                                onSaved,
                                                 onSwitchToSingle,
                                                 channels,
                                                 customers,
@@ -36,6 +37,7 @@ export default function RecurringIncomeForm({
     action: string;
     cancelHref: string;
     onCancel?: () => void;
+    onSaved?: () => void;
     onSwitchToSingle?: () => void;
     channels: Option[];
     customers: Customer[];
@@ -131,8 +133,11 @@ export default function RecurringIncomeForm({
                 const body = await response.json().catch(() => null);
                 throw new Error(body?.error ?? 'Salvataggio non riuscito');
             }
-            router.push(`${cancelHref}${cancelHref.includes('?') ? '&' : '?'}saved=updated`);
-            router.refresh();
+            if (onSaved) onSaved();
+            else {
+                router.push(`${cancelHref}${cancelHref.includes('?') ? '&' : '?'}saved=updated`);
+                router.refresh();
+            }
         } catch (cause) {
             setError(cause instanceof Error ? cause.message : 'Salvataggio non riuscito');
         } finally {

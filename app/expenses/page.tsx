@@ -1069,6 +1069,7 @@ export default async function ExpensesPage({searchParams}: {
                     <h2>Lista spese</h2>
                     <p className="muted">Risultati mostrati: {filteredExpenses.length}</p>
                 </div>
+                <Link className="btn btn-sm btn-default" href="/expenses/payments">Pagamenti</Link>
             </div>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">

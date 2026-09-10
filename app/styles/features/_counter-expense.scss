@@ -462,6 +462,20 @@
     display: flex !important;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
+  }
+
+  .cash-register-receipt-identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .cash-register-receipt-date > strong {
+    flex-shrink: 0;
   }
 }
 
@@ -476,9 +490,10 @@
 }
 
 @media (max-width: 760px) {
-  .cash-register-receipt-method {
+  .cash-register-receipt-mobile-description {
     min-width: 0;
     font-weight: 800;
+    overflow-wrap: anywhere;
   }
 }
 

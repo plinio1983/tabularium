@@ -8,6 +8,7 @@ type Props = {
   dateQuick: string;
   dateYear: string;
   useFiscalPeriodFilter?: boolean;
+  inactivePeriodLabel?: string;
   companyNow: Date;
   label: string;
   years?: string[];
@@ -15,10 +16,10 @@ type Props = {
   onOpenFilters: () => void;
 };
 
-export default function PeriodSelectorBox({dateQuick, dateYear, useFiscalPeriodFilter = false, companyNow, label, years: availableYears, onSelect, onOpenFilters}: Props) {
+export default function PeriodSelectorBox({dateQuick, dateYear, useFiscalPeriodFilter = false, inactivePeriodLabel, companyNow, label, years: availableYears, onSelect, onOpenFilters}: Props) {
   const [pendingQuickButton, setPendingQuickButton] = useState<string | null>(null);
-  useEffect(() => setPendingQuickButton(null), [dateQuick, dateYear]);
-  const currentQuickValue = useFiscalPeriodFilter ? '' : dateQuick || defaultQuickPeriod;
+  useEffect(() => setPendingQuickButton(null), [dateQuick, dateYear, inactivePeriodLabel]);
+  const currentQuickValue = useFiscalPeriodFilter || inactivePeriodLabel ? '' : dateQuick || defaultQuickPeriod;
   const currentQuickYear = dateYear || String(companyNow.getFullYear());
   const years = Array.from(new Set([...(availableYears ?? Array.from({length: 8}, (_, index) => String(companyNow.getFullYear() - index))), currentQuickYear])).sort((a, b) => Number(b) - Number(a));
   return <div className="trend-selectors trend-selectors-switch" aria-label={label}>
@@ -35,10 +36,11 @@ export default function PeriodSelectorBox({dateQuick, dateYear, useFiscalPeriodF
           onSelect(event.currentTarget.value, currentQuickYear);
         }}>
           {useFiscalPeriodFilter ? <option value="" disabled>Periodo fiscale dai filtri</option> : null}
+          {inactivePeriodLabel && !useFiscalPeriodFilter ? <option value="" disabled>{inactivePeriodLabel}</option> : null}
           {periodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
         <select aria-label="Anno" value={currentQuickYear}
-                disabled={useFiscalPeriodFilter || currentQuickValue === 'custom' || isRollingPeriod(currentQuickValue)}
+                disabled={useFiscalPeriodFilter || Boolean(inactivePeriodLabel) || currentQuickValue === 'custom' || isRollingPeriod(currentQuickValue)}
                 onChange={(event) => onSelect(currentQuickValue, event.currentTarget.value)}>
           {years.map(year => <option key={year} value={year}>{year}</option>)}
         </select>

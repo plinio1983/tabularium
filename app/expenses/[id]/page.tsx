@@ -143,7 +143,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             <div className="left-side">
                 <DetailBackButton href={returnTo} />
             </div>
-            <div className="right-side">
+            <div className="right-side btn-group">
                 <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
                     <span className="--hidden-mobile"> Copia</span>
                 </button>
@@ -157,7 +157,7 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
           <div className="left-side">
             <DetailBackButton href={returnTo} />
           </div>
-          <div className="right-side">
+          <div className="right-side btn-group">
             <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
               <span className="--hidden-mobile"> Copia</span>
             </button>

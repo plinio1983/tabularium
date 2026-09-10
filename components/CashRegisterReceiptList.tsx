@@ -187,7 +187,10 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                 </div>
                 <div className="cash-register-receipt-content">
                     <div className="cash-register-receipt-date">
-                        <small>#{receipt.id}</small>
+                        <div className="cash-register-receipt-identity">
+                            <small>#{receipt.id}</small>
+                            <span>{receipt.paymentMethodIcon ?? ''} {receipt.paymentMethod}</span>
+                        </div>
                         <strong>{receiptDate(receipt.creditDate, timeZone)}</strong>
                     </div>
                     <div className="cash-register-receipt-channel">
@@ -197,8 +200,8 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                             <strong>{receipt.isFiscal ? ` IVA ${receipt.vatRate}%` : ''}</strong>
                         </small>
                     </div>
-                    <div className="cash-register-receipt-method">
-                        <span>{receipt.paymentMethodIcon ?? ''} {receipt.paymentMethod}</span>
+                    <div className="cash-register-receipt-mobile-description">
+                        <span>{receipt.description || '—'}</span>
                     </div>
                     <strong className="cash-register-receipt-amount">{euro(receipt.amount)}</strong>
                 </div>

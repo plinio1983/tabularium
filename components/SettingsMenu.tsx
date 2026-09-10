@@ -21,6 +21,8 @@ const mainMenuLinks = [
     {href: (_timeZone: string) => '/clients', label: 'Clienti', icon: '♙'},
     {href: (_timeZone: string) => '/suppliers', label: 'Fornitori', icon: '◇'},
     {href: (_timeZone: string) => '/employees', label: 'Dipendenti', icon: '♙'},
+    {href: (_timeZone: string) => '/expenses/payments', label: 'Pagamenti', icon: '↗'},
+    {href: (_timeZone: string) => '/incomes/credits', label: 'Accrediti', icon: '↙'},
     {href: (_timeZone: string) => '/expenses/import', label: 'Importa dati', icon: '⬆'},
 ] as const;
 

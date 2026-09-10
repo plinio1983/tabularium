@@ -171,12 +171,27 @@ export default async function IncomeDetailPage({params, searchParams}: {
         />
 
         <div className="record-detail-shell">
+            <div className="record-detail-action-row pt-0 hidden-sm-up">
+                <div className="left-side">
+                    <DetailBackButton href={returnTo} />
+                </div>
+                <div className="right-side btn-group">
+                    <Link className="btn btn-sm btn-default" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
+                    <DeleteActionButton
+                        action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
+                        confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata."
+                        className="btn btn-sm btn-danger"
+                    >
+                        🗑 Elimina
+                    </DeleteActionButton>
+                </div>
+            </div>
             <article className={['record-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
-                <div className="record-detail-action-row">
+                <div className="record-detail-action-row hidden-sm-down">
                     <div className="left-side">
                         <DetailBackButton href={returnTo} />
                     </div>
-                    <div className="right-side">
+                    <div className="right-side btn-group">
                         <Link className="btn btn-sm btn-default" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
                         <DeleteActionButton
                             action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
