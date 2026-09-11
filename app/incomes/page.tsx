@@ -858,13 +858,13 @@ export default async function IncomesPage({searchParams}: {
         }
     });
 
-    return <div className="grid">
+    return <div className="grid income-page-content">
         <div className="toolbar-card">
             <div>
                 <h2>Incassi</h2>
                 <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
             </div>
-            <div className="toolbar-actions">
+            <div className="toolbar-actions income-page-toolbar-actions">
                 {/*<Link className="btn btn-sm btn-default" href="/incomes/credits">Accrediti</Link>*/}
                 <Link className="btn btn-sm btn-ghost" href="/recurring-incomes">
                     <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti

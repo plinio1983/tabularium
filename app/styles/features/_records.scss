@@ -657,6 +657,16 @@ body.drawer-open {
   margin: 5px 0 0;
 }
 
+@media (max-width: 576px) {
+  .income-page-content > .toolbar-card > div:first-child {
+    margin: 0 14px;
+  }
+
+  .income-page-content > .toolbar-card .income-page-toolbar-actions {
+    display: none;
+  }
+}
+
 
 .import-page {
   gap: 18px;

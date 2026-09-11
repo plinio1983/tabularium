@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import MainNav from '@/components/MainNav';
 import SettingsMenu from '@/components/SettingsMenu';
@@ -33,8 +34,8 @@ function isFooterHiddenPath(pathname: string) {
   return pathname === '/incomes/cash-register';
 }
 
-function DesktopHeader({ compactOnMobile = false, userName }: { compactOnMobile?: boolean; userName?: string | null }) {
-  const className = compactOnMobile ? "nav compact-mobile-header-path" : "nav fixed";
+function DesktopHeader({ compactOnMobile = false, incomePage = false, userName }: { compactOnMobile?: boolean; incomePage?: boolean; userName?: string | null }) {
+  const className = `${compactOnMobile ? "nav compact-mobile-header-path" : "nav fixed"}${incomePage ? " income-page-header" : ""}`;
 
   return <div className={className}>
       {/*<div className="site-header-brand compact hidden-md-up">*/}
@@ -43,6 +44,10 @@ function DesktopHeader({ compactOnMobile = false, userName }: { compactOnMobile?
     <div className="site-header-brand">
       <img className="site-header-logo" src={logoHorizontal.src} alt="Tabularium" width={logoHorizontal.width} height={logoHorizontal.height} />
     </div>
+    {incomePage ? <div className="income-mobile-header-actions" aria-label="Azioni incassi">
+      <Link className="btn btn-sm btn-ghost" href="/recurring-incomes"><span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti</Link>
+      <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new><span className="btn-icon" aria-hidden="true">＋</span>Incasso</button>
+    </div> : null}
     <div className="site-header-actions">
       <Suspense fallback={null}>
         <MainNav />
@@ -72,7 +77,7 @@ export default function ShellChrome({ slot, userName }: Props) {
       </>;
     }
 
-    return <DesktopHeader userName={userName} />;
+    return <DesktopHeader incomePage={pathname === '/incomes'} userName={userName} />;
   }
 
   if (isFooterHiddenPath(pathname)) return null;
