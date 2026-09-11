@@ -4,6 +4,7 @@ import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
 import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { writeAuditLog } from '@/lib/audit';
+import {parseRecurringExpenseBulkEdit} from '@/lib/recurring-expense-bulk-edit';
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
   return pathFromUrl(value, fallback);
@@ -26,16 +27,23 @@ export async function POST(request: Request) {
   }
 
   if (bulkAction === 'bulk_edit') {
-    const field = String(formData.get('field') || '');
-    const data: Record<string, unknown> = {};
-    if (field === 'categoryId') data.categoryId = Number(formData.get('categoryId')) || null;
-    if (field === 'cadence') data.cadence = String(formData.get('cadence'));
-    if (field === 'dueDay') data.dueDay = Number(formData.get('dueDay'));
-    if (field === 'startDate') data.startDate = new Date(String(formData.get('startDate')));
-    if (field === 'billing') { data.billingPeriodMode = String(formData.get('billingPeriodMode')); data.billingMonth = data.billingPeriodMode === 'CUSTOM_MONTH' ? Number(formData.get('billingMonth')) : null; }
-    if (field === 'payment') { const automatic = String(formData.get('isAutomaticPayment')) === 'true'; data.isAutomaticPayment = automatic; data.paymentMethodId = automatic ? Number(formData.get('paymentMethodId')) || null : null; data.bankId = automatic ? Number(formData.get('bankId')) || null : null; }
-    if (!Object.keys(data).length) return redirectToPath(safePath(returnTo, '/recurring-expenses', request.url));
-    await prisma.recurringExpense.updateMany({where: {id: {in: ids}, workspaceId: current.workspace.id, companyId: current.company.id}, data});
+    let data: ReturnType<typeof parseRecurringExpenseBulkEdit>;
+    const invalid = () => redirectToPath(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), {error: 'invalid'}));
+    try {
+      data = parseRecurringExpenseBulkEdit(formData);
+    } catch {
+      return invalid();
+    }
+    const where = {id: {in: ids}, workspaceId: current.workspace.id, companyId: current.company.id};
+    if (data.categoryId && !await prisma.expenseCategory.findFirst({where: {id: data.categoryId, workspaceId: current.workspace.id}})) return invalid();
+    if (data.paymentMethodId && !await prisma.paymentMethod.findFirst({where: {id: data.paymentMethodId, workspaceId: current.workspace.id}})) return invalid();
+    if (data.bankId && !await prisma.bank.findFirst({where: {id: data.bankId, workspaceId: current.workspace.id}})) return invalid();
+    if (data.startDate && await prisma.recurringExpense.findFirst({where: {...where, endDate: {lt: data.startDate}}, select: {id: true}})) return invalid();
+    const result = await prisma.recurringExpense.updateMany({where, data});
+    await writeAuditLog({
+      workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
+      entityType: 'RecurringExpense', metadata: {ids, operation: bulkAction, fields: Object.keys(data), updated: result.count}, request
+    });
     return redirectToPath(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), {saved: 'bulk_updated'}));
   }
 
