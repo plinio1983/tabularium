@@ -186,6 +186,16 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
           title={mode === "copy" ? "Nuova spesa da copia" : "Modifica spesa"}
           cancelHref={returnTo}
           onCancel={() => setExpense(null)}
+          onDeletePayment={mode === "payment-edit" ? async (paymentId) => {
+            const form = new FormData();
+            form.set('_action', 'delete');
+            const response = await fetch(`/api/expenses/${expense.id}/payments/${paymentId}`, {method: 'POST', body: form});
+            if (!response.ok) {
+              const payload = await response.json().catch(() => null);
+              throw new Error(payload?.error ?? 'Non è stato possibile eliminare il pagamento. Riprova.');
+            }
+            window.location.reload();
+          } : undefined}
           submitLabel={mode === "copy" ? "Crea spesa copiata" : mode === "payment" || mode === "payment-edit" ? "Salva pagamento" : "Salva modifiche"}
           action={mode === "copy" ? `/api/expenses?returnTo=${encodeURIComponent(returnTo)}` : `/api/expenses/${expense.id}?returnTo=${encodeURIComponent(returnTo)}`}
           categories={categories}

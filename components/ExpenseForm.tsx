@@ -123,6 +123,7 @@ type Props = {
     submitLabel?: string;
     onCancel?: () => void;
     onSaved?: () => void;
+    onDeletePayment?: (paymentId: number) => Promise<void>;
     cancelHref?: string;
     onSwitchToRecurring?: () => void;
     onExpenseTypeChange?: (type: "single" | "vat" | "tax" | "payroll") => void;
@@ -459,6 +460,7 @@ export default function ExpenseForm({
                                         submitLabel = "Salva spesa",
                                         onCancel,
                                         onSaved,
+                                        onDeletePayment,
                                         cancelHref,
                                         onSwitchToRecurring,
                                         onExpenseTypeChange,
@@ -845,9 +847,21 @@ export default function ExpenseForm({
         addPaymentRow();
     }, [openNewPayment]);
 
-    function removePaymentRow(index: number) {
+    async function removePaymentRow(index: number) {
+        if (isSubmitting) return;
         const payment = payments[index];
         if (payment?.id && !window.confirm("Eliminare questo pagamento?")) return;
+        if (payment?.id && onDeletePayment) {
+            setSubmitError("");
+            setIsSubmitting(true);
+            try {
+                await onDeletePayment(payment.id);
+            } catch (error) {
+                setSubmitError(error instanceof Error ? error.message : "Errore durante l’eliminazione del pagamento. Riprova.");
+                setIsSubmitting(false);
+            }
+            return;
+        }
         setPayments((rows) => rows.filter((_, i) => i !== index));
         if (payment?.key === openPaymentKey) setOpenPaymentKey(null);
     }
@@ -883,6 +897,8 @@ export default function ExpenseForm({
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        if (isSubmitting) { event.preventDefault(); return; }
+        setSubmitError("");
         if (window.matchMedia("(max-width: 900px)").matches) {
             if (isPaymentOnlyMode) {
                 if (!validateMobileStep()) {
@@ -894,6 +910,11 @@ export default function ExpenseForm({
                 nextMobileStep();
                 return;
             }
+        }
+        if (isPayroll && paidAmountValue > amountValue + 0.005) {
+            event.preventDefault();
+            setSubmitError(`I pagamenti registrati (${formatEuro(paidAmountValue)}) superano il totale da corrispondere (${formatEuro(amountValue)}, netto più compensi extra). Controlla gli importi prima di salvare.`);
+            return;
         }
         if (!onSaved) return;
         event.preventDefault();
@@ -1543,6 +1564,7 @@ export default function ExpenseForm({
                                                 type="button"
                                                 className="btn btn-sm btn-danger remove-row"
                                                 onClick={() => removePaymentRow(index)}
+                                                disabled={isSubmitting}
                                             >
                                                 🗑️ Elimina
                                             </button>
@@ -1639,8 +1661,9 @@ export default function ExpenseForm({
                                             type="button"
                                             className="btn btn-sm btn-danger remove-row"
                                             onClick={() => removePaymentRow(index)}
+                                            disabled={isSubmitting}
                                         >
-                                            🗑️ Rimuovi
+                                            🗑️ {onDeletePayment && payment.id ? "Elimina" : "Rimuovi"}
                                         </button>
                                         <button
                                             type="button"
@@ -1867,7 +1890,7 @@ export default function ExpenseForm({
             /> : null}
 
             <div className="actions-row full form-actions-row form-sticky-actions">
-                {submitError ? <p className="inline-warning full">{submitError}</p> : null}
+                {submitError ? <p className="inline-warning full" role="alert">{submitError}</p> : null}
                 <button className="btn btn-md btn-primary" type="submit" disabled={isSubmitting}>
                     <span className="btn-icon">✓</span> {isSubmitting ? "Salvataggio..." : submitLabel}
                 </button>

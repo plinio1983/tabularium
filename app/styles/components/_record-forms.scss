@@ -1960,6 +1960,12 @@
   overflow: visible;
 }
 
+.single-expense-form .entity-autocomplete-input-row .app-autocomplete-control {
+  >input {
+    padding-left: 30px !important;
+  }
+}
+
 .single-expense-form .entity-autocomplete-wide:focus-within {
   z-index: 700;
 }

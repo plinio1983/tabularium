@@ -311,6 +311,12 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
                         data-expense-detail-payment-edit-id={payment.id}>
                   ✎ Modifica
                 </button>
+                <DeleteActionButton
+                  action={`/api/expenses/${expense.id}/payments/${payment.id}`}
+                  confirmMessage="Eliminare questo pagamento?"
+                  ariaLabel={`Elimina pagamento di ${euro(payment.amount.toString())}`}
+                  className="btn btn-sm btn-danger"
+                >🗑️ Elimina</DeleteActionButton>
               </div>
             </article>)}
           </div> : <div className="record-empty-state">Nessun pagamento registrato.</div>}

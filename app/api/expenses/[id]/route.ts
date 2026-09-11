@@ -249,7 +249,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     dueDate: data.dueDate
   });
   const paidAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
-  if (isPayroll && paidAmount > expenseAmount + 0.005) throw new Error('I pagamenti non possono superare il netto da corrispondere');
+  if (isPayroll && paidAmount > expenseAmount + 0.005) {
+    return NextResponse.json({error: 'I pagamenti non possono superare il totale da corrispondere (netto più compensi extra).'}, {status: 400});
+  }
   const firstPayment = payments[0];
 
   const nextIsRecurring = isVatSettlement ? false : (existing.isRecurring ? data.isRecurring : false);

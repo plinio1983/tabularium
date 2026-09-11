@@ -82,6 +82,21 @@ function dateLabel(value?: Date | string | null) {
     }).format(date);
 }
 
+function desktopStartDateLabel(value?: Date | string | null) {
+    if (!value) return '-';
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return '-';
+    const parts = new Intl.DateTimeFormat('it-IT', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    }).formatToParts(date);
+    const day = parts.find(part => part.type === 'day')?.value ?? '';
+    const month = parts.find(part => part.type === 'month')?.value ?? '';
+    const year = parts.find(part => part.type === 'year')?.value ?? '';
+    return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${year}`;
+}
+
 function dueLabel(item: any) {
     if (item.dueMonth) return `${item.dueDay ?? '-'} ${months[item.dueMonth] ?? ''}`;
     if (item.dueDay) return `Giorno ${item.dueDay}`;
@@ -376,7 +391,7 @@ export default function RecurringExpensesList({
                             <td className="cell-left recurring-payment-cell" title={payment}>{paymentChannelName ?
                                 <span className={badgeClass(item.bank ? 'tone-bank-services' : 'tone-neutral')}>{payment}</span> :
                                 <span className={badgeClass('tone-neutral')}>  •   Manuale</span>}</td>
-                            <td className="cell-left nowrap-cell">{dateLabel(item.startDate)}</td>
+                            <td className="cell-left nowrap-cell">{desktopStartDateLabel(item.startDate)}</td>
                         </tr>;
                     })}
                     </tbody>

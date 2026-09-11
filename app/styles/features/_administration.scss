@@ -2375,8 +2375,7 @@ table {
 }
 
 @media (max-width: 1020px) {
-  .record-detail-hero,
-  .expense-detail-two-columns {
+  .record-detail-hero {
     grid-template-columns: 1.2fr .8fr;
   }
 

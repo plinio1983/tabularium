@@ -1272,7 +1272,24 @@
     flex-direction: column;
     width: 100%;
     margin: 0;
-    //padding: 0;
+    padding: 0;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  /* Every mobile step uses the same inner rhythm and reaches the available width. */
+  .app-form-wizard > .form-section-stack,
+  .app-form-wizard > details > .form-section-stack,
+  .app-form-wizard .form-section-grid {
+    width: 100%;
+    margin-inline: 0;
+    padding: 0;
+    gap: 16px;
+  }
+
+  .app-form-wizard .app-form-wizard-step {
+    box-sizing: border-box;
   }
 }
 
