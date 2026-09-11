@@ -25,6 +25,20 @@ export async function POST(request: Request) {
     return redirectToPath(safePath(returnTo, '/recurring-expenses', request.url));
   }
 
+  if (bulkAction === 'bulk_edit') {
+    const field = String(formData.get('field') || '');
+    const data: Record<string, unknown> = {};
+    if (field === 'categoryId') data.categoryId = Number(formData.get('categoryId')) || null;
+    if (field === 'cadence') data.cadence = String(formData.get('cadence'));
+    if (field === 'dueDay') data.dueDay = Number(formData.get('dueDay'));
+    if (field === 'startDate') data.startDate = new Date(String(formData.get('startDate')));
+    if (field === 'billing') { data.billingPeriodMode = String(formData.get('billingPeriodMode')); data.billingMonth = data.billingPeriodMode === 'CUSTOM_MONTH' ? Number(formData.get('billingMonth')) : null; }
+    if (field === 'payment') { const automatic = String(formData.get('isAutomaticPayment')) === 'true'; data.isAutomaticPayment = automatic; data.paymentMethodId = automatic ? Number(formData.get('paymentMethodId')) || null : null; data.bankId = automatic ? Number(formData.get('bankId')) || null : null; }
+    if (!Object.keys(data).length) return redirectToPath(safePath(returnTo, '/recurring-expenses', request.url));
+    await prisma.recurringExpense.updateMany({where: {id: {in: ids}, workspaceId: current.workspace.id, companyId: current.company.id}, data});
+    return redirectToPath(appendFlash(safePath(returnTo, '/recurring-expenses', request.url), {saved: 'bulk_updated'}));
+  }
+
   if (bulkAction === 'change_category') {
     const categoryId = Number(formData.get('categoryId'));
     if (Number.isInteger(categoryId) && categoryId > 0) {

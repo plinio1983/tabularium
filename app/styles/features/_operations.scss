@@ -1643,7 +1643,7 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     flex: 0 0 auto;
     //min-height: 42px;
     //padding: 0px 0 2px 7px;
-    padding: 0;
+    padding: 4px;
     margin: 0;
   }
 }
@@ -1878,7 +1878,7 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     min-height: 0;
     max-height: none;
     margin: 0;
-    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) env(safe-area-inset-left);
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
     box-sizing: border-box;
     grid-template-rows: auto minmax(0, 1fr);
     border: 1px solid rgba(226, 232, 240, .95);
@@ -1957,7 +1957,6 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 24px;
     padding-bottom: 14px;
   }
 }

@@ -93,7 +93,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
     }
   };
 
-  return <div className="grid">
+  return <div className="grid recurring-expenses-page-content">
     <div className="toolbar-card record-toolbar-card">
       <div><h2>Uscite ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
       <NewRecurringExpensePanel

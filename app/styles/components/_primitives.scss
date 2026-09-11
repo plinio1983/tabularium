@@ -544,16 +544,25 @@ button {
   display: none !important;
 }
 
+@media (max-width: 448px) {
+  .hidden-sp-down {
+    display: none !important;
+  }
+}
+
 @media (max-width: 576px) {
-  .hidden-sp,
-  .hidden-sp-down,
   .hidden-xs-down {
     display: none !important;
   }
 }
 
+@media (min-width: 449px) {
+  .hidden-sp-up {
+    display: none !important;
+  }
+}
+
 @media (min-width: 577px) {
-  .hidden-sp-up,
   .hidden-xs-up {
     display: none !important;
   }

@@ -10,7 +10,7 @@ import CustomerAutocomplete from "@/components/CustomerAutocomplete";
 
 type Props = {
   formId: string;
-  subject: "spese" | "incassi";
+  subject: "spese" | "incassi" | "uscite ricorrenti";
   action?: string;
   categoryFieldName?: string;
   categories?: Array<{value: string; label: string; icon?: string | null}>;
@@ -66,7 +66,9 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
   const editableIdSet = new Set(editableIds.map(String));
   const incomeSelectionEligible = subject === "incassi" && selectedIds.length > 0 && selectedIds.every(id => editableIdSet.has(id));
   const selectedDatesInvalid = updateOrderDate && updateDueDate && Boolean(orderDate && dueDate && dueDate < orderDate);
-  const fields = subject === "spese" ? [
+  const fields = subject === "uscite ricorrenti" ? [
+    {label: "Categoria", description: "Assegna una categoria comune", icon: "🏷", enabled: hasCategoryStep, step: "category" as const},
+  ] : subject === "spese" ? [
     {label: "Data ordine e scadenza", description: "Aggiorna le date dei record selezionati", icon: "📅", enabled: hasDatesStep, step: "dates" as const},
     {label: "Categoria", description: "Assegna una categoria comune", icon: "🏷", enabled: hasCategoryStep, step: "category" as const},
     {label: "Esercente", description: "Sostituisci il fornitore associato", icon: "🏪", enabled: Boolean(action && subject === "spese" && suppliers.length && supplierSelectionEligible), step: "supplier" as const, status: supplierSelectionEligible ? undefined : "Solo spese standard"},

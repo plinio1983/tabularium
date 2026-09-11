@@ -949,7 +949,7 @@ export default async function ExpensesPage({searchParams}: {
         }
     ].filter(Boolean) as Array<{ label: string; value: string }>;
 
-    return <div className="grid">
+    return <div className="grid expense-page-content">
         {/*<Link className="btn btn-md btn-default" href="/recurring-expenses"><span className="btn-icon">↻</span>Uscite ricorrenti</Link>*/}
         <NewExpensePanel
             categories={orderedCategories.map(c => ({
@@ -999,6 +999,10 @@ export default async function ExpensesPage({searchParams}: {
         </div> : null}
 
         <div className="card record-list-card">
+            <div className="mobile-page-title expense-mobile-page-title">
+                <h2>Spese</h2>
+                <p className="muted">Gestione delle spese fiscali e non fiscali.</p>
+            </div>
             <div className="filter-drawer-wrapper period-filter-drawer-wrapper">
                 <ExpenseFiltersDrawer
                     filters={filters}

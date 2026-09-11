@@ -352,6 +352,71 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   color: #b42318;
 }
 
+@media (max-width: 760px) {
+  .bulk-action-modal-backdrop {
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0 !important;
+  }
+
+  .bulk-action-modal-backdrop > .bulk-action-modal {
+    width: min(86vw, 380px);
+    max-width: none;
+    height: 100dvh;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    box-sizing: border-box;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .bulk-action-modal-header {
+    padding-right: 28px;
+  }
+
+  .bulk-action-modal-actions {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: 14px;
+  }
+
+  .bulk-action-modal-actions button {
+    border: 1px solid #dbe3ff;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: var(--accent);
+    font-weight: 850;
+    text-decoration: none;
+  }
+
+  .bulk-action-modal-actions button:hover,
+  .bulk-action-modal-actions button:focus-visible {
+    border-color: #b9c7ff;
+    background: #eef2ff;
+    color: var(--accent);
+    outline: none;
+  }
+
+  .bulk-action-modal-actions button.danger-menu-item,
+  .bulk-action-modal-actions button.bulk-direct-danger {
+    border-color: #fecdd3;
+    background: #fff7f7;
+    color: #b42318;
+  }
+
+  .bulk-action-modal-actions button.danger-menu-item:hover,
+  .bulk-action-modal-actions button.danger-menu-item:focus-visible,
+  .bulk-action-modal-actions button.bulk-direct-danger:hover,
+  .bulk-action-modal-actions button.bulk-direct-danger:focus-visible {
+    border-color: #fda4af;
+    background: #fff1f2;
+    color: #b42318;
+  }
+}
+
 
 .record-detail-page {
   width: 100%;

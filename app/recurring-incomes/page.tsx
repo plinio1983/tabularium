@@ -49,7 +49,7 @@ export default async function RecurringIncomesPage({searchParams}: {
     ]);
     const methods = orderPaymentMethods(rawMethods, 'INCOME');
     const banks = orderBanks(rawBanks);
-    return <div className="grid"><NewIncomePanel showToolbar={false} banks={banks.map(bank => ({
+    return <div className="grid recurring-incomes-page-content"><NewIncomePanel showToolbar={false} banks={banks.map(bank => ({
         ...bank,
         isPrimary: bank.id === current.company.primaryBankId
     }))} paymentMethods={methods} salesChannels={channels} customers={customers}/>
@@ -59,11 +59,11 @@ export default async function RecurringIncomesPage({searchParams}: {
         </div>
         <ActionFeedbackBanner searchParams={query} savedMessages={{
             created: 'Entrata ricorrente creata.',
-            updated: 'Entrata ricorrente aggiornata.'
+            updated: 'Entrata ricorrente aggiornata.', bulk_updated: 'Entrate ricorrenti aggiornate.', bulk_deleted: 'Entrate ricorrenti disattivate.'
         }} errorMessages={{invalid: 'Controlla i dati inseriti.', not_found: 'Entrata ricorrente non trovata.'}}/>
         <RecurringIncomeEditModal items={items.map(({customer, salesChannel, paymentMethod, bank, ...item}) => ({...item, amount: item.amount.toString(), vatRate: item.vatRate.toString()}))}
             channels={channels} customers={customers} methods={methods} banks={banks}>
-            <RecurringIncomesList items={items} filters={filters}/>
+            <RecurringIncomesList items={items} filters={filters} methods={methods} banks={banks}/>
         </RecurringIncomeEditModal>
     </div>;
 }

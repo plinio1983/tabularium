@@ -657,16 +657,76 @@ body.drawer-open {
   margin: 5px 0 0;
 }
 
-@media (max-width: 576px) {
-  .income-page-content > .toolbar-card > div:first-child {
-    margin: 0 14px;
-  }
+.mobile-page-title {
+  display: none;
 
-  .income-page-content > .toolbar-card .income-page-toolbar-actions {
-    display: none;
+  @media (max-width: 576px) {
+    display: block;
+    margin: 0;
+    padding: 0 0 18px;
   }
 }
 
+@media (max-width: 576px) {
+  .income-page-content > .toolbar-card,
+  .expense-page-content > .record-toolbar-card,
+  .expense-page-content > .toolbar-card,
+  .expense-page-content > .grid > .record-toolbar-card,
+  .expense-page-content > .grid > .toolbar-card {
+    display: none;
+  }
+
+  .recurring-expenses-page-content > .toolbar-card,
+  .recurring-expenses-page-content .record-toolbar-card,
+  .recurring-incomes-page-content > .record-toolbar-card {
+    display: none;
+  }
+
+  .recurring-incomes-page-content > .grid:first-child:not(:has(.app-form-modal)) {
+    display: none;
+  }
+
+  .recurring-expense-mobile-page-title,
+  .recurring-income-mobile-page-title {
+    margin: 0 !important;
+  }
+
+  .expense-page-content > .expense-new-panel:not(:has(.app-form-modal)) {
+    display: none;
+  }
+
+  .mobile-page-title h2 {
+    margin: 0;
+  }
+
+  .mobile-page-title p {
+    margin: 5px 0 0;
+  }
+
+  .recurring-expense-mobile-page-title {
+    margin-bottom: 0 !important;
+  }
+
+  .recurring-list-heading {
+    margin: 0 !important;
+  }
+}
+
+.recurring-incomes-page-content .record-list-card > .bulk-actions-bar {
+  position: relative !important;
+  top: auto !important;
+}
+
+@media (max-width: 760px) {
+  .bulk-actions-bar .bulk-select-all-inline {
+    display: inline-flex !important;
+    align-items: flex-end;
+    gap: 8px;
+    flex: 0 0 auto;
+    padding: 4px;
+    margin: 0;
+  }
+}
 
 .import-page {
   gap: 18px;

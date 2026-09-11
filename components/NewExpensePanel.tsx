@@ -115,7 +115,7 @@ export default function NewExpensePanel({
         router.refresh();
     }
 
-    return <div className={showToolbar || isOpen ? 'grid' : 'grid hidden'}>
+    return <div className={`grid expense-new-panel${showToolbar || isOpen ? '' : ' hidden'}`}>
         {showToolbar ? <div className="toolbar-card record-toolbar-card">
             <div className="record-toolbar-card-content">
                 <div className="record-toolbar-card-title">

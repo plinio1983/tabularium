@@ -889,6 +889,10 @@ export default async function IncomesPage({searchParams}: {
         </div> : null}
 
         <div className="card record-list-card">
+            <div className="mobile-page-title income-mobile-page-title">
+                <h2>Incassi</h2>
+                <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
+            </div>
             <div className="filter-drawer-wrapper period-filter-drawer-wrapper">
                 <IncomeFiltersDrawer
                     filters={filters}

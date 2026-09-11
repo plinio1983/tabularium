@@ -228,13 +228,15 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
   const actions = document.createElement("div");
   actions.className = "bulk-action-modal-actions";
 
-  Array.from(sourcePanel.children).forEach((child) => {
-    if (!(child instanceof HTMLButtonElement)) return;
-    const sourceButton = child;
+  Array.from(sourcePanel.querySelectorAll<HTMLButtonElement>("button")).forEach((sourceButton) => {
     const cloned = document.createElement("button");
     cloned.type = "button";
     cloned.innerHTML = sourceButton.innerHTML;
     cloned.className = sourceButton.className;
+    cloned.classList.remove("hidden-xs-down", "hidden-sm-down", "hidden-sm-up", "hidden-mobile");
+    cloned.querySelectorAll<HTMLElement>("[class]").forEach((element) => {
+      element.classList.remove("hidden-xs-down", "hidden-sm-down", "hidden-sm-up", "hidden-mobile");
+    });
     cloned.disabled = sourceButton.disabled;
     cloned.addEventListener("click", () => {
       if (sourceButton.disabled) return;
@@ -353,9 +355,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     const panel = document.createElement("div");
     panel.className = "floating-bulk-menu-panel";
 
-    Array.from(sourcePanel.children).forEach((child) => {
-      if (!(child instanceof HTMLButtonElement)) return;
-      const sourceButton = child;
+    Array.from(sourcePanel.querySelectorAll<HTMLButtonElement>("button")).forEach((sourceButton) => {
       const cloned = document.createElement("button");
       cloned.type = "button";
       cloned.innerHTML = sourceButton.innerHTML;

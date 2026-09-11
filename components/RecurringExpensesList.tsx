@@ -3,6 +3,7 @@ import LiveSearch from '@/components/LiveSearch';
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
+import RecurringExpenseBulkEditModal from '@/components/RecurringExpenseBulkEditModal';
 import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersDrawer';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
 import MobileSortControl from '@/components/MobileSortControl';
@@ -241,9 +242,10 @@ export default function RecurringExpensesList({
     ].filter(Boolean);
     return <div className="card recurring-expenses-card">
         <RecurringExpenseDetailEditModalController categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} employees={employees} returnTo={listHref}/>
-        <div className="list-heading recurring-list-heading">
+        <div className="list-heading recurring-list-heading mobile-page-title recurring-expense-mobile-page-title">
             <div>
-                <h2>Lista spese</h2>
+                <h2>Uscite ricorrenti</h2>
+                <p className="muted">Gestisci le regole di spesa ricorrente.</p>
             </div>
         </div>
         <LiveSearch name="search" label="Ricerca spesa ricorrente" placeholder="Fornitore, esercente, dipendente o descrizione"/>
@@ -258,6 +260,7 @@ export default function RecurringExpensesList({
         </div> : null}
 
         <BulkSelectionController/>
+        <RecurringExpenseBulkEditModal formId="recurringExpenseBulkForm" action={`/api/recurring-expenses/bulk?returnTo=${returnTo}`} categories={categories} methods={paymentMethods} banks={banks}/>
         <script dangerouslySetInnerHTML={{
             __html: `
       document.addEventListener('click', function(event) {
@@ -307,10 +310,11 @@ export default function RecurringExpensesList({
                         />
                     </div>
                 </details>
-                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to={returnTo}>
+                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-bulk-multi-edit="true" data-bulk-edit-event="true" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
-                        <span className="btn-icon icon-small">🗑</span><span className="hidden-sm-down">Elimina</span>
+                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
+                        <span className="btn-icon icon-small">🗑</span>
+                        <span className="hidden-sm-down">Elimina</span>
                     </button>
                 </div>
             </div>

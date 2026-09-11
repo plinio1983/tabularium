@@ -181,9 +181,27 @@
   display: none;
 }
 
+.expense-mobile-header-actions {
+  display: none;
+}
+
+.recurring-expense-mobile-header-actions {
+  display: none;
+}
+
+.recurring-income-mobile-header-actions {
+  display: none;
+}
+
 @media (max-width: 576px) {
   .income-page-header .site-header-brand,
-  .income-page-header .site-header-actions .nav-links {
+  .income-page-header .site-header-actions .nav-links,
+  .expense-page-header .site-header-brand,
+  .expense-page-header .site-header-actions .nav-links,
+  .recurring-expense-page-header .site-header-brand,
+  .recurring-expense-page-header .site-header-actions .nav-links,
+  .recurring-income-page-header .site-header-brand,
+  .recurring-income-page-header .site-header-actions .nav-links {
     display: none;
   }
 
@@ -208,6 +226,55 @@
   .income-page-header .site-header-actions {
     flex: 0 0 auto;
   }
+
+  .expense-page-header {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .expense-mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .expense-mobile-header-actions .btn {
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .expense-page-header .site-header-actions {
+    flex: 0 0 auto;
+  }
+
+  .recurring-expense-page-header {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .recurring-expense-mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .recurring-expense-mobile-header-actions .btn {
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .recurring-expense-page-header .site-header-actions {
+    flex: 0 0 auto;
+  }
+
+  .recurring-income-page-header { align-items: center; gap: 8px; }
+  .recurring-income-mobile-header-actions { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; }
+  .recurring-income-mobile-header-actions .btn { min-width: 0; white-space: nowrap; }
+  .recurring-income-page-header .site-header-actions { flex: 0 0 auto; }
 }
 
 .settings-menu-shell {
