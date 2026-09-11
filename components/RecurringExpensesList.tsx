@@ -301,7 +301,7 @@ export default function RecurringExpensesList({
             </div>
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link bulk-add-link btn btn-md btn-primary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Aggiungi spesa ricorrente">
-                    <span className="btn-icon">+</span>
+                    <span className="btn-icon">＋</span>
                     <span className="hidden-sm-down">Spesa ricorrente</span>
                 </button>
                 <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} paymentMethods={paymentMethods}/>

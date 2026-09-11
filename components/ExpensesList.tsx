@@ -283,7 +283,7 @@ export default function ExpensesList({
                 </div>
                 <div className="bulk-inner-container">
                     <ExpenseNewTriggerButton className="bulk-direct-link bulk-add-link btn btn-md btn-primary" floatingLabel="Aggiungi spesa">
-                        <span className="btn-icon">+</span>
+                        <span className="btn-icon">＋</span>
                         <span className="hidden-sm-down">Spesa</span>
                     </ExpenseNewTriggerButton>
                     {filterAction}

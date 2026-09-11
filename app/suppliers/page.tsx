@@ -286,7 +286,7 @@ export default async function SuppliersPage({searchParams}: {
                 </div>
                 <div className="bulk-inner-container">
                     <button className="bulk-direct-link btn btn-md btn-primary bulk-add-link " type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">
-                        <span className="btn-icon">+</span>
+                        <span className="btn-icon">＋</span>
                         <span className="hidden-sm-down">Fornitore</span>
                     </button>
                     <SupplierFiltersDrawer filters={filters}/>

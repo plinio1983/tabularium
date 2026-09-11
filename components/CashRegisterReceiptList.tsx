@@ -118,13 +118,13 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                 </div>
             </div>
             <div className="bulk-inner-container">
-                <Link className="btn btn-sm btn-default" href="/expenses/import?type=receipts">Importa CSV</Link>
+                {/*<Link className="btn btn-sm btn-default" href="/expenses/import?type=receipts">Importa CSV</Link>*/}
                 <Link className="bulk-direct-link bulk-add-link btn btn-md btn-primary"
                       href="/incomes/cash-register"
                       data-bulk-new
                       data-floating-label="Scontrino"
                       data-floating-icon="+">
-                    <span className="btn-icon">+</span><span className="bulk-label">Scontrino</span>
+                    <span className="btn-icon">＋</span><span className="bulk-label">Scontrino</span>
                 </Link>
                 {filtersTrigger}
             </div>

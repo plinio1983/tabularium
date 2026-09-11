@@ -256,7 +256,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
                         <div><h2>Allegati</h2><p>Fatture, documenti e ricevute collegati all’incasso.</p></div>
-                        <button className="btn btn-sm btn-default" type="button" data-income-attachments-id={income.id}>✎ Gestisci</button>
+                        <button className="btn btn-sm btn-default" type="button" data-income-attachments-id={income.id}>✎ Gestisci Allegati</button>
                     </div>
                     {income.attachments.length ? <div className="record-attachment-panel">
                         {income.attachments.map(attachment => <a className="record-attachment-item" href={`/api/income-attachments/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id}>

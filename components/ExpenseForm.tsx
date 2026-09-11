@@ -1698,7 +1698,7 @@ export default function ExpenseForm({
                         <i aria-hidden="true">€</i><span>Netto cedolino<strong>{formatEuro(Number(normalizedPayrollNetAmount || 0))}</strong></span>
                     </div>
                     <div className="record-review-item">
-                        <i aria-hidden="true">+</i><span>Compensi extra<strong>{formatEuro(Number(normalizedPayrollExtraCompensation || 0))}</strong></span>
+                        <i aria-hidden="true">＋</i><span>Compensi extra<strong>{formatEuro(Number(normalizedPayrollExtraCompensation || 0))}</strong></span>
                     </div>
                     <div className="record-review-item">
                         <i aria-hidden="true">€</i><span>Lordo cedolino<strong>{payrollGrossAmount ? formatEuro(Number(payrollGrossAmount.replace(",", "."))) : "Non indicato"}</strong></span>

@@ -59,7 +59,7 @@ export default function NewIncomePanel({ initialOpen = false, initialType = 'sin
           <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
         </div>
         <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
-          <span className="btn-icon">+</span>Inserisci incasso
+          <span className="btn-icon">＋</span>Inserisci incasso
         </button>
       </div> : null}
 

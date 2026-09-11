@@ -915,6 +915,7 @@ export default async function ExpensesPage({searchParams}: {
     }, new Map<string, ExpenseCategoryDatum>()).values()).sort((a, b) => b.total - a.total);
 
     const activeFilterItems = [
+        pendingTask && {label: 'Da gestire', value: expenseTaskLabels[pendingTask]},
         orderDateFromDefault && {label: 'Data ordine da', value: formatDateInputLabel(orderDateFromDefault)},
         orderDateToDefault && {label: 'Data ordine a', value: formatDateInputLabel(orderDateToDefault)},
         billingPeriodFromFilter && {label: 'Periodo fatt. da', value: billingPeriodFromFilter},
@@ -1079,7 +1080,7 @@ export default async function ExpensesPage({searchParams}: {
                     <h2>Lista spese</h2>
                     <p className="muted">Risultati mostrati: {filteredExpenses.length}</p>
                 </div>
-                <Link className="btn btn-sm btn-default" href="/expenses/payments">Pagamenti</Link>
+                {/*<Link className="btn btn-sm btn-default" href="/expenses/payments">Pagamenti</Link>*/}
             </div>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">

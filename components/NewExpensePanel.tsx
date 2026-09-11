@@ -131,7 +131,7 @@ export default function NewExpensePanel({
                     <span className="btn-icon">↻</span>Uscite ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary" type="button" onClick={() => setIsOpen(true)}>
-                    <span className="btn-icon">+</span>
+                    <span className="btn-icon">＋</span>
                     <span className="--hidden-mobile">Aggiungi spesa</span>
                     {/*<span className="hidden-desktop">Spesa</span>*/}
                 </button>

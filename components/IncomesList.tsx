@@ -222,7 +222,7 @@ export default function IncomesList({
             </div>
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link bulk-add-link  btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
-                    <span className="btn-icon">+</span><span className="hidden-sm-down">Incasso</span></button>
+                    <span className="btn-icon">＋</span><span className="hidden-sm-down">Incasso</span></button>
                 {filterAction}
             </div>
         </form>

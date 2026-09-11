@@ -43,7 +43,7 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
       {companies.map(company => <details className="card company-settings-card payment-credit-collapsible" key={company.id} open={company.id === current.company.id}>
         <summary className="category-create-toggle">
           <span className="company-settings-summary"><strong>{company.name}</strong><span className="company-settings-badges">{company.id === current.company.id ? <span className="badge">Attiva</span> : null} {company.isDefault ? <span className="badge">Predefinita</span> : null} {!company.isActive ? <span className="badge tone-neutral">Disabilitata</span> : null}</span></span>
-          <span aria-hidden="true">+</span>
+          <span aria-hidden="true">＋</span>
         </summary>
         <form action={saveCompanyAction} className="form app-record-form entity-form entity-styled-form company-settings-form company-edit-form">
           <input type="hidden" name="id" value={company.id}/>

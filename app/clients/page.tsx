@@ -148,7 +148,7 @@ export default async function ClientsPage({searchParams}: {
                 </div>
                 <div className="bulk-inner-container">
                     <button className="bulk-direct-link btn btn-md bulk-add-link btn-primary" type="button" data-bulk-new data-client-new data-floating-label="Cliente">
-                        <span className="btn-icon">+</span><span className="hidden-sm-down">Cliente</span>
+                        <span className="btn-icon">＋</span><span className="hidden-sm-down">Cliente</span>
                     </button>
                     <ClientFiltersDrawer filters={filters}/>
                 </div>

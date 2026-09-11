@@ -7,7 +7,7 @@ export default function EntityFormActions({onCancel, submitLabel, mobileSubmitLa
   layout?: 'form' | 'drawer'; formId?: string; onReset?: () => void;
 }) {
   const buttons = <>
-    <button className="btn btn-md btn-default" type="button" onClick={onCancel} disabled={submitting}><span className="btn-icon">✕</span> Annulla</button>
+    {layout !== 'drawer' ? <button className="btn btn-md btn-default" type="button" onClick={onCancel} disabled={submitting}><span className="btn-icon">✕</span> Annulla</button> : null}
     <button className="btn btn-md btn-primary" type="submit" form={formId} disabled={submitting}><span className="btn-icon">✓</span> {submitting ? submittingLabel : submitLabel}</button>
   </>;
   // Drawer actions stay inside the dialog's focus scope, outside its scrolling form.

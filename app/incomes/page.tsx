@@ -780,6 +780,7 @@ export default async function IncomesPage({searchParams}: {
     const residualVatDebt = recoverableExpenseVat === null ? null : totals.vatDebt - recoverableExpenseVat;
 
     const activeFilterItems = [
+        pendingTask && {label: 'Da gestire', value: incomeTaskLabels[pendingTask]},
         orderDateFromFilter && {label: 'Data ordine da', value: formatDateInputLabel(orderDateFromFilter)},
         orderDateToFilter && {label: 'Data ordine a', value: formatDateInputLabel(orderDateToFilter)},
         creditDateFromDefault && {label: 'Data accredito da', value: formatDateInputLabel(creditDateFromDefault)},
@@ -869,7 +870,7 @@ export default async function IncomesPage({searchParams}: {
                     <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
-                    <span className="btn-icon">+</span>Inserisci incasso
+                    <span className="btn-icon">＋</span>Inserisci incasso
                 </button>
             </div>
         </div>

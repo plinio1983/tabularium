@@ -77,7 +77,7 @@ export default function RecurringIncomesList({ items, filters = {} }: { items: a
     <div className="bulk-actions-bar recurring-bulk-actions-bar">
       <div className="bulk-inner-container">
         <button className="bulk-direct-link bulk-add-link btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-income-new-type="recurring" data-floating-label="Incasso ricorrente">
-          <span className="btn-icon">+</span><span className="hidden-sm-down">Incasso ricorrente</span>
+          <span className="btn-icon">＋</span><span className="hidden-sm-down">Incasso ricorrente</span>
         </button>
         <RecurringIncomeFiltersDrawer filters={filters}/>
       </div>
