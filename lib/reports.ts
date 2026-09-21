@@ -184,9 +184,9 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
     if (!income.isFiscal) return sum;
     return income.invoiceStatus !== 'EMESSA' ? sum + 1 : sum;
   }, 0);
-  const fattureNonRicevute = expenses.reduce((sum, expense) => {
-    return isExpenseInvoiceNotReceived(expense) ? sum + 1 : sum;
-  }, 0);
+  const expensesAwaitingInvoice = expenses.filter(isExpenseInvoiceNotReceived);
+  const fattureNonRicevute = expensesAwaitingInvoice.length;
+  const totaleInAttesaFattura = expensesAwaitingInvoice.reduce((sum, expense) => sum + Number(expense.amount), 0);
 
   return {
     speseTotali,
@@ -209,6 +209,7 @@ function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ yea
     ivaSaldoVersato,
     fattureNonInviate,
     fattureNonRicevute,
+    totaleInAttesaFattura,
     fattureScadute,
     fattureScaduteCount
   };

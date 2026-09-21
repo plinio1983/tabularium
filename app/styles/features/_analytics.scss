@@ -34,7 +34,7 @@
   display: grid;
   gap: 16px;
   padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
+  //border-bottom: 1px solid var(--line);
 
   @media (max-width: 576px) {
     border-bottom: none;
@@ -587,10 +587,7 @@
 
 .month-report-metrics .month-report-value {
   width: auto;
-  //display: grid;
-  //grid-template-rows: 28px auto;
   align-content: start;
-  //padding-right: 18px;
   border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
@@ -598,10 +595,11 @@
   justify-content: space-between;
   gap: 16px;
   grid-template-rows: none;
-  padding-right: 0;
   border-right: 0;
   border-bottom: 1px solid var(--line);
   padding-bottom: 17px;
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
 .month-report-fiscal-metrics .month-report-value {
@@ -3294,7 +3292,7 @@ html, body {
   position: absolute;
   z-index: 1;
   inset-block: 0;
-  border-radius: 99px;
+  border-radius: 2px;
 }
 
 .monthly-profit-comparison-axis > i.is-net {
@@ -5095,6 +5093,8 @@ html, body {
 @media (max-width: 576px) {
   .month-report-metrics .month-report-value {
     flex-direction: column;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 }
 

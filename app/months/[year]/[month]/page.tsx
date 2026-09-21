@@ -109,15 +109,15 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         billingPeriodTo: monthValue(reportPeriods[reportPeriods.length - 1])
     }).toString() : '';
     const fiscalTotals = report.summary;
-    const metrics = [
-        {label: mode === 'overall' ? 'Entrate' : 'Entrate fiscali', value: report.totals.totalRevenue},
-        {label: mode === 'overall' ? 'Uscite' : 'Uscite fiscali', value: report.totals.totalExpenses},
+    const metrics: Array<{label: string; value: number; className?: string}> = [
+        {label: mode === 'overall' ? 'Entrate' : 'Entrate fiscali', value: report.totals.totalRevenue, className: 'is-fiscal-income'},
+        {label: mode === 'overall' ? 'Uscite' : 'Uscite fiscali', value: report.totals.totalExpenses, className: 'is-fiscal-expense'},
         ...(mode === 'overall' ? [
             {label: 'Margine lordo', value: report.totals.grossProfit},
             {label: 'Risultato al netto IVA', value: report.totals.estimatedNetProfit},
         ] : [
-            {label: 'Utile fiscale', value: report.totals.declaredProfit},
-            {label: 'Margine lordo', value: report.totals.grossProfit},
+            {label: 'Utile fiscale', value: report.totals.declaredProfit, className: 'is-fiscal-profit'},
+            {label: 'Margine lordo', value: report.totals.grossProfit, className: 'is-gross-margin'},
         ]),
     ];
     const monthNavOptions = monthNavLabels.map((label, index) => {
@@ -259,14 +259,24 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     >Fiscale</Link>
                 </div>
             </div>
-            {periodType !== 'month' ? <p className="muted">{lastReportPeriod
+            {periodType !== 'month' ? <span className="muted">{lastReportPeriod
                 ? `Dati fino a ${monthName(lastReportPeriod.month)} ${lastReportPeriod.year}. Sono inclusi soltanto i mesi conclusi.`
-                : 'Nessun mese concluso nel periodo.'}</p> : null}
-            <p className="muted">{mode === 'overall'
+                : 'Nessun mese concluso nel periodo.'}</span> : null}
+            <span className="muted">{mode === 'overall'
                 ? 'Accrediti e pagamenti effettivi del periodo, inclusi i movimenti non fiscali. Il risultato al netto IVA rettifica il margine lordo per l’IVA sugli incassi e sulle spese pagate, senza contare due volte i versamenti IVA.'
-                : 'Entrate e uscite fiscali del periodo di fatturazione, indipendentemente dalle date di accredito e pagamento. L’utile fiscale esclude l’IVA; i versamenti IVA sono separati dai costi.'}</p>
+                : 'Entrate e uscite fiscali del periodo di fatturazione, indipendentemente dalle date di accredito e pagamento. L’utile fiscale esclude l’IVA; i versamenti IVA sono separati dai costi.'}</span>
             <div className={`month-report-metrics month-report-metrics-${mode}`}>
-                {metrics.map(metric => <div className="month-report-value" key={metric.label}>
+                {metrics.map(metric => mode === 'fiscal' ? <div
+                    className={`fiscal-overview-metric ${metric.className}${metric.value < 0 ? ' is-warning' : ''}`}
+                    key={metric.label}
+                >
+                    <span>{metric.label}</span>
+                    <strong>{euroInt(metric.value)}</strong>
+                    <div className="fiscal-overview-percentage" aria-label={`Percentuale ${metric.label.toLowerCase()} sulle entrate`}>
+                        <strong>{revenuePercentage(metric.value, report.totals.totalRevenue)}</strong>
+                        <span>delle entrate</span>
+                    </div>
+                </div> : <div className="month-report-value" key={metric.label}>
                     <span>{metric.label}</span>
                     <strong className={metric.value < 0 ? 'text-warning' : 'month-report-positive'}>
                         {euroInt(metric.value)} <small className="month-report-metric-percentage" aria-label={`Percentuale ${metric.label.toLowerCase()} sulle entrate`}>
@@ -300,15 +310,6 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             </div>
         </section>}
 
-        {mode === 'fiscal' ? <section className="month-report-section">
-            <h3>Indicatori fiscali</h3>
-            <div className="month-report-fiscal-metrics">
-                <div className="month-report-value"><span>Imponibile entrate</span><strong>{euroInt(report.totals.taxableIncome)}</strong></div>
-                <div className="month-report-value"><span>Fatture non ricevute</span><strong className="month-report-warning">{fiscalTotals.fattureNonRicevute}</strong></div>
-                <div className="month-report-value"><span>Fatture da inviare</span><strong className="month-report-warning">{fiscalTotals.fattureNonInviate}</strong></div>
-            </div>
-        </section> : null}
-
         <div className="grid grid-2 month-report-panels">
             <section className="card month-report-section"><h3>IVA</h3>
                 <dl className="month-report-summary-grid">
@@ -323,14 +324,19 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     href={`/months/${year}/${month}?mode=fiscal${periodQuery}&returnTo=${encodeURIComponent(backHref)}#iva`}
                 >Apri il prospetto IVA dettagliato in modalità Fiscale →</Link> : null}
             </section>
-            <section className="card month-report-section"><h3>Composizione dei movimenti</h3>
+            <section className="card month-report-section"><h3>{mode === 'fiscal' ? 'Indicatori fiscali' : 'Composizione dei movimenti'}</h3>
                 <dl className="month-report-summary-grid">
-                    <div><dt>Totale incassi</dt><dd>{euroInt(report.totals.totalRevenue)}</dd></div>
-                    <div><dt>Incassi fiscali</dt><dd>{euroInt(fiscalTotals.incassoFiscale)}</dd></div>
-                    {mode === 'overall' ? <>
+                    {mode === 'fiscal' ? <>
+                        <div><dt>Imponibile entrate</dt><dd>{euroInt(report.totals.taxableIncome)}</dd></div>
+                        <div><dt>Fatture non ricevute</dt><dd className="month-report-warning">{fiscalTotals.fattureNonRicevute}</dd></div>
+                        <div><dt>Tot. in attesa di fattura</dt><dd className="month-report-warning">{euroInt(fiscalTotals.totaleInAttesaFattura)}</dd></div>
+                        <div><dt>Fatture da inviare</dt><dd className="month-report-warning">{fiscalTotals.fattureNonInviate}</dd></div>
+                    </> : <>
+                        <div><dt>Totale incassi</dt><dd>{euroInt(report.totals.totalRevenue)}</dd></div>
+                        <div><dt>Incassi fiscali</dt><dd>{euroInt(fiscalTotals.incassoFiscale)}</dd></div>
                         <div><dt>Incassi non fiscali</dt><dd>{euroInt(fiscalTotals.incassoNonFiscale)}</dd></div>
                         <div><dt>Uscite non fiscali</dt><dd>{euroInt(fiscalTotals.usciteNonFiscali)}</dd></div>
-                    </> : null}
+                    </>}
                 </dl>
             </section>
         </div>

@@ -239,6 +239,8 @@ export function FiscalNonFiscalOverview({totals, year, periods, periodType}: {
 
 
 export function MonthlyProfitComparisonChart({months, year, mode, returnTo}: { months: DashboardMonth[]; year: number; mode: 'overall' | 'fiscal'; returnTo: string }) {
+    const isFiscal = mode === 'fiscal';
+    const displayedNetProfit = (month: DashboardMonth) => isFiscal ? month.totals.utileFiscale : month.totals.utileNetto;
     const monthReportLink = (year: number, month: number) => `/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(returnTo)}`;
     const totalIncome = months.reduce((sum, month) => sum + month.totals.incassoTotale, 0);
     const totalNetProfit = months.reduce((sum, month) => sum + month.totals.utileNetto, 0);
@@ -249,7 +251,7 @@ export function MonthlyProfitComparisonChart({months, year, mode, returnTo}: { m
     };
     const ratios = months.flatMap(month => [
         monthlyRatio(month.totals.utileLordo, month.totals.incassoTotale),
-        monthlyRatio(month.totals.utileNetto, month.totals.incassoTotale),
+        ...(!isFiscal ? [monthlyRatio(month.totals.utileNetto, month.totals.incassoTotale)] : []),
         monthlyRatio(month.totals.utileFiscale, month.totals.incassoTotale)
     ]);
     const hasNegativeValues = ratios.some(value => Number.isFinite(value) && value < 0);
@@ -259,11 +261,11 @@ export function MonthlyProfitComparisonChart({months, year, mode, returnTo}: { m
     const annualRatio = (value: number) => totalIncome ? value / Math.abs(totalIncome) * 100 : 0;
     const rankedMonths = months.filter(month => month.totals.incassoTotale || month.totals.speseTotali);
     const bestMonth = rankedMonths.reduce<DashboardMonth | null>(
-        (best, month) => !best || month.totals.utileNetto > best.totals.utileNetto ? month : best,
+        (best, month) => !best || displayedNetProfit(month) > displayedNetProfit(best) ? month : best,
         null
     );
     const worstMonth = rankedMonths.reduce<DashboardMonth | null>(
-        (worst, month) => !worst || month.totals.utileNetto < worst.totals.utileNetto ? month : worst,
+        (worst, month) => !worst || displayedNetProfit(month) < displayedNetProfit(worst) ? month : worst,
         null
     );
     const barStyle = (percentage: number) => {
@@ -284,7 +286,7 @@ export function MonthlyProfitComparisonChart({months, year, mode, returnTo}: { m
         <div className="card-heading-row">
             <div>
                 <h2>Andamento e report mensile</h2>
-                <p className="muted">Entrate, uscite, utile netto e fiscale con dettaglio per ogni mese del periodo selezionato ({year}).</p>
+                <p className="muted">{isFiscal ? 'Entrate, uscite, margine lordo e netto fiscale' : 'Entrate, uscite, utile netto e fiscale'} con dettaglio per ogni mese del periodo selezionato ({year}).</p>
             </div>
             <div className="dashboard-chart-main-totals">
                 <div className="dashboard-chart-main-total">
@@ -292,13 +294,13 @@ export function MonthlyProfitComparisonChart({months, year, mode, returnTo}: { m
                     <strong>{chartEuro(totalIncome)}</strong>
                     <span className="dashboard-chart-main-total-percent text-muted">100%</span>
                 </div>
-                <div className="dashboard-chart-main-total">
+                {!isFiscal ? <div className="dashboard-chart-main-total">
                     <span className="">Utile netto periodo · </span>
                     <strong className={moneyTone(totalNetProfit)}>{chartEuro(totalNetProfit)}</strong>
                     <span className="dashboard-chart-main-total-percent text-green">{annualRatio(totalNetProfit).toFixed(1)}%</span>
-                </div>
+                </div> : null}
                 <div className="dashboard-chart-main-total">
-                    <span className="">Utile fiscale periodo · </span>
+                    <span className="">{isFiscal ? 'Netto periodo · ' : 'Utile fiscale periodo · '}</span>
                     <strong className={moneyTone(totalFiscalProfit)}>{chartEuro(totalFiscalProfit)}</strong>
                     <span className="dashboard-chart-main-total-percent text-secondary">{annualRatio(totalFiscalProfit).toFixed(1)}%</span>
                 </div>
@@ -306,8 +308,8 @@ export function MonthlyProfitComparisonChart({months, year, mode, returnTo}: { m
         </div>
         <div className="monthly-profit-comparison-legend" aria-label="Legenda del grafico">
             <span className="is-gross">Margine lordo</span>
-            <span className="is-net">Utile netto</span>
-            <span className="is-fiscal">Utile fiscale</span>
+            {!isFiscal ? <span className="is-net">Utile netto</span> : null}
+            <span className="is-fiscal">{isFiscal ? 'Netto' : 'Utile fiscale'}</span>
             <small>Le percentuali sono calcolate sulle entrate del mese.</small>
         </div>
         {months.length ? <div className="monthly-profit-comparison-list">
@@ -341,7 +343,7 @@ export function MonthlyProfitComparisonChart({months, year, mode, returnTo}: { m
                             <strong className={moneyTone(grossProfit)}>{chartEuro(grossProfit)}</strong>
                             <em className={moneyTone(grossProfit)}>{grossPercentage.toFixed(1)}%</em>
                         </div>
-                        <div>
+                        {!isFiscal ? <div>
                             <span>Netto</span>
                             <div className={`monthly-profit-comparison-axis ${hasNegativeValues ? 'has-negative-values' : ''}`}
                                  aria-label={`Utile netto ${netPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
@@ -350,11 +352,11 @@ export function MonthlyProfitComparisonChart({months, year, mode, returnTo}: { m
                             </div>
                             <strong className={moneyTone(netProfit)}>{chartEuro(netProfit)}</strong>
                             <em className={moneyTone(netProfit)}>{netPercentage.toFixed(1)}%</em>
-                        </div>
+                        </div> : null}
                         <div>
-                            <span>Fiscale</span>
+                            <span>{isFiscal ? 'Netto' : 'Fiscale'}</span>
                             <div className={`monthly-profit-comparison-axis ${hasNegativeValues ? 'has-negative-values' : ''}`}
-                                 aria-label={`Utile fiscale ${fiscalPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
+                                 aria-label={`${isFiscal ? 'Netto fiscale' : 'Utile fiscale'} ${fiscalPercentage.toFixed(1)}% dell’incasso di ${capitalizedMonthName(month.month)}`}>
                                 <i className={fiscalProfit < 0 ? 'is-negative' : 'is-fiscal'} style={barStyle(fiscalPercentage)}/>
                                 {hasNegativeValues ? <b style={{left: `${zeroPosition}%`}}/> : null}
                             </div>

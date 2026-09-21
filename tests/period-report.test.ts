@@ -131,3 +131,26 @@ test('periodi senza movimenti restituiscono zero; il credito IVA non viene azzer
   close(credit.totals.grossProfit, -244);
   close(credit.totals.estimatedNetProfit, -200);
 });
+
+test('fiscale: totale in attesa di fattura coerente con il conteggio e indipendente dai pagamenti', () => {
+  const report = buildPeriodReport(september, [], [
+    expense({invoiceStatus: 'IN_ATTESA', amount: 244, payments: []}),
+    expense({invoiceStatus: 'PARZIALE', amount: 122, payments: [{amount: 61, paymentDate: date('2026-09-10')}]}),
+    expense({invoiceStatus: 'CONTESTAZIONE', amount: 61, payments: [{amount: 61, paymentDate: date('2026-09-10')}]}),
+    expense({invoiceStatus: 'RICEVUTA'}),
+    expense({invoiceStatus: 'INVIATA_SDI'}),
+    expense({invoiceStatus: 'NON_PREVISTA'}),
+    expense({invoiceStatus: 'IN_ATTESA', month: 10}),
+    expense({invoiceStatus: 'IN_ATTESA', isDeclared: false, affectsFiscalProfit: true}),
+    ...['VAT_SETTLEMENT', 'TAX_CONTRIBUTION', 'PAYROLL'].map(expenseType => expense({expenseType, invoiceStatus: 'IN_ATTESA'})),
+  ], 'fiscal');
+  assert.equal(report.summary.fattureNonRicevute, 3);
+  close(report.summary.totaleInAttesaFattura, 427);
+  close(report.monthlyBreakdown[0].totals.totaleInAttesaFattura, 427);
+});
+
+test('fiscale: totale in attesa di fattura nullo senza fatture mancanti', () => {
+  const report = buildPeriodReport(september, [], [expense()], 'fiscal');
+  assert.equal(report.summary.fattureNonRicevute, 0);
+  assert.equal(report.summary.totaleInAttesaFattura, 0);
+});
