@@ -301,6 +301,11 @@ body.drawer-open {
   display: block;
 }
 
+.recurring-incomes-editor {
+  // This grid item must shrink so the table overflows inside its scroll container.
+  min-width: 0;
+}
+
 .compact-recurring-expenses-table {
   min-width: 1120px;
 }

@@ -35,6 +35,10 @@ export function completedMonthCountForYear(year: number, now = new Date(), timeZ
   return Math.max(0, current.month - 1);
 }
 
+export function completedReportPeriods(periods: Array<{year: number; month: number}>, now = new Date(), timeZone = DEFAULT_COMPANY_TIME_ZONE) {
+  return periods.filter(period => period.month <= completedMonthCountForYear(period.year, now, timeZone));
+}
+
 function periodFromKey(key: number) {
   const year = Math.floor((key - 1) / 12);
   return { year, month: key - year * 12 };
@@ -356,8 +360,8 @@ export async function getAccountingDashboardReport(
   };
 }
 
-export async function getPeriodReport(periods: Array<{year: number; month: number}>, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal', companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE) {
-  if (!periods.length) throw new Error('At least one report period is required.');
+export async function getPeriodReport(periods: Array<{year: number; month: number}>, workspaceId?: number, mode: 'fiscal' | 'overall' = 'fiscal', companyId?: number, timeZone = DEFAULT_COMPANY_TIME_ZONE, emptyPeriod?: {year: number; month: number}) {
+  if (!periods.length) return buildPeriodReport([], [], [], mode, timeZone, emptyPeriod);
   const dateRanges = periods.map(({year, month}) => monthDateRange(year, month));
   const instantRanges = periods.map(({year, month}) => monthInstantRange(year, month, timeZone));
   const [expenses, incomes] = await Promise.all([
@@ -438,8 +442,9 @@ function reportMovements(records: any[], kind: 'income' | 'expense', mode: 'fisc
   }).sort((a, b) => (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0) || a.recordId - b.recordId);
 }
 
-export function buildPeriodReport(periods: Array<{year: number; month: number}>, incomes: any[], expenses: any[], mode: 'fiscal' | 'overall', timeZone = DEFAULT_COMPANY_TIME_ZONE) {
-  if (!periods.length) throw new Error('At least one report period is required.');
+export function buildPeriodReport(periods: Array<{year: number; month: number}>, incomes: any[], expenses: any[], mode: 'fiscal' | 'overall', timeZone = DEFAULT_COMPANY_TIME_ZONE, emptyPeriod?: {year: number; month: number}) {
+  const firstPeriod = periods[0] ?? emptyPeriod;
+  if (!firstPeriod) throw new Error('At least one report period is required.');
   const records = periodReportRecords(periods, incomes, expenses, mode, timeZone);
   const options = {timeZone, fiscalReport: mode === 'fiscal'};
   const summary = summarizeRecords(records.incomes, records.expenses, undefined, options);
@@ -449,8 +454,8 @@ export function buildPeriodReport(periods: Array<{year: number; month: number}>,
   });
   const costExpenses = mode === 'fiscal' ? records.expenses.filter(expenseAffectsFiscalProfit) : records.expenses;
   return {
-    year: periods[0].year,
-    month: periods[0].month,
+    year: firstPeriod.year,
+    month: firstPeriod.month,
     periods,
     monthlyBreakdown,
     mode,

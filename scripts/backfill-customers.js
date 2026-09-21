@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 const { Client } = pg;
 const connectionString = process.env.DATABASE_URL
-  || `postgresql://${encodeURIComponent(process.env.POSTGRES_USER || 'dms')}:${encodeURIComponent(process.env.POSTGRES_PASSWORD || 'dms')}@${process.env.POSTGRES_HOST || 'localhost'}:${process.env.POSTGRES_PORT || '5433'}/${process.env.POSTGRES_DB || 'dms_spese_ricavi'}?schema=public`;
+  || `postgresql://${encodeURIComponent(process.env.POSTGRES_USER || 'dms')}:${encodeURIComponent(process.env.POSTGRES_PASSWORD || 'dms')}@${process.env.POSTGRES_HOST || 'localhost'}:${process.env.POSTGRES_PORT || '5433'}/${process.env.POSTGRES_DB || 'tabularium_db'}?schema=public`;
 
 const client = new Client({ connectionString });
 

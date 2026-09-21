@@ -32,7 +32,7 @@ export default function ExpenseCategoryTrendChart({data, reportPeriod}: {data: I
   const monthlyBuckets = Boolean(reportPeriod) || period === 'year';
   const detailHref = (from: string, to: string, category?: string) => reportPeriod ? reportChartMonthHref(from, reportPeriod) : rangeHref(from, to, category);
   const seriesColors = useMemo(() => new Map(data.channels.map((category, index) => [category.id, colors[index % colors.length]])), [data.channels]);
-  const buckets = reportPeriod ? data.months.filter(bucket => reportPeriod.type === 'year' || Math.ceil(bucket.month / 3) === reportPeriod.quarter) : period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
+  const buckets = reportPeriod ? data.months.filter(bucket => reportPeriod.months ? reportPeriod.months.includes(bucket.month) : reportPeriod.type === 'year' || Math.ceil(bucket.month / 3) === reportPeriod.quarter) : period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
   const periodTotal = buckets.reduce((sum, bucket) => sum + bucket.total, 0);
   const periodCount = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
   const max = Math.max(...buckets.map(bucket => bucket.total), 1);

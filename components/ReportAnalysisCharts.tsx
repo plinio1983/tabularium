@@ -107,10 +107,11 @@ export function ExpenseCompositionChart({data, total, incomeTotal}: {
 }
 
 
-export function FiscalNonFiscalOverview({totals, year, periods}: {
+export function FiscalNonFiscalOverview({totals, year, periods, periodType}: {
     totals: Awaited<ReturnType<typeof getPeriodReport>>['summary'];
     year: number;
     periods: Array<{ year: number; month: number }>;
+    periodType: 'quarter' | 'year';
 }) {
     const incomeTotal = totals.incassoTotale;
     const expenseTotal = totals.speseTotali;
@@ -169,7 +170,7 @@ export function FiscalNonFiscalOverview({totals, year, periods}: {
                 <h2>Panoramica fiscale e non fiscale</h2>
                 <p className="muted">Composizione di entrate e spese nel periodo selezionato.</p>
             </div>
-            <span className="badge">{periods.length === 3 ? `${Math.ceil(periods[0].month / 3)}° trimestre` : 'Anno'} {year}</span>
+            <span className="badge">{periodType === 'quarter' ? `${Math.ceil(periods[0].month / 3)}° trimestre` : 'Anno'} {year}</span>
         </div>
         <div className="fiscal-overview-matrix">
             {cards.map(item =>

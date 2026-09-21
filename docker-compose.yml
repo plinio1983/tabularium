@@ -4,7 +4,7 @@ services:
     container_name: tabularium-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: dms_spese_ricavi
+      POSTGRES_DB: tabularium_db
       POSTGRES_USER: dms
       POSTGRES_PASSWORD: dms
     ports:
@@ -14,5 +14,5 @@ services:
 
 volumes:
   pgdata:
-    name: dms-accounting-manager_pgdata
-    external: true
+    name: tabularium_pgdata
+#    external: true

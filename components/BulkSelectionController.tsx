@@ -103,6 +103,7 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   const button = document.createElement("button");
   button.type = "button";
   button.className = `floating-bulk-button ${className}`.trim();
+  button.setAttribute("aria-label", label);
   const sicon = document.createElement("span");
   if (icon) sicon.textContent = icon;
   else {

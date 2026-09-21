@@ -112,7 +112,7 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
   const [error, setError] = useState('');
 
   const channelColors = useMemo(() => new Map(data.channels.map((channel, index) => [channel.id, colors[index % colors.length]])), [data.channels]);
-  const rawBuckets = reportPeriod ? data.months.filter(bucket => reportPeriod.type === 'year' || Math.ceil(bucket.month / 3) === reportPeriod.quarter) : period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
+  const rawBuckets = reportPeriod ? data.months.filter(bucket => reportPeriod.months ? reportPeriod.months.includes(bucket.month) : reportPeriod.type === 'year' || Math.ceil(bucket.month / 3) === reportPeriod.quarter) : period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
   const today = new Date().toISOString().slice(0, 10);
   const currentYear = Number(today.slice(0, 4));
   const buckets = !reportPeriod && data.year === currentYear ? rawBuckets.filter(bucket => bucket.from <= today) : rawBuckets;

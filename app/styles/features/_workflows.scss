@@ -3078,17 +3078,6 @@ button.bulk-direct-danger {
   }
 }
 
-.floating-bulk-filter {
-  @media (max-width: 760px) {
-    width: 38px;
-    min-width: 38px;
-
-    .floating-bulk-label {
-      display: none;
-    }
-  }
-}
-
 @media (max-width: 640px) {
   .recurring-expense-row {
     grid-template-columns:1fr;

@@ -4,7 +4,7 @@ import {aggregateExpenseCategoryTrend} from './expense-category-trend';
 import {zonedMidnightUtc} from './company-time';
 
 export type PeriodAnalysisReport = Awaited<ReturnType<typeof getPeriodReport>>;
-export type ReportChartPeriod = {type: 'quarter' | 'year'; quarter: number; mode: 'overall' | 'fiscal'; returnTo: string};
+export type ReportChartPeriod = {type: 'quarter' | 'year'; quarter: number; mode: 'overall' | 'fiscal'; returnTo: string; months?: number[]};
 
 /** Derive charts from the same scoped records and amounts as the report totals. */
 export function buildReportAnalysis(report: PeriodAnalysisReport, timeZone: string) {

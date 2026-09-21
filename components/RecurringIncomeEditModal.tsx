@@ -49,7 +49,7 @@ export default function RecurringIncomeEditModal({items, children, ...options}: 
     const item = items.find(item => item.id === Number(trigger.dataset.recurringIncomeEditId));
     if (item) {trigger.focus({preventScroll: true}); setSaved(false); setSelected(item);}
   }
-  return <div onClickCapture={event => {
+  return <div className="recurring-incomes-editor" onClickCapture={event => {
     if (!(event.target instanceof Element)) return;
     const trigger = event.target.closest<HTMLElement>('[data-recurring-income-edit-id]');
     if (!trigger || (trigger.tagName !== 'A' && event.target.closest('a, button, input, select, textarea, label'))) return;
