@@ -157,6 +157,16 @@
   border-radius: 7px 7px 2px 2px;
 }
 
+.quarter-report-month .quarter-report-label {
+  display: flex;
+  justify-content: space-evenly;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
 .quarter-report-month span {
   font-weight: 800;
 }

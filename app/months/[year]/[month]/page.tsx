@@ -4,7 +4,7 @@ import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
 import YearNavigationSelect from '@/components/YearNavigationSelect';
 import {prisma} from '@/lib/prisma';
 import {completedReportPeriods, getMonthlyReport, getPeriodReport} from '@/lib/reports';
-import {monthName} from '@/lib/money';
+import {moneyTone, monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {lastCompletedMonthInTimeZone, yearMonthInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
@@ -17,9 +17,9 @@ function capitalize(value: string) {
     return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : value;
 }
 
-function euroInt(value: number | string | null | undefined) {
+function euroInt(value: number | string | null | undefined, fractionDigits = 2) {
     const n = Number(value ?? 0);
-    return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2}).format(n);
+    return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR', minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits}).format(n);
 }
 
 function revenuePercentage(value: number, revenue: number) {
@@ -110,11 +110,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     }).toString() : '';
     const fiscalTotals = report.summary;
     const metrics: Array<{label: string; value: number; className?: string}> = [
-        {label: mode === 'overall' ? 'Entrate' : 'Entrate fiscali', value: report.totals.totalRevenue, className: 'is-fiscal-income'},
-        {label: mode === 'overall' ? 'Uscite' : 'Uscite fiscali', value: report.totals.totalExpenses, className: 'is-fiscal-expense'},
+        {label: mode === 'overall' ? 'Entrate' : 'Entrate fiscali', value: report.totals.totalRevenue, className: mode === 'overall' ? 'is-gross' : 'is-fiscal-income'},
+        {label: mode === 'overall' ? 'Uscite' : 'Uscite fiscali', value: report.totals.totalExpenses, className: mode === 'overall' ? 'is-fiscal' : 'is-fiscal-expense'},
         ...(mode === 'overall' ? [
-            {label: 'Margine lordo', value: report.totals.grossProfit},
-            {label: 'Risultato al netto IVA', value: report.totals.estimatedNetProfit},
+            {label: 'Margine lordo', value: report.totals.grossProfit, className: 'is-gross'},
+            {label: 'Risultato al netto IVA', value: report.totals.estimatedNetProfit, className: 'is-net'},
         ] : [
             {label: 'Utile fiscale', value: report.totals.declaredProfit, className: 'is-fiscal-profit'},
             {label: 'Margine lordo', value: report.totals.grossProfit, className: 'is-gross-margin'},
@@ -276,14 +276,14 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                         <strong>{revenuePercentage(metric.value, report.totals.totalRevenue)}</strong>
                         <span>delle entrate</span>
                     </div>
-                </div> : <div className="month-report-value" key={metric.label}>
+                </div> : <article className={`profitability-summary-kpi ${metric.className}`} key={metric.label}>
                     <span>{metric.label}</span>
-                    <strong className={metric.value < 0 ? 'text-warning' : 'month-report-positive'}>
-                        {euroInt(metric.value)} <small className="month-report-metric-percentage" aria-label={`Percentuale ${metric.label.toLowerCase()} sulle entrate`}>
-                            {revenuePercentage(metric.value, report.totals.totalRevenue)}
-                        </small>
-                    </strong>
-                </div>)}
+                    <strong className={moneyTone(metric.value)}>{euroInt(metric.value)}</strong>
+                    <div className={moneyTone(metric.value, 'profitability-summary-percentage')} aria-label={`Percentuale ${metric.label.toLowerCase()} sulle entrate`}>
+                        <b>{revenuePercentage(metric.value, report.totals.totalRevenue)}</b>
+                        <small>sugli incassi</small>
+                    </div>
+                </article>)}
             </div>
         </section>
 
@@ -297,13 +297,13 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 {chartMonths.map(item => {
                     const result = mode === 'fiscal' ? item.totals.utileFiscale : item.totals.utileLordo;
                     return <Link className="quarter-report-month" key={item.month} href={`/months/${item.year}/${item.month}?mode=${mode}&returnTo=${encodeURIComponent(currentReportHref)}`}>
-                        <div className="quarter-report-bars" aria-label={`Entrate ${euroInt(item.totals.incassoTotale)}, uscite ${euroInt(item.totals.speseTotali)}`}>
+                        <div className="quarter-report-bars" aria-label={`Entrate ${euroInt(item.totals.incassoTotale, 0)}, uscite ${euroInt(item.totals.speseTotali, 0)}`}>
                             <i className="is-income" style={{height: `${item.totals.incassoTotale ? Math.max(3, item.totals.incassoTotale / quarterChartMaximum * 100) : 0}%`, minHeight: item.totals.incassoTotale ? undefined : 0}}/>
                             <i className="is-expense" style={{height: `${item.totals.speseTotali ? Math.max(3, item.totals.speseTotali / quarterChartMaximum * 100) : 0}%`, minHeight: item.totals.speseTotali ? undefined : 0}}/>
                         </div>
-                        <div className="flex justify-evenly">
+                        <div className="quarter-report-label flex justify-evenly">
                             <span>{capitalize(monthName(item.month))}</span>
-                            <strong className={result < 0 ? 'is-negative' : 'is-positive'}>{euroInt(result)}</strong>
+                            <strong className={result < 0 ? 'is-negative' : 'is-positive'}>{euroInt(result, 0)}</strong>
                         </div>
                     </Link>;
                 })}
