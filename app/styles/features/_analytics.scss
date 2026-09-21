@@ -3663,6 +3663,14 @@ html, body {
   padding: 16px;
   border-radius: 15px;
   background: #f8fafc;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .report-vat-equation > div {
@@ -3844,9 +3852,6 @@ html, body {
 }
 
 @media (max-width: 900px) {
-  .report-vat-equation {
-    grid-template-columns: 1fr;
-  }
   .report-vat-equation > b {
     justify-self: center;
     line-height: 1;
