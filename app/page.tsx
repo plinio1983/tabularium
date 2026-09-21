@@ -10,7 +10,6 @@ import {
     getOrderDatePeriodSummary
 } from '@/lib/reports';
 import DashboardFiscalAjax from '@/components/DashboardFiscalAjax';
-import DashboardSectionNav from '@/components/DashboardSectionNav';
 import DashboardTasks from '@/components/DashboardTasks';
 import {requireWorkspace} from '@/lib/auth';
 import {calendarDayNumber, yearMonthInTimeZone} from '@/lib/company-time';
@@ -1645,8 +1644,6 @@ export default async function Dashboard({searchParams}: {
             {/*</div>*/}
         </div>
         <div className="dashboard-body-wrapper">
-            <DashboardSectionNav/>
-
             <DashboardTasks workspaceId={current.workspace.id} companyId={current.company.id} timeZone={current.company.timeZone} now={now}/>
 
             <div id="sintesi" className="dashboard-report-charts dashboard-anchor-section">

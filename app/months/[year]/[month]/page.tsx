@@ -110,14 +110,14 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     }).toString() : '';
     const fiscalTotals = report.summary;
     const metrics: Array<{label: string; value: number; className?: string}> = [
-        {label: mode === 'overall' ? 'Entrate' : 'Entrate fiscali', value: report.totals.totalRevenue, className: mode === 'overall' ? 'is-gross' : 'is-fiscal-income'},
-        {label: mode === 'overall' ? 'Uscite' : 'Uscite fiscali', value: report.totals.totalExpenses, className: mode === 'overall' ? 'is-fiscal' : 'is-fiscal-expense'},
+        {label: mode === 'overall' ? 'Entrate' : 'Entrate fiscali', value: report.totals.totalRevenue, className: 'is-gross'},
+        {label: mode === 'overall' ? 'Uscite' : 'Uscite fiscali', value: report.totals.totalExpenses, className: 'is-fiscal'},
         ...(mode === 'overall' ? [
             {label: 'Margine lordo', value: report.totals.grossProfit, className: 'is-gross'},
             {label: 'Risultato al netto IVA', value: report.totals.estimatedNetProfit, className: 'is-net'},
         ] : [
-            {label: 'Utile fiscale', value: report.totals.declaredProfit, className: 'is-fiscal-profit'},
-            {label: 'Margine lordo', value: report.totals.grossProfit, className: 'is-gross-margin'},
+            {label: 'Utile fiscale', value: report.totals.declaredProfit, className: 'is-fiscal'},
+            {label: 'Margine lordo', value: report.totals.grossProfit, className: 'is-gross'},
         ]),
     ];
     const monthNavOptions = monthNavLabels.map((label, index) => {
@@ -266,17 +266,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 ? 'Accrediti e pagamenti effettivi del periodo, inclusi i movimenti non fiscali. Il risultato al netto IVA rettifica il margine lordo per l’IVA sugli incassi e sulle spese pagate, senza contare due volte i versamenti IVA.'
                 : 'Entrate e uscite fiscali del periodo di fatturazione, indipendentemente dalle date di accredito e pagamento. L’utile fiscale esclude l’IVA; i versamenti IVA sono separati dai costi.'}</span>
             <div className={`month-report-metrics month-report-metrics-${mode}`}>
-                {metrics.map(metric => mode === 'fiscal' ? <div
-                    className={`fiscal-overview-metric ${metric.className}${metric.value < 0 ? ' is-warning' : ''}`}
-                    key={metric.label}
-                >
-                    <span>{metric.label}</span>
-                    <strong>{euroInt(metric.value)}</strong>
-                    <div className="fiscal-overview-percentage" aria-label={`Percentuale ${metric.label.toLowerCase()} sulle entrate`}>
-                        <strong>{revenuePercentage(metric.value, report.totals.totalRevenue)}</strong>
-                        <span>delle entrate</span>
-                    </div>
-                </div> : <article className={`profitability-summary-kpi ${metric.className}`} key={metric.label}>
+                {metrics.map(metric => <article className={`profitability-summary-kpi ${metric.className}`} key={metric.label}>
                     <span>{metric.label}</span>
                     <strong className={moneyTone(metric.value)}>{euroInt(metric.value)}</strong>
                     <div className={moneyTone(metric.value, 'profitability-summary-percentage')} aria-label={`Percentuale ${metric.label.toLowerCase()} sulle entrate`}>
@@ -290,7 +280,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         {periodType === 'month' ? null : <section className={periodType === 'year' ? 'card quarter-report-trend year-report-trend' : 'card quarter-report-trend'} aria-labelledby="quarter-report-trend-title">
             <div className="quarter-report-trend-heading">
                 <p className="muted">Andamento del periodo</p>
-                <h3 id="quarter-report-trend-title">Entrate, uscite e risultato mensile</h3>
+                <h3 id="quarter-report-trend-title">Entrate, uscite e margine lordo mensile</h3>
             </div>
             <div className="quarter-report-legend" aria-hidden="true"><span className="is-income">Entrate</span><span className="is-expense">Uscite</span></div>
             <div className="quarter-report-chart">
