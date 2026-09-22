@@ -90,7 +90,13 @@ type SupplierOption = {
     defaultExpenseCategoryId?: number | null;
     defaultVatRate?: string | number | null;
 };
-type EmployeeOption = { id: number; firstName: string; lastName: string; employeeCode?: string | null; status: 'ACTIVE' | 'INACTIVE' };
+type EmployeeOption = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    employeeCode?: string | null;
+    status: 'ACTIVE' | 'INACTIVE'
+};
 
 type Props = {
     expenses: ExpenseListItem[];
@@ -135,13 +141,15 @@ function mobileDateLabel(value?: Date | null) {
 
 function fiscalBadgeMobile(value: boolean) {
     const item = value ? {className: ''} : invoiceStatusStyles.NON_PREVISTA;
-    const label = value ? '✓ Fis' : '✕ Nf';
-    return <span className={badgeClass(item.className)}>{label}</span>;
+    const label = value ? '✓ Fis.' : '✕ Non Fis.';
+    const cssClass = value ? 'text-primary strong' : 'text-muted strong';
+    //return <span className={badgeClass(item.className)}>{label}</span>;
+    return <span className={cssClass}>{label}</span>;
 }
 
 function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
     const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.IN_ATTESA) : yesNoStyles.yes;
-    let label = !value ? 'PDF' : '@Fatt';
+    let label = !value ? 'PDF' : 'Fatt';
     let state = invoiceStatus;
     if (invoiceStatus === 'IN_ATTESA') {
         state = '⏳ ';
@@ -151,7 +159,7 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
     }
     if (invoiceStatus === 'NON_PREVISTA') {
         state = '✕ ';
-        label = 'NP';
+        label = 'No Fatt';
     }
     if (invoiceStatus === 'PARZIALE') {
         state = '⏳ ';
@@ -164,6 +172,7 @@ function electronicInvoiceBadge(value: boolean, invoiceStatus?: string) {
 function invoiceBadge(value: boolean, invoiceStatus?: string) {
     let style = !value ? 'tone-muted' : yesNoStyles.yes.className;
     let label = '';
+    let cssClass = '';
     if (!value) {
         if (invoiceStatus === 'NON_PREVISTA') {
             label = '✕';
@@ -171,10 +180,13 @@ function invoiceBadge(value: boolean, invoiceStatus?: string) {
             style = 'tone-neutral';
             label = 'PDF';
         }
+        return <span className={badgeClass(style)}>{label}</span>;
+
     } else {
-        label = '✓ @Fatt';
+        label = '@ Fatt';
+        cssClass = 'text-primary strong';
+        return <span className={cssClass}>{label}</span>;
     }
-    return <span className={badgeClass(style)}>{label}</span>;
 }
 
 function expenseSupplierName(expense: ExpenseListItem) {
@@ -235,46 +247,62 @@ export default function ExpensesList({
                 suppliers={suppliers}
                 supplierEligibleIds={expenses.filter(expense => expense.expenseType === 'STANDARD').map(expense => expense.id)}
             />
-            <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar expense-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
+            <form id={formId} action={`/api/expenses/bulk?returnTo=${returnTo}`} method="post"
+                  className="bulk-actions-bar grouped-bulk-actions-bar expense-bulk-actions-bar confirm-bulk-form"
+                  data-bulk-button-group="true">
                 <label className="bulk-select-all-inline">
-                    <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese visibili"/>
+                    <input type="checkbox" className="bulk-select-all" data-bulk-target={formId}
+                           aria-label="Seleziona tutte le spese visibili"/>
                 </label>
                 <div className="bulk-action-buttons btn-group">
-                    <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
+                    <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu
+                             data-bulk-form={formId}>
                         <summary className="bulk-action-trigger">
                             <span className="btn-icon hidden-mobile">⚙</span>
                             <span className="hidden-sm-up">Actions</span>
                             <span className="hidden-sm-down">Bulk actions</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
-                            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
-                                    formAction="/api/exports/expenses" formMethod="post" data-confirm-label="Esporta CSV">
+                            <button className="btn btn-sm btn-default" type="submit" name="bulkAction"
+                                    value="export_csv"
+                                    formAction="/api/exports/expenses" formMethod="post"
+                                    data-confirm-label="Esporta CSV">
                                 <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                             </button>
-                            <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
-                                <span className="btn-icon">✓</span><span className="hidden-sm-down">Fattura emessa</span>
+                            <button className="btn btn-sm btn-default" type="submit" name="bulkAction"
+                                    value="invoice_emitted">
+                                <span className="btn-icon">✓</span><span
+                                className="hidden-sm-down">Fattura emessa</span>
                             </button>
-                            <button className="btn btn-sm btn-default is-disabled" type="button" data-bulk-copy aria-disabled="true" disabled>
+                            <button className="btn btn-sm btn-default is-disabled" type="button" data-bulk-copy
+                                    aria-disabled="true" disabled>
                                 <span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia spese selezionate</span>
                             </button>
                             <BulkExpenseAttachmentsModal formId={formId}/>
-                            <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
+                            <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete"
+                                    type="submit"
                                     name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
-                                <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
+                                <span className="btn-icon">🗑</span><span
+                                className="hidden-sm-down">Rimuovi selezionati</span>
                             </button>
                         </div>
                     </details>
-                    <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true"
-                         data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId=" data-edit-trigger-attr="data-expense-edit-id" data-copy-trigger-attr="data-expense-copy-id" data-return-to={returnTo}>
+                    <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId}
+                         data-bulk-multi-edit="true"
+                         data-edit-base="/expenses/" data-copy-base="/expenses/new?copyId="
+                         data-edit-trigger-attr="data-expense-edit-id" data-copy-trigger-attr="data-expense-copy-id"
+                         data-return-to={returnTo}>
                         <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
                             <span className="btn-icon">✎</span>
                             <span className="hidden-sm-down">Modifica</span>
                         </a>
-                        <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-payment aria-disabled="true" disabled>
+                        <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-payment
+                                aria-disabled="true" disabled>
                             <span className="btn-icon" aria-hidden="true">€</span>
                             <span className="hidden-sm-down">Inserisci pagamento</span>
                         </button>
-                        <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete"
+                        <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down"
+                                name="bulkAction" value="delete"
                                 data-bulk-delete data-confirm-label="Elimina" disabled>
                             <span className="btn-icon icon-small">🗑</span>
                             <span className="hidden-sm-down">Elimina</span>
@@ -282,7 +310,8 @@ export default function ExpensesList({
                     </div>
                 </div>
                 <div className="bulk-inner-container">
-                    <ExpenseNewTriggerButton className="bulk-direct-link bulk-add-link btn btn-md btn-primary" floatingLabel="Aggiungi spesa">
+                    <ExpenseNewTriggerButton className="bulk-direct-link bulk-add-link btn btn-md btn-primary"
+                                             floatingLabel="Aggiungi spesa">
                         <span className="btn-icon">＋</span>
                         <span className="hidden-sm-down">Spesa</span>
                     </ExpenseNewTriggerButton>
@@ -338,25 +367,30 @@ export default function ExpensesList({
 
                 return <div className={recordClass} key={`mobile-${expense.id}`}>
                     {selectable ? <div className="mobile-record-select">
-                        <input form={formId} type="checkbox" name="ids" value={expense.id} data-payment-complete={!unpaid ? "true" : "false"} aria-label={`Seleziona spesa ${expense.id}`}/>
+                        <input form={formId} type="checkbox" name="ids" value={expense.id}
+                               data-payment-complete={!unpaid ? "true" : "false"}
+                               aria-label={`Seleziona spesa ${expense.id}`}/>
                     </div> : null}
                     <Link className="mobile-record-link" href={detailHref}>
                         <div className="mobile-record-main">
                             <div className="mobile-record-meta">
                                 <div className="mobile-record-meta-left">
                                     {/*-- Fiscal Badge -->*/}
-                                    {!isNoVatExpense ? fiscalBadgeMobile(expense.isDeclared) : isPayroll ? <span className="badge tone-neutral">Fiscale</span> : isTaxContribution ? <span className="badge tone-neutral">Non IVA</span> : null}
+                                    {!isNoVatExpense ? fiscalBadgeMobile(expense.isDeclared) : isPayroll ?
+                                        <span className="text-primary strong">✓ Fis.</span> : isTaxContribution ?
+                                            <span className="text-muted strong">Imposte</span> : <span className="text-muted strong">IVA</span>}
+
+                                    {/*-- Periodo fiscale -->*/}
+                                    <span className="mobile-record-date hidden-xs-up">&nbsp; • &nbsp;{formatMonthPeriod(expense.month)}</span>
+                                    <span className="mobile-record-date date-long hidden-xs-down">&nbsp; • &nbsp;{formatPeriod(expense.month, expense.year)}</span>
 
                                     {/*-- Fatttura -->*/}
                                     {!isNoVatExpense && expense.isDeclared ?
                                         <span className="expense-invoice-indicator">
+                                            &nbsp;•&nbsp;
                                             {electronicInvoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}
                                             <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/>
                                         </span> : null}
-
-                                    {/*-- Periodo fiscale -->*/}
-                                    <span className="mobile-record-date hidden-xs-up">• &nbsp;{formatMonthPeriod(expense.month)}</span>
-                                    <span className="mobile-record-date date-long hidden-xs-down">• &nbsp;{formatPeriod(expense.month, expense.year)}</span>
 
                                     {/*-- Aliquota IVA -->*/}
                                     {/*{isVatSettlement ? <span className="badge tone-neutral">100%</span> : isTaxContribution || isPayroll ? <span className="badge tone-neutral">N/A</span> :*/}
@@ -366,13 +400,15 @@ export default function ExpensesList({
                                     {/*-- Icona pagamento -->*/}
                                     <span>{expensePaymentIcon(expense)}</span>
                                     {/*-- Data ordine -->*/}
-                                    <span className="ml-12 mobile-record-date">{mobileDateLabel(expense.receivedDate)}</span>
+                                    <span
+                                        className="ml-12 mobile-record-date">{mobileDateLabel(expense.receivedDate)}</span>
                                 </div>
                             </div>
                             <div className="mobile-record-title-row">
 
                                 {/*-- Ricorrente/Singola/IVA -->*/}
-                                <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>
+                                <span
+                                    className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>
                                     {isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : isPayroll ? 'BP' : expense.isRecurring ? 'R' : 'S'}
                                 </span>
                                 <div className="mobile-record-title-left">
@@ -390,11 +426,17 @@ export default function ExpensesList({
                                 <div className="mobile-record-subtitle-left">
                                     {/*-- Categoria -->*/}
                                     {expense.category ?
-                                        <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : null}
+                                        <span title={expense.category.name} className="text-secondary strong">
+                                            {categoryLabel(expense.category, expense.category.code)}
+                                        </span> : null}
+                                    &nbsp;•&nbsp;
+                                    {/*{expense.category ?*/}
+                                    {/*    <span title={expense.category.name} className={badgeClass(categoryClassName)}>*/}
+                                    {/*        {categoryLabel(expense.category, expense.category.code)}*/}
+                                    {/*    </span> : null}*/}
 
                                     {/*-- Descrizione / Fornitore -->*/}
-                                    {showSupplierColumn ?
-                                        <span className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'}</span> : supplierName}
+                                    {showSupplierColumn ? <span className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'}</span> : supplierName}
                                 </div>
                                 <div>
                                     <span className={badgeClass(statusStyle.className)}> {statusLabel}</span>
@@ -408,11 +450,13 @@ export default function ExpensesList({
         </div>
 
         <div className="table-scroll">
-            <table className="expenses-table compact-expenses-table" data-sortable-table data-default-sort="order-date" data-default-sort-dir="desc">
+            <table className="expenses-table compact-expenses-table" data-sortable-table data-default-sort="order-date"
+                   data-default-sort-dir="desc">
                 <thead>
                 <tr>
                     {selectable ? <th className="cell-option cell-center">
-                        <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le spese"/>
+                        <input type="checkbox" className="bulk-select-all" data-bulk-target={formId}
+                               aria-label="Seleziona tutte le spese"/>
                     </th> : null}
                     <th className="cell-order-date" data-sort-key="order-date" data-sort-type="date">
                         <span className="th-wrap">Data<br/>riferimento</span></th>
@@ -483,36 +527,50 @@ export default function ExpensesList({
                         tabIndex={0}
                     >
                         {selectable ? <td className="cell-option cell-center">
-                            <input form={formId} type="checkbox" name="ids" value={expense.id} data-payment-complete={!paymentWaiting ? "true" : "false"} aria-label={`Seleziona spesa ${expense.id}`}/>
+                            <input form={formId} type="checkbox" name="ids" value={expense.id}
+                                   data-payment-complete={!paymentWaiting ? "true" : "false"}
+                                   aria-label={`Seleziona spesa ${expense.id}`}/>
                         </td> : null}
                         <td className="cell-order-date">{dateLabel(expense.receivedDate)}</td>
                         <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>
                         <td className="cell-type">
-                            <span className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : isPayroll ? 'BP' : expense.isRecurring ? 'R' : 'S'}</span>
+                            <span
+                                className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : isPayroll ? 'BP' : expense.isRecurring ? 'R' : 'S'}</span>
                         </td>
                         <td className="cell-category">{expense.category ?
-                            <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
+                            <span title={expense.category.name}
+                                  className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
                         {showSupplierColumn ?
-                            <td className="cell-supplier cell-compact" title={supplierName}>{isPayroll && expense.employeeId ?
-                                <Link className="supplier-table-link" href={`/employees/${expense.employeeId}?returnTo=${returnTo}`}>{supplierName}</Link> : expense.supplierId ?
-                                <Link className="supplier-table-link" href={`/suppliers/${expense.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td> : null}
+                            <td className="cell-supplier cell-compact"
+                                title={supplierName}>{isPayroll && expense.employeeId ?
+                                <Link className="supplier-table-link"
+                                      href={`/employees/${expense.employeeId}?returnTo=${returnTo}`}>{supplierName}</Link> : expense.supplierId ?
+                                    <Link className="supplier-table-link"
+                                          href={`/suppliers/${expense.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td> : null}
                         <td className="cell-amount">
-                            <strong className={moneyTone(amount)}>{euro(expense.amount as string | number)} &nbsp; {expensePaymentIcon(expense)}</strong>
+                            <strong
+                                className={moneyTone(amount)}>{euro(expense.amount as string | number)} &nbsp; {expensePaymentIcon(expense)}</strong>
                         </td>
-                        <td className="cell-vat">{isVatSettlement ? <span className="badge tone-neutral">100%</span> : isTaxContribution || isPayroll ? <span className="badge tone-neutral">N/A</span> :
-                            <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
-                        <td className="cell-description" title={expense.description ?? ''}>{expense.description ?? '-'}</td>
+                        <td className="cell-vat">{isVatSettlement ?
+                            <span className="badge tone-neutral">100%</span> : isTaxContribution || isPayroll ?
+                                <span className="badge tone-neutral">N/A</span> :
+                                <span className={badgeClass(vatStyle.className)}>{Number(expense.vatRate)}%</span>}</td>
+                        <td className="cell-description"
+                            title={expense.description ?? ''}>{expense.description ?? '-'}</td>
                         <td className="cell-payment-state">{overdue ?
-                            <span className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {statusLabel}</span> :
-                            <span className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {statusLabel}</span>}</td>
+                            <span
+                                className={badgeClass(paymentStatusStyles.SCADUTO.className)}>{paymentStatusStyles.SCADUTO.icon} {statusLabel}</span> :
+                            <span
+                                className={badgeClass(paymentStyle.className)}>{paymentStyle.icon} {statusLabel}</span>}</td>
                         <td className="cell-invoice-state">{isNoVatExpense ?
-                            <span className="badge color-badge tone-muted">✕</span> : <span className="expense-invoice-indicator">
+                            <span className="badge color-badge tone-muted">✕</span> :
+                            <span className="expense-invoice-indicator">
                                 <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
                                 <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/>
                             </span>}
                         </td>
                         <td className="cell-ebilling">{isNoVatExpense ?
-                            <span className="badge color-badge tone-muted                                                   ">✕</span> : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
+                            <span className="badge color-badge tone-muted">✕</span> : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
                         <td className="cell-residual">
                             <strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
                     </tr>;

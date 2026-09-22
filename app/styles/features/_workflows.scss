@@ -205,7 +205,6 @@
   grid-template-columns: repeat(6, minmax(150px, 1fr));
 }
 
-
 /* v42: scadenze, report linkabili e azioni dashboard */
 .tone-critical {
   background: #fff1f2;
@@ -213,7 +212,32 @@
   border-color: #fecdd3;
 }
 
-.text-critical, .money-critical {
+.strong {
+  font-weight: 700;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.text-primary {
+  color: #2649b8;
+}
+
+.text-secondary {
+  color: #5746b8;
+}
+
+.text-warning {
+  color: #8a5200;
+}
+
+.text-success {
+  color: #19733b;
+}
+
+.text-critical,
+.money-critical {
   color: #b42318 !important;
 }
 
@@ -2770,6 +2794,12 @@ body.bulk-attachments-modal-open {
 .bulk-action-trigger .bulk-label,
 .bulk-action-menu-panel .bulk-label {
   white-space: nowrap;
+}
+
+.expense-page-content .record-list-card {
+  @media (max-width: 480px) {
+    padding: 14px 6px;
+  }
 }
 
 .record-list-card {

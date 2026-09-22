@@ -1658,7 +1658,6 @@ body.invoice-attachments-modal-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 0;
 }
 
 .customer-mobile-select,
@@ -1677,7 +1676,6 @@ body.invoice-attachments-modal-open {
   min-width: 0;
   display: block;
   border-radius: 14px;
-  padding: 4px 0;
 }
 
 .mobile-record-link:active {
@@ -1728,7 +1726,6 @@ body.invoice-attachments-modal-open {
   text-overflow: ellipsis;
   white-space: nowrap;
   align-items: center;
-  padding-left: 4px;
 }
 
 .income-mobile-item .mobile-record-subtitle {
@@ -1860,15 +1857,21 @@ body.invoice-attachments-modal-open {
 
 
 .recurring-expense-badge {
-  background: #ede9fe;
-  color: #6d28d9;
-  border-color: #ddd6fe;
+  //background: #ede9fe;
+  //color: #6d28d9;
+  //border-color: #ddd6fe;
+  background: #eef2ff;
+  color: #2649b8;
+  border-color: #dbe3ff;
 }
 
 .single-expense-badge {
-  background: #ecfdf5 !important;
-  color: #047857 !important;
-  border-color: #04785763 !important;
+  //background: #ecfdf5 !important;
+  //color: #047857 !important;
+  //border-color: #04785763 !important;
+  background: #eef2ff;
+  color: #2649b8;
+  border-color: #dbe3ff;
   border-width: 1px;
   border-style: solid;
 }
