@@ -81,7 +81,7 @@ export default async function ClientsPage({searchParams}: {
     });
     const active = ['businessName', 'alias', 'email', 'vatNumber', 'taxCodeSdi', 'pec', 'iban', 'swift'].filter(key => input(filters, key));
 
-    return <div className="grid">
+    return <div className="grid client-page-content">
         <ClientEditModalController salesChannels={salesChannels}/><ClickableDesktopRows/><BulkSelectionController/>
         <div className="toolbar-card toolbar-card-wrap">
             <div>
@@ -180,7 +180,10 @@ export default async function ClientsPage({searchParams}: {
                                 <span className="party-mobile-row-grow">{customer.alias || 'Nessun referente'}</span><span className="party-mobile-row-grow text-right"><strong>{openCount}</strong> incassi da accreditare</span>
                             </div>
                             <div className="mobile-record-meta">
-                                <span className="party-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualAmount)}</strong> incassati {currentYear}</span><span className="badge badge-color">{annualCount} incassi {currentYear}</span>
+                                <span className="party-mobile-row-grow">
+                                    <strong className="badge color-badge tone-insurance">{euro(annualAmount)}</strong> incassati {currentYear}
+                                </span>
+                                <span className="badge badge-color">{annualCount} incassi {currentYear}</span>
                             </div>
                         </div>
                     </Link></div>)}{!rows.length ?

@@ -11,6 +11,7 @@ import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/wor
 import MonthComparisonPanel from '@/components/MonthComparisonPanel';
 import PeriodVatOverview from '@/components/PeriodVatOverview';
 import PeriodReportCharts from '@/components/PeriodReportCharts';
+import MonthlyEconomicTrendChart from '@/components/MonthlyEconomicTrendChart';
 import {comparisonPeriod, type MonthComparisonKind} from '@/lib/month-comparison';
 
 function capitalize(value: string) {
@@ -299,6 +300,15 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 })}
             </div>
         </section>}
+
+        {periodType !== 'month' ? <MonthlyEconomicTrendChart
+            key={`${year}-${quarter}-${periodType}-${mode}`}
+            data={report.monthlyBreakdown}
+            year={year}
+            periodLabel={periodType === 'quarter' ? `${quarter}° trimestre ${year}` : `anno ${year}`}
+            mode={mode}
+            returnTo={currentReportHref}
+        /> : null}
 
         <div className="grid grid-2 month-report-panels">
             <section className="card month-report-section"><h3>IVA</h3>

@@ -204,7 +204,7 @@ export default async function SuppliersPage({searchParams}: {
         }
     };
 
-    return <div className="grid">
+    return <div className="grid supplier-page-content">
         <SupplierEditModalController categories={categoryOptions}/>
         <div className="toolbar-card toolbar-card-wrap">
             <div>

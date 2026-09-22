@@ -1003,9 +1003,9 @@
   }
 }
 
-@media (400px <= width < 670px) {
+@media (576px <= width < 670px) {
   .filter-drawer-panel.transaction-filter-drawer-panel .record-styled-drawer-filters {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    //grid-template-columns: repeat(2, minmax(0, 1fr));
 
     .filter-group {
       grid-column: 1 / -1;

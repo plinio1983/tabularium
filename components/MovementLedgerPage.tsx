@@ -120,6 +120,9 @@ export default async function MovementLedgerPage({kind, searchParams}: {
             </Link></div>
         </div>
         <section className="card ledger-overview">
+            <div className="mobile-page-title">
+                <h2>{title}</h2>
+            </div>
             <MovementLedgerFilters path={path} quick={filters.period.quick} year={String(filters.period.year)} from={filters.period.from} to={filters.period.to} methods={namedOptions('method')} banks={namedOptions('bank')} types={types} channels={channels}/>
             <p className="muted">{interval} · {current.company.name}</p>
             <div className="ledger-kpis">

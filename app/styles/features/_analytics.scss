@@ -4291,7 +4291,7 @@ html, body {
   align-self: end;
 }
 
-.dashboard-header-card .dashboard-year-selector {
+.dashboard-year-selector {
   grid-column: 1 / -1;
   justify-self: start;
   display: flex;
@@ -4301,15 +4301,17 @@ html, body {
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: #fafbff;
+  //background: #fafbff;
+  background: #fff;
+  width: 100% ;
 }
 
-.dashboard-header-card .dashboard-year-selector select {
+.dashboard-year-selector select {
   width: auto;
   min-width: 230px;
 }
 
-.dashboard-header-card .dashboard-year-selector button {
+.dashboard-year-selector button {
   width: auto;
   white-space: nowrap;
 }
@@ -4857,7 +4859,7 @@ html, body {
 
 @media (max-width: 700px) {
   .dashboard-header-card .dashboard-top-actions,
-  .dashboard-header-card .dashboard-year-selector {
+  .dashboard-year-selector {
     justify-self: stretch;
   }
 
@@ -4875,28 +4877,28 @@ html, body {
     }
   }
 
-  .dashboard-header-card .dashboard-year-selector {
+  .dashboard-year-selector {
     display: grid;
     grid-template-columns: 1fr auto;
     //margin-top: 20px;
   }
 
-  .dashboard-header-card .dashboard-year-selector .selector-label {
+  .dashboard-year-selector .selector-label {
     grid-column: 1 / -1;
   }
 
-  .dashboard-header-card .dashboard-year-selector select {
+  .dashboard-year-selector select {
     width: 100%;
     min-width: 0;
   }
 }
 
 @media (max-width: 520px) {
-  .dashboard-header-card .dashboard-year-selector {
+  .dashboard-year-selector {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-header-card .dashboard-year-selector button {
+  .dashboard-year-selector button {
     width: 100%;
   }
 }
@@ -5678,5 +5680,92 @@ html, body {
     justify-content: space-between;
     gap: 8px;
     text-align: left;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-grid {
+    gap: 12px;
+
+    .dashboard-header-card {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+    }
+
+    .dashboard-top-actions {
+      display: none;
+    }
+
+    .dashboard-title-block h2 {
+      margin: 0;
+    }
+
+    .dashboard-title-block p {
+      margin: 5px 0 0;
+    }
+
+    .dashboard-body-wrapper {
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .dashboard-body-wrapper .card {
+      padding: 14px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .report-mobile-header-actions .trend-mode-toggle {
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .report-mobile-header-actions .trend-mode-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    width: auto;
+    max-width: none;
+    min-height: 32px;
+    padding: 8px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+    text-decoration: none;
+    flex-grow: 1;
+  }
+
+  .month-report-page {
+    padding: 14px;
+    gap: 12px;
+
+    .month-report-mode-toggle {
+      display: none;
+    }
+
+    .month-report-header {
+      gap: 12px;
+      padding-bottom: 0;
+    }
+
+    .month-report-navigation {
+      gap: 10px;
+      padding-bottom: 12px;
+    }
+
+    .month-report-title {
+      margin-top: 0;
+    }
+
+    > .card,
+    .month-report-panels > .card {
+      padding: 14px;
+    }
   }
 }

@@ -182,6 +182,13 @@
   gap: 10px;
 }
 
+.report-mobile-header-actions,
+.ledger-mobile-header-actions,
+.receipt-list-mobile-header-actions,
+.employee-mobile-header-actions,
+.client-mobile-header-actions,
+.supplier-mobile-header-actions,
+.dashboard-mobile-header-actions,
 .income-mobile-header-actions {
   display: none;
 }
@@ -199,6 +206,20 @@
 }
 
 @media (max-width: 576px) {
+  .report-page-header .site-header-brand,
+  .ledger-page-header .site-header-brand,
+  .receipt-list-page-header .site-header-brand,
+  .employee-page-header .site-header-brand,
+  .client-page-header .site-header-brand,
+  .supplier-page-header .site-header-brand,
+  .report-page-header .site-header-actions .nav-links,
+  .ledger-page-header .site-header-actions .nav-links,
+  .receipt-list-page-header .site-header-actions .nav-links,
+  .employee-page-header .site-header-actions .nav-links,
+  .client-page-header .site-header-actions .nav-links,
+  .supplier-page-header .site-header-actions .nav-links,
+  .dashboard-page-header .site-header-brand,
+  .dashboard-page-header .site-header-actions .nav-links,
   .income-page-header .site-header-brand,
   .income-page-header .site-header-actions .nav-links,
   .expense-page-header .site-header-brand,
@@ -210,11 +231,25 @@
     display: none;
   }
 
+  .report-page-header,
+  .ledger-page-header,
+  .receipt-list-page-header,
+  .employee-page-header,
+  .client-page-header,
+  .supplier-page-header,
+  .dashboard-page-header,
   .income-page-header {
     align-items: center;
     gap: 8px;
   }
 
+  .report-mobile-header-actions,
+  .ledger-mobile-header-actions,
+  .receipt-list-mobile-header-actions,
+  .employee-mobile-header-actions,
+  .client-mobile-header-actions,
+  .supplier-mobile-header-actions,
+  .dashboard-mobile-header-actions,
   .income-mobile-header-actions {
     display: flex;
     align-items: center;
@@ -223,11 +258,32 @@
     flex: 1 1 auto;
   }
 
+  .dashboard-mobile-header-actions .btn {
+    min-width: 0;
+    white-space: nowrap;
+
+    @media(max-width: 576px) {
+      flex-grow: 1;
+    }
+  }
+
+  .ledger-mobile-header-actions .btn,
+  .receipt-list-mobile-header-actions .btn,
+  .employee-mobile-header-actions .btn,
+  .client-mobile-header-actions .btn,
+  .supplier-mobile-header-actions .btn,
   .income-mobile-header-actions .btn {
     min-width: 0;
     white-space: nowrap;
   }
 
+  .report-page-header .site-header-actions,
+  .ledger-page-header .site-header-actions,
+  .receipt-list-page-header .site-header-actions,
+  .employee-page-header .site-header-actions,
+  .client-page-header .site-header-actions,
+  .supplier-page-header .site-header-actions,
+  .dashboard-page-header .site-header-actions,
   .income-page-header .site-header-actions {
     flex: 0 0 auto;
   }

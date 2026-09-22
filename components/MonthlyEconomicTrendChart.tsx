@@ -20,11 +20,18 @@ function monthName(month: number) {
   return months[month - 1] ?? '';
 }
 
-function reportHref(year: number, month: number) {
-  return `/months/${year}/${month}?returnTo=${encodeURIComponent('/')}`;
+function reportHref(year: number, month: number, mode: 'overall' | 'fiscal', returnTo: string) {
+  return `/months/${year}/${month}?mode=${mode}&returnTo=${encodeURIComponent(returnTo)}`;
 }
 
-export default function MonthlyEconomicTrendChart({data, year}: {data: MonthData[]; year: number}) {
+export default function MonthlyEconomicTrendChart({data, year, periodLabel, mode, returnTo}: {
+  data: MonthData[];
+  year: number;
+  periodLabel: string;
+  mode: 'overall' | 'fiscal';
+  returnTo: string;
+}) {
+  const profitLabel = mode === 'fiscal' ? 'Utile fiscale' : 'Risultato al netto IVA';
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const selected = selectedIndex === null ? null : data[selectedIndex];
   const positiveValues = data.flatMap(month => [month.totals.incassoTotale, month.totals.speseTotali, month.totals.utileNetto]);
@@ -51,18 +58,18 @@ export default function MonthlyEconomicTrendChart({data, year}: {data: MonthData
     <div className="card-heading-row">
       <div>
         <h2>Entrate, uscite e utile per mese</h2>
-        <p className="muted">Andamento economico dell’anno {year}. La linea rappresenta l’utile netto.</p>
+        <p className="muted">Andamento economico · {periodLabel}. La linea rappresenta {mode === 'fiscal' ? 'l’utile fiscale' : 'il risultato al netto IVA'}.</p>
       </div>
       <div className="dashboard-chart-legend" aria-label="Legenda">
         <span><i className="legend-income"/>Entrate</span>
         <span><i className="legend-expense"/>Uscite</span>
-        <span><i className="legend-profit"/>Utile netto</span>
+        <span><i className="legend-profit"/>{profitLabel}</span>
       </div>
     </div>
     {data.length ? <>
       <div className="dashboard-svg-chart-scroll">
         <svg className="dashboard-economic-chart" viewBox={`0 0 ${width} ${height}`} role="img"
-             aria-label={`Entrate, uscite e utile netto mensile ${year}`}>
+             aria-label={`Entrate, uscite e ${profitLabel.toLowerCase()} mensile ${year}`}>
           {[minValue, 0, maxValue / 2, maxValue].filter((value, index, all) => all.indexOf(value) === index).map(value => {
             const gridY = y(value);
             return <g key={value}>
@@ -88,14 +95,14 @@ export default function MonthlyEconomicTrendChart({data, year}: {data: MonthData
           {data.map((month, index) => {
             const x = left + groupWidth * index + groupWidth / 2;
             const pointY = y(month.totals.utileNetto);
-            const tooltipWidth = 200;
+            const tooltipWidth = 270;
             const tooltipX = Math.max(left, Math.min(x - tooltipWidth / 2, width - right - tooltipWidth));
             const tooltipY = pointY > top + 66 ? pointY - 64 : pointY + 13;
             const label = monthName(month.month);
             return <g key={`profit-${month.month}`}
                       className={`dashboard-chart-profit-marker ${selectedIndex === index ? 'is-selected' : ''}`}
                       tabIndex={0} role="button"
-                      aria-label={`${label}: utile netto ${euro.format(month.totals.utileNetto)}. Mostra dettaglio.`}
+                      aria-label={`${label}: ${profitLabel.toLowerCase()} ${euro.format(month.totals.utileNetto)}. Mostra dettaglio.`}
                       onMouseEnter={() => setSelectedIndex(index)} onFocus={() => setSelectedIndex(index)}
                       onClick={() => setSelectedIndex(index)}>
               <circle className="dashboard-chart-profit-hit-area" cx={x} cy={pointY} r="12"/>
@@ -103,7 +110,7 @@ export default function MonthlyEconomicTrendChart({data, year}: {data: MonthData
               <g className="dashboard-chart-profit-tooltip" aria-hidden="true">
                 <rect x={tooltipX} y={tooltipY} width={tooltipWidth} height="52" rx="8"/>
                 <text x={tooltipX + 12} y={tooltipY + 19}>{label}</text>
-                <text className="dashboard-chart-profit-tooltip-value" x={tooltipX + 12} y={tooltipY + 40}>Utile netto: {euro.format(month.totals.utileNetto)}</text>
+                <text className="dashboard-chart-profit-tooltip-value" x={tooltipX + 12} y={tooltipY + 40}>{profitLabel}: {euro.format(month.totals.utileNetto)}</text>
               </g>
             </g>;
           })}
@@ -113,10 +120,10 @@ export default function MonthlyEconomicTrendChart({data, year}: {data: MonthData
         {selected ? <div className="monthly-economic-selection">
           <div><span>Entrate</span><strong>{euro.format(selected.totals.incassoTotale)}</strong></div>
           <div><span>Uscite</span><strong>{euro.format(selected.totals.speseTotali)}</strong></div>
-          <div><span>Netto</span><strong>{euro.format(selected.totals.utileNetto)}</strong></div>
-          <Link className="btn btn-sm btn-default" href={reportHref(selected.year, selected.month)}>Report {monthName(selected.month)}</Link>
+          <div><span>{profitLabel}</span><strong>{euro.format(selected.totals.utileNetto)}</strong></div>
+          <Link className="btn btn-sm btn-default" href={reportHref(selected.year, selected.month, mode, returnTo)}>Report {monthName(selected.month)}</Link>
         </div> : <p className="muted">Seleziona un punto per vedere il dettaglio del mese.</p>}
       </div>
-    </> : <p className="muted">Nessun dato economico disponibile per l’anno selezionato.</p>}
+    </> : <p className="muted">Nessun mese concluso nel periodo selezionato.</p>}
   </section>;
 }

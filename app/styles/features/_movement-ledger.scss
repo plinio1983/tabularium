@@ -203,3 +203,25 @@
     }
   }
 }
+
+@media (max-width: 576px) {
+  .movement-ledger-page {
+    gap: 12px;
+
+    > .toolbar-card {
+      display: none;
+    }
+
+    .ledger-breakdowns {
+      gap: 12px;
+    }
+
+    .ledger-kpis > div {
+      padding: 10px 12px;
+    }
+
+    .ledger-list-header {
+      margin-bottom: 12px;
+    }
+  }
+}

@@ -673,6 +673,10 @@ body.drawer-open {
 }
 
 @media (max-width: 576px) {
+  .cash-register-receipts-page > .toolbar-card,
+  .employees-page > .toolbar-card,
+  .client-page-content > .toolbar-card,
+  .supplier-page-content > .toolbar-card,
   .income-page-content > .toolbar-card,
   .expense-page-content > .record-toolbar-card,
   .expense-page-content > .toolbar-card,
@@ -2578,4 +2582,21 @@ table th, table td {
     flex: 0 0 auto;
     margin: 0;
   }
+}
+
+@media (max-width: 576px) {
+  .cash-register-receipts-page,
+  .employees-page,
+  .client-page-content,
+  .supplier-page-content {
+    gap: 12px;
+  }
+
+  .cash-register-receipts-page > .card,
+  .employees-page > .record-list-card,
+  .client-page-content > .record-list-card,
+  .supplier-page-content > .record-list-card {
+    padding: 14px;
+  }
+
 }

@@ -16,7 +16,6 @@ import {calendarDayNumber, yearMonthInTimeZone} from '@/lib/company-time';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
-import MonthlyEconomicTrendChart from '@/components/MonthlyEconomicTrendChart';
 import {groupedChartData} from '@/components/ReportAnalysisCharts';
 
 function fiscalQuarterLabel(periods: Array<{ year: number; month: number }>) {
@@ -1613,20 +1612,12 @@ export default async function Dashboard({searchParams}: {
                 <p className="muted">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
             </div>
             <div className="actions-row dashboard-top-actions">
-                <ExpenseNewTriggerButton className="btn btn-md btn-primary"><span
+                <ExpenseNewTriggerButton className="btn btn-sm btn-primary"><span
                     className="btn-icon">＋</span> Spesa
                 </ExpenseNewTriggerButton>
-                <Link className="btn btn-md btn-primary" href="/incomes?new=1"><span
+                <Link className="btn btn-sm btn-primary" href="/incomes?new=1"><span
                     className="btn-icon">＋</span> Incasso</Link>
                 {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
-            </div>
-            <div>
-                <form className="period-selector dashboard-year-selector" method="get">
-                    <span className="selector-label">Anno fiscale</span>
-                    <AutoSubmitSelect name="annualYear" defaultValue={String(report.annualYear)} aria-label="Anno fiscale dashboard">
-                        {yearOptions.map(year => <option key={`top-annual-${year}`} value={year}>{year}</option>)}
-                    </AutoSubmitSelect>
-                </form>
             </div>
             {/*<div className="flex align-center justify-end dashboard-link-selector h100">*/}
             {/*    {fiscalMonth ?*/}
@@ -1646,6 +1637,15 @@ export default async function Dashboard({searchParams}: {
         <div className="dashboard-body-wrapper">
             <DashboardTasks workspaceId={current.workspace.id} companyId={current.company.id} timeZone={current.company.timeZone} now={now}/>
 
+            <div>
+                <form className="period-selector dashboard-year-selector" method="get">
+                    <span className="selector-label">Anno fiscale</span>
+                    <AutoSubmitSelect name="annualYear" defaultValue={String(report.annualYear)} aria-label="Anno fiscale dashboard">
+                        {yearOptions.map(year => <option key={`top-annual-${year}`} value={year}>{year}</option>)}
+                    </AutoSubmitSelect>
+                </form>
+            </div>
+
             <div id="sintesi" className="dashboard-report-charts dashboard-anchor-section">
                 <div className="charts-grid dashboard-overview-charts">
                     <ProfitabilitySummaryCard totals={report.totals} year={report.annualYear}
@@ -1654,7 +1654,6 @@ export default async function Dashboard({searchParams}: {
             </div>
 
             <div className="actions-row"><Link className="btn btn-md btn-default" href={`/months/${annualYear}/1?mode=overall&period=year&returnTo=${encodeURIComponent('/?annualYear=' + annualYear)}`}>Approfondisci nei Report <span className="btn-icon" aria-hidden="true">→</span></Link></div>
-            <MonthlyEconomicTrendChart data={completedReportMonths} year={report.annualYear}/>
 
             <div className="grid grid-2 dashboard-period-cards">
                 <DashboardFiscalAjax
