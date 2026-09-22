@@ -31,6 +31,11 @@
   gap: 20px;
   margin-bottom: 12px;
   flex-wrap: nowrap;
+
+  .btn {
+    height: 40px !important;
+    line-height: 1;
+  }
 }
 
 .shell .app-content,

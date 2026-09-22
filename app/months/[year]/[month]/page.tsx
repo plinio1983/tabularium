@@ -308,7 +308,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     <div><dt>Versamenti IVA registrati</dt><dd>{euroInt(report.totals.paidVat)}</dd></div>
                     <div><dt>{report.totals.remainingVat > 0 ? 'Saldo IVA a debito' : report.totals.remainingVat < 0 ? 'Saldo IVA a credito' : 'Saldo IVA'}</dt><dd>{euroInt(Math.abs(report.totals.remainingVat))}</dd></div>
                 </dl>
-                {mode === 'overall' ? <p className="muted">IVA riferita ai movimenti di cassa del periodo. Per il riepilogo per periodo contabile consulta la modalità Fiscale.</p> : null}
+                {/*{mode === 'overall' ? <p className="muted">IVA riferita ai movimenti di cassa del periodo. Per il riepilogo per periodo contabile consulta la modalità Fiscale.</p> : null}*/}
                 {mode === 'overall' && periodType !== 'month' ? <Link
                     className="month-report-vat-detail-link"
                     href={`/months/${year}/${month}?mode=fiscal${periodQuery}&returnTo=${encodeURIComponent(backHref)}#iva`}
