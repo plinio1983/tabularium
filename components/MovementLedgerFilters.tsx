@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useId, useState} from 'react';
+import {useEffect, useId, useState, type ReactNode} from 'react';
 import {createPortal} from 'react-dom';
 import FilterDrawer from './FilterDrawer';
 import EntityFormActions from './EntityFormActions';
@@ -10,6 +10,13 @@ import PeriodSelectorBox from './PeriodSelectorBox';
 import {useCompanyTimeZone} from './CompanyTimeZoneProvider';
 import {civilDateInTimeZone} from '@/lib/company-time';
 import {receiptPeriodParams} from '@/lib/receipt-period';
+
+function FilterField({label, icon, children}: {label: string; icon: string; children: ReactNode}) {
+  return <label className="app-form-field record-filter-field">
+    <span className="app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">{icon}</span>{label}</span>
+    {children}
+  </label>;
+}
 
 type Option = {id: number; name: string};
 export default function MovementLedgerFilters({path, quick, year, from, to, methods, banks, types, channels}: {
@@ -57,16 +64,23 @@ export default function MovementLedgerFilters({path, quick, year, from, to, meth
       setOpen(false);
       router.replace(`${path}?${next}`, {scroll: false});
     }}>
-      <label className="app-form-field record-filter-field"><span className="app-form-field-label">Ricerca</span><input name="search" defaultValue={params.get('search') ?? ''} placeholder="Nome, descrizione o numero del documento"/></label>
-      <label className="app-form-field record-filter-field"><span className="app-form-field-label">Intervallo</span><select name="dateMode" defaultValue={params.get('dateMode') ?? 'period'}>
-        <option value="period">Periodo selezionato</option><option value="all">Tutte le date</option><option value="undated">Senza data</option>
-      </select></label>
-      <label className="app-form-field record-filter-field"><span className="app-form-field-label">Dal</span><input type="date" name="dateFrom" defaultValue={from}/></label>
-      <label className="app-form-field record-filter-field"><span className="app-form-field-label">Al</span><input type="date" name="dateTo" defaultValue={to}/></label>
-      <label className="app-form-field record-filter-field"><span className="app-form-field-label">Metodo</span><select name="methodId" defaultValue={params.get('methodId') ?? ''}><option value="">Tutti</option>{methods.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-      <label className="app-form-field record-filter-field"><span className="app-form-field-label">Banca / conto</span><select name="bankId" defaultValue={params.get('bankId') ?? ''}><option value="">Tutti</option><option value="none">Non specificato</option>{banks.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-      <label className="app-form-field record-filter-field"><span className="app-form-field-label">Tipo</span><select name="type" defaultValue={params.get('type') ?? ''}><option value="">Tutti</option>{types.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-      {channels.length > 0 ? <label className="app-form-field record-filter-field"><span className="app-form-field-label">Canale di vendita</span><select name="salesChannelId" defaultValue={params.get('salesChannelId') ?? ''}><option value="">Tutti</option>{channels.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label> : null}
+      <FilterField label="Ricerca" icon="⌕"><input name="search" defaultValue={params.get('search') ?? ''} placeholder="Nome, descrizione o numero del documento"/></FilterField>
+      <fieldset className="filter-group">
+        <legend>Periodo</legend>
+        <FilterField label="Intervallo" icon="▦">
+          <select name="dateMode" defaultValue={params.get('dateMode') ?? 'period'}>
+            <option value="period">Periodo selezionato</option>
+            <option value="all">Tutte le date</option>
+            <option value="undated">Senza data</option>
+          </select>
+        </FilterField>
+        <FilterField label="Dal" icon="◷"><input type="date" name="dateFrom" defaultValue={from}/></FilterField>
+        <FilterField label="Al" icon="◷"><input type="date" name="dateTo" defaultValue={to}/></FilterField>
+      </fieldset>
+      <FilterField label="Metodo" icon="◉"><select name="methodId" defaultValue={params.get('methodId') ?? ''}><option value="">Tutti</option>{methods.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></FilterField>
+      <FilterField label="Banca / conto" icon="▣"><select name="bankId" defaultValue={params.get('bankId') ?? ''}><option value="">Tutti</option><option value="none">Non specificato</option>{banks.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></FilterField>
+      <FilterField label="Tipo" icon="◇"><select name="type" defaultValue={params.get('type') ?? ''}><option value="">Tutti</option>{types.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></FilterField>
+      {channels.length > 0 ? <FilterField label="Canale di vendita" icon="◇"><select name="salesChannelId" defaultValue={params.get('salesChannelId') ?? ''}><option value="">Tutti</option>{channels.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></FilterField> : null}
     </form>
     </FilterDrawer>
   </div>;
