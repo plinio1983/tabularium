@@ -659,10 +659,6 @@
   min-width: 0;
 }
 
-.recurring-income-mobile-item-shell {
-  grid-template-columns: minmax(0, 1fr);
-  padding: 12px;
-}
 
 @media (max-width: 900px) {
   .single-expense-form .expense-fiscal-desktop-control {

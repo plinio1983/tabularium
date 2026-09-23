@@ -206,23 +206,23 @@ export default function RecurringIncomesList({items, filters = {}, methods = [],
                         <div className="recurring-mobile-select">
                             <input form={formId} type="checkbox" name="ids" value={item.id} aria-label={`Seleziona entrata ricorrente ${item.id}`}/>
                         </div>
-                        <Link data-recurring-income-edit-id={item.id} aria-haspopup="dialog" className="recurring-income-mobile-item-shell recurring-mobile-item-link" href={`/recurring-incomes/${item.id}/edit?returnTo=${returnTo}`}>
+                        <Link data-recurring-income-edit-id={item.id} aria-haspopup="dialog" className="recurring-mobile-item-link" href={`/recurring-incomes/${item.id}/edit?returnTo=${returnTo}`}>
                             <article className={item.isActive ? 'recurring-mobile-item recurring-mobile-item-active' : 'recurring-mobile-item recurring-mobile-item-disabled'}>
                                 <div className="recurring-mobile-top">
                                     <div className="recurring-mobile-main-title">
-                                        <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span><span className="badge tone-insurance">{cadenceLabels[item.cadence] ?? item.cadence}</span><span className="badge">{creditLabel(item)}</span>
+                                        <span className="badge tone-insurance">{cadenceLabels[item.cadence] ?? item.cadence}</span>
+                                        <span className="badge">{creditLabel(item)}</span>
                                     </div>
                                     <strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong>
                                 </div>
-                                <div className="recurring-mobile-top">
+                                <div className="recurring-mobile-top-middle">
+                                    <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span>
                                     <strong>{item.customer?.businessName ?? 'Nessun cliente'}</strong>
                                     <div className="recurring-mobile-right"><strong>{credit}</strong></div>
                                 </div>
                                 <div className="recurring-mobile-middle">
                                     <div className="recurring-mobile-description">{item.description || 'Entrata ricorrente senza descrizione'}</div>
-                                    <div>
-                                        <span className="badge">{item.salesChannel?.icon ?? '◎'} {item.salesChannel?.name ?? 'Senza canale'}</span>
-                                    </div>
+                                    <div><span className="badge">{item.salesChannel?.icon ?? '◎'} {item.salesChannel?.name ?? 'Senza canale'}</span></div>
                                 </div>
                                 <div className="recurring-mobile-meta">
                                     <div><span>Periodo fatt.</span><strong>{billing}</strong></div>

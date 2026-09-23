@@ -120,6 +120,11 @@
   z-index: 100000;
   display: none;
   pointer-events: none;
+
+  @media (max-width: 760px) {
+    left: 0;
+    right: 0;
+  }
 }
 
 .floating-bulk-actions-bar.is-visible {
@@ -1635,6 +1640,7 @@ body.invoice-attachments-modal-open {
 
 .list-payment-icon {
   font-size: 16px;
+  line-height: .7;
 }
 
 .mobile-record-item:last-child {
@@ -1691,6 +1697,10 @@ body.invoice-attachments-modal-open {
   display: grid;
   gap: 7px;
   min-width: 0;
+
+  @media (max-width: 760px) {
+      gap: 4px;
+  }
 }
 
 .mobile-record-title-row,

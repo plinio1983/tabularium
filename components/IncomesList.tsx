@@ -103,7 +103,7 @@ function fiscalBadge(value: boolean) {
 
 function MobileInvoiceBadge(value: boolean, invoiceStatus?: string | null) {
     const style = invoiceStatus ? (invoiceStatusStyles[invoiceStatus] ?? invoiceStatusStyles.NON_INVIATA) : yesNoStyles.yes;
-    let label = !value ? 'PDF' : '@Fatt';
+    let label = !value ? 'PDF' : 'Fatt';
     let state = '✕ ';
     if (invoiceStatus === 'NON_INVIATA') {
         state = '⏳ ';
@@ -238,9 +238,12 @@ export default function IncomesList({
                         <div className="mobile-record-main">
                             <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
-                                    <span className="badge income-badge-compact">🧾 Scontrini</span>
-
-                                    {/*<span className="text-pre text-muted">{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
+                                    {/*<span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ Nf'}</span>*/}
+                                    {group.isFiscal ? <span className="text-primary strong">✓ Fis</span> : <span className="text-muted strong">✕ Non Fis.</span>}
+                                    {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>*/}
+                                    <span className="text-muted">&nbsp; • &nbsp;{Number(group.vatRates)}%</span>
+                                    {/*<span className="text-muted">&nbsp; • &nbsp;{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
+                                    <span className="text-muted">&nbsp; • &nbsp;{formatMonthPeriod(group.billingMonth)}</span>
                                 </div>
                                 <div className="right-side">
                                     <span className="list-payment-icon">{group.paymentMethodIcon ?? '  •  '}</span>
@@ -257,10 +260,8 @@ export default function IncomesList({
                                 </div>
                             </div>
                             <div className="mobile-record-title-row income-mobile-status-row">
-                                <span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ Nf'}</span>
-                                <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>
+                                <span className="badge income-badge-compact">🧾 Scontrini</span>
                                 {/*<span className="badge">IVA &nbsp;{aggregateVatLabel(group)}</span>*/}
-                                <small className="text-muted">•&nbsp; {formatPeriod(group.billingMonth, group.billingYear)}</small>
                                 <span className={badgeClass(incomeCreditStatusStyles.ACCREDITATO.className)}>
                                     {incomeCreditStatusStyles.ACCREDITATO.icon} {incomeCreditStatusStyles.ACCREDITATO.label}
                                 </span>
@@ -294,11 +295,18 @@ export default function IncomesList({
                         <div className="mobile-record-main">
                             <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
-                                    <span className="badge">{income.salesChannelRef.icon ?? '•'} {income.salesChannelRef.name}</span>
+                                    {income.isFiscal ? <span className='text-primary strong'>✓ Fis</span> : <span className='text-muted strong'>✕ Nf</span>}
+                                    {/*{fiscalBadge(income.isFiscal)}*/}
+                                    <span className="text-muted">
+                                        {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(income.vatRate)}%</span>*/}
+                                        <span className="text-mmuted">&nbsp; • &nbsp;{Number(income.vatRate)}%</span>
+                                    </span>
+                                    <small className="text-pre text-muted hidden-xs-up">&nbsp; • &nbsp;{formatMonthPeriod(income.billingMonth)}</small>
+                                    <small className="text-pre text-muted hidden-xs-down">&nbsp; • &nbsp;{formatPeriod(income.billingMonth, income.billingYear)}</small>
 
                                     {income.isFiscal ?
                                         <span className="expense-invoice-indicator">
-
+                                            &nbsp; •
                                             <span className="expense-invoice-indicator">{MobileInvoiceBadge(true, income.invoiceStatus)}</span>
                                             {/*<span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>*/}
                                             <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/>
@@ -322,12 +330,7 @@ export default function IncomesList({
                                 </div>
                             </div>
                             <div className="mobile-record-title-row income-mobile-status-row">
-                                {fiscalBadge(income.isFiscal)}
-                                <span className="text-muted">
-                                        <span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(income.vatRate)}%</span>
-                                    </span>
-                                <small className="text-pre text-muted hidden-xs-up">• &nbsp;{formatMonthPeriod(income.billingMonth)}</small>
-                                <small className="text-pre text-muted hidden-xs-down">• &nbsp;{formatPeriod(income.billingMonth, income.billingYear)}</small>
+                                <span className="badge">{income.salesChannelRef.icon ?? '•'} {income.salesChannelRef.name}</span>
                                 <span title={statusLabel} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {statusLabel}</span>
                             </div>
                         </div>

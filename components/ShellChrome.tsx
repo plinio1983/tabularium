@@ -120,7 +120,9 @@ function DesktopHeader({
             </Link>
         </div> : null}
         {incomePage ? <div className="income-mobile-header-actions" aria-label="Azioni incassi">
-            <Link className="btn btn-sm btn-default" href="/recurring-incomes"><span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti</Link>
+            <Link className="btn btn-sm btn-secondary" href="/recurring-incomes">
+                <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti
+            </Link>
             <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
                 <span className="btn-icon" aria-hidden="true">＋</span>Incasso
             </button>

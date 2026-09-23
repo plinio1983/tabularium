@@ -2362,12 +2362,6 @@ table th, table td {
   }
 }
 
-@media (max-width: 760px) {
-  .mobile-record-main {
-    gap: 4px;
-  }
-}
-
 @media (max-width: 640px) {
   .record-list-card > .list-heading {
     top: 0 !important;
