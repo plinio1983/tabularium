@@ -167,11 +167,16 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 href: `/months/${navYear}/${navMonth}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}`
             };
         });
-    const chartMonths = selectedPeriods.map(period => ({
-        ...period,
-        totals: report.monthlyBreakdown.find(item => item.year === period.year && item.month === period.month)?.totals
-            ?? {incassoTotale: 0, speseTotali: 0, utileFiscale: 0, utileLordo: 0},
-    }));
+    const chartMonths = periodType === 'quarter'
+        ? selectedPeriods.map(period => ({
+            ...period,
+            totals: report.monthlyBreakdown.find(item => item.year === period.year && item.month === period.month)?.totals
+                ?? {incassoTotale: 0, speseTotali: 0, utileFiscale: 0, utileLordo: 0},
+        }))
+        : report.monthlyBreakdown.filter(item =>
+            item.totals.incassoTotale !== 0 || item.totals.speseTotali !== 0 ||
+            (mode === 'fiscal' ? item.totals.utileFiscale : item.totals.utileLordo) !== 0
+        );
     const quarterChartMaximum = Math.max(1, ...chartMonths.flatMap(item => [item.totals.incassoTotale, item.totals.speseTotali]));
 
     return <div className="grid month-report-page">
@@ -299,6 +304,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     </Link>;
                 })}
             </div>
+            {!chartMonths.length ? <p className="muted">Nessun dato nel periodo selezionato.</p> : null}
         </section>}
 
         {periodType !== 'month' ? <MonthlyEconomicTrendChart

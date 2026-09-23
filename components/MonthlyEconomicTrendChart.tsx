@@ -38,9 +38,13 @@ export default function MonthlyEconomicTrendChart({data, year, periodLabel, mode
   const maxValue = Math.max(...positiveValues, 1);
   const minValue = Math.min(0, ...data.map(month => month.totals.utileNetto));
   const range = Math.max(maxValue - minValue, 1);
+  const axisTicks = [minValue, 0, maxValue / 2, maxValue]
+    .filter((value, index, all) => all.indexOf(value) === index)
+    .map(value => ({value, label: euro.format(value)}));
   const width = 960;
   const height = 300;
-  const left = 42;
+  // Allow room for the full currency labels, including separators and negative signs.
+  const left = Math.max(42, ...axisTicks.map(tick => tick.label.length * 7 + 16));
   const right = 18;
   const top = 24;
   const bottom = 48;
@@ -70,12 +74,12 @@ export default function MonthlyEconomicTrendChart({data, year, periodLabel, mode
       <div className="dashboard-svg-chart-scroll">
         <svg className="dashboard-economic-chart" viewBox={`0 0 ${width} ${height}`} role="img"
              aria-label={`Entrate, uscite e ${profitLabel.toLowerCase()} mensile ${year}`}>
-          {[minValue, 0, maxValue / 2, maxValue].filter((value, index, all) => all.indexOf(value) === index).map(value => {
+          {axisTicks.map(({value, label}) => {
             const gridY = y(value);
             return <g key={value}>
               <line className={value === 0 ? 'dashboard-chart-zero-line' : 'dashboard-chart-grid-line'}
                     x1={left} y1={gridY} x2={width - right} y2={gridY}/>
-              <text className="dashboard-chart-axis-label" x={left - 8} y={gridY + 4} textAnchor="end">{euro.format(value)}</text>
+              <text className="dashboard-chart-axis-label" x={left - 8} y={gridY + 4} textAnchor="end">{label}</text>
             </g>;
           })}
           {data.map((month, index) => {

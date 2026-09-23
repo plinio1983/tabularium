@@ -57,7 +57,7 @@ function ChannelComparisonPlot({buckets, series, channelColors, mode, selectedIn
   const selectedX = selectedIndex === null ? null : x(selectedIndex);
 
   return <div className="income-channel-comparison-scroll">
-    <svg className="income-channel-comparison-chart" viewBox={`0 0 ${width} ${height}`} style={{width}} role="img"
+    <svg className="income-channel-comparison-chart" viewBox={`0 0 ${width} ${height}`} style={{minWidth: width}} role="img"
          aria-label={`Confronto degli incassi per canale, ${mode === 'amount' ? 'importi in euro' : 'indice base 100'}`}>
       {ticks.map(tick => <g key={tick}>
         <line className="income-channel-comparison-grid" x1={left} x2={width - right} y1={y(tick)} y2={y(tick)}/>
@@ -112,18 +112,35 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
   const [error, setError] = useState('');
 
   const channelColors = useMemo(() => new Map(data.channels.map((channel, index) => [channel.id, colors[index % colors.length]])), [data.channels]);
-  const rawBuckets = reportPeriod ? data.months.filter(bucket => reportPeriod.months ? reportPeriod.months.includes(bucket.month) : reportPeriod.type === 'year' || Math.ceil(bucket.month / 3) === reportPeriod.quarter) : period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
+  const rawBuckets = reportPeriod
+    ? data.months
+      .filter(bucket => reportPeriod.type === 'year' || Math.ceil(bucket.month / 3) === reportPeriod.quarter)
+      .map(bucket => reportPeriod.months && !reportPeriod.months.includes(bucket.month)
+        ? {...bucket, total: 0, count: 0, channels: []}
+        : bucket)
+    : period === 'year' ? data.months : data.quarters[Number(period.slice(1)) - 1]?.weeks ?? [];
   const today = new Date().toISOString().slice(0, 10);
   const currentYear = Number(today.slice(0, 4));
   const buckets = !reportPeriod && data.year === currentYear ? rawBuckets.filter(bucket => bucket.from <= today) : rawBuckets;
   const periodTotal = buckets.reduce((sum, bucket) => sum + bucket.total, 0);
   const periodCount = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
   const max = Math.max(...buckets.map(bucket => bucket.total), 1);
-  const comparisonSeries = useMemo(() => buildIncomeChannelComparisonSeries(buckets, data.channels), [buckets, data.channels]);
+  const comparisonSeries = useMemo(() => {
+    const series = buildIncomeChannelComparisonSeries(buckets, data.channels);
+    const completedMonths = reportPeriod?.months;
+    if (!completedMonths) return series;
+    // Keep the full period on the axis, but only plot completed report months.
+    return series.map(channel => ({
+      ...channel,
+      points: channel.points.filter(point => completedMonths.includes(buckets[point.bucketIndex].month))
+    }));
+  }, [buckets, data.channels, reportPeriod?.months]);
   const visibleSeries = comparisonSeries.filter(channel => selectedChannelIds.has(channel.id));
   const leading = comparisonSeries[0];
   const peak = buckets.reduce<(typeof buckets)[number] | null>((best, bucket) => !best || bucket.total > best.total ? bucket : best, null);
-  const displayedBucketIndex = selectedBucketIndex ?? (buckets.length ? buckets.length - 1 : null);
+  const lastCompletedBucketIndex = buckets.reduce<number | null>((last, bucket, index) =>
+    !reportPeriod?.months || reportPeriod.months.includes(bucket.month) ? index : last, null);
+  const displayedBucketIndex = selectedBucketIndex ?? lastCompletedBucketIndex;
   const selectedBucket = displayedBucketIndex === null ? null : buckets[displayedBucketIndex] ?? null;
 
   async function changeYear(year: number) {
@@ -216,7 +233,7 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
               <strong>{selectedBucket.count} movimenti · {money.format(selectedBucket.total)}</strong>
           </div>
           <div className="income-channel-comparison-detail-list">{visibleSeries.map(channel => {
-            const point = channel.points[displayedBucketIndex ?? 0];
+            const point = channel.points.find(point => point.bucketIndex === displayedBucketIndex);
             return <Link href={detailHref(selectedBucket.from, selectedBucket.to, channel.name)} key={channel.id}>
               <i style={{background: channelColors.get(channel.id)}}/><span>{channel.icon ?? '•'} {channel.name}</span><strong>{money.format(point?.amount ?? 0)}</strong>
               <small className={point?.previousChange != null && point.previousChange < 0 ? 'is-negative' : undefined}>{point?.indexValue == null ? 'Indice n.d.' : `Indice ${point.indexValue.toFixed(0)}`} · {point?.previousChange == null ? 'var. —' : `${percent.format(point.previousChange)}%`}</small>
