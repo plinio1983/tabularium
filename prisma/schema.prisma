@@ -642,6 +642,8 @@ model RecurringExpense {
   @@index([expenseType])
   @@index([isActive])
   @@index([paymentMethodId])
+  suspensionPeriods Json @default("[]")
+
 }
 
 model RecurringExpenseExclusion {
@@ -696,6 +698,8 @@ model RecurringIncome {
   @@index([endDate])
   @@index([customerId])
   @@index([isActive])
+  suspensionPeriods Json @default("[]")
+
 }
 
 model Expense {

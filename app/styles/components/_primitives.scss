@@ -218,7 +218,8 @@ button {
   justify-content: center;
   gap: 7px;
   white-space: nowrap;
-  line-height: 1.1;
+  line-height: 1;
+  vertical-align: middle;
   text-decoration: none;
   cursor: pointer;
   transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
@@ -232,7 +233,8 @@ button {
 
 .btn-xs {
   min-height: 28px;
-  padding: 6px 10px;
+  // Optical centering of the system font; keep total vertical padding unchanged.
+  padding: 7px 10px 5px;
   border-radius: 8px;
   font-size: 12px;
   font-weight: 800;
@@ -240,7 +242,7 @@ button {
 
 .btn-sm {
   min-height: 36px;
-  padding: 8px 12px;
+  padding: 9px 12px 7px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 850;
@@ -248,7 +250,7 @@ button {
 
 .btn-md {
   min-height: 40px;
-  padding: 10px 14px;
+  padding: 11px 14px 9px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 850;
@@ -256,7 +258,7 @@ button {
 
 .btn-lg {
   min-height: 44px;
-  padding: 11px 16px;
+  padding: 12px 16px 10px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 850;

@@ -5,6 +5,7 @@ import { appendFlash } from '@/lib/flash';
 import { pathFromUrl, redirectToPath } from '@/lib/redirect';
 import { writeAuditLog } from '@/lib/audit';
 import {parseRecurringExpenseBulkEdit} from '@/lib/recurring-expense-bulk-edit';
+import {recurringStateResponse} from '@/lib/recurring-state-response';
 
 function safePath(value: string | null, fallback: string, requestUrl: string) {
   return pathFromUrl(value, fallback);
@@ -24,6 +25,10 @@ export async function POST(request: Request) {
 
   if (!ids.length) {
     return redirectToPath(safePath(returnTo, '/recurring-expenses', request.url));
+  }
+
+  if (bulkAction === 'activate' || bulkAction === 'deactivate') {
+    return recurringStateResponse(request, 'expense', ids, bulkAction === 'activate', current, safePath(returnTo, '/recurring-expenses', request.url));
   }
 
   if (bulkAction === 'bulk_edit') {

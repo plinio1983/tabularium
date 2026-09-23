@@ -4,6 +4,7 @@ import {useEffect, useRef, useState, type ComponentProps, type ReactNode} from '
 import {createPortal} from 'react-dom';
 import {useRouter} from 'next/navigation';
 import RecurringIncomeForm from './RecurringIncomeForm';
+import {useRecurringStates} from './RecurringStateProvider';
 
 type FormProps = ComponentProps<typeof RecurringIncomeForm>;
 type Item = NonNullable<FormProps['initial']> & {id: number};
@@ -42,12 +43,17 @@ function Editor({item, onClose, onSaved, ...options}: Pick<FormProps, 'channels'
 }
 
 export default function RecurringIncomeEditModal({items, children, ...options}: Pick<FormProps, 'channels' | 'customers' | 'methods' | 'banks'> & {items: Item[]; children: ReactNode}) {
+  const {records} = useRecurringStates();
   const [selected, setSelected] = useState<Item | null>(null);
   const [saved, setSaved] = useState(false);
   const router = useRouter();
   function open(trigger: HTMLElement) {
     const item = items.find(item => item.id === Number(trigger.dataset.recurringIncomeEditId));
-    if (item) {trigger.focus({preventScroll: true}); setSaved(false); setSelected(item);}
+    if (item) {
+      const state = records[`income:${item.id}`];
+      trigger.focus({preventScroll: true}); setSaved(false);
+      setSelected(state ? {...item, isActive: state.active} : item);
+    }
   }
   return <div className="recurring-incomes-editor" onClickCapture={event => {
     if (!(event.target instanceof Element)) return;

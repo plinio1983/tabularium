@@ -1,3 +1,6 @@
+import RecurringStateProvider from '@/components/RecurringStateProvider';
+import RecurringStateToggle from '@/components/RecurringStateToggle';
+import RecurringDetailState from '@/components/RecurringDetailState';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {prisma} from '@/lib/prisma';
@@ -123,7 +126,6 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
     const generatedTotal = item.generatedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
     const merchant = item.supplier?.businessName || item.merchant;
     const expenseTypeLabel = expenseTypeLabels[item.expenseType] ?? 'Singola';
-    const activeClass = item.archivedAt ? 'tone-neutral' : item.isActive ? 'tone-yes' : 'tone-critical';
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
@@ -144,7 +146,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
         }
     };
 
-    return <div className="grid record-detail-page recurring-record-detail-page">
+    return <RecurringStateProvider><div className="grid record-detail-page recurring-record-detail-page">
         <RecurringExpenseDetailEditModalController
             categories={categories.map(category => ({
                 id: category.id,
@@ -202,6 +204,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                     <DetailBackButton href={returnTo}/>
                 </div>
                 <div className="right-side btn-group">
+                    <RecurringStateToggle kind="expense" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={encodedCurrentDetailReturnTo}/>
                     <button className="btn btn-sm btn-default" type="button" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</button>
                     <DeleteActionButton
                         action={`/api/recurring-expenses/${item.id}?returnTo=${encodeURIComponent(returnTo)}`}
@@ -219,6 +222,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                         <DetailBackButton href={returnTo}/>
                     </div>
                     <div className="right-side btn-group">
+                    <RecurringStateToggle kind="expense" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={encodedCurrentDetailReturnTo}/>
                         <button className="btn btn-sm btn-default" type="button" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</button>
                         <DeleteActionButton
                             action={`/api/recurring-expenses/${item.id}?returnTo=${encodeURIComponent(returnTo)}`}
@@ -238,7 +242,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                             </p>
                             <p className="record-detail-kicker">
                                 <span className={badgeClass('tone-neutral')}>{expenseTypeLabel}</span>
-                                <span className={badgeClass(activeClass)}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span>
+                                <RecurringDetailState id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} variant="badge"/>
                             </p>
                             <h1>{item.supplierId ?
                                 <Link href={`/suppliers/${item.supplierId}?returnTo=${encodedCurrentDetailReturnTo}`}>{merchant}</Link> : merchant}</h1>
@@ -256,7 +260,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                         </div>
                         <strong>{euro(item.amount.toString())}</strong>
                         <div className="record-detail-badge-row">
-                            <span className={badgeClass(activeClass)}>{item.archivedAt ? 'Regola archiviata' : item.isActive ? 'Regola attiva' : 'Regola disattivata'}</span>
+                            <RecurringDetailState id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} variant="summary"/>
                             <span className="badge">{cadenceLabels[item.cadence] ?? item.cadence}</span>
                         </div>
                     </aside>
@@ -284,9 +288,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                         <strong>{generationTimingLabels[item.generationTiming] ?? item.generationTiming}</strong>
                     </div>
                 </section>
-                <div className="record-detail-progress" aria-label={item.isActive ? 'Regola attiva' : 'Regola disattivata'}>
-                    <span style={{width: item.isActive ? '100%' : '0%'}}/>
-                </div>
+                <RecurringDetailState id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} variant="progress"/>
 
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
@@ -319,7 +321,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                         </div>
                         <div>
                             <span>Stato</span>
-                            <strong>{item.archivedAt ? '⌛ Archiviata' : item.isActive ? '✓ Attiva' : '× Disattivata'}</strong>
+                            <RecurringDetailState id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} variant="text"/>
                         </div>
                         <div>
                             <span>Detrazione</span>
@@ -428,5 +430,5 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                 </section>
             </article>
         </div>
-    </div>;
+    </div></RecurringStateProvider>;
 }

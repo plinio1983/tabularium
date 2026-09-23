@@ -11,6 +11,8 @@ backups/
 prisma/migrations
 !prisma/migrations/
 prisma/migrations/*
+!prisma/migrations/20260923120000_recurring_suspensions/
+!prisma/migrations/20260923120000_recurring_suspensions/migration.sql
 !prisma/migrations/20260819143000_system_notifications/
 !prisma/migrations/20260819143000_system_notifications/migration.sql
 !prisma/migrations/20260824120000_recurring_expense_types/

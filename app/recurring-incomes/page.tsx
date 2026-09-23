@@ -1,3 +1,4 @@
+import RecurringStateProvider from '@/components/RecurringStateProvider';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspace} from '@/lib/auth';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
@@ -49,7 +50,7 @@ export default async function RecurringIncomesPage({searchParams}: {
     ]);
     const methods = orderPaymentMethods(rawMethods, 'INCOME');
     const banks = orderBanks(rawBanks);
-    return <div className="grid recurring-incomes-page-content"><NewIncomePanel showToolbar={false} banks={banks.map(bank => ({
+    return <RecurringStateProvider><div className="grid recurring-incomes-page-content"><NewIncomePanel showToolbar={false} banks={banks.map(bank => ({
         ...bank,
         isPrimary: bank.id === current.company.primaryBankId
     }))} paymentMethods={methods} salesChannels={channels} customers={customers}/>
@@ -57,13 +58,13 @@ export default async function RecurringIncomesPage({searchParams}: {
             <div><h2>Entrate ricorrenti</h2>
                 <p className="muted">Gestisci le regole che generano periodicamente gli incassi.</p></div>
         </div>
-        <ActionFeedbackBanner searchParams={query} savedMessages={{
+        <ActionFeedbackBanner searchParams={query} savedMessages={{activated: 'Ricorrenze attivate.', deactivated: 'Ricorrenze disattivate.',
             created: 'Entrata ricorrente creata.',
             updated: 'Entrata ricorrente aggiornata.', bulk_updated: 'Entrate ricorrenti aggiornate.', bulk_deleted: 'Entrate ricorrenti disattivate.'
-        }} errorMessages={{invalid: 'Controlla i dati inseriti.', not_found: 'Entrata ricorrente non trovata.'}}/>
+        }} errorMessages={{invalid_state: 'Impossibile cambiare stato: controlla la selezione e aggiorna la data di fine delle ricorrenze scadute prima di riattivarle.', invalid: 'Controlla i dati inseriti.', not_found: 'Entrata ricorrente non trovata.'}}/>
         <RecurringIncomeEditModal items={items.map(({customer, salesChannel, paymentMethod, bank, ...item}) => ({...item, amount: item.amount.toString(), vatRate: item.vatRate.toString()}))}
             channels={channels} customers={customers} methods={methods} banks={banks}>
-            <RecurringIncomesList items={items} filters={filters} methods={methods} banks={banks}/>
+            <RecurringIncomesList items={items} filters={filters} channels={channels} methods={methods} banks={banks}/>
         </RecurringIncomeEditModal>
-    </div>;
+    </div></RecurringStateProvider>;
 }

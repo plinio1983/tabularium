@@ -1,5 +1,7 @@
+import {isRecurringDateSuspended} from '@/lib/recurring-suspensions';
+import {canGenerateRecurringOccurrence} from '@/lib/recurring-generation-state';
 import { prisma } from '@/lib/prisma';
-import { recurrenceBillingPeriod, recurrenceDates, recurrencePeriodKey, recurrenceStartOfDay } from '@/lib/recurrence-schedule';
+import { recurrenceBillingPeriod, recurrenceDates, recurrencePeriodKey, recurrenceStartOfDay, recurrenceDateInput } from '@/lib/recurrence-schedule';
 import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
 import {createSystemNotification} from '@/lib/notifications';
 
@@ -27,13 +29,17 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
       const dates = recurrenceDates({ startDate: definition.startDate, endDate: definition.endDate, cadence: definition.cadence, day: definition.creditDay, month: definition.creditMonth }, today);
       if (!dates.length) result.skipped++;
       for (const creditDate of dates) {
+        const occurrenceDay = recurrenceDateInput(creditDate);
+        if (isRecurringDateSuspended(occurrenceDay, definition.suspensionPeriods)) {result.skipped++; continue;}
         const billing = recurrenceBillingPeriod(definition, creditDate);
         // La chiave identifica l'occorrenza, non il mese contabile: più
         // occorrenze possono legittimamente confluire nello stesso periodo.
         const key = recurrencePeriodKey(creditDate.getUTCFullYear(), creditDate.getUTCMonth() + 1);
         const existing = await prisma.income.findFirst({ where: { recurringIncomeId: definition.id, recurringIncomePeriodKey: key } });
         if (existing) { result.skipped++; continue; }
-        await prisma.$transaction(async tx => {
+        const created = await prisma.$transaction(async tx => {
+          if (!await canGenerateRecurringOccurrence(tx, 'income', definition.id, occurrenceDay)) return false;
+          if (await tx.income.findFirst({where: {recurringIncomeId: definition.id, recurringIncomePeriodKey: key}})) return false;
           const income = await tx.income.create({ data: {
             workspaceId: definition.workspaceId, companyId: definition.companyId, customerId: definition.customerId,
             salesChannelId: definition.salesChannelId, incomeCategoryId: definition.incomeCategoryId,
@@ -54,8 +60,10 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
             sourceId: income.id,
             dedupeKey: `recurring-income-created:${definition.id}:${key}`
           }, tx);
+          return true;
         });
-        result.created++;
+        if (created) result.created++;
+        else result.skipped++;
       }
       if (endDate && today > endDate) {
         await prisma.recurringIncome.update({where: {id: definition.id}, data: {isActive: false, archivedAt: today}});

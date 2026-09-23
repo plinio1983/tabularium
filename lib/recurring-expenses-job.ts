@@ -1,3 +1,5 @@
+import {isRecurringDateSuspended} from '@/lib/recurring-suspensions';
+import {canGenerateRecurringOccurrence} from '@/lib/recurring-generation-state';
 import { prisma } from '@/lib/prisma';
 import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
 import {createSystemNotification} from '@/lib/notifications';
@@ -195,6 +197,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
       }
 
       for (const dueDate of dueDates) {
+        if (isRecurringDateSuspended(dueDate, recurringExpense.suspensionPeriods)) {result.skipped++; continue;}
         if (recurringExpense.expenseType === 'STANDARD' && (!recurringExpense.supplierId || !recurringExpense.supplier)) {
           result.errors.push({ recurringExpenseId: recurringExpense.id, message: 'Fornitore mancante' });
           result.skipped += 1;
@@ -236,7 +239,9 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
           continue;
         }
 
-        await prisma.$transaction(async tx => {
+        const created = await prisma.$transaction(async tx => {
+          if (!await canGenerateRecurringOccurrence(tx, 'expense', recurringExpense.id, dueDate)) return false;
+          if (await tx.expense.findFirst({where: {recurringExpenseId: recurringExpense.id, recurringExpensePeriodKey}})) return false;
           const expense = await tx.expense.create({
             data: {
             workspaceId: recurringExpense.workspaceId || null,
@@ -283,9 +288,11 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             sourceId: expense.id,
             dedupeKey: `recurring-expense-created:${recurringExpense.id}:${recurringExpensePeriodKey}`
           }, tx);
+          return true;
         });
 
-        result.created += 1;
+        if (created) result.created += 1;
+        else result.skipped += 1;
       }
       if (result.errors.length === errorsBefore && recurringExpense.endDate && companyToday > startOfDay(new Date(recurringExpense.endDate))) {
         await prisma.recurringExpense.update({where: {id: recurringExpense.id}, data: {isActive: false, archivedAt: companyToday}});

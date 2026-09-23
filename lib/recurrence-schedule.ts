@@ -14,6 +14,11 @@ export function recurrenceStartOfDay(value: Date | string) {
   return date;
 }
 
+/** recurrenceDates constructs local calendar dates, not UTC-midnight dates. */
+export function recurrenceDateInput(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
 function cadenceMonths(cadence: string) {
   return ({ MONTHLY: 1, EVERY_2_MONTHS: 2, EVERY_3_MONTHS: 3, EVERY_6_MONTHS: 6, YEARLY: 12, EVERY_2_YEARS: 24 } as Record<string, number>)[cadence] ?? 1;
 }

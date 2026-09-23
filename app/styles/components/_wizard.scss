@@ -901,7 +901,7 @@
     padding-right: 52px;
     border: 1px solid #cbd5e1;
     border-radius: 16px;
-    background: #fff;
+    background-color: #fff;
     background-image: none;
     box-shadow: 0 4px 14px rgba(15, 23, 42, .045);
     color: var(--text);
@@ -1045,8 +1045,12 @@
     display: grid;
   }
 
-  .recurring-form-section.recurring-payment-section .recurring-form-section-grid {
+  .recurring-expense-form .recurring-form-section.recurring-payment-section .recurring-form-section-grid {
     display: flex;
+  }
+
+  .recurring-form-section.recurring-payment-section .recurring-form-section-grid {
+    display: grid;
   }
 }
 

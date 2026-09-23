@@ -140,6 +140,7 @@ export type RecurringIncomeCountAggregateOutputType = {
   isActive: number
   createdAt: number
   updatedAt: number
+  suspensionPeriods: number
   _all: number
 }
 
@@ -258,6 +259,7 @@ export type RecurringIncomeCountAggregateInputType = {
   isActive?: true
   createdAt?: true
   updatedAt?: true
+  suspensionPeriods?: true
   _all?: true
 }
 
@@ -373,6 +375,7 @@ export type RecurringIncomeGroupByOutputType = {
   isActive: boolean
   createdAt: Date
   updatedAt: Date
+  suspensionPeriods: runtime.JsonValue
   _count: RecurringIncomeCountAggregateOutputType | null
   _avg: RecurringIncomeAvgAggregateOutputType | null
   _sum: RecurringIncomeSumAggregateOutputType | null
@@ -424,6 +427,7 @@ export type RecurringIncomeWhereInput = {
   isActive?: Prisma.BoolFilter<"RecurringIncome"> | boolean
   createdAt?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
+  suspensionPeriods?: Prisma.JsonFilter<"RecurringIncome">
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
@@ -460,6 +464,7 @@ export type RecurringIncomeOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  suspensionPeriods?: Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   company?: Prisma.CompanyOrderByWithRelationInput
   customer?: Prisma.CustomerOrderByWithRelationInput
@@ -499,6 +504,7 @@ export type RecurringIncomeWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"RecurringIncome"> | boolean
   createdAt?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
+  suspensionPeriods?: Prisma.JsonFilter<"RecurringIncome">
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
@@ -535,6 +541,7 @@ export type RecurringIncomeOrderByWithAggregationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  suspensionPeriods?: Prisma.SortOrder
   _count?: Prisma.RecurringIncomeCountOrderByAggregateInput
   _avg?: Prisma.RecurringIncomeAvgOrderByAggregateInput
   _max?: Prisma.RecurringIncomeMaxOrderByAggregateInput
@@ -571,6 +578,7 @@ export type RecurringIncomeScalarWhereWithAggregatesInput = {
   isActive?: Prisma.BoolWithAggregatesFilter<"RecurringIncome"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RecurringIncome"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"RecurringIncome"> | Date | string
+  suspensionPeriods?: Prisma.JsonWithAggregatesFilter<"RecurringIncome">
 }
 
 export type RecurringIncomeCreateInput = {
@@ -591,6 +599,7 @@ export type RecurringIncomeCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace: Prisma.WorkspaceCreateNestedOneWithoutRecurringIncomesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringIncomesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutRecurringIncomesInput
@@ -627,6 +636,7 @@ export type RecurringIncomeUncheckedCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutRecurringIncomeInput
 }
 
@@ -648,6 +658,7 @@ export type RecurringIncomeUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRecurringIncomesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringIncomesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutRecurringIncomesNestedInput
@@ -684,6 +695,7 @@ export type RecurringIncomeUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedUpdateManyWithoutRecurringIncomeNestedInput
 }
 
@@ -713,6 +725,7 @@ export type RecurringIncomeCreateManyInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUpdateManyMutationInput = {
@@ -733,6 +746,7 @@ export type RecurringIncomeUpdateManyMutationInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUncheckedUpdateManyInput = {
@@ -761,6 +775,7 @@ export type RecurringIncomeUncheckedUpdateManyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeListRelationFilter = {
@@ -799,6 +814,7 @@ export type RecurringIncomeCountOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  suspensionPeriods?: Prisma.SortOrder
 }
 
 export type RecurringIncomeAvgOrderByAggregateInput = {
@@ -1222,6 +1238,7 @@ export type RecurringIncomeCreateWithoutWorkspaceInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   company: Prisma.CompanyCreateNestedOneWithoutRecurringIncomesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutRecurringIncomesInput
   salesChannel: Prisma.IncomeSalesChannelCreateNestedOneWithoutRecurringIncomesInput
@@ -1256,6 +1273,7 @@ export type RecurringIncomeUncheckedCreateWithoutWorkspaceInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutRecurringIncomeInput
 }
 
@@ -1314,6 +1332,7 @@ export type RecurringIncomeScalarWhereInput = {
   isActive?: Prisma.BoolFilter<"RecurringIncome"> | boolean
   createdAt?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringIncome"> | Date | string
+  suspensionPeriods?: Prisma.JsonFilter<"RecurringIncome">
 }
 
 export type RecurringIncomeCreateWithoutCompanyInput = {
@@ -1334,6 +1353,7 @@ export type RecurringIncomeCreateWithoutCompanyInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace: Prisma.WorkspaceCreateNestedOneWithoutRecurringIncomesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutRecurringIncomesInput
   salesChannel: Prisma.IncomeSalesChannelCreateNestedOneWithoutRecurringIncomesInput
@@ -1368,6 +1388,7 @@ export type RecurringIncomeUncheckedCreateWithoutCompanyInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutRecurringIncomeInput
 }
 
@@ -1415,6 +1436,7 @@ export type RecurringIncomeCreateWithoutIncomeCategoryInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace: Prisma.WorkspaceCreateNestedOneWithoutRecurringIncomesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringIncomesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutRecurringIncomesInput
@@ -1449,6 +1471,7 @@ export type RecurringIncomeUncheckedCreateWithoutIncomeCategoryInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutRecurringIncomeInput
 }
 
@@ -1496,6 +1519,7 @@ export type RecurringIncomeCreateWithoutSalesChannelInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace: Prisma.WorkspaceCreateNestedOneWithoutRecurringIncomesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringIncomesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutRecurringIncomesInput
@@ -1530,6 +1554,7 @@ export type RecurringIncomeUncheckedCreateWithoutSalesChannelInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutRecurringIncomeInput
 }
 
@@ -1577,6 +1602,7 @@ export type RecurringIncomeCreateWithoutBankInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace: Prisma.WorkspaceCreateNestedOneWithoutRecurringIncomesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringIncomesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutRecurringIncomesInput
@@ -1611,6 +1637,7 @@ export type RecurringIncomeUncheckedCreateWithoutBankInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutRecurringIncomeInput
 }
 
@@ -1658,6 +1685,7 @@ export type RecurringIncomeCreateWithoutPaymentMethodInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace: Prisma.WorkspaceCreateNestedOneWithoutRecurringIncomesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringIncomesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutRecurringIncomesInput
@@ -1692,6 +1720,7 @@ export type RecurringIncomeUncheckedCreateWithoutPaymentMethodInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutRecurringIncomeInput
 }
 
@@ -1739,6 +1768,7 @@ export type RecurringIncomeCreateWithoutCustomerInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace: Prisma.WorkspaceCreateNestedOneWithoutRecurringIncomesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringIncomesInput
   salesChannel: Prisma.IncomeSalesChannelCreateNestedOneWithoutRecurringIncomesInput
@@ -1773,6 +1803,7 @@ export type RecurringIncomeUncheckedCreateWithoutCustomerInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutRecurringIncomeInput
 }
 
@@ -1820,6 +1851,7 @@ export type RecurringIncomeCreateWithoutGeneratedIncomesInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace: Prisma.WorkspaceCreateNestedOneWithoutRecurringIncomesInput
   company: Prisma.CompanyCreateNestedOneWithoutRecurringIncomesInput
   customer?: Prisma.CustomerCreateNestedOneWithoutRecurringIncomesInput
@@ -1855,6 +1887,7 @@ export type RecurringIncomeUncheckedCreateWithoutGeneratedIncomesInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeCreateOrConnectWithoutGeneratedIncomesInput = {
@@ -1891,6 +1924,7 @@ export type RecurringIncomeUpdateWithoutGeneratedIncomesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRecurringIncomesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringIncomesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutRecurringIncomesNestedInput
@@ -1926,6 +1960,7 @@ export type RecurringIncomeUncheckedUpdateWithoutGeneratedIncomesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeCreateManyWorkspaceInput = {
@@ -1953,6 +1988,7 @@ export type RecurringIncomeCreateManyWorkspaceInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUpdateWithoutWorkspaceInput = {
@@ -1973,6 +2009,7 @@ export type RecurringIncomeUpdateWithoutWorkspaceInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringIncomesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutRecurringIncomesNestedInput
   salesChannel?: Prisma.IncomeSalesChannelUpdateOneRequiredWithoutRecurringIncomesNestedInput
@@ -2007,6 +2044,7 @@ export type RecurringIncomeUncheckedUpdateWithoutWorkspaceInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedUpdateManyWithoutRecurringIncomeNestedInput
 }
 
@@ -2035,6 +2073,7 @@ export type RecurringIncomeUncheckedUpdateManyWithoutWorkspaceInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeCreateManyCompanyInput = {
@@ -2062,6 +2101,7 @@ export type RecurringIncomeCreateManyCompanyInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUpdateWithoutCompanyInput = {
@@ -2082,6 +2122,7 @@ export type RecurringIncomeUpdateWithoutCompanyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRecurringIncomesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutRecurringIncomesNestedInput
   salesChannel?: Prisma.IncomeSalesChannelUpdateOneRequiredWithoutRecurringIncomesNestedInput
@@ -2116,6 +2157,7 @@ export type RecurringIncomeUncheckedUpdateWithoutCompanyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedUpdateManyWithoutRecurringIncomeNestedInput
 }
 
@@ -2144,6 +2186,7 @@ export type RecurringIncomeUncheckedUpdateManyWithoutCompanyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeCreateManyIncomeCategoryInput = {
@@ -2171,6 +2214,7 @@ export type RecurringIncomeCreateManyIncomeCategoryInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUpdateWithoutIncomeCategoryInput = {
@@ -2191,6 +2235,7 @@ export type RecurringIncomeUpdateWithoutIncomeCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRecurringIncomesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringIncomesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutRecurringIncomesNestedInput
@@ -2225,6 +2270,7 @@ export type RecurringIncomeUncheckedUpdateWithoutIncomeCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedUpdateManyWithoutRecurringIncomeNestedInput
 }
 
@@ -2253,6 +2299,7 @@ export type RecurringIncomeUncheckedUpdateManyWithoutIncomeCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeCreateManySalesChannelInput = {
@@ -2280,6 +2327,7 @@ export type RecurringIncomeCreateManySalesChannelInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUpdateWithoutSalesChannelInput = {
@@ -2300,6 +2348,7 @@ export type RecurringIncomeUpdateWithoutSalesChannelInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRecurringIncomesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringIncomesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutRecurringIncomesNestedInput
@@ -2334,6 +2383,7 @@ export type RecurringIncomeUncheckedUpdateWithoutSalesChannelInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedUpdateManyWithoutRecurringIncomeNestedInput
 }
 
@@ -2362,6 +2412,7 @@ export type RecurringIncomeUncheckedUpdateManyWithoutSalesChannelInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeCreateManyBankInput = {
@@ -2389,6 +2440,7 @@ export type RecurringIncomeCreateManyBankInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUpdateWithoutBankInput = {
@@ -2409,6 +2461,7 @@ export type RecurringIncomeUpdateWithoutBankInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRecurringIncomesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringIncomesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutRecurringIncomesNestedInput
@@ -2443,6 +2496,7 @@ export type RecurringIncomeUncheckedUpdateWithoutBankInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedUpdateManyWithoutRecurringIncomeNestedInput
 }
 
@@ -2471,6 +2525,7 @@ export type RecurringIncomeUncheckedUpdateManyWithoutBankInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeCreateManyPaymentMethodInput = {
@@ -2498,6 +2553,7 @@ export type RecurringIncomeCreateManyPaymentMethodInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUpdateWithoutPaymentMethodInput = {
@@ -2518,6 +2574,7 @@ export type RecurringIncomeUpdateWithoutPaymentMethodInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRecurringIncomesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringIncomesNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutRecurringIncomesNestedInput
@@ -2552,6 +2609,7 @@ export type RecurringIncomeUncheckedUpdateWithoutPaymentMethodInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedUpdateManyWithoutRecurringIncomeNestedInput
 }
 
@@ -2580,6 +2638,7 @@ export type RecurringIncomeUncheckedUpdateManyWithoutPaymentMethodInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeCreateManyCustomerInput = {
@@ -2607,6 +2666,7 @@ export type RecurringIncomeCreateManyCustomerInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type RecurringIncomeUpdateWithoutCustomerInput = {
@@ -2627,6 +2687,7 @@ export type RecurringIncomeUpdateWithoutCustomerInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRecurringIncomesNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutRecurringIncomesNestedInput
   salesChannel?: Prisma.IncomeSalesChannelUpdateOneRequiredWithoutRecurringIncomesNestedInput
@@ -2661,6 +2722,7 @@ export type RecurringIncomeUncheckedUpdateWithoutCustomerInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   generatedIncomes?: Prisma.IncomeUncheckedUpdateManyWithoutRecurringIncomeNestedInput
 }
 
@@ -2689,6 +2751,7 @@ export type RecurringIncomeUncheckedUpdateManyWithoutCustomerInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  suspensionPeriods?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -2748,6 +2811,7 @@ export type RecurringIncomeSelect<ExtArgs extends runtime.Types.Extensions.Inter
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  suspensionPeriods?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.RecurringIncome$customerArgs<ExtArgs>
@@ -2785,6 +2849,7 @@ export type RecurringIncomeSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  suspensionPeriods?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.RecurringIncome$customerArgs<ExtArgs>
@@ -2820,6 +2885,7 @@ export type RecurringIncomeSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  suspensionPeriods?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.RecurringIncome$customerArgs<ExtArgs>
@@ -2855,9 +2921,10 @@ export type RecurringIncomeSelectScalar = {
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  suspensionPeriods?: boolean
 }
 
-export type RecurringIncomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "startDate" | "endDate" | "archivedAt" | "cadence" | "creditDay" | "creditMonth" | "isAutomaticCredit" | "billingPeriodMode" | "billingMonth" | "customerId" | "salesChannelId" | "incomeCategoryId" | "description" | "amount" | "vatRate" | "isFiscal" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringIncome"]>
+export type RecurringIncomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "startDate" | "endDate" | "archivedAt" | "cadence" | "creditDay" | "creditMonth" | "isAutomaticCredit" | "billingPeriodMode" | "billingMonth" | "customerId" | "salesChannelId" | "incomeCategoryId" | "description" | "amount" | "vatRate" | "isFiscal" | "paymentMethodId" | "bankId" | "notes" | "isActive" | "createdAt" | "updatedAt" | "suspensionPeriods", ExtArgs["result"]["recurringIncome"]>
 export type RecurringIncomeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -2926,6 +2993,7 @@ export type $RecurringIncomePayload<ExtArgs extends runtime.Types.Extensions.Int
     isActive: boolean
     createdAt: Date
     updatedAt: Date
+    suspensionPeriods: runtime.JsonValue
   }, ExtArgs["result"]["recurringIncome"]>
   composites: {}
 }
@@ -3382,6 +3450,7 @@ export interface RecurringIncomeFieldRefs {
   readonly isActive: Prisma.FieldRef<"RecurringIncome", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"RecurringIncome", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"RecurringIncome", 'DateTime'>
+  readonly suspensionPeriods: Prisma.FieldRef<"RecurringIncome", 'Json'>
 }
     
 

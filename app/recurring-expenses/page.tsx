@@ -1,3 +1,4 @@
+import RecurringStateProvider from '@/components/RecurringStateProvider';
 import {employeeNameSearch} from '@/lib/live-search';
 import { prisma } from '@/lib/prisma';
 import RecurringExpensesList from '@/components/RecurringExpensesList';
@@ -79,6 +80,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
   const orderedCategories = orderExpenseCategories(categories);
   const flashMessages = {
     savedMessages: {
+      activated: 'Ricorrenze attivate.', deactivated: 'Ricorrenze disattivate.',
       created: 'Spesa ricorrente creata.',
       updated: 'Spesa ricorrente aggiornata.',
       deleted: 'Spesa ricorrente rimossa.',
@@ -86,6 +88,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       bulk_deleted: 'Uscite ricorrenti rimosse.'
     },
     errorMessages: {
+      invalid_state: 'Impossibile cambiare stato: controlla la selezione e aggiorna la data di fine delle ricorrenze scadute prima di riattivarle.',
       invalid: 'Controlla i dati della spesa ricorrente.',
       supplier_not_found: 'Fornitore non trovato. Aggiungilo prima con il pulsante Nuovo nel campo Esercente, poi salva la spesa ricorrente.',
       not_found: 'Spesa ricorrente non trovata.',
@@ -93,7 +96,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
     }
   };
 
-  return <div className="grid recurring-expenses-page-content">
+  return <RecurringStateProvider><div className="grid recurring-expenses-page-content">
     <div className="toolbar-card record-toolbar-card">
       <div><h2>Uscite ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
       <NewRecurringExpensePanel
@@ -120,5 +123,5 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
       suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null }))}
       employees={employees.map(e => ({id: e.id, firstName: e.firstName, lastName: e.lastName, employeeCode: e.employeeCode, status: e.status}))}
     />
-  </div>;
+  </div></RecurringStateProvider>;
 }

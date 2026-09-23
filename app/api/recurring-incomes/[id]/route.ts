@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
-import { redirectToPath } from '@/lib/redirect';
 import { z } from 'zod';
+import {changeRecurringStateInTransaction} from '@/lib/recurring-state';
+import {recurringStateResponse} from '@/lib/recurring-state-response';
+import {RecurringStateError} from '@/lib/recurring-suspensions';
 
 const bool = z.preprocess(value => ['true', 'on', '1', true].includes(value as never), z.boolean());
 const recurringIncomeSchema = z.object({
@@ -22,7 +24,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
   const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
   if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
   const id = Number((await context.params).id);
-  const existing = await prisma.recurringIncome.findFirst({ where: { id, workspaceId: access.current.workspace.id } });
+  const existing = await prisma.recurringIncome.findFirst({ where: { id, workspaceId: access.current.workspace.id, companyId: access.current.company.id } });
   if (!existing) return NextResponse.json({ error: 'Entrata ricorrente non trovata' }, { status: 404 });
   const data = recurringIncomeSchema.parse(Object.fromEntries((await request.formData()).entries()));
   const workspaceId = access.current.workspace.id;
@@ -34,16 +36,26 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
   ]);
   if (!channel || (data.customerId && !customer) || (data.paymentMethodId && !method) || (data.bankId && !bank)) return NextResponse.json({ error: 'Riferimenti non validi' }, { status: 400 });
   if (data.isAutomaticCredit && (!data.paymentMethodId || !data.bankId)) return NextResponse.json({ error: 'Metodo e banca sono obbligatori' }, { status: 400 });
-  await prisma.recurringIncome.update({ where: { id }, data: {
-    startDate: new Date(data.startDate), endDate: data.endDate ? new Date(data.endDate) : null,
-    archivedAt: data.isActive ? null : existing.archivedAt, cadence: data.cadence, creditDay: data.creditDay || null,
-    creditMonth: ['YEARLY', 'EVERY_2_YEARS'].includes(data.cadence) ? data.creditMonth || null : null,
-    billingPeriodMode: data.billingPeriodMode, billingMonth: data.billingPeriodMode === 'CUSTOM_MONTH' ? data.billingMonth || null : null,
-    customerId: data.customerId || null, salesChannelId: data.salesChannelId,
-    description: data.description, amount: data.amount, vatRate: data.vatRate, isFiscal: data.isFiscal,
-    isAutomaticCredit: data.isAutomaticCredit, paymentMethodId: data.isAutomaticCredit ? data.paymentMethodId : null,
-    bankId: data.isAutomaticCredit ? data.bankId : null, notes: data.notes || null, isActive: data.isActive
-  } });
+  try {
+    await prisma.$transaction(async tx => {
+      await tx.recurringIncome.update({ where: { id }, data: {
+        startDate: new Date(data.startDate), endDate: data.endDate ? new Date(data.endDate) : null,
+        cadence: data.cadence, creditDay: data.creditDay || null,
+        creditMonth: ['YEARLY', 'EVERY_2_YEARS'].includes(data.cadence) ? data.creditMonth || null : null,
+        billingPeriodMode: data.billingPeriodMode, billingMonth: data.billingPeriodMode === 'CUSTOM_MONTH' ? data.billingMonth || null : null,
+        customerId: data.customerId || null, salesChannelId: data.salesChannelId,
+        description: data.description, amount: data.amount, vatRate: data.vatRate, isFiscal: data.isFiscal,
+        isAutomaticCredit: data.isAutomaticCredit, paymentMethodId: data.isAutomaticCredit ? data.paymentMethodId : null,
+        bankId: data.isAutomaticCredit ? data.bankId : null, notes: data.notes || null
+      } });
+      await changeRecurringStateInTransaction(tx, 'income', [id], data.isActive, {
+        workspaceId, companyId: access.current.company.id, userId: access.current.user.id, timeZone: access.current.company.timeZone
+      }, request);
+    });
+  } catch (error) {
+    if (error instanceof RecurringStateError) return NextResponse.json({error: error.message}, {status: 400});
+    throw error;
+  }
   return NextResponse.json({ ok: true });
 }
 
@@ -51,6 +63,5 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
   const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
   if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
   const id = Number((await context.params).id);
-  await prisma.recurringIncome.updateMany({ where: { id, workspaceId: access.current.workspace.id }, data: { isActive: false } });
-  return redirectToPath('/recurring-incomes');
+  return recurringStateResponse(request, 'income', [id], false, access.current, '/recurring-incomes');
 }

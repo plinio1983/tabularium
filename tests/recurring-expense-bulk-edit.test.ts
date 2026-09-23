@@ -56,6 +56,7 @@ function handler(invalidReference = false, invalidEndDate = false) {
   const compiled = ts.transpileModule(readFileSync(new URL('../app/api/recurring-expenses/bulk/route.ts', import.meta.url), 'utf8'), {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText;
   const reference = {findFirst: async (args: unknown) => {lookups.push(args); return invalidReference ? null : {id: 4};}};
   const mocks: Record<string, unknown> = {
+    '@/lib/recurring-state-response': {recurringStateResponse: async (_request: Request, kind: string, ids: number[], active: boolean) => {writes.push({kind, ids, active}); return new Response(null, {status: 303, headers: {location: '/recurring-incomes?saved=deactivated'}});}},
     '@/lib/recurring-expense-bulk-edit': {parseRecurringExpenseBulkEdit},
     '@/lib/auth': {getWorkspaceApiAccess: async () => ({ok: true, current: {workspace: {id: 2}, company: {id: 3}, user: {id: 1}}}), workspaceOperationalRoles: []},
     '@/lib/prisma': {prisma: {expenseCategory: reference, paymentMethod: reference, bank: reference, recurringExpense: {

@@ -1,7 +1,10 @@
+import {RecurringStateBadge, RecurringStateCard} from '@/components/RecurringStateProvider';
+import RecurringStateToggle from '@/components/RecurringStateToggle';
 import {filteredListHref} from '@/lib/live-search';
 import LiveSearch from '@/components/LiveSearch';
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
+import RecurringIncomeBulkEditModal from '@/components/RecurringIncomeBulkEditModal';
 import RecurringIncomeFiltersDrawer from '@/components/RecurringIncomeFiltersDrawer';
 import MobileSortControl from '@/components/MobileSortControl';
 import {euro} from '@/lib/money';
@@ -57,9 +60,10 @@ function creditLabel(item: any) {
     return '-';
 }
 
-export default function RecurringIncomesList({items, filters = {}, methods = [], banks = []}: {
+export default function RecurringIncomesList({items, filters = {}, channels = [], methods = [], banks = []}: {
     items: any[];
     filters?: Record<string, string | string[] | undefined>;
+    channels?: Array<{id: number; name: string; icon?: string | null}>;
     methods?: Array<{id: number; name: string}>;
     banks?: Array<{id: number; name: string}>;
 }) {
@@ -101,6 +105,7 @@ export default function RecurringIncomesList({items, filters = {}, methods = [],
     const formId = 'recurringIncomeBulkForm';
     return <section className="card record-list-card recurring-expenses-card">
         <BulkSelectionController/>
+        <RecurringIncomeBulkEditModal formId={formId} action={`/api/recurring-incomes/bulk?returnTo=${returnTo}`} channels={channels} methods={methods} banks={banks}/>
         <div className="list-heading recurring-list-heading mobile-page-title recurring-income-mobile-page-title">
             <div><h2>Entrate ricorrenti</h2>
                 <p className="muted">Gestisci le regole che generano periodicamente gli incassi.</p></div>
@@ -117,15 +122,15 @@ export default function RecurringIncomesList({items, filters = {}, methods = [],
                         <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Azioni</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete" data-confirm-label="Elimina">
-                            <span className="btn-icon">🗑</span><span className="hidden-sm-down">Elimina selezionate</span>
-                        </button>
+                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="activate" data-confirm-label="Attiva selezionate">ON · Attiva selezionate</button>
+                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="deactivate" data-confirm-label="Disattiva selezionate">OFF · Disattiva selezionate</button>
+
                     </div>
                 </details>
-                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-edit-base="/recurring-incomes/" data-edit-suffix="/edit" data-edit-trigger-attr="data-recurring-income-edit-id" data-return-to={returnTo}>
+                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-bulk-edit-event="true" data-edit-base="/recurring-incomes/" data-edit-suffix="/edit" data-edit-trigger-attr="data-recurring-income-edit-id" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
-                        <span className="btn-icon icon-small">🗑</span><span className="hidden-sm-down">Elimina</span>
+                    <button type="submit" className="bulk-direct-link hidden-xs-down" name="bulkAction" value="deactivate" data-bulk-delete data-confirm-label="Disattiva" data-floating-label="Disattiva" data-floating-icon="⏻" disabled>
+                        <span className="btn-icon icon-small">⏻</span><span className="hidden-sm-down">Disattiva</span>
                     </button>
                 </div>
             </div>
@@ -156,15 +161,7 @@ export default function RecurringIncomesList({items, filters = {}, methods = [],
                     </tr>
                     </thead>
                     <tbody>{items.map(item => {
-                        const status = item.archivedAt ? {
-                            icon: '⌛',
-                            label: 'Archiviata',
-                            tone: 'tone-neutral'
-                        } : item.isActive ? {icon: '✓', label: 'Attiva', tone: 'tone-yes'} : {
-                            icon: '×',
-                            label: 'Off',
-                            tone: 'tone-critical'
-                        };
+
                         const cadence = cadenceStyles[item.cadence] ?? {icon: '↻', className: 'tone-neutral'};
                         const billingStyle = billingStyles[item.billingPeriodMode] ?? {
                             icon: 'CAL',
@@ -175,7 +172,7 @@ export default function RecurringIncomesList({items, filters = {}, methods = [],
                             <td className="cell-center">
                                 <input form={formId} type="checkbox" name="ids" value={item.id} aria-label={`Seleziona entrata ricorrente ${item.id}`}/>
                             </td>
-                            <td><span className={badgeClass(status.tone)}>{status.icon} {status.label}</span></td>
+                            <td><RecurringStateToggle kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={returnTo}/></td>
                             <td className="recurring-supplier-cell" title={item.customer?.businessName ?? ''}>
                                 <span className="recurring-table-supplier-icon">↻</span>{item.customer?.businessName ?? 'Nessun cliente'}
                             </td>
@@ -207,7 +204,7 @@ export default function RecurringIncomesList({items, filters = {}, methods = [],
                             <input form={formId} type="checkbox" name="ids" value={item.id} aria-label={`Seleziona entrata ricorrente ${item.id}`}/>
                         </div>
                         <Link data-recurring-income-edit-id={item.id} aria-haspopup="dialog" className="recurring-mobile-item-link" href={`/recurring-incomes/${item.id}/edit?returnTo=${returnTo}`}>
-                            <article className={item.isActive ? 'recurring-mobile-item recurring-mobile-item-active' : 'recurring-mobile-item recurring-mobile-item-disabled'}>
+                            <RecurringStateCard kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)}>
                                 <div className="recurring-mobile-top">
                                     <div className="recurring-mobile-main-title">
                                         <span className="badge tone-insurance">{cadenceLabels[item.cadence] ?? item.cadence}</span>
@@ -216,7 +213,7 @@ export default function RecurringIncomesList({items, filters = {}, methods = [],
                                     <strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong>
                                 </div>
                                 <div className="recurring-mobile-top-middle">
-                                    <span className={item.isActive ? 'recurring-mobile-status is-active' : 'recurring-mobile-status'}>{item.archivedAt ? 'ARCHIVIATA' : item.isActive ? 'ON' : 'OFF'}</span>
+                                    <RecurringStateBadge kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)}/>
                                     <strong>{item.customer?.businessName ?? 'Nessun cliente'}</strong>
                                     <div className="recurring-mobile-right"><strong>{credit}</strong></div>
                                 </div>
@@ -230,8 +227,9 @@ export default function RecurringIncomesList({items, filters = {}, methods = [],
                                         <span>{item.endDate ? 'Periodo' : 'Inizio'}</span><strong>{dateLabel(item.startDate)}{item.endDate ? ` – ${dateLabel(item.endDate)}` : ''}</strong>
                                     </div>
                                 </div>
-                            </article>
-                        </Link></div>;
+                            </RecurringStateCard>
+                        </Link>
+                        <div className="recurring-mobile-state"><RecurringStateToggle kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={returnTo}/></div></div>;
                 })}
             </div>
         </> : <p className="muted">Nessuna entrata ricorrente configurata.</p>}
