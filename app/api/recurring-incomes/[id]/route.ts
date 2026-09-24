@@ -1,3 +1,6 @@
+import {appendFlash} from '@/lib/flash';
+import {pathFromUrl, redirectToPath} from '@/lib/redirect';
+import {writeAuditLog} from '@/lib/audit';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
@@ -64,4 +67,23 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
   if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
   const id = Number((await context.params).id);
   return recurringStateResponse(request, 'income', [id], false, access.current, '/recurring-incomes');
+}
+
+export async function POST(request: Request, context: {params: Promise<{id: string}>}) {
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({error: access.error}, {status: access.status});
+  const id = Number((await context.params).id);
+  if (!Number.isSafeInteger(id) || id <= 0) return NextResponse.json({error: 'ID entrata ricorrente non valido'}, {status: 400});
+  const formData = await request.formData();
+  if (formData.get('_action') !== 'delete') return NextResponse.json({error: 'Azione non valida'}, {status: 400});
+  const current = access.current;
+  const deleted = await prisma.recurringIncome.deleteMany({where: {
+    id, workspaceId: current.workspace.id, companyId: current.company.id
+  }});
+  if (deleted.count) await writeAuditLog({
+    workspaceId: current.workspace.id, userId: current.user.id, action: 'DELETE',
+    entityType: 'RecurringIncome', entityId: id, request
+  });
+  const returnTo = pathFromUrl(new URL(request.url).searchParams.get('returnTo'), '/recurring-incomes');
+  return redirectToPath(appendFlash(returnTo, deleted.count ? {saved: 'deleted'} : {error: 'not_found'}));
 }

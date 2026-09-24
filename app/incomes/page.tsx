@@ -866,7 +866,7 @@ export default async function IncomesPage({searchParams}: {
             </div>
             <div className="toolbar-actions income-page-toolbar-actions">
                 {/*<Link className="btn btn-sm btn-default" href="/incomes/credits">Accrediti</Link>*/}
-                <Link className="btn btn-sm btn-ghost" href="/recurring-incomes">
+                <Link className="btn btn-sm btn-secondary" href="/recurring-incomes">
                     <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>

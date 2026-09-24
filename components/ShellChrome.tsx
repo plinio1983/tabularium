@@ -18,6 +18,8 @@ type Props = {
 
 function isCompactMobileHeaderPath(pathname: string) {
     return /^\/expenses\/\d+$/.test(pathname)
+        || /^\/recurring-expenses\/\d+$/.test(pathname)
+        || /^\/recurring-incomes\/\d+$/.test(pathname)
         || /^\/incomes\/\d+$/.test(pathname)
         || /^\/suppliers\/\d+$/.test(pathname)
         || pathname === '/expenses/new'

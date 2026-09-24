@@ -304,6 +304,12 @@ button {
   font-size: 18px;
 }
 
+.btn-option {
+  color: var(--text);
+  border: 1px solid #cbcbcb85;
+  background: #f8fafc;
+}
+
 .btn-primary {
   background: var(--accent) !important;
   color: #fff !important;

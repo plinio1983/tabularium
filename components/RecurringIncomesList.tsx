@@ -168,11 +168,11 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
                             className: 'tone-neutral'
                         };
                         const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
-                        return <tr key={item.id} className="clickable-desktop-row" data-recurring-income-edit-id={item.id} aria-haspopup="dialog" aria-label={`Modifica entrata ricorrente ${item.id}`} tabIndex={0}>
+                        return <tr key={item.id} className="clickable-desktop-row" data-row-href={`/recurring-incomes/${item.id}?returnTo=${returnTo}`} aria-label={`Apri entrata ricorrente ${item.id}`} tabIndex={0}>
                             <td className="cell-center">
                                 <input form={formId} type="checkbox" name="ids" value={item.id} aria-label={`Seleziona entrata ricorrente ${item.id}`}/>
                             </td>
-                            <td><RecurringStateToggle kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={returnTo}/></td>
+                            <td><RecurringStateToggle variant="button" kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={returnTo}/></td>
                             <td className="recurring-supplier-cell" title={item.customer?.businessName ?? ''}>
                                 <span className="recurring-table-supplier-icon">↻</span>{item.customer?.businessName ?? 'Nessun cliente'}
                             </td>
@@ -203,17 +203,17 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
                         <div className="recurring-mobile-select">
                             <input form={formId} type="checkbox" name="ids" value={item.id} aria-label={`Seleziona entrata ricorrente ${item.id}`}/>
                         </div>
-                        <Link data-recurring-income-edit-id={item.id} aria-haspopup="dialog" className="recurring-mobile-item-link" href={`/recurring-incomes/${item.id}/edit?returnTo=${returnTo}`}>
+                        <Link className="recurring-mobile-item-link" href={`/recurring-incomes/${item.id}?returnTo=${returnTo}`}>
                             <RecurringStateCard kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)}>
                                 <div className="recurring-mobile-top">
                                     <div className="recurring-mobile-main-title">
+                                        <RecurringStateBadge kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)}/>
                                         <span className="badge tone-insurance">{cadenceLabels[item.cadence] ?? item.cadence}</span>
                                         <span className="badge">{creditLabel(item)}</span>
                                     </div>
                                     <strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong>
                                 </div>
                                 <div className="recurring-mobile-top-middle">
-                                    <RecurringStateBadge kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)}/>
                                     <strong>{item.customer?.businessName ?? 'Nessun cliente'}</strong>
                                     <div className="recurring-mobile-right"><strong>{credit}</strong></div>
                                 </div>
@@ -229,7 +229,7 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
                                 </div>
                             </RecurringStateCard>
                         </Link>
-                        <div className="recurring-mobile-state"><RecurringStateToggle kind="income" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={returnTo}/></div></div>;
+                    </div>;
                 })}
             </div>
         </> : <p className="muted">Nessuna entrata ricorrente configurata.</p>}

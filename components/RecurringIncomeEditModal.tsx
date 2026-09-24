@@ -51,6 +51,7 @@ export default function RecurringIncomeEditModal({items, children, ...options}: 
     const item = items.find(item => item.id === Number(trigger.dataset.recurringIncomeEditId));
     if (item) {
       const state = records[`income:${item.id}`];
+      trigger.closest('details')?.removeAttribute('open');
       trigger.focus({preventScroll: true}); setSaved(false);
       setSelected(state ? {...item, isActive: state.active} : item);
     }
@@ -58,7 +59,7 @@ export default function RecurringIncomeEditModal({items, children, ...options}: 
   return <div className="recurring-incomes-editor" onClickCapture={event => {
     if (!(event.target instanceof Element)) return;
     const trigger = event.target.closest<HTMLElement>('[data-recurring-income-edit-id]');
-    if (!trigger || (trigger.tagName !== 'A' && event.target.closest('a, button, input, select, textarea, label'))) return;
+    if (!trigger || (trigger.tagName === 'TR' && event.target.closest('a, button, input, select, textarea, label'))) return;
     event.preventDefault(); event.stopPropagation(); open(trigger);
   }} onKeyDown={event => {
     if (!(event.target instanceof HTMLElement) || !event.target.matches('tr[data-recurring-income-edit-id]') || !['Enter', ' '].includes(event.key)) return;

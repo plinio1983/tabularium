@@ -3,8 +3,8 @@
 import {useState} from 'react';
 import {useRecurringStates} from './RecurringStateProvider';
 
-export default function RecurringStateToggle({kind, id, active, archived, returnTo}: {
-  kind: 'expense' | 'income'; id: number; active: boolean; archived: boolean; returnTo: string;
+export default function RecurringStateToggle({kind, id, active, archived, returnTo, variant = 'switch'}: {
+  kind: 'expense' | 'income'; id: number; active: boolean; archived: boolean; returnTo: string; variant?: 'switch' | 'button';
 }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -34,12 +34,21 @@ export default function RecurringStateToggle({kind, id, active, archived, return
     }}>
     <input type="hidden" name="ids" value={id}/>
     <input type="hidden" name="bulkAction" value={active ? 'deactivate' : 'activate'}/>
-    <button type="submit" role="switch" aria-checked={active} aria-busy={saving} disabled={saving}
+    {variant === 'button' ? <button type="submit" role="switch" aria-checked={active} aria-busy={saving} disabled={saving}
       title={archived ? 'Ricorrenza scaduta' : undefined}
       aria-label={saving ? 'Salvataggio in corso' : `${active ? 'Disattiva' : 'Attiva'} ${kind === 'expense' ? 'spesa' : 'entrata'} ricorrente ${id}${archived ? ' (scaduta)' : ''}`}
       className={`btn btn-xs recurring-state-button ${active ? 'btn-primary' : 'btn-default'}`}>
       {saving ? <span className="recurring-state-loader" aria-hidden="true"/> : active ? 'ON' : 'OFF'}
-    </button>
+    </button> : <div className="trend-mode-toggle recurring-state-switch" role="group" aria-busy={saving}
+      aria-label={`Stato ${kind === 'expense' ? 'spesa' : 'entrata'} ricorrente ${id}${archived ? ' (scaduta)' : ''}`}
+      title={archived ? 'Ricorrenza scaduta' : undefined}>
+      {saving ? <span className="recurring-state-loader" role="status" aria-label="Salvataggio in corso"/> : [true, false].map(nextActive =>
+        <button key={String(nextActive)} type="submit" aria-pressed={active === nextActive} disabled={active === nextActive}
+          aria-label={nextActive ? 'Attiva ricorrenza' : 'Disattiva ricorrenza'}
+          className={`trend-mode-button${nextActive ? '' : ' is-off'}${active === nextActive ? ' is-active' : ''}`}>
+          {nextActive ? 'ON' : 'OFF'}
+        </button>)}
+    </div>}
     {error ? <span role="alert" className="inline-warning">{error}</span> : null}
   </form>;
 }

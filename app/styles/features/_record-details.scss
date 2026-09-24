@@ -352,21 +352,21 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
 }
 
 .bulk-action-modal-actions button {
-  width: 100%;
-  min-height: 44px;
+  //width: 100%;
+  //min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
   padding: 11px 12px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: var(--text);
+  //border: 0;
+  //border-radius: 12px;
+  //background: transparent;
+  //color: var(--text);
   font-size: 14px;
-  font-weight: 850;
-  text-align: left;
-  cursor: pointer;
+  font-weight: 700;
+  //text-align: left;
+  //cursor: pointer;
 }
 
 .bulk-action-modal-actions button:hover {
@@ -414,14 +414,14 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
     padding-bottom: 14px;
   }
 
-  .bulk-action-modal-actions button {
-    border: 1px solid #dbe3ff;
-    border-radius: 12px;
-    background: #f8fafc;
-    color: var(--accent);
-    font-weight: 850;
-    text-decoration: none;
-  }
+  //.bulk-action-modal-actions button {
+  //  border: 1px solid #dbe3ff;
+  //  border-radius: 12px;
+  //  background: #f8fafc;
+  //  color: var(--accent);
+  //  font-weight: 850;
+  //  text-decoration: none;
+  //}
 
   .bulk-action-modal-actions button:hover,
   .bulk-action-modal-actions button:focus-visible {
@@ -664,6 +664,63 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   gap: 10px;
   flex-grow: 1;
   justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+  .recurring-record-detail-page .record-detail-action-row {
+    padding: 0 0 6px;
+  }
+}
+
+.recurring-detail-actions-inline {
+  display: none;
+}
+
+@media (min-width: 577px) {
+  .recurring-detail-actions-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .recurring-detail-actions-menu {
+    display: none;
+  }
+}
+
+.recurring-detail-actions-menu {
+  position: relative;
+
+  > summary {
+    list-style: none;
+    width: 38px;
+    height: 36px;
+    padding: 0;
+  }
+
+  > summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.recurring-detail-actions-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 6px;
+  min-width: 160px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 8px 24px rgb(20 30 60 / 15%);
+
+  > .btn {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 .record-detail-status-strip {
@@ -1699,7 +1756,7 @@ body.invoice-attachments-modal-open {
   min-width: 0;
 
   @media (max-width: 760px) {
-      gap: 4px;
+    gap: 4px;
   }
 }
 

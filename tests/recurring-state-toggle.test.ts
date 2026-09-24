@@ -26,8 +26,10 @@ for (const kind of ['expense', 'income'] as const) {
       assert.match(html, /type="hidden" name="ids" value="42"/);
       assert.ok(html.includes(`name="bulkAction" value="${active ? 'deactivate' : 'activate'}"`));
       assert.match(html, /type="submit"/);
-      assert.doesNotMatch(html, / disabled=""/);
-      assert.ok(html.includes(`aria-checked="${active}"`));
+      assert.equal((html.match(/ disabled=""/g) ?? []).length, 1);
+      assert.match(html, /role="group"/);
+      assert.equal((html.match(/aria-pressed="true"/g) ?? []).length, 1);
+      assert.equal((html.match(/aria-pressed="false"/g) ?? []).length, 1);
     });
   }
 }

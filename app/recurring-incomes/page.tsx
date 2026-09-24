@@ -59,7 +59,7 @@ export default async function RecurringIncomesPage({searchParams}: {
                 <p className="muted">Gestisci le regole che generano periodicamente gli incassi.</p></div>
         </div>
         <ActionFeedbackBanner searchParams={query} savedMessages={{activated: 'Ricorrenze attivate.', deactivated: 'Ricorrenze disattivate.',
-            created: 'Entrata ricorrente creata.',
+            created: 'Entrata ricorrente creata.', deleted: 'Entrata ricorrente eliminata.',
             updated: 'Entrata ricorrente aggiornata.', bulk_updated: 'Entrate ricorrenti aggiornate.', bulk_deleted: 'Entrate ricorrenti disattivate.'
         }} errorMessages={{invalid_state: 'Impossibile cambiare stato: controlla la selezione e aggiorna la data di fine delle ricorrenze scadute prima di riattivarle.', invalid: 'Controlla i dati inseriti.', not_found: 'Entrata ricorrente non trovata.'}}/>
         <RecurringIncomeEditModal items={items.map(({customer, salesChannel, paymentMethod, bank, ...item}) => ({...item, amount: item.amount.toString(), vatRate: item.vatRate.toString()}))}
