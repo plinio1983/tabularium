@@ -1082,7 +1082,11 @@ export default async function ExpensesPage({searchParams}: {
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista spese</h2>
-                    <p className="muted">Risultati mostrati: {filteredExpenses.length}</p>
+                    <p className="muted record-list-results-summary">
+                        <span>Risultati mostrati: {filteredExpenses.length}</span>
+                        <span>Totale importi: <strong>{euro(totals.total)}</strong></span>
+                        <span>Da pagare: <strong>{euro(totals.toPay)}</strong></span>
+                    </p>
                 </div>
                 {/*<Link className="btn btn-sm btn-default" href="/expenses/payments">Pagamenti</Link>*/}
             </div>

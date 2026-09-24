@@ -972,7 +972,11 @@ export default async function IncomesPage({searchParams}: {
             <div className="list-heading recurring-list-heading">
                 <div>
                     <h2>Lista incassi</h2>
-                    <p className="muted">Risultati mostrati: {standardFilteredIncomes.length + cashRegisterGroups.length}</p>
+                    <p className="muted record-list-results-summary">
+                        <span>Risultati mostrati: {standardFilteredIncomes.length + cashRegisterGroups.length}</span>
+                        <span>Totale importi: <strong>{euro(totals.total)}</strong></span>
+                        <span>Da incassare: <strong>{euro(totals.uncredited)}</strong></span>
+                    </p>
                 </div>
             </div>
 

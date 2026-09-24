@@ -3,13 +3,22 @@
   display: none;
 }
 
-//.expense-recurring-definition-toggle {
-//  @media (max-width: 900px) {
-//    &-internal {
-//      display: none !important;
-//    }
-//  }
-//}
+.expense-recurring-definition-toggle {
+  .expense-recurring-definition-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .expense-recurring-definition-copy p {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  > .switch {
+    flex-shrink: 0;
+  }
+}
 
 .form-section {
   grid-column: 1 / -1;

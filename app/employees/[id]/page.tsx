@@ -21,6 +21,19 @@ function Field({label, value, copy = true}: { label: string; value: string; copy
         <CopyValueButton value={value === '—' ? '' : value}/> : null}</div>;
 }
 
+function EmployeeStateSwitch({id, active}: {id: number; active: boolean}) {
+    return <form action={`/api/employees/${id}?returnTo=${encodeURIComponent(`/employees/${id}`)}`} method="post">
+        <div className="trend-mode-toggle employee-state-switch" role="group" aria-label="Stato del rapporto">
+            {[true, false].map(inProgress => <button key={String(inProgress)} type="submit" name="_action"
+                value={inProgress ? 'activate' : 'deactivate'} aria-pressed={active === inProgress}
+                disabled={active === inProgress}
+                className={`trend-mode-button${inProgress ? '' : ' is-off'}${active === inProgress ? ' is-active' : ''}`}>
+                {inProgress ? 'In corso' : 'Sospeso'}
+            </button>)}
+        </div>
+    </form>;
+}
+
 export default async function EmployeeDetailPage({params, searchParams}: {
     params: Promise<{ id: string }>;
     searchParams?: Promise<Record<string, string | string[] | undefined>>
@@ -114,11 +127,8 @@ export default async function EmployeeDetailPage({params, searchParams}: {
             <div className="record-detail-action-row pt-0 hidden-sm-up">
                 <div className="left-side"><DetailBackButton href={back}/></div>
                 <div className="right-side btn-group">
+                    <EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>
                     <button className="btn btn-sm btn-default" type="button" data-employee-edit-id={employee.id}>✎ Modifica</button>
-                    <form action={`/api/employees/${employee.id}?returnTo=${encodeURIComponent(`/employees/${employee.id}`)}`} method="post">
-                        <input type="hidden" name="_action" value={employee.status === 'ACTIVE' ? 'deactivate' : 'activate'}/>
-                        <button className="btn btn-sm btn-default" type="submit">{employee.status === 'ACTIVE' ? 'Disattiva' : 'Riattiva'}</button>
-                    </form>
                     <DeleteActionButton action={`/api/employees/${employee.id}`} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton>
                 </div>
             </div>
@@ -126,11 +136,8 @@ export default async function EmployeeDetailPage({params, searchParams}: {
                 <div className="record-detail-action-row hidden-sm-down">
                     <div className="left-side"><DetailBackButton href={back}/></div>
                     <div className="right-side btn-group">
+                        <EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>
                         <button className="btn btn-sm btn-default" type="button" data-employee-edit-id={employee.id}>✎ Modifica</button>
-                        <form action={`/api/employees/${employee.id}?returnTo=${encodeURIComponent(`/employees/${employee.id}`)}`} method="post">
-                            <input type="hidden" name="_action" value={employee.status === 'ACTIVE' ? 'deactivate' : 'activate'}/>
-                            <button className="btn btn-sm btn-default" type="submit">{employee.status === 'ACTIVE' ? 'Disattiva' : 'Riattiva'}</button>
-                        </form>
                         <DeleteActionButton action={`/api/employees/${employee.id}`} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton>
                     </div>
                 </div>
@@ -145,7 +152,7 @@ export default async function EmployeeDetailPage({params, searchParams}: {
                         </div>
                     </div>
                     <aside className="record-detail-amount-panel">
-                        <span className="record-detail-amount-panel-header">Rapporto</span><strong>{employee.status === 'ACTIVE' ? 'In corso' : 'Concluso'}</strong>
+                        <span className="record-detail-amount-panel-header">Rapporto</span><strong>{employee.status === 'ACTIVE' ? 'In corso' : 'Sospeso'}</strong>
                         <div className="record-detail-badge-row">
                             <span className="badge">Dal {date(employee.hiredAt)}</span></div>
                     </aside>

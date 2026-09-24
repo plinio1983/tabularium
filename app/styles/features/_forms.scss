@@ -1043,7 +1043,8 @@
   display: none;
 }
 
-.trend-mode-toggle.recurring-state-switch {
+.trend-mode-toggle.recurring-state-switch,
+.trend-mode-toggle.employee-state-switch {
   flex: 0 0 86px;
   width: 86px;
   min-width: 125px;

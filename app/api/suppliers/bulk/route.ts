@@ -29,10 +29,14 @@ export async function POST(request: Request) {
   if (action === 'delete') {
     const protectedCount = await prisma.supplier.count({ where: { id: { in: ids }, workspaceId: current.workspace.id, systemRole: { not: null } } });
     if (protectedCount > 0) return redirectToPath(appendFlash(redirectTo, { error: 'system_protected' }));
-    const linkedUsage = await prisma.expense.count({ where: { supplierId: { in: ids }, workspaceId: current.workspace.id } })
-      + await prisma.recurringExpense.count({ where: { supplierId: { in: ids }, workspaceId: current.workspace.id } });
+    const [expenseCount, recurringCount] = await Promise.all([
+      prisma.expense.count({ where: { supplierId: { in: ids }, workspaceId: current.workspace.id } }),
+      prisma.recurringExpense.count({ where: { supplierId: { in: ids }, workspaceId: current.workspace.id } })
+    ]);
+    const linkedUsage = expenseCount + recurringCount;
     if (linkedUsage > 0) {
-      return redirectToPath(appendFlash(redirectTo, { error: 'in_use', usage: String(linkedUsage) }));
+      const error = recurringCount > 0 ? (expenseCount > 0 ? 'in_use_expenses_and_recurring' : 'in_use_recurring') : 'in_use';
+      return redirectToPath(appendFlash(redirectTo, { error, usage: String(linkedUsage) }));
     }
     const deleted = await prisma.supplier.deleteMany({ where: { id: { in: ids }, workspaceId: current.workspace.id } });
     await writeAuditLog({

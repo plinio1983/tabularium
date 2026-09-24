@@ -378,11 +378,14 @@ export default function ExpensesList({
                                     {/*-- Fiscal Badge -->*/}
                                     {!isNoVatExpense ? fiscalBadgeMobile(expense.isDeclared) : isPayroll ?
                                         <span className="text-primary strong">✓ Fis.</span> : isTaxContribution ?
-                                            <span className="text-muted strong">Imposte</span> : <span className="text-muted strong">IVA</span>}
+                                            <span className="text-muted strong">Imposte</span> :
+                                            <span className="text-muted strong">IVA</span>}
 
                                     {/*-- Periodo fiscale -->*/}
-                                    <span className="mobile-record-date hidden-xs-up">&nbsp; • &nbsp;{formatMonthPeriod(expense.month)}</span>
-                                    <span className="mobile-record-date date-long hidden-xs-down">&nbsp; • &nbsp;{formatPeriod(expense.month, expense.year)}</span>
+                                    <span
+                                        className="mobile-record-date hidden-xs-up">&nbsp; • &nbsp;{formatMonthPeriod(expense.month)}</span>
+                                    <span
+                                        className="mobile-record-date date-long hidden-xs-down">&nbsp; • &nbsp;{formatPeriod(expense.month, expense.year)}</span>
 
                                     {/*-- Fatttura -->*/}
                                     {!isNoVatExpense && expense.isDeclared ?
@@ -436,7 +439,8 @@ export default function ExpensesList({
                                     {/*    </span> : null}*/}
 
                                     {/*-- Descrizione / Fornitore -->*/}
-                                    {showSupplierColumn ? <span className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'}</span> : supplierName}
+                                    {showSupplierColumn ? <span
+                                        className="expense-mobile-description">{expense.description || 'Spesa senza descrizione'}</span> : supplierName}
                                 </div>
                                 <div>
                                     <span className={badgeClass(statusStyle.className)}> {statusLabel}</span>
@@ -538,18 +542,19 @@ export default function ExpensesList({
                                 className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : isPayroll ? 'BP' : expense.isRecurring ? 'R' : 'S'}</span>
                         </td>
                         <td className="cell-category">{expense.category ?
+                            // <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}
                             <span title={expense.category.name}
-                                  className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}</td>
-                        {showSupplierColumn ?
-                            <td className="cell-supplier cell-compact"
-                                title={supplierName}>{isPayroll && expense.employeeId ?
+                                  className='text-secondary strong'>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}
+                        </td>
+                        {showSupplierColumn ? <td className="cell-supplier cell-compact"
+                            title={supplierName}>{isPayroll && expense.employeeId ?
+                            <Link className="supplier-table-link"
+                                  href={`/employees/${expense.employeeId}?returnTo=${returnTo}`}>{supplierName}</Link> : expense.supplierId ?
                                 <Link className="supplier-table-link"
-                                      href={`/employees/${expense.employeeId}?returnTo=${returnTo}`}>{supplierName}</Link> : expense.supplierId ?
-                                    <Link className="supplier-table-link"
-                                          href={`/suppliers/${expense.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}</td> : null}
+                                      href={`/suppliers/${expense.supplierId}?returnTo=${returnTo}`}>{supplierName}</Link> : supplierName}
+                        </td> : null}
                         <td className="cell-amount">
-                            <strong
-                                className={moneyTone(amount)}>{euro(expense.amount as string | number)} &nbsp; {expensePaymentIcon(expense)}</strong>
+                            <strong className={moneyTone(amount)}>{euro(expense.amount as string | number)} &nbsp; {expensePaymentIcon(expense)}</strong>
                         </td>
                         <td className="cell-vat">{isVatSettlement ?
                             <span className="badge tone-neutral">100%</span> : isTaxContribution || isPayroll ?
@@ -565,12 +570,14 @@ export default function ExpensesList({
                         <td className="cell-invoice-state">{isNoVatExpense ?
                             <span className="badge color-badge tone-muted">✕</span> :
                             <span className="expense-invoice-indicator">
-                                <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
+                                <span
+                                    className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} {invoiceStyle.label}</span>
                                 <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/>
                             </span>}
                         </td>
                         <td className="cell-ebilling">{isNoVatExpense ?
-                            <span className="badge color-badge tone-muted">✕</span> : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
+                            <span
+                                className="badge color-badge tone-muted">✕</span> : invoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}</td>
                         <td className="cell-residual">
                             <strong className={residual > 0 ? 'text-warning' : 'text-ok'}>{euro(residual)}</strong></td>
                     </tr>;

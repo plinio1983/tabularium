@@ -199,8 +199,10 @@ export default async function SuppliersPage({searchParams}: {
         errorMessages: {
             invalid: 'Controlla i dati del fornitore.',
             not_found: 'Fornitore non trovato.',
-            in_use: 'Il fornitore è collegato ad altri movimenti.'
-            , system_protected: 'Il fornitore di sistema non può essere modificato o eliminato.'
+            in_use: 'Eliminazione bloccata: i fornitori selezionati hanno spese collegate nel workspace, anche in altre aziende.',
+            in_use_recurring: 'Eliminazione bloccata: i fornitori selezionati hanno spese ricorrenti collegate, anche se non hanno spese registrate. Rimuovi il collegamento nelle ricorrenze oppure elimina le ricorrenze prima di riprovare.',
+            in_use_expenses_and_recurring: 'Eliminazione bloccata: i fornitori selezionati hanno sia spese sia spese ricorrenti collegate nel workspace, anche in altre aziende.',
+            system_protected: 'Il fornitore di sistema non può essere modificato o eliminato.'
         }
     };
 

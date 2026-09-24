@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import {useId, useState} from "react";
 import ExpenseForm from "@/components/ExpenseForm";
 import RecurringExpenseForm from "@/components/RecurringExpenseForm";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
@@ -62,6 +62,7 @@ type Props = {
 export default function ExpenseCreationSwitcher(props: Props) {
     const inferredType: CreationType = props.initialType
         ?? (props.initialExpense?.expenseType === "VAT_SETTLEMENT" ? "vat" : props.initialExpense?.expenseType === "TAX_CONTRIBUTION" ? "tax" : props.initialExpense?.expenseType === "PAYROLL" ? "payroll" : "single");
+    const recurrenceDescriptionId = useId();
     const [type, setType] = useState<CreationType>(inferredType);
     const [isRecurringDefinition, setIsRecurringDefinition] = useState(props.initialType === "recurring");
     const [typeConfirmed, setTypeConfirmed] = useState(Boolean(props.skipTypeStep || props.initialExpense?.id));
@@ -75,13 +76,16 @@ export default function ExpenseCreationSwitcher(props: Props) {
     }
 
     function recurrenceControl(location: "external" | "internal") {
-        //return <div className={`app-form-field full app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide expense-recurring-definition-toggle expense-recurring-definition-toggle-${location}`}>
-        return <div className={`app-form-field full app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide`}>
-            <div className="switch-toggle-field-label app-form-field-label">
-                <span className="app-form-field-icon" aria-hidden="true">↻</span>
-                <span className="app-form-label">Definizione ricorrente</span>
+        const descriptionId = `${recurrenceDescriptionId}-${location}`;
+        return <div className={`app-form-field full app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide expense-recurring-definition-toggle expense-recurring-definition-toggle-${location}`}>
+            <div className="expense-recurring-definition-copy">
+                <div className="switch-toggle-field-label app-form-field-label">
+                    <span className="app-form-field-icon" aria-hidden="true">↻</span>
+                    <span className="app-form-label">Definizione ricorrente</span>
+                </div>
+                <p id={descriptionId} className="muted">Una spesa che si ripete nel tempo, come un affitto o un abbonamento. Imposta la cadenza per generare automaticamente le spese alle scadenze previste.</p>
             </div>
-            <label className="switch"><input type="checkbox" checked={isRecurringDefinition && recurringEligible} disabled={!recurringEligible} aria-label={recurringEligible ? "Definizione ricorrente" : "Definizione ricorrente non disponibile per questo tipo di spesa"} onChange={event => setIsRecurringDefinition(event.currentTarget.checked)}/>
+            <label className="switch"><input type="checkbox" aria-describedby={descriptionId} checked={isRecurringDefinition && recurringEligible} disabled={!recurringEligible} aria-label={recurringEligible ? "Definizione ricorrente" : "Definizione ricorrente non disponibile per questo tipo di spesa"} onChange={event => setIsRecurringDefinition(event.currentTarget.checked)}/>
                 <span className="slider"/>
             </label>
         </div>;
@@ -131,9 +135,9 @@ export default function ExpenseCreationSwitcher(props: Props) {
     };
     const form = isRecurringDefinition && recurringEligible
         ?
-        <RecurringExpenseForm key={`recurring-${type}`} categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} employees={props.employees} action={props.recurringAction} initialExpense={recurringInitialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} mobileStepOffset={1} onBackToType={props.skipTypeStep ? undefined : () => setTypeConfirmed(false)} hideMobileActions={!typeConfirmed}/>
+        <RecurringExpenseForm key={`recurring-${type}`} categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} employees={props.employees} action={props.recurringAction} initialExpense={recurringInitialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} mobileStepOffset={1} onBackToType={props.skipTypeStep ? undefined : () => setTypeConfirmed(false)} hideMobileActions={!typeConfirmed} recurrenceControl={recurrenceControl("internal")}/>
         :
-        <ExpenseForm key={type} categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} employees={props.employees} action={props.expenseAction} title={props.title} submitLabel={props.submitLabel} initialExpense={initialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} onSwitchToRecurring={() => changeType("recurring")} onExpenseTypeChange={changeType} mobileStepOffset={1} onBackToType={props.skipTypeStep ? undefined : () => setTypeConfirmed(false)} hideMobileActions={!typeConfirmed}/>;
+        <ExpenseForm key={type} categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} employees={props.employees} action={props.expenseAction} title={props.title} submitLabel={props.submitLabel} initialExpense={initialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} onSwitchToRecurring={() => changeType("recurring")} onExpenseTypeChange={changeType} mobileStepOffset={1} onBackToType={props.skipTypeStep ? undefined : () => setTypeConfirmed(false)} hideMobileActions={!typeConfirmed} recurrenceControl={recurrenceControl("internal")}/>;
 
     return <>
         <div className={typeConfirmed ? "expense-creation-stage is-confirmed" : "expense-creation-stage"}>{typeStep}
