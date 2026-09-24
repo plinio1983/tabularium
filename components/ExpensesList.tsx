@@ -263,23 +263,23 @@ export default function ExpensesList({
                             <span className="hidden-sm-down">Bulk actions</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
-                            <button className="btn btn-sm btn-default" type="submit" name="bulkAction"
+                            <button className="btn btn-sm btn-option" type="submit" name="bulkAction"
                                     value="export_csv"
                                     formAction="/api/exports/expenses" formMethod="post"
                                     data-confirm-label="Esporta CSV">
                                 <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                             </button>
-                            <button className="btn btn-sm btn-default" type="submit" name="bulkAction"
+                            <button className="btn btn-sm btn-option" type="submit" name="bulkAction"
                                     value="invoice_emitted">
                                 <span className="btn-icon">✓</span><span
                                 className="hidden-sm-down">Fattura emessa</span>
                             </button>
-                            <button className="btn btn-sm btn-default is-disabled" type="button" data-bulk-copy
+                            <button className="btn btn-sm btn-option is-disabled" type="button" data-bulk-copy
                                     aria-disabled="true" disabled>
                                 <span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia spese selezionate</span>
                             </button>
                             <BulkExpenseAttachmentsModal formId={formId}/>
-                            <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete"
+                            <button className="btn btn-sm btn-option danger-menu-item bulk-menu-mobile-delete"
                                     type="submit"
                                     name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
                                 <span className="btn-icon">🗑</span><span

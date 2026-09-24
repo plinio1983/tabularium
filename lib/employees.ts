@@ -37,3 +37,15 @@ export function employeePersistenceData(input: EmployeeInput) {
 export function employeeDisplayName(employee: {firstName: string; lastName: string}) {
   return `${employee.lastName} ${employee.firstName}`.trim();
 }
+
+export function employeeCompensationTotals(expenses: Array<{
+  amount: number | string | {toString(): string};
+  payments: Array<{amount: number | string | {toString(): string}}>;
+}>) {
+  return expenses.reduce((totals, expense) => {
+    const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
+    totals.paid += paid;
+    totals.toPay += Math.max(0, Number(expense.amount.toString()) - paid);
+    return totals;
+  }, {paid: 0, toPay: 0});
+}

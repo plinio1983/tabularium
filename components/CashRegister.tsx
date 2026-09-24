@@ -488,7 +488,10 @@ export default function CashRegister({
                 <button className="cash-register-submit" type="button"
                         disabled={sending || !hasValidAmount || !selectedMethod || !selectedBankId || !methodIsAvailable(selectedMethod)}
                         onClick={() => void submitReceipt()}>
-                    <span>✓</span> {sending ? 'Salvataggio…' : 'SALVA MODIFICHE'}
+                    <span>✓</span>
+                    <div className="cash-register-label">
+                        {sending ? 'Salvataggio…' : 'SALVA MODIFICHE'}
+                    </div>
                 </button>
             </> : null}
             {mode !== 'edit' ? <>

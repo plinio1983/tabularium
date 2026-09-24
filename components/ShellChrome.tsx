@@ -22,6 +22,7 @@ function isCompactMobileHeaderPath(pathname: string) {
         || /^\/recurring-incomes\/\d+$/.test(pathname)
         || /^\/incomes\/\d+$/.test(pathname)
         || /^\/suppliers\/\d+$/.test(pathname)
+        || /^\/clients\/\d+$/.test(pathname)
         || pathname === '/expenses/new'
         || pathname === '/expenses/counter'
         || pathname === '/recurring-expenses/new'

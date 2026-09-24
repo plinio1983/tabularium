@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {employeeDisplayName, employeeInputSchema, employeePersistenceData} from '../lib/employees';
+import {employeeCompensationTotals, employeeDisplayName, employeeInputSchema, employeePersistenceData} from '../lib/employees';
 
 test('valida e normalizza l’anagrafica del dipendente', () => {
   const parsed = employeeInputSchema.parse({
@@ -22,4 +22,20 @@ test('rifiuta una cessazione precedente all’assunzione', () => {
 
 test('costruisce il nome ordinabile del dipendente', () => {
   assert.equal(employeeDisplayName({firstName: 'Mario', lastName: 'Rossi'}), 'Rossi Mario');
+});
+
+test('riepiloga retribuzioni saldate, parziali e ancora da pagare', () => {
+  assert.deepEqual(employeeCompensationTotals([
+    {amount: '1500', payments: [{amount: '1000'}, {amount: '500'}]},
+    {amount: '1600', payments: [{amount: '600'}]},
+    {amount: '1400', payments: []}
+  ]), {paid: 2100, toPay: 2400});
+});
+
+test('un pagamento eccedente non compensa il residuo di altre retribuzioni', () => {
+  assert.deepEqual(employeeCompensationTotals([
+    {amount: '100', payments: [{amount: '120'}]},
+    {amount: '100', payments: []}
+  ]), {paid: 120, toPay: 100});
+  assert.deepEqual(employeeCompensationTotals([]), {paid: 0, toPay: 0});
 });

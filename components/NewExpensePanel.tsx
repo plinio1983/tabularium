@@ -58,7 +58,10 @@ export default function NewExpensePanel({
     const [isOpen, setIsOpen] = useState(initialOpen);
     const [returnAction, setReturnAction] = useState('/api/expenses');
     const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
-    const [creationType, setCreationType] = useState<'single' | 'recurring' | 'vat' | 'tax' | 'payroll'>('single');
+    const initialCreationType = initialExpense?.expenseType === 'PAYROLL' ? 'payroll'
+        : initialExpense?.expenseType === 'TAX_CONTRIBUTION' ? 'tax'
+        : initialExpense?.expenseType === 'VAT_SETTLEMENT' ? 'vat' : 'single';
+    const [creationType, setCreationType] = useState<'single' | 'recurring' | 'vat' | 'tax' | 'payroll'>(initialCreationType);
     const [creationKey, setCreationKey] = useState(0);
     const [availableEmployees, setAvailableEmployees] = useState<EmployeeOption[]>(employees);
 
@@ -93,22 +96,22 @@ export default function NewExpensePanel({
 
     useEffect(() => {
         if (initialOpen) {
-            setCreationType('single');
+            setCreationType(initialCreationType);
             setCreationKey(value => value + 1);
             setIsOpen(true);
         }
-    }, [initialOpen]);
+    }, [initialOpen, initialCreationType]);
 
     useEffect(() => {
         const open = (event: Event) => {
             event.preventDefault();
-            setCreationType('single');
+            setCreationType(initialCreationType);
             setCreationKey(value => value + 1);
             setIsOpen(true);
         };
         window.addEventListener('tabularium:expense-new', open);
         return () => window.removeEventListener('tabularium:expense-new', open);
-    }, []);
+    }, [initialCreationType]);
 
     function handleSaved() {
         setIsOpen(false);
@@ -139,7 +142,7 @@ export default function NewExpensePanel({
         </div> : null}
 
         {isOpen ?
-            <div className="modal-backdrop app-form-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuova spesa" onMouseDown={() => setIsOpen(false)}>
+            <div className="modal-backdrop app-form-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={modalCopy.title} onMouseDown={() => setIsOpen(false)}>
                 <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
                     <div className="modal-title">
                         <div>

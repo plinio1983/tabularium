@@ -1,6 +1,10 @@
+import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
+import DetailActionsBar from '@/components/DetailActionsBar';
 import {notFound} from 'next/navigation';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspaceRole, workspaceOperationalRoles} from '@/lib/auth';
+import {employeeCompensationTotals} from '@/lib/employees';
+import {euro} from '@/lib/money';
 import {detailBackHref} from '@/lib/detail-navigation';
 import DetailBackButton from '@/components/DetailBackButton';
 import EmployeeEditModalController from '@/components/EmployeeEditModalController';
@@ -69,6 +73,7 @@ export default async function EmployeeDetailPage({params, searchParams}: {
         })
     ]);
     if (!employee) notFound();
+    const compensation = employeeCompensationTotals(employee.expenses);
     const back = detailBackHref(rawReturnTo, `/employees/${id}`, '/employees');
     const orderedCategories = orderExpenseCategories(categories);
     const orderedBanks = orderBanks(banks);
@@ -124,23 +129,20 @@ export default async function EmployeeDetailPage({params, searchParams}: {
         employeeId: employee.id
     }} initialOpen={(Array.isArray(query.new) ? query.new[0] : query.new) === '1'} showToolbar={false}/>
         <div className="record-detail-shell">
-            <div className="record-detail-action-row pt-0 hidden-sm-up">
+            <div className="record-detail-action-row record-detail-responsive-actions pt-0">
                 <div className="left-side"><DetailBackButton href={back}/></div>
-                <div className="right-side btn-group">
-                    <EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>
-                    <button className="btn btn-sm btn-default" type="button" data-employee-edit-id={employee.id}>✎ Modifica</button>
-                    <DeleteActionButton action={`/api/employees/${employee.id}`} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton>
+                <div className="right-side">
+                    <DetailActionsBar controls={<EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>}
+                        primary={<>
+                            <button className="btn btn-sm btn-option" type="button" data-employee-edit-id={employee.id}>✎ Modifica</button>
+                            <ExpenseNewTriggerButton className="btn btn-sm btn-option">＋ Aggiungi spesa</ExpenseNewTriggerButton>
+                            <DeleteActionButton action={'/api/employees/' + employee.id} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                        </>}
+                    />
                 </div>
             </div>
             <article className="record-detail-document party-detail-document">
-                <div className="record-detail-action-row hidden-sm-down">
-                    <div className="left-side"><DetailBackButton href={back}/></div>
-                    <div className="right-side btn-group">
-                        <EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>
-                        <button className="btn btn-sm btn-default" type="button" data-employee-edit-id={employee.id}>✎ Modifica</button>
-                        <DeleteActionButton action={`/api/employees/${employee.id}`} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton>
-                    </div>
-                </div>
+
                 <section className="record-detail-hero">
                     <div>
                         <div className="record-detail-title-block">
@@ -156,6 +158,10 @@ export default async function EmployeeDetailPage({params, searchParams}: {
                         <div className="record-detail-badge-row">
                             <span className="badge">Dal {date(employee.hiredAt)}</span></div>
                     </aside>
+                </section>
+                <section className="record-detail-status-strip employee-compensation-summary" aria-label="Riepilogo retribuzione">
+                    <div><span>Retribuzione corrisposta</span><strong className="text-ok">{euro(compensation.paid)}</strong></div>
+                    <div><span>Da corrispondere</span><strong className={compensation.toPay > 0 ? 'text-warning' : 'text-ok'}>{euro(compensation.toPay)}</strong></div>
                 </section>
                 <section className="record-detail-status-strip">
                     <div><span>Stato</span><strong>{employee.status === 'ACTIVE' ? 'Attivo' : 'Inattivo'}</strong></div>

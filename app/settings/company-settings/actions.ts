@@ -3,6 +3,7 @@
 import {redirect} from 'next/navigation';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspaceRole, workspaceManagementRoles} from '@/lib/auth';
+import {changeCompany, type CompanyOperation} from '@/lib/company-management';
 import {isValidTimeZone} from '@/lib/company-time';
 
 function text(formData: FormData, key: string) {
@@ -47,32 +48,21 @@ export async function saveCompanyAction(formData: FormData) {
     redirect('/settings/company-settings?saved=1');
 }
 
-export async function setDefaultCompanyAction(formData: FormData) {
+async function companyOperation(formData: FormData, operation: CompanyOperation) {
     const current = await requireWorkspaceRole(workspaceManagementRoles, '/settings/company-settings');
-    const id = Number(formData.get('id'));
-    const company = await prisma.company.findFirst({where: {id, workspaceId: current.workspace.id, isActive: true}});
-    if (!company) redirect('/settings/company-settings?error=not_found');
-    await prisma.$transaction([
-        prisma.company.updateMany({where: {workspaceId: current.workspace.id}, data: {isDefault: false}}),
-        prisma.company.update({where: {id}, data: {isDefault: true}})
-    ]);
-    redirect('/settings/company-settings?saved=default');
+    const result = await changeCompany(operation, Number(formData.get('id')), current.workspace.id, current.user.id);
+    const query = 'error' in result ? `error=${result.error}` : `saved=${result.saved}`;
+    redirect(`/settings/company-settings?${query}`);
+}
+
+export async function setDefaultCompanyAction(formData: FormData) {
+    await companyOperation(formData, 'default');
 }
 
 export async function toggleCompanyAction(formData: FormData) {
-    const current = await requireWorkspaceRole(workspaceManagementRoles, '/settings/company-settings');
-    const id = Number(formData.get('id'));
-    const company = await prisma.company.findFirst({where: {id, workspaceId: current.workspace.id}});
-    if (!company) redirect('/settings/company-settings?error=not_found');
-    const activeCount = await prisma.company.count({where: {workspaceId: current.workspace.id, isActive: true}});
-    if (company.isActive && activeCount <= 1) redirect('/settings/company-settings?error=last_active');
-    await prisma.company.update({where: {id}, data: {isActive: !company.isActive, isDefault: company.isActive ? false : company.isDefault}});
-    if (company.isActive) {
-        const fallback = await prisma.company.findFirst({where: {workspaceId: current.workspace.id, isActive: true, id: {not: id}}, orderBy: [{isDefault: 'desc'}, {id: 'asc'}]});
-        if (fallback) {
-            await prisma.authSession.updateMany({where: {workspaceId: current.workspace.id, activeCompanyId: id}, data: {activeCompanyId: fallback.id}});
-            if (company.isDefault) await prisma.company.update({where: {id: fallback.id}, data: {isDefault: true}});
-        }
-    }
-    redirect('/settings/company-settings?saved=status');
+    await companyOperation(formData, 'toggle');
+}
+
+export async function deleteCompanyAction(formData: FormData) {
+    await companyOperation(formData, 'delete');
 }

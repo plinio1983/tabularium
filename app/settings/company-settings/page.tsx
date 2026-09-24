@@ -2,7 +2,9 @@ import {requireWorkspaceRole, workspaceManagementRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import DetailBackButton from '@/components/DetailBackButton';
 import CompanyCreatePanel from './CompanyCreatePanel';
-import {saveCompanyAction, setDefaultCompanyAction, toggleCompanyAction} from './actions';
+import CompanyDeleteForm from './CompanyDeleteForm';
+import {companyUsageSelect, companyUsageSummary} from '@/lib/company-usage';
+import {deleteCompanyAction, saveCompanyAction, setDefaultCompanyAction, toggleCompanyAction} from './actions';
 import CompanyFormFields from '@/components/CompanyFormFields';
 import {Suspense} from 'react';
 import ActiveCompanySwitcher from '@/components/ActiveCompanySwitcher';
@@ -11,26 +13,31 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
   const current = await requireWorkspaceRole(workspaceManagementRoles, '/settings/company-settings');
   const companies = await prisma.company.findMany({
     where: {workspaceId: current.workspace.id},
+    include: {_count: {select: companyUsageSelect}},
     orderBy: [{isActive: 'desc'}, {isDefault: 'desc'}, {name: 'asc'}, {id: 'asc'}]
   });
+  const activeCount = companies.filter(company => company.isActive).length;
   const params = (await searchParams) ?? {};
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const errors: Record<string, string> = {
     invalid: 'Inserisci almeno il nome della società.',
     invalid_timezone: 'Seleziona un fuso orario valido.',
     duplicate: 'Il codice è già utilizzato nel workspace.',
-    last_active: 'Deve rimanere almeno una società attiva.',
+    last_active: 'Deve rimanere almeno una società abilitata.',
+    in_use: 'Eliminazione bloccata: la società contiene dati collegati. Consulta il riepilogo aggiornato; puoi disabilitarla per conservare lo storico.',
+    conflict: 'La configurazione è stata modificata contemporaneamente. Riprova.',
     not_found: 'Società non trovata.'
   };
   const saved = Array.isArray(params.saved) ? params.saved[0] : params.saved;
   const savedMessages: Record<string, string> = {
     '1': 'Società salvata.',
     default: 'Società predefinita aggiornata.',
-    status: 'Stato della società aggiornato.'
+    status: 'Stato della società aggiornato.',
+    deleted: 'Società eliminata.'
   };
   return <div className="grid admin-page settings-admin-page categories-settings-page company-settings-page">
     <div className="toolbar-card">
-      <div><h2>Società</h2><p className="muted">Gestisci le entità contabili del workspace. La società attiva determina movimenti e report visualizzati.</p></div>
+      <div><h2>Società</h2><p className="muted">Gestisci le entità contabili del workspace. La società in uso determina movimenti e report visualizzati.</p></div>
       <div className="settings-hub-toolbar-actions">
         <DetailBackButton href="/settings"/>
         <Suspense fallback={null}><ActiveCompanySwitcher returnTo="/settings/company-settings"/></Suspense>
@@ -42,18 +49,25 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
     <section className="grid company-settings-list">
       {companies.map(company => <details className="card company-settings-card payment-credit-collapsible" key={company.id} open={company.id === current.company.id}>
         <summary className="category-create-toggle">
-          <span className="company-settings-summary"><strong>{company.name}</strong><span className="company-settings-badges">{company.id === current.company.id ? <span className="badge">Attiva</span> : null} {company.isDefault ? <span className="badge">Predefinita</span> : null} {!company.isActive ? <span className="badge tone-neutral">Disabilitata</span> : null}</span></span>
+          <span className="company-settings-summary"><strong>{company.name}</strong><span className="company-settings-badges">{company.id === current.company.id ? <span className="badge">In uso</span> : null} {company.isDefault ? <span className="badge">Predefinita</span> : null} <span className={company.isActive ? 'badge tone-ok' : 'badge tone-neutral'}>{company.isActive ? 'Abilitata' : 'Disabilitata'}</span></span></span>
           <span aria-hidden="true">＋</span>
         </summary>
+        <p className="muted company-settings-usage">{companyUsageSummary(company._count) || 'Nessun dato collegato.'}</p>
         <form action={saveCompanyAction} className="form app-record-form entity-form entity-styled-form company-settings-form company-edit-form">
           <input type="hidden" name="id" value={company.id}/>
           <CompanyFormFields company={company} idPrefix={`company-${company.id}`}/>
           <div className="actions-row form-actions-row full company-settings-actions">
-            {!company.isDefault && company.isActive ? <button className="btn btn-md btn-default" formAction={setDefaultCompanyAction} type="submit"><span className="btn-icon">☆</span> Imposta predefinita</button> : null}
-            <button className="btn btn-md btn-default" formAction={toggleCompanyAction} type="submit"><span className="btn-icon">{company.isActive ? '○' : '●'}</span> {company.isActive ? 'Disabilita' : 'Riattiva'}</button>
+            {!company.isDefault && company.isActive ? <button className="btn btn-md btn-default" formAction={setDefaultCompanyAction} formNoValidate type="submit"><span className="btn-icon">☆</span> Imposta predefinita</button> : null}
+            <button className="btn btn-md btn-default" formAction={toggleCompanyAction} formNoValidate type="submit" disabled={company.isActive && activeCount <= 1}><span className="btn-icon">{company.isActive ? '○' : '●'}</span> {company.isActive ? 'Disabilita' : 'Riattiva'}</button>
             <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> Salva modifiche</button>
           </div>
         </form>
+        <CompanyDeleteForm id={company.id} name={company.name} action={deleteCompanyAction}
+          blockedReason={company.isActive && activeCount <= 1
+            ? 'Non puoi eliminare l’ultima società abilitata.'
+            : companyUsageSummary(company._count)
+              ? `Eliminazione bloccata: ${companyUsageSummary(company._count)}. Puoi disabilitare la società per conservare lo storico.`
+              : undefined}/>
       </details>)}
     </section>
   </div>;

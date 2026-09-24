@@ -91,8 +91,8 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                         <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv" formAction="/api/exports/receipts" formMethod="post" data-confirm-label="Esporta CSV">⇩ Esporta CSV</button>
-                        <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv" formAction="/api/exports/receipts" formMethod="post" data-confirm-label="Esporta CSV">⇩ Esporta CSV</button>
+                        <button className="btn btn-sm btn-option danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
                             <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
                         </button>
                     </div>

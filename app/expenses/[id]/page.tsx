@@ -1,3 +1,5 @@
+import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
+import DetailActionsBar from '@/components/DetailActionsBar';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
@@ -139,33 +141,31 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
     />
 
     <div className="record-detail-shell">
-      <div className="record-detail-action-row pt-0 hidden-sm-up">
+      <div className="record-detail-action-row record-detail-responsive-actions pt-0">
             <div className="left-side">
                 <DetailBackButton href={returnTo} />
             </div>
-            <div className="right-side btn-group">
-                <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
-                    <span className="--hidden-mobile"> Copia</span>
-                </button>
-                <Link className="btn btn-sm btn-default" href="#" data-expense-detail-edit-id={expense.id}>✎
-                    <span className="--hidden-mobile"> Modifica</span>
-                </Link>
-            </div>
+            <div className="right-side">
+                    <DetailActionsBar
+                        primary={<>
+                            <button className="btn btn-sm btn-option" type="button" data-expense-detail-edit-id={expense.id}>✎ Modifica</button>
+                            <button className="btn btn-sm btn-option" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉ Copia</button>
+                            <button className="btn btn-sm btn-option detail-action-primary" type="button" data-expense-detail-payment-id={expense.id} disabled={residual <= 0}>€ Aggiungi pagamento</button>
+                        </>}
+                        secondary={<>
+                            {hasWorkspaceRole(current.membership.role, workspaceOperationalRoles) && canMarkExpenseInvoiceEmitted(expense) ? <form action={'/api/expenses/' + expense.id + '?returnTo=' + encodedCurrentDetailReturnTo} method="post">
+                            <input type="hidden" name="_action" value="invoice_emitted"/>
+                            <button className="btn btn-sm btn-option" type="submit">✓ Fattura emessa</button>
+                            </form> : null}
+                            <button className="btn btn-sm btn-option" type="button" data-expense-detail-attachments-id={expense.id}>📎 Modifica allegati</button>
+                            <BulkExpenseAttachmentsModal formId="expense-detail-download" recordIds={[expense.id]} disabled={!expense.attachments.length}/>
+                            <DeleteActionButton action={'/api/expenses/' + expense.id} confirmMessage="Confermi la rimozione della spesa? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                        </>}
+                    />
+                </div>
         </div>
       <article className="record-detail-document">
-        <div className="record-detail-action-row hidden-sm-down">
-          <div className="left-side">
-            <DetailBackButton href={returnTo} />
-          </div>
-          <div className="right-side btn-group">
-            <button className="btn btn-sm btn-default" type="button" data-expense-detail-copy-id={expense.id} data-expense-copy-id={expense.id}>⧉
-              <span className="--hidden-mobile"> Copia</span>
-            </button>
-            <Link className="btn btn-sm btn-default" href="#" data-expense-detail-edit-id={expense.id}>✎
-              <span className="--hidden-mobile"> Modifica</span>
-            </Link>
-          </div>
-        </div>
+
         <section className="record-detail-hero">
           <div>
             <div className="record-detail-title-block">
@@ -361,7 +361,6 @@ export default async function ExpenseDetailPage({ params, searchParams }: { para
             </a>)}
           </div> : <div className="record-empty-state">Nessun allegato caricato.</div>}
         </section>
-
 
         <section className="record-detail-section record-detail-section-actions">
           <details className="record-detail-actions-collapse">

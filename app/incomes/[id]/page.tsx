@@ -1,3 +1,5 @@
+import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
+import DetailActionsBar from '@/components/DetailActionsBar';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {prisma} from '@/lib/prisma';
@@ -6,7 +8,7 @@ import DetailBackButton from '@/components/DetailBackButton';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import {euro} from '@/lib/money';
-import {requireWorkspace} from '@/lib/auth';
+import {hasWorkspaceRole, workspaceOperationalRoles, requireWorkspace} from '@/lib/auth';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {detailBackHref} from '@/lib/detail-navigation';
 import {
@@ -63,7 +65,6 @@ function booleanBadgeSimple(value: boolean) {
     const item = value ? fiscalStyles.yes : fiscalStyles.no;
     return `${item.icon} ${item.label}`;
 }
-
 
 function fiscalBadge(value: boolean) {
     const item = value ? yesNoStyles.yes : yesNoStyles.no;
@@ -171,37 +172,31 @@ export default async function IncomeDetailPage({params, searchParams}: {
         />
 
         <div className="record-detail-shell">
-            <div className="record-detail-action-row pt-0 hidden-sm-up">
+            <div className="record-detail-action-row record-detail-responsive-actions pt-0">
                 <div className="left-side">
                     <DetailBackButton href={returnTo} />
                 </div>
-                <div className="right-side btn-group">
-                    <Link className="btn btn-sm btn-default" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
-                    <DeleteActionButton
-                        action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
-                        confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata."
-                        className="btn btn-sm btn-danger"
-                    >
-                        🗑 Elimina
-                    </DeleteActionButton>
+                <div className="right-side">
+                    <DetailActionsBar
+                        primary={<>
+                            <button className="btn btn-sm btn-option" type="button" data-income-edit-id={income.id}>✎ Modifica</button>
+                            <button className="btn btn-sm btn-option" type="button" data-income-copy-id={income.id}>⧉ Copia</button>
+                            <button className="btn btn-sm btn-option detail-action-primary" type="button" data-income-credit-id={income.id} disabled={creditSummary.residual <= 0}>€ Aggiungi accredito</button>
+                        </>}
+                        secondary={<>
+                            {hasWorkspaceRole(current.membership.role, workspaceOperationalRoles) && income.isFiscal && income.invoiceStatus !== 'EMESSA' ? <form action={'/api/incomes/bulk?returnTo=' + encodeURIComponent(currentDetailReturnTo)} method="post">
+                            <input type="hidden" name="ids" value={income.id}/>
+                            <input type="hidden" name="bulkAction" value="invoice_emitted"/>
+                            <button className="btn btn-sm btn-option" type="submit">✓ Fattura emessa</button>
+                            </form> : null}
+                            <button className="btn btn-sm btn-option" type="button" data-income-attachments-id={income.id}>📎 Modifica allegati</button>
+                            <BulkExpenseAttachmentsModal formId="income-detail-download" recordIds={[income.id]} disabled={!income.attachments.length} endpoint="/api/incomes/attachments/archive" subject="incassi"/>
+                            <DeleteActionButton action={'/api/incomes/' + income.id + '?returnTo=' + encodedReturnTo} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                        </>}
+                    />
                 </div>
             </div>
             <article className={['record-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
-                <div className="record-detail-action-row hidden-sm-down">
-                    <div className="left-side">
-                        <DetailBackButton href={returnTo} />
-                    </div>
-                    <div className="right-side btn-group">
-                        <Link className="btn btn-sm btn-default" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
-                        <DeleteActionButton
-                            action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
-                            confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata."
-                            className="btn btn-sm btn-danger"
-                        >
-                            🗑 Elimina
-                        </DeleteActionButton>
-                    </div>
-                </div>
 
                 <section className="record-detail-hero">
                     <div>

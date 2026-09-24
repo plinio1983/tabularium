@@ -1,3 +1,4 @@
+import DetailActionsBar from '@/components/DetailActionsBar';
 import {notFound} from 'next/navigation';
 import {requireWorkspace} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
@@ -70,21 +71,20 @@ export default async function ClientDetailPage({params, searchParams}: {
     return <div className="grid record-detail-page party-detail-page">
         <ClientEditModalController salesChannels={salesChannels}/>
         <div className="record-detail-shell">
-            <div className="record-detail-action-row pt-0 hidden-sm-up">
+            <div className="record-detail-action-row record-detail-responsive-actions pt-0">
                 <div className="left-side"><DetailBackButton href={backHref}/></div>
-                {!customer.systemRole ? <div className="right-side btn-group">
-                    <button className="btn btn-sm btn-default" type="button" data-client-edit-id={customer.id}>✎ Modifica</button>
-                    <DeleteActionButton action={`/api/clients/${customer.id}`} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton>
+                {!customer.systemRole ? <div className="right-side">
+                    <DetailActionsBar
+                        primary={<>
+                            <button className="btn btn-sm btn-option" type="button" data-client-edit-id={customer.id}>✎ Modifica</button>
+                            <button className="btn btn-sm btn-option" type="button" data-income-new>＋ Aggiungi incasso</button>
+                            <DeleteActionButton action={'/api/clients/' + customer.id} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                        </>}
+                    />
                 </div> : <span className="badge">Cliente di sistema</span>}
             </div>
             <article className="record-detail-document party-detail-document">
-                <div className="record-detail-action-row hidden-sm-down">
-                    <div className="left-side"><DetailBackButton href={backHref}/></div>
-                    {!customer.systemRole ? <div className="right-side btn-group">
-                        <button className="btn btn-sm btn-default" type="button" data-client-edit-id={customer.id}>✎ Modifica</button>
-                        <DeleteActionButton action={`/api/clients/${customer.id}`} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-danger">🗑 Elimina</DeleteActionButton>
-                    </div> : <span className="badge">Cliente di sistema</span>}
-                </div>
+
                 <section className="record-detail-hero">
                     <div>
                         <div className="record-detail-title-block">

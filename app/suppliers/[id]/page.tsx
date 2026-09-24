@@ -1,3 +1,5 @@
+import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
+import DetailActionsBar from '@/components/DetailActionsBar';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
@@ -104,41 +106,21 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       showToolbar={false}
     />
     <div className="record-detail-shell">
-        <div className="record-detail-action-row pt-0 hidden-sm-up">
+        <div className="record-detail-action-row record-detail-responsive-actions pt-0">
             <div className="left-side">
                 <DetailBackButton href={returnTo}/>
             </div>
-            {!supplier.systemRole ? <div className="right-side btn-group">
-                <button className="btn btn-sm btn-default" type="button" data-supplier-edit-id={supplier.id}>
-                    <span className="btn-icon">✎</span> Modifica
-                </button>
-                <DeleteActionButton
-                    action={`/api/suppliers/${supplier.id}`}
-                    confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata."
-                    className="btn btn-sm btn-danger"
-                >
-                    🗑 Elimina
-                </DeleteActionButton>
-            </div> : <span className="badge">Fornitore di sistema</span>}
+            {!supplier.systemRole ? <div className="right-side">
+                    <DetailActionsBar
+                        primary={<>
+                            <button className="btn btn-sm btn-option" type="button" data-supplier-edit-id={supplier.id}>✎ Modifica</button>
+                            <ExpenseNewTriggerButton className="btn btn-sm btn-option">＋ Aggiungi spesa</ExpenseNewTriggerButton>
+                            <DeleteActionButton action={'/api/suppliers/' + supplier.id} confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                        </>}
+                    />
+                </div> : <span className="badge">Fornitore di sistema</span>}
         </div>
       <article className="record-detail-document party-detail-document">
-        <div className="record-detail-action-row hidden-sm-down">
-          <div className="left-side">
-            <DetailBackButton href={returnTo}/>
-          </div>
-          {!supplier.systemRole ? <div className="right-side btn-group">
-            <button className="btn btn-sm btn-default" type="button" data-supplier-edit-id={supplier.id}>
-              <span className="btn-icon">✎</span> Modifica
-            </button>
-            <DeleteActionButton
-              action={`/api/suppliers/${supplier.id}`}
-              confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata."
-              className="btn btn-sm btn-danger"
-            >
-              🗑 Elimina
-            </DeleteActionButton>
-          </div> : <span className="badge">Fornitore di sistema</span>}
-        </div>
 
         <section className="record-detail-hero">
           <div>

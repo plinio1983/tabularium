@@ -122,8 +122,8 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
                         <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Azioni</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="activate" data-confirm-label="Attiva selezionate">ON · Attiva selezionate</button>
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="deactivate" data-confirm-label="Disattiva selezionate">OFF · Disattiva selezionate</button>
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="activate" data-confirm-label="Attiva selezionate">ON · Attiva selezionate</button>
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="deactivate" data-confirm-label="Disattiva selezionate">OFF · Disattiva selezionate</button>
 
                     </div>
                 </details>

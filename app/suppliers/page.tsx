@@ -268,18 +268,17 @@ export default async function SuppliersPage({searchParams}: {
                         <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
                                 formAction="/api/exports/suppliers" formMethod="post" data-confirm-label="Esporta CSV">
                             <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                         </button>
-                        <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
+                        <button className="btn btn-sm btn-option danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
                             <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
                         </button>
                     </div>
                   </details>
-                  <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-copy-base="/suppliers/new?copyId=" data-return-to={returnTo}>
+                  <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true"><span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia</span></a>
                     <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
                         <span className="btn-icon icon-small">🗑</span>
                         <span className="hidden-sm-down">Elimina</span>

@@ -193,18 +193,18 @@ export default function IncomesList({
                         <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
                                 formAction="/api/exports/incomes" formMethod="post" data-confirm-label="Esporta CSV">
                             <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                         </button>
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="invoice_emitted">
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="invoice_emitted">
                             <span className="btn-icon">✓</span><span className="hidden-sm-down">Fattura emessa</span>
                         </button>
-                        <button className="btn btn-sm btn-default is-disabled" type="button" data-bulk-copy aria-disabled="true" disabled>
+                        <button className="btn btn-sm btn-option is-disabled" type="button" data-bulk-copy aria-disabled="true" disabled>
                             <span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia incassi selezionati</span>
                         </button>
                         <BulkExpenseAttachmentsModal formId={formId} endpoint="/api/incomes/attachments/archive" subject="incassi"/>
-                        <button className="btn btn-sm btn-default danger-menu-item bulk-menu-mobile-delete" type="submit"
+                        <button className="btn btn-sm btn-option danger-menu-item bulk-menu-mobile-delete" type="submit"
                                 name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
                             <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
                         </button>

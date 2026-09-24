@@ -25,11 +25,15 @@ function formatBytes(value: number) {
 export default function BulkExpenseAttachmentsModal({
                                                         formId,
                                                         endpoint = '/api/expenses/attachments/archive',
-                                                        subject = 'spese'
+                                                        subject = 'spese',
+                                                        recordIds,
+                                                        disabled = false
                                                     }: {
     formId: string;
     endpoint?: string;
-    subject?: 'spese' | 'incassi'
+    subject?: 'spese' | 'incassi';
+    recordIds?: number[];
+    disabled?: boolean
 }) {
     const [open, setOpen] = useState(false);
     const [ids, setIds] = useState<number[]>([]);
@@ -41,7 +45,7 @@ export default function BulkExpenseAttachmentsModal({
     const [notice, setNotice] = useState('');
 
     function showModal() {
-        const selected = selectedIds(formId);
+        const selected = recordIds ?? selectedIds(formId);
         if (!selected.length) return;
         setIds(selected);
         setFilter('ALL');
@@ -216,8 +220,8 @@ export default function BulkExpenseAttachmentsModal({
     ) : null;
 
     return <>
-        <button className="btn btn-sm btn-default" type="button" onClick={showModal} data-bulk-download-attachments>
-            <span className="btn-icon">📎</span><span className="hidden-sm-down">Scarica allegati</span>
+        <button className="btn btn-sm btn-option" type="button" onClick={showModal} disabled={disabled} data-bulk-download-attachments>
+            <span className="btn-icon">📎</span><span className={recordIds ? undefined : "hidden-sm-down"}>Scarica allegati</span>
         </button>
         {modal}
     </>;

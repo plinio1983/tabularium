@@ -296,9 +296,9 @@ export default function RecurringExpensesList({
                         <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="activate" data-confirm-label="Attiva selezionate">ON · Attiva selezionate</button>
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="deactivate" data-confirm-label="Disattiva selezionate">OFF · Disattiva selezionate</button>
-                        <button className="btn btn-sm btn-default" type="submit" name="bulkAction" value="export_csv"
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="activate" data-confirm-label="Attiva selezionate">ON · Attiva selezionate</button>
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="deactivate" data-confirm-label="Disattiva selezionate">OFF · Disattiva selezionate</button>
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
                                 formAction="/api/exports/recurring-expenses" formMethod="post" data-confirm-label="Esporta CSV">
                             <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                         </button>
