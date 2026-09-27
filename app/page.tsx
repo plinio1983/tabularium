@@ -1637,7 +1637,7 @@ export default async function Dashboard({searchParams}: {
         <div className="dashboard-body-wrapper">
             <DashboardTasks workspaceId={current.workspace.id} companyId={current.company.id} timeZone={current.company.timeZone} now={now}/>
 
-            <div>
+            <div className="flex">
                 <form className="period-selector dashboard-year-selector" method="get">
                     <div className="dashboard-title-block mb-6">
                         <h2>Dashboard</h2>

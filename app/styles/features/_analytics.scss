@@ -4299,12 +4299,11 @@ html, body {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  flex-grow: 1;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  //background: #fafbff;
   background: #fff;
-  width: 100% ;
 }
 
 .dashboard-year-selector select {
