@@ -97,12 +97,6 @@
   position: relative;
 }
 
-@media (max-width: 1210px) {
-  .monthly-profit-comparison-list {
-    grid-template-columns: 1fr !important;
-  }
-}
-
 @media (min-width: 900px) {
   .income-form .income-amount-control {
     min-width: 70%;

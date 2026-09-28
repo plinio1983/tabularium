@@ -8,7 +8,7 @@ import FilterIcon from '@/components/FilterIcon';
 
 type Filters = Record<string, string | string[] | undefined>;
 const cadenceOptions = [
-  ['MONTHLY', 'Ogni mese'], ['EVERY_2_MONTHS', 'Ogni 2 mesi'],
+  ['WEEKLY', 'Settimanale'], ['MONTHLY', 'Ogni mese'], ['EVERY_2_MONTHS', 'Ogni 2 mesi'],
   ['EVERY_3_MONTHS', 'Ogni 3 mesi'], ['EVERY_6_MONTHS', 'Ogni 6 mesi'],
   ['YEARLY', 'Annuale'], ['EVERY_2_YEARS', 'Ogni 2 anni'],
 ];

@@ -1,3 +1,4 @@
+import {weekdayLabel} from '@/lib/recurring-cadence';
 import {RecurringStateBadge, RecurringStateCard} from '@/components/RecurringStateProvider';
 import RecurringStateToggle from '@/components/RecurringStateToggle';
 import {filteredListHref} from '@/lib/live-search';
@@ -12,7 +13,7 @@ import {badgeClass} from '@/lib/expense-ui';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 
 const cadenceLabels: Record<string, string> = {
-    MONTHLY: 'Ogni mese', EVERY_2_MONTHS: 'Ogni 2 mesi', EVERY_3_MONTHS: 'Ogni 3 mesi',
+    WEEKLY: 'Settimanale', MONTHLY: 'Ogni mese', EVERY_2_MONTHS: 'Ogni 2 mesi', EVERY_3_MONTHS: 'Ogni 3 mesi',
     EVERY_6_MONTHS: 'Ogni 6 mesi', YEARLY: 'Annuale', EVERY_2_YEARS: 'Ogni 2 anni'
 };
 const billingLabels: Record<string, string> = {
@@ -20,6 +21,7 @@ const billingLabels: Record<string, string> = {
 };
 const months = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 const cadenceStyles: Record<string, { icon: string; className: string }> = {
+    WEEKLY: {icon: '7G', className: 'tone-paid'},
     MONTHLY: {icon: '↻', className: 'tone-paid'},
     EVERY_2_MONTHS: {icon: '2M', className: 'tone-web'},
     EVERY_3_MONTHS: {icon: '3M', className: 'tone-installment'},
@@ -55,6 +57,7 @@ function inputDefault(filters: Record<string, string | string[] | undefined>, ke
 }
 
 function creditLabel(item: any) {
+    if (item.cadence === 'WEEKLY') return weekdayLabel(item.creditDay);
     if (item.creditMonth) return `${item.creditDay ?? '-'} ${months[item.creditMonth] ?? ''}`;
     if (item.creditDay) return `Giorno ${item.creditDay}`;
     return '-';
@@ -119,7 +122,7 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
                     <summary className="bulk-action-trigger">
-                        <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Azioni</span><span className="hidden-sm-down">Bulk actions</span>
+                        <span className="btn-icon hidden-xs-down">⚙</span><span className="hidden-sm-up">Azioni</span><span className="hidden-sm-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="activate" data-confirm-label="Attiva selezionate">ON · Attiva selezionate</button>

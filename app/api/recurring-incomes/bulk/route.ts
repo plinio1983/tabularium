@@ -1,3 +1,5 @@
+import {bulkScheduleChanges} from '@/lib/recurring-schedule-change';
+import {dateInputInTimeZone} from '@/lib/company-time';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
@@ -33,7 +35,17 @@ export async function POST(request: Request) {
     if (changes.paymentMethodId && !await prisma.paymentMethod.findFirst({where: {id: changes.paymentMethodId, workspaceId: current.workspace.id}})) return invalid();
     if (changes.bankId && !await prisma.bank.findFirst({where: {id: changes.bankId, workspaceId: current.workspace.id}})) return invalid();
     if (changes.startDate && await prisma.recurringIncome.findFirst({where: {...where, endDate: {lt: changes.startDate}}, select: {id: true}})) return invalid();
-    const result = await prisma.recurringIncome.updateMany({where, data: changes});
+    let result: {count: number};
+    if (!changes.cadence && changes.creditDay !== undefined && await prisma.recurringIncome.findFirst({where: {...where, cadence: 'WEEKLY'}, select: {id: true}})) return invalid();
+    if (changes.cadence) {
+      const records = await prisma.recurringIncome.findMany({where});
+      let updates;
+      try {
+        updates = records.map(record => ({id: record.id, data: bulkScheduleChanges(record, changes, 'income', dateInputInTimeZone(current.company.timeZone))}));
+      } catch {return invalid();}
+      await prisma.$transaction(updates.map(update => prisma.recurringIncome.update({where: {id: update.id}, data: update.data})));
+      result = {count: updates.length};
+    } else result = await prisma.recurringIncome.updateMany({where, data: changes});
     await writeAuditLog({
       workspaceId: current.workspace.id, userId: current.user.id, action: 'BULK_UPDATE',
       entityType: 'RecurringIncome', metadata: {ids, operation: bulkAction, fields: Object.keys(changes), updated: result.count}, request

@@ -24,22 +24,27 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
       const bankId = definition.bankId ?? defaultBank?.id;
       if (!paymentMethodId || !bankId) throw new Error('Metodo di accredito o banca predefinita mancanti');
 
-      const today = recurrenceStartOfDay(dateInputInTimeZone(definition.company.timeZone, todayInput));
-      const endDate = definition.endDate ? recurrenceStartOfDay(definition.endDate) : null;
-      const dates = recurrenceDates({ startDate: definition.startDate, endDate: definition.endDate, cadence: definition.cadence, day: definition.creditDay, month: definition.creditMonth }, today);
+      const weekly = definition.cadence === 'WEEKLY';
+      const today = recurrenceStartOfDay(`${dateInputInTimeZone(definition.company.timeZone, todayInput)}${weekly ? 'T00:00:00' : ''}`);
+      const endDate = definition.endDate ? recurrenceStartOfDay(weekly ? `${calendarDateInput(definition.endDate)}T00:00:00` : definition.endDate) : null;
+      const dates = recurrenceDates({ startDate: weekly ? calendarDateInput(definition.startDate) : definition.startDate,
+        endDate: weekly && definition.endDate ? calendarDateInput(definition.endDate) : definition.endDate,
+        cadence: definition.cadence, day: definition.creditDay, month: definition.creditMonth }, today);
       if (!dates.length) result.skipped++;
-      for (const creditDate of dates) {
-        const occurrenceDay = recurrenceDateInput(creditDate);
+      for (const scheduledDate of dates) {
+        const occurrenceDay = recurrenceDateInput(scheduledDate);
+        const creditDate = weekly ? new Date(`${occurrenceDay}T00:00:00Z`) : scheduledDate;
         if (isRecurringDateSuspended(occurrenceDay, definition.suspensionPeriods)) {result.skipped++; continue;}
-        const billing = recurrenceBillingPeriod(definition, creditDate);
+        const billing = recurrenceBillingPeriod(definition, scheduledDate);
         // La chiave identifica l'occorrenza, non il mese contabile: più
         // occorrenze possono legittimamente confluire nello stesso periodo.
-        const key = recurrencePeriodKey(creditDate.getUTCFullYear(), creditDate.getUTCMonth() + 1);
-        const existing = await prisma.income.findFirst({ where: { recurringIncomeId: definition.id, recurringIncomePeriodKey: key } });
+        const key = definition.cadence === 'WEEKLY' ? occurrenceDay
+          : recurrencePeriodKey(creditDate.getUTCFullYear(), creditDate.getUTCMonth() + 1);
+        const existing = await prisma.income.findFirst({ where: { recurringIncomeId: definition.id, OR: [{recurringIncomePeriodKey: key}, {dueDate: creditDate}] } });
         if (existing) { result.skipped++; continue; }
         const created = await prisma.$transaction(async tx => {
           if (!await canGenerateRecurringOccurrence(tx, 'income', definition.id, occurrenceDay)) return false;
-          if (await tx.income.findFirst({where: {recurringIncomeId: definition.id, recurringIncomePeriodKey: key}})) return false;
+          if (await tx.income.findFirst({where: {recurringIncomeId: definition.id, OR: [{recurringIncomePeriodKey: key}, {dueDate: creditDate}]}})) return false;
           const income = await tx.income.create({ data: {
             workspaceId: definition.workspaceId, companyId: definition.companyId, customerId: definition.customerId,
             salesChannelId: definition.salesChannelId, incomeCategoryId: definition.incomeCategoryId,

@@ -126,7 +126,7 @@ export default async function ClientsPage({searchParams}: {
                 <div className="bulk-action-buttons btn-group">
                     <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="clientBulkForm">
                         <summary className="bulk-action-trigger">
-                            <span className="btn-icon hidden-mobile">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
+                            <span className="btn-icon hidden-xs-down">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
                             <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"

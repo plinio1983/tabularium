@@ -1,3 +1,4 @@
+import {weekdayLabel} from '@/lib/recurring-cadence';
 import RecurringDetailActionsMenu from '@/components/RecurringDetailActionsMenu';
 import RecurringStateProvider from '@/components/RecurringStateProvider';
 import RecurringStateToggle from '@/components/RecurringStateToggle';
@@ -17,7 +18,7 @@ import {stripFlashParams} from '@/lib/flash';
 import {badgeClass, categoryLabel, categoryTone, vatKey, vatStyles, yesNoStyles} from '@/lib/expense-ui';
 
 const cadenceLabels: Record<string, string> = {
-    MONTHLY: 'Ogni mese',
+    WEEKLY: 'Settimanale', MONTHLY: 'Ogni mese',
     EVERY_2_MONTHS: 'Ogni 2 mesi',
     EVERY_3_MONTHS: 'Ogni 3 mesi',
     EVERY_6_MONTHS: 'Ogni 6 mesi',
@@ -62,7 +63,8 @@ function booleanBadge(value: boolean) {
     return <span className={badgeClass(item.className)}>{item.icon} {item.label}</span>;
 }
 
-function dueLabel(item: { dueDay?: number | null; dueMonth?: number | null }) {
+function dueLabel(item: { cadence?: string; dueDay?: number | null; dueMonth?: number | null }) {
+    if (item.cadence === 'WEEKLY') return weekdayLabel(item.dueDay);
     if (item.dueMonth) return `${item.dueDay ?? '-'} ${months[item.dueMonth] ?? ''}`;
     if (item.dueDay) return `Giorno ${item.dueDay}`;
     return '-';

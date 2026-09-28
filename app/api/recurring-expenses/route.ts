@@ -14,7 +14,7 @@ const RecurringExpenseSchema = z.object({
   expenseType: z.enum(['STANDARD', 'TAX_CONTRIBUTION', 'PAYROLL']).default('STANDARD'),
   startDate: z.string().min(1),
   endDate: z.string().optional().transform(value => value || null),
-  cadence: z.enum(['MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
+  cadence: z.enum(['WEEKLY', 'MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
   dueDay: z.coerce.number().min(1).max(31).optional().nullable(),
   dueMonth: z.coerce.number().min(1).max(12).optional().nullable(),
   generationTiming: z.enum(['FIRST_OF_MONTH', 'DAYS_7_BEFORE', 'DAYS_10_BEFORE', 'DAYS_15_BEFORE', 'DAYS_30_BEFORE', 'ON_DUE_DATE']).default('FIRST_OF_MONTH'),
@@ -44,6 +44,7 @@ const RecurringExpenseSchema = z.object({
   ,payrollPeriodEndDay: z.coerce.number().min(1).max(31).optional().nullable()
   ,affectsFiscalProfit: BooleanFromForm.default(false)
 }).superRefine((data, context) => {
+  if (data.cadence === 'WEEKLY' && (!Number.isInteger(data.dueDay) || !data.dueDay || data.dueDay > 7)) context.addIssue({code: 'custom', path: ['dueDay'], message: 'Seleziona un giorno della settimana valido'});
   if (data.endDate && data.endDate < data.startDate) context.addIssue({code: 'custom', path: ['endDate'], message: 'La data di fine non può precedere la data iniziale'});
   if (data.expenseType === 'STANDARD' && !data.supplierId) context.addIssue({code: 'custom', path: ['supplierId'], message: 'Seleziona un fornitore'});
   if (data.expenseType === 'TAX_CONTRIBUTION' && !data.taxAuthorityId) context.addIssue({code: 'custom', path: ['taxAuthorityId'], message: 'Seleziona un ente fiscale'});

@@ -4,6 +4,11 @@ import {matchesExpenseQuickSearch, matchesExpenseType} from '../lib/expense-list
 
 const types = ['STANDARD', 'VAT_SETTLEMENT', 'COUNTER', 'TAX_CONTRIBUTION', 'PAYROLL'];
 
+test('la ricerca trova il nome aggiornato dell’ente', () => {
+  assert.equal(matchesExpenseQuickSearch({expenseType: 'TAX_CONTRIBUTION', isRecurring: false,
+    merchant: 'Vecchio nome', taxAuthority: {name: 'Ente rinominato'}}, 'rinominato'), true);
+});
+
 test('senza filtro tipo tutte le tipologie sono visibili', () => {
   for (const expenseType of types) {
     assert.equal(matchesExpenseType({expenseType, isRecurring: false}, ''), true, expenseType);

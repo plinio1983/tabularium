@@ -1,5 +1,6 @@
 "use client";
 
+import {weekdayOptions} from '@/lib/recurring-cadence';
 import {type ReactNode, useEffect, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {DateField} from '@/components/FormControls';
@@ -11,7 +12,7 @@ const groups = [
   {name: 'schedule', label: 'Cadenza e fatturazione', hint: 'Cadenza, data inizio e periodo fatturazione', icon: '↻'},
   {name: 'payment', label: 'Pagamento', hint: 'Modalità e giorno pagamento', icon: '€'},
 ] as const;
-const cadences = [['MONTHLY', 'Ogni mese'], ['EVERY_2_MONTHS', 'Ogni 2 mesi'], ['EVERY_3_MONTHS', 'Ogni 3 mesi'], ['EVERY_6_MONTHS', 'Ogni 6 mesi'], ['YEARLY', 'Annuale'], ['EVERY_2_YEARS', 'Ogni 2 anni']];
+const cadences = [['WEEKLY', 'Settimanale'], ['MONTHLY', 'Ogni mese'], ['EVERY_2_MONTHS', 'Ogni 2 mesi'], ['EVERY_3_MONTHS', 'Ogni 3 mesi'], ['EVERY_6_MONTHS', 'Ogni 6 mesi'], ['YEARLY', 'Annuale'], ['EVERY_2_YEARS', 'Ogni 2 anni']];
 const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 
 function EditableField({title, hint, name, active, onChange, children}: {
@@ -62,7 +63,7 @@ export default function RecurringExpenseBulkEditModal({formId, action, categorie
   </label>;
   const enabledFields = step === 'schedule' ? ['updateCadence', 'updateStartDate', 'updateBilling'] : ['updatePayment', 'updateDueDay'];
   const incomplete = step === 'categoryId' ? !value('categoryId') : !enabledFields.some(name => active[name])
-    || (step === 'schedule' && ((active.updateCadence && !value('cadence')) || (active.updateStartDate && !value('startDate'))
+    || (step === 'schedule' && ((active.updateCadence && (!value('cadence') || (value('cadence') === 'WEEKLY' && !value('weeklyDay')))) || (active.updateStartDate && !value('startDate'))
       || (active.updateBilling && (!value('billingPeriodMode') || (value('billingPeriodMode') === 'CUSTOM_MONTH' && !value('billingMonth'))))))
     || (step === 'payment' && ((active.updateDueDay && (!value('dueDay') || !Number.isInteger(Number(value('dueDay'))) || Number(value('dueDay')) < 1 || Number(value('dueDay')) > 30))
       || (active.updatePayment && (!value('isAutomaticPayment') || (value('isAutomaticPayment') === 'true' && (!value('paymentMethodId') || !value('bankId')))))));
@@ -94,6 +95,10 @@ export default function RecurringExpenseBulkEditModal({formId, action, categorie
                 <label><span>Nuova cadenza</span><select name="cadence" required value={value('cadence')} onChange={event => change('cadence', event.target.value)}>
                   <option value="">Seleziona cadenza</option>{cadences.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
                 </select></label>
+                {value('cadence') === 'WEEKLY' ? <label><span>Giorno della settimana</span><select name="weeklyDay" required value={value('weeklyDay')} onChange={event => change('weeklyDay', event.target.value)}>
+                  <option value="">Seleziona giorno</option>{weekdayOptions.map(day => <option key={day.value} value={day.value}>{day.label}</option>)}
+                </select></label> : null}
+                <p className="muted">Per passare da o a settimanale, o cambiarne il giorno, attiva anche la nuova data inizio e scegli oggi o una data futura. Le occorrenze già generate restano invariate.</p>
               </EditableField>
               <EditableField title="Data inizio" hint="Assegna la stessa data inizio alle ricorrenze selezionate" name="updateStartDate" active={!!active.updateStartDate} onChange={next => toggle('updateStartDate', next)}>
                 <div className="app-form-wizard bulk-edit-date-control-scope"><DateField label="Nuova data inizio" name="startDate" value={value('startDate')} onChange={next => change('startDate', next)} required/></div>
@@ -114,7 +119,7 @@ export default function RecurringExpenseBulkEditModal({formId, action, categorie
                 </select></label>
                 {value('isAutomaticPayment') === 'true' ? <>{optionSelect('paymentMethodId', 'Metodo', methods)}{optionSelect('bankId', 'Banca', banks)}</> : null}
               </EditableField>
-              <EditableField title="Giorno pagamento" hint="Assegna un giorno del mese da 1 a 30" name="updateDueDay" active={!!active.updateDueDay} onChange={next => toggle('updateDueDay', next)}>
+              <EditableField title="Giorno pagamento" hint="Giorno del mese da 1 a 30. Per le settimanali usa Cadenza e fatturazione." name="updateDueDay" active={!!active.updateDueDay} onChange={next => toggle('updateDueDay', next)}>
                 <label><span>Nuovo giorno pagamento</span><select name="dueDay" required value={value('dueDay')} onChange={event => change('dueDay', event.target.value)}>
                   <option value="">Seleziona giorno</option>{Array.from({length: 30}, (_, index) => index + 1).map(day => <option key={day} value={day}>{day}</option>)}
                 </select></label>

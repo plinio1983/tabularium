@@ -340,7 +340,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     caret.className = "floating-bulk-caret";
     caret.textContent = "▾";
     const icon = document.createElement("span");
-    icon.className = "btn-icon hidden-mobile";
+    icon.className = "btn-icon";
     icon.textContent = "⚙";
     const label = document.createElement("span");
     const hLabel = document.createElement("span");
@@ -400,10 +400,10 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   if (newItem) {
     const newItemWrap = document.createElement("div");
     const label = newItem.getAttribute("data-floating-label") ?? "Aggiungi spesa";
-    const icon = newItem.getAttribute("data-floating-icon") ?? "+";
+    const icon = newItem.getAttribute("data-floating-icon") ?? (newItem.querySelector(".btn-icon") ? "" : "+");
     newItemWrap.className = "bulk-inner-container";
-    newItemWrap.appendChild(buildFloatingButton(newItem, label, icon, "floating-bulk-new btn-primary"));
-    if (filter) newItemWrap.appendChild(buildFloatingButton(filter, "Filtri", "", "floating-bulk-filter"));
+    newItemWrap.appendChild(buildFloatingButton(newItem, label, icon, "floating-bulk-new bulk-direct-link bulk-add-link btn btn-md btn-primary"));
+    if (filter) newItemWrap.appendChild(buildFloatingButton(filter, "Filtri", "", "floating-bulk-filter bulk-direct-link bulk-filter-action app-filter-trigger btn btn-sm btn-default"));
     inner.appendChild(newItemWrap);
   }
 

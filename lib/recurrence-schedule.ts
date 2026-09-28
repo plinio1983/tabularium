@@ -1,3 +1,5 @@
+import {weeklyDates} from './recurring-cadence';
+
 export type RecurrenceDefinition = {
   startDate: Date | string;
   endDate?: Date | string | null;
@@ -29,6 +31,16 @@ function addMonths(year: number, month: number, delta: number) {
 }
 
 export function recurrenceDates(definition: RecurrenceDefinition, untilInput: Date) {
+  if (definition.cadence === 'WEEKLY') {
+    const civilStart = (value: Date | string) => recurrenceStartOfDay(
+      typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00` : value
+    );
+    const start = civilStart(definition.startDate);
+    const requestedEnd = civilStart(untilInput);
+    const configuredEnd = definition.endDate ? civilStart(definition.endDate) : null;
+    const end = configuredEnd && configuredEnd < requestedEnd ? configuredEnd : requestedEnd;
+    return weeklyDates(start, end, definition.day ?? (start.getDay() || 7), false);
+  }
   const requestedUntil = recurrenceStartOfDay(untilInput);
   const configuredEnd = definition.endDate ? recurrenceStartOfDay(definition.endDate) : null;
   const until = configuredEnd && configuredEnd < requestedUntil ? configuredEnd : requestedUntil;

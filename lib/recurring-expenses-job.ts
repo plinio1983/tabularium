@@ -3,6 +3,7 @@ import {canGenerateRecurringOccurrence} from '@/lib/recurring-generation-state';
 import { prisma } from '@/lib/prisma';
 import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
 import {createSystemNotification} from '@/lib/notifications';
+import {weeklyDates} from '@/lib/recurring-cadence';
 
 export type RecurringExpenseJobResult = {
   checked: number;
@@ -88,6 +89,10 @@ export function calculateRecurringExpenseDueDates(recurringExpense: any, todayIn
   const occurrenceEnd = endDate && endDate < lookAheadEnd ? endDate : lookAheadEnd;
 
   if (startDate > occurrenceEnd) return [];
+  if (recurringExpense.cadence === 'WEEKLY') {
+    return weeklyDates(startDate, occurrenceEnd, recurringExpense.dueDay ?? (startDate.getUTCDay() || 7))
+      .filter(date => recurringExpenseGenerationDate(date, recurringExpense.generationTiming) <= today);
+  }
 
   const dueDates: Date[] = [];
   const cursorStart = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), 1));
@@ -215,7 +220,8 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
         }
 
         const billingPeriod = billingPeriodFromDueDate(recurringExpense, dueDate);
-        const recurringExpensePeriodKey = periodKey(billingPeriod.year, billingPeriod.month);
+        const recurringExpensePeriodKey = recurringExpense.cadence === 'WEEKLY'
+          ? calendarDateInput(dueDate) : periodKey(billingPeriod.year, billingPeriod.month);
         const payrollPeriod = recurringExpense.expenseType === 'PAYROLL'
           ? payrollPeriodFromBillingPeriod(recurringExpense, billingPeriod)
           : null;
@@ -230,7 +236,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
             workspaceId: recurringExpense.workspaceId || null,
             companyId: recurringExpense.companyId,
             recurringExpenseId: recurringExpense.id,
-            recurringExpensePeriodKey
+            OR: [{recurringExpensePeriodKey}, {dueDate}]
           }
         });
 
@@ -241,7 +247,7 @@ export async function generateRecurringExpenses(todayInput = new Date()): Promis
 
         const created = await prisma.$transaction(async tx => {
           if (!await canGenerateRecurringOccurrence(tx, 'expense', recurringExpense.id, dueDate)) return false;
-          if (await tx.expense.findFirst({where: {recurringExpenseId: recurringExpense.id, recurringExpensePeriodKey}})) return false;
+          if (await tx.expense.findFirst({where: {recurringExpenseId: recurringExpense.id, OR: [{recurringExpensePeriodKey}, {dueDate}]}})) return false;
           const expense = await tx.expense.create({
             data: {
             workspaceId: recurringExpense.workspaceId || null,

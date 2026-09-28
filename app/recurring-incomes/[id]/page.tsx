@@ -1,3 +1,4 @@
+import {weekdayLabel} from '@/lib/recurring-cadence';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import {notFound} from 'next/navigation';
 import {prisma} from '@/lib/prisma';
@@ -15,7 +16,7 @@ import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import IncomesList from '@/components/IncomesList';
 
 const cadenceLabels: Record<string, string> = {
-    MONTHLY: 'Ogni mese', EVERY_2_MONTHS: 'Ogni 2 mesi', EVERY_3_MONTHS: 'Ogni 3 mesi',
+    WEEKLY: 'Settimanale', MONTHLY: 'Ogni mese', EVERY_2_MONTHS: 'Ogni 2 mesi', EVERY_3_MONTHS: 'Ogni 3 mesi',
     EVERY_6_MONTHS: 'Ogni 6 mesi', YEARLY: 'Annuale', EVERY_2_YEARS: 'Ogni 2 anni'
 };
 const billingLabels: Record<string, string> = {
@@ -65,7 +66,7 @@ export default async function RecurringIncomeDetailPage({params, searchParams}: 
     const editableItem = {...rule, amount: item.amount.toString(), vatRate: item.vatRate.toString()};
     const stateProps = {kind: 'income' as const, id, active: item.isActive, archived: Boolean(item.archivedAt)};
     const cadence = cadenceLabels[item.cadence] ?? item.cadence;
-    const creditDay = item.creditMonth ? `${item.creditDay ?? '-'} ${months[item.creditMonth]}` : item.creditDay ? `Giorno ${item.creditDay}` : '-';
+    const creditDay = item.cadence === 'WEEKLY' ? weekdayLabel(item.creditDay) : item.creditMonth ? `${item.creditDay ?? '-'} ${months[item.creditMonth]}` : item.creditDay ? `Giorno ${item.creditDay}` : '-';
     const billing = `${billingLabels[item.billingPeriodMode] ?? item.billingPeriodMode}${item.billingMonth ? ` · ${months[item.billingMonth]}` : ''}`;
     const generatedTotal = generatedIncomes.reduce((sum, income) => sum + Number(income.amount), 0);
     const actions = <>

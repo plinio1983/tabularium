@@ -1,3 +1,5 @@
+import {dateInputInTimeZone} from '@/lib/company-time';
+import {requiresNewScheduleStart} from '@/lib/recurring-cadence';
 import {appendFlash} from '@/lib/flash';
 import {pathFromUrl, redirectToPath} from '@/lib/redirect';
 import {writeAuditLog} from '@/lib/audit';
@@ -11,7 +13,7 @@ import {RecurringStateError} from '@/lib/recurring-suspensions';
 
 const bool = z.preprocess(value => ['true', 'on', '1', true].includes(value as never), z.boolean());
 const recurringIncomeSchema = z.object({
-  startDate: z.string().min(1), cadence: z.enum(['MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
+  startDate: z.string().min(1), cadence: z.enum(['WEEKLY', 'MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
   endDate: z.string().optional().transform(value => value || null),
   creditDay: z.coerce.number().min(1).max(31).optional().nullable(), creditMonth: z.coerce.number().min(1).max(12).optional().nullable(),
   billingPeriodMode: z.enum(['SAME_MONTH', 'NEXT_MONTH', 'CUSTOM_MONTH']).default('SAME_MONTH'), billingMonth: z.coerce.number().min(1).max(12).optional().nullable(),
@@ -20,6 +22,7 @@ const recurringIncomeSchema = z.object({
   isFiscal: bool.default(false), isAutomaticCredit: bool.default(false), paymentMethodId: z.coerce.number().optional().nullable(), bankId: z.coerce.number().optional().nullable(), notes: z.string().optional(),
   isActive: bool.default(false)
 }).superRefine((data, context) => {
+  if (data.cadence === 'WEEKLY' && (!Number.isInteger(data.creditDay) || !data.creditDay || data.creditDay > 7)) context.addIssue({code: 'custom', path: ['creditDay'], message: 'Seleziona un giorno della settimana valido'});
   if (data.endDate && data.endDate < data.startDate) context.addIssue({code: 'custom', path: ['endDate'], message: 'La data di fine non può precedere la data iniziale'});
 });
 
@@ -31,6 +34,9 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
   if (!existing) return NextResponse.json({ error: 'Entrata ricorrente non trovata' }, { status: 404 });
   const data = recurringIncomeSchema.parse(Object.fromEntries((await request.formData()).entries()));
   const workspaceId = access.current.workspace.id;
+  if (requiresNewScheduleStart({cadence: existing.cadence, day: existing.creditDay}, {cadence: data.cadence, day: data.creditDay}) && data.startDate < dateInputInTimeZone(access.current.company.timeZone)) {
+    return NextResponse.json({error: 'Per cambiare la cadenza settimanale o il giorno della settimana, imposta una data iniziale da oggi in avanti. Le occorrenze già generate restano invariate.'}, {status: 400});
+  }
   const [channel, customer, method, bank] = await Promise.all([
     prisma.incomeSalesChannel.findFirst({ where: { id: data.salesChannelId, workspaceId } }),
     data.customerId ? prisma.customer.findFirst({ where: { id: data.customerId, workspaceId } }) : null,

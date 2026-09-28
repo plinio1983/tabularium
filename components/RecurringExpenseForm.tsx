@@ -1,5 +1,6 @@
 "use client";
 
+import {weekdayOptions, weekdayLabel, weekdayFromDate} from '@/lib/recurring-cadence';
 import {type FormEvent, type ReactNode, useEffect, useId, useRef, useState} from "react";
 import {categoryIcon} from "@/lib/expense-ui";
 import {DateField, FormField, SelectField} from "@/components/FormControls";
@@ -675,9 +676,14 @@ export default function RecurringExpenseForm({
                         icon="↻"
                         name="cadence"
                         value={cadence}
-                        onChange={setCadence}
+                        onChange={next => {
+                            if ((next === 'WEEKLY') !== (cadence === 'WEEKLY')) setDueDay(String(next === 'WEEKLY' ? weekdayFromDate(startDate || today) : 1));
+                            if (next === 'WEEKLY' && cadence !== 'WEEKLY') setGenerationTiming('ON_DUE_DATE');
+                            setCadence(next);
+                        }}
                         required
                         options={[
+                            {value: "WEEKLY", label: "Settimanale"},
                             {value: "MONTHLY", label: "Ogni mese"},
                             {value: "EVERY_2_MONTHS", label: "Ogni 2 mesi"},
                             {value: "EVERY_3_MONTHS", label: "Ogni 3 mesi"},
@@ -687,7 +693,10 @@ export default function RecurringExpenseForm({
                         ]}
                     />
 
-                    {isYearly ? (
+                    {cadence === 'WEEKLY' ? <p className="muted full app-form-wizard-step app-form-wizard-step-1">La prima occorrenza cade nel giorno scelto a partire dalla data iniziale, poi ogni 7 giorni.</p> : null}
+                    {initialExpense ? <p className="muted full app-form-wizard-step app-form-wizard-step-1">Per passare da o a settimanale, o cambiarne il giorno, imposta la data iniziale da oggi in avanti. Le occorrenze già generate restano invariate.</p> : null}
+                    {cadence === 'WEEKLY' ? <SelectField className="app-form-wizard-step app-form-wizard-step-1"
+                        label="Giorno della settimana" icon="№" name="dueDay" value={dueDay} onChange={setDueDay} required options={weekdayOptions}/> : isYearly ? (
                         <>
                             <SelectField className="app-form-wizard-step app-form-wizard-step-1" label="Giorno scadenza" icon="№" name="dueDay" value={dueDay} onChange={setDueDay} required options={Array.from({length: 30}, (_, index) => ({
                                 value: index + 1,
@@ -1006,13 +1015,13 @@ export default function RecurringExpenseForm({
                                 <i aria-hidden="true">⌛</i><span>Data di fine<strong>{hasEndDate && endDate ? formatItalianCompactDate(endDate) : "Senza scadenza"}</strong></span>
                             </div>
                             <div className="record-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({
-                                MONTHLY: "Ogni mese",
+                                WEEKLY: "Settimanale", MONTHLY: "Ogni mese",
                                 EVERY_2_MONTHS: "Ogni 2 mesi",
                                 EVERY_3_MONTHS: "Ogni 3 mesi",
                                 EVERY_6_MONTHS: "Ogni 6 mesi",
                                 YEARLY: "Annuale",
                                 EVERY_2_YEARS: "Ogni 2 anni"
-                            } as Record<string, string>)[cadence]} · giorno {dueDay}{isYearly ? ` ${monthOptions.find(([value]) => String(value) === dueMonth)?.[1] ?? ""}` : ""}</strong></span>
+                            } as Record<string, string>)[cadence]} · {cadence === "WEEKLY" ? weekdayLabel(dueDay) : `giorno ${dueDay}`}{isYearly ? ` ${monthOptions.find(([value]) => String(value) === dueMonth)?.[1] ?? ""}` : ""}</strong></span>
                             </div>
                             <div className="record-review-item">
                                 <i aria-hidden="true">◷</i><span>Generazione<strong>{generationTimingOptions.find(option => option.value === generationTiming)?.label ?? "Il primo del mese"}</strong></span>

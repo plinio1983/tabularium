@@ -1,3 +1,4 @@
+import {weekdayOptions} from './recurring-cadence';
 import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
 import type { InvoiceStatus, PaymentStatus } from '../generated/prisma/client';
@@ -288,6 +289,7 @@ function parseInteger(value: unknown) {
 
 function mapCadence(value: unknown) {
   const text = textValue(value).toLowerCase();
+  if (text.includes('settim') || text === 'weekly') return 'WEEKLY';
   if (text.includes('2') || text.includes('bimes')) return 'EVERY_2_MONTHS';
   if (text.includes('3') || text.includes('trim')) return 'EVERY_3_MONTHS';
   if (text.includes('6') || text.includes('semes')) return 'EVERY_6_MONTHS';
@@ -360,8 +362,16 @@ export async function importRecurringExpenseDefinitionsWorkbook(buffer: Buffer, 
     const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
     const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
     const cadence = mapCadence(rowValue(row, ['Cadenza', 'Frequenza', 'Ricorrenza']));
-    const dueDay = parseInteger(rowValue(row, ['Giorno scadenza', 'Giorno pagamento', 'Scadenza giorno']));
-    const dueMonth = parseInteger(rowValue(row, ['Mese scadenza', 'Scadenza mese']));
+    const rawDay = rowValue(row, cadence === 'WEEKLY'
+      ? ['Giorno della settimana', 'Giorno scadenza', 'Giorno pagamento', 'Scadenza giorno']
+      : ['Giorno scadenza', 'Giorno pagamento', 'Scadenza giorno']);
+    const normalizedDay = textValue(rawDay).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const dueDay = cadence === 'WEEKLY'
+      ? weekdayOptions.find(option => option.label.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === normalizedDay)?.value
+        ?? parseInteger(rawDay) ?? (startDate.getUTCDay() || 7)
+      : parseInteger(rawDay);
+    if (cadence === 'WEEKLY' && (dueDay! < 1 || dueDay! > 7)) {skipped++; continue;}
+    const dueMonth = cadence === 'WEEKLY' ? null : parseInteger(rowValue(row, ['Mese scadenza', 'Scadenza mese']));
     const billingPeriodMode = mapBillingPeriodMode(rowValue(row, ['Competenza', 'Periodo fatturazione', 'Modalità periodo fatturazione']));
     const billingMonth = parseInteger(rowValue(row, ['Mese competenza', 'Mese fatturazione']));
     const isAutomaticPayment = mapAutomaticPayment(rowValue(row, ['Generazione pagamento', 'Tipo generazione', 'Accrual']));

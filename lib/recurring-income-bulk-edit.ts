@@ -1,7 +1,7 @@
 import {z} from 'zod';
 
 const id = z.coerce.number().int().positive();
-const cadence = z.enum(['MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']);
+const cadence = z.enum(['WEEKLY', 'MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']);
 const billingMode = z.enum(['SAME_MONTH', 'NEXT_MONTH', 'CUSTOM_MONTH']);
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value => {
   const parsed = new Date(value);
@@ -18,6 +18,7 @@ type BulkEditData = {
   paymentMethodId?: number | null;
   bankId?: number | null;
   creditDay?: number;
+  creditMonth?: number | null;
 };
 
 // Only explicitly enabled fields contribute to the update; hidden/stale values are ignored.
@@ -27,7 +28,11 @@ export function parseRecurringIncomeBulkEdit(form: FormData): BulkEditData {
   const data: BulkEditData = {};
   if (group === 'salesChannelId') data.salesChannelId = id.parse(form.get('salesChannelId'));
   if (group === 'schedule') {
-    if (enabled('updateCadence')) data.cadence = cadence.parse(form.get('cadence'));
+    if (enabled('updateCadence')) {
+      data.cadence = cadence.parse(form.get('cadence'));
+      if (data.cadence === 'WEEKLY') data.creditDay = z.coerce.number().int().min(1).max(7).parse(form.get('weeklyDay'));
+      if (!['YEARLY', 'EVERY_2_YEARS'].includes(data.cadence)) data.creditMonth = null;
+    }
     if (enabled('updateStartDate')) data.startDate = new Date(date.parse(form.get('startDate')));
     if (enabled('updateBilling')) {
       data.billingPeriodMode = billingMode.parse(form.get('billingPeriodMode'));

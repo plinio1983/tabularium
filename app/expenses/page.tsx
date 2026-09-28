@@ -369,7 +369,8 @@ function amountMatchesFilter(amount: number, filterValue: AmountFilter | null) {
 }
 
 
-function expenseSupplierName(expense: { supplier?: { businessName: string } | null; merchant?: string | null }) {
+function expenseSupplierName(expense: { expenseType?: string; taxAuthority?: {name: string} | null; supplier?: { businessName: string } | null; merchant?: string | null }) {
+    if (expense.expenseType === 'TAX_CONTRIBUTION') return expense.taxAuthority?.name ?? expense.merchant ?? '';
     return expense.supplier?.businessName ?? expense.merchant ?? '';
 }
 
@@ -635,6 +636,7 @@ export default async function ExpensesPage({searchParams}: {
             include: {
                 category: true,
                 supplier: true,
+                taxAuthority: {select: {name: true}},
                 employee: true,
                 payments: {include: {bank: true, paymentMethod: true}, orderBy: {id: 'asc'}},
                 attachments: true
@@ -842,9 +844,9 @@ export default async function ExpensesPage({searchParams}: {
             case 'supplier_desc':
                 return compareText(expenseSupplierName(a), expenseSupplierName(b), 'desc');
             case 'merchant_asc':
-                return compareText(a.merchant, b.merchant, 'asc');
+                return compareText(expenseSupplierName(a), expenseSupplierName(b), 'asc');
             case 'merchant_desc':
-                return compareText(a.merchant, b.merchant, 'desc');
+                return compareText(expenseSupplierName(a), expenseSupplierName(b), 'desc');
             case 'description_asc':
                 return compareText(a.description, b.description, 'asc');
             case 'description_desc':

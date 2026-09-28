@@ -16,7 +16,7 @@ type Props = {
 };
 
 const cadenceOptions = [
-  ["MONTHLY", "Ogni mese"],
+  ["WEEKLY", "Settimanale"], ["MONTHLY", "Ogni mese"],
   ["EVERY_2_MONTHS", "Ogni 2 mesi"],
   ["EVERY_3_MONTHS", "Ogni 3 mesi"],
   ["EVERY_6_MONTHS", "Ogni 6 mesi"],

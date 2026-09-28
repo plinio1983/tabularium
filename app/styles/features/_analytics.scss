@@ -529,6 +529,11 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 .month-report-record-link {
@@ -540,6 +545,11 @@
   color: #1d2538;
   font-size: 17px;
   font-weight: 850;
+
+  @media (max-width: 576px) {
+    padding: 15px 16px;
+    font-size: 15px;
+  }
 }
 
 .month-report-record-link:hover {
@@ -562,18 +572,6 @@
   color: var(--accent);
   font-size: 12px;
   font-weight: 850;
-}
-
-@media (max-width: 576px) {
-  .month-report-record-links {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .month-report-record-link {
-    padding: 15px 16px;
-    font-size: 15px;
-  }
 }
 
 .month-report-section h3 {
@@ -682,6 +680,12 @@
   font-size: .62em;
   font-weight: 800;
   white-space: nowrap;
+
+  @media (max-width: 389px) {
+    display: block;
+    margin-top: 5px;
+    margin-left: 0;
+  }
 }
 
 @media (max-width: 389px) {
@@ -689,11 +693,6 @@
   .month-report-metrics .month-report-value:nth-child(4),
   .month-report-metrics .month-report-value:nth-child(6) {
     align-items: flex-end;
-  }
-  .month-report-metric-percentage {
-    display: block;
-    margin-top: 5px;
-    margin-left: 0;
   }
 }
 
@@ -2112,8 +2111,6 @@ html, body {
 
 .dashboard-chart-main-total .dashboard-chart-main-total-percent {
   font-size: 16px;
-  // color: #a15c00;
-  //color: #6d28d9;
 }
 
 .dashboard-chart-main-total > span {
@@ -2942,6 +2939,11 @@ html, body {
   align-items: stretch;
   gap: 8px;
   min-width: 0;
+
+  @media (max-width: 576px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
 }
 
 .monthly-economic-selection > div {
@@ -2952,6 +2954,10 @@ html, body {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #f8fafc;
+
+  @media (max-width: 576px) {
+    padding: 7px 5px;
+  }
 }
 
 .monthly-economic-selection span {
@@ -2959,6 +2965,10 @@ html, body {
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
+
+  @media (max-width: 576px) {
+    font-size: 13px;
+  }
 }
 
 .monthly-economic-selection strong {
@@ -2966,6 +2976,10 @@ html, body {
   color: var(--text);
   font-size: 14px;
   overflow-wrap: anywhere;
+
+  @media (max-width: 576px) {
+    font-size: 13px;
+  }
 }
 
 .monthly-economic-selection > .btn {
@@ -2975,6 +2989,13 @@ html, body {
   justify-content: center;
   text-align: center;
   white-space: normal;
+
+  @media (max-width: 576px) {
+    grid-column: 1 / -1;
+    width: auto;
+    padding-inline: 6px;
+    justify-self: end;
+  }
 }
 
 .monthly-economic-selection-scroll.is-empty {
@@ -2994,27 +3015,6 @@ html, body {
 }
 
 @media (max-width: 576px) {
-  .monthly-economic-selection {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
-  }
-
-  .monthly-economic-selection > div {
-    padding: 7px 5px;
-  }
-
-  .monthly-economic-selection span,
-  .monthly-economic-selection strong {
-    font-size: 13px;
-  }
-
-  .monthly-economic-selection > .btn {
-    grid-column: 1 / -1;
-    width: auto;
-    padding-inline: 6px;
-    justify-self: end;
-  }
-
   .monthly-profit-comparison-card .dashboard-chart-main-totals {
     display: grid;
     width: 100%;
@@ -3023,7 +3023,6 @@ html, body {
 
   .monthly-profit-comparison-card .dashboard-chart-main-totals > .dashboard-chart-main-total:first-of-type {
     max-width: 100%;
-    //grid-column: 1 / -1;
   }
 }
 
@@ -3080,8 +3079,6 @@ html, body {
   font-size: 10px;
 }
 
-// Conservato temporaneamente per poter ripristinare il report tabellare senza
-// doverne ricostruire markup e logica.
 .dashboard-monthly-legacy-report {
   display: none;
 }

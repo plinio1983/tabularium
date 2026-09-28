@@ -49,6 +49,8 @@ type ExpenseListItem = {
     vatRate: unknown;
     description?: string | null;
     supplierId?: number | null;
+    taxAuthorityId?: number | null;
+    taxAuthority?: { name: string } | null;
     employeeId?: number | null;
     supplier?: { businessName: string } | null;
     merchant?: string | null;
@@ -190,6 +192,7 @@ function invoiceBadge(value: boolean, invoiceStatus?: string) {
 }
 
 function expenseSupplierName(expense: ExpenseListItem) {
+    if (expense.expenseType === 'TAX_CONTRIBUTION') return expense.taxAuthority?.name ?? expense.merchant ?? '-';
     return expense.supplier?.businessName ?? expense.merchant ?? '-';
 }
 
@@ -258,7 +261,7 @@ export default function ExpensesList({
                     <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu
                              data-bulk-form={formId}>
                         <summary className="bulk-action-trigger">
-                            <span className="btn-icon hidden-mobile">⚙</span>
+                            <span className="btn-icon hidden-xs-down">⚙</span>
                             <span className="hidden-sm-up">Actions</span>
                             <span className="hidden-sm-down">Bulk actions</span>
                         </summary>
@@ -547,7 +550,9 @@ export default function ExpensesList({
                                   className='text-secondary strong'>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}
                         </td>
                         {showSupplierColumn ? <td className="cell-supplier cell-compact"
-                            title={supplierName}>{isPayroll && expense.employeeId ?
+                            title={supplierName}>{isTaxContribution && expense.taxAuthorityId ?
+                            <Link className="supplier-table-link"
+                                  href={`/tax-authorities/${expense.taxAuthorityId}?returnTo=${returnTo}`}>{supplierName}</Link> : isPayroll && expense.employeeId ?
                             <Link className="supplier-table-link"
                                   href={`/employees/${expense.employeeId}?returnTo=${returnTo}`}>{supplierName}</Link> : expense.supplierId ?
                                 <Link className="supplier-table-link"

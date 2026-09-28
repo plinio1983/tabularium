@@ -1,5 +1,6 @@
 'use client';
 
+import {weekdayOptions, weekdayLabel, weekdayFromDate} from '@/lib/recurring-cadence';
 import {FormEvent, useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import MobileFormStickyActions from '@/components/MobileFormStickyActions';
@@ -163,8 +164,13 @@ export default function RecurringIncomeForm({
             <summary><span>Ricorrenza e scadenza</span><small>Data iniziale, frequenza e giorno previsto</small>
             </summary>
             <div className="form-section-grid recurring-form-section-grid">
+                {cadence === 'WEEKLY' ? <p className="muted full">La prima occorrenza cade nel giorno scelto a partire dalla data iniziale, poi ogni 7 giorni.</p> : null}
+                {initial ? <p className="muted full">Per passare da o a settimanale, o cambiarne il giorno, imposta la data iniziale da oggi in avanti. Le occorrenze già generate restano invariate.</p> : null}
                 <DateField label="Data iniziale" name="startDate" value={startDate} onChange={setStartDate} required/>
-                <SelectField label="Frequenza" icon="↻" name="cadence" value={cadence} onChange={setCadence} required options={[{
+                <SelectField label="Frequenza" icon="↻" name="cadence" value={cadence} onChange={next => {
+                    if ((next === 'WEEKLY') !== (cadence === 'WEEKLY')) setCreditDay(String(next === 'WEEKLY' ? weekdayFromDate(startDate || today) : 1));
+                    setCadence(next);
+                }} required options={[{value: 'WEEKLY', label: 'Settimanale'}, {
                     value: 'MONTHLY',
                     label: 'Ogni mese'
                 }, {value: 'EVERY_2_MONTHS', label: 'Ogni 2 mesi'}, {
@@ -174,7 +180,7 @@ export default function RecurringIncomeForm({
                     value: 'YEARLY',
                     label: 'Annuale'
                 }, {value: 'EVERY_2_YEARS', label: 'Ogni 2 anni'}]}/>
-                <SelectField label="Giorno accredito" icon="№" name="creditDay" value={creditDay} onChange={setCreditDay} required options={dayOptions}/>
+                <SelectField label={cadence === "WEEKLY" ? "Giorno della settimana" : "Giorno accredito"} icon="№" name="creditDay" value={creditDay} onChange={setCreditDay} required options={cadence === "WEEKLY" ? weekdayOptions : dayOptions}/>
                 {['YEARLY', 'EVERY_2_YEARS'].includes(cadence) ?
                     <SelectField label="Mese accredito" icon="▦" name="creditMonth" value={creditMonth} onChange={setCreditMonth} required options={monthOptions.map((label, index) => ({
                         value: index + 1,
@@ -282,13 +288,13 @@ export default function RecurringIncomeForm({
             </div>
             <div className="record-review-grid">
                         <div className="record-review-item"><i aria-hidden="true">↻</i><span>Ricorrenza<strong>{({
-                            MONTHLY: 'Ogni mese',
+                            WEEKLY: 'Settimanale', MONTHLY: 'Ogni mese',
                             EVERY_2_MONTHS: 'Ogni 2 mesi',
                             EVERY_3_MONTHS: 'Ogni 3 mesi',
                             EVERY_6_MONTHS: 'Ogni 6 mesi',
                             YEARLY: 'Annuale',
                             EVERY_2_YEARS: 'Ogni 2 anni'
-                        } as Record<string, string>)[cadence]} · giorno {creditDay}</strong></span></div>
+                        } as Record<string, string>)[cadence]} · {cadence === "WEEKLY" ? weekdayLabel(creditDay) : `giorno ${creditDay}`}</strong></span></div>
                         <div className="record-review-item">
                             <i aria-hidden="true">◷</i><span>Data iniziale<strong>{startDate ? formatItalianCompactDate(startDate) : 'Non indicata'}</strong></span>
                         </div>

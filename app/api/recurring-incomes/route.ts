@@ -8,7 +8,7 @@ import {resolveDefaultIncomeCategory} from '@/lib/income-category';
 
 const bool = z.preprocess(value => ['true', 'on', '1', true].includes(value as never), z.boolean());
 const recurringIncomeSchema = z.object({
-  startDate: z.string().min(1), cadence: z.enum(['MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
+  startDate: z.string().min(1), cadence: z.enum(['WEEKLY', 'MONTHLY', 'EVERY_2_MONTHS', 'EVERY_3_MONTHS', 'EVERY_6_MONTHS', 'YEARLY', 'EVERY_2_YEARS']),
   endDate: z.string().optional().transform(value => value || null),
   creditDay: z.coerce.number().min(1).max(31).optional().nullable(), creditMonth: z.coerce.number().min(1).max(12).optional().nullable(),
   billingPeriodMode: z.enum(['SAME_MONTH', 'NEXT_MONTH', 'CUSTOM_MONTH']).default('SAME_MONTH'), billingMonth: z.coerce.number().min(1).max(12).optional().nullable(),
@@ -16,6 +16,7 @@ const recurringIncomeSchema = z.object({
   description: z.string().min(1), amount: z.coerce.number().positive(), vatRate: z.coerce.number().min(0).default(22),
   isFiscal: bool.default(false), isAutomaticCredit: bool.default(false), paymentMethodId: z.coerce.number().optional().nullable(), bankId: z.coerce.number().optional().nullable(), notes: z.string().optional()
 }).superRefine((data, context) => {
+  if (data.cadence === 'WEEKLY' && (!Number.isInteger(data.creditDay) || !data.creditDay || data.creditDay > 7)) context.addIssue({code: 'custom', path: ['creditDay'], message: 'Seleziona un giorno della settimana valido'});
   if (data.endDate && data.endDate < data.startDate) context.addIssue({code: 'custom', path: ['endDate'], message: 'La data di fine non può precedere la data iniziale'});
 });
 
