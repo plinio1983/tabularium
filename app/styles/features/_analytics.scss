@@ -4359,6 +4359,21 @@ html, body {
   background: #fff;
 }
 
+.dashboard-year-selector .dashboard-selector-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.dashboard-year-selector .dashboard-title-block {
+  flex-grow: 1;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+}
+
 .dashboard-year-selector select {
   width: auto;
   min-width: 230px;
@@ -4633,9 +4648,7 @@ html, body {
     grid-template-rows: 21px 24px;
     align-items: flex-end;
     gap: 3px;
-    //text-align: right;
     border: 1px solid var(--line);
-    //border-radius: 12px;
     padding: 0 6px;
 
     @media (min-width: 576px) and (max-width: 760px) {
@@ -4930,19 +4943,18 @@ html, body {
     }
   }
 
-  .dashboard-year-selector {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    //margin-top: 20px;
-  }
+  //.dashboard-year-selector {
+    //display: grid;
+    //grid-template-columns: 1fr auto;
+  //}
 
   .dashboard-year-selector .selector-label {
     grid-column: 1 / -1;
   }
 
   .dashboard-year-selector select {
-    width: 100%;
     min-width: 0;
+    flex-grow: 1;
   }
 }
 

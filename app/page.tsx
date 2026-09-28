@@ -1639,10 +1639,12 @@ export default async function Dashboard({searchParams}: {
                         <h2>Dashboard</h2>
                         <p className="muted">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
                     </div>
+                    <div className="dashboard-selector-wrapper">
                     <span className="selector-label">Anno fiscale</span>
                     <AutoSubmitSelect name="annualYear" defaultValue={String(report.annualYear)} aria-label="Anno fiscale dashboard">
                         {yearOptions.map(year => <option key={`top-annual-${year}`} value={year}>{year}</option>)}
                     </AutoSubmitSelect>
+                    </div>
                 </form>
             </div>
 
