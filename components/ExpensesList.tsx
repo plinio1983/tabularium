@@ -1,3 +1,5 @@
+import MonthGroupedRecords from '@/components/MonthGroupedRecords';
+import {listDateSort, listDateValue} from '@/lib/list-month-groups';
 import Link from 'next/link';
 import BulkCopyExpensesModal from '@/components/BulkCopyExpensesModal';
 import BulkEditFieldsModal from '@/components/BulkEditFieldsModal';
@@ -35,6 +37,9 @@ type ExpenseListItem = {
     id: number;
     amount: unknown;
     receivedDate?: Date | null;
+    paymentDate?: Date | null;
+    createdAt?: Date;
+    updatedAt?: Date;
     dueDate?: Date | null;
     month: number;
     year: number;
@@ -103,6 +108,8 @@ type EmployeeOption = {
 type Props = {
     expenses: ExpenseListItem[];
     mobileExpenses?: ExpenseListItem[];
+    monthGrouping?: boolean;
+    mobileSort?: string;
     returnTo: string;
     showSupplierColumn?: boolean;
     selectable?: boolean;
@@ -214,6 +221,8 @@ function dateSortValue(value?: Date | null) {
 export default function ExpensesList({
                                          expenses,
                                          mobileExpenses,
+                                         monthGrouping = false,
+                                         mobileSort = '',
                                          returnTo,
                                          showSupplierColumn = true,
                                          selectable = false,
@@ -229,6 +238,7 @@ export default function ExpensesList({
                                          timeZone = DEFAULT_COMPANY_TIME_ZONE,
                                          filterAction
                                      }: Props) {
+    const dateSort = listDateSort(mobileSort, timeZone);
     const mobileItems = mobileExpenses ?? sortExpensesByReceivedDateDesc(expenses);
     const hasBulkControls = selectable && categories.length > 0;
 
@@ -334,7 +344,7 @@ export default function ExpensesList({
         </> : null}
 
         <div className="mobile-record-list" aria-label={mobileLabel}>
-            {mobileItems.map(expense => {
+            <MonthGroupedRecords enabled={monthGrouping} sort={dateSort} records={mobileItems.map(expense => {
                 const isVatSettlement = expense.expenseType === 'VAT_SETTLEMENT';
                 const isTaxContribution = expense.expenseType === 'TAX_CONTRIBUTION';
                 const isPayroll = expense.expenseType === 'PAYROLL';
@@ -368,7 +378,7 @@ export default function ExpensesList({
                 const recordClass = `mobile-record-item ${recordAddClass}`;
                 const detailHref = expenseDetailHref(expense, returnTo, linkRecurringExpensesToDefinition);
 
-                return <div className={recordClass} key={`mobile-${expense.id}`}>
+                return {key: expense.id, value: listDateValue(expense, dateSort), content: <div className={recordClass} key={`mobile-${expense.id}`}>
                     {selectable ? <div className="mobile-record-select">
                         <input form={formId} type="checkbox" name="ids" value={expense.id}
                                data-payment-complete={!unpaid ? "true" : "false"}
@@ -451,13 +461,13 @@ export default function ExpensesList({
                             </div>
                         </div>
                     </Link>
-                </div>;
-            })}
+                </div>};
+            })}/>
             {!mobileItems.length ? <div className="expense-mobile-empty">{emptyMessage}</div> : null}
         </div>
 
         <div className="table-scroll">
-            <table className="expenses-table compact-expenses-table" data-sortable-table data-default-sort="order-date"
+            <table className="expenses-table compact-expenses-table" data-sortable-table data-month-grouping={monthGrouping} data-default-sort="order-date"
                    data-default-sort-dir="desc">
                 <thead>
                 <tr>

@@ -1,3 +1,4 @@
+import {isSingleMonthRange} from '@/lib/list-month-groups';
 import {parseIncomeTask, matchesIncomeTask, incomeTaskLabels} from '@/lib/dashboard-tasks';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
@@ -964,22 +965,6 @@ export default async function IncomesPage({searchParams}: {
                 </div>
             </section>
 
-            {/*<div className="record-summary-chart">*/}
-            {/*    <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>*/}
-            {/*</div>*/}
-        </div>
-        <div className="card record-list-card">
-            <div className="list-heading recurring-list-heading">
-                <div>
-                    <h2>Lista incassi</h2>
-                    <p className="muted record-list-results-summary">
-                        <span>Risultati mostrati: {standardFilteredIncomes.length + cashRegisterGroups.length}</span>
-                        <span>Totale importi: <strong>{euro(totals.total)}</strong></span>
-                        <span>Da incassare: <strong>{euro(totals.uncredited)}</strong></span>
-                    </p>
-                </div>
-            </div>
-
             {activeFilterItems.length ? <div className="recurring-active-filters">
                 <div>
                     <span className="recurring-active-filters-title">Filtri attivi</span>
@@ -990,6 +975,20 @@ export default async function IncomesPage({searchParams}: {
                 </div>
                 <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes"><span className="btn-icon">×</span> Reset</Link>
             </div> : null}
+
+            {/*<div className="record-summary-chart">*/}
+            {/*    <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>*/}
+            {/*</div>*/}
+        </div>
+        <div className="card record-list-card">
+            <div className="list-heading recurring-list-heading">
+                <div>
+                    <h2>Lista incassi</h2>
+                    <p className="muted record-list-results-summary">
+                        <span>Risultati mostrati: {standardFilteredIncomes.length + cashRegisterGroups.length}</span>
+                    </p>
+                </div>
+            </div>
 
             <LiveSearch name="customerQuick" label="Ricerca incasso" placeholder="Cliente o descrizione"/>
 
@@ -1072,6 +1071,11 @@ export default async function IncomesPage({searchParams}: {
             <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
             <IncomesList
+                mobileSort={mobileSort}
+                monthGrouping={!isSingleMonthRange(
+                    useFiscalPeriodFilter ? billingPeriodFromFilter : creditDateFromDefault,
+                    useFiscalPeriodFilter ? billingPeriodToFilter : creditDateToDefault
+                )}
                 timeZone={current.company.timeZone}
                 incomes={standardFilteredIncomes}
                 mobileIncomes={mobileSortedIncomes}

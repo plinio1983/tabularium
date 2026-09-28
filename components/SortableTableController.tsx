@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import {useSearchParams} from 'next/navigation';
+import {compareListDates, hasMultipleMonths, listMonthKey, listMonthLabel} from '@/lib/list-month-groups';
 
 function sortableRows(table: HTMLTableElement) {
   const body = table.tBodies.item(0);
@@ -34,11 +35,35 @@ function applySort(table: HTMLTableElement, key: string, direction: 'asc' | 'des
   if (!body) return;
 
   const rows = sortableRows(table);
+  const temporal = type === 'date' || key === 'billing-period';
+  const dateValue = (row: HTMLTableRowElement) => {
+    const value = sortValue(row, key);
+    return value.trim() && Number.isFinite(Number(value)) ? Number(value) : null;
+  };
   rows.sort((a, b) => {
+    if (temporal) return compareListDates(dateValue(a), dateValue(b), direction);
     const compared = compareValues(sortValue(a, key), sortValue(b, key), type);
     return direction === 'asc' ? compared : -compared;
   });
   rows.forEach(row => body.appendChild(row));
+  body.querySelectorAll('[data-month-heading]').forEach(row => row.remove());
+  if (temporal && table.dataset.monthGrouping === 'true') {
+    const keys = rows.map(row => listMonthKey(dateValue(row), key === 'billing-period' ? 'billing' : 'date'));
+    if (hasMultipleMonths(keys)) rows.forEach((row, index) => {
+      if (index > 0 && keys[index] === keys[index - 1]) return;
+      const separator = document.createElement('tr');
+      separator.dataset.monthHeading = 'true';
+      separator.className = 'list-month-row';
+      const cell = document.createElement('td');
+      cell.colSpan = row.cells.length;
+      const title = document.createElement('h2');
+      title.className = 'list-month-heading';
+      title.textContent = listMonthLabel(keys[index]);
+      cell.appendChild(title);
+      separator.appendChild(cell);
+      body.insertBefore(separator, row);
+    });
+  }
 
   table.querySelectorAll<HTMLElement>('[data-sort-key]').forEach(item => {
     item.classList.remove('sort-asc', 'sort-desc');
@@ -104,6 +129,7 @@ export default function SortableTableController() {
     return () => {
       document.querySelectorAll<HTMLTableElement>('table[data-sortable-table]').forEach((table, index) => {
         if (table.dataset.currentSort) sorts.current[index] = {key: table.dataset.currentSort, direction: table.dataset.currentSortDir === 'asc' ? 'asc' : 'desc'};
+        table.querySelectorAll('[data-month-heading]').forEach(row => row.remove());
       });
       document.removeEventListener('click', onClick);
       document.removeEventListener('keydown', onKeyDown);

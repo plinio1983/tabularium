@@ -1,3 +1,4 @@
+import {isSingleMonthRange} from '@/lib/list-month-groups';
 import {parseExpenseTask, matchesExpenseTask, expenseTaskLabels} from '@/lib/dashboard-tasks';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
@@ -1076,22 +1077,6 @@ export default async function ExpensesPage({searchParams}: {
                     </Link>
                 </div>
             </section>
-            {/*<div className="record-summary-chart">*/}
-            {/*    <ExpenseCategoryPieChart data={expensesByCategory}/>*/}
-            {/*</div>*/}
-        </div>
-        <div className="card record-list-card --fixed">
-            <div className="list-heading recurring-list-heading">
-                <div>
-                    <h2>Lista spese</h2>
-                    <p className="muted record-list-results-summary">
-                        <span>Risultati mostrati: {filteredExpenses.length}</span>
-                        <span>Totale importi: <strong>{euro(totals.total)}</strong></span>
-                        <span>Da pagare: <strong>{euro(totals.toPay)}</strong></span>
-                    </p>
-                </div>
-                {/*<Link className="btn btn-sm btn-default" href="/expenses/payments">Pagamenti</Link>*/}
-            </div>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">
                 <div>
@@ -1104,6 +1089,20 @@ export default async function ExpensesPage({searchParams}: {
                     </div>
                 </div>
             </div> : null}
+            {/*<div className="record-summary-chart">*/}
+            {/*    <ExpenseCategoryPieChart data={expensesByCategory}/>*/}
+            {/*</div>*/}
+        </div>
+        <div className="card record-list-card --fixed">
+            <div className="list-heading recurring-list-heading">
+                <div>
+                    <h2>Lista spese</h2>
+                    <p className="muted record-list-results-summary">
+                        <span>Risultati mostrati: {filteredExpenses.length}</span>
+                    </p>
+                </div>
+                {/*<Link className="btn btn-sm btn-default" href="/expenses/payments">Pagamenti</Link>*/}
+            </div>
 
             <LiveSearch name="supplierQuick" label="Ricerca spesa" placeholder="Fornitore, esercente, dipendente o descrizione"/>
 
@@ -1226,6 +1225,11 @@ export default async function ExpensesPage({searchParams}: {
             <MobileSortControl action="/expenses" currentValue={mobileSort} options={expenseMobileSortOptions} searchParams={filters}/>
 
             <ExpensesList
+                mobileSort={mobileSort}
+                monthGrouping={!isSingleMonthRange(
+                    useFiscalPeriodFilter ? billingPeriodFromFilter : orderDateFromDefault,
+                    useFiscalPeriodFilter ? billingPeriodToFilter : orderDateToDefault
+                )}
                 timeZone={current.company.timeZone}
                 expenses={filteredExpenses}
                 mobileExpenses={mobileSortedExpenses}

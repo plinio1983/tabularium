@@ -1,3 +1,5 @@
+import MonthGroupedRecords from '@/components/MonthGroupedRecords';
+import {listDateSort, listDateValue} from '@/lib/list-month-groups';
 import Link from 'next/link';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import SortableTableController from '@/components/SortableTableController';
@@ -24,6 +26,8 @@ type IncomeItem = {
     orderDate: Date | null;
     creditDate: Date | null;
     dueDate?: Date | null;
+    createdAt?: Date;
+    updatedAt?: Date;
     amount: unknown;
     vatRate: unknown;
     description: string | null;
@@ -133,6 +137,8 @@ type SimpleOption = {
 export default function IncomesList({
                                         incomes,
                                         mobileIncomes: suppliedMobileIncomes,
+                                        monthGrouping = false,
+                                        mobileSort = '',
                                         cashRegisterGroups = [],
                                         returnTo,
                                         banks,
@@ -148,6 +154,8 @@ export default function IncomesList({
                                     }: {
     incomes: IncomeItem[];
     mobileIncomes?: IncomeItem[];
+    monthGrouping?: boolean;
+    mobileSort?: string;
     cashRegisterGroups?: IncomeCashRegisterGroup[];
     returnTo: string;
     banks: SimpleOption[];
@@ -167,6 +175,7 @@ export default function IncomesList({
     emptyMessage?: string;
     filterAction?: ReactNode;
 }) {
+    const dateSort = listDateSort(mobileSort, timeZone);
     const mobileIncomes = suppliedMobileIncomes ?? [...incomes].sort((a, b) => (b.creditDate?.getTime() ?? 0) - (a.creditDate?.getTime() ?? 0) || b.id - a.id);
     const formId = 'incomeBulkForm';
 
@@ -227,10 +236,10 @@ export default function IncomesList({
             </div>
         </form>
         <div className="income-mobile-list mobile-record-list" aria-label="Lista incassi mobile">
-            {cashRegisterGroups.map(group => {
+            <MonthGroupedRecords enabled={monthGrouping} sort={dateSort} records={[...cashRegisterGroups.map(group => {
                 const fiscalStyle = group.isFiscal ? fiscalStyles.yes : fiscalStyles.no;
                 const vatStyle = vatStyles[String(Number(group.vatRates))] ?? vatStyles['0'];
-                return <div className="income-mobile-item mobile-record-item cash-register-aggregate-mobile-item" key={`mobile-cash-${group.key}`}>
+                return {key: `cash-${group.key}`, value: listDateValue({...group, creditDate: group.latestCreditDate, orderDate: group.latestCreditDate}, dateSort), content: <div className="income-mobile-item mobile-record-item cash-register-aggregate-mobile-item" key={`mobile-cash-${group.key}`}>
                     <div className="mobile-record-select">
                         <input type="checkbox" disabled aria-label="I cumulativi degli scontrini non sono selezionabili"/>
                     </div>
@@ -268,9 +277,8 @@ export default function IncomesList({
                             </div>
                         </div>
                     </Link>
-                </div>;
-            })}
-            {mobileIncomes.map(income => {
+                </div>};
+            }), ...mobileIncomes.map(income => {
                 const paymentMethod = income.paymentMethodRef.name;
                 const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
                 const status = creditStatus(income, timeZone);
@@ -287,7 +295,7 @@ export default function IncomesList({
                 const vatStyle = vatStyles[String(Number(income.vatRate))] ?? vatStyles['0'];
                 const amount = Number(income.amount);
                 const recordClass = ['income-mobile-item', 'mobile-record-item', status === incomeCreditStatusStyles.SCADUTO ? 'mobile-record-item-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
-                return <div className={recordClass} key={`mobile-income-${income.id}`}>
+                return {key: income.id, value: listDateValue(income, dateSort), content: <div className={recordClass} key={`mobile-income-${income.id}`}>
                     <div className="mobile-record-select">
                         <input form={formId} type="checkbox" name="ids" value={income.id} data-credit-complete={creditState === 'ACCREDITATO' ? "true" : "false"} aria-label={`Seleziona incasso ${income.id}`}/>
                     </div>
@@ -335,14 +343,14 @@ export default function IncomesList({
                             </div>
                         </div>
                     </Link>
-                </div>;
-            })}
+                </div>};
+            })]}/>
             {!incomes.length && !cashRegisterGroups.length ?
                 <div className="record-empty-state">{emptyMessage}</div> : null}
         </div>
 
         <div className="table-scroll incomes-table-scroll">
-            <table className="expenses-table incomes-table compact-incomes-table" data-sortable-table data-default-sort="credit-date" data-default-sort-dir="desc">
+            <table className="expenses-table incomes-table compact-incomes-table" data-sortable-table data-month-grouping={monthGrouping} data-default-sort="credit-date" data-default-sort-dir="desc">
                 <thead>
                 <tr>
                     <th className="cell-option">

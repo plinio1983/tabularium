@@ -2948,12 +2948,6 @@ button.bulk-direct-danger {
 }
 
 @media (max-width: 768px) {
-  .recurring-active-filters {
-    display: grid;
-  }
-}
-
-@media (max-width: 768px) {
   .recurring-active-filters-reset {
     width: fit-content;
     right: 10px;

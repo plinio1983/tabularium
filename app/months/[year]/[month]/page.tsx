@@ -1,9 +1,11 @@
+import ReportCurrentMonthSwitch from '@/components/ReportCurrentMonthSwitch';
+import {selectReportPeriods} from '@/lib/report-period-selection';
 import Link from 'next/link';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import MonthReportMonthSelect from '@/components/MonthReportMonthSelect';
 import YearNavigationSelect from '@/components/YearNavigationSelect';
 import {prisma} from '@/lib/prisma';
-import {completedReportPeriods, getMonthlyReport, getPeriodReport} from '@/lib/reports';
+import {getMonthlyReport, getPeriodReport} from '@/lib/reports';
 import {moneyTone, monthName} from '@/lib/money';
 import {requireWorkspace} from '@/lib/auth';
 import {lastCompletedMonthInTimeZone, yearMonthInTimeZone} from '@/lib/company-time';
@@ -49,11 +51,6 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const rawPeriodType = Array.isArray(query.period) ? query.period[0] : query.period;
     const periodType: 'month' | 'quarter' | 'year' = rawPeriodType === 'quarter' || rawPeriodType === 'year' ? rawPeriodType : 'month';
     const quarter = Math.floor((month - 1) / 3) + 1;
-    const selectedPeriods = periodType === 'year'
-        ? Array.from({length: 12}, (_, index) => ({year, month: index + 1}))
-        : periodType === 'quarter'
-            ? Array.from({length: 3}, (_, index) => ({year, month: (quarter - 1) * 3 + index + 1}))
-            : [{year, month}];
     const rawMode = Array.isArray(query.mode) ? query.mode[0] : query.mode;
     const mode: 'overall' | 'fiscal' = rawMode === 'fiscal' ? 'fiscal' : 'overall';
     const rawComparisonKind = Array.isArray(query.compare) ? query.compare[0] : query.compare;
@@ -66,7 +63,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const now = new Date();
     const currentPeriod = yearMonthInTimeZone(current.company.timeZone, now);
     const lastCompletedMonth = lastCompletedMonthInTimeZone(current.company.timeZone, now);
-    const reportPeriods = periodType === 'month' ? selectedPeriods : completedReportPeriods(selectedPeriods, now, current.company.timeZone);
+    const rawIncludeCurrentMonth = Array.isArray(query.includeCurrentMonth) ? query.includeCurrentMonth[0] : query.includeCurrentMonth;
+    const includeCurrentMonthQuery = rawIncludeCurrentMonth === '1' ? '&includeCurrentMonth=1' : '';
+    const {selectedPeriods, reportPeriods, canIncludeCurrentMonth, includeCurrentMonth} = selectReportPeriods({
+        year, month, type: periodType, includeCurrentMonth: rawIncludeCurrentMonth === '1'
+    }, now, current.company.timeZone);
     const lastReportPeriod = reportPeriods.at(-1);
     const currentYear = currentPeriod.year;
     const currentMonth = currentPeriod.month;
@@ -102,7 +103,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
     const periodQuery = periodType === 'month' ? '' : `&period=${periodType}`;
-    const currentReportHref = `/months/${year}/${month}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}`;
+    const currentReportHref = `/months/${year}/${month}?mode=${mode}${periodQuery}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`;
     const periodLabel = periodType === 'month' ? 'mese' : periodType === 'quarter' ? 'trimestre' : 'anno';
     const periodTitle = periodType === 'year' ? 'dell’anno' : `del ${periodLabel}`;
     const recordListQuery = reportPeriods.length ? new URLSearchParams({
@@ -123,7 +124,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
     ];
     const monthNavOptions = monthNavLabels.map((label, index) => {
         const navMonth = index + 1;
-        const href = `/months/${year}/${navMonth}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`;
+        const href = `/months/${year}/${navMonth}?mode=${mode}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`;
         return {
             label,
             selectLabel: monthSelectLabels[index],
@@ -138,7 +139,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         return {
             quarter: navQuarter,
             label: `Tri ${navQuarter}`,
-            href: `/months/${year}/${navMonth}?mode=${mode}&period=quarter&returnTo=${encodeURIComponent(backHref)}`,
+            href: `/months/${year}/${navMonth}?mode=${mode}&period=quarter${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`,
             disabled: year > currentYear || (year === currentYear && navQuarter > Math.floor((currentMonth - 1) / 3) + 1)
         };
     });
@@ -164,7 +165,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     : (navYear === currentYear ? Math.min(month, currentMonth) : month);
             return {
                 year: navYear,
-                href: `/months/${navYear}/${navMonth}?mode=${mode}${periodQuery}&returnTo=${encodeURIComponent(backHref)}`
+                href: `/months/${navYear}/${navMonth}?mode=${mode}${periodQuery}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`
             };
         });
     const chartMonths = periodType === 'quarter'
@@ -228,9 +229,9 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 {/*</span>*/}
 
                 <div className="trend-mode-toggle report-period-type-toggle" role="group" aria-label="Tipo di periodo">
-                    <Link className={periodType === 'month' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${lastCompletedMonth.year}/${lastCompletedMonth.month}?mode=${mode}&returnTo=${encodeURIComponent(backHref)}`}>Mese</Link>
-                    <Link className={periodType === 'quarter' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/${(quarter - 1) * 3 + 1}?mode=${mode}&period=quarter&returnTo=${encodeURIComponent(backHref)}`}>Trimestre</Link>
-                    <Link className={periodType === 'year' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/1?mode=${mode}&period=year&returnTo=${encodeURIComponent(backHref)}`}>Anno</Link>
+                    <Link className={periodType === 'month' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${lastCompletedMonth.year}/${lastCompletedMonth.month}?mode=${mode}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Mese</Link>
+                    <Link className={periodType === 'quarter' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/${(quarter - 1) * 3 + 1}?mode=${mode}&period=quarter${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Trimestre</Link>
+                    <Link className={periodType === 'year' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/1?mode=${mode}&period=year${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Anno</Link>
                 </div>
                 <YearNavigationSelect options={yearNavOptions} year={year}/>
                 {periodType === 'month' ? <MonthReportMonthSelect
@@ -257,17 +258,20 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 <div className="trend-mode-toggle month-report-mode-toggle" role="group" aria-label="Tipo andamento mensile">
                     <Link
                         className={mode === 'overall' ? 'trend-mode-button is-active' : 'trend-mode-button'}
-                        href={`/months/${year}/${month}?mode=overall${periodQuery}&returnTo=${encodeURIComponent(backHref)}`}
+                        href={`/months/${year}/${month}?mode=overall${periodQuery}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}
                     >Complessivo</Link>
                     <Link
                         className={mode === 'fiscal' ? 'trend-mode-button is-active' : 'trend-mode-button'}
-                        href={`/months/${year}/${month}?mode=fiscal${periodQuery}&returnTo=${encodeURIComponent(backHref)}`}
+                        href={`/months/${year}/${month}?mode=fiscal${periodQuery}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}
                     >Fiscale</Link>
                 </div>
             </div>
-            {periodType !== 'month' ? <span className="muted">{lastReportPeriod
-                ? `Dati fino a ${monthName(lastReportPeriod.month)} ${lastReportPeriod.year}. Sono inclusi soltanto i mesi conclusi.`
-                : 'Nessun mese concluso nel periodo.'}</span> : null}
+            {periodType !== 'month' ? <div className="report-period-scope">
+                <span className="muted">{lastReportPeriod
+                    ? `Dati fino a ${monthName(lastReportPeriod.month)} ${lastReportPeriod.year}. ${includeCurrentMonth ? 'Mese in corso incluso.' : 'Sono inclusi soltanto i mesi conclusi.'}`
+                    : 'Nessun mese concluso nel periodo.'}</span>
+                {canIncludeCurrentMonth ? <ReportCurrentMonthSwitch checked={includeCurrentMonth}/> : null}
+            </div> : null}
             <span className="muted">{mode === 'overall'
                 ? 'Accrediti e pagamenti effettivi del periodo, inclusi i movimenti non fiscali. Il risultato al netto IVA rettifica il margine lordo per l’IVA sugli incassi e sulle spese pagate, senza contare due volte i versamenti IVA.'
                 : 'Entrate e uscite fiscali del periodo di fatturazione, indipendentemente dalle date di accredito e pagamento. L’utile fiscale esclude l’IVA; i versamenti IVA sono separati dai costi.'}</span>
@@ -327,7 +331,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 {/*{mode === 'overall' ? <p className="muted">IVA riferita ai movimenti di cassa del periodo. Per il riepilogo per periodo contabile consulta la modalità Fiscale.</p> : null}*/}
                 {mode === 'overall' && periodType !== 'month' ? <Link
                     className="month-report-vat-detail-link"
-                    href={`/months/${year}/${month}?mode=fiscal${periodQuery}&returnTo=${encodeURIComponent(backHref)}#iva`}
+                    href={`/months/${year}/${month}?mode=fiscal${periodQuery}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}#iva`}
                 >Apri il prospetto IVA dettagliato in modalità Fiscale →</Link> : null}
             </section>
             <section className="card month-report-section"><h3>{mode === 'fiscal' ? 'Indicatori fiscali' : 'Composizione dei movimenti'}</h3>
@@ -376,6 +380,8 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             period={{type: periodType, quarter, mode, returnTo: currentReportHref}}/> : null}
         {mode === 'fiscal' && periodType !== 'month' && reportPeriods.length > 0 ? <PeriodVatOverview
             months={report.monthlyBreakdown}
+            includeCurrentMonth={includeCurrentMonth}
+            returnTo={currentReportHref}
             periodType={periodType}
         /> : null}
     </div>;

@@ -20,13 +20,17 @@ function monthLabel(month: number) {
   return `${label.charAt(0).toUpperCase()}${label.slice(1)}`;
 }
 
-function periodHref(path: '/expenses' | '/incomes', from: MonthVatData, to: MonthVatData) {
+function periodHref(path: '/expenses' | '/incomes', from: MonthVatData, to: MonthVatData, includeCurrentMonth: boolean, returnTo?: string) {
   const query = new URLSearchParams({mode: 'fiscal'});
   if (from.month !== to.month) query.set('period', 'quarter');
+  if (includeCurrentMonth) query.set('includeCurrentMonth', '1');
+  if (returnTo) query.set('returnTo', returnTo);
   return `/months/${from.year}/${from.month}?${query}#report-${path === '/expenses' ? 'expense' : 'income'}-movements`;
 }
 
-export default function PeriodVatOverview({months, periodType}: {months: MonthVatData[]; periodType: 'quarter' | 'year'}) {
+export default function PeriodVatOverview({months, periodType, includeCurrentMonth = false, returnTo}: {
+  months: MonthVatData[]; periodType: 'quarter' | 'year'; includeCurrentMonth?: boolean; returnTo?: string;
+}) {
   const sourceRows = periodType === 'quarter'
     ? months.map(item => ({
         key: `${item.year}-${item.month}`, label: monthLabel(item.month), from: item, to: item,
@@ -100,7 +104,7 @@ export default function PeriodVatOverview({months, periodType}: {months: MonthVa
           <div className="is-settled"><span>IVA liquidata</span><strong>{euro(row.settled)}</strong></div>
         </div>
         <footer>
-          <nav aria-label={`Movimenti ${row.label}`}><Link href={periodHref('/incomes', row.from, row.to)}>Vedi incassi</Link><Link href={periodHref('/expenses', row.from, row.to)}>Vedi spese</Link></nav>
+          <nav aria-label={`Movimenti ${row.label}`}><Link href={periodHref('/incomes', row.from, row.to, includeCurrentMonth, returnTo)}>Vedi incassi</Link><Link href={periodHref('/expenses', row.from, row.to, includeCurrentMonth, returnTo)}>Vedi spese</Link></nav>
           <div><span>Progressivo</span><strong className={moneyTone(row.progressive)}>{euro(row.progressive)}</strong></div>
         </footer>
       </article>)}
