@@ -33,7 +33,7 @@ function syncDirectActionGroup(group: HTMLElement) {
   const bar = group.closest<HTMLElement>(".bulk-actions-bar");
   const edit = group.querySelector<HTMLAnchorElement>("[data-bulk-edit]");
   const copy = bar?.querySelector<HTMLElement>("[data-bulk-copy]");
-  const del = group.querySelector<HTMLButtonElement>("[data-bulk-delete]");
+  const shortcuts = group.querySelectorAll<HTMLButtonElement>("[data-bulk-shortcut]");
   const payment = group.querySelector<HTMLButtonElement>("[data-bulk-add-payment]");
   const credit = group.querySelector<HTMLButtonElement>("[data-bulk-add-credit]");
   const singleEnabled = selected === 1;
@@ -96,13 +96,22 @@ function syncDirectActionGroup(group: HTMLElement) {
     else credit.removeAttribute("data-income-credit-id");
   }
 
-  if (del) del.disabled = !anyEnabled;
+  shortcuts.forEach(button => {
+    button.disabled = !anyEnabled;
+    button.classList.toggle("is-disabled", !anyEnabled);
+  });
+  bar?.querySelectorAll<HTMLButtonElement>("[data-bulk-action-proxy]").forEach(button => {
+    const selector = button.dataset.bulkActionProxy;
+    const source = selector ? group.querySelector<HTMLElement>(selector) : null;
+    button.disabled = !source || source.matches(':disabled, [aria-disabled="true"], .is-disabled');
+  });
 }
 
 function buildFloatingButton(original: HTMLElement, label: string, icon: string, className = "", iconClassName = "") {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = `floating-bulk-button ${className}`.trim();
+  const responsiveClasses = ["hidden-xs-down", "hidden-sp-down"].filter(name => original.classList.contains(name));
+  button.className = `floating-bulk-button ${className} ${responsiveClasses.join(" ")}`.trim();
   button.setAttribute("aria-label", label);
   const sicon = document.createElement("span");
   if (icon) sicon.textContent = icon;
@@ -334,15 +343,17 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     const trigger = document.createElement("button");
     trigger.type = "button";
     trigger.className = "floating-bulk-button floating-bulk-menu-trigger";
-    // trigger.innerHTML = `<span class="btn-icon">⚙</span><span><span class="floating-bulk-label">Bulk </span>Actions</span><span class="floating-bulk-caret">▾</span>`;
+    trigger.setAttribute("aria-label", "Azioni multiple");
 
     const caret = document.createElement("span");
     caret.className = "floating-bulk-caret";
     caret.textContent = "▾";
     const icon = document.createElement("span");
     icon.className = "btn-icon";
+    icon.setAttribute("aria-hidden", "true");
     icon.textContent = "⚙";
     const label = document.createElement("span");
+    label.className = "hidden-xs-down";
     const hLabel = document.createElement("span");
     hLabel.textContent = "Bulk ";
     hLabel.className = "floating-bulk-label";
@@ -388,15 +399,17 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   const directCopy = sourceBar.querySelector<HTMLElement>("[data-bulk-direct-actions] [data-bulk-copy]");
   const payment = sourceBar.querySelector<HTMLElement>("[data-bulk-add-payment]");
   const credit = sourceBar.querySelector<HTMLElement>("[data-bulk-add-credit]");
-  const del = sourceBar.querySelector<HTMLElement>("[data-bulk-delete]");
+
   const newItem = sourceBar.querySelector<HTMLElement>("[data-bulk-new], [data-expense-new]");
   const filter = sourceBar.querySelector<HTMLElement>("[data-bulk-filter]");
 
   if (edit) actionTarget.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
-  if (directCopy) actionTarget.appendChild(buildFloatingButton(directCopy, "Copia", "⧉", "floating-bulk-copy"));
   if (payment) actionTarget.appendChild(buildFloatingButton(payment, "Inserisci pagamento", "€", "floating-bulk-payment"));
   if (credit) actionTarget.appendChild(buildFloatingButton(credit, "Inserisci accredito", "€", "floating-bulk-credit"));
-  if (del) actionTarget.appendChild(buildFloatingButton(del, del.getAttribute("data-floating-label") ?? "Elimina", del.getAttribute("data-floating-icon") ?? "🗑", "floating-bulk-delete hidden-xs-down", "icon-small"));
+  if (directCopy) actionTarget.appendChild(buildFloatingButton(directCopy, "Copia", "⧉", "floating-bulk-copy"));
+  sourceBar.querySelectorAll<HTMLElement>("[data-bulk-shortcut]").forEach(source => {
+    actionTarget.appendChild(buildFloatingButton(source, source.dataset.floatingLabel ?? "Azione", source.dataset.floatingIcon ?? "", `floating-bulk-shortcut${source.classList.contains("hidden-xs-down") ? " hidden-xs-down" : ""}`));
+  });
   if (newItem) {
     const newItemWrap = document.createElement("div");
     const label = newItem.getAttribute("data-floating-label") ?? "Aggiungi spesa";
@@ -417,7 +430,7 @@ function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
   const sourceDirectCopy = sourceBar.querySelector<HTMLElement>("[data-bulk-direct-actions] [data-bulk-copy]");
   const sourcePayment = sourceBar.querySelector<HTMLButtonElement>("[data-bulk-add-payment]");
   const sourceCredit = sourceBar.querySelector<HTMLButtonElement>("[data-bulk-add-credit]");
-  const sourceDel = sourceBar.querySelector<HTMLButtonElement>("[data-bulk-delete]");
+
   const sourceSelectAll = sourceBar.querySelector<HTMLInputElement>(".bulk-select-all-inline .bulk-select-all");
   const floatingSelectAll = floating.querySelector<HTMLInputElement>(".floating-bulk-select-all-inline input");
 
@@ -450,9 +463,13 @@ function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
     floatingCredit.classList.toggle("is-disabled", Boolean(sourceCredit?.disabled));
   }
 
-  floating
-    .querySelector(".floating-bulk-delete")
-    ?.classList.toggle("is-disabled", Boolean(sourceDel?.disabled));
+  const shortcuts = sourceBar.querySelectorAll<HTMLButtonElement>("[data-bulk-shortcut]");
+  floating.querySelectorAll<HTMLButtonElement>(".floating-bulk-shortcut").forEach((button, index) => {
+    button.disabled = Boolean(shortcuts[index]?.disabled);
+    button.classList.toggle("is-disabled", button.disabled);
+  });
+
+
 }
 
 export default function BulkSelectionController() {
@@ -505,10 +522,25 @@ export default function BulkSelectionController() {
         const listCard = bar.closest<HTMLElement>(".record-list-card");
         const cardRect = listCard?.getBoundingClientRect();
         const hasScrollableArea = cardRect ? cardRect.bottom > 120 && cardRect.top < window.innerHeight - 80 : true;
-        const shouldShow = rect.bottom < 0 && hasScrollableArea;
+        const mobileView = window.matchMedia("(max-width: 760px)").matches
+          ? bar.closest<HTMLElement>(".mobile-record-views") : null;
+        const viewHidden = mobileView?.dataset.listOpen === "false";
+        const header = mobileView?.querySelector<HTMLElement>(".mobile-record-list-header");
+        const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+        // The list title and close button remain above the floating actions.
+        if (header) floating.style.top = `${headerBottom}px`;
+        else floating.style.removeProperty("top");
+        const shouldShow = !viewHidden && rect.bottom < headerBottom && hasScrollableArea;
 
         floating.classList.toggle("is-visible", shouldShow);
         floating.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+        floating.inert = !shouldShow;
+        if (!shouldShow) {
+          floating.querySelectorAll<HTMLElement>(".floating-bulk-menu-wrap.is-open").forEach(menu => {
+            menu.classList.remove("is-open");
+            menu.querySelector("[aria-expanded]")?.setAttribute("aria-expanded", "false");
+          });
+        }
       });
     };
 
@@ -541,6 +573,16 @@ export default function BulkSelectionController() {
         event.preventDefault();
         event.stopPropagation();
         openBulkActionModal(bulkActionMenu);
+        return;
+      }
+
+      const proxy = target.closest<HTMLButtonElement>("[data-bulk-action-proxy]");
+      if (proxy) {
+        event.preventDefault();
+        if (proxy.disabled) return;
+        const group = proxy.closest(".bulk-actions-bar")?.querySelector("[data-bulk-direct-actions]");
+        const source = proxy.dataset.bulkActionProxy ? group?.querySelector<HTMLElement>(proxy.dataset.bulkActionProxy) : null;
+        source?.click();
         return;
       }
 
@@ -640,6 +682,7 @@ export default function BulkSelectionController() {
     document.addEventListener("keydown", onKeyDown);
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
     window.addEventListener("resize", onScrollOrResize);
+    window.addEventListener("record-view-change", onScrollOrResize);
 
     const frame = window.requestAnimationFrame(() => {
       syncBulkControls();
@@ -655,6 +698,7 @@ export default function BulkSelectionController() {
       document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
+      window.removeEventListener("record-view-change", onScrollOrResize);
       document.querySelectorAll(".floating-bulk-actions-bar").forEach((bar) => bar.remove());
       closeBulkActionModal();
     };

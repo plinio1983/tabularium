@@ -1,3 +1,4 @@
+import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
 import {parseIncomeTask, matchesIncomeTask, incomeTaskLabels} from '@/lib/dashboard-tasks';
 import Link from 'next/link';
@@ -569,7 +570,9 @@ export default async function IncomesPage({searchParams}: {
     stripFlashSearchParams(currentQuery);
     const currentQueryString = currentQuery.toString();
     const listHref = `/incomes${currentQueryString ? `?${currentQueryString}` : ''}`;
-    const returnTo = encodeURIComponent(listHref);
+    const mobileListQuery = new URLSearchParams(currentQuery);
+    mobileListQuery.set('mobileList', '1');
+    const returnTo = encodeURIComponent(`/incomes?${mobileListQuery}`);
     const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod') || inputDefault(filters, 'billingPeriodQuick'));
     const hasCreditDateFilter = Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo') || inputDefault(filters, 'dateQuick'));
     const dateYearFilter = inputDefault(filters, 'dateYear');
@@ -652,6 +655,7 @@ export default async function IncomesPage({searchParams}: {
         Object.entries(extraFilters).forEach(([key, value]) => {
             if (value) query.set(key, value);
         });
+        query.set('mobileList', '1');
         const queryString = query.toString();
         return `/incomes${queryString ? `?${queryString}` : ''}`;
     };
@@ -884,6 +888,7 @@ export default async function IncomesPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
+        <MobileRecordViews kind="income" title="Lista incassi" count={standardFilteredIncomes.length + cashRegisterGroups.length} summary={<>
         {pendingTask ? <div className="card pending-list-banner" role="status">
             <div><strong>Da gestire · {incomeTaskLabels[pendingTask]}</strong><p className="muted">Tutti i periodi, salvo ulteriori filtri selezionati.</p></div>
             <Link className="btn btn-sm btn-default" href="/incomes">Rimuovi filtro pendenze</Link>
@@ -980,14 +985,16 @@ export default async function IncomesPage({searchParams}: {
             {/*    <IncomePieBreakdownChart title="Incassi per canale di vendita" data={incomesBySalesChannel}/>*/}
             {/*</div>*/}
         </div>
+        </>}>
         <div className="card record-list-card">
-            <div className="list-heading recurring-list-heading">
+            <div className="list-heading recurring-list-heading mobile-record-list-header">
                 <div>
                     <h2>Lista incassi</h2>
                     <p className="muted record-list-results-summary">
                         <span>Risultati mostrati: {standardFilteredIncomes.length + cashRegisterGroups.length}</span>
                     </p>
                 </div>
+                <MobileRecordCloseButton/>
             </div>
 
             <LiveSearch name="customerQuick" label="Ricerca incasso" placeholder="Cliente o descrizione"/>
@@ -1118,6 +1125,7 @@ export default async function IncomesPage({searchParams}: {
                 emptyMessage="Nessun incasso trovato con i filtri selezionati."
             />
         </div>
+        </MobileRecordViews>
         {/*<div className="card record-list-card">*/}
         {/*  <div className="charts-grid">*/}
         {/*    <IncomePieBreakdownChart title="Entrate per canale di vendita" data={incomesBySalesChannel} />*/}

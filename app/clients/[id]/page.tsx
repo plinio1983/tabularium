@@ -1,3 +1,4 @@
+import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import DetailActionsBar from '@/components/DetailActionsBar';
 import {notFound} from 'next/navigation';
 import {requireWorkspace} from '@/lib/auth';
@@ -65,13 +66,14 @@ export default async function ClientDetailPage({params, searchParams}: {
     const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
     const annualIncomes = customer.incomes.filter(income => income.billingYear === currentYear);
     const annualTotal = annualIncomes.reduce((sum, income) => sum + Number(income.amount), 0);
-    const returnTo = encodeURIComponent(`/clients/${customer.id}`);
+    const returnTo = encodeURIComponent(`/clients/${customer.id}?${new URLSearchParams({mobileList: '1', returnTo: backHref})}`);
     const {standardIncomes: listedIncomes, cashRegisterGroups} = prepareIncomeList(customer.incomes);
 
     return <div className="grid record-detail-page party-detail-page">
         <ClientEditModalController salesChannels={salesChannels}/>
+        <MobileRecordViews kind="income" title="Incassi collegati" linkLabel="Visualizza incassi collegati" count={listedIncomes.length + cashRegisterGroups.length} summary={<>
         <div className="record-detail-shell">
-            <div className="record-detail-action-row record-detail-responsive-actions pt-0">
+            <div className="record-detail-action-row record-detail-responsive-actions">
                 <div className="left-side"><DetailBackButton href={backHref}/></div>
                 {!customer.systemRole ? <div className="right-side">
                     <DetailActionsBar
@@ -122,16 +124,19 @@ export default async function ClientDetailPage({params, searchParams}: {
                 </details>
             </article>
         </div>
+        </>}>
         <div className="card record-list-card">
-            <div className="list-heading">
+            <div className="list-heading mobile-record-list-header">
                 <div><h2>Incassi collegati</h2>
                     <p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p>
                 </div>
+                <MobileRecordCloseButton/>
             </div>
             <IncomesList timeZone={current.company.timeZone} incomes={listedIncomes} cashRegisterGroups={cashRegisterGroups} returnTo={returnTo} banks={orderBanks(banks).map(bank => ({
                 ...bank,
                 isPrimary: bank.id === current.company.primaryBankId
             }))} paymentMethods={orderPaymentMethods(paymentMethods, 'INCOME')} salesChannels={salesChannels} customers={customers} initialCustomerId={customer.id} hideCustomer emptyMessage="Nessun incasso collegato a questo cliente."/>
         </div>
+        </MobileRecordViews>
     </div>;
 }

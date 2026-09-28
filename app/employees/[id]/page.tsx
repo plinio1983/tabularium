@@ -1,3 +1,4 @@
+import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import DetailActionsBar from '@/components/DetailActionsBar';
 import {notFound} from 'next/navigation';
@@ -79,7 +80,7 @@ export default async function EmployeeDetailPage({params, searchParams}: {
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
     const employeeDetailHref = `/employees/${employee.id}`;
-    const encodedEmployeeDetailHref = encodeURIComponent(employeeDetailHref);
+    const encodedEmployeeDetailHref = encodeURIComponent(`${employeeDetailHref}?${new URLSearchParams({mobileList: '1', returnTo: back})}`);
     const categoryOptions = orderedCategories.map(category => ({
         id: category.id,
         code: category.code,
@@ -128,8 +129,9 @@ export default async function EmployeeDetailPage({params, searchParams}: {
         expenseType: 'PAYROLL',
         employeeId: employee.id
     }} initialOpen={(Array.isArray(query.new) ? query.new[0] : query.new) === '1'} showToolbar={false}/>
+        <MobileRecordViews kind="expense" title="Spese collegate" linkLabel="Visualizza spese collegate" count={employee.expenses.length} summary={<>
         <div className="record-detail-shell">
-            <div className="record-detail-action-row record-detail-responsive-actions pt-0">
+            <div className="record-detail-action-row record-detail-responsive-actions">
                 <div className="left-side"><DetailBackButton href={back}/></div>
                 <div className="right-side">
                     <DetailActionsBar controls={<EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>}
@@ -179,12 +181,15 @@ export default async function EmployeeDetailPage({params, searchParams}: {
                 </details>
             </article>
         </div>
+        </>}>
         <div className="card record-list-card">
-            <div className="list-heading">
+            <div className="list-heading mobile-record-list-header">
                 <div><h2>Spese collegate</h2><p className="muted">Risultati mostrati: {employee.expenses.length}</p>
                 </div>
+                <MobileRecordCloseButton/>
             </div>
             <ExpensesList timeZone={current.company.timeZone} expenses={employee.expenses} returnTo={encodedEmployeeDetailHref} showSupplierColumn={false} selectable formId="employeeExpenseBulkForm" categories={categoryOptions} banks={bankOptions} paymentMethods={paymentMethodOptions} suppliers={supplierOptions} employees={employeeOptions} mobileLabel="Spese collegate al dipendente" emptyMessage="Nessuna spesa collegata a questo dipendente."/>
         </div>
+        </MobileRecordViews>
     </div>;
 }

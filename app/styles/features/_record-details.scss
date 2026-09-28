@@ -142,7 +142,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 2px;
+  padding: 4px 2px;
   border: 1px solid rgba(226, 232, 240, .95);
   background: rgba(255, 255, 255, .97);
   box-shadow: 3px -1px 25px rgba(15, 23, 42, .20);
@@ -168,10 +168,10 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   justify-content: center;
   gap: 7px;
   //padding: 12px;
-  border: 1px solid #b7bccc;
+  border: 1px solid #cfd7ff;
   border-radius: 999px;
   background: #fff;
-  color: var(--accent);
+  color: var(--text);
   font-size: 12px;
   font-weight: 850;
   line-height: 1;
@@ -180,6 +180,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
 }
 
 .floating-bulk-filter {
+  color: var(--accent);
   border-color: #cfd7ff;
 }
 
@@ -210,6 +211,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
 }
 
 .floating-bulk-menu-trigger {
+  border-color: #b7bccc;
   color: var(--text);
   padding: 12px;
 }
@@ -702,7 +704,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 0 0 6px;
+    padding: 6px 0;
   }
 }
 
@@ -2767,5 +2769,69 @@ body.invoice-attachments-modal-open {
 
       > .detail-action-item:nth-child(n) { display: block; }
     }
+  }
+}
+
+// These action bars use the mobile layout up to 760px.
+@media (max-width: 760px) {
+  .bulk-action-trigger > .hidden-xs-down,
+  .floating-bulk-menu-trigger > .hidden-xs-down {
+    display: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .bulk-action-trigger .btn-icon,
+  .floating-bulk-menu-trigger .btn-icon {
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .floating-bulk-menu-trigger > .floating-bulk-caret {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: auto;
+    font-size: 12px;
+    line-height: 1;
+    color: inherit;
+  }
+}
+
+.floating-bulk-button-group .floating-bulk-menu-trigger {
+  border-color: #cfd7ff;
+}
+
+.floating-bulk-menu-trigger.is-disabled {
+  color: var(--text);
+}
+
+// Close the group after its last visible action as shortcuts move into the menu.
+@media (min-width: 449px) and (max-width: 576px) {
+  .grouped-bulk-actions-bar .bulk-direct-actions > :is([data-bulk-add-payment], [data-bulk-add-credit]),
+  .floating-bulk-button-group > :is(.floating-bulk-payment, .floating-bulk-credit) {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+}
+
+@media (max-width: 448px) {
+  .grouped-bulk-actions-bar .bulk-direct-actions:has([data-bulk-add-payment], [data-bulk-add-credit]) > [data-bulk-edit],
+  .floating-bulk-button-group:has(.floating-bulk-payment, .floating-bulk-credit) > .floating-bulk-edit {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+}
+
+// Apply the same responsive limits directly to the floating expense/income bars.
+@media (max-width: 576px) {
+  .floating-bulk-actions-bar:has(.floating-bulk-payment, .floating-bulk-credit) .floating-bulk-copy {
+    display: none !important;
+  }
+}
+
+@media (max-width: 448px) {
+  .floating-bulk-actions-bar :is(.floating-bulk-payment, .floating-bulk-credit) {
+    display: none !important;
   }
 }

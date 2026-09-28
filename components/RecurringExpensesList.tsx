@@ -295,10 +295,11 @@ export default function RecurringExpensesList({
             </label>
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
-                    <summary className="bulk-action-trigger">
-                        <span className="btn-icon hidden-xs-down">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
+                    <summary className="bulk-action-trigger" aria-label="Azioni multiple">
+                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Actions</span><span className="hidden-sm-down hidden-xs-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
+                        <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction" value="delete" data-confirm-label="Elimina"><span className="btn-icon">🗑</span><span>Elimina selezionati</span></button>
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="activate" data-confirm-label="Attiva selezionate">ON · Attiva selezionate</button>
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="deactivate" data-confirm-label="Disattiva selezionate">OFF · Disattiva selezionate</button>
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
@@ -319,10 +320,7 @@ export default function RecurringExpensesList({
                 </details>
                 <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="recurringExpenseBulkForm" data-bulk-multi-edit="true" data-bulk-edit-event="true" data-edit-base="/recurring-expenses/" data-edit-suffix="" data-edit-trigger-attr="data-recurring-expense-detail-edit-id" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-sp-down" name="bulkAction" value="delete" data-bulk-delete data-confirm-label="Elimina" disabled>
-                        <span className="btn-icon icon-small">🗑</span>
-                        <span className="hidden-sm-down">Elimina</span>
-                    </button>
+                    <button type="submit" className="bulk-direct-link is-disabled hidden-sp-down" name="bulkAction" value="deactivate" data-bulk-shortcut data-floating-label="Disattiva" data-floating-icon="⏻" data-confirm-label="Disattiva" disabled><span className="btn-icon">⏻</span><span className="hidden-sm-down">Disattiva</span></button>
                 </div>
             </div>
             <div className="bulk-inner-container">

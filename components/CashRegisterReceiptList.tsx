@@ -87,12 +87,12 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
             </label>
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
-                    <summary className="bulk-action-trigger">
-                        <span className="btn-icon hidden-xs-down">⚙</span><span className="hidden-sm-up">Actions</span><span className="hidden-sm-down">Bulk actions</span>
+                    <summary className="bulk-action-trigger" aria-label="Azioni multiple">
+                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Actions</span><span className="hidden-sm-down hidden-xs-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv" formAction="/api/exports/receipts" formMethod="post" data-confirm-label="Esporta CSV">⇩ Esporta CSV</button>
-                        <button className="btn btn-sm btn-option danger-menu-item bulk-menu-mobile-delete" type="submit" name="bulkAction" value="delete">
+                        <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction" value="delete">
                             <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
                         </button>
                     </div>
@@ -111,10 +111,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
                         <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
                     </a>
-                    <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down"
-                            name="bulkAction" value="delete" data-bulk-delete disabled>
-                        <span className="btn-icon icon-small">🗑</span><span className="bulk-label">Elimina</span>
-                    </button>
+                    <button type="submit" className="bulk-direct-link is-disabled hidden-xs-down" name="bulkAction" value="export_csv" data-bulk-shortcut data-floating-label="Esporta CSV" data-floating-icon="⇩" data-confirm-label="Esporta CSV" formAction="/api/exports/receipts" formMethod="post" disabled><span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span></button>
                 </div>
             </div>
             <div className="bulk-inner-container">

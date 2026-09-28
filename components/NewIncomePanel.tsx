@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {createPortal} from "react-dom";
 import IncomeCreationSwitcher from '@/components/IncomeCreationSwitcher';
 import { flashParamNames } from '@/lib/flash';
 
@@ -20,6 +21,8 @@ export default function NewIncomePanel({ initialOpen = false, initialType = 'sin
   initialCustomerId?: number;
 }) {
   const [isOpen, setIsOpen] = useState(initialOpen);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [creationType, setCreationType] = useState<'single' | 'recurring'>(initialType);
   const [creationKey, setCreationKey] = useState(0);
   const [returnAction, setReturnAction] = useState('/api/incomes');
@@ -63,7 +66,7 @@ export default function NewIncomePanel({ initialOpen = false, initialType = 'sin
         </button>
       </div> : null}
 
-      {isOpen ? <div className="modal-backdrop app-form-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={modalCopy.title} onMouseDown={() => setIsOpen(false)}>
+      {isOpen && mounted ? createPortal(<div className="modal-backdrop app-form-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={modalCopy.title} onMouseDown={() => setIsOpen(false)}>
         <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
           <div className="modal-title">
             <div>
@@ -74,7 +77,7 @@ export default function NewIncomePanel({ initialOpen = false, initialType = 'sin
           </div>
           <IncomeCreationSwitcher key={creationKey} initialType={creationType} onTypeChange={setCreationType} initialIncome={initialCustomerId ? { customerId: initialCustomerId } : undefined} incomeAction={returnAction} recurringAction={returnAction.replace('/api/incomes', '/api/recurring-incomes')} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} />
         </div>
-      </div> : null}
+      </div>, document.body) : null}
     </div>
   );
 }

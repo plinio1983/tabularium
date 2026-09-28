@@ -121,8 +121,8 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le entrate ricorrenti visibili"/></label>
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
-                    <summary className="bulk-action-trigger">
-                        <span className="btn-icon hidden-xs-down">⚙</span><span className="hidden-sm-up">Azioni</span><span className="hidden-sm-down">Bulk actions</span>
+                    <summary className="bulk-action-trigger" aria-label="Azioni multiple">
+                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Bulk actions</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="activate" data-confirm-label="Attiva selezionate">ON · Attiva selezionate</button>
@@ -132,7 +132,7 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
                 </details>
                 <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-bulk-edit-event="true" data-edit-base="/recurring-incomes/" data-edit-suffix="/edit" data-edit-trigger-attr="data-recurring-income-edit-id" data-return-to={returnTo}>
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <button type="submit" className="bulk-direct-link hidden-xs-down" name="bulkAction" value="deactivate" data-bulk-delete data-confirm-label="Disattiva" data-floating-label="Disattiva" data-floating-icon="⏻" disabled>
+                    <button type="submit" className="bulk-direct-link hidden-xs-down" name="bulkAction" value="deactivate" data-bulk-shortcut data-confirm-label="Disattiva" data-floating-label="Disattiva" data-floating-icon="⏻" disabled>
                         <span className="btn-icon icon-small">⏻</span><span className="hidden-sm-down">Disattiva</span>
                     </button>
                 </div>

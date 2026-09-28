@@ -1607,10 +1607,6 @@ export default async function Dashboard({searchParams}: {
             showToolbar={false}
         />
         <div className="dashboard-actions toolbar-card dashboard-header-card">
-            <div className="dashboard-title-block">
-                <h2>Dashboard</h2>
-                <p className="muted">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
-            </div>
             <div className="actions-row dashboard-top-actions">
                 <ExpenseNewTriggerButton className="btn btn-sm btn-primary"><span
                     className="btn-icon">＋</span> Spesa

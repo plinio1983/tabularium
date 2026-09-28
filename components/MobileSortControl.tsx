@@ -1,5 +1,7 @@
 "use client";
 
+import {useSearchParams} from "next/navigation";
+
 type MobileSortOption = {
   value: string;
   label: string;
@@ -20,14 +22,17 @@ function optionLabel(option: MobileSortOption) {
 }
 
 export default function MobileSortControl({ action, currentValue, options, searchParams }: Props) {
+  const liveParams = useSearchParams();
+  const keepListOpen = (action === '/expenses' || action === '/incomes') && liveParams.get('mobileList') === '1';
   const selectedValue = options.some(option => option.value === currentValue) ? currentValue : options[0]?.value ?? '';
   const hiddenParams = Object.entries(searchParams).flatMap(([key, value]) => {
-    if (key === 'mobileSort' || key === 'saved' || key === 'error' || key === 'usage') return [];
+    if (key === 'mobileList' || key === 'mobileSort' || key === 'saved' || key === 'error' || key === 'usage') return [];
     if (Array.isArray(value)) return value.filter(Boolean).map(item => [key, item] as const);
     return value ? [[key, value] as const] : [];
   });
 
   return <form className="mobile-sort-control" action={action}>
+    {keepListOpen ? <input type="hidden" name="mobileList" value="1"/> : null}
     {hiddenParams.map(([key, value], index) => <input type="hidden" name={key} value={value} key={`${key}-${index}`} />)}
     <label htmlFor={`${action.replace('/', '') || 'list'}MobileSort`}>Ordina per</label>
     <select id={`${action.replace('/', '') || 'list'}MobileSort`} name="mobileSort" defaultValue={selectedValue} aria-label="Ordina lista mobile" onChange={event => event.currentTarget.form?.requestSubmit()}>

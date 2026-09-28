@@ -981,17 +981,7 @@
   background: rgba(180, 35, 24, 0.08);
 }
 
-.bulk-menu-mobile-delete {
-  display: none !important;
-}
 
-@media (max-width: 576px) {
-  .bulk-action-menu-panel .bulk-menu-mobile-delete,
-  .floating-bulk-menu-panel .bulk-menu-mobile-delete,
-  .bulk-action-modal-actions .bulk-menu-mobile-delete {
-    display: flex !important;
-  }
-}
 
 
 /* v59 - bulk menu, collapsible filters, expense table refinements */
@@ -2209,6 +2199,7 @@ body.bulk-attachments-modal-open {
 .modal-close-button {
   width: 34px;
   height: 34px;
+  min-height: 34px;
   min-width: 34px;
   max-width: 34px;
   padding: 0;
@@ -3145,7 +3136,7 @@ button.bulk-direct-danger {
 }
 
 @media (max-width: 768px) {
-  .floating-bulk-button-group > .floating-bulk-copy {
+  .floating-bulk-button-group > .floating-bulk-copy:last-child {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }

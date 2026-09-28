@@ -369,10 +369,10 @@ export default async function MonthPage({params, searchParams}: { params: Promis
             isCurrentMonth={year === currentYear && month === currentMonth}
         /> : null}
         {reportPeriods.length > 0 ? <nav className="month-report-record-links" aria-label={`Movimenti ${periodTitle}`}>
-            <Link className="card month-report-record-link is-expense" href={`/expenses?${recordListQuery}`}>
+            <Link className="card month-report-record-link is-expense" href={`/expenses?${recordListQuery}&mobileList=1`}>
                 <span>Spese {periodTitle}</span><strong aria-hidden="true">→</strong>
             </Link>
-            <Link className="card month-report-record-link is-income" href={`/incomes?${recordListQuery}`}>
+            <Link className="card month-report-record-link is-income" href={`/incomes?${recordListQuery}&mobileList=1`}>
                 <span>Incassi {periodTitle}</span><strong aria-hidden="true">→</strong>
             </Link>
         </nav> : null}

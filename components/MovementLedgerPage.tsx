@@ -130,14 +130,6 @@ export default async function MovementLedgerPage({kind, searchParams}: {
                 <div><span>Movimenti</span><strong>{summary.count}</strong></div>
                 <div><span>Importo medio</span><strong>{euro(summary.count ? total / summary.count : 0)}</strong></div>
             </div>
-        </section>
-        <div className="ledger-breakdowns">
-            <Breakdown title="Per metodo" rows={breakdown('method')} total={total}/><Breakdown title="Per banca / conto" rows={breakdown('bank')} total={total}/>
-        </div>
-        <section className="card ledger-list">
-            <div className="ledger-list-header"><h3>Lista {title.toLowerCase()}</h3>
-                <div id="ledger-list-filter-trigger"/>
-            </div>
             <div className="recurring-active-filters">
                 <div>
                     <div className="flex justify-start align-start">
@@ -149,6 +141,14 @@ export default async function MovementLedgerPage({kind, searchParams}: {
                             <span className="badge" key={item.label}><strong>{item.label}:</strong> {item.value}</span>)}</div>
                     </div>
                 </div>
+            </div>
+        </section>
+        <div className="ledger-breakdowns">
+            <Breakdown title="Per metodo" rows={breakdown('method')} total={total}/><Breakdown title="Per banca / conto" rows={breakdown('bank')} total={total}/>
+        </div>
+        <section className="card ledger-list">
+            <div className="ledger-list-header"><h3>Lista {title.toLowerCase()}</h3>
+                <div id="ledger-list-filter-trigger"/>
             </div>
             <LiveSearch name="search" label={isPayment ? 'Cerca pagamento' : 'Cerca accredito'} placeholder="Nome, descrizione o numero del documento"/>
             <p className="muted">{summary.count ? `${(page - 1) * ledgerPageSize + 1}–${Math.min(page * ledgerPageSize, summary.count)} di ${summary.count}` : 'Nessun movimento per i filtri selezionati.'}</p>

@@ -1,3 +1,4 @@
+import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
 import {parseExpenseTask, matchesExpenseTask, expenseTaskLabels} from '@/lib/dashboard-tasks';
 import Link from 'next/link';
@@ -609,7 +610,9 @@ export default async function ExpensesPage({searchParams}: {
     stripFlashSearchParams(currentQuery);
     const currentQueryString = currentQuery.toString();
     const listHref = `/expenses${currentQueryString ? `?${currentQueryString}` : ''}`;
-    const returnTo = encodeURIComponent(listHref);
+    const mobileListQuery = new URLSearchParams(currentQuery);
+    mobileListQuery.set('mobileList', '1');
+    const returnTo = encodeURIComponent(`/expenses?${mobileListQuery}`);
     const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'period') || inputDefault(filters, 'billingPeriodQuick'));
     const hasOrderDateFilter = Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo') || inputDefault(filters, 'dateQuick'));
     const dateYearFilter = inputDefault(filters, 'dateYear');
@@ -698,6 +701,7 @@ export default async function ExpensesPage({searchParams}: {
         Object.entries(extraFilters).forEach(([key, value]) => {
             if (value) query.set(key, value);
         });
+        query.set('mobileList', '1');
         const queryString = query.toString();
         return `/expenses${queryString ? `?${queryString}` : ''}`;
     };
@@ -996,6 +1000,7 @@ export default async function ExpensesPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
+        <MobileRecordViews title="Lista spese" count={filteredExpenses.length} summary={<>
         {pendingTask ? <div className="card pending-list-banner" role="status">
             <div><strong>Da gestire · {expenseTaskLabels[pendingTask]}</strong><p className="muted">Tutti i periodi, salvo ulteriori filtri selezionati.</p></div>
             <Link className="btn btn-sm btn-default" href="/expenses">Rimuovi filtro pendenze</Link>
@@ -1093,15 +1098,16 @@ export default async function ExpensesPage({searchParams}: {
             {/*    <ExpenseCategoryPieChart data={expensesByCategory}/>*/}
             {/*</div>*/}
         </div>
+        </>}>
         <div className="card record-list-card --fixed">
-            <div className="list-heading recurring-list-heading">
+            <div className="list-heading recurring-list-heading mobile-record-list-header">
                 <div>
                     <h2>Lista spese</h2>
                     <p className="muted record-list-results-summary">
                         <span>Risultati mostrati: {filteredExpenses.length}</span>
                     </p>
                 </div>
-                {/*<Link className="btn btn-sm btn-default" href="/expenses/payments">Pagamenti</Link>*/}
+                <MobileRecordCloseButton/>
             </div>
 
             <LiveSearch name="supplierQuick" label="Ricerca spesa" placeholder="Fornitore, esercente, dipendente o descrizione"/>
@@ -1287,6 +1293,7 @@ export default async function ExpensesPage({searchParams}: {
                 emptyMessage="Nessuna spesa trovata con i filtri selezionati."
             />
         </div>
+        </MobileRecordViews>
         {/*<div className="card record-list-card">*/}
         {/*  <ExpenseCategoryChart data={expensesByCategory} />*/}
         {/*</div>*/}

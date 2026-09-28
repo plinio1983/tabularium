@@ -1,3 +1,4 @@
+import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import DetailActionsBar from '@/components/DetailActionsBar';
 import Link from 'next/link';
@@ -61,7 +62,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   }).filter(item => item.residual > 0);
   const amountToPay = openExpenses.reduce((sum, item) => sum + item.residual, 0);
   const supplierDetailHref = `/suppliers/${supplier.id}`;
-  const encodedSupplierDetailHref = encodeURIComponent(supplierDetailHref);
+  const encodedSupplierDetailHref = encodeURIComponent(`${supplierDetailHref}?${new URLSearchParams({mobileList: '1', returnTo})}`);
   const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
   const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
@@ -105,8 +106,9 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       initialOpen={(Array.isArray(query.new) ? query.new[0] : query.new) === '1'}
       showToolbar={false}
     />
-    <div className="record-detail-shell">
-        <div className="record-detail-action-row record-detail-responsive-actions pt-0">
+    <MobileRecordViews kind="expense" title="Spese collegate" linkLabel="Visualizza spese collegate" count={supplier.expenses.length} summary={<>
+        <div className="record-detail-shell">
+        <div className="record-detail-action-row record-detail-responsive-actions">
             <div className="left-side">
                 <DetailBackButton href={returnTo}/>
             </div>
@@ -219,12 +221,14 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
       </article>
     </div>
 
-    <div className="card record-list-card supplier-linked-expenses-list">
-      <div className="list-heading">
+    </>}>
+        <div className="card record-list-card supplier-linked-expenses-list">
+      <div className="list-heading mobile-record-list-header">
         <div>
           <h2>Spese collegate</h2>
           <p className="muted">Risultati mostrati: {supplier.expenses.length}</p>
         </div>
+        <MobileRecordCloseButton/>
       </div>
 
       <ExpensesList
@@ -242,5 +246,6 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         emptyMessage="Nessuna spesa collegata a questo fornitore."
       />
     </div>
+        </MobileRecordViews>
   </div>;
 }

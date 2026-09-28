@@ -270,12 +270,14 @@ export default function ExpensesList({
                 <div className="bulk-action-buttons btn-group">
                     <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu
                              data-bulk-form={formId}>
-                        <summary className="bulk-action-trigger">
-                            <span className="btn-icon hidden-xs-down">⚙</span>
-                            <span className="hidden-sm-up">Actions</span>
-                            <span className="hidden-sm-down">Bulk actions</span>
+                        <summary className="bulk-action-trigger" aria-label="Azioni multiple">
+                            <span className="btn-icon" aria-hidden="true">⚙</span>
+                            <span className="hidden-sm-up hidden-xs-down">Actions</span>
+                            <span className="hidden-sm-down hidden-xs-down">Bulk actions</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
+                        <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-copy]" disabled><span className="btn-icon">⧉</span><span>Copia</span></button>
+                        <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-add-payment]" disabled><span className="btn-icon">€</span><span>Inserisci pagamento</span></button>
                             <button className="btn btn-sm btn-option" type="submit" name="bulkAction"
                                     value="export_csv"
                                     formAction="/api/exports/expenses" formMethod="post"
@@ -287,12 +289,9 @@ export default function ExpensesList({
                                 <span className="btn-icon">✓</span><span
                                 className="hidden-sm-down">Fattura emessa</span>
                             </button>
-                            <button className="btn btn-sm btn-option is-disabled" type="button" data-bulk-copy
-                                    aria-disabled="true" disabled>
-                                <span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia spese selezionate</span>
-                            </button>
+
                             <BulkExpenseAttachmentsModal formId={formId}/>
-                            <button className="btn btn-sm btn-option danger-menu-item bulk-menu-mobile-delete"
+                            <button className="btn btn-sm btn-option danger-menu-item"
                                     type="submit"
                                     name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
                                 <span className="btn-icon">🗑</span><span
@@ -309,17 +308,12 @@ export default function ExpensesList({
                             <span className="btn-icon">✎</span>
                             <span className="hidden-sm-down">Modifica</span>
                         </a>
-                        <button type="button" className="bulk-direct-link is-disabled" data-bulk-add-payment
+                        <button type="button" className="bulk-direct-link is-disabled hidden-sp-down" data-bulk-add-payment
                                 aria-disabled="true" disabled>
                             <span className="btn-icon" aria-hidden="true">€</span>
                             <span className="hidden-sm-down">Inserisci pagamento</span>
                         </button>
-                        <button type="submit" className="bulk-direct-link bulk-direct-danger hidden-xs-down"
-                                name="bulkAction" value="delete"
-                                data-bulk-delete data-confirm-label="Elimina" disabled>
-                            <span className="btn-icon icon-small">🗑</span>
-                            <span className="hidden-sm-down">Elimina</span>
-                        </button>
+                        <button type="button" className="bulk-direct-link is-disabled hidden-xs-down" data-bulk-copy aria-disabled="true" disabled><span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia</span></button>
                     </div>
                 </div>
                 <div className="bulk-inner-container">

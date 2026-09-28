@@ -56,6 +56,7 @@ export default function LiveSearch({name, label, placeholder}: Props) {
     if (!storagePaths.has(pathname)) return;
     const storageKey = `dmsAccounting.${pathname.slice(1)}.filters`;
     const params = liveSearchParams(query, name, new URLSearchParams(query).get(name) ?? '');
+    params.delete('mobileList');
     const clean = params.toString();
     try {
       if (!restored.current) {
@@ -72,6 +73,8 @@ export default function LiveSearch({name, label, placeholder}: Props) {
           }
           if (saved) {
             const stored = new URLSearchParams(saved);
+            stored.delete('mobileList');
+            if (new URLSearchParams(query).get('mobileList') === '1') stored.set('mobileList', '1');
             const next = liveSearchParams(stored.toString(), name, stored.get(name) ?? '').toString();
             if (next) {
               startTransition(() => router.replace(`${pathname}?${next}`, {scroll: false}));
