@@ -702,7 +702,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 12px 0;
+    padding: 0 0 6px;
   }
 }
 
@@ -1823,7 +1823,7 @@ body.invoice-attachments-modal-open {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .mobile-record-title-row span {
@@ -2738,5 +2738,34 @@ body.invoice-attachments-modal-open {
     .detail-actions-inline > .detail-action-item:nth-child(3) { display: block; }
     .detail-actions-mobile-primary { display: none; }
     .detail-actions-bar[data-has-secondary="false"] > .detail-actions-menu { display: none; }
+  }
+}
+
+// Keep the employee status and navigation on one row before actions run out of room.
+@media (max-width: 760px) {
+  body:has(.employee-detail-page) .nav { display: none; }
+  body:has(.employee-detail-page) .shell { padding-top: 0; }
+
+  .employee-detail-page {
+    .record-detail-action-row { gap: 8px; }
+    .record-detail-action-row > .left-side { flex: 0 0 auto; }
+    .record-detail-action-row > .right-side { flex: 1 1 0; }
+
+    .detail-actions-bar {
+      width: 100%;
+      flex-wrap: nowrap;
+      gap: 8px;
+
+      > .detail-actions-controls { flex: 0 0 auto; }
+      > .detail-actions-menu { display: block; }
+    }
+
+    .detail-actions-inline { display: none; }
+    .detail-actions-mobile-primary {
+      display: grid;
+      gap: 6px;
+
+      > .detail-action-item:nth-child(n) { display: block; }
+    }
   }
 }
