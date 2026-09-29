@@ -694,14 +694,14 @@ body.drawer-open {
 .mobile-page-title {
   display: none;
 
-  @media (max-width: 576px) {
+  @media (max-width: 760px) {
     display: block;
     margin: 0;
     padding: 0 0 18px;
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 760px) {
   .cash-register-receipts-page .mobile-record-summary > .toolbar-card,
   .employees-page > .toolbar-card,
   .client-page-content > .toolbar-card,

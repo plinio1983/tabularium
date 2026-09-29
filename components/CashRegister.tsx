@@ -503,7 +503,7 @@ export default function CashRegister({
             {selectedMethod && mode === 'create' ?
                 <button className="cash-register-submit" type="button" disabled={sending || !hasValidAmount || !methodIsAvailable(selectedMethod)}
                         onClick={() => void submitReceipt()}>
-                    <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INCASSA'}
+                    <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> <span className="cash-register-submit-label">{sending ? 'Invio…' : 'INCASSA'}</span>
                 </button> : <>
                     {cashMethod ? <button type="button" disabled={!hasValidAmount}
                                           className={selectedMethodId === cashMethod.id ? 'is-selected' : ''}
@@ -596,7 +596,7 @@ export default function CashRegister({
                             disabled={sending || !hasValidAmount || !methodIsAvailable(selectedMethod)}
                             onFocus={() => setKeyboardConfirmationIndex(1)}
                             onClick={() => void submitReceipt()}>
-                        <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INCASSA'}
+                        <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> <span className="cash-register-submit-label">{sending ? 'Invio…' : 'INCASSA'}</span>
                     </button>
                 </section>}
                 {!selectedMethod ? <p className="cash-register-keyboard-hint">Usa le frecce per scegliere e premi Invio per selezionare.</p> : null}

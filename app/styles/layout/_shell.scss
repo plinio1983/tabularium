@@ -209,7 +209,7 @@
   display: none;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 760px) {
   .report-page-header .site-header-brand,
   .ledger-page-header .site-header-brand,
   .receipt-list-page-header .site-header-brand,
@@ -1714,7 +1714,7 @@ body:has(.admin-login-page) .app-footer {
 
 .company-mobile-header-actions { display: none; }
 
-@media (max-width: 576px) {
+@media (max-width: 760px) {
   .company-page-header {
     align-items: center;
     gap: 8px;

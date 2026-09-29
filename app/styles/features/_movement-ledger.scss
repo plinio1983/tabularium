@@ -208,9 +208,6 @@
   .movement-ledger-page {
     gap: 12px;
 
-    > .toolbar-card {
-      display: none;
-    }
 
     .ledger-breakdowns {
       gap: 12px;
@@ -223,5 +220,11 @@
     .ledger-list-header {
       margin-bottom: 12px;
     }
+  }
+}
+
+@media (max-width: 760px) {
+  .movement-ledger-page .mobile-record-summary > .toolbar-card {
+    display: none;
   }
 }

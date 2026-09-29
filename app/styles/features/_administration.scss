@@ -3716,10 +3716,6 @@ body:has(.dashboard-grid) {
 }
 
 @media (max-width: 576px) {
-  .company-settings-page > .toolbar-card .settings-hub-toolbar-actions {
-    display: none;
-  }
-
   .company-settings-details {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3773,5 +3769,11 @@ body:has(.dashboard-grid) {
     align-items: flex-start;
     justify-content: flex-start;
     gap: 6px;
+  }
+}
+
+@media (max-width: 760px) {
+  .company-settings-page > .toolbar-card {
+    display: none;
   }
 }

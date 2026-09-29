@@ -419,6 +419,13 @@
   line-height: 1;
 }
 
+.cash-register-actions .cash-register-submit .cash-register-submit-label {
+  align-self: stretch;
+  min-width: 0;
+  border: 0;
+  font-size: inherit;
+}
+
 .cash-register-actions button:disabled {
   opacity: .42;
   cursor: not-allowed;

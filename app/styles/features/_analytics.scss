@@ -5828,3 +5828,9 @@ html, body {
     }
   }
 }
+
+@media (max-width: 760px) {
+  .month-report-page .month-report-mode-toggle {
+    display: none;
+  }
+}
