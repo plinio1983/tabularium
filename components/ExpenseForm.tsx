@@ -1015,7 +1015,7 @@ export default function ExpenseForm({
                 <input type="hidden" name="isRecurring" value={isRecurring ? "true" : "false"}/>
                 <input type="hidden" name="expenseType" value={isVatSettlement ? "VAT_SETTLEMENT" : isTaxContribution ? "TAX_CONTRIBUTION" : isPayroll ? "PAYROLL" : "STANDARD"}/>
                 <ExpenseTypeChoice
-                    className="app-form-wizard-step app-form-wizard-step-1"
+                    className={`app-form-wizard-step app-form-wizard-step-1${isExistingExpense ? " hidden-md-up" : ""}`}
                     selected={isRecurring ? "recurring" : isVatSettlement ? "vat" : isTaxContribution ? "tax" : isPayroll ? "payroll" : "single"}
                     onSelect={selectExpenseType}
                     onSelectCounter={() => window.location.assign("/expenses/counter")}

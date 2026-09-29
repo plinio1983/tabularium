@@ -1,5 +1,7 @@
 'use client';
 
+import {MobileRecordCloseButton} from './MobileRecordViews';
+
 import Link from 'next/link';
 import {useCallback, useState, type MouseEvent, type ReactNode} from 'react';
 import CashRegisterReceiptDetailModal from '@/components/CashRegisterReceiptDetailModal';
@@ -68,8 +70,9 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
     const formId = 'cashRegisterReceiptBulkForm';
     const encodedReturnTo = encodeURIComponent(returnTo);
     return <div className="card record-list-card cash-register-receipt-list-card fixed">
-        <div className="list-heading recurring-list-heading">
+        <div className="list-heading recurring-list-heading mobile-record-list-header">
             <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
+            <MobileRecordCloseButton/>
         </div>
         {headerContent}
         <p className="muted">Esporta CSV dalle azioni dopo aver selezionato gli scontrini. La lista mostra al massimo 1.000 record: restringi il periodo per gli archivi più grandi.</p>

@@ -1,3 +1,4 @@
+import MobileRecordViews from '@/components/MobileRecordViews';
 import LiveSearch from '@/components/LiveSearch';
 import Link from 'next/link';
 import CashRegisterReceiptList from '@/components/CashRegisterReceiptList';
@@ -121,9 +122,20 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     if (methodId) returnQuery.set('paymentMethodId', String(methodId));
     if (channelId) returnQuery.set('salesChannelId', String(channelId));
     if (fiscal === 'yes' || fiscal === 'no') returnQuery.set('fiscal', fiscal);
+    returnQuery.set('mobileList', '1');
     const receiptListReturnTo = `/incomes/cash-register/receipts${returnQuery.size ? `?${returnQuery}` : ''}`;
 
+    const activeFiltersBox = <div className="recurring-active-filters">
+                    <div>
+                        <span className="recurring-active-filters-title">Filtri attivi</span>
+                        <div className="recurring-active-filter-tags">{activeFilters.map(item =>
+                            <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div>
+                    </div>
+                    <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes/cash-register/receipts"><span className="btn-icon">×</span> Reset</Link>
+                </div>;
+
     return <div className="grid cash-register-receipts-page">
+        <MobileRecordViews kind="income" title="Lista scontrini" linkLabel="Visualizza scontrini" count={receiptCount} summary={<>
         <div className="toolbar-card">
             <div><h2>Scontrini registratore</h2><p className="muted">{receiptCount} movimenti · {total.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'})}</p></div>
             <div className="toolbar-actions">
@@ -133,16 +145,11 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         </div>
         <CashRegisterReceiptTrendChart key={`${dateFrom}-${dateTo}-${annual}`} points={trend} annual={annual}
             periodSelector={<CashRegisterReceiptPeriodSelector key="receipt-period" dateQuick={period.quick} dateYear={String(billingYear)} years={years}/>}/>
+        <div className="receipt-summary-mobile-filters">{activeFiltersBox}</div>
+        </>}>
         <CashRegisterReceiptList
             headerContent={<>
-                <div className="recurring-active-filters">
-                    <div>
-                        <span className="recurring-active-filters-title">Filtri attivi</span>
-                        <div className="recurring-active-filter-tags">{activeFilters.map(item =>
-                            <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div>
-                    </div>
-                    <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes/cash-register/receipts"><span className="btn-icon">×</span> Reset</Link>
-                </div>
+                <div className="receipt-list-desktop-filters">{activeFiltersBox}</div>
                 <LiveSearch name="search" label="Ricerca scontrino" placeholder="Descrizione scontrino"/>
             </>}
             returnTo={receiptListReturnTo}
@@ -162,5 +169,6 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
                 paymentMethodIcon: receipt.paymentMethodRef.icon
             }))}
         />
+        </MobileRecordViews>
     </div>;
 }

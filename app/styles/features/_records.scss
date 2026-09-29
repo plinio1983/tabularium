@@ -702,7 +702,7 @@ body.drawer-open {
 }
 
 @media (max-width: 576px) {
-  .cash-register-receipts-page > .toolbar-card,
+  .cash-register-receipts-page .mobile-record-summary > .toolbar-card,
   .employees-page > .toolbar-card,
   .client-page-content > .toolbar-card,
   .supplier-page-content > .toolbar-card,
@@ -2777,5 +2777,16 @@ table th, table td {
 
   .movement-ledger-page .ledger-list-header {
     padding-right: 40px;
+  }
+}
+
+.receipt-summary-mobile-filters { display: none; }
+
+@media (max-width: 760px) {
+  .cash-register-receipts-page {
+    .receipt-list-desktop-filters { display: none; }
+    .receipt-summary-mobile-filters { display: block; }
+    .mobile-record-summary > .card,
+    .mobile-record-list-pane > .card { padding: 14px; }
   }
 }

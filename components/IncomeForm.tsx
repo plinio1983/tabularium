@@ -417,7 +417,7 @@ export default function IncomeForm({
 
             <IncomeTypeChoice
                 selected="single"
-                className="app-form-wizard-step app-form-wizard-step-1"
+                className={`app-form-wizard-step app-form-wizard-step-1${initialIncome?.id ? " hidden-md-up" : ""}`}
                 disabled={Boolean(initialIncome?.id)}
                 onSelect={type => type === "recurring" && onSwitchToRecurring?.()}
                 onSelectCounter={() => window.location.assign("/incomes/cash-register")}

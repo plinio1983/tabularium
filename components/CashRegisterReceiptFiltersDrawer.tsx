@@ -3,7 +3,7 @@
 import {useEffect, useId, useState, type ReactNode} from "react";
 import FilterDrawer from "./FilterDrawer";
 import EntityFormActions from "./EntityFormActions";
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import FilterIcon from "@/components/FilterIcon";
 
 import {periodOptions, isRollingPeriod} from '@/lib/period-selector';
@@ -58,11 +58,13 @@ export default function CashRegisterReceiptFiltersDrawer({
     const [open, setOpen] = useState(false);
     const formId = useId();
     const router = useRouter();
+    const params = useSearchParams();
 
     const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri report scontrini" panelClassName="record-filter-drawer-panel"
-      actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push('/incomes/cash-register/receipts');}}/>}>
+      actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push(`/incomes/cash-register/receipts${params.get('mobileList') === '1' ? '?mobileList=1' : ''}`);}}/>}>
       <form id={formId} className="record-filters recurring-drawer-filters record-styled-drawer-filters receipt-drawer-filters" action="/incomes/cash-register/receipts" method="get">
         <input type="hidden" name="search" value={search}/>
+        <input type="hidden" name="mobileList" value={params.get('mobileList') ?? ''}/>
         <fieldset className="filter-group cash-register-receipt-period-filter-group">
             <legend>Periodo</legend>
             <FilterField label="Periodo rapido" icon="▦">
