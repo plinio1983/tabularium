@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {matchesExpenseQuickSearch, matchesExpenseType} from '../lib/expense-list-filters';
+import {matchesExpenseMerchantSearch, matchesExpenseQuickSearch, matchesExpenseType} from '../lib/expense-list-filters';
 
 const types = ['STANDARD', 'VAT_SETTLEMENT', 'COUNTER', 'TAX_CONTRIBUTION', 'PAYROLL'];
 
@@ -43,4 +43,21 @@ test('la ricerca trova dipendente, ente ed esercente anche senza fornitore', () 
 
 test('la ricerca continua a trovare il fornitore delle spese standard', () => {
   assert.equal(matchesExpenseQuickSearch({expenseType: 'STANDARD', isRecurring: false, supplier: {businessName: 'ACME'}, merchant: null}, 'acme'), true);
+});
+
+test('il filtro esercente trova il dipendente aggiornato in entrambi gli ordini del nome', () => {
+  const expense = {expenseType: 'PAYROLL', isRecurring: false, merchant: 'Vecchio nominativo',
+    employee: {firstName: 'Mario', lastName: 'Rossi'}, description: 'Premio produzione'};
+  for (const query of ['Rossi Mario', 'Mario Rossi', 'rossi', 'Vecchio nominativo', '']) {
+    assert.equal(matchesExpenseMerchantSearch(expense, query), true, query);
+  }
+  assert.equal(matchesExpenseMerchantSearch(expense, 'Bianchi'), false);
+  assert.equal(matchesExpenseMerchantSearch(expense, 'produzione'), false);
+});
+
+test('il filtro esercente mantiene la ricerca per fornitore ed ente', () => {
+  assert.equal(matchesExpenseMerchantSearch({expenseType: 'STANDARD', isRecurring: false,
+    supplier: {businessName: 'ACME'}, merchant: 'Storico'}, 'acme'), true);
+  assert.equal(matchesExpenseMerchantSearch({expenseType: 'TAX_CONTRIBUTION', isRecurring: false,
+    taxAuthority: {name: 'Agenzia entrate'}, merchant: 'Storico'}, 'entrate'), true);
 });

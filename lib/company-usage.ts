@@ -5,11 +5,12 @@ export const companyUsageSelect = {
 
 export type CompanyUsage = Record<keyof typeof companyUsageSelect, number>;
 
-export function companyUsageSummary(counts: CompanyUsage) {
-  const labels: Record<keyof CompanyUsage, string> = {
+export const companyUsageLabels: Record<keyof CompanyUsage, string> = {
     expenses: 'spese', incomes: 'incassi', recurringExpenses: 'spese ricorrenti',
     recurringIncomes: 'incassi ricorrenti', employees: 'dipendenti', revenues: 'riepiloghi mensili', notifications: 'notifiche'
-  };
-  return (Object.keys(labels) as Array<keyof CompanyUsage>)
-    .filter(key => counts[key] > 0).map(key => `${counts[key]} ${labels[key]}`).join(' · ');
+};
+
+export function companyUsageSummary(counts: CompanyUsage) {
+  return (Object.keys(companyUsageLabels) as Array<keyof CompanyUsage>)
+    .filter(key => counts[key] > 0).map(key => `${counts[key]} ${companyUsageLabels[key]}`).join(' · ');
 }

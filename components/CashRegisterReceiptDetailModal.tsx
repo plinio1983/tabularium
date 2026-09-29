@@ -75,7 +75,7 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
                 <span className="receipt-detail-symbol" aria-hidden="true"><ReceiptDetailIcon kind="receipt"/></span>
                 <div><p>Registratore di cassa</p><h2 id={titleId}>Scontrino <span>#{receiptId}</span></h2></div>
                 <button ref={closeRef} className="receipt-detail-close" type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                    <span className="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></span>
                 </button>
             </header>
             <div className="receipt-detail-body" aria-busy={!receipt && !error}>
@@ -124,8 +124,9 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
             </div>
             <footer className="receipt-detail-footer">
                 <button className="btn btn-md btn-default" type="button" onClick={onClose}>Chiudi</button>
+                {receipt ? <Link className="btn btn-md btn-default" href={`/incomes/${receipt.id}/convert`}><span className="btn-icon">⇄</span> Converti tipo</Link> : null}
                 {receipt ? <Link className="btn btn-md btn-primary" href={`/incomes/cash-register?editId=${receipt.id}&returnTo=${encodeURIComponent(returnTo)}`}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m16 4 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/></svg>
+                    <span className="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m16 4 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/></svg></span>
                     Modifica scontrino
                 </Link> : null}
             </footer>

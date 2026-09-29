@@ -29,7 +29,7 @@ export default function EmployeeCreateModal({open, onClose, action = '/api/emplo
   if (!mounted || !open) return null;
   return createPortal(<div className="modal-backdrop app-form-modal employee-create-modal" role="dialog" aria-modal="true" aria-label="Aggiungi dipendente" onMouseDown={event => event.target === event.currentTarget && !saving && onClose()}>
     <div className="modal-card modal-card-wide entity-form-modal-card" onMouseDown={event => event.stopPropagation()}>
-      <div className="modal-title"><div><h3>Nuovo dipendente</h3><p className="muted">Inserisci i dati anagrafici e del rapporto.</p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={onClose} disabled={saving}>×</button></div>
+      <div className="modal-title"><div><h3>Nuovo dipendente</h3><p className="muted">Inserisci i dati anagrafici e del rapporto.</p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={onClose} disabled={saving}><span className="btn-icon">×</span></button></div>
       <form className="card form app-record-form entity-form entity-styled-form inline-create-form" action={action} method="post" onSubmit={submit}>
         <EmployeeFormFields/>{error ? <p className="full form-error" role="alert">{error}</p> : null}
         <EntityFormActions onCancel={onClose} submitLabel={onCreated ? 'Salva e seleziona' : 'Salva dipendente'} submitting={saving}/>

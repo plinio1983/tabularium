@@ -1,3 +1,4 @@
+import MobileRecordViews, {MobileRecordCloseButton} from './MobileRecordViews';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspace} from '@/lib/auth';
@@ -71,7 +72,7 @@ export default async function MovementLedgerPage({kind, searchParams}: {
         page,
         pages
     } = await loadMovementLedger(prisma, kind, current.workspace.id, current.company.id, current.company.timeZone, filters);
-    const returnTo = filteredListHref(path, {...params, page: String(page)});
+    const returnTo = filteredListHref(path, {...params, page: String(page), mobileList: '1'});
     const pageHref = (next: number) => filteredListHref(path, {...params, page: String(next)});
     const sortHeader = (column: typeof filters.sort, label: string) => <SortableColumnHeader key={column} label={label}
                                                                                              direction={filters.sort === column ? filters.direction : undefined}
@@ -110,6 +111,7 @@ export default async function MovementLedgerPage({kind, searchParams}: {
         },
     ].filter(item => item.value);
     return <div className="grid movement-ledger-page">
+        <MobileRecordViews kind={isPayment ? 'expense' : 'income'} title={`Lista ${title.toLowerCase()}`} linkLabel={`Visualizza ${title.toLowerCase()}`} count={summary.count} summary={<>
         <div className="toolbar-card">
             <div><h2>{title}</h2>
                 <p className="muted">{isPayment ? 'Pagamenti registrati sulle spese, comprese le buste paga.' : 'Accrediti registrati sugli incassi, compresi gli scontrini.'}</p>
@@ -146,9 +148,11 @@ export default async function MovementLedgerPage({kind, searchParams}: {
         <div className="ledger-breakdowns">
             <Breakdown title="Per metodo" rows={breakdown('method')} total={total}/><Breakdown title="Per banca / conto" rows={breakdown('bank')} total={total}/>
         </div>
+        </>}>
         <section className="card ledger-list">
-            <div className="ledger-list-header"><h3>Lista {title.toLowerCase()}</h3>
+            <div className="ledger-list-header mobile-record-list-header"><h3>Lista {title.toLowerCase()}</h3>
                 <div id="ledger-list-filter-trigger"/>
+                <MobileRecordCloseButton/>
             </div>
             <LiveSearch name="search" label={isPayment ? 'Cerca pagamento' : 'Cerca accredito'} placeholder="Nome, descrizione o numero del documento"/>
             <p className="muted">{summary.count ? `${(page - 1) * ledgerPageSize + 1}–${Math.min(page * ledgerPageSize, summary.count)} di ${summary.count}` : 'Nessun movimento per i filtri selezionati.'}</p>
@@ -201,5 +205,6 @@ export default async function MovementLedgerPage({kind, searchParams}: {
                         <span className="btn-icon" aria-hidden="true">→</span></Link> :
                     <span/>}</nav> : null}
         </section>
+        </MobileRecordViews>
     </div>;
 }

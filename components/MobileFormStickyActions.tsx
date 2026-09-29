@@ -80,14 +80,14 @@ export default function MobileFormStickyActions({
         <div className="app-form-wizard-actions-row mobile-form-sticky-actions-row">
             {showBack ? (
                 <button className="btn btn-md btn-default" type="button" onClick={onBack}>
-                    ← {backLabel}
+                    <span className="btn-icon">←</span> {backLabel}
                 </button>
             ) : onCancel ? (
                 <button className="btn btn-md btn-default" type="button" onClick={onCancel}>
-                    × Annulla
+                    <span className="btn-icon">×</span> Annulla
                 </button>
             ) : cancelHref ? (
-                <a className="btn btn-md btn-default" href={cancelHref}>× Annulla</a>
+                <a className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</a>
             ) : (
                 <span aria-hidden="true"/>
             )}
@@ -104,7 +104,7 @@ export default function MobileFormStickyActions({
                     event.stopPropagation();
                     onNext();
                 }}>
-                    Avanti →
+                    Avanti <span className="btn-icon">→</span>
                 </button>
             )}
         </div>

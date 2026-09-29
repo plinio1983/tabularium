@@ -73,7 +73,7 @@ export default function NewIncomePanel({ initialOpen = false, initialType = 'sin
               <h3>{modalCopy.title}</h3>
               <p className="muted">{modalCopy.description}</p>
             </div>
-            <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}>×</button>
+            <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button>
           </div>
           <IncomeCreationSwitcher key={creationKey} initialType={creationType} onTypeChange={setCreationType} initialIncome={initialCustomerId ? { customerId: initialCustomerId } : undefined} incomeAction={returnAction} recurringAction={returnAction.replace('/api/incomes', '/api/recurring-incomes')} onCancel={() => setIsOpen(false)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} />
         </div>

@@ -62,11 +62,11 @@ export default function SelectedButtonGroupScroller({className, children, showCo
         {canScrollLeft ? <a className="button-group-scroll-control" href="#" role="button" aria-label="Scorri mesi a sinistra" onClick={event => {
             event.preventDefault();
             scroll(-1);
-        }}>‹</a> : null}
+        }}><span className="btn-icon">‹</span></a> : null}
         {group}
         {canScrollRight ? <a className="button-group-scroll-control" href="#" role="button" aria-label="Scorri mesi a destra" onClick={event => {
             event.preventDefault();
             scroll(1);
-        }}>›</a> : null}
+        }}><span className="btn-icon">›</span></a> : null}
     </div>;
 }

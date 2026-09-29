@@ -49,11 +49,11 @@ export default function MovementLedgerFilters({path, quick, year, from, to, meth
       }}
       onOpenFilters={() => setOpen(true)}/>
     <FilterDrawer open={open} onClose={() => setOpen(false)} title={path === '/expenses/payments' ? 'Filtri pagamenti' : 'Filtri accrediti'}
-      actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.replace(path, {scroll: false});}}/>}>
+      actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.replace(params.get('mobileList') === '1' ? `${path}?mobileList=1` : path, {scroll: false});}}/>}>
     <form id={formId} key={params.toString() + open} className="record-filters recurring-drawer-filters record-styled-drawer-filters" action={path} method="get" onSubmit={event => {
       event.preventDefault();
       const next = new URLSearchParams();
-      for (const key of ['sort', 'direction']) {const value = params.get(key); if (value) next.set(key, value);}
+      for (const key of ['sort', 'direction', 'mobileList']) {const value = params.get(key); if (value) next.set(key, value);}
       new FormData(event.currentTarget).forEach((value, key) => {if (typeof value === 'string' && value) next.set(key, value);});
       if (next.get('dateFrom') === from && next.get('dateTo') === to && quick !== 'custom') {
         next.delete('dateFrom');

@@ -18,7 +18,7 @@ export default function DeleteActionButton({
   title = 'Elimina',
   ariaLabel = 'Elimina',
   className = 'btn btn-xs btn-danger icon-action',
-  children = '🗑️'
+  children = <span className="btn-icon">🗑️</span>
 }: DeleteActionButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -65,7 +65,7 @@ export default function DeleteActionButton({
       onClick={handleClick}
       disabled={isDeleting}
     >
-      {isDeleting ? '…' : children}
+      {isDeleting ? <span className="btn-icon">…</span> : children}
     </button>
   );
 }

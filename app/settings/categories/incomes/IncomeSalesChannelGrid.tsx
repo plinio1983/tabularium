@@ -52,7 +52,7 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
             ? <IncomeEntityDeleteForm id={channel.id} kind="channel" name={channel.name} action={deleteAction}/>
             : <button className="btn btn-sm btn-danger" type="button" disabled>Rimuovi</button>}
           <button className="btn btn-sm btn-primary" type="button" onClick={() => setEditing(channel)}>
-            ✎ Modifica
+            <span className="btn-icon">✎</span> Modifica
           </button>
         </div>
       </article>)}
@@ -76,7 +76,7 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
             <h3 id="sales-channel-edit-title">Modifica canale di vendita</h3>
             <p className="muted">Aggiorna nome, icona e posizione nelle select.</p>
           </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}><span className="btn-icon">×</span></button>
         </div>
         <form action={updateAction} className="form app-record-form sales-channel-edit-form">
           <input type="hidden" name="id" value={editing.id}/>
@@ -97,7 +97,7 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
           </label> : <p className="muted span-2">Questo è il canale tecnico di fallback e viene usato solo quando non sono disponibili canali ordinari.</p>}
           <div className="actions-row span-2 sales-channel-edit-actions">
             <button className="btn btn-md btn-default" type="button" onClick={() => setEditing(null)}>Annulla</button>
-            <button className="btn btn-md btn-primary" type="submit">✓ Salva modifiche</button>
+            <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> Salva modifiche</button>
           </div>
         </form>
       </section>

@@ -19,7 +19,7 @@ import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
 import LiveSearch from '@/components/LiveSearch';
 import {expenseAffectsFiscalProfit} from '@/lib/reports';
-import {matchesExpenseQuickSearch, matchesExpenseType} from '@/lib/expense-list-filters';
+import {matchesExpenseMerchantSearch, matchesExpenseQuickSearch, matchesExpenseType} from '@/lib/expense-list-filters';
 
 const paymentStatusOptions = [
     ['overdue', 'Scaduto'],
@@ -759,7 +759,7 @@ export default async function ExpensesPage({searchParams}: {
         if (useFiscalPeriodFilter && !affectsFiscalResult) return false;
         if (categoryFilter && expense.category?.name !== categoryFilter) return false;
         if (!matchesExpenseType(expense, expenseTypeFilter)) return false;
-        if (merchantFilter && !normalize(expenseSupplierName(expense)).includes(merchantFilter)) return false;
+        if (!matchesExpenseMerchantSearch(expense, merchantFilter)) return false;
         if (!matchesExpenseQuickSearch(expense, supplierQuickFilter)) return false;
         if (productFilter && !normalize(expense.description).includes(productFilter)) return false;
         if (!amountMatchesFilter(amount, amountFilterValue)) return false;
@@ -1014,6 +1014,7 @@ export default async function ExpensesPage({searchParams}: {
             <div className="filter-drawer-wrapper period-filter-drawer-wrapper">
                 <ExpenseFiltersDrawer
                     filters={filters}
+                    employees={employees.map(({id, firstName, lastName, employeeCode}) => ({id, firstName, lastName, employeeCode}))}
                     categories={orderedCategories.map(category => ({
                         id: category.id,
                         code: category.code,
@@ -1245,6 +1246,7 @@ export default async function ExpensesPage({searchParams}: {
                 formId="expenseBulkForm"
                 filterAction={<ExpenseFiltersDrawer
                     filters={filters}
+                    employees={employees.map(({id, firstName, lastName, employeeCode}) => ({id, firstName, lastName, employeeCode}))}
                     categories={orderedCategories.map(category => ({
                         id: category.id,
                         code: category.code,

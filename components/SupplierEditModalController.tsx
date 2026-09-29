@@ -71,7 +71,7 @@ export default function SupplierEditModalController({categories = []}: { categor
           <p className="muted">Aggiorna l’anagrafica di {supplier.businessName}.</p>
         </div>
         <button className="btn btn-icon-only btn-default modal-close-button" type="button"
-                onClick={() => setSupplier(null)}>×</button>
+                onClick={() => setSupplier(null)}><span className="btn-icon">×</span></button>
       </div>
 
       <form className="card form app-record-form entity-form entity-styled-form"

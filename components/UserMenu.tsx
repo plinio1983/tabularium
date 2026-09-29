@@ -95,28 +95,28 @@ export default function UserMenu({userName}: {userName?: string | null}) {
         {open ? <div className="user-menu-popover" id={panelId}>
             <nav aria-label="Menu utente" className="user-menu-links">
                 <Link href="/settings/account" onClick={() => setOpen(false)}>
-                    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <span className="btn-icon"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>
-                    </svg>
+                    </svg></span>
                     <span>{userName?.trim() || 'Account'}</span>
                 </Link>
                 <Link href="/account/workspace" onClick={() => setOpen(false)}>
-                    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <span className="btn-icon"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
                         <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
-                    </svg>
+                    </svg></span>
                     <span>Workspace</span>
                 </Link>
                 <Link href="/settings/company-settings" onClick={() => setOpen(false)}>
-                    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <span className="btn-icon"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M3 21V7h8v14M11 21V3h10v18M1 21h22M6 11h2m-2 4h2m6-8h3m-3 4h3m-3 4h3"/>
-                    </svg>
+                    </svg></span>
                     <span>Società</span>
                 </Link>
                 <Link href="/settings/company-settings" onClick={() => setOpen(false)}>
-                    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <span className="btn-icon"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 21v-4h6v4M9 7h1m4 0h1M9 11h1m4 0h1"/>
-                    </svg>
+                    </svg></span>
                     <span>Dati Azienda</span>
                 </Link>
             </nav>
@@ -129,7 +129,7 @@ export default function UserMenu({userName}: {userName?: string | null}) {
                     disabled={!company.isActive || switchingId !== null}
                     onClick={() => switchCompany(company)}>
                     <span className="user-menu-company-name">{company.name}{!company.isActive ? <small>Disabilitata</small> : null}</span>
-                    <span aria-hidden="true">{company.id === data.activeCompanyId ? '✓' : ''}</span>
+                    <span className="btn-icon" aria-hidden="true">{company.id === data.activeCompanyId ? '✓' : ''}</span>
                 </button>)}
                 {switchingId !== null ? <p role="status">Cambio società in corso…</p> : null}
                 {error ? <div className="user-menu-error" role="alert">{error}
@@ -139,9 +139,9 @@ export default function UserMenu({userName}: {userName?: string | null}) {
             <hr/>
             <form action="/logout" method="post" className="user-menu-links user-menu-logout">
                 <button type="submit">
-                    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <span className="btn-icon"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-                    </svg>
+                    </svg></span>
                     <span>Logout</span>
                 </button>
             </form>

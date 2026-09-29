@@ -351,7 +351,7 @@ body.drawer-open {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .recurring-table-supplier-icon {
@@ -2747,5 +2747,35 @@ table th, table td {
   .mobile-record-summary,
   .mobile-record-list-pane {
     transition: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .recurring-record-detail-page:has(.mobile-record-views[data-list-open="true"]) {
+    .record-detail-shell > .record-detail-action-row {
+      display: none;
+    }
+
+    .recurring-detail-document {
+      overflow: visible;
+      border-radius: 0;
+    }
+  }
+
+  .recurring-detail-document .mobile-record-summary {
+    gap: 0;
+
+    > .mobile-record-open {
+      margin: 16px;
+    }
+  }
+
+  .recurring-generated-list > .mobile-record-list-header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .movement-ledger-page .ledger-list-header {
+    padding-right: 40px;
   }
 }

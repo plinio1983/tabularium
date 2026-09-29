@@ -92,7 +92,7 @@ export default async function IncomeCategoriesSettingsPage({searchParams}: {
                         <option value={channel.id} key={channel.id}>{channel.icon ?? ''} {channel.name}</option>)}
                 </select>
             </label>
-            <button className="btn btn-md btn-primary" type="submit">✓ Salva configurazione</button>
+            <button className="btn btn-md btn-primary" type="submit"><span className="btn-icon">✓</span> Salva configurazione</button>
         </form>
     </div>;
 }

@@ -45,14 +45,14 @@ export default function ExpenseInvoiceAttachmentsLink({attachments, endpointBase
       <section className="modal-card invoice-attachments-modal" role="dialog" aria-modal="true" aria-labelledby="invoice-attachments-modal-title" onMouseDown={event => event.stopPropagation()}>
         <div className="modal-title">
           <div><h3 id="invoice-attachments-modal-title">Fatture allegate</h3><p className="muted">Seleziona il documento da aprire o scaricare.</p></div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)} aria-label="Chiudi">×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)} aria-label="Chiudi"><span className="btn-icon">×</span></button>
         </div>
         <div className="invoice-attachments-modal-list">
           {invoices.map(attachment => <a href={`${endpointBase}/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id} onClick={() => setOpen(false)}>
-            <span aria-hidden="true">📎</span>
+            <span className="btn-icon" aria-hidden="true">📎</span>
             <strong>{attachment.originalName}</strong>
             <small>{attachment.sizeBytes ? `${Math.max(1, Math.round(attachment.sizeBytes / 1024))} KB` : 'Apri documento'}</small>
-            <span aria-hidden="true">↗</span>
+            <span className="btn-icon" aria-hidden="true">↗</span>
           </a>)}
         </div>
       </section>
@@ -68,7 +68,7 @@ export default function ExpenseInvoiceAttachmentsLink({attachments, endpointBase
           onKeyDown={event => {
             if (event.key === 'Enter' || event.key === ' ') activate(event);
           }}>
-      <span aria-hidden="true">📎</span>{invoices.length > 1 ? <small>{invoices.length}</small> : null}
+      <span className="btn-icon" aria-hidden="true">📎</span>{invoices.length > 1 ? <small>{invoices.length}</small> : null}
     </span>
     {modal}
   </>;

@@ -433,7 +433,7 @@ export default function CashRegister({
                 <input ref={amountRef} className={amountSizeClass} aria-label="Importo incasso" value={formattedAmount} readOnly
                        disabled={confirmationLocked} inputMode="none"/>
                 <button type="button" className="amount-clear-button" aria-label="Azzera importo"
-                        disabled={confirmationLocked} onClick={clearAmount}>×</button>
+                        disabled={confirmationLocked} onClick={clearAmount}><span className="btn-icon">×</span></button>
             </div>
         </section>
 
@@ -449,7 +449,7 @@ export default function CashRegister({
             {['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'backspace'].map(key =>
                 <button type="button" key={key} disabled={confirmationLocked} onClick={() => appendKey(key)}
                         aria-label={key === 'backspace' ? 'Cancella ultima cifra' : key}>
-                    {key === 'backspace' ? '⌫' : key}
+                    {key === 'backspace' ? <span className="btn-icon">⌫</span> : key}
                 </button>)}
         </section>
 
@@ -483,12 +483,12 @@ export default function CashRegister({
                 </div>
                 <button className="cash-register-edit-cancel btn btn-md btn-default" type="button"
                         disabled={sending} onClick={() => router.push(returnTo)}>
-                    <span aria-hidden="true">×</span> ANNULLA
+                    <span className="btn-icon" aria-hidden="true">×</span> ANNULLA
                 </button>
                 <button className="cash-register-submit" type="button"
                         disabled={sending || !hasValidAmount || !selectedMethod || !selectedBankId || !methodIsAvailable(selectedMethod)}
                         onClick={() => void submitReceipt()}>
-                    <span>✓</span>
+                    <span className="btn-icon">✓</span>
                     <div className="cash-register-label">
                         {sending ? 'Salvataggio…' : 'SALVA MODIFICHE'}
                     </div>
@@ -498,36 +498,36 @@ export default function CashRegister({
             {selectedMethod && mode === 'create' ? <button className="cash-register-cancel btn-danger" type="button"
                                                            disabled={sending} onClick={cancelMethod}
                                                            aria-label="Annulla metodo selezionato" title="Annulla">
-                ↵
+                <span className="btn-icon">↵</span>
             </button> : null}
             {selectedMethod && mode === 'create' ?
                 <button className="cash-register-submit" type="button" disabled={sending || !hasValidAmount || !methodIsAvailable(selectedMethod)}
                         onClick={() => void submitReceipt()}>
-                    <span>{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INCASSA'}
+                    <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INCASSA'}
                 </button> : <>
                     {cashMethod ? <button type="button" disabled={!hasValidAmount}
                                           className={selectedMethodId === cashMethod.id ? 'is-selected' : ''}
                                           onClick={() => chooseMethod(cashMethod.id)}>
-                        <span>{cashMethod.icon ?? '💶'}</span>{cashMethod.name}
+                        <span className="btn-icon">{cashMethod.icon ?? '💶'}</span>{cashMethod.name}
                     </button> : null}
                     {primaryMethod ?
                         <button type="button" disabled={!hasValidAmount || !methodIsAvailable(primaryMethod)}
                                 className={selectedMethodId === primaryMethod.id ? 'is-selected' : ''}
                                 onClick={() => chooseMethod(primaryMethod.id)}>
-                            <span>{primaryMethod.icon ?? '💳'}</span>{primaryMethod.name}
+                            <span className="btn-icon">{primaryMethod.icon ?? '💳'}</span>{primaryMethod.name}
                         </button> : null}
                     {otherMethods.length ? <div className="cash-register-more">
                         <button type="button" disabled={!hasValidAmount || !isFiscal}
                                 className={otherMethods.some(method => method.id === selectedMethodId) ? 'is-selected' : ''}
                                 aria-label="Altri metodi" aria-expanded={menuOpen}
-                                onClick={() => setMenuOpen(open => !open)}>•••
+                                onClick={() => setMenuOpen(open => !open)}><span className="btn-icon">•••</span>
                         </button>
                     </div> : null}
                 </>}
             {mode === 'copy' && selectedMethod ?
                 <button className="cash-register-submit" type="button" disabled={sending || !methodIsAvailable(selectedMethod)}
                         onClick={() => void submitReceipt()}>
-                    <span>{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INVIA COPIA'}
+                    <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INVIA COPIA'}
                 </button> : null}
             </> : null}
         </section>
@@ -538,14 +538,14 @@ export default function CashRegister({
                      aria-labelledby="cash-register-method-title" onClick={event => event.stopPropagation()}>
                 <header>
                     <h2 id="cash-register-method-title">Metodo di pagamento</h2>
-                    <button type="button" aria-label="Chiudi" onClick={() => setMenuOpen(false)}>×</button>
+                    <button type="button" aria-label="Chiudi" onClick={() => setMenuOpen(false)}><span className="btn-icon">×</span></button>
                 </header>
                 <div>
                     {otherMethods.map(method =>
                         <button type="button" key={method.id} disabled={!hasValidAmount || !methodIsAvailable(method)}
                                 className={selectedMethodId === method.id ? 'is-selected' : ''}
                                 onClick={() => chooseMethod(method.id)}>
-                            <span>{method.icon ?? '•'}</span>{method.name}
+                            <span className="btn-icon">{method.icon ?? '•'}</span>{method.name}
                         </button>)}
                 </div>
             </section>
@@ -565,7 +565,7 @@ export default function CashRegister({
                     <button type="button" aria-label="Chiudi" disabled={sending} onClick={() => {
                         setKeyboardMethodOpen(false);
                         focusAmount();
-                    }}>×
+                    }}><span className="btn-icon">×</span>
                     </button>
                 </header>
                 {!selectedMethod ? <div>
@@ -581,7 +581,7 @@ export default function CashRegister({
                                     setKeyboardConfirmationIndex(1);
                                     setNotice(null);
                                 }}>
-                            <span>{method.icon ?? '•'}</span>{method.name}
+                            <span className="btn-icon">{method.icon ?? '•'}</span>{method.name}
                         </button>)}
                 </div> : <section className="cash-register-actions has-confirmation cash-register-keyboard-confirmation">
                     <button ref={keyboardCancelRef}
@@ -589,14 +589,14 @@ export default function CashRegister({
                             type="button" tabIndex={0} disabled={sending}
                             aria-label="Annulla metodo selezionato" title="Annulla"
                             onFocus={() => setKeyboardConfirmationIndex(0)}
-                            onClick={cancelKeyboardMethodModal}>↩</button>
+                            onClick={cancelKeyboardMethodModal}><span className="btn-icon">↩</span></button>
                     <button ref={keyboardSubmitRef}
                             className={`cash-register-submit ${keyboardConfirmationIndex === 1 ? 'is-selected' : ''}`}
                             type="button" tabIndex={0}
                             disabled={sending || !hasValidAmount || !methodIsAvailable(selectedMethod)}
                             onFocus={() => setKeyboardConfirmationIndex(1)}
                             onClick={() => void submitReceipt()}>
-                        <span>{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INCASSA'}
+                        <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INCASSA'}
                     </button>
                 </section>}
                 {!selectedMethod ? <p className="cash-register-keyboard-hint">Usa le frecce per scegliere e premi Invio per selezionare.</p> : null}

@@ -136,7 +136,7 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
             <h3>{mode === "copy" ? `Copia incasso #${income.id}` : mode === "credit" ? `Nuovo accredito · incasso #${income.id}` : mode === "attachments" ? `Modifica allegati · incasso #${income.id}` : `Modifica incasso #${income.id}`}</h3>
             <p className="muted">{mode === "copy" ? "I dati sono precompilati: puoi modificarli prima di salvare il nuovo incasso." : mode === "credit" ? "Registra un nuovo accredito per questo incasso." : mode === "attachments" ? "Aggiungi, classifica o rimuovi gli allegati dell’incasso." : "Aggiorna l'incasso."}</p>
           </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIncome(null)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIncome(null)}><span className="btn-icon">×</span></button>
         </div>
         <IncomeForm
           key={`${mode}-${income.id}`}

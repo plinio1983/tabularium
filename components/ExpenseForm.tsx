@@ -1,5 +1,7 @@
 "use client";
 
+import LinkedRecordFields from '@/components/LinkedRecordFields';
+
 import {type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState} from "react";
 import {categoryIcon, formatPeriod} from "@/lib/expense-ui";
 import {DateField, FormField, MonthField, SelectField} from "@/components/FormControls";
@@ -122,6 +124,8 @@ type Props = {
     title?: string;
     submitLabel?: string;
     onCancel?: () => void;
+    onSubmitData?: (data: FormData) => void;
+    preserveLinkedRecords?: boolean;
     onSaved?: () => void;
     onDeletePayment?: (paymentId: number) => Promise<void>;
     cancelHref?: string;
@@ -356,7 +360,7 @@ function SupplierAutocomplete({
                         setShowCreate(true);
                     }}
                 >
-                    ＋ Nuovo
+                    <span className="btn-icon">＋</span> Nuovo
                 </button>
             </div>
 
@@ -393,7 +397,7 @@ function SupplierAutocomplete({
                             setResults(suppliers.slice(0, 10));
                             setIsOpen(true);
                         }}
-                    >×</button> : null}
+                    ><span className="btn-icon">×</span></button> : null}
                     {isOpen && (
                         <div className="entity-autocomplete-results" role="listbox">
                             {results.length ? (
@@ -459,6 +463,8 @@ export default function ExpenseForm({
                                         title = "Nuova spesa",
                                         submitLabel = "Salva spesa",
                                         onCancel,
+                                        onSubmitData,
+                                        preserveLinkedRecords = false,
                                         onSaved,
                                         onDeletePayment,
                                         cancelHref,
@@ -495,7 +501,7 @@ export default function ExpenseForm({
     const cashBankIdValue = cashBankId ? String(cashBankId) : (fallbackBank ? String(fallbackBank.id) : "");
     const methodName = (methodId: string) => paymentMethods.find(method => String(method.id) === methodId)?.name ?? "";
     const normalizePaymentRow = (row: PaymentRow): PaymentRow =>
-        isCashChannel(methodName(row.paymentMethodId)) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
+        !preserveLinkedRecords && isCashChannel(methodName(row.paymentMethodId)) && cashBankIdValue ? {...row, bankId: cashBankIdValue} : row;
     const [amount, setAmount] = useState(normalizeMoney(initialExpense?.amount).replace(".", ","));
     const [payrollNetAmount, setPayrollNetAmount] = useState(normalizeMoney(initialExpense?.payrollNetAmount ?? initialExpense?.amount).replace(".", ","));
     const [payrollExtraCompensation, setPayrollExtraCompensation] = useState(normalizeMoney(initialExpense?.payrollExtraCompensation).replace(".", ","));
@@ -743,7 +749,7 @@ export default function ExpenseForm({
             invalid.focus();
             return false;
         }
-        if (mobileStep === 4 && !canAddPayment) {
+        if (mobileStep === 4 && !preserveLinkedRecords && !canAddPayment) {
             openPaymentRef.current?.scrollIntoView({behavior: "smooth", block: "center"});
             return false;
         }
@@ -884,7 +890,7 @@ export default function ExpenseForm({
     }
 
     function renderPaymentHiddenInputs(payment: PaymentRow) {
-        const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
+        const cashBankLocked = !preserveLinkedRecords && isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
         return (
             <>
                 <input type="hidden" name="paymentId[]" value={payment.id ?? ""}/>
@@ -914,6 +920,11 @@ export default function ExpenseForm({
         if (isPayroll && paidAmountValue > amountValue + 0.005) {
             event.preventDefault();
             setSubmitError(`I pagamenti registrati (${formatEuro(paidAmountValue)}) superano il totale da corrispondere (${formatEuro(amountValue)}, netto più compensi extra). Controlla gli importi prima di salvare.`);
+            return;
+        }
+        if (onSubmitData) {
+            event.preventDefault();
+            onSubmitData(new FormData(event.currentTarget));
             return;
         }
         if (!onSaved) return;
@@ -972,7 +983,7 @@ export default function ExpenseForm({
             method="post"
             encType="multipart/form-data"
             onSubmit={handleSubmit}
-            data-in-place-submit={onSaved ? "true" : undefined}
+            data-in-place-submit={onSaved || onSubmitData ? "true" : undefined}
         >
             <div className="app-form-wizard-header full">
                 <div className="app-form-wizard-heading">
@@ -1325,7 +1336,7 @@ export default function ExpenseForm({
                                 aria-label={key === "backspace" ? "Cancella ultima cifra" : key}
                                 onMouseDown={event => event.preventDefault()}
                                 onClick={() => appendAmountKey(key)}
-                            >{key === "backspace" ? "⌫" : key}</button>)}
+                            >{key === "backspace" ? <span className="btn-icon">⌫</span> : key}</button>)}
                         </div> : null}
                     </div>
                     <input type="hidden" name="paymentStatus" value={computedPaymentStatus}/>
@@ -1478,7 +1489,7 @@ export default function ExpenseForm({
                     <span>Pagamenti</span>
                     <small>Stato, residuo e movimenti registrati</small>
                 </summary>
-                <div className="form-section-stack">
+                <LinkedRecordFields locked={preserveLinkedRecords}>
 
                     {/*<div className="field-note payment-note payment-status-note full">*/}
                     {/*    <div>*/}
@@ -1526,7 +1537,7 @@ export default function ExpenseForm({
                         </div>
                         {payments.map((payment, index) => {
                             const isOpen = openPaymentKey === payment.key;
-                            const cashBankLocked = isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
+                            const cashBankLocked = !preserveLinkedRecords && isCashChannel(methodName(payment.paymentMethodId)) && cashBankIdValue;
                             const paymentMethod = paymentMethods.find(method => String(method.id) === payment.paymentMethodId);
                             const paymentBank = banks.find(bank => String(bank.id) === payment.bankId);
 
@@ -1558,7 +1569,7 @@ export default function ExpenseForm({
                                                 className="btn btn-sm btn-default"
                                                 onClick={() => setOpenPaymentKey(payment.key)}
                                             >
-                                                ✎ Modifica
+                                                <span className="btn-icon">✎</span> Modifica
                                             </button>
                                             <button
                                                 type="button"
@@ -1566,7 +1577,7 @@ export default function ExpenseForm({
                                                 onClick={() => removePaymentRow(index)}
                                                 disabled={isSubmitting}
                                             >
-                                                🗑️ Elimina
+                                                <span className="btn-icon">🗑️</span> Elimina
                                             </button>
                                         </div>
                                     </div>
@@ -1663,7 +1674,7 @@ export default function ExpenseForm({
                                             onClick={() => removePaymentRow(index)}
                                             disabled={isSubmitting}
                                         >
-                                            🗑️ {onDeletePayment && payment.id ? "Elimina" : "Rimuovi"}
+                                            <span className="btn-icon">🗑️</span> {onDeletePayment && payment.id ? "Elimina" : "Rimuovi"}
                                         </button>
                                         <button
                                             type="button"
@@ -1671,7 +1682,7 @@ export default function ExpenseForm({
                                             disabled={!isPaymentComplete(normalizePaymentRow(payment))}
                                             onClick={() => setOpenPaymentKey(null)}
                                         >
-                                            &nbsp;&nbsp;✓ Ok&nbsp;&nbsp;
+                                            &nbsp;&nbsp;<span className="btn-icon">✓</span> Ok&nbsp;&nbsp;
                                         </button>
                                         {/*<button*/}
                                         {/*    type="button"*/}
@@ -1693,7 +1704,7 @@ export default function ExpenseForm({
                             </div>
                         )}
                     </section>
-                </div>
+                </LinkedRecordFields>
             </details>
 
             <section className="expense-review-step record-review-step full app-form-wizard-step app-form-wizard-step-6" aria-label="Riepilogo spesa">
@@ -1772,7 +1783,7 @@ export default function ExpenseForm({
                 <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
                     <span className="btn-icon">＋</span>
                     <span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span>
-                    <span aria-hidden="true">→</span>
+                    <span className="btn-icon" aria-hidden="true">→</span>
                 </button>
                 <label className="card full expense-review-notes expense-review-notes-mobile">
                     Note
@@ -1791,7 +1802,7 @@ export default function ExpenseForm({
                     <span>Allegati</span>
                     <small>File, XML e P7M</small>
                 </summary>
-                <div className="form-section-stack">
+                <LinkedRecordFields locked={preserveLinkedRecords}>
 
                     <label className="card attachment-row-wrap">
                         <div className="attachment-row-title">
@@ -1836,9 +1847,9 @@ export default function ExpenseForm({
                                     <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setExistingAttachmentTypes(current => ({
                                         ...current,
                                         [attachment.id]: option.value
-                                    }))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
+                                    }))}><span className="btn-icon" aria-hidden="true">{option.icon}</span>{option.label}</button>)}
                             </div>
-                            <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeExistingAttachment(attachment.id)}>🗑 Elimina</button>
+                            <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeExistingAttachment(attachment.id)}><span className="btn-icon">🗑</span> Elimina</button>
                         </div>;
                     })}
 
@@ -1852,9 +1863,9 @@ export default function ExpenseForm({
                             <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${file.name}`}>
                                 {attachmentTypeOptions.map(option =>
                                     <button className={currentType === option.value ? "is-selected" : ""} type="button" key={option.value} onClick={() => setSelectedAttachmentTypes(current => current.map((value, itemIndex) => itemIndex === index ? option.value : value))}>
-                                        <span aria-hidden="true">{option.icon}</span>{option.label}</button>)}
+                                        <span className="btn-icon" aria-hidden="true">{option.icon}</span>{option.label}</button>)}
                             </div>
-                            <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeSelectedAttachment(index)}>🗑 Elimina</button>
+                            <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeSelectedAttachment(index)}><span className="btn-icon">🗑</span> Elimina</button>
                         </div>;
                     })}
 
@@ -1871,7 +1882,7 @@ export default function ExpenseForm({
                             onChange={event => setNotes(event.currentTarget.value)}
                         />
                     </label>
-                </div>
+                </LinkedRecordFields>
             </details>
 
             {!hideMobileActions ? <MobileFormStickyActions

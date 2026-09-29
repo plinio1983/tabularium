@@ -366,9 +366,13 @@
   background: #f8fafc;
 }
 
-.burger-menu-icon {
+.burger-menu-icon,
+.burger-menu-icon.btn-icon {
   width: 20px;
+  flex: 0 0 20px;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
   gap: 4px;
 }
 
@@ -1656,7 +1660,8 @@ body:has(.admin-login-page) .app-footer {
 .user-menu-links button {
   justify-content: flex-start;
 
-  > svg {
+  > svg,
+  > .btn-icon {
     flex: 0 0 auto;
     color: var(--accent);
   }
@@ -1704,5 +1709,45 @@ body:has(.admin-login-page) .app-footer {
     right: 12px;
     top: 70px;
     width: auto;
+  }
+}
+
+.company-mobile-header-actions { display: none; }
+
+@media (max-width: 576px) {
+  .company-page-header {
+    align-items: center;
+    gap: 8px;
+
+    .site-header-brand,
+    .site-header-actions .nav-links { display: none; }
+    .site-header-actions { flex: 0 0 auto; }
+  }
+
+  .company-mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+
+    .btn { min-width: 0; white-space: nowrap; }
+  }
+}
+
+@media (max-width: 440px) {
+  .company-mobile-header-actions {
+    gap: 6px;
+
+    .company-header-back-label { display: none; }
+    .btn { padding-inline: 8px; font-size: 12px; }
+  }
+
+  .company-page-header .site-header-actions {
+    gap: 4px;
+
+    .settings-trigger,
+    .user-menu-trigger,
+    .notification-bell-trigger { width: 36px; }
   }
 }

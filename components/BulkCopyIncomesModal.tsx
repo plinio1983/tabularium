@@ -31,7 +31,7 @@ export default function BulkCopyIncomesModal({formId, action}: {formId: string; 
     if (event.target === event.currentTarget) setIsOpen(false);
   }}>
     <div className="app-form-modal bulk-category-modal bulk-copy-expenses-modal" role="dialog" aria-modal="true" aria-labelledby={`${formId}-copy-modal-title`}>
-      <div className="modal-toolbar-card toolbar-card"><div><h2 id={`${formId}-copy-modal-title`}>Copia incassi</h2><p className="muted">Incassi selezionati: <strong>{selectedIds.length}</strong></p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setIsOpen(false)}>×</button></div>
+      <div className="modal-toolbar-card toolbar-card"><div><h2 id={`${formId}-copy-modal-title`}>Copia incassi</h2><p className="muted">Incassi selezionati: <strong>{selectedIds.length}</strong></p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button></div>
       <form action={action} method="post" className="form bulk-category-modal-form bulk-copy-expenses-form">
         <input type="hidden" name="bulkAction" value="copy"/>{selectedIds.map(id => <input key={id} type="hidden" name="ids" value={id}/>)}
         <fieldset><legend>Data ordine e scadenza</legend>
@@ -45,7 +45,7 @@ export default function BulkCopyIncomesModal({formId, action}: {formId: string; 
           <label className="bulk-copy-option"><input type="radio" name="creditMode" value="TODAY"/><span><strong>Copia accrediti con data odierna</strong><small>Sostituisce tutte le date di accredito con oggi.</small></span></label>
           <label className="bulk-copy-option"><input type="radio" name="creditMode" value="RELATIVE_TO_ORDER"/><span><strong>Ricalcola dalla data ordine</strong><small>Mantiene per ogni accredito la distanza dall’ordine originale.</small></span></label>
         </fieldset>
-        <div className="actions-row form-actions-row"><button type="button" className="btn btn-sm btn-default" onClick={() => setIsOpen(false)}>× Annulla</button><button type="submit" className="btn btn-md btn-primary">⧉ Copia incassi</button></div>
+        <div className="actions-row form-actions-row"><button type="button" className="btn btn-sm btn-default" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span> Annulla</button><button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">⧉</span> Copia incassi</button></div>
       </form>
     </div>
   </div>, document.body);

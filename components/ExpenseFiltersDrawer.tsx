@@ -7,13 +7,14 @@ import {useRouter} from "next/navigation";
 import FilterIcon from "@/components/FilterIcon";
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {civilDateInTimeZone} from '@/lib/company-time';
-import SupplierFilterInput from "@/components/SupplierFilterInput";
+import SupplierFilterInput, {type EmployeeFilterOption} from "@/components/SupplierFilterInput";
 
 type CategoryOption = { id: number; code: string; name: string; icon?: string | null };
 
 type Props = {
   filters: Record<string, string | string[] | undefined>;
   categories: CategoryOption[];
+  employees: EmployeeFilterOption[];
   quickDateFilter: string;
   orderDateFromDefault: string;
   orderDateToDefault: string;
@@ -155,6 +156,7 @@ function quickOrderDateRange(value: string, now: Date) {
 export default function ExpenseFiltersDrawer({
   filters,
   categories,
+  employees,
   quickDateFilter,
   orderDateFromDefault,
   orderDateToDefault,
@@ -297,7 +299,7 @@ export default function ExpenseFiltersDrawer({
           <option value="counter">Banco</option>
         </select></FilterField>
 
-        <SupplierFilterInput initialValue={inputDefault(filters, "merchant")} />
+        <SupplierFilterInput employees={employees} initialValue={inputDefault(filters, "merchant")} />
         <FilterField label="Descrizione" icon="≡"><input name="product" defaultValue={inputDefault(filters, "product")} /></FilterField>
         <FilterField label="Importo" icon="€"><input name="amount" inputMode="decimal" defaultValue={inputDefault(filters, "amount")} /></FilterField>
 

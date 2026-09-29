@@ -14,7 +14,7 @@ export default function ExpenseInvoiceEmittedButton({action}: {action: string}) 
   }}>
     <input type="hidden" name="_action" value="invoice_emitted"/>
     <button className="btn btn-sm btn-default" type="submit" disabled={submitting}>
-      {submitting ? 'Salvataggio…' : '✓ Segna fattura emessa'}
+      {submitting ? 'Salvataggio…' : <><span className="btn-icon">✓</span> Segna fattura emessa</>}
     </button>
   </form>;
 }

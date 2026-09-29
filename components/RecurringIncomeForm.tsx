@@ -245,7 +245,7 @@ export default function RecurringIncomeForm({
                         <button type="button" key={value} className={vatRate === value ? 'is-selected' : ''} disabled={!fiscal} onMouseDown={event => event.preventDefault()} onClick={() => setVatRate(value)}>{value}%</button>)}</div>
                     <input type="hidden" name="vatRate" value={fiscal ? vatRate : '0'}/>
                     <div className="app-amount-keypad full" aria-label="Tastiera numerica">{['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'backspace'].map(key =>
-                        <button type="button" key={key} aria-label={key === 'backspace' ? 'Cancella ultima cifra' : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === 'backspace' ? '⌫' : key}</button>)}</div>
+                        <button type="button" key={key} aria-label={key === 'backspace' ? 'Cancella ultima cifra' : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === 'backspace' ? <span className="btn-icon">⌫</span> : key}</button>)}</div>
                 </div>
             </div>
         </details>
@@ -330,8 +330,8 @@ export default function RecurringIncomeForm({
         <MobileFormStickyActions currentStep={step} submitStep={5} onBack={() => setStep(value => Math.max(1, value - 1))} onNext={goNext} onCancel={onCancel} cancelHref={cancelHref} submitLabel="Salva entrata" isSubmitting={submitting} error={error}/>
         <div className="actions-row full form-actions-row form-sticky-actions">{error ?
             <p className="inline-warning full">{error}</p> : null}
-            <button className="btn btn-md btn-primary" type="submit" disabled={submitting}>✓ {submitting ? 'Salvataggio...' : 'Salva entrata'}</button>
-            {onCancel ? <button className="btn btn-md btn-default" type="button" onClick={onCancel}>× Annulla</button> :
-                <a className="btn btn-md btn-default" href={cancelHref}>× Annulla</a>}</div>
+            <button className="btn btn-md btn-primary" type="submit" disabled={submitting}><span className="btn-icon">✓</span> {submitting ? 'Salvataggio...' : 'Salva entrata'}</button>
+            {onCancel ? <button className="btn btn-md btn-default" type="button" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button> :
+                <a className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</a>}</div>
     </form>;
 }

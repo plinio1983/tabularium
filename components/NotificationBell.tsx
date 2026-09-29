@@ -68,7 +68,7 @@ export default function NotificationBell() {
 
   return <div className="notification-bell" ref={rootRef}>
     <button className="notification-bell-trigger" type="button" aria-label={`Notifiche${data.unreadCount ? `: ${data.unreadCount} non lette` : ''}`} aria-expanded={open} onClick={() => setOpen(value => !value)}>
-      <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+      <span className="btn-icon"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></span>
       {data.unreadCount ? <strong>{data.unreadCount > 99 ? '99+' : data.unreadCount}</strong> : null}
     </button>
     {open ? <div className="notification-popover">

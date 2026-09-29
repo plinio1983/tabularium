@@ -16,7 +16,6 @@ export default function CompanyDeleteForm({id, name, blockedReason, action}: {
     if (blockedReason || !window.confirm(`Eliminare definitivamente la società “${name}”? L’operazione non può essere annullata. Se è in uso o predefinita, verrà selezionata un’altra società abilitata.`)) event.preventDefault();
   }}>
     <input type="hidden" name="id" value={id}/>
-    <p className="muted">{blockedReason || 'Puoi eliminare questa società perché non contiene dati collegati.'}</p>
     <DeleteButton blocked={Boolean(blockedReason)}/>
   </form>;
 }

@@ -76,13 +76,13 @@ export default function RecurringExpenseBulkEditModal({formId, action, categorie
           <h2 id={`${formId}-bulk-edit-title`}>{step ? groups.find(group => group.name === step)?.label : 'Modifica uscite ricorrenti'}</h2>
           <p className="muted"><strong>{ids.length}</strong> record selezionati</p>
         </div>
-        <button type="button" className="bulk-edit-close-button" aria-label="Chiudi modifica multipla" onClick={close}>✕</button>
+        <button type="button" className="bulk-edit-close-button" aria-label="Chiudi modifica multipla" onClick={close}><span className="btn-icon">✕</span></button>
       </div>
       <div key={step} className={`bulk-edit-step bulk-edit-step-${direction}`}>
         {!step ? <div className="bulk-edit-form bulk-edit-choice-form">
           <div className="bulk-edit-choice-intro"><strong>Cosa vuoi modificare?</strong><span>Scegli un gruppo di informazioni. I campi non selezionati resteranno invariati.</span></div>
           <div className="bulk-edit-fields-list">{groups.map(group => <button type="button" className="bulk-edit-field-button" key={group.name} onClick={() => choose(group.name)}>
-            <span className="bulk-edit-field-icon" aria-hidden="true">{group.icon}</span><span className="bulk-edit-field-copy"><strong>{group.label}</strong><small>{group.hint}</small></span><span className="bulk-edit-field-status">›</span>
+            <span className="bulk-edit-field-icon btn-icon" aria-hidden="true">{group.icon}</span><span className="bulk-edit-field-copy"><strong>{group.label}</strong><small>{group.hint}</small></span><span className="bulk-edit-field-status btn-icon">›</span>
           </button>)}</div>
           <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-default" onClick={close}>Annulla</button></div>
         </div> : <form action={action} method="post" className={`bulk-edit-form ${step === 'categoryId' ? 'bulk-edit-category-form' : 'bulk-edit-accounting-form'}`}>
@@ -127,7 +127,7 @@ export default function RecurringExpenseBulkEditModal({formId, action, categorie
             </> : null}
             {step !== 'categoryId' && !enabledFields.some(name => active[name]) ? <p className="muted bulk-edit-dates-hint">Attiva almeno un campo da modificare.</p> : null}
           </div>
-          <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-default" onClick={back}>‹ Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!!incomplete}>✓ Conferma</button></div>
+          <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-default" onClick={back}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!!incomplete}><span className="btn-icon">✓</span> Conferma</button></div>
         </form>}
       </div>
     </div>

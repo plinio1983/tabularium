@@ -1,3 +1,4 @@
+import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {weekdayLabel} from '@/lib/recurring-cadence';
 import RecurringDetailActionsMenu from '@/components/RecurringDetailActionsMenu';
 import RecurringStateProvider from '@/components/RecurringStateProvider';
@@ -134,7 +135,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
     const paymentChannelName = item.paymentMethod?.name;
     const recurringDetailHref = `/recurring-expenses/${item.id}`;
-    const encodedRecurringDetailHref = encodeURIComponent(recurringDetailHref);
+    const encodedRecurringDetailHref = encodeURIComponent(`${recurringDetailHref}?${new URLSearchParams({returnTo, mobileList: '1'})}`);
     const flashMessages = {
         savedMessages: {
             created: 'Spesa ricorrente creata.',
@@ -210,7 +211,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                     <RecurringStateToggle kind="expense" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={encodedCurrentDetailReturnTo}/>
                     <RecurringDetailActionsMenu>
                         <summary className="btn btn-sm btn-default" aria-label="Azioni spesa ricorrente" title="Azioni spesa ricorrente">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            <span className="btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
                         </summary>
                         <div className="recurring-detail-actions-panel">
                             <button className="btn btn-sm btn-option" type="button" data-recurring-expense-detail-edit-id={item.id}>
@@ -237,6 +238,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
             </div>
 
             <article className="record-detail-document recurring-detail-document">
+                <MobileRecordViews kind="expense" title="Spese generate" linkLabel="Visualizza spese generate" count={item.generatedExpenses.length} summary={<>
                 <div className="record-detail-action-row hidden-sm-down">
                     <div className="left-side">
                         <DetailBackButton href={returnTo}/>
@@ -245,27 +247,27 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                     <RecurringStateToggle kind="expense" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)} returnTo={encodedCurrentDetailReturnTo}/>
                         <RecurringDetailActionsMenu>
                         <summary className="btn btn-sm btn-default" aria-label="Azioni spesa ricorrente" title="Azioni spesa ricorrente">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            <span className="btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
                         </summary>
                         <div className="recurring-detail-actions-panel">
-                            <button className="btn btn-sm btn-default" type="button" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</button>
+                            <button className="btn btn-sm btn-default" type="button" data-recurring-expense-detail-edit-id={item.id}><span className="btn-icon">✎</span> Modifica</button>
                         <DeleteActionButton
                             action={`/api/recurring-expenses/${item.id}?returnTo=${encodeURIComponent(returnTo)}`}
                             confirmMessage="Confermi la rimozione della spesa ricorrente? L’operazione non può essere annullata."
                             className="btn btn-sm btn-danger"
                         >
-                            🗑 Elimina
+                            <span className="btn-icon">🗑</span> Elimina
                         </DeleteActionButton>
                         </div>
                     </RecurringDetailActionsMenu>
                     <div className="recurring-detail-actions-inline">
-                            <button className="btn btn-sm btn-default" type="button" data-recurring-expense-detail-edit-id={item.id}>✎ Modifica</button>
+                            <button className="btn btn-sm btn-default" type="button" data-recurring-expense-detail-edit-id={item.id}><span className="btn-icon">✎</span> Modifica</button>
                         <DeleteActionButton
                             action={`/api/recurring-expenses/${item.id}?returnTo=${encodeURIComponent(returnTo)}`}
                             confirmMessage="Confermi la rimozione della spesa ricorrente? L’operazione non può essere annullata."
                             className="btn btn-sm btn-danger"
                         >
-                            🗑 Elimina
+                            <span className="btn-icon">🗑</span> Elimina
                         </DeleteActionButton>
                         </div>
                     </div>
@@ -407,13 +409,15 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                     </div>
                 </section>
 
-                <section className="record-detail-section">
-                    <div className="record-detail-section-heading">
+                </>}>
+                <section className="record-detail-section record-list-card recurring-generated-list">
+                    <div className="record-detail-section-heading mobile-record-list-header">
                         <div>
                             <h2>Spese generate</h2>
                             <p>Ultime spese create da questa regola ricorrente.</p>
                         </div>
                         <span className="badge">{item.generatedExpenses.length} record · {euro(generatedTotal)}</span>
+                        <MobileRecordCloseButton/>
                     </div>
 
                     <div className="recurring-generated-expenses-list">
@@ -465,6 +469,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                         />
                     </div>
                 </section>
+            </MobileRecordViews>
             </article>
         </div>
     </div></RecurringStateProvider>;

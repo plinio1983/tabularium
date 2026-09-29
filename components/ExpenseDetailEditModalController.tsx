@@ -179,7 +179,7 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
             <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : mode === "payment" ? `Nuovo pagamento · spesa #${expense.id}` : mode === "payment-edit" ? `Modifica pagamento · spesa #${expense.id}` : mode === "attachments" ? `Modifica allegati · spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
             <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : mode === "payment" ? "Registra un nuovo pagamento per questa spesa." : mode === "payment-edit" ? "Aggiorna il pagamento selezionato." : mode === "attachments" ? "Aggiungi o aggiorna gli allegati della spesa." : "Aggiorna dati, pagamenti e allegati."}</p>
           </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setExpense(null)}>×</button>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setExpense(null)}><span className="btn-icon">×</span></button>
         </div>
         <ExpenseForm
           key={`${mode}-${expense.id}-${targetPaymentId ?? "none"}`}

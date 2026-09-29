@@ -1,5 +1,7 @@
 "use client";
 
+import LinkedRecordFields from '@/components/LinkedRecordFields';
+
 import {type FormEvent, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import CustomerAutocomplete from '@/components/CustomerAutocomplete';
 import {CurrencyInput} from "@/components/CurrencyInput";
@@ -72,6 +74,9 @@ type Props = {
     title?: string;
     submitLabel?: string;
     onCancel?: () => void;
+    onSubmitData?: (data: FormData) => void;
+    preserveLinkedRecords?: boolean;
+    hideMobileActions?: boolean;
     cancelHref?: string;
     banks: Option[];
     paymentMethods: PaymentMethodOption[];
@@ -155,6 +160,9 @@ export default function IncomeForm({
                                        title = "Nuovo incasso",
                                        submitLabel = "Salva incasso",
                                        onCancel,
+                                       onSubmitData,
+                                       preserveLinkedRecords = false,
+                                       hideMobileActions = false,
                                        cancelHref,
                                        banks,
                                        paymentMethods,
@@ -388,10 +396,14 @@ export default function IncomeForm({
                 nextMobileStep();
             }
         }
+        if (!event.defaultPrevented && onSubmitData) {
+            event.preventDefault();
+            onSubmitData(new FormData(event.currentTarget));
+        }
     }
 
     return (
-        <form ref={formRef} className={`card form income-form app-record-form app-form-wizard income-mobile-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
+        <form data-in-place-submit={onSubmitData ? "true" : undefined} ref={formRef} className={`card form income-form app-record-form app-form-wizard income-mobile-wizard app-form-wizard-current-${mobileStep}`} action={action} method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
             <div className="app-form-wizard-header full">
                 <div className="app-form-wizard-heading">
                     <span>Passaggio {mobileStep} di 7</span>
@@ -524,7 +536,7 @@ export default function IncomeForm({
 
                         <div className="app-amount-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key =>
-                                <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
+                                <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? <span className="btn-icon">⌫</span> : key}</button>)}
                         </div>
                     </div>
                 </div>
@@ -535,7 +547,7 @@ export default function IncomeForm({
                     <span>Accrediti</span>
                     <small>Importi, date e conti di destinazione</small>
                 </summary>
-                <div className="form-section-stack">
+                <LinkedRecordFields locked={preserveLinkedRecords}>
                     <section className="payments-box income-credits-box full">
                         <div className="form-summary full">
                             <div><span className="muted">Accreditato</span><strong>{formatEuro(creditedAmount)}</strong>
@@ -555,7 +567,7 @@ export default function IncomeForm({
                         {credits.map((credit, index) => {
                             const isOpen = openCreditKey === credit.key;
                             const method = paymentMethods.find(item => String(item.id) === credit.paymentMethodId);
-                            const cashSelected = isCashMethod(method);
+                            const cashSelected = !preserveLinkedRecords && isCashMethod(method);
                             const bankId = cashSelected && cashBank ? String(cashBank.id) : credit.bankId;
                             const bank = banks.find(item => String(item.id) === bankId);
                             if (!isOpen) return <div className="payment-row payment-summary-row" key={credit.key}>
@@ -576,8 +588,8 @@ export default function IncomeForm({
                                     </div>
                                 </div>
                                 <div className="payment-row-actions">
-                                    <button type="button" className="btn btn-sm btn-default" onClick={() => setOpenCreditKey(credit.key)}>✎ Modifica</button>
-                                    <button type="button" className="btn btn-sm btn-danger remove-row" onClick={() => removeCredit(index)}>🗑️ Elimina</button>
+                                    <button type="button" className="btn btn-sm btn-default" onClick={() => setOpenCreditKey(credit.key)}><span className="btn-icon">✎</span> Modifica</button>
+                                    <button type="button" className="btn btn-sm btn-danger remove-row" onClick={() => removeCredit(index)}><span className="btn-icon">🗑️</span> Elimina</button>
                                 </div>
                             </div>;
 
@@ -620,11 +632,11 @@ export default function IncomeForm({
                                     </div>
                                 </div>
                                 <div className="payment-edit-actions">
-                                    <button type="button" className="btn btn-sm btn-danger remove-row" onClick={() => removeCredit(index)}>🗑️ Rimuovi</button>
+                                    <button type="button" className="btn btn-sm btn-danger remove-row" onClick={() => removeCredit(index)}><span className="btn-icon">🗑️</span> Rimuovi</button>
                                     <button type="button" className="btn btn-sm btn-primary payment-collapse-action" disabled={!isCreditComplete({
                                         ...credit,
                                         bankId
-                                    })} onClick={() => setOpenCreditKey(null)}>&nbsp;&nbsp;✓ Ok&nbsp;&nbsp;
+                                    })} onClick={() => setOpenCreditKey(null)}>&nbsp;&nbsp;<span className="btn-icon">✓</span> Ok&nbsp;&nbsp;
                                     </button>
                                 </div>
                             </div>;
@@ -633,7 +645,7 @@ export default function IncomeForm({
                         {credits.length && !canAddCredit && creditResidual > 0.005 ?
                             <p className="inline-warning">Completa l’accredito aperto prima di aggiungerne un altro.</p> : null}
                     </section>
-                </div>
+                </LinkedRecordFields>
             </details>
 
             <details className="form-section full income-form-section income-fiscal-section app-form-wizard-step app-form-wizard-step-5" open>
@@ -725,7 +737,7 @@ export default function IncomeForm({
                             </div>
                 </div>
                 <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
-                    <span className="btn-icon">＋</span><span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span><span aria-hidden="true">→</span>
+                    <span className="btn-icon">＋</span><span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span><span className="btn-icon" aria-hidden="true">→</span>
                 </button>
                 <label className="card full expense-review-notes expense-review-notes-mobile">
                     Note
@@ -733,9 +745,9 @@ export default function IncomeForm({
                 </label>
             </section>
 
-            <AttachmentFormSection initialAttachments={initialIncome?.attachments} onStateChange={updateAttachmentState} focusOnMount={focusAttachments}/>
+            <AttachmentFormSection initialAttachments={initialIncome?.attachments} onStateChange={updateAttachmentState} focusOnMount={focusAttachments} readOnly={preserveLinkedRecords}/>
 
-            <MobileFormStickyActions
+            {!hideMobileActions ? <MobileFormStickyActions
                 currentStep={isCreditOnlyMode ? 1 : mobileStep}
                 submitStep={isCreditOnlyMode ? 1 : 6}
                 onBack={() => goToMobileStep(mobileStep - 1)}
@@ -746,7 +758,7 @@ export default function IncomeForm({
                 submitDisabled={Boolean(attachmentError)}
                 error={attachmentError}
                 backLabel={mobileStep === 7 ? "Riepilogo" : "Indietro"}
-            />
+            /> : null}
 
             <div className="actions-row full form-actions-row form-sticky-actions">
                 <button className="btn btn-md btn-primary" type="submit">

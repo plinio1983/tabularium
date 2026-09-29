@@ -240,7 +240,7 @@ function SupplierAutocomplete({
                         setShowCreate(true);
                     }}
                 >
-                    ＋ Nuovo
+                    <span className="btn-icon">＋</span> Nuovo
                 </button>
             </div>
             <div className="entity-autocomplete-input-row">
@@ -859,7 +859,7 @@ export default function RecurringExpenseForm({
                         </div> : null}
                         <div className="app-amount-keypad full" aria-label="Tastiera numerica">
                             {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "backspace"].map(key =>
-                                <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? "⌫" : key}</button>)}
+                                <button type="button" key={key} aria-label={key === "backspace" ? "Cancella ultima cifra" : key} onMouseDown={event => event.preventDefault()} onClick={() => appendAmountKey(key)}>{key === "backspace" ? <span className="btn-icon">⌫</span> : key}</button>)}
                         </div>
                     </div>
                 </div>

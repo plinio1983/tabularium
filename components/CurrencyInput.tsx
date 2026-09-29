@@ -105,6 +105,6 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(fu
         const input = event.currentTarget.previousElementSibling;
         if (input instanceof HTMLInputElement) input.focus({preventScroll: true});
       }}
-    >×</button> : null}
+    ><span className="btn-icon">×</span></button> : null}
   </>;
 });

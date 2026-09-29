@@ -49,7 +49,7 @@ export default async function TaxAuthorityDetailPage({params, searchParams}: {
 
   return <div className="grid record-detail-page party-detail-page">
     <div className="record-detail-shell">
-      <div className="record-detail-action-row record-detail-responsive-actions pt-0">
+      <div className="record-detail-action-row record-detail-responsive-actions">
         <div className="left-side"><DetailBackButton href={backHref}/></div>
       </div>
       <article className="record-detail-document party-detail-document">

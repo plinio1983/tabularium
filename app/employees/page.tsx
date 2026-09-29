@@ -124,7 +124,7 @@ export default async function EmployeesPage({searchParams}: {
                     <div className="recurring-active-filter-tags">{activeFilters.map(item => <span className="badge"
                                                                                                    key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div>
                 </div>
-                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/employees">× Reset</Link>
+                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/employees"><span className="btn-icon">×</span> Reset</Link>
             </div> : null}
             <form id="employeeBulkForm" action={`/api/employees/bulk?returnTo=${encodeURIComponent(returnTo)}`}
                   method="post"
@@ -137,7 +137,7 @@ export default async function EmployeesPage({searchParams}: {
                     <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu
                              data-bulk-form="employeeBulkForm">
                         <summary className="bulk-action-trigger" aria-label="Azioni multiple"><span className="btn-icon" aria-hidden="true">⚙</span><span
-                            className="hidden-sm-up hidden-xs-down">Actions</span><span className="hidden-sm-down hidden-xs-down">Bulk actions</span>
+                            className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
                             <button className="btn btn-sm btn-option danger-menu-item"

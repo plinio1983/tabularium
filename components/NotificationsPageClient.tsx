@@ -51,7 +51,7 @@ export default function NotificationsPageClient() {
     </div>
     <section className="card notifications-list" aria-live="polite">
       {visible.map(item => <Link key={item.id} href={item.actionUrl ?? '#'} onClick={() => markRead(item)} className={`notifications-list-item severity-${item.severity.toLowerCase()} ${item.readAt ? 'is-read' : 'is-unread'}`}>
-        <span className="notification-list-icon" aria-hidden="true">{item.severity === 'CRITICAL' ? '!' : item.severity === 'WARNING' ? '◷' : '✓'}</span>
+        <span className="notification-list-icon btn-icon" aria-hidden="true">{item.severity === 'CRITICAL' ? '!' : item.severity === 'WARNING' ? '◷' : '✓'}</span>
         <span className="notification-list-copy"><span className="notification-list-title"><strong>{item.title}</strong>{item.company ? <small>{item.company.name}</small> : null}</span><span>{item.message}</span><time dateTime={item.occurredAt}>{new Date(item.occurredAt).toLocaleString('it-IT', {dateStyle: 'medium', timeStyle: 'short'})}</time></span>
         {!item.readAt ? <span className="notification-unread-label">Nuova</span> : null}
       </Link>)}

@@ -1,25 +1,41 @@
 'use client';
 
-import {useEffect, useId, useRef, useState} from 'react';
+import {useEffect, useId, useRef, useState, type ComponentProps} from 'react';
 import {createPortal, useFormStatus} from 'react-dom';
 import CompanyFormFields from '@/components/CompanyFormFields';
+import EntityFormActions from '@/components/EntityFormActions';
 
 type Props = {
+  company?: NonNullable<ComponentProps<typeof CompanyFormFields>['company']> & {id: number};
   action: (formData: FormData) => void | Promise<void>;
 };
 
-function SubmitButton() {
+function FormActions({editing, onCancel}: {editing: boolean; onCancel: () => void}) {
   const {pending} = useFormStatus();
-  return <button className="btn btn-md btn-primary" type="submit" disabled={pending}>
-    <span className="btn-icon">＋</span> {pending ? 'Salvataggio…' : 'Aggiungi società'}
-  </button>;
+  return <EntityFormActions onCancel={onCancel} submitting={pending}
+    submitLabel={editing ? 'Salva modifiche' : 'Aggiungi società'}
+    mobileSubmitLabel={editing ? 'Salva modifiche' : 'Aggiungi società'}/>;
 }
 
-export default function CompanyCreatePanel({action}: Props) {
+export default function CompanyCreatePanel({action, company}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const cardRef = useRef<HTMLElement>(null);
   const titleId = useId();
+  const previousFocus = useRef<HTMLElement | null>(null);
+  function openModal() {
+    previousFocus.current = document.activeElement as HTMLElement | null;
+    setIsOpen(true);
+  }
+
+  useEffect(() => {
+    if (company) return;
+    function onClick(event: MouseEvent) {
+      if (event.target instanceof Element && event.target.closest('[data-company-new]')) openModal();
+    }
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [company]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -28,7 +44,7 @@ export default function CompanyCreatePanel({action}: Props) {
     cardRef.current?.querySelector<HTMLInputElement>('input[name="name"]')?.focus();
     return () => {
       document.body.style.overflow = previousOverflow;
-      triggerRef.current?.focus({preventScroll: true});
+      (previousFocus.current ?? triggerRef.current)?.focus({preventScroll: true});
     };
   }, [isOpen]);
 
@@ -41,9 +57,9 @@ export default function CompanyCreatePanel({action}: Props) {
   }
 
   return <>
-    <div className="actions-row">
-      <button ref={triggerRef} type="button" className="btn btn-md btn-primary" aria-haspopup="dialog" onClick={() => setIsOpen(true)}>
-        <span className="btn-icon" aria-hidden="true">＋</span> Nuova società
+    <div className="company-modal-trigger">
+      <button ref={triggerRef} type="button" className={`btn btn-md ${company ? 'btn-default' : 'btn-primary'}`} aria-haspopup="dialog" onClick={openModal}>
+        <span className="btn-icon" aria-hidden="true">{company ? '✎' : '＋'}</span> {company ? 'Modifica' : 'Nuova società'}
       </button>
     </div>
     {isOpen ? createPortal(<div className="modal-backdrop app-form-modal company-create-modal" role="presentation"
@@ -51,7 +67,7 @@ export default function CompanyCreatePanel({action}: Props) {
       onKeyDown={event => {
         if (event.key === 'Escape') {event.stopPropagation(); setIsOpen(false);}
         if (event.key !== 'Tab') return;
-        const focusable = Array.from(cardRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]') ?? [])
+        const focusable = [...Array.from(cardRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]') ?? []), ...Array.from(document.querySelectorAll<HTMLElement>('body > .mobile-form-sticky-actions button:not(:disabled)'))]
           .filter(element => element.getClientRects().length > 0);
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
@@ -60,15 +76,13 @@ export default function CompanyCreatePanel({action}: Props) {
       }}>
       <section ref={cardRef} className="modal-card modal-card-wide entity-form-modal-card" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <div className="modal-title">
-          <div><h3 id={titleId}>Nuova società</h3><p className="muted">Inserisci i dati della nuova società contabile.</p></div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setIsOpen(false)}>×</button>
+          <div><h3 id={titleId}>{company ? 'Modifica società' : 'Nuova società'}</h3><p className="muted">{company ? company.name : 'Inserisci i dati della nuova società contabile.'}</p></div>
+          <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button>
         </div>
         <form action={submit} className="form app-record-form entity-form entity-styled-form company-settings-form company-create-form">
-          <CompanyFormFields idPrefix="company-new"/>
-          <div className="actions-row form-actions-row full company-settings-actions company-create-actions">
-            <button type="button" className="btn btn-md btn-default" onClick={() => setIsOpen(false)}><span className="btn-icon">✕</span> Annulla</button>
-            <SubmitButton/>
-          </div>
+          {company ? <input type="hidden" name="id" value={company.id}/> : null}
+          <CompanyFormFields company={company} idPrefix={company ? `company-${company.id}` : 'company-new'}/>
+          <FormActions editing={Boolean(company)} onCancel={() => setIsOpen(false)}/>
         </form>
       </section>
     </div>, document.body) : null}

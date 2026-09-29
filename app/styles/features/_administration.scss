@@ -98,13 +98,11 @@ table {
   }
 
   .cell-order-date {
-    //width: 75px;
     width: 8%;
-    text-align: center;
+    //text-align: center;
   }
 
   .cell-billing-period {
-    //width: 80px;
     width: 8%;
     text-align: left;
   }
@@ -182,7 +180,7 @@ table {
 
   .cell-payment-state > * {
     text-overflow: ellipsis;
-    overflow: hidden;
+    //overflow: hidden;
   }
 
   .cell-description {
@@ -3687,7 +3685,7 @@ body:has(.dashboard-grid) {
 
 .company-settings-delete-form {
   border-top: 1px solid var(--line);
-  margin-top: 16px;
+  margin-top: 4px;
   padding-top: 16px;
   display: flex;
   flex-wrap: wrap;
@@ -3696,4 +3694,84 @@ body:has(.dashboard-grid) {
   gap: 12px;
 
   p { flex: 1 1 240px; margin: 0; }
+}
+
+.company-settings-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+  margin: 0;
+
+  dt { color: var(--muted); font-size: 12px; }
+  dd { margin: 4px 0 0; overflow-wrap: anywhere; }
+}
+
+.company-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  form { margin: 0; }
+}
+
+@media (max-width: 576px) {
+  .company-settings-page > .toolbar-card .settings-hub-toolbar-actions {
+    display: none;
+  }
+
+  .company-settings-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.company-settings-usage {
+  padding-block: 16px;
+  border-block: 1px solid var(--line);
+
+  h3 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  > p { margin: 0; }
+}
+
+.company-usage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.company-usage-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+
+  dt { font-size: 13px; }
+  dt::first-letter { text-transform: uppercase; }
+  dd {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (max-width: 576px) {
+  .company-usage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .company-usage-item {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 6px;
+  }
 }

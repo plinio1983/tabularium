@@ -33,7 +33,7 @@ function EditSurface({heading, title, onClose, children}: {
                         <h2 id="payment-credit-edit-modal-title">{heading}</h2>
                         <p className="muted">{title}</p>
                     </div>
-                    <button type="button" className="btn btn-icon-only btn-default modal-close-button" aria-label="Chiudi" onClick={onClose}>×</button>
+                    <button type="button" className="btn btn-icon-only btn-default modal-close-button" aria-label="Chiudi" onClick={onClose}><span className="btn-icon">×</span></button>
                 </div>
                 {children}
             </div>
@@ -138,7 +138,7 @@ export default function PaymentCreditEditRow({
                         <button type="submit" className="btn btn-sm btn-danger">Rimuovi</button>
                     </form>}
                 <button type="button" className="btn btn-sm btn-primary" aria-expanded={editing} onClick={() => setEditing(value => !value)}>
-                    ✎ {editing ? 'Chiudi' : 'Modifica'}
+                    <span className="btn-icon">✎</span> {editing ? 'Chiudi' : 'Modifica'}
                 </button>
             </div>
         </div>
@@ -232,7 +232,7 @@ export default function PaymentCreditEditRow({
             </fieldset> : null}
             <div className="payment-credit-expanded-actions">
                 <button type="button" className="btn btn-sm btn-default" onClick={() => setEditing(false)}>Annulla</button>
-                <button type="submit" className="btn btn-sm btn-primary">✓ Salva modifiche</button>
+                <button type="submit" className="btn btn-sm btn-primary"><span className="btn-icon">✓</span> Salva modifiche</button>
             </div>
           </form>
         </EditSurface> : null}

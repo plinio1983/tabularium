@@ -253,7 +253,7 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
           const lastPoint = [...channel.points].reverse().find(point => point.indexValue !== null);
           const periodChange = firstPoint?.indexValue != null && lastPoint?.indexValue != null ? lastPoint.indexValue - firstPoint.indexValue : null;
           return <button type="button" className={active ? 'is-active' : ''} aria-pressed={active} onClick={() => toggleChannel(channel.id)} key={channel.id}>
-            <span style={{background: channelColors.get(channel.id)}}/><strong>{channel.icon ?? '•'} {channel.name}</strong>
+            <span style={{background: channelColors.get(channel.id)}}/><strong><span className="btn-icon">{channel.icon ?? '•'}</span> {channel.name}</strong>
             <div className="income-channel-item-values"><span>{money.format(channel.total)}</span><span>{channel.share.toFixed(1)}%</span>
               <b className={periodChange !== null && periodChange < 0 ? 'is-negative' : 'is-positive'}>{periodChange === null ? '—' : `${percent.format(periodChange)}%`}</b></div>
           </button>;

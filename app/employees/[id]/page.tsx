@@ -136,9 +136,9 @@ export default async function EmployeeDetailPage({params, searchParams}: {
                 <div className="right-side">
                     <DetailActionsBar controls={<EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>}
                         primary={<>
-                            <button className="btn btn-sm btn-option" type="button" data-employee-edit-id={employee.id}>✎ Modifica</button>
-                            <ExpenseNewTriggerButton className="btn btn-sm btn-option">＋ Aggiungi spesa</ExpenseNewTriggerButton>
-                            <DeleteActionButton action={'/api/employees/' + employee.id} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                            <button className="btn btn-sm btn-option" type="button" data-employee-edit-id={employee.id}><span className="btn-icon">✎</span> Modifica</button>
+                            <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span className="btn-icon">＋</span> Spesa</ExpenseNewTriggerButton>
+                            <DeleteActionButton action={'/api/employees/' + employee.id} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
                         </>}
                     />
                 </div>

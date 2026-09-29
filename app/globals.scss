@@ -1,1 +1,12 @@
 @use './styles';
+
+.record-conversion {
+  [hidden] { display: none !important; }
+  .conversion-change {
+    padding: .75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    dt { font-weight: 600; }
+    dd { margin: .25rem 0 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+  }
+  .form-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+}

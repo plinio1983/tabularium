@@ -128,7 +128,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             <div><h2>Scontrini registratore</h2><p className="muted">{receiptCount} movimenti · {total.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'})}</p></div>
             <div className="toolbar-actions">
                 <Link className="btn btn-sm btn-default" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
-                <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register">🧮 Reg. di cassa</Link>
+                <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register"><span className="btn-icon">🧮</span> Reg. di cassa</Link>
             </div>
         </div>
         <CashRegisterReceiptTrendChart key={`${dateFrom}-${dateTo}-${annual}`} points={trend} annual={annual}

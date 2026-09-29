@@ -296,7 +296,7 @@ export default function RecurringExpensesList({
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
                     <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Actions</span><span className="hidden-sm-down hidden-xs-down">Bulk actions</span>
+                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction" value="delete" data-confirm-label="Elimina"><span className="btn-icon">🗑</span><span>Elimina selezionati</span></button>
@@ -324,7 +324,7 @@ export default function RecurringExpensesList({
                 </div>
             </div>
             <div className="bulk-inner-container">
-                <button className="bulk-direct-link bulk-add-link btn btn-md btn-primary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Aggiungi spesa ricorrente">
+                <button className="bulk-direct-link bulk-add-link btn btn-md btn-primary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
                     <span className="btn-icon">＋</span>
                     <span className="hidden-sm-down">Spesa ricorrente</span>
                 </button>

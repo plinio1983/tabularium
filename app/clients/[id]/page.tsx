@@ -78,9 +78,9 @@ export default async function ClientDetailPage({params, searchParams}: {
                 {!customer.systemRole ? <div className="right-side">
                     <DetailActionsBar
                         primary={<>
-                            <button className="btn btn-sm btn-option" type="button" data-client-edit-id={customer.id}>✎ Modifica</button>
-                            <button className="btn btn-sm btn-option" type="button" data-income-new>＋ Aggiungi incasso</button>
-                            <DeleteActionButton action={'/api/clients/' + customer.id} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                            <button className="btn btn-sm btn-option" type="button" data-client-edit-id={customer.id}><span className="btn-icon">✎</span> Modifica</button>
+                            <button className="btn btn-sm btn-option" type="button" data-income-new><span className="btn-icon">＋</span> Aggiungi incasso</button>
+                            <DeleteActionButton action={'/api/clients/' + customer.id} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
                         </>}
                     />
                 </div> : <span className="badge">Cliente di sistema</span>}

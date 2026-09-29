@@ -12,7 +12,7 @@ export default function NewClientPanel({ initialOpen = false, salesChannels }: {
   }, []);
   useEffect(() => { setAction(`/api/clients?returnTo=${encodeURIComponent(`${location.pathname}${location.search}`)}`); }, []);
   return <>{open ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Aggiungi nuovo cliente" onMouseDown={() => setOpen(false)}><div className="modal-card modal-card-wide entity-form-modal-card" onMouseDown={event => event.stopPropagation()}>
-    <div className="modal-title"><div><h3>Nuovo cliente</h3><p className="muted">Inserisci i dati del cliente.</p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}>×</button></div>
+    <div className="modal-title"><div><h3>Nuovo cliente</h3><p className="muted">Inserisci i dati del cliente.</p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)}><span className="btn-icon">×</span></button></div>
     <form className="card form app-record-form entity-form entity-styled-form inline-create-form" action={action} method="post"><ClientFormFields salesChannels={salesChannels}/><EntityFormActions onCancel={() => setOpen(false)} submitLabel="Salva cliente"/></form>
   </div></div> : null}</>;
 }

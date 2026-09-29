@@ -1,5 +1,7 @@
 "use client";
 
+import LinkedRecordFields from '@/components/LinkedRecordFields';
+
 import {useEffect, useRef, useState} from "react";
 
 export type AttachmentTypeValue = "INVOICE" | "DOCUMENT" | "PAYMENT_RECEIPT";
@@ -11,7 +13,7 @@ const typeOptions: Array<{value: AttachmentTypeValue; label: string; icon: strin
   {value: "PAYMENT_RECEIPT", label: "Ricevuta accredito", icon: "€"},
 ];
 
-export default function AttachmentFormSection({initialAttachments = [], onStateChange, focusOnMount = false}: {initialAttachments?: FormAttachment[]; onStateChange?: (count: number, error: string) => void; focusOnMount?: boolean}) {
+export default function AttachmentFormSection({initialAttachments = [], onStateChange, focusOnMount = false, readOnly = false}: {initialAttachments?: FormAttachment[]; onStateChange?: (count: number, error: string) => void; focusOnMount?: boolean; readOnly?: boolean}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const sectionRef = useRef<HTMLDetailsElement>(null);
   const [removedIds, setRemovedIds] = useState<number[]>([]);
@@ -39,7 +41,7 @@ export default function AttachmentFormSection({initialAttachments = [], onStateC
 
   return <details ref={sectionRef} className="form-section full expense-attachments-section app-form-wizard-step app-form-wizard-step-7" open>
     <summary><span>Allegati</span><small>File, XML e P7M</small></summary>
-    <div className="form-section-stack">
+    <LinkedRecordFields locked={readOnly}>
       <label className="card attachment-row-wrap">
         <div className="attachment-row-title">Allegati &nbsp;<small className="text-warning">PDF, immagini, XML, P7M</small></div>
         <div className="flex attachment-row">
@@ -56,8 +58,8 @@ export default function AttachmentFormSection({initialAttachments = [], onStateC
         return <div className="card attachment-type-item" key={attachment.id}>
           <input type="hidden" name="existingAttachmentIds" value={attachment.id}/><input type="hidden" name="existingAttachmentTypes" value={currentType}/>
           <div className="attachment-type-item-heading"><span aria-hidden="true">📎</span><strong>{attachment.originalName}</strong><small>{attachment.sizeBytes ? `${Math.max(1, Math.round(attachment.sizeBytes / 1024))} KB` : "Allegato salvato"}</small></div>
-          <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${attachment.originalName}`}>{typeOptions.map(option => <button type="button" key={option.value} className={currentType === option.value ? "is-selected" : ""} onClick={() => setExistingTypes(current => ({...current, [attachment.id]: option.value}))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}</div>
-          <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => setRemovedIds(current => [...current, attachment.id])}>🗑 Elimina</button>
+          <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${attachment.originalName}`}>{typeOptions.map(option => <button type="button" key={option.value} className={currentType === option.value ? "is-selected" : ""} onClick={() => setExistingTypes(current => ({...current, [attachment.id]: option.value}))}><span className="btn-icon" aria-hidden="true">{option.icon}</span>{option.label}</button>)}</div>
+          <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => setRemovedIds(current => [...current, attachment.id])}><span className="btn-icon">🗑</span> Elimina</button>
         </div>;
       })}
       {files.map((file, index) => {
@@ -65,11 +67,11 @@ export default function AttachmentFormSection({initialAttachments = [], onStateC
         return <div className="card attachment-type-item" key={`${file.name}-${file.size}-${index}`}>
           <input type="hidden" name="attachmentTypes" value={currentType}/>
           <div className="attachment-type-item-heading"><span aria-hidden="true">＋</span><strong>{file.name}</strong><small>{Math.max(1, Math.round(file.size / 1024))} KB</small></div>
-          <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${file.name}`}>{typeOptions.map(option => <button type="button" key={option.value} className={currentType === option.value ? "is-selected" : ""} onClick={() => setFileTypes(current => current.map((value, itemIndex) => itemIndex === index ? option.value : value))}><span aria-hidden="true">{option.icon}</span>{option.label}</button>)}</div>
-          <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeFile(index)}>🗑 Elimina</button>
+          <div className="btn-group attachment-type-selector" role="group" aria-label={`Tipo di ${file.name}`}>{typeOptions.map(option => <button type="button" key={option.value} className={currentType === option.value ? "is-selected" : ""} onClick={() => setFileTypes(current => current.map((value, itemIndex) => itemIndex === index ? option.value : value))}><span className="btn-icon" aria-hidden="true">{option.icon}</span>{option.label}</button>)}</div>
+          <button className="btn btn-sm btn-danger attachment-remove-button" type="button" onClick={() => removeFile(index)}><span className="btn-icon">🗑</span> Elimina</button>
         </div>;
       })}
       {error ? <p className="inline-warning full">{error}</p> : null}
-    </div>
+    </LinkedRecordFields>
   </details>;
 }

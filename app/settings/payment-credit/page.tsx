@@ -225,7 +225,7 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
             </table>
           </div>
           <div className="cash-register-routing-actions">
-            <button className="btn btn-sm btn-primary" type="submit">✓ Salva instradamento</button>
+            <button className="btn btn-sm btn-primary" type="submit"><span className="btn-icon">✓</span> Salva instradamento</button>
           </div>
         </form> : <p className="muted">Abilita almeno un metodo non Cash nel registratore e configura un canale di vendita.</p>}
       </div>

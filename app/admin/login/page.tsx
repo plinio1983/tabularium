@@ -59,7 +59,7 @@ export default async function AdminLoginPage({ searchParams }: { searchParams?: 
         </div>
 
         <button type="submit" className="btn btn-md btn-primary admin-login-submit">
-          Accedi alla console <span aria-hidden="true">→</span>
+          Accedi alla console <span className="btn-icon" aria-hidden="true">→</span>
         </button>
         <p className="admin-login-security-note"><span aria-hidden="true">●</span> Connessione protetta e sessione cifrata</p>
       </form>

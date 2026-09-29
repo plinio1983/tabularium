@@ -61,9 +61,9 @@ test('incassi: apertura e chiusura mantengono ricerca e ordinamento sulla pagina
   assert.equal(history[1].href, '/incomes?customerQuick=Cliente&mobileSort=amount_desc');
 });
 
-for (const [pathname, kind] of [['/suppliers/7', 'expense'], ['/employees/8', 'expense'], ['/clients/9', 'income']]) {
+for (const [pathname, kind] of [['/suppliers/7', 'expense'], ['/employees/8', 'expense'], ['/clients/9', 'income'], ['/expenses/payments', 'expense'], ['/incomes/credits', 'income'], ['/recurring-expenses/10', 'expense'], ['/recurring-incomes/11', 'income']]) {
   test(`${pathname}: apertura e chiusura dei movimenti collegati conservano il ritorno al dettaglio`, () => {
-    const params = new URLSearchParams({returnTo: '/expenses?mobileList=1&supplierQuick=Test', mobileList: '1'});
+    const params = new URLSearchParams({returnTo: '/expenses?mobileList=1&supplierQuick=Test', mobileList: '1', page: '2', sort: 'date', direction: 'desc'});
     const {tree, history, closeButton} = render(params.toString(), pathname, kind);
     tree.props.children[0].props.children[1].props.onClick({preventDefault() {}});
     const opened = new URL(history[0].href, 'http://localhost');
@@ -74,5 +74,9 @@ for (const [pathname, kind] of [['/suppliers/7', 'expense'], ['/employees/8', 'e
     assert.equal(closed.pathname, pathname);
     assert.equal(closed.searchParams.has('mobileList'), false);
     assert.equal(closed.searchParams.get('returnTo'), params.get('returnTo'));
+    for (const key of ['page', 'sort', 'direction']) {
+      assert.equal(opened.searchParams.get(key), params.get(key));
+      assert.equal(closed.searchParams.get(key), params.get(key));
+    }
   });
 }

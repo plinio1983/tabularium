@@ -40,7 +40,7 @@ export default function FilterDrawer({open, onClose, title, panelClassName = 're
     <aside ref={panelRef} className={`filter-drawer-panel filter-drawer-with-footer ${panelClassName}`} role="dialog" aria-modal="true" aria-label={title}>
       <div className="filter-drawer-header">
         <h3>{title}</h3>
-        <button ref={closeRef} className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi filtri" onClick={onClose}>×</button>
+        <button ref={closeRef} className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi filtri" onClick={onClose}><span className="btn-icon">×</span></button>
       </div>
       {children}
       {actions}

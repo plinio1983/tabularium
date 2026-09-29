@@ -24,6 +24,24 @@ function allInputsForForm(formId: string) {
   );
 }
 
+// Modal menu rows retain their source so resizing can restore overflow actions.
+const modalActionSources = new WeakMap<HTMLButtonElement, HTMLButtonElement>();
+
+function syncActionMenuVisibility(bar: HTMLElement) {
+  const direct = bar.querySelector<HTMLElement>("[data-bulk-direct-actions]");
+  const shortcuts = Array.from(direct?.querySelectorAll<HTMLButtonElement>("[data-bulk-shortcut]") ?? []);
+  bar.querySelectorAll<HTMLButtonElement>(".bulk-action-menu-panel button").forEach(button => {
+    const proxy = button.dataset.bulkActionProxy;
+    const counterpart = proxy ? direct?.querySelector<HTMLElement>(proxy) : shortcuts.find(shortcut =>
+      Boolean(button.name) && shortcut.name === button.name && shortcut.value === button.value
+      && shortcut.getAttribute("formaction") === button.getAttribute("formaction")
+      && shortcut.getAttribute("formmethod") === button.getAttribute("formmethod")
+    );
+    // Disabled direct controls still occupy their slot; selection does not duplicate them.
+    button.hidden = Boolean(counterpart?.getClientRects().length);
+  });
+}
+
 function syncDirectActionGroup(group: HTMLElement) {
   const formId = group.getAttribute("data-bulk-form") ?? "";
   const selectedInputs = formId ? selectedInputsForForm(formId) : [];
@@ -200,6 +218,8 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
   const sourcePanel = sourceMenu.querySelector<HTMLElement>(".bulk-action-menu-panel");
   if (!sourcePanel) return;
 
+  const sourceBar = sourceMenu.closest<HTMLElement>(".bulk-actions-bar");
+  if (sourceBar) syncActionMenuVisibility(sourceBar);
   closeBulkActionModal();
   sourceMenu.removeAttribute("open");
 
@@ -228,7 +248,10 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
   close.type = "button";
   close.className = "bulk-action-modal-close";
   close.setAttribute("aria-label", "Chiudi azioni bulk");
-  close.textContent = "×";
+  const closeIcon = document.createElement("span");
+  closeIcon.className = "btn-icon";
+  closeIcon.textContent = "×";
+  close.appendChild(closeIcon);
   close.addEventListener("click", closeBulkActionModal);
 
   header.appendChild(title);
@@ -248,6 +271,8 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
       element.classList.remove("hidden-xs-down", "hidden-sm-down", "hidden-sm-up", "hidden-mobile");
     });
     cloned.disabled = sourceButton.disabled;
+    cloned.hidden = sourceButton.hidden;
+    modalActionSources.set(cloned, sourceButton);
     cloned.addEventListener("click", () => {
       if (sourceButton.disabled) return;
       closeBulkActionModal();
@@ -346,7 +371,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     trigger.setAttribute("aria-label", "Azioni multiple");
 
     const caret = document.createElement("span");
-    caret.className = "floating-bulk-caret";
+    caret.className = "floating-bulk-caret btn-icon";
     caret.textContent = "▾";
     const icon = document.createElement("span");
     icon.className = "btn-icon";
@@ -412,7 +437,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   });
   if (newItem) {
     const newItemWrap = document.createElement("div");
-    const label = newItem.getAttribute("data-floating-label") ?? "Aggiungi spesa";
+    const label = newItem.getAttribute("data-floating-label") ?? "Spesa";
     const icon = newItem.getAttribute("data-floating-icon") ?? (newItem.querySelector(".btn-icon") ? "" : "+");
     newItemWrap.className = "bulk-inner-container";
     newItemWrap.appendChild(buildFloatingButton(newItem, label, icon, "floating-bulk-new bulk-direct-link bulk-add-link btn btn-md btn-primary"));
@@ -420,11 +445,25 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     inner.appendChild(newItemWrap);
   }
 
+  const closeList = sourceBar.closest<HTMLElement>(".mobile-record-list-pane")
+    ?.querySelector<HTMLButtonElement>(".mobile-record-close");
+  if (closeList) {
+    const closeButton = buildFloatingButton(closeList, "Chiudi lista e torna al riepilogo", "×", "floating-bulk-close btn btn-neutral btn-icon-only");
+    closeButton.title = "Torna al riepilogo";
+    inner.appendChild(closeButton);
+  }
+
   document.body.appendChild(floating);
   return floating;
 }
 
 function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
+  syncActionMenuVisibility(sourceBar);
+  const sourceActions = sourceBar.querySelectorAll<HTMLButtonElement>(".bulk-action-menu-panel button");
+  floating.querySelectorAll<HTMLButtonElement>(".floating-bulk-menu-panel button").forEach((button, index) => {
+    button.hidden = Boolean(sourceActions[index]?.hidden);
+    button.disabled = Boolean(sourceActions[index]?.disabled);
+  });
   const sourceMenu = sourceBar.querySelector<HTMLElement>("[data-bulk-menu]");
   const sourceEdit = sourceBar.querySelector<HTMLElement>("[data-bulk-edit]");
   const sourceDirectCopy = sourceBar.querySelector<HTMLElement>("[data-bulk-direct-actions] [data-bulk-copy]");
@@ -669,6 +708,10 @@ export default function BulkSelectionController() {
     const onScrollOrResize = () => {
       syncBulkControls();
       updateFloatingVisibility();
+      document.querySelectorAll<HTMLButtonElement>(".bulk-action-modal-actions > button").forEach(button => {
+        const source = modalActionSources.get(button);
+        if (source) button.hidden = source.hidden;
+      });
     };
 
     const onKeyDown = (event: KeyboardEvent) => {

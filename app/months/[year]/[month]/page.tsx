@@ -332,7 +332,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 {mode === 'overall' && periodType !== 'month' ? <Link
                     className="month-report-vat-detail-link"
                     href={`/months/${year}/${month}?mode=fiscal${periodQuery}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}#iva`}
-                >Apri il prospetto IVA dettagliato in modalità Fiscale →</Link> : null}
+                >Apri il prospetto IVA dettagliato in modalità Fiscale <span className="btn-icon">→</span></Link> : null}
             </section>
             <section className="card month-report-section"><h3>{mode === 'fiscal' ? 'Indicatori fiscali' : 'Composizione dei movimenti'}</h3>
                 <dl className="month-report-summary-grid">

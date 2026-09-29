@@ -272,8 +272,8 @@ export default function ExpensesList({
                              data-bulk-form={formId}>
                         <summary className="bulk-action-trigger" aria-label="Azioni multiple">
                             <span className="btn-icon" aria-hidden="true">⚙</span>
-                            <span className="hidden-sm-up hidden-xs-down">Actions</span>
-                            <span className="hidden-sm-down hidden-xs-down">Bulk actions</span>
+                            <span className="hidden-sm-up hidden-xs-down">Azioni</span>
+                            <span className="hidden-sm-down hidden-xs-down">Azioni</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
                         <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-copy]" disabled><span className="btn-icon">⧉</span><span>Copia</span></button>
@@ -318,7 +318,7 @@ export default function ExpensesList({
                 </div>
                 <div className="bulk-inner-container">
                     <ExpenseNewTriggerButton className="bulk-direct-link bulk-add-link btn btn-md btn-primary"
-                                             floatingLabel="Aggiungi spesa">
+                                             floatingLabel="Spesa">
                         <span className="btn-icon">＋</span>
                         <span className="hidden-sm-down">Spesa</span>
                     </ExpenseNewTriggerButton>
@@ -470,7 +470,7 @@ export default function ExpensesList({
                                aria-label="Seleziona tutte le spese"/>
                     </th> : null}
                     <th className="cell-order-date" data-sort-key="order-date" data-sort-type="date">
-                        <span className="th-wrap">Data<br/>riferimento</span></th>
+                        <span className="th-wrap">Data<br/>rif.</span></th>
                     <th className="cell-billing-period" data-sort-key="billing-period" data-sort-type="number">
                         <span className="th-wrap">Periodo<br/>Cont.</span></th>
                     <th className="cell-type" data-sort-key="type"><span className="th-wrap">Tipo</span></th>

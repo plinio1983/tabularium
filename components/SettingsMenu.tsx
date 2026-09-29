@@ -63,7 +63,7 @@ export default function SettingsMenu() {
             aria-controls="settings-drawer"
             onClick={openMenu}
         >
-            <span className="burger-menu-icon" aria-hidden="true"><span/><span/><span/></span>
+            <span className="burger-menu-icon btn-icon" aria-hidden="true"><span/><span/><span/></span>
         </button>
 
         {isOpen ?
@@ -74,7 +74,7 @@ export default function SettingsMenu() {
                 <div className="settings-drawer-heading">
                     <h2>Menu</h2>
                 </div>
-                <button className="settings-drawer-close" type="button" aria-label="Chiudi menu" onClick={closeMenu}>×</button>
+                <button className="settings-drawer-close" type="button" aria-label="Chiudi menu" onClick={closeMenu}><span className="btn-icon">×</span></button>
             </div>
             <nav className="settings-drawer-nav" aria-label="Menu principale laterale">
                 {mainMenuLinks.map(link => link.href
@@ -84,7 +84,7 @@ export default function SettingsMenu() {
                     </Link>
                     :
                     <button key={link.label} type="button" className="settings-drawer-item-disabled" disabled aria-disabled="true" title="Gestione clienti non ancora disponibile">
-                        <span className="settings-drawer-item-icon" aria-hidden="true">{link.icon}</span>
+                        <span className="settings-drawer-item-icon btn-icon" aria-hidden="true">{link.icon}</span>
                         <span>{link.label}</span>
                     </button>)}
                 <Link href="/settings" onClick={closeMenu}>

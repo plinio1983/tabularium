@@ -78,7 +78,7 @@ export default function BulkChangeCategoryModal({
           </option>)}
         </select></label>
         <div className="actions-row form-actions-row">
-          <button type="button" className="btn btn-sm btn-default" onClick={() => setIsOpen(false)}>× Annulla</button>
+          <button type="button" className="btn btn-sm btn-default" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span> Annulla</button>
           <button type="submit" className="btn btn-md btn-primary">Salva</button>
         </div>
       </form>

@@ -26,7 +26,7 @@ export default function DetailActionsMenu({children, desktop = false}: {children
 
   return <details ref={menuRef} className={`detail-actions-menu${desktop ? " detail-actions-menu-desktop" : ""}`}>
     <summary className="btn btn-sm btn-default" aria-label="Azioni del dettaglio">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <span className="btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
     </summary>
     <div className="detail-actions-menu-panel" onClick={event => {
       const action = event.target instanceof Element ? event.target.closest('button, a') : null;

@@ -1,3 +1,5 @@
+import RecordDetailDocument from '@/components/RecordDetailDocument';
+import {canConvertIncome} from '@/lib/record-conversion';
 import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
 import DetailActionsBar from '@/components/DetailActionsBar';
 import Link from 'next/link';
@@ -172,32 +174,33 @@ export default async function IncomeDetailPage({params, searchParams}: {
         />
 
         <div className="record-detail-shell">
-            <div className="record-detail-action-row record-detail-responsive-actions pt-0">
+            <RecordDetailDocument className={['record-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')} actions={
+                <div className="record-detail-action-row record-detail-responsive-actions">
                 <div className="left-side">
                     <DetailBackButton href={returnTo} />
                 </div>
                 <div className="right-side">
                     <DetailActionsBar
                         primary={<>
-                            <button className="btn btn-sm btn-option" type="button" data-income-edit-id={income.id}>✎ Modifica</button>
-                            <button className="btn btn-sm btn-option" type="button" data-income-copy-id={income.id}>⧉ Copia</button>
-                            <button className="btn btn-sm btn-option detail-action-primary" type="button" data-income-credit-id={income.id} disabled={creditSummary.residual <= 0}>€ Aggiungi accredito</button>
+                            <button className="btn btn-sm btn-option" type="button" data-income-edit-id={income.id}><span className="btn-icon">✎</span> Modifica</button>
+                            <button className="btn btn-sm btn-option" type="button" data-income-copy-id={income.id}><span className="btn-icon">⧉</span> Copia</button>
+                            <button className="btn btn-sm btn-option detail-action-primary" type="button" data-income-credit-id={income.id} disabled={creditSummary.residual <= 0}><span className="btn-icon">€</span> Aggiungi accredito</button>
                         </>}
                         secondary={<>
+                            {hasWorkspaceRole(current.membership.role, workspaceOperationalRoles) && canConvertIncome(income) ? <Link className="btn btn-sm btn-option" href={`/incomes/${income.id}/convert`}><span className="btn-icon">⇄</span> Converti tipo</Link> : null}
                             {hasWorkspaceRole(current.membership.role, workspaceOperationalRoles) && income.isFiscal && income.invoiceStatus !== 'EMESSA' ? <form action={'/api/incomes/bulk?returnTo=' + encodeURIComponent(currentDetailReturnTo)} method="post">
                             <input type="hidden" name="ids" value={income.id}/>
                             <input type="hidden" name="bulkAction" value="invoice_emitted"/>
-                            <button className="btn btn-sm btn-option" type="submit">✓ Fattura emessa</button>
+                            <button className="btn btn-sm btn-option" type="submit"><span className="btn-icon">✓</span> Fattura emessa</button>
                             </form> : null}
-                            <button className="btn btn-sm btn-option" type="button" data-income-attachments-id={income.id}>📎 Modifica allegati</button>
+                            <button className="btn btn-sm btn-option" type="button" data-income-attachments-id={income.id}><span className="btn-icon">📎</span> Modifica allegati</button>
                             <BulkExpenseAttachmentsModal formId="income-detail-download" recordIds={[income.id]} disabled={!income.attachments.length} endpoint="/api/incomes/attachments/archive" subject="incassi"/>
-                            <DeleteActionButton action={'/api/incomes/' + income.id + '?returnTo=' + encodedReturnTo} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                            <DeleteActionButton action={'/api/incomes/' + income.id + '?returnTo=' + encodedReturnTo} confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
                         </>}
                     />
                 </div>
             </div>
-            <article className={['record-detail-document', 'income-detail-document', detailToneClass].filter(Boolean).join(' ')}>
-
+            }>
                 <section className="record-detail-hero">
                     <div>
                         <div className="record-detail-title-block">
@@ -247,19 +250,6 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 <div className="record-detail-progress" aria-label={`Accreditato ${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0).toFixed(0)}%`}>
                     <span style={{width: `${Math.min(100, amount ? creditSummary.credited / amount * 100 : 0)}%`}}/>
                 </div>
-
-                <section className="record-detail-section">
-                    <div className="record-detail-section-heading">
-                        <div><h2>Allegati</h2><p>Fatture, documenti e ricevute collegati all’incasso.</p></div>
-                        <button className="btn btn-sm btn-default" type="button" data-income-attachments-id={income.id}>✎ Gestisci Allegati</button>
-                    </div>
-                    {income.attachments.length ? <div className="record-attachment-panel">
-                        {income.attachments.map(attachment => <a className="record-attachment-item" href={`/api/income-attachments/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id}>
-                            <span className="record-attachment-icon">{attachment.type === 'INVOICE' ? '▤' : attachment.type === 'PAYMENT_RECEIPT' ? '€' : '📄'}</span>
-                            <span><strong>{attachment.originalName}</strong><small>{attachment.type === 'INVOICE' ? 'Fattura' : attachment.type === 'PAYMENT_RECEIPT' ? 'Ricevuta accredito' : 'Documento'} · {attachment.sizeBytes ? `${Math.max(1, Math.round(attachment.sizeBytes / 1024))} KB` : 'Apri allegato'}</small></span>
-                        </a>)}
-                    </div> : <p className="muted">Nessun allegato inserito.</p>}
-                </section>
 
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
@@ -332,36 +322,43 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     </div>
                 </section>
 
-                <section className="record-detail-section">
-                    <div className="record-detail-section-heading">
-                        <div>
-                            <h2>Note</h2>
-                            <p>Annotazioni interne collegate all’incasso.</p>
-                        </div>
-                    </div>
+                {income.notes?.trim() ? <section className="record-detail-section">
                     <div className="record-detail-item record-detail-item-wide">
                         <span>Note</span>
-                        <strong className="displayed-notes">{income.notes ?? 'Nessuna nota inserita.'}</strong>
+                        <strong className="displayed-notes">{income.notes}</strong>
                     </div>
+                </section> : null}
+
+                <section className="record-detail-section">
+                    <div className="record-detail-section-heading">
+                        <div><h2>Allegati</h2><p>Fatture, documenti e ricevute collegati all’incasso.</p></div>
+                        <button className="btn btn-sm btn-default" type="button" data-income-attachments-id={income.id}><span className="btn-icon">✎</span> Gestisci Allegati</button>
+                    </div>
+                    {income.attachments.length ? <div className="record-attachment-panel">
+                        {income.attachments.map(attachment => <a className="record-attachment-item" href={`/api/income-attachments/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id}>
+                            <span className="record-attachment-icon">{attachment.type === 'INVOICE' ? '▤' : attachment.type === 'PAYMENT_RECEIPT' ? '€' : '📄'}</span>
+                            <span><strong>{attachment.originalName}</strong><small>{attachment.type === 'INVOICE' ? 'Fattura' : attachment.type === 'PAYMENT_RECEIPT' ? 'Ricevuta accredito' : 'Documento'} · {attachment.sizeBytes ? `${Math.max(1, Math.round(attachment.sizeBytes / 1024))} KB` : 'Apri allegato'}</small></span>
+                        </a>)}
+                    </div> : <p className="muted">Nessun allegato inserito.</p>}
                 </section>
 
-                <section className="record-detail-section record-detail-section-actions">
-                    <details className="record-detail-actions-collapse">
-                        <summary><span>Azioni sull’incasso</span><small>Rimuovi, copia o modifica</small></summary>
-                        <div className="record-detail-actions-collapse-panel">
-                            <DeleteActionButton
-                                action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}
-                                confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata."
-                                className="btn btn-sm btn-danger"
-                            >
-                                🗑 Rimuovi
-                            </DeleteActionButton>
-                            <button className="btn btn-sm btn-default" type="button" data-income-copy-id={income.id}>⧉ Copia</button>
-                            <Link className="btn btn-sm btn-default" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>
-                        </div>
-                    </details>
-                </section>
-            </article>
+                {/*<section className="record-detail-section record-detail-section-actions">*/}
+                {/*    <details className="record-detail-actions-collapse">*/}
+                {/*        <summary><span>Azioni sull’incasso</span><small>Rimuovi, copia o modifica</small></summary>*/}
+                {/*        <div className="record-detail-actions-collapse-panel">*/}
+                {/*            <DeleteActionButton*/}
+                {/*                action={`/api/incomes/${income.id}?returnTo=${encodedReturnTo}`}*/}
+                {/*                confirmMessage="Confermi la rimozione dell’incasso? L’operazione non può essere annullata."*/}
+                {/*                className="btn btn-sm btn-danger"*/}
+                {/*            >*/}
+                {/*                🗑 Rimuovi*/}
+                {/*            </DeleteActionButton>*/}
+                {/*            <button className="btn btn-sm btn-default" type="button" data-income-copy-id={income.id}>⧉ Copia</button>*/}
+                {/*            <Link className="btn btn-sm btn-default" href="#" data-income-edit-id={income.id}>✎ Modifica</Link>*/}
+                {/*        </div>*/}
+                {/*    </details>*/}
+                {/*</section>*/}
+            </RecordDetailDocument>
         </div>
     </div>;
 }

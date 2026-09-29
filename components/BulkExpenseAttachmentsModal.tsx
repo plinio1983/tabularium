@@ -161,7 +161,7 @@ export default function BulkExpenseAttachmentsModal({
                         <p className="muted">Scegli quali documenti includere per i {ids.length} record selezionati.</p>
                     </div>
                     <button className="btn btn-icon-only btn-default modal-close-button" type="button"
-                            onClick={() => setOpen(false)} aria-label="Chiudi">×
+                            onClick={() => setOpen(false)} aria-label="Chiudi"><span className="btn-icon">×</span>
                     </button>
                 </div>
 
@@ -172,7 +172,7 @@ export default function BulkExpenseAttachmentsModal({
                                                    onClick={() => {
                                                        setFilter(option.value);
                                                        setNotice('');
-                                                   }}><span
+                                                   }}><span className="btn-icon"
                         aria-hidden="true">{option.icon}</span>{subject === 'incassi' && option.value === 'PAYMENTS' ? 'Solo accrediti' : option.label}
                     </button>)}
                 </div>
@@ -203,7 +203,7 @@ export default function BulkExpenseAttachmentsModal({
 
                 <div className="actions-row form-actions-row bulk-attachments-actions">
                     <button className="btn btn-md btn-default btn-cancel" type="button" disabled={Boolean(busy)}
-                            onClick={() => setOpen(false)}>× Annulla
+                            onClick={() => setOpen(false)}><span className="btn-icon">×</span> Annulla
                     </button>
                     <button className="btn btn-md btn-default" type="button" disabled={!available || !email.trim()}
                             onClick={sendEmail}><span

@@ -33,7 +33,7 @@ export default function ExpenseTypeChoice({
         <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
             {options.slice(0, 1).map(option => <TypeButton key={option.type} option={option} selected={selected} disabled={disabled || disabledTypes.includes(option.type) || (!onSelect && selected !== option.type)} onSelect={onSelect}/>) }
             <button type="button" disabled={disabled || !onSelectCounter} onClick={onSelectCounter}>
-                <span aria-hidden="true">🛍️</span><strong>Da banco</strong><small>Acquisto già pagato</small>
+                <span className="btn-icon" aria-hidden="true">🛍️</span><strong>Da banco</strong><small>Acquisto già pagato</small>
             </button>
             {options.slice(1).map(option => <TypeButton key={option.type} option={option} selected={selected} disabled={disabled || disabledTypes.includes(option.type) || (!onSelect && selected !== option.type)} onSelect={onSelect}/>) }
         </div>
@@ -48,6 +48,6 @@ function TypeButton({option, selected, disabled, onSelect}: {
 }) {
     const isSelected = selected === option.type;
     return <button type="button" role="radio" aria-checked={isSelected} className={isSelected ? "is-selected" : ""} disabled={disabled} onClick={() => onSelect?.(option.type)}>
-        <span aria-hidden="true">{option.icon}</span><strong>{option.label}</strong><small>{option.description}</small>
+        <span className="btn-icon" aria-hidden="true">{option.icon}</span><strong>{option.label}</strong><small>{option.description}</small>
     </button>;
 }

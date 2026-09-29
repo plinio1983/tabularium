@@ -1,16 +1,21 @@
 'use client';
 
+import {matchesEntityQuickSearch} from '@/lib/entity-quick-search';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 
 type SupplierOption = {
   id: number;
   businessName: string;
   alias?: string | null;
+  kind?: 'employee';
+  employeeCode?: string | null;
 };
 
-export default function SupplierFilterInput({ initialValue = '' }: { initialValue?: string }) {
+export type EmployeeFilterOption = {id: number; firstName: string; lastName: string; employeeCode?: string | null};
+
+export default function SupplierFilterInput({ initialValue = '', employees = [] }: { initialValue?: string; employees?: EmployeeFilterOption[] }) {
   const [query, setQuery] = useState(initialValue);
-  const [results, setResults] = useState<SupplierOption[]>([]);
+  const [suppliers, setResults] = useState<SupplierOption[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,6 +43,15 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, []);
+
+  const results: SupplierOption[] = [...suppliers, ...employees.filter(employee => matchesEntityQuickSearch(query,
+    `${employee.lastName} ${employee.firstName}`, `${employee.firstName} ${employee.lastName}`, employee.employeeCode
+  )).slice(0, 8).map(employee => ({
+    id: employee.id,
+    businessName: `${employee.lastName} ${employee.firstName}`.trim(),
+    kind: 'employee' as const,
+    employeeCode: employee.employeeCode,
+  }))];
 
   function selectSupplier(supplier: SupplierOption) {
     setQuery(supplier.businessName);
@@ -76,13 +90,13 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
         }}
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
-        placeholder="Cerca fornitore o alias"
+        placeholder="Cerca fornitore, alias o dipendente"
         autoComplete="off"
       />
       {open && <div className="entity-autocomplete-results filter-entity-autocomplete-results" role="listbox">
         {results.length ? results.map((supplier, index) => <button
           type="button"
-          key={supplier.id}
+          key={`${supplier.kind ?? 'supplier'}-${supplier.id}`}
           className={index === activeIndex ? 'active' : ''}
           onMouseEnter={() => setActiveIndex(index)}
           onMouseDown={(event) => {
@@ -91,8 +105,9 @@ export default function SupplierFilterInput({ initialValue = '' }: { initialValu
           }}
         >
           <strong>{supplier.businessName}</strong>
+          {supplier.kind === 'employee' && <small>Dipendente{supplier.employeeCode ? ` · ${supplier.employeeCode}` : ''}</small>}
           {supplier.alias && <small>Referente: {supplier.alias}</small>}
-        </button>) : <div className="entity-autocomplete-empty">Nessun fornitore trovato.</div>}
+        </button>) : <div className="entity-autocomplete-empty">Nessun fornitore o dipendente trovato.</div>}
       </div>}
     </div>
   </div>;

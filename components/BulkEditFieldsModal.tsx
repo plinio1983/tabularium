@@ -168,7 +168,7 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
             <h2 id={`${formId}-bulk-edit-title`}>{step === "choice" ? `Modifica ${subject}` : step === "category" ? "Modifica categoria" : step === "dates" ? "Modifica date" : step === "supplier" ? "Modifica esercente" : step === "customer" ? "Modifica cliente" : step === "salesChannel" ? "Modifica canale di vendita" : "Informazioni fiscali e contabili"}</h2>
             <p className="muted"><strong>{selectedIds.length}</strong> {selectedIds.length === 1 ? "record selezionato" : "record selezionati"}</p>
           </div>
-          <button type="button" className="bulk-edit-close-button" aria-label="Chiudi modifica multipla" onClick={closeModal}>✕</button>
+          <button type="button" className="bulk-edit-close-button" aria-label="Chiudi modifica multipla" onClick={closeModal}><span className="btn-icon">✕</span></button>
         </div>
         <div key={step} className={`bulk-edit-step bulk-edit-step-${direction}`}>
           {step === "choice" ? <div className="bulk-edit-form bulk-edit-choice-form">
@@ -184,9 +184,9 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
                 disabled={!field.enabled}
                 onClick={field.step === "category" && field.enabled ? selectCategory : field.step === "dates" && field.enabled ? selectDates : field.step === "supplier" && field.enabled ? selectSupplier : field.step === "customer" && field.enabled ? selectCustomer : field.step === "salesChannel" && field.enabled ? selectSalesChannel : field.step === "accounting" && field.enabled ? selectAccounting : undefined}
               >
-                <span className="bulk-edit-field-icon" aria-hidden="true">{field.icon}</span>
+                <span className="bulk-edit-field-icon btn-icon" aria-hidden="true">{field.icon}</span>
                 <span className="bulk-edit-field-copy"><strong>{field.label}</strong><small>{field.description}</small></span>
-                <span className="bulk-edit-field-status">{field.enabled ? "›" : field.status ?? "Prossimamente"}</span>
+                <span className="bulk-edit-field-status">{field.enabled ? <span className="btn-icon">›</span> : field.status ?? "Prossimamente"}</span>
               </button>)}
             </div>
             <div className="bulk-edit-actions">

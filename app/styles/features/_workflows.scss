@@ -1078,42 +1078,34 @@
 }
 
 .bulk-action-menu-panel button {
-  width: 100%;
-  background: transparent;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  min-width: 100%;
-  align-items: center;
-  flex: 0 0 auto;
-  white-space: nowrap;
-  max-width: none;
-  min-height: 38px;
-  height: auto;
-  padding: 9px 10px;
   display: flex;
-  justify-content: flex-start;
+  flex: 0 0 auto;
   gap: 8px;
+  width: 100%;
+  min-width: 100%;
+  max-width: none;
+  // height: auto;
+  min-height: 38px;
+  padding: 9px 10px;
+  align-items: center;
+  justify-content: flex-start;
+  white-space: nowrap;
+  background: transparent;
+  // font: inherit;
+  // text-align: left;
+  cursor: pointer;
   border: 0;
   border-bottom: 1px solid var(--line);
-  //border-radius: 0;
+  border-radius: 0;
   color: var(--text);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.15;
   box-shadow: none;
 
   .btn-icon {
     width: 26px;
   }
-}
-
-.bulk-action-menu-panel button {
-  min-width: 100% !important;
-}
-
-.bulk-action-menu-panel button {
-  width: 100% !important;
 }
 
 .bulk-action-menu-panel button:hover {
@@ -1320,13 +1312,13 @@ select:disabled {
   gap: 7px;
   //height: 30px;
   min-height: 38px;
-  padding: 0 13px;
+  padding: 0 12px;
   border-style: solid;
   border-width: 1px;
   border-color: #cfd7ff;
   border-radius: 999px;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
   text-decoration: none;
   box-shadow: 0 3px 8px rgba(15, 23, 42, .05);
@@ -3221,4 +3213,12 @@ button.bulk-direct-danger {
   .expense-import-btn .expense-import-btn-text-compact {
     display: inline !important;
   }
+}
+
+
+// Menu actions already visible in the bar stay hidden despite the button display rules.
+.bulk-action-menu-panel button[hidden],
+.floating-bulk-menu-panel button[hidden],
+.bulk-action-modal-actions button[hidden] {
+  display: none !important;
 }

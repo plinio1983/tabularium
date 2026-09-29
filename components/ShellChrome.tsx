@@ -46,6 +46,7 @@ function DesktopHeader({
                            employeePage = false,
                            clientPage = false,
                            supplierPage = false,
+                           companyPage = false,
                            dashboardPage = false,
                            incomePage = false,
                            expensePage = false,
@@ -60,6 +61,7 @@ function DesktopHeader({
     employeePage?: boolean;
     clientPage?: boolean;
     supplierPage?: boolean;
+    companyPage?: boolean;
     dashboardPage?: boolean;
     incomePage?: boolean;
     expensePage?: boolean;
@@ -67,7 +69,7 @@ function DesktopHeader({
     recurringIncomePage?: boolean;
     userName?: string | null
 }) {
-    const className = `${compactOnMobile ? "nav compact-mobile-header-path" : "nav fixed"}${ledgerKind ? " ledger-page-header" : ""}${reportPage ? " report-page-header" : ""}${receiptListPage ? " receipt-list-page-header" : ""}${employeePage ? " employee-page-header" : ""}${clientPage ? " client-page-header" : ""}${supplierPage ? " supplier-page-header" : ""}${dashboardPage ? " dashboard-page-header" : ""}${incomePage ? " income-page-header" : ""}${expensePage ? " expense-page-header" : ""}${recurringExpensePage ? " recurring-expense-page-header" : ""}${recurringIncomePage ? " recurring-income-page-header" : ""}`;
+    const className = `${compactOnMobile ? "nav compact-mobile-header-path" : "nav fixed"}${ledgerKind ? " ledger-page-header" : ""}${reportPage ? " report-page-header" : ""}${receiptListPage ? " receipt-list-page-header" : ""}${employeePage ? " employee-page-header" : ""}${clientPage ? " client-page-header" : ""}${supplierPage ? " supplier-page-header" : ""}${companyPage ? " company-page-header" : ""}${dashboardPage ? " dashboard-page-header" : ""}${incomePage ? " income-page-header" : ""}${expensePage ? " expense-page-header" : ""}${recurringExpensePage ? " recurring-expense-page-header" : ""}${recurringIncomePage ? " recurring-income-page-header" : ""}`;
 
     return <div className={className}>
         {/*<div className="site-header-brand compact hidden-md-up">*/}
@@ -106,6 +108,10 @@ function DesktopHeader({
             <button className="btn btn-sm btn-primary" type="button" data-client-new>
                 <span className="btn-icon" aria-hidden="true">＋</span>Nuovo cliente
             </button>
+        </div> : null}
+        {companyPage ? <div className="company-mobile-header-actions" aria-label="Azioni società">
+            <Link className="btn btn-sm btn-default" href="/settings" aria-label="Indietro"><span className="btn-icon">↩</span><span className="company-header-back-label">Indietro</span></Link>
+            <button className="btn btn-sm btn-primary" type="button" data-company-new><span className="btn-icon">＋</span>Nuova società</button>
         </div> : null}
         {supplierPage ? <div className="supplier-mobile-header-actions" aria-label="Azioni fornitori">
             <button className="btn btn-sm btn-primary" type="button" data-supplier-new>
@@ -179,7 +185,7 @@ export default function ShellChrome({slot, userName}: Props) {
             </>;
         }
 
-        return <DesktopHeader ledgerKind={pathname === '/incomes/credits' ? 'credits' : pathname === '/expenses/payments' ? 'payments' : null} reportPage={/^\/months\/\d+\/\d+$/.test(pathname)} receiptListPage={pathname === '/incomes/cash-register/receipts'} employeePage={pathname === '/employees'} clientPage={pathname === '/clients'} supplierPage={pathname === '/suppliers'} dashboardPage={pathname === '/'} incomePage={pathname === '/incomes'} expensePage={pathname === '/expenses'} recurringExpensePage={pathname === '/recurring-expenses'} recurringIncomePage={pathname === '/recurring-incomes'} userName={userName}/>;
+        return <DesktopHeader ledgerKind={pathname === '/incomes/credits' ? 'credits' : pathname === '/expenses/payments' ? 'payments' : null} reportPage={/^\/months\/\d+\/\d+$/.test(pathname)} receiptListPage={pathname === '/incomes/cash-register/receipts'} employeePage={pathname === '/employees'} clientPage={pathname === '/clients'} supplierPage={pathname === '/suppliers'} companyPage={pathname === '/settings/company-settings'} dashboardPage={pathname === '/'} incomePage={pathname === '/incomes'} expensePage={pathname === '/expenses'} recurringExpensePage={pathname === '/recurring-expenses'} recurringIncomePage={pathname === '/recurring-incomes'} userName={userName}/>;
     }
 
     if (isFooterHiddenPath(pathname)) return null;

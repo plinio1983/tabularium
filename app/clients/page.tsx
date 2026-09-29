@@ -89,7 +89,7 @@ export default async function ClientsPage({searchParams}: {
                 <p className="muted">Anagrafica dei clienti usati nell’inserimento degli incassi.</p>
             </div>
             <div className="toolbar-actions">
-                <button className="btn btn-sm btn-primary" type="button" data-client-new>＋ Nuovo cliente</button>
+                <button className="btn btn-sm btn-primary" type="button" data-client-new><span className="btn-icon">＋</span> Nuovo cliente</button>
             </div>
         </div>
         <NewClientPanel initialOpen={input(filters, 'new') === '1'} salesChannels={salesChannels}/>
@@ -115,7 +115,7 @@ export default async function ClientsPage({searchParams}: {
                     <div className="recurring-active-filter-tags">{active.map(key =>
                         <span className="badge" key={key}><strong>{key}:</strong> {input(filters, key)}</span>)}</div>
                 </div>
-                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/clients">× Reset</Link>
+                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/clients"><span className="btn-icon">×</span> Reset</Link>
             </div> : null}
 
             <form id="clientBulkForm" action={`/api/clients/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar party-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
@@ -126,7 +126,7 @@ export default async function ClientsPage({searchParams}: {
                 <div className="bulk-action-buttons btn-group">
                     <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="clientBulkForm">
                         <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                            <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Actions</span><span className="hidden-sm-down hidden-xs-down">Bulk actions</span>
+                            <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
                             <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"

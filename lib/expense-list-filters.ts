@@ -28,3 +28,12 @@ export function matchesExpenseQuickSearch(expense: ListExpense, query: string) {
     expense.employee ? `${expense.employee.firstName} ${expense.employee.lastName}` : null,
     expense.employee ? `${expense.employee.lastName} ${expense.employee.firstName}` : null);
 }
+
+export function matchesExpenseMerchantSearch(expense: ListExpense, query: string) {
+  const merchant = expense.expenseType === 'TAX_CONTRIBUTION'
+    ? expense.taxAuthority?.name ?? expense.merchant
+    : expense.supplier?.businessName ?? expense.merchant;
+  return matchesEntityQuickSearch(query, merchant,
+    expense.employee ? `${expense.employee.lastName} ${expense.employee.firstName}` : null,
+    expense.employee ? `${expense.employee.firstName} ${expense.employee.lastName}` : null);
+}

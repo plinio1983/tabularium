@@ -23,5 +23,5 @@ export default function CopyValueButton({value}: {value: string}) {
     aria-label={copied ? "Valore copiato" : "Copia valore"}
     onClick={copyValue}
     disabled={!value}
-  >{copied ? "✓" : "⧉"}</button>;
+  ><span className="btn-icon">{copied ? "✓" : "⧉"}</span></button>;
 }

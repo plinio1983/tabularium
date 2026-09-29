@@ -18,13 +18,13 @@ export default function CategoryCreatePanel({ action, iconOptions }: Props) {
       onClick={() => setIsOpen(value => !value)}
     >
       <span className="category-create-toggle-copy">
-        <span className="category-create-toggle-icon" aria-hidden="true">＋</span>
+        <span className="category-create-toggle-icon btn-icon" aria-hidden="true">＋</span>
         <span>
           <strong>Nuova categoria</strong>
           <small>Aggiungi un nuovo valore disponibile nei form di spesa.</small>
         </span>
       </span>
-      <span className="category-create-toggle-state" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+      <span className="category-create-toggle-state btn-icon" aria-hidden="true">{isOpen ? '−' : '+'}</span>
     </button>
     {isOpen ? <form action={action} className="form app-record-form category-create-form settings-entity-create-form">
       <div className="app-form-field span-2">
@@ -57,7 +57,7 @@ export default function CategoryCreatePanel({ action, iconOptions }: Props) {
           <small>&nbsp;</small>
       </div>
       <div className="actions-row full category-create-actions">
-        <button type="button" className="btn btn-md btn-default" onClick={() => setIsOpen(false)}>× Annulla</button>
+        <button type="button" className="btn btn-md btn-default" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span> Annulla</button>
         <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">＋</span> Aggiungi categoria</button>
       </div>
     </form> : null}

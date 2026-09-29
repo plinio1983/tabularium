@@ -34,7 +34,7 @@ export function SupplierFormField({ label, icon, hint, className = '', htmlFor, 
           className="btn btn-sm btn-link"
           onClick={onCreate}
       >
-          ＋ Nuovo
+          <span className="btn-icon">＋</span> Nuovo
       </button>
     {children}
     {hint ? <small className="app-form-field-hint">{hint}</small> : null}
@@ -139,7 +139,7 @@ export function DateField({ label, name, value, onChange, hint, className = '', 
           inputRef.current?.focus();
           inputRef.current?.showPicker?.();
         }}
-      >▦</button>
+      ><span className="btn-icon">▦</span></button>
     </div>
     {children}
   </FormField>;
@@ -166,7 +166,7 @@ export function MonthField({ label, name, value, onChange, hint, className = '',
       <button type="button" className="app-date-picker-button" aria-label={`Apri datepicker mese e anno per ${label}`} onClick={() => {
         inputRef.current?.focus();
         inputRef.current?.showPicker?.();
-      }}>▦</button>
+      }}><span className="btn-icon">▦</span></button>
     </div>
   </FormField>;
 }

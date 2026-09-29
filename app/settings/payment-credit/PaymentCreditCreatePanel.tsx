@@ -28,13 +28,13 @@ export default function PaymentCreditCreatePanel({ action, type, iconOptions }: 
       onClick={() => setIsOpen(value => !value)}
     >
       <span className="category-create-toggle-copy">
-        <span className="category-create-toggle-icon" aria-hidden="true">{isBank ? '▥' : '▣'}</span>
+        <span className="category-create-toggle-icon btn-icon" aria-hidden="true">{isBank ? '▥' : '▣'}</span>
         <span>
           <strong>{isBank ? 'Nuova banca / canale accredito' : 'Nuovo metodo di pagamento o accredito'}</strong>
           <small>{isBank ? 'Aggiungi un conto disponibile nei movimenti.' : 'Aggiungi un metodo e definisci dove deve essere disponibile.'}</small>
         </span>
       </span>
-      <span className="category-create-toggle-symbol" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+      <span className="category-create-toggle-symbol btn-icon" aria-hidden="true">{isOpen ? '−' : '+'}</span>
     </button>
     {isOpen ? <form action={action} className="form app-record-form category-create-form settings-entity-create-form payment-credit-create-form">
       <label className="app-form-field"><span className="app-form-field-label">{isBank ? 'Nome banca o canale' : 'Nome metodo'}</span><input name="name" maxLength={80} required /></label>

@@ -329,7 +329,7 @@ export default function CounterExpenseRegister({
       <div className="cash-register-display-amount">
         <span>€</span>
         <input ref={amountRef} className={amountSizeClass} aria-label="Importo spesa" value={formattedAmount} readOnly inputMode="none"/>
-        <button type="button" className="amount-clear-button" aria-label="Azzera importo" onClick={clearAmount}>×</button>
+        <button type="button" className="amount-clear-button" aria-label="Azzera importo" onClick={clearAmount}><span className="btn-icon">×</span></button>
       </div>
     </section>
 
@@ -350,7 +350,7 @@ export default function CounterExpenseRegister({
       {['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'backspace'].map(key =>
         <button type="button" key={key} onClick={() => appendKey(key)}
                 aria-label={key === 'backspace' ? 'Cancella ultima cifra' : key}>
-          {key === 'backspace' ? '⌫' : key}
+          {key === 'backspace' ? <span className="btn-icon">⌫</span> : key}
         </button>)}
     </section>
 
@@ -361,10 +361,10 @@ export default function CounterExpenseRegister({
     <section className="cash-register-actions counter-expense-actions">
       <button className="cash-register-submit" type="button" disabled={!hasValidAmount}
               onClick={openPaymentModal}>
-        <span aria-hidden="true">💳</span>
+        <span className="btn-icon" aria-hidden="true">💳</span>
 
               <span>PAGA</span>
-              <span>➤</span>
+              <span className="btn-icon">➤</span>
       </button>
     </section>
 
@@ -375,7 +375,7 @@ export default function CounterExpenseRegister({
           <h2 id="counter-expense-method-title">
             {selectedMethod ? 'Conferma spesa' : 'Metodo di pagamento'}
           </h2>
-          <button type="button" aria-label="Chiudi" disabled={sending} onClick={closePaymentModal}>×</button>
+          <button type="button" aria-label="Chiudi" disabled={sending} onClick={closePaymentModal}><span className="btn-icon">×</span></button>
         </header>
 
         {!selectedMethod ? <div className="counter-expense-choice-list">
@@ -389,7 +389,7 @@ export default function CounterExpenseRegister({
                       setBankIndex(0);
                       setConfirmationIndex(1);
                     }}>
-              <span>{method.icon ?? '•'}</span>{method.name}
+              <span className="btn-icon">{method.icon ?? '•'}</span>{method.name}
             </button>)}
           <p className="cash-register-keyboard-hint">Usa le frecce per scegliere e premi Invio per selezionare.</p>
         </div> : <>
@@ -434,8 +434,8 @@ export default function CounterExpenseRegister({
                         className={`${bank.isPrimary ? 'is-primary' : ''} ${bankIndex === index ? 'is-selected' : ''}`}
                         onFocus={() => setBankIndex(index)}
                         onClick={() => void saveExpense(bank.id)}>
-                  <span>➤</span>
-                  <span>{bank.icon ?? '🏦'}</span>
+                  <span className="btn-icon">➤</span>
+                  <span className="btn-icon">{bank.icon ?? '🏦'}</span>
                   <span>{bank.name}{bank.isPrimary ? <small>Principale</small> : null}</span>
                 </button>)}
             </div>
@@ -448,15 +448,15 @@ export default function CounterExpenseRegister({
                     className={`cash-register-cancel btn btn-md btn-danger ${isCash && confirmationIndex === 0 ? 'is-selected' : ''}`}
                     type="button" disabled={sending}
                     onFocus={() => { if (isCash) setConfirmationIndex(0); }}
-                    onClick={closePaymentModal}>↵</button>
+                    onClick={closePaymentModal}><span className="btn-icon">↵</span></button>
             {isCash ? <button ref={submitRef}
                               className={`btn cash-register-submit ${confirmationIndex === 1 ? 'is-selected' : ''}`}
                               type="button" disabled={sending}
                               onFocus={() => setConfirmationIndex(1)}
                               onClick={() => void saveExpense(null)}>
-              <span aria-hidden="true">{selectedMethod.icon ?? '•'}</span>
+              <span className="btn-icon" aria-hidden="true">{selectedMethod.icon ?? '•'}</span>
               <span>{sending ? 'Salvataggio…' : 'Salva spesa'}</span>
-              <span aria-hidden="true">➤</span>
+              <span className="btn-icon" aria-hidden="true">➤</span>
             </button> : null}
           </div>
         </>}

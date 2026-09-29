@@ -99,13 +99,13 @@ export default function SupplierAutocomplete({
     <div className="app-form-field entity-autocomplete-field">
       <label className="app-form-field-label" htmlFor={inputId}>
         <span className="app-form-field-icon" aria-hidden="true">◎</span><span>Esercente</span>
-        {allowCreate ? <span className="flex flex-grow justify-end"><button type="button" className="btn btn-sm btn-link mr-22" onClick={() => setShowCreate(true)}>＋ Nuovo</button></span> : null}
+        {allowCreate ? <span className="flex flex-grow justify-end"><button type="button" className="btn btn-sm btn-link mr-22" onClick={() => setShowCreate(true)}><span className="btn-icon">＋</span> Nuovo</button></span> : null}
       </label>
     </div>
     <div className="entity-autocomplete-input-row"><div className={`app-autocomplete-control ${selected ? "has-selection" : ""}`}>
       <span className="app-autocomplete-search-icon" aria-hidden="true">⌕</span>
       <input id={inputId} value={query} onChange={event => {setQuery(event.target.value); onSupplierValueChange?.(event.target.value); setSelected(null); onSupplierSelected?.(null); setIsOpen(true);}} onFocus={() => setIsOpen(true)} onKeyDown={onKeyDown} placeholder="Cerca per ragione sociale o referente" autoComplete="off" role="combobox" aria-expanded={isOpen} aria-autocomplete="list" required/>
-      {query ? <button type="button" className="app-autocomplete-clear" aria-label="Cancella fornitore" onClick={clearSupplier}>×</button> : null}
+      {query ? <button type="button" className="app-autocomplete-clear" aria-label="Cancella fornitore" onClick={clearSupplier}><span className="btn-icon">×</span></button> : null}
       {isOpen ? <div className="entity-autocomplete-results" role="listbox">{results.length ? results.map((supplier, index) => <button type="button" key={supplier.id} role="option" aria-selected={index === activeIndex} className={index === activeIndex ? "active" : ""} onMouseEnter={() => setActiveIndex(index)} onMouseDown={event => {event.preventDefault(); selectSupplier(supplier);}}><strong>{supplier.businessName}</strong>{supplier.alias ? <small>Referente: {supplier.alias}</small> : null}</button>) : <div className="entity-autocomplete-empty">Nessun fornitore trovato.</div>}</div> : null}
     </div></div>
     {selected ? <div className="app-autocomplete-selection"><span aria-hidden="true">✓</span><div><strong>{selected.businessName}</strong>{selected.alias ? <small>{selected.alias}</small> : null}</div></div> : null}

@@ -115,9 +115,9 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
             {!supplier.systemRole ? <div className="right-side">
                     <DetailActionsBar
                         primary={<>
-                            <button className="btn btn-sm btn-option" type="button" data-supplier-edit-id={supplier.id}>✎ Modifica</button>
-                            <ExpenseNewTriggerButton className="btn btn-sm btn-option">＋ Aggiungi spesa</ExpenseNewTriggerButton>
-                            <DeleteActionButton action={'/api/suppliers/' + supplier.id} confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete">🗑 Elimina</DeleteActionButton>
+                            <button className="btn btn-sm btn-option" type="button" data-supplier-edit-id={supplier.id}><span className="btn-icon">✎</span> Modifica</button>
+                            <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span className="btn-icon">＋</span> Spesa</ExpenseNewTriggerButton>
+                            <DeleteActionButton action={'/api/suppliers/' + supplier.id} confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
                         </>}
                     />
                 </div> : <span className="badge">Fornitore di sistema</span>}

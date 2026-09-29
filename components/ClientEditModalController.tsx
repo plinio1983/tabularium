@@ -19,7 +19,7 @@ export default function ClientEditModalController({salesChannels}: {salesChannel
     document.addEventListener('click', handler); return () => document.removeEventListener('click', handler);
   }, []);
   return customer ? <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label="Modifica cliente" onMouseDown={() => setCustomer(null)}><div className="modal-card modal-card-wide entity-form-modal-card" onMouseDown={event => event.stopPropagation()}>
-    <div className="modal-title"><div><h3>Modifica cliente</h3><p className="muted">Aggiorna l’anagrafica di {customer.businessName}.</p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setCustomer(null)}>×</button></div>
+    <div className="modal-title"><div><h3>Modifica cliente</h3><p className="muted">Aggiorna l’anagrafica di {customer.businessName}.</p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setCustomer(null)}><span className="btn-icon">×</span></button></div>
     <form className="card form app-record-form entity-form entity-styled-form inline-create-form" action={`/api/clients/${customer.id}?returnTo=${encodeURIComponent(returnTo)}`} method="post"><ClientFormFields customer={customer} salesChannels={salesChannels}/><EntityFormActions onCancel={() => setCustomer(null)} submitLabel="Salva modifiche"/></form>
   </div></div> : null;
 }

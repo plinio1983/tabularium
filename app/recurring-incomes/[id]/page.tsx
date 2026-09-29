@@ -1,3 +1,4 @@
+import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {weekdayLabel} from '@/lib/recurring-cadence';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import {notFound} from 'next/navigation';
@@ -75,7 +76,7 @@ export default async function RecurringIncomeDetailPage({params, searchParams}: 
             <RecurringStateToggle {...stateProps} returnTo={encodedDetailHref}/>
             <RecurringDetailActionsMenu>
                 <summary className="btn btn-sm btn-default" aria-label="Azioni entrata ricorrente" title="Azioni entrata ricorrente">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <span className="btn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
                 </summary>
                 <div className="recurring-detail-actions-panel">
                     <button className="btn btn-sm btn-option" type="button" data-recurring-income-edit-id={id}><span className="btn-icon">✎</span> Modifica</button>
@@ -101,6 +102,7 @@ export default async function RecurringIncomeDetailPage({params, searchParams}: 
                 <div className="record-detail-shell">
                     <div className="record-detail-action-row hidden-sm-up">{actions}</div>
                     <article className="record-detail-document recurring-detail-document">
+                <MobileRecordViews kind="income" title="Entrate generate" linkLabel="Visualizza entrate generate" count={generatedIncomes.length} summary={<>
                         <div className="record-detail-action-row hidden-sm-down">{actions}</div>
                         <section className="record-detail-hero">
                             <div className="record-detail-title-block">
@@ -146,11 +148,14 @@ export default async function RecurringIncomeDetailPage({params, searchParams}: 
                             </div>
                         </section>
                         <section className="record-detail-section"><div className="record-detail-item record-detail-item-wide"><span>Note</span><strong className="displayed-notes">{item.notes ?? '-'}</strong></div></section>
-                        <section className="record-detail-section">
-                            <div className="record-detail-section-heading"><div><h2>Entrate generate</h2><p>Ultime entrate create da questa regola ricorrente.</p></div><span className="badge">{generatedIncomes.length} record · {euro(generatedTotal)}</span></div>
-                            <IncomesList incomes={generatedIncomes} returnTo={encodedDetailHref} banks={banks} paymentMethods={methods} salesChannels={channels} customers={customers} timeZone={current.company.timeZone} emptyMessage="Nessuna entrata generata da questa ricorrenza."/>
+                        </>}>
+                <section className="record-detail-section record-list-card recurring-generated-list">
+                            <div className="record-detail-section-heading mobile-record-list-header"><div><h2>Entrate generate</h2><p>Ultime entrate create da questa regola ricorrente.</p></div><span className="badge">{generatedIncomes.length} record · {euro(generatedTotal)}</span>
+                        <MobileRecordCloseButton/></div>
+                            <IncomesList incomes={generatedIncomes} returnTo={encodeURIComponent(`${detailHref}&mobileList=1`)} banks={banks} paymentMethods={methods} salesChannels={channels} customers={customers} timeZone={current.company.timeZone} emptyMessage="Nessuna entrata generata da questa ricorrenza."/>
                         </section>
-                    </article>
+                    </MobileRecordViews>
+            </article>
                 </div>
             </div>
         </RecurringIncomeEditModal>
