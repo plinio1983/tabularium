@@ -161,13 +161,14 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   flex: 0 0 auto;
 }
 
-.floating-bulk-button {
+.floating-bulk-button:not(.modal-close-button) {
   //height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 0 12px;
+  padding-left: 12px;
+  padding-right: 12px;
   border: 1px solid #cfd7ff;
   border-radius: 999px;
   background: #fff;
@@ -177,6 +178,8 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
+
+  &:not(.btn) { padding-top: 0; padding-bottom: 0; }
 }
 
 .floating-bulk-filter {
@@ -190,10 +193,8 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   width: 38px;
   min-width: 38px;
   max-width: 38px;
-  height: 38px;
-  min-height: 38px;
-  max-height: 38px;
-  padding: 0;
+  padding-left: 0;
+  padding-right: 0;
   gap: 0;
   border-radius: 50%;
 
@@ -214,14 +215,6 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   border-color: #b7bccc;
   color: var(--text);
   padding: 12px;
-}
-
-// Use the same add/filter controls in the list bar and its floating counterpart.
-.bulk-actions-bar .bulk-add-link .btn-icon,
-.floating-bulk-actions-inner .floating-bulk-new .btn-icon {
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1;
 }
 
 @media (max-width: 760px) {
@@ -303,30 +296,6 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   display: flex;
 }
 
-.floating-bulk-menu-panel button {
-  width: 100%;
-  max-width: 100%;
-  min-height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 9px 10px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 800;
-  text-align: left;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.floating-bulk-menu-panel button:hover {
-  background: #f3f4f6;
-}
-
 .bulk-action-modal-open {
   overflow: hidden;
 }
@@ -354,10 +323,6 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   box-shadow: 0 24px 70px rgba(15, 23, 42, .28);
 }
 
-.bulk-action-modal .bulk-action-modal-actions button {
-  min-width: 100%;
-}
-
 .bulk-action-modal-drag-handle {
   display: none;
 }
@@ -377,60 +342,14 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   letter-spacing: -.02em;
 }
 
-.bulk-action-modal-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--text);
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-}
+
 
 .bulk-action-modal-actions {
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
-  gap: 8px;
+  gap: 4px;
   overflow: auto;
-  padding: 10px;
-}
-
-.bulk-action-modal-actions button {
-  //width: 100%;
-  //min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 11px 12px;
-  //border: 0;
-  //border-radius: 12px;
-  //background: transparent;
-  //color: var(--text);
-  font-size: 14px;
-  font-weight: 700;
-  //text-align: left;
-  //cursor: pointer;
-}
-
-.bulk-action-modal-actions button:hover {
-  background: #f3f4f6;
-}
-
-.bulk-action-modal-actions button:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-}
-
-.bulk-action-modal-actions .danger-menu-item,
-.bulk-action-modal-actions .bulk-direct-danger {
-  color: #b42318;
+  padding: 7px;
 }
 
 @media (max-width: 760px) {
@@ -464,38 +383,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
     padding-bottom: 14px;
   }
 
-  //.bulk-action-modal-actions button {
-  //  border: 1px solid #dbe3ff;
-  //  border-radius: 12px;
-  //  background: #f8fafc;
-  //  color: var(--accent);
-  //  font-weight: 850;
-  //  text-decoration: none;
-  //}
 
-  .bulk-action-modal-actions button:hover,
-  .bulk-action-modal-actions button:focus-visible {
-    border-color: #b9c7ff;
-    background: #eef2ff;
-    color: var(--accent);
-    outline: none;
-  }
-
-  .bulk-action-modal-actions button.danger-menu-item,
-  .bulk-action-modal-actions button.bulk-direct-danger {
-    border-color: #fecdd3;
-    background: #fff7f7;
-    color: #b42318;
-  }
-
-  .bulk-action-modal-actions button.danger-menu-item:hover,
-  .bulk-action-modal-actions button.danger-menu-item:focus-visible,
-  .bulk-action-modal-actions button.bulk-direct-danger:hover,
-  .bulk-action-modal-actions button.bulk-direct-danger:focus-visible {
-    border-color: #fda4af;
-    background: #fff1f2;
-    color: #b42318;
-  }
 }
 
 
@@ -1312,7 +1200,8 @@ body.invoice-attachments-modal-open {
 
 .income-detail-action-row .btn {
   flex: 0 0 auto;
-  padding: 8px 12px;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 .income-detail-hero {
@@ -2445,11 +2334,11 @@ body.invoice-attachments-modal-open {
   .expense-review-attachments-button {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    min-height: 62px;
     align-items: center;
     gap: 10px;
     width: 100%;
-    padding: 10px 13px;
+    padding-left: 13px;
+    padding-right: 13px;
     border-color: #c7d2fe;
     border-radius: 16px;
     background: #f5f7ff;
@@ -2634,7 +2523,9 @@ body.invoice-attachments-modal-open {
     padding: 0;
   }
 
-  > summary::-webkit-details-marker { display: none; }
+  > summary::-webkit-details-marker {
+    display: none;
+  }
 }
 
 .detail-actions-bar,
@@ -2652,8 +2543,13 @@ body.invoice-attachments-modal-open {
   flex-shrink: 0;
 }
 
-.detail-actions-menu-desktop { display: block; }
-.detail-actions-mobile-primary { display: none; }
+.detail-actions-menu-desktop {
+  display: block;
+}
+
+.detail-actions-mobile-primary {
+  display: none;
+}
 
 .detail-actions-inline .detail-action-primary {
   color: #fff;
@@ -2665,8 +2561,13 @@ body.invoice-attachments-modal-open {
   color: var(--danger, #b91c1c);
 }
 
-.record-detail-responsive-actions > .left-side { flex-shrink: 0; }
-.record-detail-responsive-actions > .right-side { min-width: 0; }
+.record-detail-responsive-actions > .left-side {
+  flex-shrink: 0;
+}
+
+.record-detail-responsive-actions > .right-side {
+  min-width: 0;
+}
 
 
 .detail-actions-menu-panel {
@@ -2687,7 +2588,6 @@ body.invoice-attachments-modal-open {
 
   .btn {
     width: 100%;
-    min-height: 44px;
     justify-content: flex-start;
   }
 
@@ -2705,69 +2605,114 @@ body.invoice-attachments-modal-open {
     flex: 1 1 0;
   }
 
-  .detail-actions-bar { width: 100%; }
+  .detail-actions-bar {
+    width: 100%;
+  }
   .detail-actions-controls {
     display: flex;
     justify-content: flex-end;
     flex: 0 0 100%;
   }
 
-  .detail-actions-menu { display: block; }
-  .detail-actions-inline { flex-wrap: nowrap; gap: 8px; }
+  .detail-actions-menu {
+    display: block;
+  }
+  .detail-actions-inline {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
   .detail-actions-inline .btn {
-    min-height: 40px;
     padding-left: 10px;
     padding-right: 10px;
     font-size: 12px;
   }
-  .detail-actions-inline > .detail-action-item:nth-child(n + 2) { display: none; }
+  .detail-actions-inline > .detail-action-item:nth-child(n + 2) {
+    display: none;
+  }
   .detail-actions-mobile-primary {
     display: grid;
     gap: 6px;
   }
-  .detail-actions-mobile-primary > .detail-action-item:first-child { display: none; }
+  .detail-actions-mobile-primary > .detail-action-item:first-child {
+    display: none;
+  }
   .detail-actions-mobile-primary .detail-actions-delete {
     margin-top: 6px;
     border-top: 1px solid var(--line);
   }
 
   @container (min-width: 300px) {
-    .detail-actions-inline > .detail-action-item:nth-child(2) { display: block; }
-    .detail-actions-mobile-primary > .detail-action-item:nth-child(2) { display: none; }
+    .detail-actions-inline > .detail-action-item:nth-child(2) {
+      display: block;
+    }
+
+    .detail-actions-mobile-primary > .detail-action-item:nth-child(2) {
+      display: none;
+    }
   }
 
   @container (min-width: 390px) {
-    .detail-actions-inline > .detail-action-item:nth-child(3) { display: block; }
-    .detail-actions-mobile-primary { display: none; }
-    .detail-actions-bar[data-has-secondary="false"] > .detail-actions-menu { display: none; }
+    .detail-actions-inline > .detail-action-item:nth-child(3) {
+      display: block;
+    }
+
+    .detail-actions-mobile-primary {
+      display: none;
+    }
+
+    .detail-actions-bar[data-has-secondary="false"] > .detail-actions-menu {
+      display: none;
+    }
   }
 }
 
 // Keep the employee status and navigation on one row before actions run out of room.
 @media (max-width: 760px) {
-  body:has(.employee-detail-page) .nav { display: none; }
-  body:has(.employee-detail-page) .shell { padding-top: 0; }
+  body:has(.employee-detail-page) .nav {
+    display: none;
+  }
+  //body:has(.employee-detail-page) .shell {
+  //  padding-top: 0;
+  //}
 
   .employee-detail-page {
-    .record-detail-action-row { gap: 8px; }
-    .record-detail-action-row > .left-side { flex: 0 0 auto; }
-    .record-detail-action-row > .right-side { flex: 1 1 0; }
+    .record-detail-action-row {
+      gap: 8px;
+    }
+
+    .record-detail-action-row > .left-side {
+      flex: 0 0 auto;
+    }
+
+    .record-detail-action-row > .right-side {
+      flex: 1 1 0;
+    }
 
     .detail-actions-bar {
       width: 100%;
       flex-wrap: nowrap;
       gap: 8px;
 
-      > .detail-actions-controls { flex: 0 0 auto; }
-      > .detail-actions-menu { display: block; }
+      > .detail-actions-controls {
+        flex: 0 0 auto;
+      }
+
+      > .detail-actions-menu {
+        display: block;
+      }
     }
 
-    .detail-actions-inline { display: none; }
+    .detail-actions-inline {
+      display: none;
+    }
+
     .detail-actions-mobile-primary {
       display: grid;
       gap: 6px;
 
-      > .detail-action-item:nth-child(n) { display: block; }
+      > .detail-action-item:nth-child(n) {
+        display: block;
+      }
     }
   }
 }
@@ -2845,21 +2790,8 @@ body.invoice-attachments-modal-open {
 @media (max-width: 760px) {
   .floating-bulk-actions-inner > .floating-bulk-close {
     display: inline-flex;
-    flex: 0 0 38px;
-    box-sizing: border-box;
-    width: 38px;
-    min-width: 38px;
-    height: 38px;
     margin-left: auto;
-    padding: 0;
-    gap: 0;
-    border-radius: 50%;
-    border-color: var(--line);
-    color: var(--text);
-    background: var(--card);
-
     .floating-bulk-label { display: none; }
-    .btn-icon { margin: 0; font-size: 20px; line-height: 1; }
   }
 }
 
@@ -2892,9 +2824,9 @@ body.invoice-attachments-modal-open {
     width: 100%;
     min-width: 100%;
     max-width: none;
-    min-height: 38px;
     margin: 0;
-    padding: 9px 10px;
+    padding-left: 10px;
+    padding-right: 10px;
     white-space: nowrap;
     border: 0;
     border-bottom: 1px solid var(--line);
@@ -2906,13 +2838,20 @@ body.invoice-attachments-modal-open {
     line-height: 1.15;
     box-shadow: none;
 
-    .btn-icon { width: 26px; flex: 0 0 auto; }
+    .btn-icon {
+      width: 26px;
+      flex: 0 0 auto;
+    }
 
     &:hover,
-    &:focus-visible { background: #f3f4f6; }
+    &:focus-visible {
+      background: #f3f4f6;
+    }
 
     &.detail-actions-delete,
-    &.btn-danger { color: #b91c1c; }
+    &.btn-danger {
+      color: #b91c1c;
+    }
   }
 }
 

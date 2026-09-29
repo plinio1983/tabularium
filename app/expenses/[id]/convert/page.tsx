@@ -1,6 +1,6 @@
-import RecordConversionPage from '@/components/RecordConversionPage';
+import {redirect} from 'next/navigation';
 
 export default async function ConvertPage({params}: {params: Promise<{id: string}>}) {
     const {id} = await params;
-    return <RecordConversionPage kind="expenses" id={Number(id)}/>;
+    redirect(`/expenses/${encodeURIComponent(id)}?convert=1`);
 }

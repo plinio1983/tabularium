@@ -7,11 +7,11 @@ import {conversionExpenseInclude, conversionIncomeInclude, conversionSnapshot} f
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import RecordConversionForm from '@/components/RecordConversionForm';
 
-export default async function RecordConversionPage({kind, id}: {kind: 'expenses' | 'incomes'; id: number}) {
+export default async function RecordConversionPage({kind, id, returnHref: requestedReturnHref}: {kind: 'expenses' | 'incomes'; id: number; returnHref?: string}) {
     const current = await requireWorkspaceRole(workspaceOperationalRoles, `/${kind}/${id}/convert`);
     if (!Number.isSafeInteger(id) || id <= 0) notFound();
     const where = {id, workspaceId: current.workspace.id, companyId: current.company.id};
-    const returnHref = `/${kind}/${id}`;
+    const returnHref = requestedReturnHref ?? `/${kind}/${id}`;
     const [banks, methods] = await Promise.all([
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
         prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}})

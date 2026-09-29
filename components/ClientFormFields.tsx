@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import type {ReactNode} from 'react';
 
 type Customer = { businessName?: string; alias?: string | null; email?: string | null; vatNumber?: string | null; taxCodeSdi?: string | null; pec?: string | null; iban?: string | null; swift?: string | null; internalNotes?: string | null; defaultSalesChannelId?: number | null };
@@ -22,7 +23,7 @@ function Field({name, label, icon, className = '', children}: {
 export default function ClientFormFields({ customer, salesChannels }: { customer?: Customer; salesChannels: SalesChannel[] }) {
   return <>
     <details className="form-section full entity-form-section" open>
-      <summary><span><span className="entity-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span><small>Dati principali del cliente</small></summary>
+      <summary><span className="info-label-row"><span><span className="entity-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span><InfoHint compactOnly title="Anagrafica">Dati principali del cliente</InfoHint></span><small className="info-hint-desktop-text">Dati principali del cliente</small></summary>
       <div className="form-section-grid entity-form-section-grid">
         <Field name="businessName" label="Ragione sociale" icon="◉" className="span-2">
           <input id="client-businessName" name="businessName" required defaultValue={customer?.businessName ?? ''} placeholder="Es. Cliente S.r.l." autoComplete="organization" maxLength={160} autoFocus/>
@@ -60,7 +61,7 @@ export default function ClientFormFields({ customer, salesChannels }: { customer
       </div>
     </details>
     <details className="form-section full entity-form-section" open>
-      <summary><span><span className="entity-form-section-icon" aria-hidden="true">≡</span>Note</span><small>Annotazioni interne</small></summary>
+      <summary><span className="info-label-row"><span><span className="entity-form-section-icon" aria-hidden="true">≡</span>Note</span><InfoHint compactOnly title="Note">Annotazioni interne</InfoHint></span><small className="info-hint-desktop-text">Annotazioni interne</small></summary>
       <div className="form-section-stack">
         <Field name="internalNotes" label="Note interne" icon="≡" className="full">
           <textarea id="client-internalNotes" name="internalNotes" rows={4} defaultValue={customer?.internalNotes ?? ''} placeholder="Inserisci eventuali riferimenti o annotazioni utili…"/>

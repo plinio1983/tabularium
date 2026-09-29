@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
 import {parseExpenseTask, matchesExpenseTask, expenseTaskLabels} from '@/lib/dashboard-tasks';
@@ -232,8 +233,7 @@ function ExpenseCategoryColumnChart({data, total}: { data: ExpenseCategoryDatum[
     return <div className="expense-column-panel" aria-label="Grafico a colonne per categorie di spesa">
         <div className="expense-column-heading">
             <div>
-                <h2>Top categorie</h2>
-                <p className="muted">Colonne per totale speso sui risultati filtrati.</p>
+                <div className="info-title-row"><h2>Top categorie</h2><InfoHint compactOnly title="Spese per categoria">Colonne per totale speso sui risultati filtrati.</InfoHint></div><p className="muted info-hint-desktop-text">Colonne per totale speso sui risultati filtrati.</p>
             </div>
         </div>
         {groupedData.length ? <div className="expense-column-chart">
@@ -1008,8 +1008,8 @@ export default async function ExpensesPage({searchParams}: {
 
         <div className="card record-list-card">
             <div className="mobile-page-title expense-mobile-page-title">
-                <h2>Spese</h2>
-                <p className="muted">Gestione delle spese fiscali e non fiscali.</p>
+                <h2>Spese</h2><p className="muted">Gestione delle spese fiscali e non fiscali.</p>
+
             </div>
             <div className="filter-drawer-wrapper period-filter-drawer-wrapper">
                 <ExpenseFiltersDrawer
@@ -1038,8 +1038,7 @@ export default async function ExpensesPage({searchParams}: {
             <section className="record-top-summary" aria-labelledby="record-top-summary-title">
                 <div className="card-heading-row">
                     <div>
-                        <h2 id="record-top-summary-title">{totalsPeriodLabel}</h2>
-                        <p className="muted">Riepilogo delle spese comprese nei filtri impostati.</p>
+                        <div className="info-title-row"><h2 id="record-top-summary-title">{totalsPeriodLabel}</h2><InfoHint compactOnly title="Riepilogo spese">Riepilogo delle spese comprese nei filtri impostati.</InfoHint></div><p className="muted info-hint-desktop-text">Riepilogo delle spese comprese nei filtri impostati.</p>
                     </div>
                     {/*{monthlyReportHref ? <Link className="btn btn-sm btn-secondary" href={monthlyReportHref}>*/}
                     {/*    <span className="btn-icon" aria-hidden="true">*/}

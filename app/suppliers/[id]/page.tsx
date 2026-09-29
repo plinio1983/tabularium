@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import DetailActionsBar from '@/components/DetailActionsBar';
@@ -116,7 +117,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
                     <DetailActionsBar
                         primary={<>
                             <button className="btn btn-sm btn-option" type="button" data-supplier-edit-id={supplier.id}><span className="btn-icon">✎</span> Modifica</button>
-                            <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span className="btn-icon">＋</span> Spesa</ExpenseNewTriggerButton>
+                            <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span className="btn-icon btn-icon-add">＋</span> Spesa</ExpenseNewTriggerButton>
                             <DeleteActionButton action={'/api/suppliers/' + supplier.id} confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
                         </>}
                     />
@@ -191,8 +192,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         <details className="record-detail-section party-detail-collapsible">
           <summary className="record-detail-section-heading">
             <div>
-              <h2>Anagrafica</h2>
-              <p>Dati principali del fornitore.</p>
+              <div className="info-title-row"><h2>Anagrafica</h2><InfoHint compactOnly title="Anagrafica">Dati principali del fornitore.</InfoHint></div><p className="muted info-hint-desktop-text">Dati principali del fornitore.</p>
             </div>
             <span className="party-detail-collapsible-toggle" aria-hidden="true">⌄</span>
           </summary>

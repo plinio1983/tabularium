@@ -1,6 +1,7 @@
 "use client";
 
 import {useId, useState} from "react";
+import ExpenseTypeStep from "./ExpenseTypeStep";
 import ExpenseForm from "@/components/ExpenseForm";
 import RecurringExpenseForm from "@/components/RecurringExpenseForm";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
@@ -92,18 +93,12 @@ export default function ExpenseCreationSwitcher(props: Props) {
     }
 
     const typeStep =
-        <section className={`form app-record-form single-expense-form expense-creation-type-step app-form-wizard app-form-wizard-current-1 ${typeConfirmed ? "is-complete" : ""}`}>
-            <div className="app-form-wizard-header full">
-                <div className="app-form-wizard-heading">
-                    <span>Passaggio 1 di {totalSteps}</span><strong><span>Tipo di spesa</span></strong></div>
-                <div className="app-form-wizard-progress" aria-label={`Passaggio 1 di ${totalSteps}`}>
-                    <span style={{width: `${100 / totalSteps}%`}}/></div>
-            </div>
+        <ExpenseTypeStep totalSteps={totalSteps} confirmed={typeConfirmed}>
             <ExpenseTypeChoice selected={type} onSelect={changeType} onSelectCounter={() => window.location.assign("/expenses/counter")} title="Seleziona il tipo di spesa"/>
             {recurrenceControl("external")}
             {!typeConfirmed ?
                 <MobileFormStickyActions currentStep={1} submitStep={2} onBack={() => undefined} onNext={() => setTypeConfirmed(true)} onCancel={props.onCancel} cancelHref={props.cancelHref ?? "/expenses"} submitLabel="Avanti"/> : null}
-        </section>;
+        </ExpenseTypeStep>;
 
     const initialExpense = type === "vat"
         ? {...props.initialExpense, expenseType: "VAT_SETTLEMENT" as const}

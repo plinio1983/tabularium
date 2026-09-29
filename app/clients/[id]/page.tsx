@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import DetailActionsBar from '@/components/DetailActionsBar';
 import {notFound} from 'next/navigation';
@@ -79,7 +80,7 @@ export default async function ClientDetailPage({params, searchParams}: {
                     <DetailActionsBar
                         primary={<>
                             <button className="btn btn-sm btn-option" type="button" data-client-edit-id={customer.id}><span className="btn-icon">✎</span> Modifica</button>
-                            <button className="btn btn-sm btn-option" type="button" data-income-new><span className="btn-icon">＋</span> Aggiungi incasso</button>
+                            <button className="btn btn-sm btn-option" type="button" data-income-new><span className="btn-icon btn-icon-add">＋</span> Aggiungi incasso</button>
                             <DeleteActionButton action={'/api/clients/' + customer.id} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
                         </>}
                     />
@@ -116,7 +117,7 @@ export default async function ClientDetailPage({params, searchParams}: {
                 </section>
                 <details className="record-detail-section party-detail-collapsible">
                     <summary className="record-detail-section-heading">
-                        <div><h2>Anagrafica</h2><p>Dati principali del cliente.</p></div>
+                        <div><div className="info-title-row"><h2>Anagrafica</h2><InfoHint compactOnly title="Anagrafica">Dati principali del cliente.</InfoHint></div><p className="muted info-hint-desktop-text">Dati principali del cliente.</p></div>
                         <span className="party-detail-collapsible-toggle" aria-hidden="true">⌄</span></summary>
                     <div className="record-detail-status-strip party-detail-info-strip">
                         <CopyableField label="Ragione sociale" value={customer.businessName}/><CopyableField label="Referente" value={customer.alias}/><CopyableField label="Email" value={customer.email}/><CopyableField label="P.IVA / C.F." value={customer.vatNumber}/><CopyableField label="Cod. SDI" value={customer.taxCodeSdi}/><CopyableField label="PEC" value={customer.pec}/><CopyableField label="IBAN" value={customer.iban}/><CopyableField label="Swift" value={customer.swift}/><CopyableField label="Canale di vendita predefinito" value={salesChannels.find(channel => channel.id === customer.defaultSalesChannelId)?.name}/><CopyableField label="Note interne" value={customer.internalNotes} className="span-2"/>

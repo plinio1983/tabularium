@@ -76,7 +76,7 @@ export default function RecurringExpenseBulkEditModal({formId, action, categorie
           <h2 id={`${formId}-bulk-edit-title`}>{step ? groups.find(group => group.name === step)?.label : 'Modifica uscite ricorrenti'}</h2>
           <p className="muted"><strong>{ids.length}</strong> record selezionati</p>
         </div>
-        <button type="button" className="bulk-edit-close-button" aria-label="Chiudi modifica multipla" onClick={close}><span className="btn-icon">✕</span></button>
+        <button type="button" className="btn btn-neutral btn-icon-only modal-close-button bulk-edit-close-button" aria-label="Chiudi modifica multipla" onClick={close}><span className="btn-icon" aria-hidden="true">×</span></button>
       </div>
       <div key={step} className={`bulk-edit-step bulk-edit-step-${direction}`}>
         {!step ? <div className="bulk-edit-form bulk-edit-choice-form">
@@ -127,7 +127,7 @@ export default function RecurringExpenseBulkEditModal({formId, action, categorie
             </> : null}
             {step !== 'categoryId' && !enabledFields.some(name => active[name]) ? <p className="muted bulk-edit-dates-hint">Attiva almeno un campo da modificare.</p> : null}
           </div>
-          <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-default" onClick={back}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!!incomplete}><span className="btn-icon">✓</span> Conferma</button></div>
+          <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-ghost" onClick={back}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!!incomplete}><span className="btn-icon">✓</span> Conferma</button></div>
         </form>}
       </div>
     </div>

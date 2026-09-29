@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import RecordDetailDocument from '@/components/RecordDetailDocument';
 import {canConvertIncome} from '@/lib/record-conversion';
 import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
@@ -254,8 +255,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
                         <div>
-                            <h2>Dati incasso</h2>
-                            <p>Canale, accredito e metodo di pagamento.</p>
+                            <div className="info-title-row"><h2>Dati incasso</h2><InfoHint compactOnly title="Dati incasso">Canale, accredito e metodo di pagamento.</InfoHint></div><p className="muted info-hint-desktop-text">Canale, accredito e metodo di pagamento.</p>
                         </div>
                     </div>
                     <div className="record-detail-item record-detail-item-wide">
@@ -282,7 +282,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
 
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
-                        <div><h2>Accrediti</h2><p>Movimenti registrati per questo incasso.</p></div>
+                        <div><div className="info-title-row"><h2>Accrediti</h2><InfoHint compactOnly title="Accrediti">Movimenti registrati per questo incasso.</InfoHint></div><p className="muted info-hint-desktop-text">Movimenti registrati per questo incasso.</p></div>
                         <div className="record-detail-section-heading-actions">
                             <span className="badge hidden-mobile">{income.credits.length} record</span>
                             <button className="btn btn-sm btn-primary" type="button" data-income-credit-id={income.id}>
@@ -305,8 +305,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
                         <div>
-                            <h2>Dati contabili</h2>
-                            <p>Periodo fiscale, rilevanza, IVA e fatturazione.</p>
+                            <div className="info-title-row"><h2>Dati contabili</h2><InfoHint compactOnly title="Dati contabili">Periodo fiscale, rilevanza, IVA e fatturazione.</InfoHint></div><p className="muted info-hint-desktop-text">Periodo fiscale, rilevanza, IVA e fatturazione.</p>
                         </div>
                     </div>
                     <div className="record-detail-status-strip">
@@ -331,7 +330,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
 
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
-                        <div><h2>Allegati</h2><p>Fatture, documenti e ricevute collegati all’incasso.</p></div>
+                        <div><div className="info-title-row"><h2>Allegati</h2><InfoHint compactOnly title="Allegati">Fatture, documenti e ricevute collegati all’incasso.</InfoHint></div><p className="muted info-hint-desktop-text">Fatture, documenti e ricevute collegati all’incasso.</p></div>
                         <button className="btn btn-sm btn-default" type="button" data-income-attachments-id={income.id}><span className="btn-icon">✎</span> Gestisci Allegati</button>
                     </div>
                     {income.attachments.length ? <div className="record-attachment-panel">

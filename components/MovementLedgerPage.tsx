@@ -73,14 +73,16 @@ export default async function MovementLedgerPage({kind, searchParams}: {
         pages
     } = await loadMovementLedger(prisma, kind, current.workspace.id, current.company.id, current.company.timeZone, filters);
     const returnTo = filteredListHref(path, {...params, page: String(page), mobileList: '1'});
-    const pageHref = (next: number) => filteredListHref(path, {...params, page: String(next)});
+    // Opening the compact list updates browser history without rerendering these server links.
+    const pageHref = (next: number) => filteredListHref(path, {...params, page: String(next), mobileList: '1'});
     const sortHeader = (column: typeof filters.sort, label: string) => <SortableColumnHeader key={column} label={label}
                                                                                              direction={filters.sort === column ? filters.direction : undefined}
                                                                                              href={filteredListHref(path, {
                                                                                                  ...params,
                                                                                                  sort: column,
                                                                                                  direction: filters.sort === column && filters.direction === 'asc' ? 'desc' : 'asc',
-                                                                                                 page: '1'
+                                                                                                 page: '1',
+                                                                                                 mobileList: '1'
                                                                                              })}/>;
     const namedOptions = (dimension: string) => options.filter(item => item.dimension === dimension).map(item => ({
         id: Number(item.id),
@@ -113,8 +115,8 @@ export default async function MovementLedgerPage({kind, searchParams}: {
     return <div className="grid movement-ledger-page">
         <MobileRecordViews kind={isPayment ? 'expense' : 'income'} title={`Lista ${title.toLowerCase()}`} linkLabel={`Visualizza ${title.toLowerCase()}`} count={summary.count} summary={<>
         <div className="toolbar-card">
-            <div><h2>{title}</h2>
-                <p className="muted">{isPayment ? 'Pagamenti registrati sulle spese, comprese le buste paga.' : 'Accrediti registrati sugli incassi, compresi gli scontrini.'}</p>
+            <div><h2>{title}</h2><p className="muted">{isPayment ? 'Pagamenti registrati sulle spese, comprese le buste paga.' : 'Accrediti registrati sugli incassi, compresi gli scontrini.'}</p>
+
             </div>
             <div className="toolbar-actions">
                 <Link className="btn btn-md btn-default" href={documentPath}><span className="btn-icon" aria-hidden="true">↩</span>Torna a {isPayment ? 'Spese' : 'Incassi'}
@@ -122,9 +124,6 @@ export default async function MovementLedgerPage({kind, searchParams}: {
             </Link></div>
         </div>
         <section className="card ledger-overview">
-            <div className="mobile-page-title">
-                <h2>{title}</h2>
-            </div>
             <MovementLedgerFilters path={path} quick={filters.period.quick} year={String(filters.period.year)} from={filters.period.from} to={filters.period.to} methods={namedOptions('method')} banks={namedOptions('bank')} types={types} channels={channels}/>
             <p className="muted">{interval} · {current.company.name}</p>
             <div className="ledger-kpis">
@@ -155,7 +154,10 @@ export default async function MovementLedgerPage({kind, searchParams}: {
                 <MobileRecordCloseButton/>
             </div>
             <LiveSearch name="search" label={isPayment ? 'Cerca pagamento' : 'Cerca accredito'} placeholder="Nome, descrizione o numero del documento"/>
-            <p className="muted">{summary.count ? `${(page - 1) * ledgerPageSize + 1}–${Math.min(page * ledgerPageSize, summary.count)} di ${summary.count}` : 'Nessun movimento per i filtri selezionati.'}</p>
+            <div className="ledger-list-results-row">
+            <p className="muted">{summary.count ? `Mostrati ${(page - 1) * ledgerPageSize + 1}–${Math.min(page * ledgerPageSize, summary.count)} di ${summary.count}` : 'Nessun movimento per i filtri selezionati.'}</p>
+                <div id="ledger-mobile-filter-trigger"/>
+            </div>
             {rows.length ?
                 <div className="mobile-record-list ledger-mobile-list" aria-label={`Lista ${title.toLowerCase()}`}>
                     {rows.map(row => <div className="mobile-record-item" key={row.id}>

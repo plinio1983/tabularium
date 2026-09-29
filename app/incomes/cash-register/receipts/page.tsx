@@ -92,7 +92,6 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const orderedMethods = orderPaymentMethods(methods, 'INCOME');
     const aggregates = dailyAggregates.map(item => ({day: item.day, count: item.count, total: Number(item.total)}));
     const trend = annual ? buildMonthlyReceiptTrend(billingYear, aggregates) : buildDailyReceiptTrendRange(dateFrom, dateTo, aggregates);
-    const total = trend.reduce((sum, point) => sum + point.total, 0);
     const receiptCount = trend.reduce((sum, point) => sum + point.count, 0);
     const selectedMethod = orderedMethods.find(item => item.id === methodId);
     const selectedChannel = channels.find(item => item.id === channelId);
@@ -136,16 +135,13 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
 
     return <div className="grid cash-register-receipts-page">
         <MobileRecordViews kind="income" title="Andamento scontrini" linkLabel="Visualizza scontrini" count={receiptCount} summary={<>
-        <div className="toolbar-card">
-            <div><h2>Andamento scontrini</h2><p className="muted">{receiptCount} movimenti · {total.toLocaleString('it-IT', {style: 'currency', currency: 'EUR'})}</p></div>
-            <div className="toolbar-actions">
-                <Link className="btn btn-sm btn-default" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
-                <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register"><span className="btn-icon">🧮</span> Reg. di cassa</Link>
-            </div>
-        </div>
         <CashRegisterReceiptTrendChart key={`${dateFrom}-${dateTo}-${annual}`} points={trend} annual={annual}
+            headerActions={<div className="toolbar-actions">
+                <Link className="btn btn-sm btn-ghost" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
+                <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register"><span className="btn-icon">🧮</span> Reg. di cassa</Link>
+            </div>}
+            activeFilters={activeFiltersBox}
             periodSelector={<CashRegisterReceiptPeriodSelector key="receipt-period" dateQuick={period.quick} dateYear={String(billingYear)} years={years}/>}/>
-        {activeFiltersBox}
         </>}>
         <CashRegisterReceiptList
             headerContent={<>
@@ -155,6 +151,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
             filtersTrigger={<CashRegisterReceiptFiltersDrawer key="receipt-filters" search={search} dateQuick={period.quick} dateYear={String(billingYear)} years={years} dateFrom={dateFrom} dateTo={dateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}
             receipts={receipts.map(receipt => ({
                 id: receipt.id,
+                recurringIncomeId: receipt.recurringIncomeId,
                 description: receipt.description,
                 amount: Number(receipt.amount),
                 creditDate: receipt.creditDate.toISOString(),

@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { categoryIconOptions, defaultExpenseCategoryCode, orderExpenseCategories } from '@/lib/workspace-defaults';
@@ -45,7 +46,7 @@ export default async function ExpenseCategoriesSettingsPage({ searchParams }: { 
 
   return <div className="grid admin-page settings-admin-page categories-settings-page">
     <div className="toolbar-card">
-      <div><h2>Categorie di spesa</h2><p className="muted">Gestisci categorie, acronimi e icone usati da spese, filtri e report.</p></div>
+      <div><div className="info-title-row"><h2>Categorie di spesa</h2><InfoHint compactOnly title="Categorie di spesa">Gestisci categorie, acronimi e icone usati da spese, filtri e report.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci categorie, acronimi e icone usati da spese, filtri e report.</p></div>
       <DetailBackButton href="/settings"/>
     </div>
     {saved ? <div className="form-summary full"><strong>{savedMessages[saved] ?? 'Categorie aggiornate.'}</strong></div> : null}
@@ -68,8 +69,7 @@ export default async function ExpenseCategoriesSettingsPage({ searchParams }: { 
       <div className="vat-settlement-category-title">
         <span className="vat-settlement-category-icon" aria-hidden="true">%</span>
         <div>
-          <h3>Categoria Saldo IVA</h3>
-          <p className="muted">Categoria assegnata automaticamente alle spese che registrano un versamento IVA.</p>
+          <div className="info-title-row"><h3>Categoria Saldo IVA</h3><InfoHint compactOnly title="Categoria Saldo IVA">Categoria assegnata automaticamente alle spese che registrano un versamento IVA.</InfoHint></div><p className="muted info-hint-desktop-text">Categoria assegnata automaticamente alle spese che registrano un versamento IVA.</p>
         </div>
       </div>
       <div className="app-form-field vat-settlement-category-field">

@@ -198,6 +198,10 @@ table {
   justify-self: center;
   align-content: start;
 
+  @media(max-width: 760px) {
+    margin-top: 18px;
+  }
+
   > * {
     width: 100%;
     max-width: none;
@@ -209,10 +213,10 @@ table {
     flex-direction: row;
     align-items: center;
 
-    @media (max-width: 760px) {
-      flex-direction: column;
-      align-items: stretch;
-    }
+    //@media (max-width: 760px) {
+    //  flex-direction: column;
+    //  align-items: stretch;
+    //}
   }
 
   .detail-back-button {
@@ -1112,7 +1116,6 @@ table {
 }
 
 .sales-channel-edit-modal .modal-close-button {
-  flex: 0 0 34px;
   align-self: flex-start;
   margin-left: auto;
 }
@@ -1605,7 +1608,6 @@ table {
 }
 
 .payment-credit-edit-modal .modal-close-button {
-  flex: 0 0 34px;
   align-self: flex-start;
   margin-left: auto;
 }
@@ -1955,7 +1957,7 @@ table {
   }
 
   .toolbar-card {
-    flex-direction: column;
+    //flex-direction: column;
   }
 
   .actions-row {

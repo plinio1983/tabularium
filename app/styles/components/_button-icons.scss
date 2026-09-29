@@ -1,0 +1,8 @@
+// Keep addition icons consistent across button sizes, headers and both action bars.
+:root .btn-icon.btn-icon-add {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+  // Optical alignment of the full-width plus glyph inside its line box.
+  transform: translateY(1px);
+}

@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import {prisma} from '@/lib/prisma';
@@ -52,9 +53,11 @@ function ActiveFilterSummary({items}: { items: Array<{ label: string; value: str
     return <div className="active-filter-summary">
         <span className="active-filter-summary-title">Filtri attivi:</span>
         {items.length ? items.map(item =>
-                <span className="active-filter-chip" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) :
+                <span className="active-filter-chip"
+                      key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>) :
             <span className="active-filter-empty">nessun filtro impostato</span>}
-        <Link className="btn btn-md btn-default reset-btn" href="/suppliers"><span className="btn-icon">↺</span> Reset</Link>
+        <Link className="btn btn-md btn-default reset-btn" href="/suppliers"><span
+            className="btn-icon">↺</span> Reset</Link>
     </div>;
 }
 
@@ -77,8 +80,15 @@ export default async function SuppliersPage({searchParams}: {
 
     const [suppliers, categories] = await Promise.all([
         prisma.supplier.findMany({
-            where: {workspaceId: current.workspace.id,
-                ...(inputDefault(filters, 'businessName').trim() ? {businessName: {contains: inputDefault(filters, 'businessName').trim(), mode: 'insensitive' as const}} : {})},
+            where: {
+                workspaceId: current.workspace.id,
+                ...(inputDefault(filters, 'businessName').trim() ? {
+                    businessName: {
+                        contains: inputDefault(filters, 'businessName').trim(),
+                        mode: 'insensitive' as const
+                    }
+                } : {})
+            },
             orderBy: {businessName: 'asc'},
             include: {expenses: {where: {companyId: current.company.id}, include: {payments: true}}}
         }),
@@ -210,8 +220,9 @@ export default async function SuppliersPage({searchParams}: {
         <SupplierEditModalController categories={categoryOptions}/>
         <div className="toolbar-card toolbar-card-wrap">
             <div>
-                <h2>Fornitori</h2>
-                <p className="muted">Anagrafica degli esercenti usati nell’inserimento delle spese.</p>
+                <h2>Fornitori</h2><p className="muted">Anagrafica degli esercenti usati nell’inserimento delle
+                spese.</p>
+
             </div>
             <div className="toolbar-actions">
                 <NewSupplierPanel initialOpen={inputDefault(filters, 'new') === '1'} categories={categoryOptions}/>
@@ -226,27 +237,34 @@ export default async function SuppliersPage({searchParams}: {
             defaultErrorMessage="Impossibile completare l’operazione."
         />
 
-        <script dangerouslySetInnerHTML={{__html: `document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });`}}/>
+        <script
+            dangerouslySetInnerHTML={{__html: `document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });`}}/>
 
         <div className="card record-list-card fixed">
             <div className="list-heading recurring-list-heading">
                 <div>
-                    <h2>Lista fornitori</h2>
+                    <div className="info-title-row">
+                        <h2 className="hidden-sm-up">Fornitori</h2>
+                        <h2 className="hidden-sm-down">Lista fornitori</h2>
+                        <InfoHint compactOnly title="Lista fornitori">Anagrafica degli esercenti usati nell’inserimento delle spese.</InfoHint></div>
                     <p className="muted">Risultati mostrati: {filteredSupplierRows.length}</p>
                 </div>
             </div>
             <LiveSearch name="businessName" label="Ricerca fornitore" placeholder="Nome o ragione sociale"/>
-            <MobileSortControl action="/suppliers" currentValue={mobileSort} options={supplierMobileSortOptions} searchParams={filters}/>
+            <MobileSortControl action="/suppliers" currentValue={mobileSort} options={supplierMobileSortOptions}
+                               searchParams={filters}/>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">
                 <div>
                     <span className="recurring-active-filters-title">Filtri attivi</span>
                     <div className="recurring-active-filter-tags">
                         {activeFilterItems.map(item =>
-                            <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
+                            <span className="badge"
+                                  key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}
                     </div>
                 </div>
-                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/suppliers"><span className="btn-icon">×</span> Reset</Link>
+                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/suppliers"><span
+                    className="btn-icon">×</span> Reset</Link>
             </div> : null}
 
             <script dangerouslySetInnerHTML={{
@@ -257,34 +275,49 @@ export default async function SuppliersPage({searchParams}: {
 
             <BulkSelectionController/>
 
-            <form id="supplierBulkForm" action={`/api/suppliers/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar party-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
+            <form id="supplierBulkForm" action={`/api/suppliers/bulk?returnTo=${returnTo}`} method="post"
+                  className="bulk-actions-bar grouped-bulk-actions-bar party-bulk-actions-bar confirm-bulk-form"
+                  data-bulk-button-group="true">
                 <label className="bulk-select-all-inline">
                     <input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm"
                            aria-label="Seleziona tutti i fornitori visibili"/>
                 </label>
                 <div className="bulk-action-buttons btn-group">
-                  <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="supplierBulkForm">
-                    <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
-                    </summary>
-                    <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
-                                formAction="/api/exports/suppliers" formMethod="post" data-confirm-label="Esporta CSV">
-                            <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
-                        </button>
-                        <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction" value="delete">
-                            <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
-                        </button>
+                    <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu
+                             data-bulk-form="supplierBulkForm">
+                        <summary className="bulk-action-trigger" aria-label="Azioni multiple">
+                            <span className="btn-icon" aria-hidden="true">⚙</span><span
+                            className="hidden-sm-up hidden-xs-down">Azioni</span><span
+                            className="hidden-sm-down hidden-xs-down">Azioni</span>
+                        </summary>
+                        <div className="bulk-action-menu-panel">
+                            <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
+                                    formAction="/api/exports/suppliers" formMethod="post"
+                                    data-confirm-label="Esporta CSV">
+                                <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
+                            </button>
+                            <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction"
+                                    value="delete">
+                                <span className="btn-icon">🗑</span><span
+                                className="hidden-sm-down">Rimuovi selezionati</span>
+                            </button>
+                        </div>
+                    </details>
+                    <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm"
+                         data-edit-base="/suppliers/" data-return-to={returnTo}>
+                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span
+                            className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
+                        <button type="submit" className="bulk-direct-link is-disabled hidden-xs-down" name="bulkAction"
+                                value="export_csv" data-bulk-shortcut data-floating-label="Esporta CSV"
+                                data-floating-icon="⇩" data-confirm-label="Esporta CSV"
+                                formAction="/api/exports/suppliers" formMethod="post" disabled><span
+                            className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span></button>
                     </div>
-                  </details>
-                  <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="supplierBulkForm" data-edit-base="/suppliers/" data-return-to={returnTo}>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <button type="submit" className="bulk-direct-link is-disabled hidden-xs-down" name="bulkAction" value="export_csv" data-bulk-shortcut data-floating-label="Esporta CSV" data-floating-icon="⇩" data-confirm-label="Esporta CSV" formAction="/api/exports/suppliers" formMethod="post" disabled><span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span></button>
-                  </div>
                 </div>
                 <div className="bulk-inner-container">
-                    <button className="bulk-direct-link btn btn-md btn-primary bulk-add-link " type="button" data-bulk-new data-supplier-new data-floating-label="Fornitore">
-                        <span className="btn-icon">＋</span>
+                    <button className="bulk-direct-link btn btn-md btn-primary bulk-add-link " type="button"
+                            data-bulk-new data-supplier-new data-floating-label="Fornitore">
+                        <span className="btn-icon btn-icon-add">＋</span>
                         <span className="hidden-sm-down">Fornitore</span>
                     </button>
                     <SupplierFiltersDrawer filters={filters}/>
@@ -301,9 +334,13 @@ export default async function SuppliersPage({searchParams}: {
                                                    annualPurchasedAmount
                                                }) => {
                     const detailHref = `/suppliers/${supplier.id}?returnTo=${encodeURIComponent(supplierListHref)}`;
-                    return <div className={amountToPay > 0 ? "party-mobile-item mobile-record-item mobile-record-item-overdue" : "party-mobile-item mobile-record-item"} key={`mobile-supplier-${supplier.id}`}>
+                    return <div
+                        className={amountToPay > 0 ? "party-mobile-item mobile-record-item mobile-record-item-overdue" : "party-mobile-item mobile-record-item"}
+                        key={`mobile-supplier-${supplier.id}`}>
                         <div className="mobile-record-select">
-                            <input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} disabled={Boolean(supplier.systemRole)}/>
+                            <input form="supplierBulkForm" type="checkbox" name="ids" value={supplier.id}
+                                   aria-label={`Seleziona fornitore ${supplier.businessName}`}
+                                   disabled={Boolean(supplier.systemRole)}/>
                         </div>
                         <Link className="mobile-record-link party-mobile-link" href={detailHref}>
                             <div className="mobile-record-main">
@@ -312,18 +349,23 @@ export default async function SuppliersPage({searchParams}: {
                                         <strong>{supplier.businessName}</strong>
                                     </div>
                                     <div className="mobile-record-title-right">
-                                        <span className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</span>
+                                        <span
+                                            className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</span>
                                     </div>
                                 </div>
                                 <div className="mobile-record-subtitle">
                                     {supplier.systemRole ? <span className="badge">System</span> : null}&nbsp;
-                                    <span className="party-mobile-row-grow">{supplier.alias || 'Nessun referente'}</span>
-                                    <span className="party-mobile-row-grow text-right"><strong>{openExpensesCount}</strong> ordini da saldare</span>
+                                    <span
+                                        className="party-mobile-row-grow">{supplier.alias || 'Nessun referente'}</span>
+                                    <span
+                                        className="party-mobile-row-grow text-right"><strong>{openExpensesCount}</strong> ordini da saldare</span>
                                 </div>
                                 <div className="mobile-record-meta">
-                                    <span className="party-mobile-row"><strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong> Spesi {currentYear}</span>
+                                    <span className="party-mobile-row"><strong
+                                        className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong> Spesi {currentYear}</span>
                                     <div className="party-mobile-row-right">
-                                        <span className="badge badge-color">{annualOrdersCount} ordini {currentYear}</span>
+                                        <span
+                                            className="badge badge-color">{annualOrdersCount} ordini {currentYear}</span>
                                     </div>
                                     {/*<span>{euro(annualPurchasedAmount)} acquistati {currentYear}</span>*/}
                                     {/*{supplier.email ? <span>{supplier.email}</span> : null}*/}
@@ -337,17 +379,21 @@ export default async function SuppliersPage({searchParams}: {
             </div>
 
             <div className="table-scroll">
-                <table className="suppliers-table compact-suppliers-table" data-sortable-table data-default-sort="business-name" data-default-sort-dir="asc">
+                <table className="suppliers-table compact-suppliers-table" data-sortable-table
+                       data-default-sort="business-name" data-default-sort-dir="asc">
                     <thead>
                     <tr>
                         <th className="cell-center">
-                            <input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm" aria-label="Seleziona tutti i fornitori"/>
+                            <input type="checkbox" className="bulk-select-all" data-bulk-target="supplierBulkForm"
+                                   aria-label="Seleziona tutti i fornitori"/>
                         </th>
                         <th data-sort-key="business-name">Ragione <br/>Sociale</th>
                         <th data-sort-key="alias">Referente</th>
-                        <th className="text-center" data-sort-key="open-count" data-sort-type="number">Ordini <br/>da saldare
+                        <th className="text-center" data-sort-key="open-count" data-sort-type="number">Ordini <br/>da
+                            saldare
                         </th>
-                        <th className="text-right supplier-amount-header" data-sort-key="open-amount" data-sort-type="number">Importo <br/>da saldare
+                        <th className="text-right supplier-amount-header" data-sort-key="open-amount"
+                            data-sort-type="number">Importo <br/>da saldare
                         </th>
                         <th className="text-center" data-sort-key="annual-count" data-sort-type="number">Ordini <br/>anno
                         </th>
@@ -377,20 +423,25 @@ export default async function SuppliersPage({searchParams}: {
                             key={supplier.id}
                         >
                             <td className="cell-center">
-                                <input form="supplierBulkForm" className="bulk-select-all" type="checkbox" name="ids" value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`} disabled={Boolean(supplier.systemRole)}/>
+                                <input form="supplierBulkForm" className="bulk-select-all" type="checkbox" name="ids"
+                                       value={supplier.id} aria-label={`Seleziona fornitore ${supplier.businessName}`}
+                                       disabled={Boolean(supplier.systemRole)}/>
                             </td>
                             <td><strong>{supplier.businessName}</strong>{supplier.systemRole ?
                                 <span className="badge ml-6">System</span> : null}</td>
                             <td>{supplier.alias ?? '-'}</td>
                             <td className="text-center">
-                                <strong className={openExpensesCount > 0 ? 'text-warning' : ''}>{openExpensesCount}</strong>
+                                <strong
+                                    className={openExpensesCount > 0 ? 'text-warning' : ''}>{openExpensesCount}</strong>
                             </td>
                             <td className="text-right party-amount-cell">
-                                <strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
+                                <strong
+                                    className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
                             </td>
                             <td className="text-center"><strong>{annualOrdersCount}</strong></td>
                             <td className="text-right party-amount-cell">
-                                <strong className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong>
+                                <strong
+                                    className="badge color-badge tone-insurance">{euro(annualPurchasedAmount)}</strong>
                             </td>
                         </tr>;
                     })}

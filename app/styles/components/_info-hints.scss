@@ -1,0 +1,74 @@
+button.info-hint-trigger {
+  display: inline-flex;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  border: 1px solid var(--line);
+  background: var(--card, #fff);
+  color: var(--text, #334155);
+  opacity: 1;
+  visibility: visible;
+
+  .btn-icon, svg { display: block; width: 18px; height: 18px; margin: 0; flex: 0 0 18px; }
+}
+
+.app-form-wizard-header > .info-hint-trigger {
+  justify-self: end;
+  align-self: center;
+}
+
+@media (min-width: 761px) {
+  .form-section > summary .info-hint-desktop-text { display: block; font-size: 12px; font-weight: 400; }
+}
+
+@media (max-width: 900px) {
+  .app-form-wizard .app-form-wizard-header { position: relative; }
+  .app-form-wizard-header:has(> .info-hint-trigger) .app-form-wizard-heading { padding-right: 40px; }
+  .app-form-wizard-header > .info-hint-trigger { position: absolute; right: 0; top: 6px; }
+}
+
+@media (min-width: 761px) {
+  .company-help { display: none; }
+}
+
+.info-title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-width: 0;
+
+  > h2, > h3 { margin: 0; min-width: 0; }
+  > button.info-hint-trigger { flex: 0 0 32px; margin: 0; }
+}
+
+/* Keep contextual help on the label row even inside grid/card headings. */
+.info-title-row,
+.info-label-row,
+.info-field-heading {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-width: 0;
+
+  > :is(h2, h3, label, span):first-child {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: auto;
+  }
+
+  > button.info-hint-trigger {
+    flex: 0 0 32px;
+    align-self: center;
+    margin: 0;
+  }
+}

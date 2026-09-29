@@ -74,9 +74,7 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
             <header className="receipt-detail-header">
                 <span className="receipt-detail-symbol" aria-hidden="true"><ReceiptDetailIcon kind="receipt"/></span>
                 <div><p>Registratore di cassa</p><h2 id={titleId}>Scontrino <span>#{receiptId}</span></h2></div>
-                <button ref={closeRef} className="receipt-detail-close" type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}>
-                    <span className="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></span>
-                </button>
+                <button ref={closeRef} className="btn btn-neutral btn-icon-only modal-close-button receipt-detail-close" type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}><span className="btn-icon" aria-hidden="true">×</span></button>
             </header>
             <div className="receipt-detail-body" aria-busy={!receipt && !error}>
                 {!receipt && !error ? <div className="receipt-detail-loading" role="status">

@@ -1,3 +1,5 @@
+import InfoHint from '@/components/InfoHint';
+import RecordConversionPage from '@/components/RecordConversionPage';
 import RecordDetailDocument from '@/components/RecordDetailDocument';
 import {canConvertExpense} from '@/lib/record-conversion';
 import BulkExpenseAttachmentsModal from '@/components/BulkExpenseAttachmentsModal';
@@ -150,6 +152,7 @@ export default async function ExpenseDetailPage({params, searchParams}: {
     };
 
     return <div className="grid record-detail-page expense-detail-page">
+        {query.convert === '1' && !conversionUnavailableReason ? <RecordConversionPage kind="expenses" id={expense.id} returnHref={currentDetailReturnTo}/> : null}
         <ExpenseDetailEditModalController
             categories={orderedCategories.map(c => ({
                 id: c.id,
@@ -231,7 +234,7 @@ export default async function ExpenseDetailPage({params, searchParams}: {
                                                 aria-describedby="expense-conversion-unavailable"><span className="btn-icon">⇄</span> Converti tipo
                                         </button>
                                     </div> :
-                                    <Link className="btn btn-sm btn-option" href={`/expenses/${expense.id}/convert`}><span className="btn-icon">⇄</span>
+                                    <Link className="btn btn-sm btn-option" href={`${currentDetailReturnTo}&convert=1`} scroll={false} aria-haspopup="dialog"><span className="btn-icon">⇄</span>
                                         Converti tipo</Link>}
                                 {hasWorkspaceRole(current.membership.role, workspaceOperationalRoles) && canMarkExpenseInvoiceEmitted(expense) ?
                                     <form
@@ -436,20 +439,19 @@ export default async function ExpenseDetailPage({params, searchParams}: {
 
                 </section>
 
-                <section className="record-detail-section">
+                {expense.notes?.trim() ? <section className="record-detail-section">
                     <div className="record-detail-section-heading">
                         <div className="flex-grow">
-                            <h2>Altre Informazioni</h2>
-                            <p>Altri dati della spesa.</p>
+                            <div className="info-title-row"><h2>Altre Informazioni</h2><InfoHint compactOnly title="Altre Informazioni">Altri dati della spesa.</InfoHint></div><p className="muted info-hint-desktop-text">Altri dati della spesa.</p>
                         </div>
                     </div>
                     <div className="">
                         <div className="record-detail-item record-detail-item-wide">
                             <span>Note</span>
-                            <strong className="displayed-notes">{expense.notes ?? '-'}</strong>
+                            <strong className="displayed-notes">{expense.notes}</strong>
                         </div>
                     </div>
-                </section>
+                </section> : null}
 
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">

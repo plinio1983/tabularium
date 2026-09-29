@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { ensureWorkspaceDefaults, orderBanks, orderPaymentMethods, paymentCreditIconOptions } from '@/lib/workspace-defaults';
@@ -188,11 +189,11 @@ export default async function PaymentCreditSettingsPage({ searchParams }: { sear
     {section === 'routing' ?
     <details className="card categories-settings-card payment-credit-settings-card payment-credit-collapsible cash-register-routing-card" open>
       <summary className="category-create-toggle">
-        <span>Instradamento accrediti registratore</span>
+        <span className="info-label-row"><span>Instradamento accrediti registratore</span><InfoHint compactOnly title="Banche di accredito automatico">Scegli la banca di accredito per ogni combinazione tra metodo di pagamento e canale di vendita. Cash resta sempre associato a Cassa.</InfoHint></span>
         <span aria-hidden="true">＋</span>
       </summary>
       <div className="cash-register-routing-content">
-        <p className="muted">Scegli la banca di accredito per ogni combinazione tra metodo di pagamento e canale di vendita. Cash resta sempre associato a Cassa.</p>
+        <p className="muted info-hint-desktop-text">Scegli la banca di accredito per ogni combinazione tra metodo di pagamento e canale di vendita. Cash resta sempre associato a Cassa.</p>
         {routedMethods.length && salesChannels.length ? <form action={updateCashRegisterBankRulesAction}>
           <div className="table-scroll">
             <table className="cash-register-routing-table">

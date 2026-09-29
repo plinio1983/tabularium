@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import {requireWorkspaceRole, workspaceManagementRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {ensureWorkspaceDefaults, orderExpenseCategories} from '@/lib/workspace-defaults';
@@ -19,7 +20,7 @@ export default async function TaxAuthoritiesPage({searchParams}: {searchParams?:
   ]);
   const categories = orderExpenseCategories(categoryRecords);
   return <div className="grid admin-page settings-admin-page categories-settings-page tax-authorities-settings-page">
-    <div className="toolbar-card"><div><h2>Enti fiscali e previdenziali</h2><p className="muted">Gestisci i beneficiari disponibili nelle spese di tipo Imposte.</p></div><DetailBackButton href="/settings"/></div>
+    <div className="toolbar-card"><div><div className="info-title-row"><h2>Enti fiscali e previdenziali</h2><InfoHint compactOnly title="Enti fiscali e previdenziali">Gestisci i beneficiari disponibili nelle spese di tipo Imposte.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci i beneficiari disponibili nelle spese di tipo Imposte.</p></div><DetailBackButton href="/settings"/></div>
     {saved ? <div className="form-summary full"><strong>Anagrafica aggiornata.</strong></div> : null}
     {error ? <div className="inline-form-error full">{error === 'duplicate' ? 'Esiste già un ente con questo nome.' : 'Controlla i dati inseriti.'}</div> : null}
     <TaxAuthorityManager authorities={authorities.map(authority => ({

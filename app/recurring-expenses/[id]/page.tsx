@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {weekdayLabel} from '@/lib/recurring-cadence';
 import RecurringDetailActionsMenu from '@/components/RecurringDetailActionsMenu';
@@ -332,8 +333,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
                         <div>
-                            <h2>Dati ricorrenza</h2>
-                            <p>Dati specifici, categoria e impostazioni della regola.</p>
+                            <div className="info-title-row"><h2>Dati ricorrenza</h2><InfoHint compactOnly title="Dati ricorrenza">Dati specifici, categoria e impostazioni della regola.</InfoHint></div><p className="muted info-hint-desktop-text">Dati specifici, categoria e impostazioni della regola.</p>
                         </div>
                     </div>
                     <div className="record-detail-status-strip">
@@ -378,8 +378,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                 <section className="record-detail-section">
                     <div className="record-detail-section-heading">
                         <div>
-                            <h2>Regola di pagamento</h2>
-                            <p>Metodo, banca e note configurate per la ricorrenza.</p>
+                            <div className="info-title-row"><h2>Regola di pagamento</h2><InfoHint compactOnly title="Regola di pagamento">Metodo, banca e note configurate per la ricorrenza.</InfoHint></div><p className="muted info-hint-desktop-text">Metodo, banca e note configurate per la ricorrenza.</p>
                         </div>
                     </div>
                     <div className="record-detail-status-strip">
@@ -413,8 +412,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                 <section className="record-detail-section record-list-card recurring-generated-list">
                     <div className="record-detail-section-heading mobile-record-list-header">
                         <div>
-                            <h2>Spese generate</h2>
-                            <p>Ultime spese create da questa regola ricorrente.</p>
+                            <div className="info-title-row"><h2>Spese generate</h2><InfoHint compactOnly title="Spese generate">Ultime spese create da questa regola ricorrente.</InfoHint></div><p className="muted info-hint-desktop-text">Ultime spese create da questa regola ricorrente.</p>
                         </div>
                         <span className="badge">{item.generatedExpenses.length} record · {euro(generatedTotal)}</span>
                         <MobileRecordCloseButton/>

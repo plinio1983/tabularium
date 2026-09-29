@@ -29,7 +29,10 @@ export default async function WorkspaceAuditPage() {
         <h2>Registro attività</h2>
         <p className="muted">Ultime 200 operazioni sensibili eseguite nel workspace.</p>
       </div>
-      <Link className="btn btn-md btn-default" href="/account/workspace">Torna al workspace</Link>
+      <a className="btn btn-md btn-ghost" href="/account/workspace">
+        <span className="btn-icon">↩</span> Indietro
+      </a>
+      {/*<Link className="btn btn-md btn-default" href="/account/workspace">↩ Indietro</Link>*/}
     </div>
 
     <div className="card table-wrap">

@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import {requireWorkspaceRole, workspaceManagementRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import DetailBackButton from '@/components/DetailBackButton';
@@ -42,6 +43,7 @@ export default async function CompanyConfigurationPage({searchParams}: {searchPa
     </div>
     {saved ? <div className="form-summary full"><strong>{savedMessages[saved] ?? 'Configurazione aggiornata.'}</strong></div> : null}
     {error ? <div className="inline-form-error full">{errors[error] ?? 'Operazione non riuscita.'}</div> : null}
+    <div className="company-help"><span>Informazioni sulle società</span><InfoHint compactOnly title="Società">Gestisci le entità contabili del workspace. La società in uso determina movimenti e report visualizzati.</InfoHint></div>
     <section className="grid company-settings-list">
       {companies.map(company => <article className="card company-settings-card" key={company.id}>
         <div className="company-settings-heading">

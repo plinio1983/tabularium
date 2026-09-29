@@ -3,6 +3,10 @@
 import {useRef, useState, type ComponentProps, type FormEvent} from 'react';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
+import ExpenseTypeStep from './ExpenseTypeStep';
+import RecordConversionModal from './RecordConversionModal';
+import ExpenseTypeChoice, {type ExpenseCreationType} from './ExpenseTypeChoice';
+import MobileFormStickyActions from './MobileFormStickyActions';
 import ExpenseForm from '@/components/ExpenseForm';
 import IncomeForm from '@/components/IncomeForm';
 import {conversionLabels, expenseConversionDefaults, expenseConversionTypes, type ExpenseConversionType} from '@/lib/record-conversion';
@@ -20,6 +24,8 @@ export default function RecordConversionForm(props: Props) {
     const typeLabel = (type: string) => type === 'STANDARD' ? props.kind === 'expenses' ? 'Spesa singola' : 'Incasso singolo' : conversionLabels[type];
     const targets = props.kind === 'expenses' ? expenseConversionTypes : ['STANDARD', 'CASH_REGISTER'];
     const [target, setTarget] = useState('');
+    const [typeConfirmed, setTypeConfirmed] = useState(false);
+    const choiceTypes: Record<ExpenseConversionType, ExpenseCreationType> = {STANDARD: 'single', PAYROLL: 'payroll', TAX_CONTRIBUTION: 'tax'};
     const [busy, setBusy] = useState(false);
     const busyRef = useRef(false);
     const [error, setError] = useState('');
@@ -42,7 +48,8 @@ export default function RecordConversionForm(props: Props) {
             const payload = await response.json();
             if (!response.ok) throw new Error(payload.error || 'Impossibile verificare la conversione.');
             if (payload.saved) {
-                router.push(props.returnHref);
+                if (props.kind === 'expenses') router.replace(props.returnHref, {scroll: false});
+                else router.push(props.returnHref);
                 router.refresh();
             } else {
                 pending.current = data;
@@ -56,45 +63,68 @@ export default function RecordConversionForm(props: Props) {
         finally { busyRef.current = false; setBusy(false); }
     }
 
+    const close = () => {if (!busyRef.current) router.replace(props.returnHref, {scroll: false});};
     const preserved = 'Pagamenti, accrediti e allegati rimangono collegati allo stesso record. Per modificarli usa le rispettive funzioni dopo la conversione.';
-    return <div className="modal-page-wrap record-conversion">
-        <div className="modal-card modal-card-wide modal-page-card">
-            <div className="toolbar-card modal-toolbar-card">
-                <div><h2>Converti {props.kind === 'expenses' ? 'spesa' : 'incasso'} #{props.id}</h2><p className="muted">Tipo attuale: {typeLabel(props.sourceType)}</p></div>
-                <Link className="btn btn-sm btn-default" href={props.returnHref}>Annulla</Link>
-            </div>
-            <p className="field-note">{preserved}</p>
+    const payrollNote = 'L’importo originale è proposto come netto. Completa dipendente e periodo lavorato; verifica gli eventuali compensi extra.';
+    const typeChoice = props.kind === 'expenses' ? <ExpenseTypeChoice title="Seleziona il tipo in cui convertire" selected={choiceTypes[target as ExpenseConversionType]}
+                        availableTypes={expenseConversionTypes.filter(type => type !== props.sourceType).map(type => choiceTypes[type])} showCounter={false} disabled={busy}
+                        onSelect={choice => {
+                            const type = expenseConversionTypes.find(type => choiceTypes[type] === choice);
+                            if (type) {setTarget(type); setError('');}
+                        }}/> : null;
+    const content = <>
+            <p className="field-note record-conversion-note">{preserved}</p>
             {error ? <p className="text-critical" role="alert" tabIndex={-1} ref={errorMessage}>{error}</p> : null}
-            <div hidden={Boolean(review)}>
+            <div hidden={Boolean(review)} className={props.kind === 'expenses' ? `expense-creation-stage ${typeConfirmed ? 'is-confirmed' : ''}` : undefined}>
+                {props.kind === 'expenses' ? <>
+                    <div className="form app-record-form single-expense-form app-form-wizard hidden-md-down">{typeChoice}</div>
+                    <ExpenseTypeStep totalSteps={target === 'STANDARD' ? 7 : 6} confirmed={typeConfirmed}>
+                        {typeChoice}
+                    {!typeConfirmed && !review ? <MobileFormStickyActions currentStep={1} submitStep={2} onBack={() => undefined} onNext={() => setTypeConfirmed(true)} nextDisabled={!target || busy} onCancel={close} submitLabel="Avanti"/> : null}
+                    </ExpenseTypeStep>
+                </> : <>
                 <label className="full">Converti in
                     <select value={target} disabled={busy} onChange={event => {setTarget(event.target.value); setError('');}}>
                         <option value="">Seleziona il nuovo tipo</option>
                         {targets.filter(type => type !== props.sourceType).map(type => <option key={type} value={type}>{typeLabel(type)}</option>)}
                     </select>
                 </label>
-                {target ? <fieldset disabled={busy} style={{border: 0, padding: 0, margin: 0, minWidth: 0}}>
+                </>}
+                {target ? <fieldset className={props.kind === 'expenses' ? 'expense-creation-form-stage' : undefined} disabled={busy} style={{border: 0, padding: 0, margin: 0, minWidth: 0}}>
                     {props.kind === 'expenses' ? <>
-                        {target === 'PAYROLL' ? <p className="field-note">L’importo originale è proposto come netto. Completa dipendente e periodo lavorato; verifica gli eventuali compensi extra.</p> : null}
+                        {target === 'PAYROLL' ? <p className="field-note record-conversion-note">{payrollNote}</p> : null}
                         <ExpenseForm key={target} {...props.formProps}
                             initialExpense={expenseConversionDefaults(props.formProps.initialExpense!, target as ExpenseConversionType)}
-                            action={`/api/${props.kind}/${props.id}/convert`} preserveLinkedRecords hideMobileActions={Boolean(review) || busy} onSubmitData={data => void submit(data)} submitLabel="Verifica conversione" cancelHref={props.returnHref}/>
+                            action={`/api/${props.kind}/${props.id}/convert`} preserveLinkedRecords mobileStepOffset={1} onBackToType={() => setTypeConfirmed(false)} onCancel={close}
+                            hideMobileActions={!typeConfirmed || Boolean(review) || busy} onSubmitData={data => void submit(data)} submitLabel="Verifica conversione" cancelHref={props.returnHref}/>
                     </> : target === 'STANDARD' ? <IncomeForm key={target} {...props.formProps}
                         initialIncome={{...props.formProps.initialIncome, customerId: null}}
                         action={`/api/${props.kind}/${props.id}/convert`} preserveLinkedRecords hideMobileActions={Boolean(review) || busy} onSubmitData={data => void submit(data)} submitLabel="Verifica conversione" cancelHref={props.returnHref}/>
                         : <CashConversionForm formProps={props.formProps} onSubmit={data => void submit(data)}/>}
                 </fieldset> : null}
             </div>
-            {review ? <section className="card">
+            {review ? <form className={`card record-conversion-review${props.kind === 'expenses' ? ' app-record-form app-form-wizard' : ''}`} onSubmit={event => {
+                event.preventDefault();
+                if (pending.current) void submit(pending.current, true);
+            }}>
                 <h3 tabIndex={-1} ref={reviewHeading}>Conferma conversione in {typeLabel(target)}</h3>
                 <p>Verifica i dati che cambieranno. I campi specifici del tipo precedente saranno rimossi; gli allegati conserveranno la classificazione attuale.</p>
                 <dl>{review.changes.map(change => <div key={change.label} className="conversion-change"><dt>{change.label}</dt><dd>{change.before} → <strong>{change.after}</strong></dd></div>)}</dl>
-                <div className="form-actions">
-                    <button type="button" className="btn btn-md btn-default" disabled={busy} onClick={() => setReview(null)}>Torna al form</button>
-                    <button type="button" className="btn btn-md btn-primary" disabled={busy} onClick={() => pending.current && void submit(pending.current, true)}>{busy ? 'Conversione…' : 'Conferma conversione'}</button>
+                <div className={props.kind === 'expenses' ? 'actions-row full form-actions-row form-sticky-actions' : 'form-actions'}>
+                    <button type="button" className="btn btn-md btn-default" disabled={busy} onClick={() => setReview(null)}><span className="btn-icon">←</span> Torna al form</button>
+                    <button type="submit" className="btn btn-md btn-primary" disabled={busy}><span className="btn-icon">✓</span> {busy ? 'Conversione…' : 'Conferma conversione'}</button>
                 </div>
-            </section> : null}
+                {props.kind === 'expenses' ? <MobileFormStickyActions currentStep={2} submitStep={2} onBack={() => {if (!busy) setReview(null);}} onNext={() => undefined} backLabel="Torna al form" submitLabel="Conferma conversione" submittingLabel="Conversione…" isSubmitting={busy}/> : null}
+            </form> : null}
+    </>;
+    if (props.kind === 'expenses') return <RecordConversionModal title={`Converti spesa #${props.id}`} description={`Tipo attuale: ${typeLabel(props.sourceType)}`} help={<><p>{preserved}</p>{target === 'PAYROLL' ? <p>{payrollNote}</p> : null}</>} busy={busy} onClose={close}>{content}</RecordConversionModal>;
+    return <div className="modal-page-wrap record-conversion"><div className="modal-card modal-card-wide modal-page-card">
+        <div className="toolbar-card modal-toolbar-card">
+            <div><h2>Converti incasso #{props.id}</h2><p className="muted">Tipo attuale: {typeLabel(props.sourceType)}</p></div>
+            <Link className="btn btn-sm btn-default" href={props.returnHref}>Annulla</Link>
         </div>
-    </div>;
+        {content}
+    </div></div>;
 }
 
 function CashConversionForm({formProps, onSubmit}: {formProps: IncomeProps; onSubmit: (data: FormData) => void}) {

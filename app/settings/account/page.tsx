@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import { redirect } from 'next/navigation';
 import { getCurrentSession } from '@/lib/auth';
 import { revokeOtherSessionsAction, updateAccountAction } from './actions';
@@ -30,8 +31,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
   return <div className="grid admin-page settings-admin-page account-settings-page">
     <div className="toolbar-card">
       <div>
-        <h2>Account</h2>
-        <p className="muted">Gestisci le informazioni di accesso del tuo utente.</p>
+        <div className="info-title-row"><h2>Account</h2><InfoHint compactOnly title="Account">Gestisci le informazioni di accesso del tuo utente.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci le informazioni di accesso del tuo utente.</p>
       </div>
       <DetailBackButton href="/settings" />
     </div>
@@ -40,8 +40,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
       <div className="account-form-intro full">
         <span className="account-form-intro-icon" aria-hidden="true">◎</span>
         <div>
-          <h3>Profilo e accesso</h3>
-          <p className="muted">Aggiorna i dati personali e, se necessario, modifica la password.</p>
+          <div className="info-title-row"><h3>Profilo e accesso</h3><InfoHint compactOnly title="Dati personali">Aggiorna i dati personali e, se necessario, modifica la password.</InfoHint></div><p className="muted info-hint-desktop-text">Aggiorna i dati personali e, se necessario, modifica la password.</p>
         </div>
       </div>
       {saved ? <div className="form-summary full"><strong>Account aggiornato.</strong></div> : null}
@@ -93,8 +92,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
       <div className="account-sessions-heading">
         <span className="account-form-intro-icon" aria-hidden="true">⌁</span>
         <div>
-          <h3>Sessioni attive</h3>
-          <p className="muted">Controlla l’accesso dell’account sugli altri dispositivi.</p>
+          <div className="info-title-row"><h3>Sessioni attive</h3><InfoHint compactOnly title="Sessioni di accesso">Controlla l’accesso dell’account sugli altri dispositivi.</InfoHint></div><p className="muted info-hint-desktop-text">Controlla l’accesso dell’account sugli altri dispositivi.</p>
         </div>
         <span className="badge">{activeSessions} {activeSessions === 1 ? 'sessione' : 'sessioni'}</span>
       </div>

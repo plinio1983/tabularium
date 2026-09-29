@@ -284,9 +284,7 @@ export default function CounterExpenseRegister({
         <h1>Spesa da banco</h1>
       </div>
       <div className="cash-register-header-actions">
-        <a className="btn btn-circle btn-sm btn-neutral btn-close" href="/expenses" aria-label="Torna alle spese">
-          <span className="btn-icon" aria-hidden="true">✕</span>
-        </a>
+        <a className="btn btn-neutral btn-icon-only modal-close-button" href="/expenses" aria-label="Torna alle spese"><span className="btn-icon" aria-hidden="true">×</span></a>
       </div>
     </header>
 
@@ -375,7 +373,7 @@ export default function CounterExpenseRegister({
           <h2 id="counter-expense-method-title">
             {selectedMethod ? 'Conferma spesa' : 'Metodo di pagamento'}
           </h2>
-          <button type="button" aria-label="Chiudi" disabled={sending} onClick={closePaymentModal}><span className="btn-icon">×</span></button>
+          <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" disabled={sending} onClick={closePaymentModal}><span className="btn-icon">×</span></button>
         </header>
 
         {!selectedMethod ? <div className="counter-expense-choice-list">

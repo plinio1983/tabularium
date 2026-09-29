@@ -166,7 +166,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
             <h3>{mode === "copy" ? `Copia spesa #${expense.id}` : mode === "payment" ? `Nuovo pagamento · spesa #${expense.id}` : `Modifica spesa #${expense.id}`}</h3>
             <p className="muted">{mode === "copy" ? "I dati sono precompilati, pagamenti e stato pagamento restano azzerati." : mode === "payment" ? "Registra un nuovo pagamento per questa spesa." : "Aggiorna dati e pagamenti."}</p>
           </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setExpense(null)}><span className="btn-icon">×</span></button>
+          <button aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" type="button" onClick={() => setExpense(null)}><span className="btn-icon">×</span></button>
         </div>
         <ExpenseForm
           key={`${mode}-${expense.id}`}

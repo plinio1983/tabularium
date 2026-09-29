@@ -18,7 +18,7 @@ export default function CategoryCreatePanel({ action, iconOptions }: Props) {
       onClick={() => setIsOpen(value => !value)}
     >
       <span className="category-create-toggle-copy">
-        <span className="category-create-toggle-icon btn-icon" aria-hidden="true">＋</span>
+        <span className="category-create-toggle-icon btn-icon btn-icon-add" aria-hidden="true">＋</span>
         <span>
           <strong>Nuova categoria</strong>
           <small>Aggiungi un nuovo valore disponibile nei form di spesa.</small>
@@ -58,7 +58,7 @@ export default function CategoryCreatePanel({ action, iconOptions }: Props) {
       </div>
       <div className="actions-row full category-create-actions">
         <button type="button" className="btn btn-md btn-default" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span> Annulla</button>
-        <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">＋</span> Aggiungi categoria</button>
+        <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon btn-icon-add">＋</span> Aggiungi categoria</button>
       </div>
     </form> : null}
   </section>;

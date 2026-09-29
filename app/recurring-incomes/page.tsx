@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import RecurringStateProvider from '@/components/RecurringStateProvider';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspace} from '@/lib/auth';
@@ -55,8 +56,7 @@ export default async function RecurringIncomesPage({searchParams}: {
         isPrimary: bank.id === current.company.primaryBankId
     }))} paymentMethods={methods} salesChannels={channels} customers={customers}/>
         <div className="toolbar-card record-toolbar-card">
-            <div><h2>Entrate ricorrenti</h2>
-                <p className="muted">Gestisci le regole che generano periodicamente gli incassi.</p></div>
+            <div><div className="info-title-row"><h2>Entrate ricorrenti</h2><InfoHint compactOnly title="Entrate ricorrenti">Gestisci le regole che generano periodicamente gli incassi.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci le regole che generano periodicamente gli incassi.</p></div>
         </div>
         <ActionFeedbackBanner searchParams={query} savedMessages={{activated: 'Ricorrenze attivate.', deactivated: 'Ricorrenze disattivate.',
             created: 'Entrata ricorrente creata.', deleted: 'Entrata ricorrente eliminata.',

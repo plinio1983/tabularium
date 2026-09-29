@@ -21,5 +21,5 @@ export default function NewEmployeePanel({initialOpen = false}: {initialOpen?: b
     document.addEventListener('click', handler);
     return () => document.removeEventListener('click', handler);
   }, []);
-  return <><button className="btn btn-sm btn-primary btn-stretch" type="button" data-employee-new><span className="btn-icon">＋</span>Nuovo dipendente</button><EmployeeCreateModal open={open} onClose={() => setOpen(false)} action={action}/></>;
+  return <><button className="btn btn-sm btn-primary btn-stretch" type="button" data-employee-new><span className="btn-icon btn-icon-add">＋</span>Nuovo dipendente</button><EmployeeCreateModal open={open} onClose={() => setOpen(false)} action={action}/></>;
 }

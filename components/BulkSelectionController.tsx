@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import {useSearchParams} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 
 function selectedInputsForForm(formId: string) {
   const inputs = Array.from(
@@ -14,6 +14,19 @@ function selectedInputsForForm(formId: string) {
     if (!uniqueById.has(input.value)) uniqueById.set(input.value, input);
   });
   return Array.from(uniqueById.values());
+}
+
+function syncConversionAction(button: HTMLButtonElement) {
+  const inputs = selectedInputsForForm(button.dataset.bulkForm ?? '');
+  const eligible = (button.dataset.convertEligibleIds ?? '').split(',');
+  const id = inputs.length === 1 && eligible.includes(inputs[0].value) ? inputs[0].value : '';
+  button.disabled = !id;
+  button.setAttribute('aria-disabled', String(!id));
+  button.title = id ? 'Converti tipo' : 'Seleziona un solo record convertibile';
+  const kind = button.dataset.bulkConvert;
+  button.dataset.convertHref = id && (kind === 'expenses' || kind === 'incomes')
+    ? `/${kind}/${id}${kind === 'expenses' ? '?convert=1&' : '/convert?'}returnTo=${button.dataset.returnTo ?? ''}`
+    : '';
 }
 
 function allInputsForForm(formId: string) {
@@ -140,6 +153,10 @@ function buildFloatingButton(original: HTMLElement, label: string, icon: string,
   const slabel = document.createElement("span");
   slabel.textContent = label;
   sicon.className = `btn-icon ${iconClassName}`;
+  if (['+', '＋'].includes(sicon.textContent?.trim() ?? '')) {
+    sicon.textContent = '＋';
+    sicon.classList.add('btn-icon-add');
+  }
   slabel.className = "floating-bulk-label";
   button.appendChild(sicon);
   button.appendChild(slabel);
@@ -246,7 +263,7 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
 
   const close = document.createElement("button");
   close.type = "button";
-  close.className = "bulk-action-modal-close";
+  close.className = "btn btn-neutral btn-icon-only modal-close-button bulk-action-modal-close";
   close.setAttribute("aria-label", "Chiudi azioni bulk");
   const closeIcon = document.createElement("span");
   closeIcon.className = "btn-icon";
@@ -448,7 +465,7 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   const closeList = sourceBar.closest<HTMLElement>(".mobile-record-list-pane")
     ?.querySelector<HTMLButtonElement>(".mobile-record-close");
   if (closeList) {
-    const closeButton = buildFloatingButton(closeList, "Chiudi lista e torna al riepilogo", "×", "floating-bulk-close btn btn-neutral btn-icon-only");
+    const closeButton = buildFloatingButton(closeList, "Chiudi lista e torna al riepilogo", "×", "floating-bulk-close btn btn-neutral btn-icon-only modal-close-button");
     closeButton.title = "Torna al riepilogo";
     inner.appendChild(closeButton);
   }
@@ -512,6 +529,7 @@ function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
 }
 
 export default function BulkSelectionController() {
+  const router = useRouter();
   const query = useSearchParams().toString();
   useEffect(() => {
     document.querySelectorAll<HTMLInputElement>('input[name="ids"], input[data-bulk-target]').forEach(input => {
@@ -529,6 +547,7 @@ export default function BulkSelectionController() {
       });
 
       document.querySelectorAll<HTMLElement>("[data-bulk-direct-actions]").forEach(syncDirectActionGroup);
+      document.querySelectorAll<HTMLButtonElement>("[data-bulk-convert]").forEach(syncConversionAction);
 
       document.querySelectorAll<HTMLInputElement>(".bulk-select-all").forEach((checkbox) => {
         const formId = checkbox.getAttribute("data-bulk-target") ?? "";
@@ -612,6 +631,17 @@ export default function BulkSelectionController() {
         event.preventDefault();
         event.stopPropagation();
         openBulkActionModal(bulkActionMenu);
+        return;
+      }
+
+      const conversion = target.closest<HTMLButtonElement>('[data-bulk-convert]');
+      if (conversion) {
+        event.preventDefault();
+        syncConversionAction(conversion);
+        if (!conversion.disabled && conversion.dataset.convertHref) {
+          closeBulkActionModal();
+          router.push(conversion.dataset.convertHref, {scroll: false});
+        }
         return;
       }
 
@@ -745,7 +775,7 @@ export default function BulkSelectionController() {
       document.querySelectorAll(".floating-bulk-actions-bar").forEach((bar) => bar.remove());
       closeBulkActionModal();
     };
-  }, [query]);
+  }, [query, router]);
 
   return null;
 }

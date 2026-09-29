@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import type {ReactNode} from 'react';
 import {supplierDefaultVatRates} from '@/lib/supplier-defaults';
 
@@ -40,8 +41,7 @@ export default function SupplierFormFields({supplier, categories}: {
   return <>
     <details className="form-section full entity-form-section" open>
       <summary>
-        <span><span className="entity-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span>
-        <small>Dati fiscali, referente e coordinate di pagamento</small>
+        <span className="info-label-row"><span><span className="entity-form-section-icon" aria-hidden="true">◉</span>Anagrafica</span><InfoHint compactOnly title="Anagrafica">Dati fiscali, referente e coordinate di pagamento</InfoHint></span><small className="info-hint-desktop-text">Dati fiscali, referente e coordinate di pagamento</small>
       </summary>
       <div className="form-section-grid entity-form-section-grid">
         <Field name="businessName" label="Ragione sociale" icon="◉" className="span-2">
@@ -93,8 +93,7 @@ export default function SupplierFormFields({supplier, categories}: {
 
     <details className="form-section full entity-form-section" open>
       <summary>
-        <span><span className="entity-form-section-icon" aria-hidden="true">≡</span>Note</span>
-        <small>Annotazioni interne e informazioni operative</small>
+        <span className="info-label-row"><span><span className="entity-form-section-icon" aria-hidden="true">≡</span>Note</span><InfoHint compactOnly title="Note">Annotazioni interne e informazioni operative</InfoHint></span><small className="info-hint-desktop-text">Annotazioni interne e informazioni operative</small>
       </summary>
       <div className="form-section-stack">
         <Field name="internalNotes" label="Note interne" icon="≡" className="full">

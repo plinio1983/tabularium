@@ -70,7 +70,7 @@ export default function SupplierEditModalController({categories = []}: { categor
           <h3>Modifica fornitore</h3>
           <p className="muted">Aggiorna l’anagrafica di {supplier.businessName}.</p>
         </div>
-        <button className="btn btn-icon-only btn-default modal-close-button" type="button"
+        <button aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" type="button"
                 onClick={() => setSupplier(null)}><span className="btn-icon">×</span></button>
       </div>
 

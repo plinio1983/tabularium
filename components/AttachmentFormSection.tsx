@@ -1,5 +1,6 @@
 "use client";
 
+import InfoHint from '@/components/InfoHint';
 import LinkedRecordFields from '@/components/LinkedRecordFields';
 
 import {useEffect, useRef, useState} from "react";
@@ -40,7 +41,7 @@ export default function AttachmentFormSection({initialAttachments = [], onStateC
   }
 
   return <details ref={sectionRef} className="form-section full expense-attachments-section app-form-wizard-step app-form-wizard-step-7" open>
-    <summary><span>Allegati</span><small>File, XML e P7M</small></summary>
+    <summary><span className="info-label-row"><span>Allegati</span><InfoHint compactOnly title="Allegati">File, XML e P7M</InfoHint></span><small className="info-hint-desktop-text">File, XML e P7M</small></summary>
     <LinkedRecordFields locked={readOnly}>
       <label className="card attachment-row-wrap">
         <div className="attachment-row-title">Allegati &nbsp;<small className="text-warning">PDF, immagini, XML, P7M</small></div>

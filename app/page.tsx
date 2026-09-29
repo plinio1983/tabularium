@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import type {ReactNode} from 'react';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
@@ -410,8 +411,7 @@ function DashboardPieChart({
     return <div className="card category-chart-card composition-pie-card">
         <div className="card-heading-row">
             <div>
-                <h2>{title}</h2>
-                <p className="muted">{description}</p>
+                <div className="info-title-row"><h2>{title}</h2><InfoHint compactOnly title="Come leggere il grafico">{description}</InfoHint></div><p className="muted info-hint-desktop-text">{description}</p>
             </div>
             {badge || secondaryBadge ? <div className="dashboard-chart-main-totals">
                 {badge ? <div className="dashboard-chart-main-total">{badge}</div> : null}
@@ -555,8 +555,7 @@ function AnnualProfitOverview({totals, year}: { totals: any; year: number }) {
     return <section className="card annual-profit-overview">
         <div className="card-heading-row">
             <div>
-                <h2>Margini e redditività</h2>
-                <p className="muted">Valori annuali e incidenza sulle entrate totali nel {year}.</p>
+                <div className="info-title-row"><h2>Margini e redditività</h2><InfoHint compactOnly title="Come leggere il riepilogo">Valori annuali e incidenza sulle entrate totali nel {year}.</InfoHint></div><p className="muted info-hint-desktop-text">Valori annuali e incidenza sulle entrate totali nel {year}.</p>
             </div>
         </div>
         <div className="fiscal-overview-matrix annual-profit-overview-matrix">
@@ -806,8 +805,7 @@ function MonthlyIncomeExpenseRatioChart({
                     aria-labelledby="monthly-income-expense-ratio-chart-title">
         <div className="card-heading-row">
             <div>
-                <h2 id="monthly-income-expense-ratio-chart-title">Margine lordo per mese</h2>
-                <p className="muted">Percentuale del margine lordo rispetto alle entrate totali mensili da inizio anno {year}.</p>
+                <div className="info-title-row"><h2 id="monthly-income-expense-ratio-chart-title">Margine lordo per mese</h2><InfoHint compactOnly title="Come leggere il riepilogo">Percentuale del margine lordo rispetto alle entrate totali mensili da inizio anno {year}.</InfoHint></div><p className="muted info-hint-desktop-text">Percentuale del margine lordo rispetto alle entrate totali mensili da inizio anno {year}.</p>
             </div>
             {/*<div className="text-right chart-total">*/}
             {/*    <span className="badge">Anno {year}</span>*/}
@@ -1193,8 +1191,7 @@ function ProfitabilityTrendChart({months, year}: { months: DashboardMonth[]; yea
     return <section className="card dashboard-insight-card full">
         <div className="card-heading-row">
             <div>
-                <h2>Marginalità per mese</h2>
-                <p className="muted">Percentuale rispetto alle entrate mensili nell’anno {year}.</p>
+                <div className="info-title-row"><h2>Marginalità per mese</h2><InfoHint compactOnly title="Come leggere il riepilogo">Percentuale rispetto alle entrate mensili nell’anno {year}.</InfoHint></div><p className="muted info-hint-desktop-text">Percentuale rispetto alle entrate mensili nell’anno {year}.</p>
             </div>
             <div className="dashboard-chart-legend">
                 {series.map(item =>
@@ -1229,8 +1226,7 @@ function CashScheduleChart({items, year}: { items: CashScheduleItem[]; year: num
     return <section id="scadenze" className="card dashboard-insight-card dashboard-anchor-section">
         <div className="card-heading-row">
             <div>
-                <h2>Scadenzario incassi e pagamenti</h2>
-                <p className="muted">Movimenti ancora aperti, raggruppati per data prevista nel {year}.</p>
+                <div className="info-title-row"><h2>Scadenzario incassi e pagamenti</h2><InfoHint compactOnly title="Come leggere il riepilogo">Movimenti ancora aperti, raggruppati per data prevista nel {year}.</InfoHint></div><p className="muted info-hint-desktop-text">Movimenti ancora aperti, raggruppati per data prevista nel {year}.</p>
             </div>
             <div className="dashboard-chart-legend">
                 <span><i className="legend-income"/>Da incassare</span>
@@ -1281,8 +1277,7 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
     return <section id="iva" className="card dashboard-insight-card vat-situation-card dashboard-anchor-section">
         <div className="card-heading-row">
             <div>
-                <h2>Situazione IVA</h2>
-                <p className="muted">Stima ricavata dai movimenti fiscali registrati nel {year}.</p>
+                <div className="info-title-row"><h2>Situazione IVA</h2><InfoHint compactOnly title="Come leggere il riepilogo">Stima ricavata dai movimenti fiscali registrati nel {year}.</InfoHint></div><p className="muted info-hint-desktop-text">Stima ricavata dai movimenti fiscali registrati nel {year}.</p>
             </div>
             <span className={`vat-balance-badge ${balance > 0 ? 'is-debit' : balance < 0 ? 'is-credit' : ''}`}>
                 {balance > 0 ? 'A debito' : balance < 0 ? 'A credito' : 'In equilibrio'}
@@ -1360,8 +1355,7 @@ function IncomeExpenseBreakdownChart({
     return <section className="card income-expense-chart-card" aria-labelledby="income-expense-chart-title">
         <div className="card-heading-row">
             <div className="card-title-wrap">
-                <h2 id="income-expense-chart-title">Grafico entrate / uscite</h2>
-                <p className="muted">Ripartizione fiscale e non fiscale anno {periods[0]?.year ?? ''}.</p>
+                <div className="info-title-row"><h2 id="income-expense-chart-title">Grafico entrate / uscite</h2><InfoHint compactOnly title="Come leggere il riepilogo">Ripartizione fiscale e non fiscale anno {periods[0]?.year ?? ''}.</InfoHint></div><p className="muted info-hint-desktop-text">Ripartizione fiscale e non fiscale anno {periods[0]?.year ?? ''}.</p>
             </div>
             <div>
                 <span className="badge">Totale {chartEuro(total)}</span>
@@ -1609,11 +1603,11 @@ export default async function Dashboard({searchParams}: {
         <div className="dashboard-actions toolbar-card dashboard-header-card">
             <div className="actions-row dashboard-top-actions">
                 <ExpenseNewTriggerButton className="btn btn-sm btn-primary"><span
-                    className="btn-icon">＋</span> Spesa
+                    className="btn-icon btn-icon-add">＋</span> Spesa
                 </ExpenseNewTriggerButton>
                 <Link className="btn btn-sm btn-primary" href="/incomes?new=1"><span
-                    className="btn-icon">＋</span> Incasso</Link>
-                {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon">＋</span> Fornitore</Link>*/}
+                    className="btn-icon btn-icon-add">＋</span> Incasso</Link>
+                {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon btn-icon-add">＋</span> Fornitore</Link>*/}
             </div>
             {/*<div className="flex align-center justify-end dashboard-link-selector h100">*/}
             {/*    {fiscalMonth ?*/}
@@ -1636,7 +1630,7 @@ export default async function Dashboard({searchParams}: {
             <div className="flex">
                 <form className="period-selector dashboard-year-selector" method="get">
                     <div className="dashboard-title-block mb-6">
-                        <h2>Dashboard</h2>
+                        <div className="info-title-row"><h2>Dashboard</h2><InfoHint compactOnly title="Dashboard">I riepiloghi fanno riferimento al periodo consolidato indicato. Liquidità e scadenze sono aggiornate a oggi.</InfoHint></div>
                         <p className="muted">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
                     </div>
                     <div className="dashboard-selector-wrapper">

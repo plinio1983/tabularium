@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import {redirect} from 'next/navigation';
 import Link from 'next/link';
 import {getCurrentSession} from '@/lib/auth';
@@ -25,8 +26,7 @@ export default async function PasswordSettingsPage({searchParams}: {
   return <div className="grid admin-page settings-admin-page account-settings-page">
     <div className="toolbar-card">
       <div>
-        <h2>Cambia password</h2>
-        <p className="muted">Gestisci separatamente la password di accesso.</p>
+        <div className="info-title-row"><h2>Cambia password</h2><InfoHint compactOnly title="Password">Gestisci separatamente la password di accesso.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci separatamente la password di accesso.</p>
       </div>
       <DetailBackButton href="/settings/account"/>
     </div>

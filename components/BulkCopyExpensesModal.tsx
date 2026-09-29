@@ -39,7 +39,7 @@ export default function BulkCopyExpensesModal({formId, action}: {formId: string;
                         <h2 id={`${formId}-copy-modal-title`}>Copia spese</h2>
                         <p className="muted">Spese selezionate: <strong>{selectedIds.length}</strong></p>
                     </div>
-                    <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button>
+                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button>
                 </div>
                 <form action={action} method="post" className="form bulk-category-modal-form bulk-copy-expenses-form">
                     <input type="hidden" name="bulkAction" value="copy"/>

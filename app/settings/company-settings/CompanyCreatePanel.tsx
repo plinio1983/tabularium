@@ -59,7 +59,7 @@ export default function CompanyCreatePanel({action, company}: Props) {
   return <>
     <div className="company-modal-trigger">
       <button ref={triggerRef} type="button" className={`btn btn-md ${company ? 'btn-default' : 'btn-primary'}`} aria-haspopup="dialog" onClick={openModal}>
-        <span className="btn-icon" aria-hidden="true">{company ? '✎' : '＋'}</span> {company ? 'Modifica' : 'Nuova società'}
+        <span className={`btn-icon${company ? '' : ' btn-icon-add'}`} aria-hidden="true">{company ? '✎' : '＋'}</span> {company ? 'Modifica' : 'Nuova società'}
       </button>
     </div>
     {isOpen ? createPortal(<div className="modal-backdrop app-form-modal company-create-modal" role="presentation"
@@ -77,7 +77,7 @@ export default function CompanyCreatePanel({action, company}: Props) {
       <section ref={cardRef} className="modal-card modal-card-wide entity-form-modal-card" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <div className="modal-title">
           <div><h3 id={titleId}>{company ? 'Modifica società' : 'Nuova società'}</h3><p className="muted">{company ? company.name : 'Inserisci i dati della nuova società contabile.'}</p></div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button>
+          <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button>
         </div>
         <form action={submit} className="form app-record-form entity-form entity-styled-form company-settings-form company-create-form">
           {company ? <input type="hidden" name="id" value={company.id}/> : null}

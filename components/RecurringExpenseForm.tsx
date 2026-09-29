@@ -1,5 +1,6 @@
 "use client";
 
+import InfoHint from '@/components/InfoHint';
 import {weekdayOptions, weekdayLabel, weekdayFromDate} from '@/lib/recurring-cadence';
 import {type FormEvent, type ReactNode, useEffect, useId, useRef, useState} from "react";
 import {categoryIcon} from "@/lib/expense-ui";
@@ -240,7 +241,7 @@ function SupplierAutocomplete({
                         setShowCreate(true);
                     }}
                 >
-                    <span className="btn-icon">＋</span> Nuovo
+                    <span className="btn-icon btn-icon-add">＋</span> Nuovo
                 </button>
             </div>
             <div className="entity-autocomplete-input-row">
@@ -639,6 +640,7 @@ export default function RecurringExpenseForm({
                         <span>{["Ricorrenza", "Importo", "Dettagli", "Fatturazione", "Pagamento", "Note"][mobileStep - 1]}</span>
                     </strong>
                 </div>
+                <InfoHint compactOnly title="Informazioni sul passaggio">{["Data iniziale, cadenza e giorno previsto. La cadenza settimanale genera un’occorrenza ogni sette giorni a partire dal giorno scelto.", "Importo, fiscalità e aliquota IVA.", "Dati specifici, categoria e descrizione della spesa.", "Fatturazione e periodo contabile.", "Automazione, metodo di pagamento e banca.", "Note interne e controllo dei dati."][mobileStep - 1]}</InfoHint>
                 <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep + mobileStepOffset} di ${6 + mobileStepOffset}`}>
                     <span style={{width: `${(mobileStep + mobileStepOffset) / (6 + mobileStepOffset) * 100}%`}}/>
                 </div>
@@ -664,15 +666,14 @@ export default function RecurringExpenseForm({
 
             <details className="form-section full recurring-form-section recurring-document-section recurring-dates-section" open>
                 <summary>
-                    <span>Ricorrenza e scadenza</span>
-                    <small>Data iniziale, cadenza e giorno previsto</small>
+                    <span className="info-label-row"><span>Ricorrenza e scadenza</span><InfoHint compactOnly title="Ricorrenza e scadenza">Data iniziale, cadenza e giorno previsto</InfoHint></span><small className="info-hint-desktop-text">Data iniziale, cadenza e giorno previsto</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
                     <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data inizio" name="startDate" value={startDate} onChange={setStartDate} required/>
 
                     <SelectField
                         className="app-form-wizard-step app-form-wizard-step-1"
-                        label="Cadenza"
+                        label="Cadenza" hint={cadence === 'WEEKLY' ? 'La prima occorrenza cade nel giorno scelto a partire dalla data iniziale, poi ogni 7 giorni.' : undefined}
                         icon="↻"
                         name="cadence"
                         value={cadence}
@@ -693,7 +694,7 @@ export default function RecurringExpenseForm({
                         ]}
                     />
 
-                    {cadence === 'WEEKLY' ? <p className="muted full app-form-wizard-step app-form-wizard-step-1">La prima occorrenza cade nel giorno scelto a partire dalla data iniziale, poi ogni 7 giorni.</p> : null}
+
                     {initialExpense ? <p className="muted full app-form-wizard-step app-form-wizard-step-1">Per passare da o a settimanale, o cambiarne il giorno, imposta la data iniziale da oggi in avanti. Le occorrenze già generate restano invariate.</p> : null}
                     {cadence === 'WEEKLY' ? <SelectField className="app-form-wizard-step app-form-wizard-step-1"
                         label="Giorno della settimana" icon="№" name="dueDay" value={dueDay} onChange={setDueDay} required options={weekdayOptions}/> : isYearly ? (
@@ -736,8 +737,7 @@ export default function RecurringExpenseForm({
 
             <details className="form-section full recurring-form-section recurring-document-section recurring-details-section app-form-wizard-step app-form-wizard-step-3" open>
                 <summary>
-                    <span>{isPayroll ? "Dipendente e competenza" : isTaxContribution ? "Ente e dettagli" : "Fornitore e dettagli"}</span>
-                    <small>Dati specifici, categoria e descrizione della spesa</small>
+                    <span className="info-label-row"><span>{isPayroll ? "Dipendente e competenza" : isTaxContribution ? "Ente e dettagli" : "Fornitore e dettagli"}</span><InfoHint compactOnly title="Dati della spesa">Dati specifici, categoria e descrizione della spesa</InfoHint></span><small className="info-hint-desktop-text">Dati specifici, categoria e descrizione della spesa</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
                     {!isTaxContribution && !isPayroll ? <SupplierAutocomplete suppliers={suppliers} initialSupplierId={initialExpense?.supplierId ?? null} initialMerchant={initialExpense?.merchant ?? ""} onValueChange={setSupplierName} categories={categories} onSupplierSelected={supplier => {
@@ -867,8 +867,7 @@ export default function RecurringExpenseForm({
 
             {!isTaxContribution && !isPayroll ? <details className="form-section full recurring-form-section recurring-fiscal-section app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
-                    <span>Fatturazione</span>
-                    <small>Fattura elettronica e periodo fatturazione</small>
+                    <span className="info-label-row"><span>Fatturazione</span><InfoHint compactOnly title="Fatturazione">Fattura elettronica e periodo fatturazione</InfoHint></span><small className="info-hint-desktop-text">Fattura elettronica e periodo fatturazione</small>
                 </summary>
 
                 <div className="form-section-grid recurring-form-section-grid">
@@ -926,8 +925,7 @@ export default function RecurringExpenseForm({
 
             <details className="form-section full recurring-form-section recurring-payment-section app-form-wizard-step app-form-wizard-step-5" open>
                 <summary>
-                    <span>Pagamento</span>
-                    <small>Automazione, canale e banca</small>
+                    <span className="info-label-row"><span>Pagamento</span><InfoHint compactOnly title="Pagamento">Automazione, canale e banca</InfoHint></span><small className="info-hint-desktop-text">Automazione, canale e banca</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">
                     <div className="switch-toggle-field recurring-switch-control recurring-accrual-toggle hidden-md-down">
@@ -994,8 +992,7 @@ export default function RecurringExpenseForm({
 
             <details className="form-section full recurring-form-section recurring-notes-section app-form-wizard-step app-form-wizard-step-6" open={mobileStep === 6}>
                 <summary>
-                    <span>Note</span>
-                    <small>Note interne opzionali</small>
+                    <span className="info-label-row"><span>Note</span><InfoHint compactOnly title="Note">Note interne opzionali</InfoHint></span><small className="info-hint-desktop-text">Note interne opzionali</small>
                 </summary>
                 <div className="form-section-stack">
                     <section className="recurring-review-summary record-review-step" aria-label="Riepilogo spesa ricorrente">

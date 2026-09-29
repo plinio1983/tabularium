@@ -255,12 +255,6 @@
 }
 
 @media (max-width: 760px) {
-  .cash-register-header .btn.btn-close {
-    background: var(--bg);
-  }
-}
-
-@media (max-width: 760px) {
   .cash-register-controls {
     grid-template-columns: auto minmax(0, 1fr);
   }
@@ -414,6 +408,10 @@
 @media (max-width: 760px) {
   .cash-register-trend-heading {
     display: grid;
+
+    > .toolbar-actions {
+      display: none;
+    }
   }
 }
 

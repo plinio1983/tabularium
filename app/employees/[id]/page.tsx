@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import DetailActionsBar from '@/components/DetailActionsBar';
@@ -137,7 +138,7 @@ export default async function EmployeeDetailPage({params, searchParams}: {
                     <DetailActionsBar controls={<EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>}
                         primary={<>
                             <button className="btn btn-sm btn-option" type="button" data-employee-edit-id={employee.id}><span className="btn-icon">✎</span> Modifica</button>
-                            <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span className="btn-icon">＋</span> Spesa</ExpenseNewTriggerButton>
+                            <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span className="btn-icon btn-icon-add">＋</span> Spesa</ExpenseNewTriggerButton>
                             <DeleteActionButton action={'/api/employees/' + employee.id} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
                         </>}
                     />
@@ -173,7 +174,7 @@ export default async function EmployeeDetailPage({params, searchParams}: {
                 </section>
                 <details className="record-detail-section party-detail-collapsible" open>
                     <summary className="record-detail-section-heading">
-                        <div><h2>Anagrafica</h2><p>Dati personali e coordinate del dipendente.</p></div>
+                        <div><div className="info-title-row"><h2>Anagrafica</h2><InfoHint compactOnly title="Anagrafica">Dati personali e coordinate del dipendente.</InfoHint></div><p className="muted info-hint-desktop-text">Dati personali e coordinate del dipendente.</p></div>
                         <span className="party-detail-collapsible-toggle" aria-hidden="true">⌄</span></summary>
                     <div className="record-detail-status-strip party-detail-info-strip">
                         <Field label="Nome" value={employee.firstName}/><Field label="Cognome" value={employee.lastName}/><Field label="Matricola" value={show(employee.employeeCode)}/><Field label="Codice fiscale" value={show(employee.taxCode)}/><Field label="Email" value={show(employee.email)}/><Field label="Telefono" value={show(employee.phone)}/><Field label="IBAN" value={show(employee.iban)}/><Field label="Note interne" value={show(employee.internalNotes)}/>

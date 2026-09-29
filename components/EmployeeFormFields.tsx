@@ -1,5 +1,6 @@
 'use client';
 
+import InfoHint from '@/components/InfoHint';
 import {type ReactNode, useState} from 'react';
 import {calendarDateInput} from '@/lib/company-time';
 import {DateField} from '@/components/FormControls';
@@ -45,11 +46,10 @@ export default function EmployeeFormFields({employee}: { employee?: EmployeeForm
     return <>
         <details className="form-section full entity-form-section" open>
             <summary>
-                <span>
+                <span className="info-label-row"><span>
                     <span className="entity-form-section-icon" aria-hidden="true">♙</span>
                     Anagrafica
-                </span>
-                <small>Identità e contatti del dipendente</small>
+                </span><InfoHint compactOnly title="Anagrafica">Identità e contatti del dipendente</InfoHint></span><small className="info-hint-desktop-text">Identità e contatti del dipendente</small>
             </summary>
             <div className="form-section-grid entity-form-section-grid">
                 <Field name="firstName" label="Nome" icon="♙">
@@ -77,11 +77,10 @@ export default function EmployeeFormFields({employee}: { employee?: EmployeeForm
         </details>
         <details className="form-section full entity-form-section" open>
             <summary>
-                <span>
+                <span className="info-label-row"><span>
                     <span className="entity-form-section-icon" aria-hidden="true">◷</span>
                     Rapporto
-                </span>
-                <small>Periodo e stato del rapporto di lavoro</small>
+                </span><InfoHint compactOnly title="Rapporto">Periodo e stato del rapporto di lavoro</InfoHint></span><small className="info-hint-desktop-text">Periodo e stato del rapporto di lavoro</small>
             </summary>
             <div className="form-section-grid entity-form-section-grid">
                 <DateField label="Data assunzione" name="hiredAt" value={hiredAt} onChange={setHiredAt}/>
@@ -102,11 +101,10 @@ export default function EmployeeFormFields({employee}: { employee?: EmployeeForm
         </details>
         <details className="form-section full entity-form-section" open>
             <summary>
-                <span>
+                <span className="info-label-row"><span>
                     <span className="entity-form-section-icon" aria-hidden="true">≡</span>
                     Note
-                </span>
-                <small>Informazioni operative riservate</small>
+                </span><InfoHint compactOnly title="Note">Informazioni operative riservate</InfoHint></span><small className="info-hint-desktop-text">Informazioni operative riservate</small>
             </summary>
             <div className="form-section-stack">
                 <Field name="internalNotes" label="Note interne" icon="≡" className="full"><textarea id="employee-internalNotes" name="internalNotes" rows={4} maxLength={2000} defaultValue={employee?.internalNotes ?? ''} placeholder="Inserisci eventuali informazioni operative sul dipendente…"/></Field>

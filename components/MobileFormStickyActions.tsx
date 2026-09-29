@@ -79,7 +79,7 @@ export default function MobileFormStickyActions({
         {error ? <p className="inline-warning full">{error}</p> : null}
         <div className="app-form-wizard-actions-row mobile-form-sticky-actions-row">
             {showBack ? (
-                <button className="btn btn-md btn-default" type="button" onClick={onBack}>
+                <button className="btn btn-md btn-ghost" type="button" onClick={onBack}>
                     <span className="btn-icon">←</span> {backLabel}
                 </button>
             ) : onCancel ? (

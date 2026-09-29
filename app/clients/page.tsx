@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import Link from 'next/link';
 import {requireWorkspace} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
@@ -46,8 +47,15 @@ export default async function ClientsPage({searchParams}: {
     const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
     const [customers, salesChannels] = await Promise.all([
         prisma.customer.findMany({
-            where: {workspaceId: current.workspace.id,
-                ...(input(filters, 'businessName').trim() ? {businessName: {contains: input(filters, 'businessName').trim(), mode: 'insensitive' as const}} : {})},
+            where: {
+                workspaceId: current.workspace.id,
+                ...(input(filters, 'businessName').trim() ? {
+                    businessName: {
+                        contains: input(filters, 'businessName').trim(),
+                        mode: 'insensitive' as const
+                    }
+                } : {})
+            },
             include: {incomes: {where: {companyId: current.company.id}, include: {credits: true}}},
             orderBy: {businessName: 'asc'}
         }),
@@ -85,11 +93,13 @@ export default async function ClientsPage({searchParams}: {
         <ClientEditModalController salesChannels={salesChannels}/><ClickableDesktopRows/><BulkSelectionController/>
         <div className="toolbar-card toolbar-card-wrap">
             <div>
-                <h2>Clienti</h2>
-                <p className="muted">Anagrafica dei clienti usati nell’inserimento degli incassi.</p>
+                <h2>Clienti</h2><p className="muted">Anagrafica dei clienti usati nell’inserimento degli incassi.</p>
+
             </div>
             <div className="toolbar-actions">
-                <button className="btn btn-sm btn-primary" type="button" data-client-new><span className="btn-icon">＋</span> Nuovo cliente</button>
+                <button className="btn btn-sm btn-primary" type="button" data-client-new><span
+                    className="btn-icon btn-icon-add">＋</span> Nuovo cliente
+                </button>
             </div>
         </div>
         <NewClientPanel initialOpen={input(filters, 'new') === '1'} salesChannels={salesChannels}/>
@@ -106,46 +116,70 @@ export default async function ClientsPage({searchParams}: {
         }} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
         <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
-                <div><h2>Lista clienti</h2><p className="muted">Risultati mostrati: {rows.length}</p></div>
+                <div>
+                    <div className="info-title-row">
+                        <h2 className="hidden-sm-up">Clienti</h2>
+                        <h2 className="hidden-sm-down">Lista clienti</h2>
+
+                        <InfoHint compactOnly title="Lista clienti">Anagrafica dei clienti usati nell’inserimento degli
+                            incassi.</InfoHint></div>
+                    <p className="muted">Risultati mostrati: {rows.length}</p></div>
             </div>
             <LiveSearch name="businessName" label="Ricerca cliente" placeholder="Nome o ragione sociale"/>
-            <MobileSortControl action="/clients" currentValue={mobileSort} options={mobileSortOptions} searchParams={filters}/>
+            <MobileSortControl action="/clients" currentValue={mobileSort} options={mobileSortOptions}
+                               searchParams={filters}/>
             {active.length ? <div className="recurring-active-filters">
                 <div><span className="recurring-active-filters-title">Filtri attivi</span>
                     <div className="recurring-active-filter-tags">{active.map(key =>
                         <span className="badge" key={key}><strong>{key}:</strong> {input(filters, key)}</span>)}</div>
                 </div>
-                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/clients"><span className="btn-icon">×</span> Reset</Link>
+                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/clients"><span
+                    className="btn-icon">×</span> Reset</Link>
             </div> : null}
 
-            <form id="clientBulkForm" action={`/api/clients/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar party-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
+            <form id="clientBulkForm" action={`/api/clients/bulk?returnTo=${returnTo}`} method="post"
+                  className="bulk-actions-bar grouped-bulk-actions-bar party-bulk-actions-bar confirm-bulk-form"
+                  data-bulk-button-group="true">
                 <label className="bulk-select-all-inline">
                     <input type="checkbox" className="bulk-select-all" data-bulk-target="clientBulkForm"
                            aria-label="Seleziona tutti i clienti visibili"/>
                 </label>
                 <div className="bulk-action-buttons btn-group">
-                    <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="clientBulkForm">
+                    <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu
+                             data-bulk-form="clientBulkForm">
                         <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                            <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
+                            <span className="btn-icon" aria-hidden="true">⚙</span><span
+                            className="hidden-sm-up hidden-xs-down">Azioni</span><span
+                            className="hidden-sm-down hidden-xs-down">Azioni</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
                             <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
-                                    formAction="/api/exports/clients" formMethod="post" data-confirm-label="Esporta CSV">
+                                    formAction="/api/exports/clients" formMethod="post"
+                                    data-confirm-label="Esporta CSV">
                                 <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                             </button>
-                            <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction" value="delete">
-                                <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
+                            <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction"
+                                    value="delete">
+                                <span className="btn-icon">🗑</span><span
+                                className="hidden-sm-down">Rimuovi selezionati</span>
                             </button>
                         </div>
                     </details>
-                    <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="clientBulkForm" data-edit-trigger-attr="data-client-edit-id">
-                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                        <button type="submit" className="bulk-direct-link is-disabled hidden-xs-down" name="bulkAction" value="export_csv" data-bulk-shortcut data-floating-label="Esporta CSV" data-floating-icon="⇩" data-confirm-label="Esporta CSV" formAction="/api/exports/clients" formMethod="post" disabled><span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span></button>
+                    <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="clientBulkForm"
+                         data-edit-trigger-attr="data-client-edit-id">
+                        <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span
+                            className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
+                        <button type="submit" className="bulk-direct-link is-disabled hidden-xs-down" name="bulkAction"
+                                value="export_csv" data-bulk-shortcut data-floating-label="Esporta CSV"
+                                data-floating-icon="⇩" data-confirm-label="Esporta CSV"
+                                formAction="/api/exports/clients" formMethod="post" disabled><span
+                            className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span></button>
                     </div>
                 </div>
                 <div className="bulk-inner-container">
-                    <button className="bulk-direct-link btn btn-md bulk-add-link btn-primary" type="button" data-bulk-new data-client-new data-floating-label="Cliente">
-                        <span className="btn-icon">＋</span><span className="hidden-sm-down">Cliente</span>
+                    <button className="bulk-direct-link btn btn-md bulk-add-link btn-primary" type="button"
+                            data-bulk-new data-client-new data-floating-label="Cliente">
+                        <span className="btn-icon btn-icon-add">＋</span><span className="hidden-sm-down">Cliente</span>
                     </button>
                     <ClientFiltersDrawer filters={filters}/>
                 </div>
@@ -158,11 +192,15 @@ export default async function ClientsPage({searchParams}: {
                                                                                                                          annualCount,
                                                                                                                          annualAmount
                                                                                                                      }) =>
-                <div className={openCount ? 'party-mobile-item mobile-record-item mobile-record-item-overdue' : 'party-mobile-item mobile-record-item'} key={customer.id}>
+                <div
+                    className={openCount ? 'party-mobile-item mobile-record-item mobile-record-item-overdue' : 'party-mobile-item mobile-record-item'}
+                    key={customer.id}>
                     <div className="mobile-record-select">
-                        <input form="clientBulkForm" type="checkbox" name="ids" value={customer.id} disabled={Boolean(customer.systemRole)}/>
+                        <input form="clientBulkForm" type="checkbox" name="ids" value={customer.id}
+                               disabled={Boolean(customer.systemRole)}/>
                     </div>
-                    <Link className="mobile-record-link party-mobile-link" href={`/clients/${customer.id}?returnTo=${returnTo}`}>
+                    <Link className="mobile-record-link party-mobile-link"
+                          href={`/clients/${customer.id}?returnTo=${returnTo}`}>
                         <div className="mobile-record-main">
                             <div className="mobile-record-title-row">
                                 <div className="mobile-record-title-left">
@@ -174,11 +212,14 @@ export default async function ClientsPage({searchParams}: {
                                 </div>
                             </div>
                             <div className="mobile-record-subtitle">
-                                <span className="party-mobile-row-grow">{customer.alias || 'Nessun referente'}</span><span className="party-mobile-row-grow text-right"><strong>{openCount}</strong> incassi da accreditare</span>
+                                <span
+                                    className="party-mobile-row-grow">{customer.alias || 'Nessun referente'}</span><span
+                                className="party-mobile-row-grow text-right"><strong>{openCount}</strong> incassi da accreditare</span>
                             </div>
                             <div className="mobile-record-meta">
                                 <span className="party-mobile-row-grow">
-                                    <strong className="badge color-badge tone-insurance">{euro(annualAmount)}</strong> incassati {currentYear}
+                                    <strong
+                                        className="badge color-badge tone-insurance">{euro(annualAmount)}</strong> incassati {currentYear}
                                 </span>
                                 <span className="badge badge-color">{annualCount} incassi {currentYear}</span>
                             </div>
@@ -186,14 +227,16 @@ export default async function ClientsPage({searchParams}: {
                     </Link></div>)}{!rows.length ?
                 <div className="record-empty-state">Nessun cliente trovato.</div> : null}</div>
             <div className="table-scroll">
-                <table className="suppliers-table compact-suppliers-table" data-sortable-table data-default-sort="business-name" data-default-sort-dir="asc">
+                <table className="suppliers-table compact-suppliers-table" data-sortable-table
+                       data-default-sort="business-name" data-default-sort-dir="asc">
                     <thead>
                     <tr>
                         <th className="cell-center">
                             <input type="checkbox" className="bulk-select-all" data-bulk-target="clientBulkForm"/></th>
                         <th data-sort-key="business-name">Ragione<br/>sociale</th>
                         <th data-sort-key="alias">Referente</th>
-                        <th className="text-center" data-sort-key="open-count" data-sort-type="number">Incassi<br/>non accr.
+                        <th className="text-center" data-sort-key="open-count" data-sort-type="number">Incassi<br/>non
+                            accr.
                         </th>
                         <th className="" data-sort-key="open-amount" data-sort-type="number">Importo<br/>Non accr.
                         </th>
@@ -204,9 +247,15 @@ export default async function ClientsPage({searchParams}: {
                     </tr>
                     </thead>
                     <tbody>{rows.map(({customer, openCount, openAmount, annualCount, annualAmount}) =>
-                        <tr className="clickable-desktop-row" data-row-href={`/clients/${customer.id}?returnTo=${returnTo}`} data-sort-row data-sort-business-name={customer.businessName} data-sort-alias={customer.alias ?? ''} data-sort-open-count={openCount} data-sort-open-amount={openAmount} data-sort-annual-count={annualCount} data-sort-annual-amount={annualAmount} tabIndex={0} key={customer.id}>
+                        <tr className="clickable-desktop-row"
+                            data-row-href={`/clients/${customer.id}?returnTo=${returnTo}`} data-sort-row
+                            data-sort-business-name={customer.businessName} data-sort-alias={customer.alias ?? ''}
+                            data-sort-open-count={openCount} data-sort-open-amount={openAmount}
+                            data-sort-annual-count={annualCount} data-sort-annual-amount={annualAmount} tabIndex={0}
+                            key={customer.id}>
                             <td className="cell-center customer-mobile-select">
-                                <input form="clientBulkForm" type="checkbox" name="ids" value={customer.id} disabled={Boolean(customer.systemRole)}/>
+                                <input form="clientBulkForm" type="checkbox" name="ids" value={customer.id}
+                                       disabled={Boolean(customer.systemRole)}/>
                             </td>
                             <td>
                                 <strong>{customer.businessName}</strong>

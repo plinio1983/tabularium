@@ -383,9 +383,7 @@ export default function CashRegister({
                 </a>
             </div>
             <div className="cash-register-header-actions">
-                <a className="btn btn-circle btn-sm btn-neutral btn-close" href={mode === 'edit' ? returnTo : '/incomes/'}>
-                    <span className="btn-icon" aria-hidden="true">✕</span>
-                </a>
+                <a aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" href={mode === 'edit' ? returnTo : '/incomes/'}><span className="btn-icon" aria-hidden="true">×</span></a>
                 {/*<DetailBackButton href={mode === 'edit' ? '/incomes/cash-register/receipts' : '/incomes'}/>*/}
             </div>
         </header>
@@ -538,7 +536,7 @@ export default function CashRegister({
                      aria-labelledby="cash-register-method-title" onClick={event => event.stopPropagation()}>
                 <header>
                     <h2 id="cash-register-method-title">Metodo di pagamento</h2>
-                    <button type="button" aria-label="Chiudi" onClick={() => setMenuOpen(false)}><span className="btn-icon">×</span></button>
+                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" onClick={() => setMenuOpen(false)}><span className="btn-icon">×</span></button>
                 </header>
                 <div>
                     {otherMethods.map(method =>
@@ -562,7 +560,7 @@ export default function CashRegister({
                      onClick={event => event.stopPropagation()}>
                 <header>
                     <h2 id="cash-register-keyboard-method-title">Metodo di pagamento</h2>
-                    <button type="button" aria-label="Chiudi" disabled={sending} onClick={() => {
+                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" disabled={sending} onClick={() => {
                         setKeyboardMethodOpen(false);
                         focusAmount();
                     }}><span className="btn-icon">×</span>

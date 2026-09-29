@@ -1,5 +1,6 @@
 "use client";
 
+import InfoHint from '@/components/InfoHint';
 import {useMemo, useState, type ReactNode} from 'react';
 import type {DailyReceiptTrend} from '@/lib/cash-register-trend';
 import {euro} from '@/lib/money';
@@ -8,7 +9,7 @@ function dayLabel(value: string, options: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat('it-IT', options).format(new Date(`${value}T12:00:00`)).replace('.', '');
 }
 
-export default function CashRegisterReceiptTrendChart({points, annual = false, periodSelector}: {points: DailyReceiptTrend[]; annual?: boolean; periodSelector?: ReactNode}) {
+export default function CashRegisterReceiptTrendChart({points, annual = false, periodSelector, headerActions, activeFilters}: {points: DailyReceiptTrend[]; annual?: boolean; periodSelector?: ReactNode; headerActions?: ReactNode; activeFilters?: ReactNode}) {
   const lastActiveIndex = points.reduce((last, point, index) => point.count ? index : last, 0);
   const [selectedIndex, setSelectedIndex] = useState(lastActiveIndex);
   const selected = points[selectedIndex] ?? points[0];
@@ -40,18 +41,18 @@ export default function CashRegisterReceiptTrendChart({points, annual = false, p
   const labelEvery = points.length > 20 ? 3 : points.length > 12 ? 2 : 1;
 
   return <section className="card cash-register-trend-card fixed" aria-labelledby="cash-register-trend-title">
-    {periodSelector}
     <div className="cash-register-trend-heading">
       <div>
-        <h2 id="cash-register-trend-title">Andamento scontrini</h2>
-        <p className="muted">Incasso {annual ? 'mensile' : 'giornaliero'}. {annual ? 'I mesi' : 'I giorni'} senza movimenti restano visibili a zero.</p>
+        <div className="info-title-row"><h2 id="cash-register-trend-title">Andamento scontrini</h2><InfoHint compactOnly title="Lettura del grafico">Incasso {annual ? 'mensile' : 'giornaliero'}. {annual ? 'I mesi' : 'I giorni'} senza movimenti restano visibili a zero.</InfoHint></div><p className="muted info-hint-desktop-text">Incasso {annual ? 'mensile' : 'giornaliero'}. {annual ? 'I mesi' : 'I giorni'} senza movimenti restano visibili a zero.</p>
       </div>
-      <div className="cash-register-trend-kpis">
+      {headerActions}
+    </div>
+    {periodSelector}
+    <div className="cash-register-trend-kpis">
         <div><span>Incasso</span><strong>{euro(totals.total)}</strong></div>
         <div><span>Scontrini</span><strong>{totals.count}</strong></div>
         <div><span>Ticket medio</span><strong>{euro(totals.average)}</strong></div>
         <div><span>{annual ? 'Mese migliore' : 'Giorno migliore'}</span><strong>{totals.best?.count ? dayLabel(totals.best.day, annual ? {month: 'short'} : {day: '2-digit', month: 'short'}) : '—'}</strong></div>
-      </div>
     </div>
 
     {points.length ? <>
@@ -106,5 +107,6 @@ export default function CashRegisterReceiptTrendChart({points, annual = false, p
         <div><span>Ticket medio</span><strong>{selected.count ? euro(selected.average) : '—'}</strong></div>
       </div> : null}
     </> : <div className="record-empty-state">Nessun dato disponibile per il periodo selezionato.</div>}
+    {activeFilters}
   </section>;
 }

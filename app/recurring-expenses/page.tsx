@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import RecurringStateProvider from '@/components/RecurringStateProvider';
 import {employeeNameSearch} from '@/lib/live-search';
 import { prisma } from '@/lib/prisma';
@@ -98,7 +99,7 @@ export default async function RecurringExpensesPage({ searchParams }: { searchPa
 
   return <RecurringStateProvider><div className="grid recurring-expenses-page-content">
     <div className="toolbar-card record-toolbar-card">
-      <div><h2>Uscite ricorrenti</h2><p className="muted">Gestisci le regole di spesa ricorrente.</p></div>
+      <div><div className="info-title-row"><h2>Uscite ricorrenti</h2><InfoHint compactOnly title="Uscite ricorrenti">Gestisci le regole di spesa ricorrente.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci le regole di spesa ricorrente.</p></div>
       <NewRecurringExpensePanel
         categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}

@@ -1,5 +1,6 @@
 'use client';
 
+import InfoHint from '@/components/InfoHint';
 import {weekdayOptions, weekdayLabel, weekdayFromDate} from '@/lib/recurring-cadence';
 import {FormEvent, useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
@@ -150,7 +151,8 @@ export default function RecurringIncomeForm({
         <div className="app-form-wizard-header full">
             <div className="app-form-wizard-heading">
                 <span>Passaggio {step} di 5</span><strong>{labels[step - 1]}</strong></div>
-            <div className="app-form-wizard-progress"><span style={{width: `${step / 5 * 100}%`}}/></div>
+            <InfoHint compactOnly title="Informazioni sul passaggio">{["Data iniziale, frequenza e giorno previsto. La cadenza settimanale genera un’occorrenza ogni sette giorni.", "Cliente, canale e descrizione.", "Importo, fiscalità e IVA.", "Automazione dell’accredito, metodo e banca.", "Controlla i dati prima di salvare."][step - 1]}</InfoHint>
+                <div className="app-form-wizard-progress"><span style={{width: `${step / 5 * 100}%`}}/></div>
         </div>
         <IncomeTypeChoice
             selected="recurring"
@@ -161,13 +163,13 @@ export default function RecurringIncomeForm({
         />
 
         <details className="form-section full recurring-form-section recurring-document-section recurring-dates-section recurring-income-step-1 app-form-wizard-step app-form-wizard-step-1" open>
-            <summary><span>Ricorrenza e scadenza</span><small>Data iniziale, frequenza e giorno previsto</small>
+            <summary><span className="info-label-row"><span>Ricorrenza e scadenza</span><InfoHint compactOnly title="Ricorrenza e scadenza">Data iniziale, frequenza e giorno previsto</InfoHint></span><small className="info-hint-desktop-text">Data iniziale, frequenza e giorno previsto</small>
             </summary>
             <div className="form-section-grid recurring-form-section-grid">
-                {cadence === 'WEEKLY' ? <p className="muted full">La prima occorrenza cade nel giorno scelto a partire dalla data iniziale, poi ogni 7 giorni.</p> : null}
+
                 {initial ? <p className="muted full">Per passare da o a settimanale, o cambiarne il giorno, imposta la data iniziale da oggi in avanti. Le occorrenze già generate restano invariate.</p> : null}
                 <DateField label="Data iniziale" name="startDate" value={startDate} onChange={setStartDate} required/>
-                <SelectField label="Frequenza" icon="↻" name="cadence" value={cadence} onChange={next => {
+                <SelectField label="Frequenza" hint={cadence === 'WEEKLY' ? 'La prima occorrenza cade nel giorno scelto a partire dalla data iniziale, poi ogni 7 giorni.' : undefined} icon="↻" name="cadence" value={cadence} onChange={next => {
                     if ((next === 'WEEKLY') !== (cadence === 'WEEKLY')) setCreditDay(String(next === 'WEEKLY' ? weekdayFromDate(startDate || today) : 1));
                     setCadence(next);
                 }} required options={[{value: 'WEEKLY', label: 'Settimanale'}, {
@@ -198,7 +200,7 @@ export default function RecurringIncomeForm({
         </details>
 
         <details className="form-section full recurring-form-section income-form-section income-document-section recurring-document-section recurring-details-section recurring-income-step-2 app-form-wizard-step app-form-wizard-step-2" open>
-            <summary><span>Cliente e dettagli</span><small>Cliente, canale e descrizione</small></summary>
+            <summary><span className="info-label-row"><span>Cliente e dettagli</span><InfoHint compactOnly title="Cliente e dettagli">Cliente, canale e descrizione</InfoHint></span><small className="info-hint-desktop-text">Cliente, canale e descrizione</small></summary>
             <div className="form-section-grid recurring-form-section-grid">
                 <CustomerAutocomplete customers={customers} salesChannels={channels} initialCustomerId={initial?.customerId}
                                       onValueChange={setCustomerName}
@@ -215,7 +217,7 @@ export default function RecurringIncomeForm({
         </details>
 
         <details className="form-section full recurring-form-section income-form-section recurring-document-section income-amount-section recurring-income-step-3 app-form-wizard-step app-form-wizard-step-3" open>
-            <summary><span>Importo e IVA</span><small>Fiscalità, importo e aliquota IVA</small></summary>
+            <summary><span className="info-label-row"><span>Importo e IVA</span><InfoHint compactOnly title="Importo e IVA">Fiscalità, importo e aliquota IVA</InfoHint></span><small className="info-hint-desktop-text">Fiscalità, importo e aliquota IVA</small></summary>
             <div className="form-section-grid recurring-form-section-grid">
                 <div className="amount-vat-row full recurring-wizard-amount">
                     <div className="recurring-wizard-amount-entry full">
@@ -251,7 +253,7 @@ export default function RecurringIncomeForm({
         </details>
 
         <details className="form-section full recurring-form-section income-form-section income-payment-section recurring-payment-section recurring-income-step-4 app-form-wizard-step app-form-wizard-step-4" open>
-            <summary><span>Accredito</span><small>Automazione, metodo, banca e competenza</small></summary>
+            <summary><span className="info-label-row"><span>Accredito</span><InfoHint compactOnly title="Accredito">Automazione, metodo, banca e competenza</InfoHint></span><small className="info-hint-desktop-text">Automazione, metodo, banca e competenza</small></summary>
             <div className="form-section-grid recurring-form-section-grid">
                 <SelectField label="Periodo di competenza" icon="▦" name="billingPeriodMode" value={billingMode} onChange={setBillingMode} options={[{
                     value: 'SAME_MONTH',

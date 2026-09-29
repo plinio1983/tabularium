@@ -934,7 +934,7 @@
       border-bottom: 1px solid var(--line);
 
       h3 { font-size: 18px; }
-      .modal-close-button { min-width: 44px; width: 44px; height: 44px; }
+
     }
 
     .record-styled-drawer-filters {
@@ -1030,7 +1030,8 @@
   //min-height: 30px;
   //max-height: 30px;
   box-sizing: border-box;
-  padding: 2px 0 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .recurring-state-button[aria-busy="true"] {

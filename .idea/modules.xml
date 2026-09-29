@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/dms-accounting-manager.iml" filepath="$PROJECT_DIR$/.idea/dms-accounting-manager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Tabularium.iml" filepath="$PROJECT_DIR$/.idea/Tabularium.iml" />
     </modules>
   </component>
 </project>

@@ -33,7 +33,7 @@ function EditSurface({heading, title, onClose, children}: {
                         <h2 id="payment-credit-edit-modal-title">{heading}</h2>
                         <p className="muted">{title}</p>
                     </div>
-                    <button type="button" className="btn btn-icon-only btn-default modal-close-button" aria-label="Chiudi" onClick={onClose}><span className="btn-icon">×</span></button>
+                    <button type="button" className="btn btn-neutral btn-icon-only modal-close-button" aria-label="Chiudi" onClick={onClose}><span className="btn-icon">×</span></button>
                 </div>
                 {children}
             </div>

@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
 import {parseIncomeTask, matchesIncomeTask, incomeTaskLabels} from '@/lib/dashboard-tasks';
@@ -439,8 +440,7 @@ function IncomeBreakdownChart({title, description, data}: {
     return <div className="card category-chart-card embedded-chart-card income-chart">
         <div className="card-heading-row">
             <div>
-                <h2>{title}</h2>
-                <p className="muted">{description}</p>
+                <div className="info-title-row"><h2>{title}</h2><InfoHint compactOnly title="Come leggere il grafico">{description}</InfoHint></div><p className="muted info-hint-desktop-text">{description}</p>
             </div>
             <span className="badge">Totale {euro(total)}</span>
         </div>
@@ -527,8 +527,7 @@ function IncomeVerticalBarChart({title, description, data}: {
     return <div className="income-sales-channel-chart" aria-label={title}>
         <div className="card-heading-row">
             <div>
-                <h2>{title}</h2>
-                <p className="muted">{description}</p>
+                <div className="info-title-row"><h2>{title}</h2><InfoHint compactOnly title="Come leggere il grafico">{description}</InfoHint></div><p className="muted info-hint-desktop-text">{description}</p>
             </div>
             <span className="badge">Totale {euro(total)}</span>
         </div>
@@ -866,8 +865,8 @@ export default async function IncomesPage({searchParams}: {
     return <div className="grid income-page-content">
         <div className="toolbar-card">
             <div>
-                <h2>Incassi</h2>
-                <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
+                <h2>Incassi</h2><p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
+
             </div>
             <div className="toolbar-actions income-page-toolbar-actions">
                 {/*<Link className="btn btn-sm btn-default" href="/incomes/credits">Accrediti</Link>*/}
@@ -875,7 +874,7 @@ export default async function IncomesPage({searchParams}: {
                     <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
-                    <span className="btn-icon">＋</span>Inserisci incasso
+                    <span className="btn-icon btn-icon-add">＋</span>Inserisci incasso
                 </button>
             </div>
         </div>
@@ -896,8 +895,8 @@ export default async function IncomesPage({searchParams}: {
 
         <div className="card record-list-card">
             <div className="mobile-page-title income-mobile-page-title">
-                <h2>Incassi</h2>
-                <p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
+                <h2>Incassi</h2><p className="muted">Gestione delle entrate fiscali e non fiscali.</p>
+
             </div>
             <div className="filter-drawer-wrapper period-filter-drawer-wrapper">
                 <IncomeFiltersDrawer
@@ -926,8 +925,7 @@ export default async function IncomesPage({searchParams}: {
             <section className="record-top-summary" aria-labelledby="income-top-summary-title">
                 <div className="card-heading-row">
                     <div>
-                        <h2 id="income-top-summary-title">{totalsPeriodLabel}</h2>
-                        <p className="muted">Riepilogo immediato degli incassi compresi nei filtri correnti.</p>
+                        <div className="info-title-row"><h2 id="income-top-summary-title">{totalsPeriodLabel}</h2><InfoHint compactOnly title="Riepilogo incassi">Riepilogo immediato degli incassi compresi nei filtri correnti.</InfoHint></div><p className="muted info-hint-desktop-text">Riepilogo immediato degli incassi compresi nei filtri correnti.</p>
                     </div>
                     {/*{monthlyReportHref ? <Link className="btn btn-sm btn-secondary" href={monthlyReportHref}>*/}
                     {/*    <span className="btn-icon" aria-hidden="true">*/}

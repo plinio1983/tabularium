@@ -76,7 +76,7 @@ export default function IncomeSalesChannelGrid({channels, iconOptions, updateAct
             <h3 id="sales-channel-edit-title">Modifica canale di vendita</h3>
             <p className="muted">Aggiorna nome, icona e posizione nelle select.</p>
           </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}><span className="btn-icon">×</span></button>
+          <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}><span className="btn-icon">×</span></button>
         </div>
         <form action={updateAction} className="form app-record-form sales-channel-edit-form">
           <input type="hidden" name="id" value={editing.id}/>

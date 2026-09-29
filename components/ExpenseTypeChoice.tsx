@@ -3,9 +3,11 @@
 export type ExpenseCreationType = "single" | "recurring" | "vat" | "tax" | "payroll";
 
 type Props = {
-    selected: ExpenseCreationType;
+    selected?: ExpenseCreationType;
     onSelect?: (type: ExpenseCreationType) => void;
     onSelectCounter?: () => void;
+    availableTypes?: ExpenseCreationType[];
+    showCounter?: boolean;
     disabled?: boolean;
     disabledTypes?: ExpenseCreationType[];
     className?: string;
@@ -21,6 +23,8 @@ const options: Array<{type: ExpenseCreationType; icon: string; label: string; de
 
 export default function ExpenseTypeChoice({
     selected,
+    availableTypes,
+    showCounter = true,
     onSelect,
     onSelectCounter,
     disabled = false,
@@ -31,18 +35,18 @@ export default function ExpenseTypeChoice({
     return <div className={`entry-type-choice full ${className}`.trim()}>
         <span className="entry-type-choice-title">{title}</span>
         <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
-            {options.slice(0, 1).map(option => <TypeButton key={option.type} option={option} selected={selected} disabled={disabled || disabledTypes.includes(option.type) || (!onSelect && selected !== option.type)} onSelect={onSelect}/>) }
-            <button type="button" disabled={disabled || !onSelectCounter} onClick={onSelectCounter}>
+            {options.slice(0, 1).filter(option => !availableTypes || availableTypes.includes(option.type)).map(option => <TypeButton key={option.type} option={option} selected={selected} disabled={disabled || disabledTypes.includes(option.type) || (!onSelect && selected !== option.type)} onSelect={onSelect}/>) }
+            {showCounter ? <button type="button" disabled={disabled || !onSelectCounter} onClick={onSelectCounter}>
                 <span className="btn-icon" aria-hidden="true">🛍️</span><strong>Da banco</strong><small>Acquisto già pagato</small>
-            </button>
-            {options.slice(1).map(option => <TypeButton key={option.type} option={option} selected={selected} disabled={disabled || disabledTypes.includes(option.type) || (!onSelect && selected !== option.type)} onSelect={onSelect}/>) }
+            </button> : null}
+            {options.slice(1).filter(option => !availableTypes || availableTypes.includes(option.type)).map(option => <TypeButton key={option.type} option={option} selected={selected} disabled={disabled || disabledTypes.includes(option.type) || (!onSelect && selected !== option.type)} onSelect={onSelect}/>) }
         </div>
     </div>;
 }
 
 function TypeButton({option, selected, disabled, onSelect}: {
     option: {type: ExpenseCreationType; icon: string; label: string; description: string};
-    selected: ExpenseCreationType;
+    selected?: ExpenseCreationType;
     disabled: boolean;
     onSelect?: (type: ExpenseCreationType) => void;
 }) {

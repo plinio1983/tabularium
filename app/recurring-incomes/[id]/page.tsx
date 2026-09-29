@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {weekdayLabel} from '@/lib/recurring-cadence';
 import DeleteActionButton from '@/components/DeleteActionButton';
@@ -125,7 +126,7 @@ export default async function RecurringIncomeDetailPage({params, searchParams}: 
                         </section>
                         <RecurringDetailState {...stateProps} variant="progress"/>
                         <section className="record-detail-section">
-                            <div className="record-detail-section-heading"><div><h2>Dati ricorrenza</h2><p>Dati e impostazioni della regola.</p></div></div>
+                            <div className="record-detail-section-heading"><div><div className="info-title-row"><h2>Dati ricorrenza</h2><InfoHint compactOnly title="Dati ricorrenza">Dati e impostazioni della regola.</InfoHint></div><p className="muted info-hint-desktop-text">Dati e impostazioni della regola.</p></div></div>
                             <div className="record-detail-status-strip">
                                 <div><span>Descrizione</span><strong>{item.description}</strong></div>
                                 <div><span>Cliente</span><strong>{customer?.businessName ?? '-'}</strong></div>
@@ -139,7 +140,7 @@ export default async function RecurringIncomeDetailPage({params, searchParams}: 
                             </div>
                         </section>
                         <section className="record-detail-section">
-                            <div className="record-detail-section-heading"><div><h2>Regola di incasso</h2><p>Metodo e banca configurati per la ricorrenza.</p></div></div>
+                            <div className="record-detail-section-heading"><div><div className="info-title-row"><h2>Regola di incasso</h2><InfoHint compactOnly title="Regola di incasso">Metodo e banca configurati per la ricorrenza.</InfoHint></div><p className="muted info-hint-desktop-text">Metodo e banca configurati per la ricorrenza.</p></div></div>
                             <div className="record-detail-status-strip">
                                 <div><span>Metodo di incasso</span><strong>{paymentMethod?.name ?? '-'}</strong></div>
                                 <div><span>Banca</span><strong>{bank?.name ?? '-'}</strong></div>
@@ -150,7 +151,7 @@ export default async function RecurringIncomeDetailPage({params, searchParams}: 
                         <section className="record-detail-section"><div className="record-detail-item record-detail-item-wide"><span>Note</span><strong className="displayed-notes">{item.notes ?? '-'}</strong></div></section>
                         </>}>
                 <section className="record-detail-section record-list-card recurring-generated-list">
-                            <div className="record-detail-section-heading mobile-record-list-header"><div><h2>Entrate generate</h2><p>Ultime entrate create da questa regola ricorrente.</p></div><span className="badge">{generatedIncomes.length} record · {euro(generatedTotal)}</span>
+                            <div className="record-detail-section-heading mobile-record-list-header"><div><div className="info-title-row"><h2>Entrate generate</h2><InfoHint compactOnly title="Entrate generate">Ultime entrate create da questa regola ricorrente.</InfoHint></div><p className="muted info-hint-desktop-text">Ultime entrate create da questa regola ricorrente.</p></div><span className="badge">{generatedIncomes.length} record · {euro(generatedTotal)}</span>
                         <MobileRecordCloseButton/></div>
                             <IncomesList incomes={generatedIncomes} returnTo={encodeURIComponent(`${detailHref}&mobileList=1`)} banks={banks} paymentMethods={methods} salesChannels={channels} customers={customers} timeZone={current.company.timeZone} emptyMessage="Nessuna entrata generata da questa ricorrenza."/>
                         </section>

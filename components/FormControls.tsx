@@ -1,5 +1,6 @@
 'use client';
 
+import InfoHint from '@/components/InfoHint';
 import { type ReactNode, useId, useRef } from 'react';
 import {formatItalianCompactDate} from '@/lib/date-format';
 
@@ -14,30 +15,36 @@ type FormFieldProps = {
 
 export function FormField({ label, icon, hint, className = '', htmlFor, children }: FormFieldProps) {
   return <div className={`app-form-field ${className}`.trim()}>
-    <label className="app-form-field-label" htmlFor={htmlFor}>
+    {hint ? <div className="info-field-heading"><label className="app-form-field-label" htmlFor={htmlFor}>
       {icon ? <span className="app-form-field-icon" aria-hidden="true">{icon}</span> : null}
       <span>{label}</span>
-    </label>
+    </label><InfoHint compactOnly title={label}>{hint}</InfoHint></div> : <label className="app-form-field-label" htmlFor={htmlFor}>
+      {icon ? <span className="app-form-field-icon" aria-hidden="true">{icon}</span> : null}
+      <span>{label}</span>
+    </label>}
     {children}
-    {hint ? <small className="app-form-field-hint">{hint}</small> : null}
+    {hint ? <small className="info-hint-desktop-text">{hint}</small> : null}
   </div>;
 }
 
 export function SupplierFormField({ label, icon, hint, className = '', htmlFor, children, onCreate }: FormFieldProps & { onCreate: () => void }) {
   return <div className={`app-form-field ${className}`.trim()}>
-    <label className="app-form-field-label" htmlFor={htmlFor}>
+    {hint ? <div className="info-field-heading"><label className="app-form-field-label" htmlFor={htmlFor}>
       {icon ? <span className="app-form-field-icon" aria-hidden="true">{icon}</span> : null}
       <span>{label}</span>
-    </label>
+    </label><InfoHint compactOnly title={label}>{hint}</InfoHint></div> : <label className="app-form-field-label" htmlFor={htmlFor}>
+      {icon ? <span className="app-form-field-icon" aria-hidden="true">{icon}</span> : null}
+      <span>{label}</span>
+    </label>}
       <button
           type="button"
           className="btn btn-sm btn-link"
           onClick={onCreate}
       >
-          <span className="btn-icon">＋</span> Nuovo
+          <span className="btn-icon btn-icon-add">＋</span> Nuovo
       </button>
     {children}
-    {hint ? <small className="app-form-field-hint">{hint}</small> : null}
+    {hint ? <small className="info-hint-desktop-text">{hint}</small> : null}
   </div>;
 }
 

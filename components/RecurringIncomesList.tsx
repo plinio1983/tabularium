@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import {weekdayLabel} from '@/lib/recurring-cadence';
 import {RecurringStateBadge, RecurringStateCard} from '@/components/RecurringStateProvider';
 import RecurringStateToggle from '@/components/RecurringStateToggle';
@@ -110,7 +111,7 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
         <BulkSelectionController/>
         <RecurringIncomeBulkEditModal formId={formId} action={`/api/recurring-incomes/bulk?returnTo=${returnTo}`} channels={channels} methods={methods} banks={banks}/>
         <div className="list-heading recurring-list-heading mobile-page-title recurring-income-mobile-page-title">
-            <div><h2>Entrate ricorrenti</h2>
+            <div><div className="info-title-row"><h2>Entrate ricorrenti</h2><InfoHint compactOnly title="Entrate ricorrenti">Gestisci le regole che generano periodicamente gli incassi.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci le regole che generano periodicamente gli incassi.</p>
                 <p className="muted">Gestisci le regole che generano periodicamente gli incassi.</p></div>
         </div>
     <LiveSearch name="search" label="Ricerca incasso ricorrente" placeholder="Cliente o descrizione"/>
@@ -139,7 +140,7 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
             </div>
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link bulk-add-link btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-income-new-type="recurring" data-floating-label="Incasso ricorrente">
-                    <span className="btn-icon">＋</span><span className="hidden-sm-down">Incasso ricorrente</span>
+                    <span className="btn-icon btn-icon-add">＋</span><span className="hidden-sm-down">Incasso ricorrente</span>
                 </button>
                 <RecurringIncomeFiltersDrawer filters={filters}/>
             </div>

@@ -31,7 +31,7 @@ export default function IncomeEntityCreatePanel({
   return <>
     <div className="sales-channel-create-action">
       <button type="button" className="btn btn-md btn-primary" aria-haspopup="dialog" onClick={() => setOpen(true)}>
-        <span className="btn-icon" aria-hidden="true">＋</span> Nuovo canale di vendita
+        <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span> Nuovo canale di vendita
       </button>
     </div>
     {open ? createPortal(<div
@@ -51,7 +51,7 @@ export default function IncomeEntityCreatePanel({
             <h3 id="sales-channel-create-title">Nuovo canale di vendita</h3>
             <p className="muted">Aggiungi un nuovo valore disponibile nei form di incasso.</p>
           </div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setOpen(false)}><span className="btn-icon">×</span></button>
+          <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" onClick={() => setOpen(false)}><span className="btn-icon">×</span></button>
         </div>
         <form action={action} className="form app-record-form sales-channel-edit-form">
           <input type="hidden" name="kind" value={kind}/>
@@ -68,7 +68,7 @@ export default function IncomeEntityCreatePanel({
           </div>
           <div className="actions-row span-2 sales-channel-edit-actions">
             <button type="button" className="btn btn-md btn-default" onClick={() => setOpen(false)}><span className="btn-icon">×</span> Annulla</button>
-            <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">＋</span> Aggiungi canale</button>
+            <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon btn-icon-add">＋</span> Aggiungi canale</button>
           </div>
         </form>
       </section>

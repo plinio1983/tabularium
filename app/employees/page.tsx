@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import {employeeNameSearch} from '@/lib/live-search';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
@@ -114,7 +115,12 @@ export default async function EmployeesPage({searchParams}: {
         }} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
         <div className="card record-list-card">
             <div className="list-heading recurring-list-heading">
-                <div><h2>Lista dipendenti</h2><p className="muted">Risultati mostrati: {employees.length}</p></div>
+                <div>
+                    <div className="info-title-row">
+                        <h2 className="hidden-sm-up">Dipendenti</h2>
+                        <h2 className="hidden-sm-down">Lista dipendenti</h2>
+                        <InfoHint compactOnly title="Dipendenti">Anagrafiche dell’azienda {current.company.name}.</InfoHint></div>
+                    <p className="muted">Risultati mostrati: {employees.length}</p></div>
             </div>
             <LiveSearch name="search" label="Ricerca dipendente"
                         placeholder="Nome, cognome, matricola o codice fiscale"/>
@@ -124,7 +130,8 @@ export default async function EmployeesPage({searchParams}: {
                     <div className="recurring-active-filter-tags">{activeFilters.map(item => <span className="badge"
                                                                                                    key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div>
                 </div>
-                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/employees"><span className="btn-icon">×</span> Reset</Link>
+                <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/employees"><span
+                    className="btn-icon">×</span> Reset</Link>
             </div> : null}
             <form id="employeeBulkForm" action={`/api/employees/bulk?returnTo=${encodeURIComponent(returnTo)}`}
                   method="post"
@@ -136,8 +143,10 @@ export default async function EmployeesPage({searchParams}: {
                 <div className="bulk-action-buttons btn-group">
                     <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu
                              data-bulk-form="employeeBulkForm">
-                        <summary className="bulk-action-trigger" aria-label="Azioni multiple"><span className="btn-icon" aria-hidden="true">⚙</span><span
-                            className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
+                        <summary className="bulk-action-trigger" aria-label="Azioni multiple"><span className="btn-icon"
+                                                                                                    aria-hidden="true">⚙</span><span
+                            className="hidden-sm-up hidden-xs-down">Azioni</span><span
+                            className="hidden-sm-down hidden-xs-down">Azioni</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
                             <button className="btn btn-sm btn-option danger-menu-item"
@@ -157,7 +166,7 @@ export default async function EmployeesPage({searchParams}: {
                 <div className="bulk-inner-container">
                     <button className="bulk-direct-link btn btn-md bulk-add-link btn-primary" type="button"
                             data-bulk-new data-employee-new data-floating-label="Dipendente"><span
-                        className="btn-icon">＋</span><span className="hidden-sm-down">Dipendente</span></button>
+                        className="btn-icon btn-icon-add">＋</span><span className="hidden-sm-down">Dipendente</span></button>
                     <EmployeeFiltersDrawer filters={filters}/></div>
             </form>
             <div className="table-scroll">

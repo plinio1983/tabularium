@@ -1,0 +1,24 @@
+.record-conversion-modal {
+  // The shared form grid must not override the native hidden state of a wizard stage.
+  [hidden] { display: none !important; }
+
+  .record-conversion-review { margin-top: 16px; }
+
+  @media (max-width: 900px) {
+    .record-conversion-description,
+    .record-conversion-note { display: none; }
+
+    .record-conversion > .modal-title {
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin: 0 0 12px;
+      padding: 0;
+
+      > div { min-width: 0; }
+      h3 { margin: 0; font-size: 18px; line-height: 1.2; }
+      > .modal-close-button { flex-shrink: 0; }
+    }
+
+  }
+}

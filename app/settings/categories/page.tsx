@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import Link from 'next/link';
 import { requireWorkspaceRole, workspaceManagementRoles } from '@/lib/auth';
 import DetailBackButton from '@/components/DetailBackButton';
@@ -7,7 +8,7 @@ export default async function CategoriesSettingsPage() {
 
   return <div className="grid admin-page settings-admin-page categories-settings-page">
     <div className="toolbar-card">
-      <div><h2>Categorie</h2><p className="muted">Scegli l’area di categorie da configurare.</p></div>
+      <div><div className="info-title-row"><h2>Categorie</h2><InfoHint compactOnly title="Categorie">Scegli l’area di categorie da configurare.</InfoHint></div><p className="muted info-hint-desktop-text">Scegli l’area di categorie da configurare.</p></div>
       <DetailBackButton href="/settings" />
     </div>
     <div className="settings-category-hub">

@@ -160,7 +160,7 @@ export default function BulkExpenseAttachmentsModal({
                         <h2 id={`${formId}-attachments-title`}>Scarica allegati</h2>
                         <p className="muted">Scegli quali documenti includere per i {ids.length} record selezionati.</p>
                     </div>
-                    <button className="btn btn-icon-only btn-default modal-close-button" type="button"
+                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button"
                             onClick={() => setOpen(false)} aria-label="Chiudi"><span className="btn-icon">×</span>
                     </button>
                 </div>

@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import Link from 'next/link';
 import DetailBackButton from '@/components/DetailBackButton';
 import {requireWorkspace} from '@/lib/auth';
@@ -53,8 +54,7 @@ export default async function SettingsPage() {
     return <div className="grid admin-page settings-admin-page settings-hub-page">
         <div className="toolbar-card">
             <div>
-                <h2>Impostazioni</h2>
-                <p className="muted">Gestisci account, workspace e configurazioni contabili.</p>
+                <div className="info-title-row"><h2>Impostazioni</h2><InfoHint compactOnly title="Impostazioni">Gestisci account, workspace e configurazioni contabili.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci account, workspace e configurazioni contabili.</p>
             </div>
             <div className="settings-hub-toolbar-actions">
                 <DetailBackButton href="/"/>

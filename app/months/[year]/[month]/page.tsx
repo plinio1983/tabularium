@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import ReportCurrentMonthSwitch from '@/components/ReportCurrentMonthSwitch';
 import {selectReportPeriods} from '@/lib/report-period-selection';
 import Link from 'next/link';
@@ -180,6 +181,10 @@ export default async function MonthPage({params, searchParams}: { params: Promis
         );
     const quarterChartMaximum = Math.max(1, ...chartMonths.flatMap(item => [item.totals.incassoTotale, item.totals.speseTotali]));
 
+    const reportDescription = mode === 'overall'
+                ? 'Accrediti e pagamenti effettivi del periodo, inclusi i movimenti non fiscali. Il risultato al netto IVA rettifica il margine lordo per l’IVA sugli incassi e sulle spese pagate, senza contare due volte i versamenti IVA.'
+                : 'Entrate e uscite fiscali del periodo di fatturazione, indipendentemente dalle date di accredito e pagamento. L’utile fiscale esclude l’IVA; i versamenti IVA sono separati dai costi.';
+
     return <div className="grid month-report-page">
         <NewExpensePanel
             categories={orderedCategories.map(category => ({
@@ -252,8 +257,10 @@ export default async function MonthPage({params, searchParams}: { params: Promis
 
             <div className="month-report-title">
                 <div>
-                    <p>{periodType === 'month' ? 'Dettaglio mensile' : periodType === 'quarter' ? 'Dettaglio trimestrale' : 'Dettaglio annuale'}</p>
-                    <h2>{periodType === 'month' ? `${capitalize(monthName(month))} ${year}` : periodType === 'quarter' ? `${quarter}° trimestre ${year} · ${capitalize(monthName(selectedPeriods[0].month))}–${capitalize(monthName(selectedPeriods[2].month))}` : `${year}`}</h2>
+                    <p>{periodType === 'month' ? 'Report mensile' : periodType === 'quarter' ? 'Report trimestrale' : 'Report annuale'}</p>
+                    <div className="info-title-row"><h2>{periodType === 'month' ? `${capitalize(monthName(month))} ${year}` : periodType === 'quarter' ? `${quarter}° trimestre ${year} · ${capitalize(monthName(selectedPeriods[0].month))}–${capitalize(monthName(selectedPeriods[2].month))}` : `${year}`}</h2>
+                        <InfoHint compactOnly title={mode === 'overall' ? 'Report complessivo' : 'Report fiscale'}>{reportDescription}</InfoHint>
+                    </div>
                 </div>
                 <div className="trend-mode-toggle month-report-mode-toggle" role="group" aria-label="Tipo andamento mensile">
                     <Link
@@ -272,9 +279,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     : 'Nessun mese concluso nel periodo.'}</span>
                 {canIncludeCurrentMonth ? <ReportCurrentMonthSwitch checked={includeCurrentMonth}/> : null}
             </div> : null}
-            <span className="muted">{mode === 'overall'
-                ? 'Accrediti e pagamenti effettivi del periodo, inclusi i movimenti non fiscali. Il risultato al netto IVA rettifica il margine lordo per l’IVA sugli incassi e sulle spese pagate, senza contare due volte i versamenti IVA.'
-                : 'Entrate e uscite fiscali del periodo di fatturazione, indipendentemente dalle date di accredito e pagamento. L’utile fiscale esclude l’IVA; i versamenti IVA sono separati dai costi.'}</span>
+            <p className="muted info-hint-desktop-text">{reportDescription}</p>
             <div className={`month-report-metrics month-report-metrics-${mode}`}>
                 {metrics.map(metric => <article className={`profitability-summary-kpi ${metric.className}`} key={metric.label}>
                     <span>{metric.label}</span>

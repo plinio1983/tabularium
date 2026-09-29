@@ -1,5 +1,6 @@
 "use client";
 
+import InfoHint from '@/components/InfoHint';
 import {useMemo, useState} from 'react';
 import Link from 'next/link';
 import {reportChartMonthHref, type ReportChartPeriod} from '@/lib/report-analysis';
@@ -188,8 +189,7 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
 
   return <section id="incassi" className="income-channel-trend-card dashboard-anchor-section" aria-labelledby="income-channel-trend-title">
     <div className="income-channel-trend-heading">
-      <div><h2 id="income-channel-trend-title">Andamento incassi per canale di vendita</h2>
-        <p className="muted">{reportPeriod ? (reportPeriod.mode === 'fiscal' ? 'Entrate fiscali per mese di fatturazione.' : 'Accrediti effettivi per mese, coerenti con il totale del report.') : 'Confronto mensile degli incassi registrati per data di accredito.'}</p></div>
+      <div><div className="info-title-row"><h2 id="income-channel-trend-title">Andamento incassi per canale di vendita</h2><InfoHint compactOnly title="Confronto dei canali di vendita">{reportPeriod ? (reportPeriod.mode === 'fiscal' ? 'Entrate fiscali per mese di fatturazione.' : 'Accrediti effettivi per mese, coerenti con il totale del report.') : 'Confronto mensile degli incassi registrati per data di accredito.'}</InfoHint></div><p className="muted info-hint-desktop-text">{reportPeriod ? (reportPeriod.mode === 'fiscal' ? 'Entrate fiscali per mese di fatturazione.' : 'Accrediti effettivi per mese, coerenti con il totale del report.') : 'Confronto mensile degli incassi registrati per data di accredito.'}</p></div>
       <div className="income-channel-trend-controls">
         <div className="trend-mode-toggle" role="group" aria-label="Visualizzazione grafico">
           <button type="button" className={`trend-mode-button ${view === 'total' ? 'is-active' : ''}`} onClick={() => setView('total')}>Totale</button>
@@ -215,11 +215,13 @@ export default function IncomeSalesChannelTrendChart({initialData, availableYear
     {error ? <p className="inline-warning">{error}</p> : null}
     {view === 'channels' ? <>
       <div className="income-channel-comparison-toolbar">
+        <div className="info-label-row">
         <div className="trend-mode-toggle income-channel-comparison-mode" role="group" aria-label="Unità di confronto dei canali">
           <button type="button" className={`trend-mode-button ${comparisonMode === 'index' ? 'is-active' : ''}`} onClick={() => setComparisonMode('index')}>Indice 100</button>
           <button type="button" className={`trend-mode-button ${comparisonMode === 'amount' ? 'is-active' : ''}`} onClick={() => setComparisonMode('amount')}>Importi €</button>
         </div>
-        <p className="muted">{comparisonMode === 'index' ? 'Confronta la crescita dal primo intervallo con incassi di ciascun canale.' : 'Confronta i volumi economici effettivi dei canali.'}</p>
+        <InfoHint compactOnly title="Confronto dei canali di vendita">{comparisonMode === 'index' ? 'Confronta la crescita dal primo intervallo con incassi di ciascun canale.' : 'Confronta i volumi economici effettivi dei canali.'}</InfoHint></div>
+        <p className="muted info-hint-desktop-text">{comparisonMode === 'index' ? 'Confronta la crescita dal primo intervallo con incassi di ciascun canale.' : 'Confronta i volumi economici effettivi dei canali.'}</p>
       </div>
       <div className={loading ? 'income-channel-comparison-wrap is-loading' : 'income-channel-comparison-wrap'}>
         {visibleSeries.length ? <ChannelComparisonPlot buckets={buckets} series={visibleSeries} channelColors={channelColors} mode={comparisonMode}

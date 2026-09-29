@@ -45,7 +45,7 @@ export default function ExpenseInvoiceAttachmentsLink({attachments, endpointBase
       <section className="modal-card invoice-attachments-modal" role="dialog" aria-modal="true" aria-labelledby="invoice-attachments-modal-title" onMouseDown={event => event.stopPropagation()}>
         <div className="modal-title">
           <div><h3 id="invoice-attachments-modal-title">Fatture allegate</h3><p className="muted">Seleziona il documento da aprire o scaricare.</p></div>
-          <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setOpen(false)} aria-label="Chiudi"><span className="btn-icon">×</span></button>
+          <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" onClick={() => setOpen(false)} aria-label="Chiudi"><span className="btn-icon">×</span></button>
         </div>
         <div className="invoice-attachments-modal-list">
           {invoices.map(attachment => <a href={`${endpointBase}/${attachment.id}`} target="_blank" rel="noreferrer" key={attachment.id} onClick={() => setOpen(false)}>

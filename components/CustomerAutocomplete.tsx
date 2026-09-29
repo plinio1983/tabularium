@@ -121,7 +121,7 @@ export default function CustomerAutocomplete({ customers, salesChannels = [], in
                       setOpen(false);
                   }}
               >
-          <span className="btn-icon">＋</span> Nuovo
+          <span className="btn-icon btn-icon-add">＋</span> Nuovo
         </button>
           </span> : null}
       </span>
@@ -177,7 +177,7 @@ export default function CustomerAutocomplete({ customers, salesChannels = [], in
         <div className="modal-card" onMouseDown={event => event.stopPropagation()}>
           <div className="modal-title">
             <h3>➕ Nuovo cliente</h3>
-            <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setShowCreate(false)}><span className="btn-icon">✕</span></button>
+            <button aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" type="button" onClick={() => setShowCreate(false)}><span className="btn-icon" aria-hidden="true">×</span></button>
           </div>
           <div className="modal-form-grid">
             <label>Ragione sociale<input value={createData.businessName} onChange={event => updateCreateData('businessName', event.target.value)} required autoFocus /></label>

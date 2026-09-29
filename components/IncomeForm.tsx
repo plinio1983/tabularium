@@ -1,5 +1,6 @@
 "use client";
 
+import InfoHint from '@/components/InfoHint';
 import LinkedRecordFields from '@/components/LinkedRecordFields';
 
 import {type FormEvent, useCallback, useEffect, useMemo, useRef, useState} from "react";
@@ -409,6 +410,7 @@ export default function IncomeForm({
                     <span>Passaggio {mobileStep} di 7</span>
                     <strong>{["Vendita", "Importo", "Cliente", "Accredito", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</strong>
                 </div>
+                <InfoHint compactOnly title="Informazioni sul passaggio">{["Dati principali della vendita e date dell’incasso.", "Importo, fiscalità e aliquota IVA.", "Cliente, canale di vendita e descrizione.", "Importi, date, metodi e conti di destinazione degli accrediti.", "Stato fattura e periodo contabile.", "Controlla i dati prima di salvare.", "Allega fatture, documenti e ricevute."][mobileStep - 1]}</InfoHint>
                 <div className="app-form-wizard-progress" aria-label={`Passaggio ${mobileStep} di 7`}>
                     <span style={{width: `${mobileStep / 7 * 100}%`}}/>
                 </div>
@@ -425,8 +427,7 @@ export default function IncomeForm({
 
             <details className="form-section full income-form-section income-document-section" open>
                 <summary>
-                    <span>Documento</span>
-                    <small>Dati principali dell'incasso</small>
+                    <span className="info-label-row"><span>Documento</span><InfoHint compactOnly title="Documento">Dati principali dell'incasso</InfoHint></span><small className="info-hint-desktop-text">Dati principali dell'incasso</small>
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
                     <DateField className="app-form-wizard-step app-form-wizard-step-1" label="Data ordine" name="orderDate" value={orderDate} onChange={setOrderDate} required/>
@@ -466,8 +467,7 @@ export default function IncomeForm({
 
             <details className="form-section full income-form-section income-amount-section" open>
                 <summary>
-                    <span>Importo e IVA</span>
-                    <small>Fiscalità, importo e aliquota IVA</small>
+                    <span className="info-label-row"><span>Importo e IVA</span><InfoHint compactOnly title="Importo e IVA">Fiscalità, importo e aliquota IVA</InfoHint></span><small className="info-hint-desktop-text">Fiscalità, importo e aliquota IVA</small>
                 </summary>
                 <div className="form-section-grid income-form-section-grid">
                     <div className="amount-vat-row full income-amount-vat-row app-form-wizard-step app-form-wizard-step-2 income-wizard-amount w100">
@@ -544,8 +544,7 @@ export default function IncomeForm({
 
             <details className="form-section full income-form-section income-payment-section income-credits-section app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
-                    <span>Accrediti</span>
-                    <small>Importi, date e conti di destinazione</small>
+                    <span className="info-label-row"><span>Accrediti</span><InfoHint compactOnly title="Accrediti">Importi, date e conti di destinazione</InfoHint></span><small className="info-hint-desktop-text">Importi, date e conti di destinazione</small>
                 </summary>
                 <LinkedRecordFields locked={preserveLinkedRecords}>
                     <section className="payments-box income-credits-box full">
@@ -650,8 +649,7 @@ export default function IncomeForm({
 
             <details className="form-section full income-form-section income-fiscal-section app-form-wizard-step app-form-wizard-step-5" open>
                 <summary>
-                    <span>Fattura</span>
-                    <small>Stato fattura e periodo contabile</small>
+                    <span className="info-label-row"><span>Fattura</span><InfoHint compactOnly title="Fattura">Stato fattura e periodo contabile</InfoHint></span><small className="info-hint-desktop-text">Stato fattura e periodo contabile</small>
                 </summary>
                 <div className="form-section-grid income-form-section-grid income-form-section-fiscal">
                     <MonthField label="Periodo contabile" name="billingPeriod" value={billingPeriod} onChange={setBillingPeriod} required/>
@@ -737,7 +735,7 @@ export default function IncomeForm({
                             </div>
                 </div>
                 <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
-                    <span className="btn-icon">＋</span><span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span><span className="btn-icon" aria-hidden="true">→</span>
+                    <span className="btn-icon btn-icon-add">＋</span><span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span><span className="btn-icon" aria-hidden="true">→</span>
                 </button>
                 <label className="card full expense-review-notes expense-review-notes-mobile">
                     Note

@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import {requireWorkspaceRole, workspaceManagementRoles} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {ensureWorkspaceDefaults, incomeEntityIconOptions} from '@/lib/workspace-defaults';
@@ -69,8 +70,7 @@ export default async function IncomeCategoriesSettingsPage({searchParams}: {
     ]);
     return <div className="grid admin-page settings-admin-page categories-settings-page">
         <div className="toolbar-card">
-            <div><h2>Canali di vendita</h2>
-                <p className="muted">Gestisci i canali e la posizione con cui vengono mostrati nelle select. I valori più bassi compaiono per primi.</p>
+            <div><div className="info-title-row"><h2>Canali di vendita</h2><InfoHint compactOnly title="Canali di vendita">Gestisci i canali e la posizione con cui vengono mostrati nelle select. I valori più bassi compaiono per primi.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci i canali e la posizione con cui vengono mostrati nelle select. I valori più bassi compaiono per primi.</p>
             </div>
             <DetailBackButton href="/settings"/></div>
         {saved ? <div className="form-summary full"><strong>Configurazione aggiornata.</strong></div> : null}
@@ -81,8 +81,7 @@ export default async function IncomeCategoriesSettingsPage({searchParams}: {
             <div className="sales-channel-register-title">
                 <span className="vat-settlement-category-icon" aria-hidden="true">▣</span>
                 <div>
-                    <h3>Registratore di cassa</h3>
-                    <p className="muted">Canale predefinito applicato agli incassi da banco.</p>
+                    <div className="info-title-row"><h3>Registratore di cassa</h3><InfoHint compactOnly title="Canale predefinito">Canale predefinito applicato agli incassi da banco.</InfoHint></div><p className="muted info-hint-desktop-text">Canale predefinito applicato agli incassi da banco.</p>
                 </div>
             </div>
             <label className="app-form-field">Canale predefinito

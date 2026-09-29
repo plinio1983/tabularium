@@ -16,3 +16,7 @@
 @use 'features/recurring-expense-form';
 @use 'features/movement-ledger';
 @use 'features/receipt-detail';
+
+@use 'components/info-hints';
+@use 'components/button-icons';
+@use 'components/record-conversion';

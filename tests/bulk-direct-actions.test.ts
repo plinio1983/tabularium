@@ -123,3 +123,28 @@ test('azioni con destinazioni diverse non sono considerate duplicati', () => {
   state.sync();
   assert.equal(state.copyItem.hidden, false);
 });
+
+test('conversione: selezione singola idonea, duplicati desktop/mobile e reset del collegamento', () => {
+  let selected: Array<{value: string}> = [];
+  const exports: any = {};
+  const code = readFileSync(new URL('../components/BulkSelectionController.tsx', import.meta.url), 'utf8') + '\nexport {syncConversionAction};';
+  runInNewContext(ts.transpileModule(code, {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText, {
+    exports, require: () => ({}), document: {querySelectorAll: () => selected}
+  });
+  for (const kind of ['expenses', 'incomes']) {
+    const button = {disabled: true, title: '', dataset: {bulkForm: 'records', bulkConvert: kind, convertEligibleIds: '7,8', returnTo: '%2Fexpenses%3FmobileList%3D1', convertHref: ''}, setAttribute() {}};
+    for (const ids of [[], ['9'], ['7', '8']]) {
+      selected = ids.map(value => ({value})); exports.syncConversionAction(button);
+      assert.equal(button.disabled, true);
+      assert.equal(button.dataset.convertHref, '');
+    }
+    selected = [{value: '7'}, {value: '7'}]; exports.syncConversionAction(button);
+    assert.equal(button.disabled, false);
+    assert.equal(button.dataset.convertHref, kind === 'expenses'
+      ? '/expenses/7?convert=1&returnTo=%2Fexpenses%3FmobileList%3D1'
+      : '/incomes/7/convert?returnTo=%2Fexpenses%3FmobileList%3D1');
+    selected = []; exports.syncConversionAction(button);
+    assert.equal(button.disabled, true);
+    assert.equal(button.dataset.convertHref, '');
+  }
+});

@@ -168,7 +168,7 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
             <h2 id={`${formId}-bulk-edit-title`}>{step === "choice" ? `Modifica ${subject}` : step === "category" ? "Modifica categoria" : step === "dates" ? "Modifica date" : step === "supplier" ? "Modifica esercente" : step === "customer" ? "Modifica cliente" : step === "salesChannel" ? "Modifica canale di vendita" : "Informazioni fiscali e contabili"}</h2>
             <p className="muted"><strong>{selectedIds.length}</strong> {selectedIds.length === 1 ? "record selezionato" : "record selezionati"}</p>
           </div>
-          <button type="button" className="bulk-edit-close-button" aria-label="Chiudi modifica multipla" onClick={closeModal}><span className="btn-icon">✕</span></button>
+          <button type="button" className="btn btn-neutral btn-icon-only modal-close-button bulk-edit-close-button" aria-label="Chiudi modifica multipla" onClick={closeModal}><span className="btn-icon" aria-hidden="true">×</span></button>
         </div>
         <div key={step} className={`bulk-edit-step bulk-edit-step-${direction}`}>
           {step === "choice" ? <div className="bulk-edit-form bulk-edit-choice-form">
@@ -206,7 +206,7 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
               </label>
             </div>
             <div className="bulk-edit-actions">
-              <button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
+              <button type="button" className="btn btn-md btn-ghost" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
               <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">✓</span> Conferma</button>
             </div>
           </form> : step === "dates" ? <form action={action} method="post" className="bulk-edit-form bulk-edit-dates-form">
@@ -237,7 +237,7 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
               {selectedDatesInvalid ? <p className="inline-form-error bulk-edit-dates-hint">La scadenza non può precedere la data ordine.</p> : null}
             </div>
             <div className="bulk-edit-actions">
-              <button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
+              <button type="button" className="btn btn-md btn-ghost" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
               <button type="submit" className="btn btn-md btn-primary" disabled={(!updateOrderDate && !updateDueDate) || (updateOrderDate && !orderDate) || (updateDueDate && !dueDate) || selectedDatesInvalid}><span className="btn-icon">✓</span> Conferma</button>
             </div>
           </form> : step === "supplier" ? <form action={action} method="post" className="bulk-edit-form bulk-edit-supplier-form">
@@ -253,7 +253,7 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
               <p className="muted">La categoria delle spese rimarrà invariata.</p>
             </div>
             <div className="bulk-edit-actions">
-              <button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
+              <button type="button" className="btn btn-md btn-ghost" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button>
               <button type="submit" className="btn btn-md btn-primary" disabled={!selectedSupplierId}><span className="btn-icon">✓</span> Conferma</button>
             </div>
           </form> : step === "customer" ? <form action={action} method="post" className="bulk-edit-form bulk-edit-supplier-form">
@@ -262,12 +262,12 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
             <div className="bulk-edit-supplier-content app-form-wizard">
               <CustomerAutocomplete customers={customers.filter(customer => !customer.systemRole)} wizardStepClass="" allowCreate={false} onCustomerSelected={customer => setSelectedCustomerId(customer?.id ?? null)}/>
             </div>
-            <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!selectedCustomerId}><span className="btn-icon">✓</span> Conferma</button></div>
+            <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-ghost" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!selectedCustomerId}><span className="btn-icon">✓</span> Conferma</button></div>
           </form> : step === "salesChannel" ? <form action={action} method="post" className="bulk-edit-form bulk-edit-category-form">
             <input type="hidden" name="bulkAction" value="change_sales_channel" />
             {selectedIds.map(id => <input key={id} type="hidden" name="ids" value={id} />)}
             <div className="bulk-edit-category-content"><label><span><span className="app-form-label-icon" aria-hidden="true">▣</span> Canale di vendita</span><select name="salesChannelId" required value={selectedSalesChannelId} onChange={event => setSelectedSalesChannelId(event.currentTarget.value)}><option value="" disabled>Seleziona canale</option>{salesChannels.map(channel => <option key={channel.id} value={channel.id}>{channel.icon ? `${channel.icon} ${channel.name}` : channel.name}</option>)}</select></label></div>
-            <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!selectedSalesChannelId}><span className="btn-icon">✓</span> Conferma</button></div>
+            <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-ghost" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!selectedSalesChannelId}><span className="btn-icon">✓</span> Conferma</button></div>
           </form> : <form action={action} method="post" className="bulk-edit-form bulk-edit-accounting-form">
             <input type="hidden" name="bulkAction" value="change_accounting" />
             {selectedIds.map(id => <input key={id} type="hidden" name="ids" value={id} />)}
@@ -289,7 +289,7 @@ export default function BulkEditFieldsModal({formId, subject, action, categoryFi
                 <SelectField label="Nuovo stato fattura" name="invoiceStatus" value={invoiceStatus} onChange={setInvoiceStatus} options={subject === "spese" ? [{value: "NON_PREVISTA", label: "Non prevista", disabled: updateElectronicInvoice && electronicInvoice}, {value: "IN_ATTESA", label: "⏳ In attesa"}, {value: "PARZIALE", label: "◐ Fatturato parzialmente"}, {value: "RICEVUTA", label: "✅ Emessa"}, {value: "CONTESTAZIONE", label: "⚠️ Contestazione"}] : [{value: "NON_INVIATA", label: "Non inviata"}, {value: "PARZIALE", label: "◐ Fatturato parzialmente"}, {value: "EMESSA", label: "✅ Emessa"}]}/>
               </AccountingField>
             </div>
-            <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-default" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!(updateFiscal || updateVatRate || updateBillingPeriod || (subject === "spese" && updateElectronicInvoice) || updateInvoiceStatus) || (updateBillingPeriod && !billingPeriod)}><span className="btn-icon">✓</span> Conferma</button></div>
+            <div className="bulk-edit-actions"><button type="button" className="btn btn-md btn-ghost" onClick={goBack}><span className="btn-icon">‹</span> Indietro</button><button type="submit" className="btn btn-md btn-primary" disabled={!(updateFiscal || updateVatRate || updateBillingPeriod || (subject === "spese" && updateElectronicInvoice) || updateInvoiceStatus) || (updateBillingPeriod && !billingPeriod)}><span className="btn-icon">✓</span> Conferma</button></div>
           </form>}
           </div>
       </div>

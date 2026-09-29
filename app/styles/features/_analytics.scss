@@ -97,7 +97,6 @@
   }
   @media (max-width: 760px) {
     .btn {
-      height: 100%;
     }
   }
   @media (max-width: 900px) {
@@ -317,7 +316,6 @@
 .month-report-month-button {
   flex: 1 1 0;
   min-width: 0;
-  min-height: 36px;
 }
 
 .year-navigation-select {
@@ -348,8 +346,8 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
-  min-height: 36px;
-  padding: 6px 10px;
+  padding-left: 10px;
+  padding-right: 10px;
   text-decoration: none;
   font-size: 14px;
   width: 151px;
@@ -4851,9 +4849,9 @@ html, body {
 }
 
 @media (max-width: 760px) {
-  .dashboard-period-overview-heading {
-    display: grid;
-  }
+  //.dashboard-period-overview-heading {
+  //  display: grid;
+  //}
 
   .dashboard-period-overview-heading .period-selector,
   .dashboard-period-overview-heading .period-selector select {
@@ -5033,13 +5031,15 @@ html, body {
   .dashboard-top-actions .btn {
     font-size: 14px;
     max-width: initial;
-    padding: 10px 14px;
+    padding-left: 14px;
+    padding-right: 14px;
   }
 }
 
 @media (max-width: 576px) {
   .dashboard-actions-bottom .actions-row .btn {
-    padding: 7px;
+    padding-left: 7px;
+    padding-right: 7px;
     font-size: 14px;
   }
 }
@@ -5388,7 +5388,6 @@ html, body {
 @media (max-width: 760px) {
   .annual-income-trend-selection > .btn {
     grid-column: 1 / -1;
-    min-height: 42px;
   }
 }
 
@@ -5740,6 +5739,14 @@ html, body {
     gap: 8px;
     text-align: left;
   }
+}
+
+.dashboard-grid .dashboard-title-block h2 {
+  margin: 0;
+}
+
+.dashboard-grid .dashboard-title-block p {
+  margin: 5px 0 0;
 }
 
 @media (max-width: 576px) {

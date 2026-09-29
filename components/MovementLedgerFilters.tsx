@@ -29,7 +29,11 @@ export default function MovementLedgerFilters({path, quick, year, from, to, meth
   const formId = useId();
   const [listTriggerTarget, setListTriggerTarget] = useState<HTMLElement | null>(null);
   useEffect(() => {
-    setListTriggerTarget(document.getElementById('ledger-list-filter-trigger'));
+    const media = window.matchMedia('(max-width: 760px)');
+    const updateTarget = () => setListTriggerTarget(document.getElementById(media.matches ? 'ledger-mobile-filter-trigger' : 'ledger-list-filter-trigger'));
+    updateTarget();
+    media.addEventListener('change', updateTarget);
+    return () => media.removeEventListener('change', updateTarget);
   }, [path]);
   const companyNow = civilDateInTimeZone(useCompanyTimeZone());
   const filterButton = <button className="btn btn-sm btn-default app-filter-trigger" type="button" onClick={() => setOpen(true)} aria-label="Filtri" aria-haspopup="dialog" aria-expanded={open}>

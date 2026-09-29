@@ -1,3 +1,4 @@
+import {canConvertIncome} from '@/lib/record-conversion';
 import MonthGroupedRecords from '@/components/MonthGroupedRecords';
 import {listDateSort, listDateValue} from '@/lib/list-month-groups';
 import Link from 'next/link';
@@ -20,6 +21,8 @@ import BulkCopyIncomesModal from '@/components/BulkCopyIncomesModal';
 import type {ReactNode} from 'react';
 
 type IncomeItem = {
+    incomeType?: string;
+    recurringIncomeId?: number | null;
     id: number;
     billingMonth: number;
     billingYear: number;
@@ -202,6 +205,11 @@ export default function IncomesList({
                         <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
+                        <button type="button" className="btn btn-sm btn-option" data-bulk-convert="incomes" data-bulk-form={formId}
+                            data-convert-eligible-ids={incomes.filter(item => canConvertIncome({incomeType: item.incomeType ?? 'STANDARD', recurringIncomeId: item.recurringIncomeId ?? null})).map(item => item.id).join(',')}
+                            data-return-to={returnTo} disabled title="Seleziona un solo record convertibile">
+                            <span className="btn-icon">⇄</span><span>Converti tipo</span>
+                        </button>
                         <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-copy]" disabled><span className="btn-icon">⧉</span><span>Copia</span></button>
                         <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-add-credit]" disabled><span className="btn-icon">€</span><span>Inserisci accredito</span></button>
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
@@ -229,7 +237,7 @@ export default function IncomesList({
             </div>
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link bulk-add-link  btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
-                    <span className="btn-icon">＋</span><span className="hidden-sm-down">Incasso</span></button>
+                    <span className="btn-icon btn-icon-add">＋</span><span className="hidden-sm-down">Incasso</span></button>
                 {filterAction}
             </div>
         </form>

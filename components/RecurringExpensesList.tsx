@@ -1,3 +1,4 @@
+import InfoHint from '@/components/InfoHint';
 import {weekdayLabel} from '@/lib/recurring-cadence';
 import {RecurringStateBadge, RecurringStateCard} from '@/components/RecurringStateProvider';
 import RecurringStateToggle from '@/components/RecurringStateToggle';
@@ -249,7 +250,7 @@ export default function RecurringExpensesList({
         <RecurringExpenseDetailEditModalController categories={categories} banks={banks} paymentMethods={paymentMethods} suppliers={suppliers} employees={employees} returnTo={listHref}/>
         <div className="list-heading recurring-list-heading mobile-page-title recurring-expense-mobile-page-title">
             <div>
-                <h2>Uscite ricorrenti</h2>
+                <div className="info-title-row"><h2>Uscite ricorrenti</h2><InfoHint compactOnly title="Uscite ricorrenti">Gestisci le regole di spesa ricorrente.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci le regole di spesa ricorrente.</p>
                 <p className="muted">Gestisci le regole di spesa ricorrente.</p>
             </div>
         </div>
@@ -325,7 +326,7 @@ export default function RecurringExpensesList({
             </div>
             <div className="bulk-inner-container">
                 <button className="bulk-direct-link bulk-add-link btn btn-md btn-primary" type="button" data-bulk-new data-recurring-expense-new data-floating-label="Spesa ricorrente">
-                    <span className="btn-icon">＋</span>
+                    <span className="btn-icon btn-icon-add">＋</span>
                     <span className="hidden-sm-down">Spesa ricorrente</span>
                 </button>
                 <RecurringExpenseFiltersDrawer filters={filters ?? {}} categories={categories} banks={banks} paymentMethods={paymentMethods}/>

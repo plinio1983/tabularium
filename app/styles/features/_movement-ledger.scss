@@ -228,3 +228,29 @@
     display: none;
   }
 }
+
+.ledger-list-results-row { display: contents; }
+#ledger-mobile-filter-trigger { display: none; }
+
+@media (max-width: 760px) {
+  .movement-ledger-page {
+    #ledger-list-filter-trigger { display: none; }
+
+    .ledger-list-results-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      margin-block: 12px;
+
+      > p { min-width: 0; margin: 0; }
+    }
+
+    #ledger-mobile-filter-trigger {
+      display: flex;
+      flex: 0 0 auto;
+      margin-left: auto;
+    }
+  }
+}

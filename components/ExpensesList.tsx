@@ -1,3 +1,4 @@
+import {canConvertExpense} from '@/lib/record-conversion';
 import MonthGroupedRecords from '@/components/MonthGroupedRecords';
 import {listDateSort, listDateValue} from '@/lib/list-month-groups';
 import Link from 'next/link';
@@ -276,6 +277,11 @@ export default function ExpensesList({
                             <span className="hidden-sm-down hidden-xs-down">Azioni</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
+                        <button type="button" className="btn btn-sm btn-option" data-bulk-convert="expenses" data-bulk-form={formId}
+                            data-convert-eligible-ids={expenses.filter(item => canConvertExpense({expenseType: item.expenseType ?? 'STANDARD', isRecurring: item.isRecurring, recurringExpenseId: item.recurringExpenseId ?? null})).map(item => item.id).join(',')}
+                            data-return-to={returnTo} disabled title="Seleziona un solo record convertibile">
+                            <span className="btn-icon">⇄</span><span>Converti tipo</span>
+                        </button>
                         <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-copy]" disabled><span className="btn-icon">⧉</span><span>Copia</span></button>
                         <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-add-payment]" disabled><span className="btn-icon">€</span><span>Inserisci pagamento</span></button>
                             <button className="btn btn-sm btn-option" type="submit" name="bulkAction"
@@ -319,7 +325,7 @@ export default function ExpensesList({
                 <div className="bulk-inner-container">
                     <ExpenseNewTriggerButton className="bulk-direct-link bulk-add-link btn btn-md btn-primary"
                                              floatingLabel="Spesa">
-                        <span className="btn-icon">＋</span>
+                        <span className="btn-icon btn-icon-add">＋</span>
                         <span className="hidden-sm-down">Spesa</span>
                     </ExpenseNewTriggerButton>
                     {filterAction}

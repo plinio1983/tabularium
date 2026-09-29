@@ -30,7 +30,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
   };
   const entity = entityLabels[importType] ?? entityLabels.single_expenses;
   if (importType === 'receipts') return <div className="grid import-page">
-    <div className="toolbar-card import-hero-card"><div><h2>Importa dati</h2><p className="muted">Importazione scontrini con anteprima.</p></div><ExpenseImportTypeSelector initialType="receipts"/></div>
+    <div className="toolbar-card import-hero-card"><div className="import-hero-title"><h2>Importa dati</h2><p className="muted">Importazione scontrini con anteprima.</p></div><ExpenseImportTypeSelector initialType="receipts"/></div>
     <ReceiptCsvImport/>
   </div>;
 
@@ -39,7 +39,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
     <div className="toolbar-card import-hero-card">
       <div className="import-hero-title">
         {/*<span className="badge">Importazione dati</span>*/}
-        <Link className="btn btn-sm btn-default" href="/"><span className="btn-icon">↩</span> Torna alla dashboard</Link>
+        <Link className="btn btn-sm btn-ghost" href="/"><span className="btn-icon">↩</span> Torna alla dashboard</Link>
         <h2>Importa dati da Excel / ODS</h2>
         <p className="muted">Importa dati, definizioni ricorrenti, incassi, clienti o fornitori usando il relativo modello compilabile.</p>
       </div>

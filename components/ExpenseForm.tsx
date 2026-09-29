@@ -1,5 +1,6 @@
 "use client";
 
+import InfoHint from '@/components/InfoHint';
 import LinkedRecordFields from '@/components/LinkedRecordFields';
 
 import {type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState} from "react";
@@ -360,7 +361,7 @@ function SupplierAutocomplete({
                         setShowCreate(true);
                     }}
                 >
-                    <span className="btn-icon">＋</span> Nuovo
+                    <span className="btn-icon btn-icon-add">＋</span> Nuovo
                 </button>
             </div>
 
@@ -994,6 +995,7 @@ export default function ExpenseForm({
                         <span>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</span>
                     </strong>
                 </div>
+                <InfoHint compactOnly title="Informazioni sul passaggio">{["Date della spesa e periodo di riferimento.", "Importo, IVA e fiscalità. Per le buste paga, l’importo comprende netto cedolino e compensi extra.", "Fornitore, dipendente o ente, descrizione e categoria della spesa.", "Stato, residuo e movimenti di pagamento.", "Fatturazione e periodo fiscale.", "Controlla i dati prima di salvare.", "Allega fatture, documenti o ricevute in PDF, immagini, XML o P7M."][mobileStep - 1]}</InfoHint>
                 <div className="app-form-wizard-progress" aria-label={mobileStep === 7 ? `Allegati` : `Passaggio ${(isNoVatExpense && mobileStep === 6 ? 5 : mobileStep) + mobileStepOffset} di ${(isNoVatExpense ? 5 : 6) + mobileStepOffset}`}>
                     <span style={{width: `${isNoVatExpense ? Math.min((mobileStep === 6 ? 5 : mobileStep) + mobileStepOffset, 5 + mobileStepOffset) / (5 + mobileStepOffset) * 100 : Math.min(mobileStep + mobileStepOffset, 6 + mobileStepOffset) / (6 + mobileStepOffset) * 100}%`}}/>
                 </div>
@@ -1027,8 +1029,7 @@ export default function ExpenseForm({
 
             <details className="form-section full app-form-wizard-split-section expense-wizard-document-section expense-wizard-dates-section" open>
                 <summary>
-                    <span>Tipo e date</span>
-                    <small>Tipologia della spesa e date principali</small>
+                    <span className="info-label-row"><span>Tipo e date</span><InfoHint compactOnly title="Tipo e date">Tipologia della spesa e date principali</InfoHint></span><small className="info-hint-desktop-text">Tipologia della spesa e date principali</small>
                 </summary>
                 <div className="form-section-grid">
 
@@ -1128,8 +1129,7 @@ export default function ExpenseForm({
 
             <details className="form-section full app-form-wizard-split-section app-form-wizard-details-section" open>
                 <summary>
-                    <span>Fornitore e dettagli</span>
-                    <small>Fornitore, descrizione e categoria della spesa</small>
+                    <span className="info-label-row"><span>Fornitore e dettagli</span><InfoHint compactOnly title="Fornitore e dettagli">Fornitore, descrizione e categoria della spesa</InfoHint></span><small className="info-hint-desktop-text">Fornitore, descrizione e categoria della spesa</small>
                 </summary>
                 <div className="form-section-grid">
                     {isVatSettlement ? <label className="app-form-wizard-step app-form-wizard-step-3">
@@ -1220,8 +1220,7 @@ export default function ExpenseForm({
 
             <details className="form-section full app-form-wizard-split-section app-form-wizard-amount-section" open>
                 <summary>
-                    <span>Importo e IVA</span>
-                    <small>Imponibile fiscale, importo e aliquota IVA</small>
+                    <span className="info-label-row"><span>Importo e IVA</span><InfoHint compactOnly title="Importo e IVA">Imponibile fiscale, importo e aliquota IVA</InfoHint></span><small className="info-hint-desktop-text">Imponibile fiscale, importo e aliquota IVA</small>
                 </summary>
                 <div className="form-section-grid">
                     <div className="amount-vat-row full app-form-wizard-step app-form-wizard-step-2">
@@ -1304,9 +1303,9 @@ export default function ExpenseForm({
                             <FormField label="Lordo cedolino" icon="€"><MoneyInput name="payrollGrossAmount" value={payrollGrossAmount} onValueChange={setPayrollGrossAmount}/></FormField>
                             <FormField label="Costo complessivo aziendale" icon="€"><MoneyInput name="payrollEmployerCost" value={payrollEmployerCost} onValueChange={setPayrollEmployerCost}/></FormField>
                             <div className="field-note">
-                                <span>Totale da corrispondere &nbsp;</span>
+                                <span className="info-label-row"><span>Totale da corrispondere</span><InfoHint compactOnly title="Importo della busta paga">Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</InfoHint></span>
                                 <strong>{formatEuro(amountValue)}</strong>
-                                <small>&nbsp; Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</small>
+                                <small className="info-hint-desktop-text">Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</small>
                             </div>
                         </div> : null}
 
@@ -1352,8 +1351,7 @@ export default function ExpenseForm({
             {!isNoVatExpense ?
                 <details className="form-section full app-form-wizard-split-section app-form-wizard-fiscal-section" open>
                     <summary>
-                        <span>Fiscale</span>
-                        <small>IVA, detrazione e fattura elettronica</small>
+                        <span className="info-label-row"><span>Fiscale</span><InfoHint compactOnly title="Fiscale">IVA, detrazione e fattura elettronica</InfoHint></span><small className="info-hint-desktop-text">IVA, detrazione e fattura elettronica</small>
                     </summary>
                     <div className="form-section-grid">
                         <div className="switch-toggle-field app-form-wizard-step app-form-wizard-step-5 expense-invoice-desktop-control">
@@ -1486,8 +1484,7 @@ export default function ExpenseForm({
 
             <details className="form-section full expense-payments-section app-form-wizard-step app-form-wizard-step-4" open>
                 <summary>
-                    <span>Pagamenti</span>
-                    <small>Stato, residuo e movimenti registrati</small>
+                    <span className="info-label-row"><span>Pagamenti</span><InfoHint compactOnly title="Pagamenti">Stato, residuo e movimenti registrati</InfoHint></span><small className="info-hint-desktop-text">Stato, residuo e movimenti registrati</small>
                 </summary>
                 <LinkedRecordFields locked={preserveLinkedRecords}>
 
@@ -1781,7 +1778,7 @@ export default function ExpenseForm({
                     </div>
                 </div>}
                 <button className="btn btn-md btn-default expense-review-attachments-button" type="button" onClick={() => goToMobileStep(7)}>
-                    <span className="btn-icon">＋</span>
+                    <span className="btn-icon btn-icon-add">＋</span>
                     <span><strong>Allegati</strong><small>{attachmentCount ? `${attachmentCount} allegati selezionati` : "Aggiungi allegati opzionali"}</small></span>
                     <span className="btn-icon" aria-hidden="true">→</span>
                 </button>
@@ -1799,8 +1796,7 @@ export default function ExpenseForm({
 
             <details ref={attachmentsSectionRef} className="form-section full expense-attachments-section app-form-wizard-step app-form-wizard-step-7" open={mobileStep === 7}>
                 <summary>
-                    <span>Allegati</span>
-                    <small>File, XML e P7M</small>
+                    <span className="info-label-row"><span>Allegati</span><InfoHint compactOnly title="Allegati">File, XML e P7M</InfoHint></span><small className="info-hint-desktop-text">File, XML e P7M</small>
                 </summary>
                 <LinkedRecordFields locked={preserveLinkedRecords}>
 

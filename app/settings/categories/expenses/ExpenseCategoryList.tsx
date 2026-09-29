@@ -74,7 +74,7 @@ export default function ExpenseCategoryList({categories, iconOptions, updateActi
               <h2 id="expense-category-edit-title">Modifica categoria</h2>
               <p className="muted">{editing.icon ?? ''} {editing.name}</p>
             </div>
-            <button className="btn btn-icon-only btn-default modal-close-button" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}><span className="btn-icon">×</span></button>
+            <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" onClick={() => setEditing(null)}><span className="btn-icon">×</span></button>
           </div>
           <form action={updateAction} className="form app-record-form expense-category-edit-form">
             <input type="hidden" name="id" value={editing.id}/>

@@ -23,7 +23,7 @@ export default function EmployeeEditModalController() {
   if (!employee) return null;
   return <div className="modal-backdrop app-form-modal" role="dialog" aria-modal="true" aria-label={`Modifica ${employee.firstName} ${employee.lastName}`} onMouseDown={() => setEmployee(null)}>
     <div className="modal-card modal-card-wide entity-form-modal-card" onMouseDown={event => event.stopPropagation()}>
-      <div className="modal-title"><div><h3>Modifica dipendente</h3><p className="muted">Aggiorna l’anagrafica di {employee.firstName} {employee.lastName}.</p></div><button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setEmployee(null)}><span className="btn-icon">×</span></button></div>
+      <div className="modal-title"><div><h3>Modifica dipendente</h3><p className="muted">Aggiorna l’anagrafica di {employee.firstName} {employee.lastName}.</p></div><button aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" type="button" onClick={() => setEmployee(null)}><span className="btn-icon">×</span></button></div>
       <form className="card form app-record-form entity-form entity-styled-form inline-create-form" action={`/api/employees/${employee.id}?returnTo=${encodeURIComponent(returnTo)}`} method="post"><EmployeeFormFields employee={employee}/><EntityFormActions onCancel={() => setEmployee(null)} submitLabel="Salva modifiche"/></form>
     </div>
   </div>;

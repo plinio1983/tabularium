@@ -77,7 +77,7 @@ export default function ActionFeedbackBanner({
   if (saved) {
     return <div className="action-feedback action-feedback-success full" role="status">
       <strong>{savedMessages?.[saved] ?? defaultSavedMessage ?? 'Operazione completata.'}</strong>
-      <button type="button" className="action-feedback-close" aria-label="Chiudi notifica" onClick={() => setDismissed(true)}><span className="btn-icon">×</span></button>
+      <button type="button" className="btn btn-neutral btn-icon-only modal-close-button action-feedback-close" aria-label="Chiudi notifica" onClick={() => setDismissed(true)}><span className="btn-icon">×</span></button>
     </div>;
   }
   if (error) {
@@ -86,7 +86,7 @@ export default function ActionFeedbackBanner({
         {errorMessages?.[error] ?? defaultErrorMessage ?? 'Operazione non completata.'}
         {error === 'in_use' && usage ? <span> Elementi collegati: {usage}.</span> : null}
       </span>
-      <button type="button" className="action-feedback-close" aria-label="Chiudi notifica" onClick={() => setDismissed(true)}><span className="btn-icon">×</span></button>
+      <button type="button" className="btn btn-neutral btn-icon-only modal-close-button action-feedback-close" aria-label="Chiudi notifica" onClick={() => setDismissed(true)}><span className="btn-icon">×</span></button>
     </div>;
   }
   return null;

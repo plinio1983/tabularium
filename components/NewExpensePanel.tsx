@@ -134,7 +134,7 @@ export default function NewExpensePanel({
                     <span className="btn-icon">↻</span>Uscite ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary" type="button" onClick={() => setIsOpen(true)}>
-                    <span className="btn-icon">＋</span>
+                    <span className="btn-icon btn-icon-add">＋</span>
                     <span className="">Spesa</span>
                     {/*<span className="hidden-desktop">Spesa</span>*/}
                 </button>
@@ -149,7 +149,7 @@ export default function NewExpensePanel({
                             <h3>{modalCopy.title}</h3>
                             <p className="muted">{modalCopy.description}</p>
                         </div>
-                        <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button>
+                        <button aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" type="button" onClick={() => setIsOpen(false)}><span className="btn-icon">×</span></button>
                     </div>
                     <ExpenseCreationSwitcher key={creationKey} categories={categories} banks={banks} paymentMethods={paymentMethods}
                                              suppliers={suppliers} employees={availableEmployees} initialExpense={initialExpense} expenseAction={returnAction}

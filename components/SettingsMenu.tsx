@@ -74,7 +74,7 @@ export default function SettingsMenu() {
                 <div className="settings-drawer-heading">
                     <h2>Menu</h2>
                 </div>
-                <button className="settings-drawer-close" type="button" aria-label="Chiudi menu" onClick={closeMenu}><span className="btn-icon">×</span></button>
+                <button className="btn btn-neutral btn-icon-only modal-close-button settings-drawer-close" type="button" aria-label="Chiudi menu" onClick={closeMenu}><span className="btn-icon">×</span></button>
             </div>
             <nav className="settings-drawer-nav" aria-label="Menu principale laterale">
                 {mainMenuLinks.map(link => link.href

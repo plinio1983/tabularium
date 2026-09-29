@@ -101,7 +101,7 @@ export default function SupplierCreateModal({
                         <h3>Nuovo fornitore</h3>
                         <p className="muted">Inserisci i dati del fornitore.</p>
                     </div>
-                    <button className="btn btn-icon-only btn-default modal-close-button" type="button" disabled={isSaving} onClick={onClose}><span className="btn-icon">×</span></button>
+                    <button aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" type="button" disabled={isSaving} onClick={onClose}><span className="btn-icon">×</span></button>
                 </div>
                 <form
                     className="card form app-record-form entity-form entity-styled-form inline-create-form"

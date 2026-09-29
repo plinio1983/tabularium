@@ -1,5 +1,6 @@
 'use client';
 
+import InfoHint from '@/components/InfoHint';
 import {useState} from 'react';
 import Link from 'next/link';
 import type {ReceiptPreview} from '@/lib/receipt-import';
@@ -27,9 +28,10 @@ export default function ReceiptCsvImport() {
   }
   return <div className="grid">
     <section className="card" style={{padding: 20}}>
-      <h3>Importa scontrini da CSV</h3>
-      <p>Carica il file esportato dalla pagina Andamento scontrini oppure compila il modello. Limite: 1.000 scontrini, 5 MB, UTF-8, separatore punto e virgola.</p>
-      <p>Data e ora devono includere il fuso orario. Usa i nomi configurati per metodo e banca e un identificativo origine diverso per ogni vendita. Mantieni lo stesso identificativo nelle importazioni successive.</p>
+      <div className="info-title-row"><h3>Importa scontrini da CSV</h3><InfoHint compactOnly title="Importazione scontrini CSV"><p>Carica il file esportato dalla pagina Andamento scontrini oppure compila il modello. Limite: 1.000 scontrini, 5 MB, UTF-8, separatore punto e virgola.</p>
+      <p>Data e ora devono includere il fuso orario. Usa i nomi configurati per metodo e banca e un identificativo origine diverso per ogni vendita. Mantieni lo stesso identificativo nelle importazioni successive.</p></InfoHint></div><p className="muted info-hint-desktop-text"><p>Carica il file esportato dalla pagina Andamento scontrini oppure compila il modello. Limite: 1.000 scontrini, 5 MB, UTF-8, separatore punto e virgola.</p>
+      <p>Data e ora devono includere il fuso orario. Usa i nomi configurati per metodo e banca e un identificativo origine diverso per ogni vendita. Mantieni lo stesso identificativo nelle importazioni successive.</p></p>
+      <p className="muted">Massimo 1.000 scontrini e 5 MB per file.</p>
       <p>Le righe già presenti vengono ignorate. Errori e identificativi con dati diversi bloccano il salvataggio dell’intero file.</p>
       <div className="actions-row"><a className="btn btn-sm btn-default" href="/api/cash-register/receipts/import" download>Scarica modello CSV</a><Link className="btn btn-sm btn-default" href="/incomes/cash-register/receipts">Vai agli scontrini</Link></div>
       <form onSubmit={event => {event.preventDefault(); void send('preview');}}>

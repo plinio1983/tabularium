@@ -35,7 +35,7 @@ function Editor({item, onClose, onSaved, ...options}: Pick<FormProps, 'channels'
     }}>
     <div ref={card} className="modal-card modal-card-wide app-wizard-modal-card">
       <div className="modal-title"><div><h3>Modifica entrata ricorrente</h3><p className="muted">Le modifiche valgono per le generazioni future.</p></div>
-        <button className="btn btn-icon-only btn-default modal-close-button" type="button" onClick={onClose} aria-label="Chiudi modifica entrata ricorrente"><span className="btn-icon">×</span></button>
+        <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" onClick={onClose} aria-label="Chiudi modifica entrata ricorrente"><span className="btn-icon">×</span></button>
       </div>
       <RecurringIncomeForm {...options} initial={item} editId={item.id} action="" cancelHref="/recurring-incomes" onCancel={onClose} onSaved={onSaved}/>
     </div>

@@ -153,24 +153,9 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .72);
-  color: currentColor;
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1;
-  cursor: pointer;
 }
 
-.action-feedback-close:hover {
-  background: rgba(255, 255, 255, .95);
-}
+
 
 .app-record-form .form-summary .muted {
   font-size: 11px;

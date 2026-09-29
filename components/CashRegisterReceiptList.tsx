@@ -1,5 +1,6 @@
 'use client';
 
+import InfoHint from '@/components/InfoHint';
 import {MobileRecordCloseButton} from './MobileRecordViews';
 
 import Link from 'next/link';
@@ -8,10 +9,12 @@ import CashRegisterReceiptDetailModal from '@/components/CashRegisterReceiptDeta
 import BulkSelectionController from '@/components/BulkSelectionController';
 import SortableTableController from '@/components/SortableTableController';
 import {euro} from '@/lib/money';
+import {canConvertIncome} from '@/lib/record-conversion';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 
 type Receipt = {
     id: number;
+    recurringIncomeId: number | null;
     description: string | null;
     amount: number;
     creditDate: string;
@@ -49,11 +52,13 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
     const timeZone = useCompanyTimeZone();
     const [detailId, setDetailId] = useState<number | null>(null);
     const closeDetail = useCallback(() => setDetailId(null), []);
+
     function openDetail(event: MouseEvent<HTMLElement>, id: number) {
         if ((event.target as Element).closest('input, button, a, label, select, textarea')) return;
         event.currentTarget.focus({preventScroll: true});
         setDetailId(id);
     }
+
     function detailTrigger(id: number) {
         return {
             tabIndex: 0,
@@ -67,15 +72,28 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
             }
         };
     }
+
     const formId = 'cashRegisterReceiptBulkForm';
     const encodedReturnTo = encodeURIComponent(returnTo);
     return <div className="card record-list-card cash-register-receipt-list-card fixed">
         <div className="list-heading recurring-list-heading mobile-record-list-header">
-            <div><h2>Andamento scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
+            <div>
+                <div className="info-title-row">
+                    <h2>Scontrini</h2>
+                    <InfoHint compactOnly title="Azioni sugli scontrini">Per esportare un CSV, seleziona gli scontrini e
+                        scegli Esporta CSV dalle azioni. La lista mostra al massimo 1.000 record: restringi il periodo
+                        per gli archivi più grandi.</InfoHint>
+                </div>
+                {/*<p className="muted info-hint-desktop-text">Per esportare un CSV, seleziona gli scontrini e scegli*/}
+                {/*    Esporta CSV dalle azioni. La lista mostra al massimo 1.000 record: restringi il periodo per gli*/}
+                {/*    archivi più grandi.</p><p className="muted">Risultati mostrati: {receipts.length}</p>*/}
+            </div>
             <MobileRecordCloseButton/>
         </div>
         {headerContent}
-        <p className="muted">Esporta CSV dalle azioni dopo aver selezionato gli scontrini. La lista mostra al massimo 1.000 record: restringi il periodo per gli archivi più grandi.</p>
+        {receipts.length >= 1000 ?
+            <p className="muted">Mostrati al massimo 1.000 scontrini: restringi il periodo per visualizzare gli altri
+                risultati.</p> : null}
         <BulkSelectionController/>
         <SortableTableController/>
         <form id={formId}
@@ -91,11 +109,22 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
                     <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
+                        <span className="btn-icon" aria-hidden="true">⚙</span><span
+                        className="hidden-sm-up hidden-xs-down">Azioni</span><span
+                        className="hidden-sm-down hidden-xs-down">Azioni</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv" formAction="/api/exports/receipts" formMethod="post" data-confirm-label="Esporta CSV"><span className="btn-icon">⇩</span> Esporta CSV</button>
-                        <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction" value="delete">
+                        <button type="button" className="btn btn-sm btn-option" data-bulk-convert="incomes" data-bulk-form={formId}
+                                data-convert-eligible-ids={receipts.filter(receipt => canConvertIncome({incomeType: 'CASH_REGISTER', recurringIncomeId: receipt.recurringIncomeId})).map(receipt => receipt.id).join(',')}
+                                data-return-to={encodedReturnTo} disabled title="Seleziona un solo record convertibile">
+                            <span className="btn-icon">⇄</span><span>Converti tipo</span>
+                        </button>
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
+                                formAction="/api/exports/receipts" formMethod="post" data-confirm-label="Esporta CSV">
+                            <span className="btn-icon">⇩</span> Esporta CSV
+                        </button>
+                        <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction"
+                                value="delete">
                             <span className="btn-icon">🗑</span><span className="bulk-label">Rimuovi selezionati</span>
                         </button>
                     </div>
@@ -114,7 +143,11 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
                         <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
                     </a>
-                    <button type="submit" className="bulk-direct-link is-disabled hidden-xs-down" name="bulkAction" value="export_csv" data-bulk-shortcut data-floating-label="Esporta CSV" data-floating-icon="⇩" data-confirm-label="Esporta CSV" formAction="/api/exports/receipts" formMethod="post" disabled><span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span></button>
+                    <button type="submit" className="bulk-direct-link is-disabled hidden-xs-down" name="bulkAction"
+                            value="export_csv" data-bulk-shortcut data-floating-label="Esporta CSV"
+                            data-floating-icon="⇩" data-confirm-label="Esporta CSV" formAction="/api/exports/receipts"
+                            formMethod="post" disabled><span className="btn-icon">⇩</span><span
+                        className="hidden-sm-down">Esporta CSV</span></button>
                 </div>
             </div>
             <div className="bulk-inner-container">
@@ -124,7 +157,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                       data-bulk-new
                       data-floating-label="Scontrino"
                       data-floating-icon="+">
-                    <span className="btn-icon">＋</span><span className="bulk-label">Scontrino</span>
+                    <span className="btn-icon btn-icon-add">＋</span><span className="bulk-label">Scontrino</span>
                 </Link>
                 {filtersTrigger}
             </div>
@@ -141,7 +174,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     </th>
                     <th data-sort-key="id" className="cell-id" data-sort-type="number">ID</th>
                     <th data-sort-key="date" className="cell-date" data-sort-type="date">Data e ora</th>
-                    <th data-sort-key="description" className="cell-description" >Descrizione</th>
+                    <th data-sort-key="description" className="cell-description">Descrizione</th>
                     <th data-sort-key="channel" className="cell-channel">Canale vendita</th>
                     <th data-sort-key="amount" data-sort-type="number" className="cell-amount">Importo</th>
                     <th data-sort-key="fiscal" className="cell-fiscal">Fiscalità</th>
@@ -166,14 +199,16 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     </td>
                     <td className="text-left">#{receipt.id}</td>
                     <td>{receiptDate(receipt.creditDate, timeZone)}</td>
-                    <td><span className="cash-register-receipt-description" title={receipt.description || undefined}>{receipt.description || '—'}</span></td>
+                    <td><span className="cash-register-receipt-description"
+                              title={receipt.description || undefined}>{receipt.description || '—'}</span></td>
                     <td>{receipt.salesChannelIcon ?? '•'} {receipt.salesChannel}</td>
                     <td className="cell-amount"><strong className="text-accent">{euro(receipt.amount)}</strong></td>
                     <td><span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-no'}`}>
                         {receipt.isFiscal ? '✓ Fisc' : '✕ Non fisc'}
                     </span></td>
                     <td>{receipt.paymentMethodIcon ?? '•'} {receipt.paymentMethod}</td>
-                    <td className="text-center">{receipt.isFiscal ? <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}</td>
+                    <td className="text-center">{receipt.isFiscal ?
+                        <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}</td>
                 </tr>)}
                 {!receipts.length ? <tr>
                     <td colSpan={9}>Nessuno scontrino nel periodo selezionato.</td>
@@ -183,7 +218,8 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
         </div>
 
         <div className="cash-register-receipt-list cash-register-receipt-mobile-list" aria-label="Andamento scontrini">
-            {receipts.map(receipt => <article className="cash-register-receipt-row" key={receipt.id} {...detailTrigger(receipt.id)}>
+            {receipts.map(receipt => <article className="cash-register-receipt-row"
+                                              key={receipt.id} {...detailTrigger(receipt.id)}>
                 <div className="mobile-record-select cash-register-receipt-select">
                     <input form={formId} type="checkbox" name="ids" value={receipt.id}
                            aria-label={`Seleziona scontrino ${receipt.id}`}/>
@@ -212,6 +248,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
             {!receipts.length ?
                 <div className="record-empty-state">Nessuno scontrino nel periodo selezionato.</div> : null}
         </div>
-        {detailId !== null ? <CashRegisterReceiptDetailModal key={detailId} receiptId={detailId} returnTo={returnTo} onClose={closeDetail}/> : null}
+        {detailId !== null ? <CashRegisterReceiptDetailModal key={detailId} receiptId={detailId} returnTo={returnTo}
+                                                             onClose={closeDetail}/> : null}
     </div>;
 }
