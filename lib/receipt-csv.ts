@@ -48,7 +48,7 @@ function csvRecords(input: string) {
 export function parseReceiptCsv(input: string): ParsedReceiptRow[] {
   const records = csvRecords(input);
   const header = records.shift()?.cells.map(value => value.trim());
-  if (!header || header.length !== receiptCsvHeaders.length || !receiptCsvHeaders.every((name, index) => header[index] === name)) throw new Error('Colonne non valide. Usa il modello CSV Scontrini o un file esportato dalla lista Scontrini.');
+  if (!header || header.length !== receiptCsvHeaders.length || !receiptCsvHeaders.every((name, index) => header[index] === name)) throw new Error('Colonne non valide. Usa il modello CSV Scontrini o un file esportato dalla pagina Andamento scontrini.');
   if (!records.length) throw new Error('Il file non contiene scontrini.');
   if (records.length > receiptCsvLimit) throw new Error(`Sono consentiti al massimo ${receiptCsvLimit} scontrini per file.`);
   return records.map(({line, cells}) => {

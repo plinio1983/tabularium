@@ -71,7 +71,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
     const encodedReturnTo = encodeURIComponent(returnTo);
     return <div className="card record-list-card cash-register-receipt-list-card fixed">
         <div className="list-heading recurring-list-heading mobile-record-list-header">
-            <div><h2>Lista scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
+            <div><h2>Andamento scontrini</h2><p className="muted">Risultati mostrati: {receipts.length}</p></div>
             <MobileRecordCloseButton/>
         </div>
         {headerContent}
@@ -182,7 +182,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
             </table>
         </div>
 
-        <div className="cash-register-receipt-list cash-register-receipt-mobile-list" aria-label="Lista scontrini">
+        <div className="cash-register-receipt-list cash-register-receipt-mobile-list" aria-label="Andamento scontrini">
             {receipts.map(receipt => <article className="cash-register-receipt-row" key={receipt.id} {...detailTrigger(receipt.id)}>
                 <div className="mobile-record-select cash-register-receipt-select">
                     <input form={formId} type="checkbox" name="ids" value={receipt.id}

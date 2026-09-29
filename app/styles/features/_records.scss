@@ -2780,12 +2780,8 @@ table th, table td {
   }
 }
 
-.receipt-summary-mobile-filters { display: none; }
-
 @media (max-width: 760px) {
   .cash-register-receipts-page {
-    .receipt-list-desktop-filters { display: none; }
-    .receipt-summary-mobile-filters { display: block; }
     .mobile-record-summary > .card,
     .mobile-record-list-pane > .card { padding: 14px; }
   }
