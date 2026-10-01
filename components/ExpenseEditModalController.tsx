@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import CounterExpenseForm from "@/components/CounterExpenseForm";
+import {useRouter} from "next/navigation";
 import ExpenseForm from "@/components/ExpenseForm";
 import { clampDateToToday, clampPeriodToCurrentMonth } from "@/lib/copy-dates";
 
@@ -23,6 +25,7 @@ type EmployeeOption = { id: number; firstName: string; lastName: string; employe
 
 type EditExpense = {
   id: number;
+  counterSnapshot?: string;
   expenseType?: "STANDARD" | "VAT_SETTLEMENT" | "COUNTER" | "TAX_CONTRIBUTION" | "PAYROLL";
   employeeId?: number | null;
   payrollNetAmount?: string | number | null;
@@ -80,6 +83,7 @@ function selectedExpenseIdsFromBulk(formId: string) {
 
 export default function ExpenseEditModalController({ categories, banks, paymentMethods, suppliers, employees = [], listHref, formId = "expenseBulkForm" }: Props) {
   const [availableEmployees, setAvailableEmployees] = useState(employees);
+  const router = useRouter();
   const [expense, setExpense] = useState<EditExpense | null>(null);
   const [mode, setMode] = useState<"edit" | "copy" | "payment">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -168,7 +172,11 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
           </div>
           <button aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" type="button" onClick={() => setExpense(null)}><span className="btn-icon">×</span></button>
         </div>
-        <ExpenseForm
+        {expense.expenseType === 'COUNTER' && (mode === 'edit' || mode === 'copy') ? <CounterExpenseForm
+          key={`${mode}-${expense.id}`} categories={categories} banks={banks} paymentMethods={paymentMethods}
+          initialExpense={mode === 'copy' ? {...expense, id: undefined, payments: []} : expense}
+          onCancel={() => setExpense(null)} onSaved={() => {setExpense(null); router.refresh();}} cancelHref={listHref}/>
+        : <ExpenseForm
           key={`${mode}-${expense.id}`}
           title={mode === "copy" ? "Nuova spesa da copia" : "Modifica spesa"}
           cancelHref={listHref}
@@ -184,7 +192,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
           initialMobileStep={mode === "payment" ? 4 : 1}
           mobileStepOffset={1}
           openNewPayment={mode === "payment"}
-        />
+        />}
       </div>
     </div> : null}
   </>;

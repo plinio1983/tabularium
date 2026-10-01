@@ -131,7 +131,7 @@ type Props = {
     onDeletePayment?: (paymentId: number) => Promise<void>;
     cancelHref?: string;
     onSwitchToRecurring?: () => void;
-    onExpenseTypeChange?: (type: "single" | "vat" | "tax" | "payroll") => void;
+    onExpenseTypeChange?: (type: "counter" | "single" | "vat" | "tax" | "payroll") => void;
     initialMobileStep?: number;
     mobileStepOffset?: number;
     onBackToType?: () => void;
@@ -1020,7 +1020,7 @@ export default function ExpenseForm({
                     className={`app-form-wizard-step app-form-wizard-step-1${isExistingExpense ? " hidden-md-up" : ""}`}
                     selected={isRecurring ? "recurring" : isVatSettlement ? "vat" : isTaxContribution ? "tax" : isPayroll ? "payroll" : "single"}
                     onSelect={selectExpenseType}
-                    onSelectCounter={() => window.location.assign("/expenses/counter")}
+                    onSelectCounter={() => onExpenseTypeChange ? onExpenseTypeChange("counter") : window.location.assign("/expenses/counter")}
                     disabled={!canEditExpenseType}
                     disabledTypes={!onSwitchToRecurring ? ["recurring"] : []}
                 />

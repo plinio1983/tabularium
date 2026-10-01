@@ -973,7 +973,7 @@ export default async function ExpensesPage({searchParams}: {
                 icon: method.icon,
                 kind: method.kind,
                 isFallback: method.isFallback,
-                systemRole: method.systemRole
+                systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
             }))}
             suppliers={suppliers.map(s => ({
                 id: s.id,
@@ -1274,7 +1274,7 @@ export default async function ExpensesPage({searchParams}: {
                     icon: method.icon,
                     kind: method.kind,
                     isFallback: method.isFallback,
-                    systemRole: method.systemRole
+                    systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
                 }))}
                 suppliers={suppliers.map(s => ({
                     id: s.id,

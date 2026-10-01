@@ -87,7 +87,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         icon: method.icon,
         kind: method.kind,
         isFallback: method.isFallback,
-        systemRole: method.systemRole
+        systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
       }))}
       suppliers={suppliers.map(s => ({
         id: s.id,
@@ -240,7 +240,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
         formId="expenseBulkForm"
         categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
         banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
-        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole }))}
+        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId }))}
         suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null, systemRole: s.systemRole }))}
         mobileLabel="Spese collegate mobile"
         emptyMessage="Nessuna spesa collegata a questo fornitore."

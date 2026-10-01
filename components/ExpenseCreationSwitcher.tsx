@@ -1,6 +1,7 @@
 "use client";
 
 import {useId, useState} from "react";
+import CounterExpenseForm from "./CounterExpenseForm";
 import ExpenseTypeStep from "./ExpenseTypeStep";
 import ExpenseForm from "@/components/ExpenseForm";
 import RecurringExpenseForm from "@/components/RecurringExpenseForm";
@@ -62,17 +63,17 @@ type Props = {
 
 export default function ExpenseCreationSwitcher(props: Props) {
     const inferredType: CreationType = props.initialType
-        ?? (props.initialExpense?.expenseType === "VAT_SETTLEMENT" ? "vat" : props.initialExpense?.expenseType === "TAX_CONTRIBUTION" ? "tax" : props.initialExpense?.expenseType === "PAYROLL" ? "payroll" : "single");
+        ?? (props.initialExpense?.expenseType === "COUNTER" ? "counter" : props.initialExpense?.expenseType === "VAT_SETTLEMENT" ? "vat" : props.initialExpense?.expenseType === "TAX_CONTRIBUTION" ? "tax" : props.initialExpense?.expenseType === "PAYROLL" ? "payroll" : "single");
     const recurrenceDescriptionId = useId();
     const [type, setType] = useState<CreationType>(inferredType);
     const [isRecurringDefinition, setIsRecurringDefinition] = useState(props.initialType === "recurring");
     const [typeConfirmed, setTypeConfirmed] = useState(Boolean(props.skipTypeStep || props.initialExpense?.id));
     const recurringEligible = type === "single" || type === "tax" || type === "payroll";
-    const totalSteps = isRecurringDefinition && recurringEligible ? 7 : type === "single" ? 7 : 6;
+    const totalSteps = type === "counter" ? 3 : isRecurringDefinition && recurringEligible ? 7 : type === "single" ? 7 : 6;
 
     function changeType(nextType: CreationType) {
         setType(nextType);
-        if (nextType === "vat" || nextType === "recurring") setIsRecurringDefinition(nextType === "recurring");
+        if (nextType === "counter" || nextType === "vat" || nextType === "recurring") setIsRecurringDefinition(nextType === "recurring");
         props.onTypeChange?.(nextType);
     }
 
@@ -94,8 +95,8 @@ export default function ExpenseCreationSwitcher(props: Props) {
 
     const typeStep =
         <ExpenseTypeStep totalSteps={totalSteps} confirmed={typeConfirmed}>
-            <ExpenseTypeChoice selected={type} onSelect={changeType} onSelectCounter={() => window.location.assign("/expenses/counter")} title="Seleziona il tipo di spesa"/>
-            {recurrenceControl("external")}
+            <ExpenseTypeChoice selected={type} onSelect={changeType} onSelectCounter={() => changeType("counter")} title="Seleziona il tipo di spesa"/>
+            {type !== "counter" ? recurrenceControl("external") : null}
             {!typeConfirmed ?
                 <MobileFormStickyActions currentStep={1} submitStep={2} onBack={() => undefined} onNext={() => setTypeConfirmed(true)} onCancel={props.onCancel} cancelHref={props.cancelHref ?? "/expenses"} submitLabel="Avanti"/> : null}
         </ExpenseTypeStep>;
@@ -128,7 +129,13 @@ export default function ExpenseCreationSwitcher(props: Props) {
         ...props.initialExpense,
         expenseType: type === "tax" ? "TAX_CONTRIBUTION" as const : type === "payroll" ? "PAYROLL" as const : "STANDARD" as const,
     };
-    const form = isRecurringDefinition && recurringEligible
+    const form = type === "counter"
+        ? <CounterExpenseForm categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods}
+            initialExpense={props.initialExpense ? {...props.initialExpense, amount: props.initialExpense.amount?.toString(), vatRate: props.initialExpense.vatRate?.toString()} : undefined} mobileStepOffset={1} hideMobileActions={!typeConfirmed}
+            onBackToType={props.skipTypeStep ? undefined : () => setTypeConfirmed(false)}
+            typeChoice={<ExpenseTypeChoice selected="counter" onSelect={changeType} onSelectCounter={() => changeType("counter")}/>}
+            onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref}/>
+        : isRecurringDefinition && recurringEligible
         ?
         <RecurringExpenseForm key={`recurring-${type}`} categories={props.categories} banks={props.banks} paymentMethods={props.paymentMethods} suppliers={props.suppliers} employees={props.employees} action={props.recurringAction} initialExpense={recurringInitialExpense} onCancel={props.onCancel} onSaved={props.onSaved} cancelHref={props.cancelHref} mobileStepOffset={1} onBackToType={props.skipTypeStep ? undefined : () => setTypeConfirmed(false)} hideMobileActions={!typeConfirmed} recurrenceControl={recurrenceControl("internal")}/>
         :

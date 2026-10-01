@@ -206,7 +206,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 icon: method.icon,
                 kind: method.kind,
                 isFallback: method.isFallback,
-                systemRole: method.systemRole
+                systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
             }))}
             suppliers={suppliers.map(supplier => ({
                 id: supplier.id,

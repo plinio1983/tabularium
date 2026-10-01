@@ -102,7 +102,7 @@ export default async function EmployeeDetailPage({params, searchParams}: {
         icon: method.icon,
         kind: method.kind,
         isFallback: method.isFallback,
-        systemRole: method.systemRole
+        systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
     }));
     const supplierOptions = suppliers.map(supplier => ({
         id: supplier.id,

@@ -1,3 +1,4 @@
+import {counterExpenseSnapshot} from '@/lib/counter-expense-edit';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceContext } from '@/lib/auth';
@@ -24,6 +25,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   return NextResponse.json({
     expense: {
       id: expense.id,
+      counterSnapshot: expense.expenseType === 'COUNTER' ? counterExpenseSnapshot(expense) : undefined,
       receivedDate: expense.receivedDate,
       dueDate: expense.dueDate,
       merchant: expense.merchant,

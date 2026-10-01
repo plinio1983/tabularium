@@ -58,14 +58,16 @@ export default function NewExpensePanel({
     const [isOpen, setIsOpen] = useState(initialOpen);
     const [returnAction, setReturnAction] = useState('/api/expenses');
     const [recurringAction, setRecurringAction] = useState('/api/recurring-expenses');
-    const initialCreationType = initialExpense?.expenseType === 'PAYROLL' ? 'payroll'
+    const initialCreationType = initialExpense?.expenseType === 'COUNTER' ? 'counter' : initialExpense?.expenseType === 'PAYROLL' ? 'payroll'
         : initialExpense?.expenseType === 'TAX_CONTRIBUTION' ? 'tax'
         : initialExpense?.expenseType === 'VAT_SETTLEMENT' ? 'vat' : 'single';
-    const [creationType, setCreationType] = useState<'single' | 'recurring' | 'vat' | 'tax' | 'payroll'>(initialCreationType);
+    const [creationType, setCreationType] = useState<'counter' | 'single' | 'recurring' | 'vat' | 'tax' | 'payroll'>(initialCreationType);
     const [creationKey, setCreationKey] = useState(0);
     const [availableEmployees, setAvailableEmployees] = useState<EmployeeOption[]>(employees);
 
-    const modalCopy = creationType === 'recurring'
+    const modalCopy = creationType === 'counter'
+        ? {title: 'Nuova spesa da banco', description: 'Registra un acquisto già pagato.'}
+        : creationType === 'recurring'
         ? {title: 'Nuova spesa ricorrente', description: 'Configura una nuova spesa ricorrente.'}
         : creationType === 'vat'
             ? {title: 'Nuovo saldo IVA', description: 'Inserisci un nuovo versamento IVA.'}

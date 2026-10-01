@@ -1581,7 +1581,7 @@ export default async function Dashboard({searchParams}: {
                 icon: method.icon,
                 kind: method.kind,
                 isFallback: method.isFallback,
-                systemRole: method.systemRole
+                systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
             }))}
             suppliers={suppliers.map(s => ({
                 id: s.id,

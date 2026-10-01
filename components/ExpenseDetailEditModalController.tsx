@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import CounterExpenseForm from "@/components/CounterExpenseForm";
+import {useRouter} from "next/navigation";
 import ExpenseForm from "@/components/ExpenseForm";
 import { clampDateToToday, clampPeriodToCurrentMonth } from "@/lib/copy-dates";
 
@@ -75,6 +77,7 @@ type Props = {
 
 export default function ExpenseDetailEditModalController({ categories, banks, paymentMethods, suppliers, employees = [], returnTo }: Props) {
   const [availableEmployees, setAvailableEmployees] = useState(employees);
+  const router = useRouter();
   const [expense, setExpense] = useState<EditExpense | null>(null);
   const [mode, setMode] = useState<"edit" | "copy" | "payment" | "payment-edit" | "attachments">("edit");
   const [targetPaymentId, setTargetPaymentId] = useState<number | null>(null);
@@ -181,7 +184,11 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
           </div>
           <button aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" type="button" onClick={() => setExpense(null)}><span className="btn-icon">×</span></button>
         </div>
-        <ExpenseForm
+        {expense.expenseType === 'COUNTER' && (mode === 'edit' || mode === 'copy') ? <CounterExpenseForm
+          key={`${mode}-${expense.id}`} categories={categories} banks={banks} paymentMethods={paymentMethods}
+          initialExpense={mode === 'copy' ? {...expense, id: undefined, payments: []} : expense}
+          onCancel={() => setExpense(null)} onSaved={() => {setExpense(null); router.refresh();}} cancelHref={returnTo}/>
+        : <ExpenseForm
           key={`${mode}-${expense.id}-${targetPaymentId ?? "none"}`}
           title={mode === "copy" ? "Nuova spesa da copia" : "Modifica spesa"}
           cancelHref={returnTo}
@@ -209,7 +216,7 @@ export default function ExpenseDetailEditModalController({ categories, banks, pa
           openNewPayment={mode === "payment"}
           initialOpenPaymentId={mode === "payment-edit" ? targetPaymentId ?? undefined : undefined}
           focusAttachments={mode === "attachments"}
-        />
+        />}
       </div>
     </div> : null}
   </>;

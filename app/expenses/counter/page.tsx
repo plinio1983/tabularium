@@ -20,7 +20,7 @@ export default async function CounterExpensePage() {
     prisma.paymentMethod.findMany({
       where: {workspaceId: current.workspace.id, kind: {in: ['EXPENSE', 'BOTH']}}
     }),
-    prisma.bank.findMany({where: {workspaceId: current.workspace.id, isFallback: false}})
+    prisma.bank.findMany({where: {workspaceId: current.workspace.id}})
   ]);
   if (!categories.length || !methods.length) redirect('/settings/payment-credit');
 
@@ -36,11 +36,12 @@ export default async function CounterExpensePage() {
       id: method.id,
       name: method.name,
       icon: method.icon,
-      systemRole: method.systemRole
+      systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
     }))}
     banks={orderBanks(banks).map(bank => ({
       id: bank.id,
       name: bank.name,
+      isFallback: bank.isFallback,
       icon: bank.icon,
       isPrimary: bank.id === current.company.primaryBankId
     }))}
