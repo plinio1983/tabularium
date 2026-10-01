@@ -56,7 +56,8 @@ test('conversion opens in a modal, requires a target and preserves form data whe
     let all = nodes(tree);
     assert.equal(all.some(node => node.type === 'select'), false);
     const choice = all.find(node => node.type === './ExpenseTypeChoice');
-    assert.deepEqual([...choice.props.availableTypes], ['payroll', 'tax']);
+    assert.deepEqual([...choice.props.availableTypes], ['single', 'payroll', 'tax']);
+    assert.deepEqual([...choice.props.disabledTypes], ['single']);
     assert.equal(choice.props.showCounter, false);
     assert.equal(all.find(node => node.type === './MobileFormStickyActions').props.nextDisabled, true);
     choice.props.onSelect('payroll');

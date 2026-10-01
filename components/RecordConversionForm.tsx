@@ -67,10 +67,10 @@ export default function RecordConversionForm(props: Props) {
     const preserved = 'Pagamenti, accrediti e allegati rimangono collegati allo stesso record. Per modificarli usa le rispettive funzioni dopo la conversione.';
     const payrollNote = 'L’importo originale è proposto come netto. Completa dipendente e periodo lavorato; verifica gli eventuali compensi extra.';
     const typeChoice = props.kind === 'expenses' ? <ExpenseTypeChoice title="Seleziona il tipo in cui convertire" selected={choiceTypes[target as ExpenseConversionType]}
-                        availableTypes={expenseConversionTypes.filter(type => type !== props.sourceType).map(type => choiceTypes[type])} showCounter={false} disabled={busy}
+                        availableTypes={expenseConversionTypes.map(type => choiceTypes[type])} disabledTypes={[choiceTypes[props.sourceType as ExpenseConversionType]]} showCounter={false} disabled={busy}
                         onSelect={choice => {
                             const type = expenseConversionTypes.find(type => choiceTypes[type] === choice);
-                            if (type) {setTarget(type); setError('');}
+                            if (type && type !== props.sourceType) {setTarget(type); setError('');}
                         }}/> : null;
     const content = <>
             <p className="field-note record-conversion-note">{preserved}</p>
@@ -86,7 +86,7 @@ export default function RecordConversionForm(props: Props) {
                 <label className="full">Converti in
                     <select value={target} disabled={busy} onChange={event => {setTarget(event.target.value); setError('');}}>
                         <option value="">Seleziona il nuovo tipo</option>
-                        {targets.filter(type => type !== props.sourceType).map(type => <option key={type} value={type}>{typeLabel(type)}</option>)}
+                        {targets.map(type => <option key={type} value={type} disabled={type === props.sourceType}>{typeLabel(type)}{type === props.sourceType ? " (attuale)" : ""}</option>)}
                     </select>
                 </label>
                 </>}
