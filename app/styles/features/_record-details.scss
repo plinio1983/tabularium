@@ -1,8 +1,4 @@
-/*
-  Sticky area sopra le tabelle:
-  - spese/incassi: bulk actions resta sempre accessibile
-  - fornitori: list heading/toolbar della card resta visibile sopra la tabella
-*/
+
 .record-list-card > .list-heading {
   position: sticky !important;
   top: 0 !important;
@@ -162,7 +158,6 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
 }
 
 .floating-bulk-button:not(.modal-close-button) {
-  //height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -170,7 +165,6 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   padding-left: 12px;
   padding-right: 12px;
   border: 1px solid #cfd7ff;
-  border-radius: 999px;
   background: #fff;
   color: var(--text);
   font-size: 12px;

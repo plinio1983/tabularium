@@ -1685,7 +1685,7 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     min-width: 42px;
 
     &:not(.btn) {
-      min-height: 42px;
+      min-height: 38px;
     }
   }
 }
@@ -1780,8 +1780,10 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 
 
 
-@media (max-width: 760px) {
-  .floating-bulk-button {
+.floating-bulk-button {
+  min-height: 38px;
+
+  @media (max-width: 760px) {
     padding: 0 12px;
   }
 }
