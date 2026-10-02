@@ -11,6 +11,8 @@ backups/
 prisma/migrations
 !prisma/migrations/
 prisma/migrations/*
+!prisma/migrations/20261002120000_require_expense_payment_date/
+!prisma/migrations/20261002120000_require_expense_payment_date/migration.sql
 !prisma/migrations/20260923120000_recurring_suspensions/
 !prisma/migrations/20260923120000_recurring_suspensions/migration.sql
 !prisma/migrations/20260819143000_system_notifications/

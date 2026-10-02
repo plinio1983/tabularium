@@ -1,3 +1,4 @@
+import {requirePaymentDate} from '@/lib/payment-date';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
@@ -295,6 +296,9 @@ export async function POST(request: Request) {
       orderBy: { id: 'asc' }
     });
 
+    if (paymentMode === 'RELATIVE_TO_ORDER' && expenses.some(expense => expense.payments.length && !expense.receivedDate)) {
+      return redirectToPath(appendFlash(redirectTo, {error: 'invalid_bulk_payment_dates'}));
+    }
     await prisma.$transaction(expenses.map(expense => {
       let receivedDate: Date | null;
       let dueDate: Date | null;
@@ -320,7 +324,7 @@ export async function POST(request: Request) {
           paymentDate = offset === null || !receivedDate ? null : addExpenseDays(receivedDate, offset);
         }
         return {
-          paymentDate,
+          paymentDate: requirePaymentDate(paymentDate),
           paymentMethodId: payment.paymentMethodId,
           bankId: payment.bankId,
           amount: payment.amount

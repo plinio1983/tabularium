@@ -1,3 +1,4 @@
+import {incomeTypeLabel} from '@/lib/record-type-label';
 import InfoHint from '@/components/InfoHint';
 import RecordDetailDocument from '@/components/RecordDetailDocument';
 import {canConvertIncome} from '@/lib/record-conversion';
@@ -222,6 +223,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                         </div>
                         <strong>{euro(amount)}</strong>
                         <div className="record-detail-badge-row">
+                            {income.recurringIncomeId ? <span className="badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null}
                             <span className={badgeClass(creditStatus.className)}>{creditStatus.icon} {creditStatusLabel}</span>
                             {/*<span className={badgeClass(paymentStyle?.className)}>{paymentStyle?.icon ?? '  •  '} {incomePaymentMethodName}</span>*/}
                             <span className={badgeClass(invoiceStyle.className)}>{invoiceStyle.icon} Fatt. {invoiceStyle.label}</span>

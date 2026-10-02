@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useSearchParams} from "next/navigation";
 
 function selectedInputsForForm(formId: string) {
   const inputs = Array.from(
@@ -24,9 +24,7 @@ function syncConversionAction(button: HTMLButtonElement) {
   button.setAttribute('aria-disabled', String(!id));
   button.title = id ? 'Converti tipo' : 'Seleziona un solo record convertibile';
   const kind = button.dataset.bulkConvert;
-  button.dataset.convertHref = id && (kind === 'expenses' || kind === 'incomes')
-    ? `/${kind}/${id}${kind === 'expenses' ? '?convert=1&' : '/convert?'}returnTo=${button.dataset.returnTo ?? ''}`
-    : '';
+  button.dataset.convertId = id && (kind === 'expenses' || kind === 'incomes') ? id : '';
 }
 
 function allInputsForForm(formId: string) {
@@ -529,7 +527,6 @@ function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
 }
 
 export default function BulkSelectionController() {
-  const router = useRouter();
   const query = useSearchParams().toString();
   useEffect(() => {
     document.querySelectorAll<HTMLInputElement>('input[name="ids"], input[data-bulk-target]').forEach(input => {
@@ -638,9 +635,9 @@ export default function BulkSelectionController() {
       if (conversion) {
         event.preventDefault();
         syncConversionAction(conversion);
-        if (!conversion.disabled && conversion.dataset.convertHref) {
+        if (!conversion.disabled && conversion.dataset.convertId) {
           closeBulkActionModal();
-          router.push(conversion.dataset.convertHref, {scroll: false});
+          document.dispatchEvent(new CustomEvent('record-conversion:open', {detail: {kind: conversion.dataset.bulkConvert, id: Number(conversion.dataset.convertId), formId: conversion.dataset.bulkForm}}));
         }
         return;
       }
@@ -775,7 +772,7 @@ export default function BulkSelectionController() {
       document.querySelectorAll(".floating-bulk-actions-bar").forEach((bar) => bar.remove());
       closeBulkActionModal();
     };
-  }, [query, router]);
+  }, [query]);
 
   return null;
 }

@@ -33,6 +33,7 @@ function setup(source = expense(), options: {denied?: boolean; missing?: boolean
     const tx = {
         expense: {findFirst: async ({where}: RecordData) => {whereCalls.push(where); return options.missing ? null : source;}, update: async (args: RecordData) => {updates.push(args); return args;}},
         income: {findFirst: async ({where}: RecordData) => {whereCalls.push(where); return options.missing ? null : source;}, update: async (args: RecordData) => {updates.push(args); return args;}},
+        company: {findFirst: async () => ({timeZone: 'Europe/Rome'})},
         employee: {findFirst: async ({where}: RecordData) => {whereCalls.push(where); return options.missingEntity ? null : {id: 7, firstName: 'Mario', lastName: 'Rossi'};}},
         taxAuthority: {findFirst: async () => options.missingEntity ? null : {id: 9, name: 'Erario'}},
         supplier: {findFirst: async () => options.missingEntity ? null : {id: 5, businessName: 'Fornitore'}},
@@ -196,4 +197,52 @@ test('scontrino → incasso singolo richiede cliente e mantiene gli accrediti', 
     assert.equal(h.updates[0].data.customerId, 5);
     assert.equal('credits' in h.updates[0].data, false);
     assert.equal((await h.send({...input, customerId: ''}, 'incomes')).status, 400);
+});
+
+const counterInput = {targetType: 'COUNTER', amount: '100', categoryId: '6', description: 'Acquisto', isDeclared: 'true', vatRate: '22', paymentDate: '2026-09-10T00:00:00.000Z', paymentMethodId: '4', bankId: '3'};
+test('da banco: anteprima avvisa, conferma conserva il primo ID ed elimina solo i successivi', async () => {
+    const source = expense();
+    source.payments.push({...source.payments[0], id: 32, amount: '40'});
+    const h = setup(source);
+    const preview = await h.send(counterInput);
+    assert.equal(preview.status, 200);
+    assert.equal(h.updates.length, 0);
+    assert.match(preview.body.warnings[0], /successivi al primo saranno eliminati/);
+    assert.equal((await h.send({...counterInput, confirmed: true, reviewToken: preview.body.reviewToken})).status, 200);
+    const data = h.updates[0].data;
+    assert.equal(data.payments.update.where.id, 31);
+    assert.equal(data.payments.update.data.amount, 100);
+    assert.deepEqual([...data.payments.deleteMany.id.in], [32]);
+    assert.equal(data.paidAmount, 100);
+    assert.equal(data.paymentStatus, 'COMPLETATO');
+    assert.equal(data.paymentDate.getTime(), source.payments[0].paymentDate.getTime());
+    assert.equal('attachments' in data, false);
+});
+test('da banco: singolo pagamento, creazione senza pagamenti e conversione inversa', async () => {
+    for (const payments of [expense().payments, []]) {
+        const h = setup({...expense(), payments});
+        const preview = await h.send(counterInput);
+        assert.equal(preview.status, 200);
+        assert.equal(preview.body.warnings.length, 0);
+        await h.send({...counterInput, confirmed: true, reviewToken: preview.body.reviewToken});
+        assert.equal(payments.length ? h.updates[0].data.payments.update.data.amount : h.updates[0].data.payments.create.amount, 100);
+    }
+    const h = setup({...expense(), expenseType: 'COUNTER'});
+    const preview = await h.send(payrollInput);
+    assert.equal(preview.status, 200);
+    await h.send({...payrollInput, confirmed: true, reviewToken: preview.body.reviewToken});
+    assert.equal('payments' in h.updates[0].data, false);
+});
+test('da banco: metodo non valido, aliquota errata, snapshot scaduto e audit fallito bloccano il salvataggio', async () => {
+    assert.equal((await setup(expense(), {methodDisabled: true}).send(counterInput)).status, 400);
+    assert.equal((await setup().send({...counterInput, vatRate: 12})).status, 400);
+    const h = setup();
+    const preview = await h.send(counterInput);
+    const snapshot = h.snapshot();
+    h.source.payments[0].amount = '30';
+    assert.equal((await h.send({...counterInput, snapshot, confirmed: true, reviewToken: preview.body.reviewToken})).status, 409);
+    const failing = setup(expense(), {auditFails: true});
+    const review = await failing.send(counterInput);
+    assert.equal((await failing.send({...counterInput, confirmed: true, reviewToken: review.body.reviewToken})).status, 500);
+    assert.equal(failing.updates.length, 0);
 });

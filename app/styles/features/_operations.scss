@@ -1748,12 +1748,12 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 @media (max-width: 760px) {
   .floating-bulk-actions-inner .floating-bulk-button:not(.modal-close-button) {
     width: 66px;
-    min-width: 42px;
+    //min-width: 42px;
 
     &:not(.btn) {
       height: 38px;
       min-height: 38px;
-      padding: 0;
+      //padding: 0;
     }
   }
 }

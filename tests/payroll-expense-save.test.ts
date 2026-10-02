@@ -35,11 +35,11 @@ function handler() {
     }},
   };
   const exports: {POST?: (request: Request, context: unknown) => Promise<Response>} = {};
-  runInNewContext(compiled, {exports, require: (name: string) => mocks[name] ?? require(name), URL, Response});
+  runInNewContext(compiled, {exports, require: (name: string) => mocks[name] ?? require(name), URL, Response, Error});
   return {save: exports.POST!, writes};
 }
 
-function request(net: string, extra: string, payments: string[]) {
+function request(net: string, extra: string, payments: string[], paymentDate = '2026-08-10') {
   const form = new FormData();
   Object.entries({expenseType: 'PAYROLL', employeeId: '4', description: 'Competenze', amount: String(Number(net.replace(',', '.')) + Number(extra.replace(',', '.'))),
     payrollNetAmount: net, payrollExtraCompensation: extra, payrollGrossAmount: '0,00', payrollEmployerCost: '0,00',
@@ -47,7 +47,7 @@ function request(net: string, extra: string, payments: string[]) {
     .forEach(([key, value]) => form.set(key, value));
   payments.forEach(amount => {
     form.append('paymentAmount[]', amount);
-    form.append('paymentDate[]', '2026-08-10');
+    form.append('paymentDate[]', paymentDate);
     form.append('paymentMethodId[]', '1');
     form.append('paymentBankId[]', '1');
   });
@@ -80,4 +80,14 @@ test('pagamento parziale resta valido', async () => {
   assert.equal(response.status, 303);
   assert.equal(writes[0].data.amount, 2400);
   assert.equal(writes[0].data.paidAmount, 1260);
+});
+
+test('API rifiuta pagamenti senza data o con data inesistente, senza scritture', async () => {
+  for (const date of ['', '2026-02-30', 'invalid']) {
+    const {save, writes} = handler();
+    const response = await save(request('100', '0', ['100'], date), {params: Promise.resolve({id: '5'})});
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /data|Data/);
+    assert.equal(writes.length, 0);
+  }
 });

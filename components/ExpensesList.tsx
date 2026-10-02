@@ -1,3 +1,5 @@
+import RecordConversionListController from '@/components/RecordConversionListController';
+import {expenseTypeLabel} from '@/lib/record-type-label';
 import {canConvertExpense} from '@/lib/record-conversion';
 import MonthGroupedRecords from '@/components/MonthGroupedRecords';
 import {listDateSort, listDateValue} from '@/lib/list-month-groups';
@@ -151,7 +153,7 @@ function mobileDateLabel(value?: Date | null) {
 
 function fiscalBadgeMobile(value: boolean) {
     const item = value ? {className: ''} : invoiceStatusStyles.NON_PREVISTA;
-    const label = value ? '✓ Fis.' : '✕ Non Fis.';
+    const label = value ? '✓ Fisc.' : '✕ Non Fisc.';
     const cssClass = value ? 'text-primary strong' : 'text-muted strong';
     //return <span className={badgeClass(item.className)}>{label}</span>;
     return <span className={cssClass}>{label}</span>;
@@ -332,6 +334,7 @@ export default function ExpensesList({
                 </div>
             </form>
 
+        <RecordConversionListController kind="expenses" formId={formId} returnHref={decodeURIComponent(returnTo)}/>
             <ExpenseEditModalController
                 categories={categories}
                 banks={banks}
@@ -387,10 +390,10 @@ export default function ExpensesList({
                     <Link className="mobile-record-link" href={detailHref}>
                         <div className="mobile-record-main">
                             <div className="mobile-record-meta">
-                                <div className="mobile-record-meta-left">
+                                <div className="mobile-record-meta-left  ml-4">
                                     {/*-- Fiscal Badge -->*/}
                                     {!isNoVatExpense ? fiscalBadgeMobile(expense.isDeclared) : isPayroll ?
-                                        <span className="text-primary strong">✓ Fis.</span> : isTaxContribution ?
+                                        <span className="text-primary strong">✓ Fisc.</span> : isTaxContribution ?
                                             <span className="text-muted strong">Imposte</span> :
                                             <span className="text-muted strong">IVA</span>}
 
@@ -403,7 +406,8 @@ export default function ExpensesList({
                                     {/*-- Fatttura -->*/}
                                     {!isNoVatExpense && expense.isDeclared ?
                                         <span className="expense-invoice-indicator">
-                                            &nbsp;•&nbsp;
+                                            &nbsp;
+                                            {/*•&nbsp;*/}
                                             {electronicInvoiceBadge(expense.hasElectronicInvoice, expense.invoiceStatus)}
                                             <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(expense)}/>
                                         </span> : null}
@@ -425,7 +429,7 @@ export default function ExpensesList({
                                 {/*-- Ricorrente/Singola/IVA -->*/}
                                 <span
                                     className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>
-                                    {isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : isPayroll ? 'BP' : expense.isRecurring ? 'R' : 'S'}
+                                    {expenseTypeLabel(expense)}
                                 </span>
                                 <div className="mobile-record-title-left">
                                     {/*-- Descrizione -->*/}
@@ -531,7 +535,7 @@ export default function ExpensesList({
                         data-sort-row
                         data-sort-order-date={dateSortValue(expense.receivedDate)}
                         data-sort-billing-period={String(Number(expense.year) * 12 + Number(expense.month))}
-                        data-sort-type={isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : isPayroll ? 'BP' : expense.isRecurring ? 'R' : 'S'}
+                        data-sort-type={expenseTypeLabel(expense)}
                         data-sort-category={`${expense.category?.code ?? ''} ${expense.category?.name ?? ''}`}
                         data-sort-supplier={supplierName}
                         data-sort-amount={String(amount)}
@@ -552,7 +556,7 @@ export default function ExpensesList({
                         <td className="cell-billing-period">{formatPeriod(expense.month, expense.year)}</td>
                         <td className="cell-type">
                             <span
-                                className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{isVatSettlement ? 'IVA' : isTaxContribution ? 'IC' : isPayroll ? 'BP' : expense.isRecurring ? 'R' : 'S'}</span>
+                                className={isVatSettlement ? 'badge color-badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge color-badge tone-neutral' : expense.isRecurring ? 'badge color-badge recurring-expense-badge' : 'badge color-badge single-expense-badge'}>{expenseTypeLabel(expense)}</span>
                         </td>
                         <td className="cell-category">{expense.category ?
                             // <span title={expense.category.name} className={badgeClass(categoryClassName)}>{categoryLabel(expense.category, expense.category.code)}</span> : '-'}

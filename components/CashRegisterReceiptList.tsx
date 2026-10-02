@@ -1,5 +1,6 @@
 'use client';
 
+import RecordConversionListController from '@/components/RecordConversionListController';
 import InfoHint from '@/components/InfoHint';
 import {MobileRecordCloseButton} from './MobileRecordViews';
 
@@ -248,6 +249,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
             {!receipts.length ?
                 <div className="record-empty-state">Nessuno scontrino nel periodo selezionato.</div> : null}
         </div>
+        <RecordConversionListController kind="incomes" formId={formId} returnHref={returnTo}/>
         {detailId !== null ? <CashRegisterReceiptDetailModal key={detailId} receiptId={detailId} returnTo={returnTo}
                                                              onClose={closeDetail}/> : null}
     </div>;

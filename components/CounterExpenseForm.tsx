@@ -16,16 +16,17 @@ type Props = {
   categories: Option[]; banks: Option[]; paymentMethods: Option[];
   initialExpense?: InitialExpense; initialDate?: string; mobileStepOffset?: number;
   hideMobileActions?: boolean; onBackToType?: () => void; onCancel?: () => void;
+  onSubmitData?: (data: FormData) => void; submitLabel?: string; lockPayment?: boolean;
   onSaved?: () => void; cancelHref?: string; typeChoice?: ReactNode;
 };
 
-export default function CounterExpenseForm({categories, banks, paymentMethods, initialExpense, initialDate, mobileStepOffset = 0, hideMobileActions, onBackToType, onCancel, onSaved, cancelHref = '/expenses', typeChoice}: Props) {
+export default function CounterExpenseForm({categories, banks, paymentMethods, initialExpense, initialDate, mobileStepOffset = 0, hideMobileActions, onBackToType, onCancel, onSaved, onSubmitData, submitLabel, lockPayment, cancelHref = '/expenses', typeChoice}: Props) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const timeZone = useCompanyTimeZone();
   const asDate = (value?: string | Date | null) => value ? dateInputInTimeZone(timeZone, new Date(value)) : initialDate ?? dateInputInTimeZone(timeZone);
   const [step, setStep] = useState(1);
-  const [date, setDate] = useState(asDate(initialExpense?.receivedDate));
+  const [date, setDate] = useState(asDate(lockPayment ? initialExpense?.payments?.[0]?.paymentDate : initialExpense?.receivedDate));
   const [category, setCategory] = useState(String(initialExpense?.categoryId ?? categories.find(item => item.code === 'DEFAULT')?.id ?? categories[0]?.id ?? ''));
   const [amount, setAmount] = useState(formatCurrencyInput(initialExpense?.amount));
   const keyState = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
@@ -100,6 +101,14 @@ export default function CounterExpenseForm({categories, banks, paymentMethods, i
     }
     busyRef.current = true; setBusy(true); setError('');
     try {
+      if (onSubmitData) {
+        const data = new FormData();
+        Object.entries({amount: numericAmount, isDeclared: fiscal, vatRate: fiscal ? vat : 0,
+          paymentDate: rows[0].paymentDate, paymentMethodId: rows[0].paymentMethodId, bankId: rows[0].bankId ?? '',
+          categoryId: category, description}).forEach(([key, value]) => data.set(key, String(value)));
+        onSubmitData(data);
+        return;
+      }
       requestId.current ??= crypto.randomUUID();
       const base = {amount: numericAmount, isDeductible: fiscal, vatRate: fiscal ? vat : 0, paymentDate: zonedMidnightUtc(date, timeZone).toISOString(), categoryId: Number(category), description};
       const response = await fetch('/api/counter-expenses', {
@@ -133,7 +142,7 @@ export default function CounterExpenseForm({categories, banks, paymentMethods, i
     <details className="form-section full app-form-wizard-split-section app-form-wizard-step app-form-wizard-step-1" open>
       <summary><span>Dati della spesa</span></summary>
       <div className="form-section-grid">
-        <DateField label="Data" name="counterDate" value={date} onChange={value => {setDate(value); if (payments.length === 1) updatePayment(0, {date: value});}} required/>
+        <fieldset disabled={lockPayment} style={{border: 0, padding: 0, margin: 0}}><DateField label="Data" name="counterDate" value={date} onChange={value => {setDate(value); if (payments.length === 1) updatePayment(0, {date: value});}} required/></fieldset>
         <SelectField label="Categoria" icon="▦" name="counterCategory" className="hidden-md-down" value={category} onChange={setCategory} disabled={busy} options={categories.map(item => ({value: item.id, label: `${item.icon ?? ''} ${item.name}`}))}/>
         <div className="full hidden-md-up">
           <div className="expense-wizard-amount-entry">
@@ -177,8 +186,8 @@ export default function CounterExpenseForm({categories, banks, paymentMethods, i
         <SelectField label="Categoria" icon="▦" name="counterCategoryMobile" className="full hidden-md-up" value={category} onChange={setCategory} disabled={busy} options={categories.map(item => ({value: item.id, label: `${item.icon ?? ''} ${item.name}`}))}/>
         {payments.map((row, index) => <Fragment key={row.id ?? index}>
             {payments.length > 1 ? <><FormField label={`Importo pagamento ${index + 1}`} icon="€"><div className="money-input"><span>€</span><CurrencyInput disabled={busy} clearable value={row.amount} onValueChange={value => updatePayment(index, {amount: value})}/></div></FormField><DateField label="Data pagamento" name={`counterPaymentDate${index}`} value={row.date} onChange={value => updatePayment(index, {date: value})}/></> : null}
-            <SelectField label="Modalità di pagamento" icon="▣" name={`counterMethod${index}`} value={row.method} disabled={busy} onChange={value => updatePayment(index, {method: value, bank: defaultBank(value)})} options={[{value: '', label: 'Seleziona modalità'}, ...methods.map(method => ({value: method.id, label: `${method.icon ?? ''} ${method.name}`}))]}/>
-            <SelectField label="Canale di addebito" icon="▥" name={`counterBank${index}`} value={isCash(row.method) ? String(cashBank?.id ?? '') : row.bank} disabled={busy || isCash(row.method) || !row.method} onChange={value => updatePayment(index, {bank: value})} options={[{value: '', label: isCash(row.method) ? 'Cassa' : 'Seleziona conto'}, ...(isCash(row.method) ? cashBank ? [cashBank] : [] : availableBanks).map(bank => ({value: bank.id, label: `${bank.icon ?? ''} ${bank.name}`}))]}/>
+            <SelectField label="Modalità di pagamento" icon="▣" name={`counterMethod${index}`} value={row.method} disabled={busy || lockPayment} onChange={value => updatePayment(index, {method: value, bank: defaultBank(value)})} options={[{value: '', label: 'Seleziona modalità'}, ...methods.map(method => ({value: method.id, label: `${method.icon ?? ''} ${method.name}`}))]}/>
+            <SelectField label="Canale di addebito" icon="▥" name={`counterBank${index}`} value={isCash(row.method) ? String(cashBank?.id ?? '') : row.bank} disabled={busy || lockPayment || isCash(row.method) || !row.method} onChange={value => updatePayment(index, {bank: value})} options={[{value: '', label: isCash(row.method) ? 'Cassa' : 'Seleziona conto'}, ...(isCash(row.method) ? cashBank ? [cashBank] : [] : availableBanks).map(bank => ({value: bank.id, label: `${bank.icon ?? ''} ${bank.name}`}))]}/>
         </Fragment>)}
         <FormField label="Descrizione (opzionale)" icon="≡" className="full" htmlFor="counter-description"><input id="counter-description" disabled={busy} value={description} placeholder="Spesa da banco" maxLength={initialExpense?.id ? 2000 : 200} onChange={event => setDescription(event.target.value)}/></FormField>
       </div>
@@ -186,8 +195,8 @@ export default function CounterExpenseForm({categories, banks, paymentMethods, i
     {error ? <p className="text-critical full" role="alert">{error}</p> : null}
     <div className="actions-row full form-actions-row form-sticky-actions hidden-md-down">
       {onCancel ? <button className="btn btn-md btn-default" type="button" disabled={busy} onClick={onCancel}><span className="btn-icon">×</span>Annulla</button> : <a className="btn btn-md btn-ghost" href={cancelHref}><span className="btn-icon">↩</span>Indietro</a>}
-      <button className="btn btn-md btn-primary" disabled={busy} type="submit"><span className="btn-icon">✓</span>{busy ? 'Salvataggio…' : initialExpense?.id ? 'Salva modifiche' : 'Paga'}</button>
+      <button className="btn btn-md btn-primary" disabled={busy} type="submit"><span className="btn-icon">✓</span>{busy ? 'Salvataggio…' : submitLabel ?? (initialExpense?.id ? 'Salva modifiche' : 'Paga')}</button>
     </div>
-    {!hideMobileActions ? <MobileFormStickyActions currentStep={displayedStep} submitStep={totalSteps} onBack={back} onNext={next} onCancel={onCancel} cancelHref={cancelHref} isSubmitting={busy} submitLabel={initialExpense?.id ? 'Salva modifiche' : 'Paga'}/> : null}
+    {!hideMobileActions ? <MobileFormStickyActions currentStep={displayedStep} submitStep={totalSteps} onBack={back} onNext={next} onCancel={onCancel} cancelHref={cancelHref} isSubmitting={busy} submitLabel={submitLabel ?? (initialExpense?.id ? 'Salva modifiche' : 'Paga')}/> : null}
   </form>;
 }

@@ -54,6 +54,7 @@ const incomeSchema = z.object({
 
 async function expenseData(tx: Tx, source: ConversionExpense, raw: Record<string, FormDataEntryValue>, workspaceId: number, companyId: number) {
     if (!canConvertExpense(source)) throw new ConversionError('Questo tipo di spesa o una spesa ricorrente non può essere convertito.');
+    if (raw.targetType === 'COUNTER') return counterExpenseData(tx, source, raw, workspaceId, companyId);
     const input = expenseSchema.parse(raw);
     if (input.targetType === source.expenseType) throw new ConversionError('Seleziona un tipo diverso da quello attuale.');
     const payroll = input.targetType === 'PAYROLL';
@@ -85,6 +86,42 @@ async function expenseData(tx: Tx, source: ConversionExpense, raw: Record<string
         paymentStatus: complete ? 'COMPLETATO' as const : paid > 0 ? 'PAGATO_PARZIALMENTE' as const : 'DA_PAGARE' as const
     };
     return data;
+}
+
+const counterConversionSchema = z.object({
+    amount: money.refine(value => value > 0 && value <= 999999999.99, 'Importo non valido'),
+    categoryId: z.coerce.number().int().positive(), description: z.string().trim().max(2000).default(''),
+    isDeclared: bool, vatRate: z.coerce.number(), paymentDate: z.string().datetime(),
+    paymentMethodId: z.coerce.number().int().positive(), bankId: optionalId
+});
+async function counterExpenseData(tx: Tx, source: ConversionExpense, raw: Record<string, FormDataEntryValue>, workspaceId: number, companyId: number) {
+    if (source.expenseType === 'COUNTER') throw new ConversionError('Seleziona un tipo diverso da quello attuale.');
+    const input = counterConversionSchema.parse(raw);
+    const first = source.payments[0];
+    const paymentDate = first ? first.paymentDate : new Date(input.paymentDate);
+    if (!paymentDate) throw new ConversionError('Il primo pagamento non ha una data. Completa il pagamento prima della conversione.');
+    const method = await tx.paymentMethod.findFirst({where: {id: first ? first.paymentMethodId : input.paymentMethodId, workspaceId, kind: {in: ['EXPENSE', 'BOTH']}}});
+    if (!method) throw new ConversionError('Metodo di pagamento non valido.');
+    const bankId = method.systemRole === 'CASH' ? null : first ? first.bankId : input.bankId;
+    if (method.systemRole !== 'CASH' && (!bankId || !await tx.bank.findFirst({where: {id: bankId, workspaceId, isFallback: false}}))) throw new ConversionError('Seleziona una banca valida.');
+    const supplier = await tx.supplier.findFirst({where: {workspaceId, systemRole: 'COUNTER_MERCHANT'}});
+    if (!supplier) throw new ConversionError('Configurazione della spesa da banco non disponibile.');
+    if (!await tx.expenseCategory.findFirst({where: {id: input.categoryId, workspaceId}})) throw new ConversionError('Categoria non valida.');
+    if (input.isDeclared && ![0, 4, 10, 22].includes(input.vatRate)) throw new ConversionError('Aliquota IVA non valida.');
+    const company = await tx.company.findFirst({where: {id: companyId, workspaceId}});
+    if (!company) throw new ConversionError('Società non disponibile.');
+    const period = yearMonthInTimeZone(company.timeZone, paymentDate);
+    return {expenseType: 'COUNTER' as const, amount: input.amount, merchant: supplier.businessName, supplierId: supplier.id,
+        employeeId: null, taxAuthorityId: null, categoryId: input.categoryId, description: input.description || 'Spesa da banco',
+        payrollNetAmount: null, payrollExtraCompensation: null, payrollGrossAmount: null, payrollEmployerCost: null,
+        payrollPeriodStart: null, payrollPeriodEnd: null, receivedDate: paymentDate, dueDate: paymentDate, paymentDate,
+        ...period, isDeclared: input.isDeclared, vatRate: input.isDeclared ? input.vatRate : 0,
+        hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const, affectsFiscalProfit: false,
+        paidAmount: input.amount, isComplete: true, paymentStatus: 'COMPLETATO' as const,
+        payments: first ? {update: {where: {id: first.id}, data: {amount: input.amount, bankId}},
+            deleteMany: {id: {in: source.payments.slice(1).map(payment => payment.id)}}}
+            : {create: {amount: input.amount, paymentDate, paymentMethodId: method.id, bankId}}
+    };
 }
 
 async function incomeData(tx: Tx, source: ConversionIncome, raw: Record<string, FormDataEntryValue>, workspaceId: number, timeZone: string) {
@@ -138,7 +175,7 @@ const fieldLabels: Record<string, string> = {
     receivedDate: 'Data ricezione', dueDate: 'Scadenza', month: 'Mese competenza', year: 'Anno competenza', billingMonth: 'Mese competenza', billingYear: 'Anno competenza',
     vatRate: 'IVA (%)', isDeclared: 'Fiscale', isFiscal: 'Fiscale', hasElectronicInvoice: 'Fattura elettronica', invoiceStatus: 'Stato fattura',
     affectsFiscalProfit: 'Incide sul risultato fiscale', paidAmount: 'Pagato', isComplete: 'Completata', paymentStatus: 'Stato pagamento',
-    paymentMethodId: 'Metodo accredito', creditBankId: 'Conto accredito', creditDate: 'Data accredito', orderDate: 'Data ordine', isCredited: 'Interamente accreditato'
+    paymentDate: 'Data pagamento', paymentMethodId: 'Metodo accredito', creditBankId: 'Conto accredito', creditDate: 'Data accredito', orderDate: 'Data ordine', isCredited: 'Interamente accreditato'
 };
 const statusLabels: Record<string, string> = {
     NON_PREVISTA: 'Non prevista', IN_ATTESA: 'In attesa', RICEVUTA: 'Ricevuta', INVIATA_SDI: 'Inviata a SDI',
@@ -187,6 +224,9 @@ export async function handleRecordConversion(kind: 'expenses' | 'incomes', reque
             const data = kind === 'expenses'
                 ? await expenseData(tx, source as ConversionExpense, raw, current.workspace.id, current.company.id)
                 : await incomeData(tx, source as ConversionIncome, raw, current.workspace.id, current.company.timeZone);
+            const counter = kind === 'expenses' && 'expenseType' in data && data.expenseType === 'COUNTER';
+            const payments = counter ? (source as ConversionExpense).payments : [];
+            const warnings = counter && payments.length > 1 ? [`La spesa contiene ${payments.length} pagamenti. I ${payments.length - 1} pagamenti successivi al primo saranno eliminati e l’importo del primo sarà impostato a ${display(data.amount, 'amount')}, pari all’importo totale della spesa.`] : [];
             const reviewToken = conversionSnapshot({snapshot, data});
             if (raw.confirmed === 'true') {
                 if (raw.reviewToken !== reviewToken) throw new ConversionError('I dati sono cambiati: verifica nuovamente il riepilogo.', 409);
@@ -194,17 +234,19 @@ export async function handleRecordConversion(kind: 'expenses' | 'incomes', reque
                 else await tx.income.update({where, data: data as Prisma.IncomeUncheckedUpdateInput});
                 await tx.auditLog.create({data: {workspaceId: current.workspace.id, userId: current.user.id,
                     action: 'UPDATE', entityType: kind === 'expenses' ? 'Expense' : 'Income', entityId: String(id),
-                    metadata: JSON.parse(JSON.stringify({operation: 'convert_type', before: source, after: {...source, ...data}})),
+                    metadata: JSON.parse(JSON.stringify({operation: 'convert_type', before: source, after: counter ? await tx.expense.findFirst({where, include: conversionExpenseInclude}) : {...source, ...data}})),
                     userAgent: request.headers.get('user-agent')?.slice(0, 500) || null}});
                 return {saved: true};
             }
             const before = source as unknown as Record<string, unknown>;
             const changes = await Promise.all(Object.entries(data)
-                .filter(([key, value]) => !['supplierId', 'employeeId', 'taxAuthorityId'].includes(key) && display(before[key], key) !== display(value, key))
+                .filter(([key, value]) => !['supplierId', 'employeeId', 'taxAuthorityId', 'payments'].includes(key) && display(before[key], key) !== display(value, key))
                 .map(async ([key, value]) => ({label: fieldLabels[key] ?? key,
                     before: await displayField(tx, current.workspace.id, key, before[key]),
                     after: await displayField(tx, current.workspace.id, key, value)})));
-            return {saved: false, reviewToken, changes};
+            if (counter) changes.push({label: 'Pagamenti', before: `${payments.length} pagamenti; primo: ${payments.length ? display(payments[0].amount, 'amount') : '—'}`,
+                after: `Un pagamento di ${display(data.amount, 'amount')}`});
+            return {saved: false, reviewToken, changes, warnings};
         }, {isolationLevel: 'Serializable', timeout: 15000});
         return NextResponse.json(result);
     } catch (error) {

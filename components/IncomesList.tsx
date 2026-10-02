@@ -1,3 +1,5 @@
+import RecordConversionListController from '@/components/RecordConversionListController';
+import {incomeTypeLabel} from '@/lib/record-type-label';
 import {canConvertIncome} from '@/lib/record-conversion';
 import MonthGroupedRecords from '@/components/MonthGroupedRecords';
 import {listDateSort, listDateValue} from '@/lib/list-month-groups';
@@ -187,6 +189,7 @@ export default function IncomesList({
         <ClickableDesktopRows/>
         <SortableTableController/>
         <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
+        <RecordConversionListController kind="incomes" formId={formId} returnHref={decodeURIComponent(returnTo)}/>
         <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers}/>
         <BulkCopyIncomesModal formId={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`}/>
         <BulkEditFieldsModal
@@ -254,7 +257,7 @@ export default function IncomesList({
                             <div className="mobile-record-header">
                                 <div className="left-side flex-grow">
                                     {/*<span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ Nf'}</span>*/}
-                                    {group.isFiscal ? <span className="text-primary strong">✓ Fis</span> : <span className="text-muted strong">✕ Non Fis.</span>}
+                                    {group.isFiscal ? <span className="text-primary strong">✓ Fisc</span> : <span className="text-muted strong">✕ Non Fisc.</span>}
                                     {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>*/}
                                     <span className="text-muted">&nbsp; • &nbsp;{Number(group.vatRates)}%</span>
                                     {/*<span className="text-muted">&nbsp; • &nbsp;{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
@@ -334,6 +337,7 @@ export default function IncomesList({
 
                             </div>
                             <div className="mobile-record-title-row">
+                                {income.recurringIncomeId ? <span className="badge color-badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null}
                                 <div className="left-side flex-grow pl-6">
                                     <span>{hideCustomer ? (income.description || 'Incasso senza descrizione') : income.customer?.businessName}</span>
                                     {!hideCustomer ?
@@ -449,7 +453,7 @@ export default function IncomesList({
                             <strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
                             <span className="income-table-payment-icon" title={income.paymentMethodRef.name} aria-label={`Metodo di pagamento: ${income.paymentMethodRef.name}`}>{income.paymentMethodRef.icon ?? '•'}</span>
                         </td>
-                        <td>{income.description ?? '-'}</td>
+                        <td>{income.recurringIncomeId ? <span className="badge color-badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null} {income.description ?? '-'}</td>
                         {/*<td>{vatBadge(income.vatRate)}</td>*/}
                          <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
                         <td className="text-center">{income.isFiscal ?

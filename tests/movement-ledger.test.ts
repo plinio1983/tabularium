@@ -20,12 +20,11 @@ test('ledger filters validate page and ids and use company date boundaries', () 
   assert.equal(dates[1].getTime() - dates[0].getTime(), 23 * 3600000);
 });
 
-test('all dates and missing dates do not silently apply the default period', () => {
-  for (const dateMode of ['all', 'undated']) {
-    const where = ledgerWhere(ledgerFilters({dateMode}, '2026-09-10'), 'Europe/Rome');
-    assert.equal(where.values.some(value => value instanceof Date), false);
-    assert.equal(where.sql.includes('date IS NULL'), dateMode === 'undated');
-  }
+test('all dates omit boundaries; obsolete undated mode falls back to the selected period', () => {
+  assert.equal(ledgerWhere(ledgerFilters({dateMode: 'all'}, '2026-09-10'), 'Europe/Rome').values.some(value => value instanceof Date), false);
+  const filters = ledgerFilters({dateMode: 'undated'}, '2026-09-10');
+  assert.equal(filters.dateMode, 'period');
+  assert.equal(ledgerWhere(filters, 'Europe/Rome').values.filter(value => value instanceof Date).length, 2);
 });
 
 test('search values stay parameterized, including wildcards and SQL fragments', () => {
@@ -71,8 +70,7 @@ test('PostgreSQL: partial payments, payroll, credits, isolation, totals and pagi
       assert.equal(payments.rows.filter(row => row.documentId === 1).length, 2);
       for (const dimension of ['method','bank']) assert.equal(payments.groups.filter(group => group.dimension === dimension).reduce((sum, group) => sum + Number(group.total), 0), 1100);
       const undated = await loadMovementLedger(db, 'payments', 1, 1, 'Europe/Rome', ledgerFilters({dateMode:'undated',bankId:'none'}, '2026-09-10'));
-      assert.equal(undated.total,20);
-      assert.equal(undated.rows[0].date,null);
+      assert.equal(undated.total,0);
       const all = await loadMovementLedger(db, 'payments', 1, 1, 'Europe/Rome', ledgerFilters({dateMode:'all'}, '2026-09-10'));
       assert.equal(all.summary.count,4);
       assert.equal(all.total,1120);

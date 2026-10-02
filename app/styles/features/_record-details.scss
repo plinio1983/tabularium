@@ -1619,7 +1619,7 @@ body.invoice-attachments-modal-open {
 .mobile-record-item {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
-  gap: 2px;
+  gap: 4px;
   padding: 8px 8px 8px 0;
   border-bottom: 1px solid var(--line);
 
@@ -1681,6 +1681,11 @@ body.invoice-attachments-modal-open {
 .mobile-record-link .badge {
   padding: 2px 9px;
   border: none;
+
+  @media (max-width: 760px) {
+    padding: 2px 6px;
+    font-size: 13px;
+  }
 }
 
 .mobile-record-main {
@@ -1717,6 +1722,12 @@ body.invoice-attachments-modal-open {
   font-weight: 900;
 }
 
+.mobile-record-main .tone-received,
+.mobile-record-main .tone-paid {
+  background: transparent;
+  padding: 0;
+}
+
 .mobile-record-subtitle {
   display: flex;
   color: var(--muted);
@@ -1726,6 +1737,11 @@ body.invoice-attachments-modal-open {
   text-overflow: ellipsis;
   white-space: nowrap;
   align-items: center;
+
+  //.tone-paid {
+  //  background: transparent;
+  //  padding: 0;
+  //}
 }
 
 .income-mobile-item .mobile-record-subtitle {

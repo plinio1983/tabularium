@@ -25,7 +25,7 @@ export function ledgerFilters(params: LedgerParams, today: string) {
     methodId: id('methodId'),
     bankId: id('bankId'),
     noBank: paramValue(params, 'bankId') === 'none',
-    dateMode: ['all', 'undated'].includes(paramValue(params, 'dateMode')) ? paramValue(params, 'dateMode') : 'period',
+    dateMode: paramValue(params, 'dateMode') === 'all' ? 'all' : 'period',
     type: paramValue(params, 'type'),
     salesChannelId: id('salesChannelId'),
     page: Number.isSafeInteger(page) && page > 0 ? Math.min(page, 1000000) : 1,
@@ -72,8 +72,7 @@ export function ledgerSource(kind: LedgerKind, workspaceId: number, companyId: n
 }
 export function ledgerWhere(filters: ReturnType<typeof ledgerFilters>, timeZone: string) {
   const clauses: Prisma.Sql[] = [];
-  if (filters.dateMode === 'undated') clauses.push(Prisma.sql`date IS NULL`);
-  else if (filters.dateMode !== 'all') clauses.push(Prisma.sql`date >= ${zonedMidnightUtc(filters.period.from, timeZone)} AND date < ${zonedMidnightUtc(addCalendarDays(filters.period.to, 1), timeZone)}`);
+  if (filters.dateMode !== 'all') clauses.push(Prisma.sql`date >= ${zonedMidnightUtc(filters.period.from, timeZone)} AND date < ${zonedMidnightUtc(addCalendarDays(filters.period.to, 1), timeZone)}`);
   if (filters.search) clauses.push(Prisma.sql`strpos(lower(concat_ws(' ', party, description, "documentId"::text)), lower(${filters.search})) > 0`);
   if (filters.methodId) clauses.push(Prisma.sql`"methodId" = ${filters.methodId}`);
   if (filters.noBank) clauses.push(Prisma.sql`"bankId" IS NULL`);

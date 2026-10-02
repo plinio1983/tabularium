@@ -36,7 +36,7 @@ export default function ExpenseTypeChoice({
         <span className="entry-type-choice-title">{title}</span>
         <div className="entry-type-choice-grid" role="radiogroup" aria-label="Tipo di spesa">
             {options.slice(0, 1).filter(option => !availableTypes || availableTypes.includes(option.type)).map(option => <TypeButton key={option.type} option={option} selected={selected} disabled={disabled || disabledTypes.includes(option.type) || (!onSelect && selected !== option.type)} onSelect={onSelect}/>) }
-            {showCounter ? <button type="button" role="radio" aria-checked={selected === "counter"} className={selected === "counter" ? "is-selected" : ""} disabled={disabled || !onSelectCounter} onClick={onSelectCounter}>
+            {showCounter ? <button type="button" role="radio" aria-checked={selected === "counter"} className={selected === "counter" ? "is-selected" : ""} disabled={disabled || disabledTypes.includes("counter") || !onSelectCounter} onClick={onSelectCounter}>
                 <span className="btn-icon" aria-hidden="true">🛍️</span><strong>Da banco</strong><small>Acquisto già pagato</small>
             </button> : null}
             {options.slice(1).filter(option => !availableTypes || availableTypes.includes(option.type)).map(option => <TypeButton key={option.type} option={option} selected={selected} disabled={disabled || disabledTypes.includes(option.type) || (!onSelect && selected !== option.type)} onSelect={onSelect}/>) }

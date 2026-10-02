@@ -1,3 +1,4 @@
+import {expenseTypeLabel} from '@/lib/record-type-label';
 import InfoHint from '@/components/InfoHint';
 import RecordConversionPage from '@/components/RecordConversionPage';
 import RecordDetailDocument from '@/components/RecordDetailDocument';
@@ -104,7 +105,7 @@ export default async function ExpenseDetailPage({params, searchParams}: {
         : expense.isRecurring || expense.recurringExpenseId
             ? 'La conversione non è disponibile per le spese ricorrenti o generate da una ricorrenza.'
             : !canConvertExpense(expense)
-                ? 'La conversione non è disponibile per le spese di tipo Saldo IVA o Da banco.'
+                ? 'La conversione non è disponibile per le spese di tipo Saldo IVA.'
                 : null;
 
     const supplierName = expense.supplier?.businessName ?? expense.merchant;
@@ -264,7 +265,7 @@ export default async function ExpenseDetailPage({params, searchParams}: {
                             <p className="record-detail-kicker">
                                 <span>Spesa #{expense.id}</span>
                                 <span
-                                    className={isVatSettlement ? 'badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge tone-neutral' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{isVatSettlement ? 'Saldo IVA' : isTaxContribution ? 'Imposte - non IVA' : isPayroll ? 'Busta paga' : expense.isRecurring ? 'R' : 'S'}</span>
+                                    className={isVatSettlement ? 'badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge tone-neutral' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{expense.isRecurring || expense.recurringExpenseId ? expenseTypeLabel(expense) : isVatSettlement ? 'Saldo IVA' : isTaxContribution ? 'Imposte - non IVA' : isPayroll ? 'Busta paga' : expenseTypeLabel(expense)}</span>
                             </p>
                             <div className="expense-detail-title">
                                 <strong>{expense.description}</strong>

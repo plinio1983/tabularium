@@ -1,3 +1,4 @@
+import {requirePaymentDate} from '@/lib/payment-date';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
@@ -130,6 +131,7 @@ async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: numbe
   if (!payments.length) return payments;
   const methods = await prisma.paymentMethod.findMany({ where: { workspaceId } });
   return payments.map(payment => {
+    requirePaymentDate(payment.paymentDate);
     const method = payment.paymentMethodId ? methods.find(item => item.id === payment.paymentMethodId) : null;
     if (!method) throw new Error('Metodo pagamento non valido');
     if (forbidCash && method && (method.systemRole === 'CASH' || method.name.trim().toLowerCase() === 'cash')) throw new Error('Cash non è disponibile per i saldi IVA');
@@ -173,7 +175,12 @@ export async function POST(request: Request) {
     ? { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const }
     : normalizeInvoiceFields(data);
   const { year, month } = resolveBillingPeriod(data, current.company.timeZone);
-  const payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id, isVatSettlement);
+  let payments: PaymentInput[];
+  try {
+    payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id, isVatSettlement);
+  } catch (error) {
+    return NextResponse.json({error: error instanceof Error ? error.message : 'Dati pagamento non validi.'}, {status: 400});
+  }
   let supplierRef: {id: number; businessName: string} | null = null;
   let taxAuthorityRef: {id: number; name: string} | null = null;
   let employeeRef: {id: number; firstName: string; lastName: string} | null = null;
@@ -265,7 +272,7 @@ export async function POST(request: Request) {
     year,
     payments: {
       create: payments.map(payment => ({
-        paymentDate: payment.paymentDate ? new Date(payment.paymentDate) : null,
+        paymentDate: requirePaymentDate(payment.paymentDate),
         paymentMethodId: payment.paymentMethodId!,
         bankId: payment.bankId || null,
         amount: payment.amount

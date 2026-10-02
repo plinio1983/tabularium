@@ -729,6 +729,7 @@ export default async function ExpensesPage({searchParams}: {
         },
         errorMessages: {
             invalid: 'Controlla i campi della spesa.',
+            invalid_bulk_payment_dates: 'Copia non eseguita: per spostare le date dei pagamenti serve la data ordine di ogni spesa selezionata.',
             invalid_bulk_dates: 'Modifica non eseguita: controlla data ordine e scadenza dei record selezionati.',
             invalid_bulk_supplier: 'Seleziona un esercente valido.',
             invalid_bulk_supplier_records: 'L’esercente può essere modificato in blocco soltanto per le spese standard.',

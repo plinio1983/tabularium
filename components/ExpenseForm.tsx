@@ -918,6 +918,11 @@ export default function ExpenseForm({
                 return;
             }
         }
+        if (!preserveLinkedRecords && payments.some(payment => Number(payment.amount || 0) > 0 && !payment.paymentDate)) {
+            event.preventDefault();
+            setSubmitError('Inserisci la data di ogni pagamento.');
+            return;
+        }
         if (isPayroll && paidAmountValue > amountValue + 0.005) {
             event.preventDefault();
             setSubmitError(`I pagamenti registrati (${formatEuro(paidAmountValue)}) superano il totale da corrispondere (${formatEuro(amountValue)}, netto più compensi extra). Controlla gli importi prima di salvare.`);

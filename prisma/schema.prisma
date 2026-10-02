@@ -771,7 +771,7 @@ model ExpensePayment {
   id              Int           @id @default(autoincrement())
   expenseId       Int
   expense         Expense       @relation(fields: [expenseId], references: [id], onDelete: Cascade)
-  paymentDate     DateTime?
+  paymentDate     DateTime
   paymentMethodId Int
   paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
   bankId          Int?

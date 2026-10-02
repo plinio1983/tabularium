@@ -1,3 +1,4 @@
+import {requirePaymentDate} from './payment-date';
 import {weekdayOptions} from './recurring-cadence';
 import * as XLSX from 'xlsx';
 import { prisma } from '@/lib/prisma';
@@ -444,6 +445,16 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const rows = getTabularRows(workbook);
   const sheets = Array.from(new Set(rows.map(item => item.sheetName)));
+  // Validate before deleting existing records or importing any rows.
+  for (const {row, sheetName} of rows) {
+    const amount = parseMoney(rowValue(row, ['Costo', 'Costo IVA inclusa', 'Importo']));
+    const paid = parseBool(rowValue(row, ['Pagamento completato', 'Compl.', 'Completato']))
+      ? amount : parseMoney(rowValue(row, ['Importo pagamento', 'Importo pagato']));
+    if (paid > 0) {
+      try { requirePaymentDate(parseDate(rowValue(row, ['Data pagamento', 'Data Pag']))); }
+      catch { throw new Error(`Foglio ${sheetName}: inserisci una data valida per ogni pagamento prima dell’importazione.`); }
+    }
+  }
   let deleted = 0;
 
   if (options.clearBeforeImport) {
@@ -474,7 +485,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
 
     const paymentDateRaw = parseDate(rowValue(row, ['Data pagamento', 'Data Pag']));
     const dueDate = dueDateRaw ?? orderDateRaw;
-    const effectivePaymentDate = paymentDateRaw ?? dueDate ?? orderDate;
+    const effectivePaymentDate = paymentDateRaw;
     const vatRate = parseMoney(rowValue(row, ['Aliquota IVA', '% IVA', 'Applicazione IVA', 'IVA']));
     const hasElectronicInvoice = parseBool(rowValue(row, ['Fattura elettronica', 'F. Elett.', 'Fattura Elettronica']));
     const isDeclared = parseBool(rowValue(row, ['Detrazione', 'Dich.', 'Dichiarazione']));
@@ -492,6 +503,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
     const explicitPaidAmount = parseMoney(rowValue(row, ['Importo pagamento', 'Importo pagato']));
     const paidAmount = paidCompleted ? amount : explicitPaidAmount;
     const paymentStatus: PaymentStatus = paidAmount >= amount && amount > 0 ? 'COMPLETATO' : paidAmount > 0 ? 'PAGATO_PARZIALMENTE' : 'DA_PAGARE';
+    if (paidAmount > 0) requirePaymentDate(effectivePaymentDate);
     const billingDate = parseDate(rowValue(row, ['Periodo fatturazione', 'Mese fatturazione', 'Periodo Fatt.'])) ?? orderDate ?? new Date();
     const companyCode = mapCompanyCode(rowValue(row, ['Società', 'Societa', 'Azienda', 'Company', 'Operatore']));
     const company = refs.companies[companyCode] ?? refs.companies.HM;
@@ -528,7 +540,7 @@ export async function importExpensesWorkbook(buffer: Buffer, options: { clearBef
         paidAmount,
         month: billingDate.getMonth() + 1,
         year: billingDate.getFullYear(),
-        payments: paidAmount > 0 && paymentMethod ? { create: [{ paymentDate: effectivePaymentDate, paymentMethodId: paymentMethod.id, bankId: bank?.id ?? null, amount: paidAmount }] } : undefined
+        payments: paidAmount > 0 && paymentMethod ? { create: [{ paymentDate: requirePaymentDate(effectivePaymentDate), paymentMethodId: paymentMethod.id, bankId: bank?.id ?? null, amount: paidAmount }] } : undefined
       }
     });
     imported++;

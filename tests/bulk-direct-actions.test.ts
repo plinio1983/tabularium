@@ -132,19 +132,17 @@ test('conversione: selezione singola idonea, duplicati desktop/mobile e reset de
     exports, require: () => ({}), document: {querySelectorAll: () => selected}
   });
   for (const kind of ['expenses', 'incomes']) {
-    const button = {disabled: true, title: '', dataset: {bulkForm: 'records', bulkConvert: kind, convertEligibleIds: '7,8', returnTo: '%2Fexpenses%3FmobileList%3D1', convertHref: ''}, setAttribute() {}};
+    const button = {disabled: true, title: '', dataset: {bulkForm: 'records', bulkConvert: kind, convertEligibleIds: '7,8', returnTo: '%2Fexpenses%3FmobileList%3D1', convertId: ''}, setAttribute() {}};
     for (const ids of [[], ['9'], ['7', '8']]) {
       selected = ids.map(value => ({value})); exports.syncConversionAction(button);
       assert.equal(button.disabled, true);
-      assert.equal(button.dataset.convertHref, '');
+      assert.equal(button.dataset.convertId, '');
     }
     selected = [{value: '7'}, {value: '7'}]; exports.syncConversionAction(button);
     assert.equal(button.disabled, false);
-    assert.equal(button.dataset.convertHref, kind === 'expenses'
-      ? '/expenses/7?convert=1&returnTo=%2Fexpenses%3FmobileList%3D1'
-      : '/incomes/7/convert?returnTo=%2Fexpenses%3FmobileList%3D1');
+    assert.equal(button.dataset.convertId, '7');
     selected = []; exports.syncConversionAction(button);
     assert.equal(button.disabled, true);
-    assert.equal(button.dataset.convertHref, '');
+    assert.equal(button.dataset.convertId, '');
   }
 });

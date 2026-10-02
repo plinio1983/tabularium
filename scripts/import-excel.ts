@@ -1,3 +1,4 @@
+import {requirePaymentDate} from '../lib/payment-date';
 import XLSX from 'xlsx';
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -154,6 +155,10 @@ async function main() {
     const month = months[match[1]];
     const year = Number(match[2]);
     const rows = XLSX.utils.sheet_to_json<any[]>(workbook.Sheets[sheetName], { header: 1, raw: true, defval: null });
+    for (const row of rows.slice(7)) {
+      if (!row?.some(Boolean) || (!row[1] && !row[4])) continue;
+      if ((Boolean(row[9]) || row[5]) && asNumber(row[4]) > 0) requirePaymentDate(excelDate(row[5]));
+    }
     const revenue = rows[1] || [];
     const orders = rows[2] || [];
     await prisma.monthlyRevenue.upsert({
@@ -173,6 +178,7 @@ async function main() {
       const code = row[13]?.toString().trim().toUpperCase();
       const company = code === 'HM' || code === 'TS' ? companies[code] : code ? companies.OTHER : null;
       const paidAmount = Boolean(row[9]) || row[5] ? asNumber(row[4]) : 0;
+      if (paidAmount > 0) requirePaymentDate(excelDate(row[5]));
       await prisma.expense.create({ data: {
         receivedDate: excelDate(row[0]), merchant: supplier.businessName, supplierId: supplier.id, categoryId: category?.id,
         description: row[3]?.toString().trim() || null, amount: asNumber(row[4]), paymentDate: excelDate(row[5]), vatRate: asNumber(row[6]),
@@ -184,7 +190,7 @@ async function main() {
         paidAmount,
         year, month,
         payments: paidAmount > 0 ? { create: [{
-          paymentDate: excelDate(row[5]),
+          paymentDate: requirePaymentDate(excelDate(row[5])),
           paymentMethodId: paymentMethod.id,
           bankId: bank?.id,
           amount: paidAmount

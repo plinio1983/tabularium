@@ -22,11 +22,11 @@ function nodes(tree: any): any[] {
     if (Array.isArray(tree)) return tree.flatMap(nodes);
     return [tree, ...nodes(tree.props?.children)];
 }
-function setup(kind: 'expenses' | 'incomes' = 'expenses') {
+function setup(kind: 'expenses' | 'incomes' = 'expenses', overrides: Record<string, unknown> = {}) {
     const state: any[] = [], refs: any[] = [], navigation: any[] = [];
     let stateIndex = 0, refIndex = 0;
     const exports: any = {};
-    runInNewContext(source, {exports, require: (name: string) => {
+    runInNewContext(source, {exports, FormData, requestAnimationFrame: (callback: () => void) => callback(), fetch: async () => ({ok: true, json: async () => ({saved: true})}), require: (name: string) => {
         if (name === 'react') return {
             useState: (initial: unknown) => {
                 const index = stateIndex++;
@@ -35,7 +35,7 @@ function setup(kind: 'expenses' | 'incomes' = 'expenses') {
             },
             useRef: (initial: unknown) => refs[refIndex++] ?? (refs[refIndex - 1] = {current: initial})
         };
-        if (name === 'next/navigation') return {useRouter: () => ({replace: (...args: any[]) => navigation.push(args)})};
+        if (name === 'next/navigation') return {useRouter: () => ({replace: (...args: any[]) => navigation.push(args), push: (...args: any[]) => navigation.push(args), refresh() {}})};
         if (name === '@/lib/record-conversion') return rules;
         if (name === 'react/jsx-runtime') return require(name);
         return {__esModule: true, default: name};
@@ -45,7 +45,7 @@ function setup(kind: 'expenses' | 'incomes' = 'expenses') {
         return exports.default({kind, id: 12, snapshot: 'snapshot', sourceType: 'STANDARD', returnHref: '/expenses/12?returnTo=%2Fexpenses', formProps: {
             initialExpense: {id: 12, amount: '123', expenseType: 'STANDARD', payments: [{id: 5, amount: '10'}]},
             categories: [], banks: [], paymentMethods: [], suppliers: []
-        }});
+        }, ...overrides});
     }};
 }
 
@@ -56,9 +56,9 @@ test('conversion opens in a modal, requires a target and preserves form data whe
     let all = nodes(tree);
     assert.equal(all.some(node => node.type === 'select'), false);
     const choice = all.find(node => node.type === './ExpenseTypeChoice');
-    assert.deepEqual([...choice.props.availableTypes], ['single', 'payroll', 'tax']);
+    assert.deepEqual([...choice.props.availableTypes], ['single', 'payroll', 'tax', 'counter']);
     assert.deepEqual([...choice.props.disabledTypes], ['single']);
-    assert.equal(choice.props.showCounter, false);
+    assert.equal(choice.props.showCounter, true);
     assert.equal(all.find(node => node.type === './MobileFormStickyActions').props.nextDisabled, true);
     choice.props.onSelect('payroll');
     all = nodes(app.render());
@@ -101,4 +101,40 @@ test('income conversion retains its existing page and selector', () => {
     const tree = setup('incomes').render();
     assert.equal(tree.type, 'div');
     assert.ok(nodes(tree).some(node => node.type === 'select'));
+});
+
+test('da banco usa il form dedicato e conserva soltanto il primo pagamento nel prefill', () => {
+    const app = setup();
+    nodes(app.render()).find(node => node.type === './ExpenseTypeChoice').props.onSelectCounter();
+    const all = nodes(app.render());
+    const form = all.find(node => node.type === './CounterExpenseForm');
+    assert.equal(form.props.initialExpense.amount, '123');
+    assert.equal(form.props.initialExpense.payments.length, 1);
+    assert.equal(form.props.initialExpense.payments[0].id, 5);
+    assert.equal(form.props.lockPayment, true);
+    assert.equal(form.props.submitLabel, 'Verifica conversione');
+    assert.equal(all.some(node => node.type === '@/components/ExpenseForm'), false);
+});
+
+test('conversion launched inline closes and saves without navigating to the detail', async () => {
+    let closed = 0, saved = 0;
+    const app = setup('expenses', {onClose: () => closed++, onSaved: () => saved++});
+    nodes(app.render()).find(node => node.type === './ExpenseTypeChoice').props.onSelect('payroll');
+    const form = nodes(app.render()).find(node => node.type === '@/components/ExpenseForm');
+    form.props.onCancel();
+    assert.equal(closed, 1);
+    form.props.onSubmitData(new FormData());
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(saved, 1);
+    assert.equal(app.navigation.length, 0);
+});
+
+test('inline income conversion uses the modal and closes without navigation', () => {
+    let closed = false;
+    const app = setup('incomes', {onClose: () => {closed = true;}});
+    const tree = app.render();
+    assert.equal(tree.type, './RecordConversionModal');
+    tree.props.onClose();
+    assert.equal(closed, true);
+    assert.equal(app.navigation.length, 0);
 });

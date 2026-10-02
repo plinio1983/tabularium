@@ -2465,14 +2465,6 @@ table th, table td {
 }
 
 @media (max-width: 760px) {
-  .mobile-record-link .badge {
-    padding: 2px 6px;
-    border: none;
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 760px) {
   .search-totals-row {
     grid-template-columns: 1fr;
   }

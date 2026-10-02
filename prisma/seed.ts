@@ -1,3 +1,4 @@
+import {requirePaymentDate} from '../lib/payment-date';
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, InvoiceStatus } from "../generated/prisma/client";
@@ -67,6 +68,9 @@ const categoryCodeAliases: Record<string, string> = {
 };
 
 async function main() {
+  for (const expense of seed.expenses) {
+    if ((expense.paymentDate || expense.isComplete) && expense.amount > 0) requirePaymentDate(expense.paymentDate);
+  }
   const workspace = await prisma.workspace.findFirst({orderBy: {id: 'asc'}});
   if (!workspace) throw new Error('Crea prima un workspace');
   await prisma.company.upsert({ where: { workspaceId_code: {workspaceId: workspace.id, code: 'HM'} }, update: { name: 'Herbal Market' }, create: { workspaceId: workspace.id, code: 'HM', name: 'Herbal Market', isDefault: true } });
@@ -134,7 +138,7 @@ async function main() {
       year: expense.year,
       month: expense.month,
       payments: paidAmount > 0 ? { create: [{
-        paymentDate: expense.paymentDate ? new Date(expense.paymentDate) : null,
+        paymentDate: requirePaymentDate(expense.paymentDate),
         paymentMethodId: paymentMethod.id,
         bankId: expense.bankName ? banks[expense.bankName] : null,
         amount: paidAmount
