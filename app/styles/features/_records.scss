@@ -1943,6 +1943,13 @@ body.drawer-open {
   min-width: 980px;
 }
 
+.compact-expenses-table .tone-paid,
+.compact-expenses-table .tone-received {
+  background: transparent;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
 .compact-expenses-table th {
   padding: 7px 7px;
   vertical-align: middle;
