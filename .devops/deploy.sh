@@ -273,7 +273,7 @@ ssh -i "${SSH_KEY}" "${SERVER_USER}@${SERVER_HOST}" \
    \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml up -d; \
    if [ -n '${REMOTE_UPLOADS_ARCHIVE}' ]; then \
      \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml cp '${REMOTE_UPLOADS_ARCHIVE}' tabularium:/tmp/tabularium-uploads.tar.gz; \
-     \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'; \
+     \$COMPOSE --env-file '${ENV_FILE}' -f docker-compose.prod.yml exec -T tabularium sh -c 'rm -rf /app/storage/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/storage/uploads --strip-components=1'; \
    fi; \
    if [ '${INSTALL_BACKUP_AUTOMATION}' = '1' ]; then \
      chmod +x scripts/backup-prod.sh scripts/restore-prod.sh scripts/backup-manager.sh .devops/install-backup-automation.sh; \

@@ -72,7 +72,7 @@ function booleanBadgeSimple(value: boolean) {
 
 function fiscalBadge(value: boolean) {
     const item = value ? yesNoStyles.yes : yesNoStyles.no;
-    const label = value ? '✓ Fiscale' : '× Non Fisc.';
+    const label = value ? '✓ Fiscale' : '× Non Fisc';
     return <span className={badgeClass(item.className)}>{label}</span>;
 }
 

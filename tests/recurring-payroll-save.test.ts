@@ -8,7 +8,7 @@ import {OptionalPayrollMoneyFromForm} from '../lib/payroll-money-schema';
 
 const require = createRequire(import.meta.url);
 
-function handler(edit: boolean) {
+function handler(edit: boolean, options: {foreignEmployee?: boolean; foreignBank?: boolean; denied?: boolean} = {}) {
   const writes: Array<{data: Record<string, unknown>}> = [];
   const route = edit ? '../app/api/recurring-expenses/[id]/route.ts' : '../app/api/recurring-expenses/route.ts';
   const compiled = ts.transpileModule(readFileSync(new URL(route, import.meta.url), 'utf8'), {
@@ -17,9 +17,18 @@ function handler(edit: boolean) {
   const current = {workspace: {id: 2}, company: {id: 1, timeZone: 'Europe/Rome'}, user: {id: 3}};
   const mocks: Record<string, unknown> = {
     '@/lib/payroll-money-schema': {OptionalPayrollMoneyFromForm},
-    '@/lib/auth': {getWorkspaceApiAccess: async () => ({ok: true, current}), workspaceOperationalRoles: []},
+    '@/lib/auth': {getWorkspaceApiAccess: async () => options.denied ? ({ok: false, status: 403, error: 'Permessi insufficienti'}) : ({ok: true, current}), workspaceOperationalRoles: []},
     '@/lib/prisma': {prisma: {
-      employee: {findFirst: async () => ({id: 4, firstName: 'Mario', lastName: 'Rossi'})},
+      employee: {findFirst: async ({where}: {where: {workspaceId: number; companyId?: number}}) => {
+        assert.equal(where.workspaceId, current.workspace.id);
+        assert.equal(where.companyId, current.company.id);
+        return options.foreignEmployee ? null : {id: 4, firstName: 'Mario', lastName: 'Rossi'};
+      }},
+      paymentMethod: {findFirst: async () => ({id: 1, name: 'Bonifico'})},
+      bank: {findFirst: async ({where}: {where: {workspaceId: number}}) => {
+        assert.equal(where.workspaceId, current.workspace.id);
+        return options.foreignBank ? null : {id: 1};
+      }},
       recurringExpense: {
         findFirst: async () => ({id: 5}),
         create: async (args: {data: Record<string, unknown>}) => {writes.push(args); return {id: 5};},
@@ -65,6 +74,22 @@ for (const edit of [false, true]) {
     assert.equal(writes[0].data.amount, 1500.5);
     assert.equal(writes[0].data.payrollGrossAmount, null);
     assert.equal(writes[0].data.payrollEmployerCost, null);
+  });
+
+  test(`${action}: rifiuta dipendenti di altre aziende e banche di altri workspace`, async () => {
+    for (const options of [{foreignEmployee: true}, {foreignBank: true}]) {
+      const {save, writes} = handler(edit, options);
+      const response = await save(request({payrollNetAmount: '1500', isAutomaticPayment: 'true', paymentMethodId: '1', bankId: '99'}), {params: Promise.resolve({id: '5'})});
+      assert.equal(response.status, 400);
+      assert.equal(writes.length, 0);
+    }
+  });
+
+  test(`${action}: VIEWER non può salvare una ricorrenza`, async () => {
+    const {save, writes} = handler(edit, {denied: true});
+    const response = await save(request({payrollNetAmount: '1500'}), {params: Promise.resolve({id: '5'})});
+    assert.equal(response.status, 403);
+    assert.equal(writes.length, 0);
   });
 
   test(`${action}: input errato restituisce 400 senza scrivere dati`, async () => {

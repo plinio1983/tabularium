@@ -16,7 +16,7 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
     prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
     prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 }),
-    prisma.employee.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]})
+    prisma.employee.findMany({where: {workspaceId: current.workspace.id, companyId: current.company.id}, orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]})
   ]);
 
   const orderedBanks = orderBanks(banks);

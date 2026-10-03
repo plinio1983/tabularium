@@ -1100,7 +1100,7 @@ export default async function ExpensesPage({searchParams}: {
             {/*</div>*/}
         </div>
         </>}>
-        <div className="card record-list-card --fixed">
+        <div className="card record-list-card record-list-grid --fixed">
             <div className="list-heading recurring-list-heading mobile-record-list-header">
                 <div>
                     <h2>Lista spese</h2>

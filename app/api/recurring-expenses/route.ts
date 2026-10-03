@@ -103,10 +103,13 @@ export async function POST(request: Request) {
   }
   const categoryId = await resolveCategoryId(data.categoryId, current.workspace.id);
   const taxAuthority = data.expenseType === 'TAX_CONTRIBUTION' ? await prisma.taxAuthority.findFirst({where: {id: data.taxAuthorityId!, workspaceId: current.workspace.id}}) : null;
-  const employee = data.expenseType === 'PAYROLL' ? await prisma.employee.findFirst({where: {id: data.employeeId!, workspaceId: current.workspace.id}}) : null;
+  const employee = data.expenseType === 'PAYROLL' ? await prisma.employee.findFirst({where: {id: data.employeeId!, workspaceId: current.workspace.id, companyId: current.company.id}}) : null;
   if (data.expenseType === 'TAX_CONTRIBUTION' && !taxAuthority) return NextResponse.json({error: 'Ente fiscale non valido'}, {status: 400});
   if (data.expenseType === 'PAYROLL' && !employee) return NextResponse.json({error: 'Dipendente non valido'}, {status: 400});
   const paymentMethod = await resolvePaymentMethod(data.paymentMethodId, current.workspace.id);
+  if (data.isAutomaticPayment && data.bankId && !await prisma.bank.findFirst({where: {id: data.bankId, workspaceId: current.workspace.id}})) {
+    return NextResponse.json({error: 'Banca non valida'}, {status: 400});
+  }
   const isYearly = data.cadence === 'YEARLY' || data.cadence === 'EVERY_2_YEARS';
   const recurringExpense = await prisma.recurringExpense.create({
     data: {

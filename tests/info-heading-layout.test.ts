@@ -12,12 +12,24 @@ for (const file of ['app/page.tsx', 'app/suppliers/page.tsx', 'app/clients/page.
       if (ts.isJsxElement(node) && node.openingElement.attributes.properties.some(attr => ts.isJsxAttribute(attr) && attr.name.getText(source) === 'className' && attr.initializer && ts.isStringLiteral(attr.initializer) && attr.initializer.text === 'info-title-row')) {
         rows++;
         const children = node.children.filter(child => !ts.isJsxText(child) || child.text.trim());
-        assert.equal(children.length, 2, 'Solo titolo e icona devono essere nella riga');
-        assert.ok(ts.isJsxElement(children[0]));
-        assert.match(children[0].openingElement.tagName.getText(source), /^h[23]$/);
-        assert.ok(ts.isJsxElement(children[1]));
-        assert.equal(children[1].openingElement.tagName.getText(source), 'InfoHint');
-        assert.ok(children[1].openingElement.attributes.properties.some(attr => ts.isJsxAttribute(attr) && attr.name.getText(source) === 'compactOnly'), 'Il testo desktop deve rimanere fuori dalla riga');
+        const headings = children.slice(0, -1);
+        assert.ok(headings.length === 1 || headings.length === 2, 'Solo titoli e icona devono essere nella riga');
+        for (const heading of headings) {
+          assert.ok(ts.isJsxElement(heading));
+          assert.match(heading.openingElement.tagName.getText(source), /^h[23]$/);
+        }
+        if (headings.length === 2) {
+          const classes = headings.map(heading => {
+            assert.ok(ts.isJsxElement(heading));
+            const attr = heading.openingElement.attributes.properties.find(attr => ts.isJsxAttribute(attr) && attr.name.getText(source) === 'className');
+            return attr && ts.isJsxAttribute(attr) && attr.initializer && ts.isStringLiteral(attr.initializer) ? attr.initializer.text : '';
+          });
+          assert.deepEqual(classes.sort(), ['hidden-sm-down', 'hidden-sm-up'], 'I titoli alternativi devono essere visibili su breakpoint complementari');
+        }
+        const hint = children.at(-1)!;
+        assert.ok(ts.isJsxElement(hint));
+        assert.equal(hint.openingElement.tagName.getText(source), 'InfoHint');
+        assert.ok(hint.openingElement.attributes.properties.some(attr => ts.isJsxAttribute(attr) && attr.name.getText(source) === 'compactOnly'), 'Il testo desktop deve rimanere fuori dalla riga');
       }
       ts.forEachChild(node, visit);
     }

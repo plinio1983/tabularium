@@ -2778,19 +2778,28 @@ body.bulk-attachments-modal-open {
   white-space: nowrap;
 }
 
-//.expense-page-content .record-list-card {
-//  @media (max-width: 480px) {
-//    padding: 14px 6px;
-//  }
-//}
-
 .record-list-card {
   overflow: hidden;
-  //overflow: visible;
+
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
 
   @media (max-width: 351px) {
-    padding: 14px 6px;
+    //padding: 12px 6px;
   }
+}
+
+.record-list-card.record-list-grid {
+  @media(max-width: 576px) {
+    padding: 12px 0;
+    border: 0;
+  }
+  //padding: 12px 6px;
+}
+
+.record-list-card .composition-pie-bar {
+  height: 8px;
 }
 
 .bulk-actions-bar {

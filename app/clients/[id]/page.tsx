@@ -126,7 +126,7 @@ export default async function ClientDetailPage({params, searchParams}: {
             </article>
         </div>
         </>}>
-        <div className="card record-list-card">
+        <div className="card record-list-card record-list-grid">
             <div className="list-heading mobile-record-list-header">
                 <div><h2>Incassi collegati</h2>
                     <p className="muted">Risultati mostrati: {listedIncomes.length + cashRegisterGroups.length}</p>

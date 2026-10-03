@@ -5,11 +5,12 @@ import {createRequire} from 'node:module';
 import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 import * as payroll from '../lib/payroll-expense';
+import * as expensePayments from '../lib/expense-payments';
 import * as redirect from '../lib/redirect';
 import * as flash from '../lib/flash';
 
 const require = createRequire(import.meta.url);
-function handler() {
+function handler(foreignBank = false) {
   const writes: Array<{data: Record<string, any>}> = [];
   const compiled = ts.transpileModule(readFileSync(new URL('../app/api/expenses/[id]/route.ts', import.meta.url), 'utf8'), {
     compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022},
@@ -17,6 +18,7 @@ function handler() {
   const current = {workspace: {id: 2}, company: {id: 1, timeZone: 'Europe/Rome'}, user: {id: 3}};
   const mocks: Record<string, unknown> = {
     '@/lib/payroll-expense': payroll,
+    '@/lib/expense-payments': expensePayments,
     '@/lib/redirect': redirect,
     '@/lib/flash': flash,
     '@/lib/company-time': {},
@@ -31,6 +33,7 @@ function handler() {
         update: async (args: {data: Record<string, any>}) => {writes.push(args); return {id: 5};},
       },
       employee: {findFirst: async () => ({id: 4, firstName: 'Test', lastName: 'Dipendente'})},
+      bank: {findMany: async () => foreignBank ? [] : [{id: 1}]},
       paymentMethod: {findMany: async () => [{id: 1, name: 'Bonifico'}]},
     }},
   };
@@ -90,4 +93,12 @@ test('API rifiuta pagamenti senza data o con data inesistente, senza scritture',
     assert.match((await response.json()).error, /data|Data/);
     assert.equal(writes.length, 0);
   }
+});
+
+test('modifica spesa: banca esterna al workspace rifiutata senza scritture', async () => {
+  const {save, writes} = handler(true);
+  const response = await save(request('1500', '0', ['1000']), {params: Promise.resolve({id: '5'})});
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /Banca/);
+  assert.equal(writes.length, 0);
 });

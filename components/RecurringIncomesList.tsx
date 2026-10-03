@@ -107,7 +107,7 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
   ].filter(Boolean);
 
     const formId = 'recurringIncomeBulkForm';
-    return <section className="card record-list-card recurring-expenses-card">
+    return <section className="card record-list-card record-list-grid recurring-expenses-card">
         <BulkSelectionController/>
         <RecurringIncomeBulkEditModal formId={formId} action={`/api/recurring-incomes/bulk?returnTo=${returnTo}`} channels={channels} methods={methods} banks={banks}/>
         <div className="list-heading recurring-list-heading mobile-page-title recurring-income-mobile-page-title">

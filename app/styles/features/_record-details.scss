@@ -145,6 +145,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   backdrop-filter: blur(10px);
   pointer-events: auto;
   overflow: visible;
+  background: linear-gradient(359deg, #d6def2, #ffffff);
 
   @media (max-width: 760px) {
     overflow-y: visible;
@@ -2803,10 +2804,13 @@ body.invoice-attachments-modal-open {
   }
 }
 
-
-// Closing the mobile list belongs only to the floating bar, after all actions.
 .floating-bulk-actions-inner > .floating-bulk-close {
   display: none;
+}
+
+.floating-bulk-actions-inner .floating-bulk-close .btn-icon {
+  font-weight: 700;
+  font-size: 20px;
 }
 
 @media (max-width: 760px) {

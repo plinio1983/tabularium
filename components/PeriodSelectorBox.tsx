@@ -56,7 +56,7 @@ export default function PeriodSelectorBox({dateQuick, dateYear, useFiscalPeriodF
         return <button
           key={value}
           type="button"
-          className={isActive ? "btn-xs btn-action btn-active trend-quick-btn" : "btn-xs btn-action trend-quick-btn"}
+          className={isActive ? "btn-sm btn-action btn-active trend-quick-btn" : "btn-sm btn-action trend-quick-btn"}
           aria-pressed={isActive}
           aria-label={pendingQuickButton === value ? `Caricamento ${accessibleLabel}` : accessibleLabel}
           title={accessibleLabel}

@@ -76,7 +76,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
 
     const formId = 'cashRegisterReceiptBulkForm';
     const encodedReturnTo = encodeURIComponent(returnTo);
-    return <div className="card record-list-card cash-register-receipt-list-card fixed">
+    return <div className="card record-list-card record-list-grid cash-register-receipt-list-card fixed">
         <div className="list-heading recurring-list-heading mobile-record-list-header">
             <div>
                 <div className="info-title-row">

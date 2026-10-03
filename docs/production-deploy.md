@@ -85,7 +85,7 @@ Il repository e' privato. Esegui il login una tantum sia sulla macchina che effe
 
 ```bash
 docker login --username 883377
-ssh -i .devops/contabo_rsa root@178.18.248.213
+ssh -i resources/contabo_rsa root@178.18.248.213
 docker login --username 883377
 ```
 
@@ -106,7 +106,7 @@ Percorso usato dagli esempi:
 Connessione SSH dal repository locale:
 
 ```bash
-ssh -i .devops/contabo_rsa root@178.18.248.213
+ssh -i resources/contabo_rsa root@178.18.248.213
 ```
 
 Sul server, una tantum:
@@ -137,7 +137,7 @@ Lo script:
 - esegue `docker pull` del tag immutabile sul server
 - aggiorna `APP_IMAGE` remoto con il tag distribuito
 - riavvia Compose usando quell'immagine
-- se richiesto, ripristina il dump nel container `db`
+- se richiesto, ripristina il dump nel servizio `tabularium-db`
 - applica esclusivamente le migrazioni Prisma versionate con `npm run db:deploy`
 - se richiesto, ripristina gli upload nel volume applicativo
 
@@ -152,7 +152,7 @@ cp deploy.conf.example deploy.conf
 ```bash
 SERVER_HOST="178.18.248.213"
 SERVER_USER="root"
-SSH_KEY=".devops/contabo_rsa"
+SSH_KEY="resources/contabo_rsa"
 REMOTE_DIR="/app/tabularium"
 IMAGE_REPOSITORY="883377/tabularium"
 ```
@@ -171,7 +171,7 @@ Le opzioni CLI sovrascrivono la configurazione:
   --config ./deploy.conf \
   --server-user root \
   --server-host 178.18.248.213 \
-  --ssh-key .devops/contabo_rsa \
+  --ssh-key resources/contabo_rsa \
   --remote-dir /app/tabularium
 ```
 
@@ -189,10 +189,16 @@ docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -
 
 L'import database e' distruttivo: lo script esegue `pg_restore --clean --if-exists` sul database di produzione. Per evitare import accidentali, `--db-dump` funziona solo insieme a `--import-db`.
 
+Gli allegati sono salvati in `storage/uploads` in locale e in `/app/storage/uploads`
+nel container di produzione, sul volume persistente. Gli archivi per
+`--uploads-archive` devono contenere la directory radice `uploads/`. I set di
+backup prodotti da `backup-prod.sh` hanno un formato diverso e vanno ripristinati
+con `restore-prod.sh`.
+
 Deploy con ripristino upload:
 
 ```bash
-tar -czf tabularium-uploads.tar.gz -C public uploads
+tar -czf tabularium-uploads.tar.gz -C storage uploads
 .devops/deploy.sh --uploads-archive ./tabularium-uploads.tar.gz
 ```
 
@@ -202,7 +208,7 @@ Deploy completo con database e upload:
 .devops/deploy.sh --import-db --db-dump ./tabularium.dump --uploads-archive ./tabularium-uploads.tar.gz
 ```
 
-Comandi equivalenti manuali:
+Procedura manuale di build e avvio:
 
 ```bash
 IMAGE_TAG="$(git rev-parse --short HEAD)"
@@ -210,7 +216,7 @@ IMAGE_NAME="883377/tabularium:${IMAGE_TAG}"
 docker build --pull -t "${IMAGE_NAME}" -t "883377/tabularium:latest" .
 docker push "${IMAGE_NAME}"
 docker push "883377/tabularium:latest"
-ssh -i .devops/contabo_rsa root@178.18.248.213
+ssh -i resources/contabo_rsa root@178.18.248.213
 ```
 
 Sul server:
@@ -219,8 +225,11 @@ Sul server:
 cd /app/tabularium
 docker pull "883377/tabularium:${IMAGE_TAG}"
 # aggiorna APP_IMAGE in .env.production al tag appena pubblicato
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d tabularium-db
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm tabularium npm run db:deploy
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm tabularium npm run db:backfill-vat-settlement
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm tabularium npm run db:backfill-customers
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d
-docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium npx prisma db push
 docker compose --env-file .env.production -f docker-compose.prod.yml ps
 ```
 
@@ -321,7 +330,7 @@ Sul computer locale crea il dump:
 
 ```bash
 docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom --no-owner --no-acl' > tabularium.dump
-tar -czf tabularium-uploads.tar.gz -C public uploads
+tar -czf tabularium-uploads.tar.gz -C storage uploads
 ```
 
 Copia sul server:
@@ -340,13 +349,13 @@ Ripristina gli upload:
 
 ```bash
 docker compose --env-file .env.production -f docker-compose.prod.yml cp tabularium-uploads.tar.gz tabularium:/tmp/tabularium-uploads.tar.gz
-docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium sh -c 'rm -rf /app/public/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/public/uploads --strip-components=1'
+docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium sh -c 'rm -rf /app/storage/uploads/* && tar -xzf /tmp/tabularium-uploads.tar.gz -C /app/storage/uploads --strip-components=1'
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 ```
 
 Verifica:
 
 ```bash
-docker compose --env-file .env.production -f docker-compose.prod.yml exec tabularium npx prisma db push
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm tabularium npm run db:deploy
 docker compose --env-file .env.production -f docker-compose.prod.yml logs -f tabularium
 ```

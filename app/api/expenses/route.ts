@@ -1,3 +1,4 @@
+import {resolveExpensePaymentInputs, type ExpensePaymentInput as PaymentInput} from '@/lib/expense-payments';
 import {requirePaymentDate} from '@/lib/payment-date';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -44,7 +45,6 @@ const ExpenseSchema = z.object({
   notes: z.string().optional()
 });
 
-
 function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
   if (!data.isDeclared) {
     return { isDeclared: false, hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const };
@@ -56,13 +56,6 @@ function normalizeInvoiceFields(data: z.infer<typeof ExpenseSchema>) {
     invoiceStatus: data.invoiceStatus === 'INVIATA_SDI' ? 'RICEVUTA' as const : data.invoiceStatus,
   };
 }
-
-type PaymentInput = {
-  paymentDate?: string;
-  paymentMethodId?: number | null;
-  bankId?: number | null;
-  amount: number;
-};
 
 function resolveBillingPeriod(data: z.infer<typeof ExpenseSchema>, timeZone: string) {
   if (data.billingPeriod) {
@@ -114,29 +107,15 @@ function parsePayments(formData: FormData | null, jsonPayments: unknown): Paymen
   return payments.filter(row => row.amount > 0);
 }
 
-
 function safePath(value: string | null, fallback: string, requestUrl: string) {
   return pathFromUrl(value, fallback);
 }
-
 
 async function resolveCategoryId(categoryId: number | null | undefined, workspaceId: number) {
   if (!categoryId) return null;
   const category = await prisma.expenseCategory.findFirst({ where: { id: categoryId, workspaceId } });
   if (!category) throw new Error('Categoria non valida');
   return category.id;
-}
-
-async function resolvePaymentInputs(payments: PaymentInput[], workspaceId: number, forbidCash = false) {
-  if (!payments.length) return payments;
-  const methods = await prisma.paymentMethod.findMany({ where: { workspaceId } });
-  return payments.map(payment => {
-    requirePaymentDate(payment.paymentDate);
-    const method = payment.paymentMethodId ? methods.find(item => item.id === payment.paymentMethodId) : null;
-    if (!method) throw new Error('Metodo pagamento non valido');
-    if (forbidCash && method && (method.systemRole === 'CASH' || method.name.trim().toLowerCase() === 'cash')) throw new Error('Cash non è disponibile per i saldi IVA');
-    return { ...payment, paymentMethodId: method.id };
-  });
 }
 
 function redirectAfterFormSaveTarget(request: Request, fallback: string) {
@@ -177,7 +156,7 @@ export async function POST(request: Request) {
   const { year, month } = resolveBillingPeriod(data, current.company.timeZone);
   let payments: PaymentInput[];
   try {
-    payments = await resolvePaymentInputs(parsePayments(formData, (raw as any).payments), current.workspace.id, isVatSettlement);
+    payments = await resolveExpensePaymentInputs(prisma, parsePayments(formData, (raw as any).payments), current.workspace.id, isVatSettlement);
   } catch (error) {
     return NextResponse.json({error: error instanceof Error ? error.message : 'Dati pagamento non validi.'}, {status: 400});
   }

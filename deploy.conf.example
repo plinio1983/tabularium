@@ -3,7 +3,7 @@
 
 SERVER_HOST="178.18.248.213"
 SERVER_USER="root"
-SSH_KEY=".devops/contabo_rsa"
+SSH_KEY="resources/contabo_rsa"
 REMOTE_DIR="/app/tabularium"
 
 # Se vuoto, lo script usa il git short SHA corrente.

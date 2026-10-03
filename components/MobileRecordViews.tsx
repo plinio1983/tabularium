@@ -72,5 +72,7 @@ export function MobileRecordCloseButton() {
     window.history.replaceState(null, '', `${pathname}${next.size ? `?${next}` : ''}`);
   }
   return <button type="button" className="btn btn-neutral btn-icon-only modal-close-button mobile-record-close"
-    aria-label="Chiudi lista e torna al riepilogo" onClick={closeList}><span className="btn-icon">×</span></button>;
+    aria-label="Chiudi lista e torna al riepilogo" onClick={closeList}>
+    <span className="btn-icon">×</span>
+  </button>;
 }

@@ -113,7 +113,7 @@ export default async function EmployeesPage({searchParams}: {
             not_found: 'Dipendente non trovato.',
             duplicate_code: 'La matricola è già utilizzata.'
         }} defaultSavedMessage="Operazione completata." defaultErrorMessage="Impossibile completare l’operazione."/>
-        <div className="card record-list-card">
+        <div className="card record-list-card record-list-grid">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <div className="info-title-row">

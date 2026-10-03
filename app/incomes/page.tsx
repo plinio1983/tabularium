@@ -984,7 +984,7 @@ export default async function IncomesPage({searchParams}: {
             {/*</div>*/}
         </div>
         </>}>
-        <div className="card record-list-card">
+        <div className="card record-list-card record-list-grid">
             <div className="list-heading recurring-list-heading mobile-record-list-header">
                 <div>
                     <h2>Lista incassi</h2>

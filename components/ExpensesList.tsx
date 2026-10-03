@@ -153,7 +153,7 @@ function mobileDateLabel(value?: Date | null) {
 
 function fiscalBadgeMobile(value: boolean) {
     const item = value ? {className: ''} : invoiceStatusStyles.NON_PREVISTA;
-    const label = value ? '✓ Fisc.' : '✕ Non Fisc.';
+    const label = value ? '✓ Fisc.' : '✕ Non Fisc';
     const cssClass = value ? 'text-primary strong' : 'text-muted strong';
     //return <span className={badgeClass(item.className)}>{label}</span>;
     return <span className={cssClass}>{label}</span>;
@@ -393,7 +393,7 @@ export default function ExpensesList({
                                 <div className="mobile-record-meta-left  ml-4">
                                     {/*-- Fiscal Badge -->*/}
                                     {!isNoVatExpense ? fiscalBadgeMobile(expense.isDeclared) : isPayroll ?
-                                        <span className="text-primary strong">✓ Fisc.</span> : isTaxContribution ?
+                                        <span className="text-primary strong">✓ Fisc</span> : isTaxContribution ?
                                             <span className="text-muted strong">Imposte</span> :
                                             <span className="text-muted strong">IVA</span>}
 

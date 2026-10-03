@@ -43,7 +43,7 @@ export default async function SystemUsersPage() {
       </div>
     </form>
 
-    <div className="card record-list-card">
+    <div className="card record-list-card record-list-grid">
       <div className="table-scroll"><table className="expenses-table compact-expenses-table"><thead><tr>
         <th>Email</th>
         <th>Nome</th>

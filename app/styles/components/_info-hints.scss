@@ -14,7 +14,13 @@ button.info-hint-trigger {
   opacity: 1;
   visibility: visible;
 
-  .btn-icon, svg { display: block; width: 18px; height: 18px; margin: 0; flex: 0 0 18px; }
+  .btn-icon, svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex: 0 0 18px;
+  }
 }
 
 .app-form-wizard-header > .info-hint-trigger {
@@ -23,17 +29,31 @@ button.info-hint-trigger {
 }
 
 @media (min-width: 761px) {
-  .form-section > summary .info-hint-desktop-text { display: block; font-size: 12px; font-weight: 400; }
+  .form-section > summary .info-hint-desktop-text {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+  }
 }
 
 @media (max-width: 900px) {
-  .app-form-wizard .app-form-wizard-header { position: relative; }
-  .app-form-wizard-header:has(> .info-hint-trigger) .app-form-wizard-heading { padding-right: 40px; }
-  .app-form-wizard-header > .info-hint-trigger { position: absolute; right: 0; top: 6px; }
+  .app-form-wizard .app-form-wizard-header {
+    position: relative;
+  }
+  .app-form-wizard-header:has(> .info-hint-trigger) .app-form-wizard-heading {
+    padding-right: 40px;
+  }
+  .app-form-wizard-header > .info-hint-trigger {
+    position: absolute;
+    right: 0;
+    top: 6px;
+  }
 }
 
 @media (min-width: 761px) {
-  .company-help { display: none; }
+  .company-help {
+    display: none;
+  }
 }
 
 .info-title-row {
@@ -44,8 +64,16 @@ button.info-hint-trigger {
   gap: 8px;
   min-width: 0;
 
-  > h2, > h3 { margin: 0; min-width: 0; }
-  > button.info-hint-trigger { flex: 0 0 32px; margin: 0; }
+  > h2, > h3 {
+    margin: 0;
+    min-width: 0;
+    padding-left: 6px;
+  }
+
+  > button.info-hint-trigger {
+    flex: 0 0 32px;
+    margin: 0;
+  }
 }
 
 /* Keep contextual help on the label row even inside grid/card headings. */

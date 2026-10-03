@@ -89,7 +89,7 @@ export default async function TaxAuthorityDetailPage({params, searchParams}: {
         </section>
       </article>
     </div>
-    <div className="card record-list-card supplier-linked-expenses-list">
+    <div className="card record-list-card record-list-grid supplier-linked-expenses-list">
       <div className="list-heading"><div>
         <h2>Spese collegate</h2>
         <p className="muted">{current.company.name} · Tutto lo storico · {authority.expenses.length} spese</p>

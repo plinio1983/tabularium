@@ -188,9 +188,11 @@ export default function IncomesList({
         <BulkSelectionController/>
         <ClickableDesktopRows/>
         <SortableTableController/>
-        <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
+        <NewIncomePanel initialOpen={initialOpen} showToolbar={false} banks={banks} paymentMethods={paymentMethods}
+                        salesChannels={salesChannels} customers={customers} initialCustomerId={initialCustomerId}/>
         <RecordConversionListController kind="incomes" formId={formId} returnHref={decodeURIComponent(returnTo)}/>
-        <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods} salesChannels={salesChannels} customers={customers}/>
+        <IncomeEditModalController returnTo={decodeURIComponent(returnTo)} banks={banks} paymentMethods={paymentMethods}
+                                   salesChannels={salesChannels} customers={customers}/>
         <BulkCopyIncomesModal formId={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`}/>
         <BulkEditFieldsModal
             formId={formId}
@@ -200,47 +202,73 @@ export default function IncomesList({
             salesChannels={salesChannels}
             editableIds={incomes.map(income => income.id)}
         />
-        <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar income-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
-            <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi visibili"/></label>
+        <form id={formId} action={`/api/incomes/bulk?returnTo=${returnTo}`} method="post"
+              className="bulk-actions-bar grouped-bulk-actions-bar income-bulk-actions-bar confirm-bulk-form"
+              data-bulk-button-group="true">
+            <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all"
+                                                             data-bulk-target={formId}
+                                                             aria-label="Seleziona tutti gli incassi visibili"/></label>
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
                     <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
+                        <span className="btn-icon" aria-hidden="true">⚙</span><span
+                        className="hidden-sm-up hidden-xs-down">Azioni</span><span
+                        className="hidden-sm-down hidden-xs-down">Azioni</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button type="button" className="btn btn-sm btn-option" data-bulk-convert="incomes" data-bulk-form={formId}
-                            data-convert-eligible-ids={incomes.filter(item => canConvertIncome({incomeType: item.incomeType ?? 'STANDARD', recurringIncomeId: item.recurringIncomeId ?? null})).map(item => item.id).join(',')}
-                            data-return-to={returnTo} disabled title="Seleziona un solo record convertibile">
+                        <button type="button" className="btn btn-sm btn-option" data-bulk-convert="incomes"
+                                data-bulk-form={formId}
+                                data-convert-eligible-ids={incomes.filter(item => canConvertIncome({
+                                    incomeType: item.incomeType ?? 'STANDARD',
+                                    recurringIncomeId: item.recurringIncomeId ?? null
+                                })).map(item => item.id).join(',')}
+                                data-return-to={returnTo} disabled title="Seleziona un solo record convertibile">
                             <span className="btn-icon">⇄</span><span>Converti tipo</span>
                         </button>
-                        <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-copy]" disabled><span className="btn-icon">⧉</span><span>Copia</span></button>
-                        <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-add-credit]" disabled><span className="btn-icon">€</span><span>Inserisci accredito</span></button>
+                        <button type="button" className="btn btn-sm btn-option"
+                                data-bulk-action-proxy="[data-bulk-copy]" disabled><span
+                            className="btn-icon">⧉</span><span>Copia</span></button>
+                        <button type="button" className="btn btn-sm btn-option"
+                                data-bulk-action-proxy="[data-bulk-add-credit]" disabled><span
+                            className="btn-icon">€</span><span>Inserisci accredito</span></button>
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
                                 formAction="/api/exports/incomes" formMethod="post" data-confirm-label="Esporta CSV">
                             <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
                         </button>
-                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="invoice_emitted">
+                        <button className="btn btn-sm btn-option" type="submit" name="bulkAction"
+                                value="invoice_emitted">
                             <span className="btn-icon">✓</span><span className="hidden-sm-down">Fattura emessa</span>
                         </button>
 
-                        <BulkExpenseAttachmentsModal formId={formId} endpoint="/api/incomes/attachments/archive" subject="incassi"/>
+                        <BulkExpenseAttachmentsModal formId={formId} endpoint="/api/incomes/attachments/archive"
+                                                     subject="incassi"/>
                         <button className="btn btn-sm btn-option danger-menu-item" type="submit"
                                 name="bulkAction" value="delete" data-confirm-label="Rimuovi selezionati">
-                            <span className="btn-icon">🗑</span><span className="hidden-sm-down">Rimuovi selezionati</span>
+                            <span className="btn-icon">🗑</span><span
+                            className="hidden-sm-down">Rimuovi selezionati</span>
                         </button>
                     </div>
                 </details>
-                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId} data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId=" data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id" data-return-to={returnTo}>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
-                    <button type="button" className="bulk-direct-link is-disabled hidden-sp-down" data-bulk-add-credit aria-disabled="true" disabled>
+                <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form={formId}
+                     data-bulk-multi-edit="true" data-edit-base="/incomes/" data-copy-base="/incomes/new?copyId="
+                     data-edit-trigger-attr="data-income-edit-id" data-copy-trigger-attr="data-income-copy-id"
+                     data-return-to={returnTo}>
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true"><span
+                        className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span></a>
+                    <button type="button" className="bulk-direct-link is-disabled hidden-sp-down" data-bulk-add-credit
+                            aria-disabled="true" disabled>
                         <span className="btn-icon" aria-hidden="true">€</span><span className="hidden-sm-down">Inserisci accredito</span>
                     </button>
-                    <button type="button" className="bulk-direct-link is-disabled hidden-xs-down" data-bulk-copy aria-disabled="true" disabled><span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia</span></button>
+                    <button type="button" className="bulk-direct-link is-disabled hidden-xs-down" data-bulk-copy
+                            aria-disabled="true" disabled><span className="btn-icon">⧉</span><span
+                        className="hidden-sm-down">Copia</span></button>
                 </div>
             </div>
             <div className="bulk-inner-container">
-                <button className="bulk-direct-link bulk-add-link  btn btn-md btn-primary" type="button" data-bulk-new data-income-new data-floating-label="Incasso">
-                    <span className="btn-icon btn-icon-add">＋</span><span className="hidden-sm-down">Incasso</span></button>
+                <button className="bulk-direct-link bulk-add-link  btn btn-md btn-primary" type="button" data-bulk-new
+                        data-income-new data-floating-label="Incasso">
+                    <span className="btn-icon btn-icon-add">＋</span><span className="hidden-sm-down">Incasso</span>
+                </button>
                 {filterAction}
             </div>
         </form>
@@ -248,45 +276,59 @@ export default function IncomesList({
             <MonthGroupedRecords enabled={monthGrouping} sort={dateSort} records={[...cashRegisterGroups.map(group => {
                 const fiscalStyle = group.isFiscal ? fiscalStyles.yes : fiscalStyles.no;
                 const vatStyle = vatStyles[String(Number(group.vatRates))] ?? vatStyles['0'];
-                return {key: `cash-${group.key}`, value: listDateValue({...group, creditDate: group.latestCreditDate, orderDate: group.latestCreditDate}, dateSort), content: <div className="income-mobile-item mobile-record-item cash-register-aggregate-mobile-item" key={`mobile-cash-${group.key}`}>
-                    <div className="mobile-record-select">
-                        <input type="checkbox" disabled aria-label="I cumulativi degli scontrini non sono selezionabili"/>
-                    </div>
-                    <Link className="mobile-record-link income-mobile-link" href={cashRegisterGroupHref(group)}>
-                        <div className="mobile-record-main">
-                            <div className="mobile-record-header">
-                                <div className="left-side flex-grow">
-                                    {/*<span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ Nf'}</span>*/}
-                                    {group.isFiscal ? <span className="text-primary strong">✓ Fisc</span> : <span className="text-muted strong">✕ Non Fisc.</span>}
-                                    {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>*/}
-                                    <span className="text-muted">&nbsp; • &nbsp;{Number(group.vatRates)}%</span>
-                                    {/*<span className="text-muted">&nbsp; • &nbsp;{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
-                                    <span className="text-muted">&nbsp; • &nbsp;{formatMonthPeriod(group.billingMonth)}</span>
+                return {
+                    key: `cash-${group.key}`,
+                    value: listDateValue({
+                        ...group,
+                        creditDate: group.latestCreditDate,
+                        orderDate: group.latestCreditDate
+                    }, dateSort),
+                    content: <div className="income-mobile-item mobile-record-item cash-register-aggregate-mobile-item"
+                                  key={`mobile-cash-${group.key}`}>
+                        <div className="mobile-record-select">
+                            <input type="checkbox" disabled
+                                   aria-label="I cumulativi degli scontrini non sono selezionabili"/>
+                        </div>
+                        <Link className="mobile-record-link income-mobile-link" href={cashRegisterGroupHref(group)}>
+                            <div className="mobile-record-main">
+                                <div className="mobile-record-header">
+                                    <div className="left-side flex-grow">
+                                        {/*<span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ Nf'}</span>*/}
+                                        {group.isFiscal ? <span className="text-primary strong">✓ Fisc</span> :
+                                            <span className="text-muted strong">✕ Non Fisc</span>}
+                                        {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>*/}
+                                        <span className="text-muted">&nbsp; • &nbsp;{Number(group.vatRates)}%</span>
+                                        {/*<span className="text-muted">&nbsp; • &nbsp;{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
+                                        <span
+                                            className="text-muted">&nbsp; • &nbsp;{formatMonthPeriod(group.billingMonth)}</span>
+                                    </div>
+                                    <div className="right-side">
+                                        <span className="list-payment-icon">{group.paymentMethodIcon ?? '  •  '}</span>
+                                        <strong
+                                            className="ml-12 mobile-record-date text-pre">{mobileDateLabel(group.latestCreditDate)}</strong>
+                                    </div>
                                 </div>
-                                <div className="right-side">
-                                    <span className="list-payment-icon">{group.paymentMethodIcon ?? '  •  '}</span>
-                                    <strong className="ml-12 mobile-record-date text-pre">{mobileDateLabel(group.latestCreditDate)}</strong>
+                                <div className="mobile-record-title-row">
+                                    <div className="left-side flex-grow pl-6">
+                                        <span>{group.salesChannelIcon ?? ''} {group.salesChannel}</span>
+                                        <div
+                                            className="mobile-record-subtitle">{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</div>
+                                    </div>
+                                    <div className="right-side">
+                                        <span className={moneyTone(group.amount)}>{euro(group.amount)}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="mobile-record-title-row">
-                                <div className="left-side flex-grow pl-6">
-                                    <span>{group.salesChannelIcon ?? ''} {group.salesChannel}</span>
-                                    <div className="mobile-record-subtitle">{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</div>
-                                </div>
-                                <div className="right-side">
-                                    <span className={moneyTone(group.amount)}>{euro(group.amount)}</span>
-                                </div>
-                            </div>
-                            <div className="mobile-record-title-row income-mobile-status-row">
-                                <span className="badge income-badge-compact">🧾 Scontrini</span>
-                                {/*<span className="badge">IVA &nbsp;{aggregateVatLabel(group)}</span>*/}
-                                <span className={badgeClass(incomeCreditStatusStyles.ACCREDITATO.className)}>
+                                <div className="mobile-record-title-row income-mobile-status-row">
+                                    <span className="badge income-badge-compact">🧾 Scontrini</span>
+                                    {/*<span className="badge">IVA &nbsp;{aggregateVatLabel(group)}</span>*/}
+                                    <span className={badgeClass(incomeCreditStatusStyles.ACCREDITATO.className)}>
                                     {incomeCreditStatusStyles.ACCREDITATO.icon} {incomeCreditStatusStyles.ACCREDITATO.label}
                                 </span>
+                                </div>
                             </div>
-                        </div>
-                    </Link>
-                </div>};
+                        </Link>
+                    </div>
+                };
             }), ...mobileIncomes.map(income => {
                 const paymentMethod = income.paymentMethodRef.name;
                 const invoiceStyle = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
@@ -304,73 +346,97 @@ export default function IncomesList({
                 const vatStyle = vatStyles[String(Number(income.vatRate))] ?? vatStyles['0'];
                 const amount = Number(income.amount);
                 const recordClass = ['income-mobile-item', 'mobile-record-item', status === incomeCreditStatusStyles.SCADUTO ? 'mobile-record-item-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
-                return {key: income.id, value: listDateValue(income, dateSort), content: <div className={recordClass} key={`mobile-income-${income.id}`}>
-                    <div className="mobile-record-select">
-                        <input form={formId} type="checkbox" name="ids" value={income.id} data-credit-complete={creditState === 'ACCREDITATO' ? "true" : "false"} aria-label={`Seleziona incasso ${income.id}`}/>
-                    </div>
-                    <Link className="mobile-record-link income-mobile-link" href={`/incomes/${income.id}?returnTo=${returnTo}`}>
-                        <div className="mobile-record-main">
-                            <div className="mobile-record-header">
-                                <div className="left-side flex-grow">
-                                    {income.isFiscal ? <span className='text-primary strong'>✓ Fis</span> : <span className='text-muted strong'>✕ Nf</span>}
-                                    {/*{fiscalBadge(income.isFiscal)}*/}
-                                    <span className="text-muted">
-                                        {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(income.vatRate)}%</span>*/}
-                                        <span className="text-mmuted">&nbsp; • &nbsp;{Number(income.vatRate)}%</span>
-                                    </span>
-                                    <small className="text-pre text-muted hidden-xs-up">&nbsp; • &nbsp;{formatMonthPeriod(income.billingMonth)}</small>
-                                    <small className="text-pre text-muted hidden-xs-down">&nbsp; • &nbsp;{formatPeriod(income.billingMonth, income.billingYear)}</small>
-
-                                    {income.isFiscal ?
-                                        <span className="expense-invoice-indicator">
-                                            &nbsp;
-                                            <span className="expense-invoice-indicator">{MobileInvoiceBadge(true, income.invoiceStatus)}</span>
-                                            {/*<span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>*/}
-                                            <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/>
-                                        </span> : ''}
-                                </div>
-
-                                <div className="right-side">
-                                    <span className="list-payment-icon">{income.paymentMethodRef?.icon ?? '  •  '}</span>
-                                    <span className="ml-12 mobile-record-date text-pre">{mobileDateLabel(income.orderDate)}</span>
-                                </div>
-
-                            </div>
-                            <div className="mobile-record-title-row">
-                                {income.recurringIncomeId ? <span className="badge color-badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null}
-                                <div className="left-side flex-grow pl-6">
-                                    <span>{hideCustomer ? (income.description || 'Incasso senza descrizione') : income.customer?.businessName}</span>
-                                    {!hideCustomer ?
-                                        <div className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div> : null}
-                                </div>
-                                <div className="right-side">
-                                    <span className={moneyTone(amount)}>{euro(amount)}</span>
-                                </div>
-                            </div>
-                            <div className="mobile-record-title-row income-mobile-status-row">
-                                <span className="badge">{income.salesChannelRef.icon ?? '•'} {income.salesChannelRef.name}</span>
-                                <span title={statusLabel} className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {statusLabel}</span>
-                            </div>
+                return {
+                    key: income.id,
+                    value: listDateValue(income, dateSort),
+                    content: <div className={recordClass} key={`mobile-income-${income.id}`}>
+                        <div className="mobile-record-select">
+                            <input form={formId} type="checkbox" name="ids" value={income.id}
+                                   data-credit-complete={creditState === 'ACCREDITATO' ? "true" : "false"}
+                                   aria-label={`Seleziona incasso ${income.id}`}/>
                         </div>
-                    </Link>
-                </div>};
+                        <Link className="mobile-record-link income-mobile-link"
+                              href={`/incomes/${income.id}?returnTo=${returnTo}`}>
+                            <div className="mobile-record-main">
+                                <div className="mobile-record-header">
+                                    <div className="left-side flex-grow">
+                                        {income.isFiscal ? <span className='text-primary strong'>✓ Fis</span> :
+                                            <span className='text-muted strong'>✕ Nf</span>}
+                                        {/*{fiscalBadge(income.isFiscal)}*/}
+                                        <span className="text-muted">
+                                        {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(income.vatRate)}%</span>*/}
+                                            <span
+                                                className="text-mmuted">&nbsp; • &nbsp;{Number(income.vatRate)}%</span>
+                                    </span>
+                                        <small
+                                            className="text-pre text-muted hidden-xs-up">&nbsp; • &nbsp;{formatMonthPeriod(income.billingMonth)}</small>
+                                        <small
+                                            className="text-pre text-muted hidden-xs-down">&nbsp; • &nbsp;{formatPeriod(income.billingMonth, income.billingYear)}</small>
+
+                                        {income.isFiscal ?
+                                            <span className="expense-invoice-indicator">
+                                            &nbsp;
+                                                <span
+                                                    className="expense-invoice-indicator">{MobileInvoiceBadge(true, income.invoiceStatus)}</span>
+                                                {/*<span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>*/}
+                                                <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)}
+                                                                               endpointBase="/api/income-attachments"/>
+                                        </span> : ''}
+                                    </div>
+
+                                    <div className="right-side">
+                                        <span
+                                            className="list-payment-icon">{income.paymentMethodRef?.icon ?? '  •  '}</span>
+                                        <span
+                                            className="ml-12 mobile-record-date text-pre">{mobileDateLabel(income.orderDate)}</span>
+                                    </div>
+
+                                </div>
+                                <div className="mobile-record-title-row">
+                                    {income.recurringIncomeId ? <span
+                                        className="badge color-badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null}
+                                    <div className="left-side flex-grow pl-6">
+                                        <span>{hideCustomer ? (income.description || 'Incasso senza descrizione') : income.customer?.businessName}</span>
+                                        {!hideCustomer ?
+                                            <div
+                                                className="mobile-record-subtitle flex-grow">{income.description ? `${income.description}` : ''}</div> : null}
+                                    </div>
+                                    <div className="right-side">
+                                        <span className={moneyTone(amount)}>{euro(amount)}</span>
+                                    </div>
+                                </div>
+                                <div className="mobile-record-title-row income-mobile-status-row">
+                                    <span
+                                        className="badge">{income.salesChannelRef.icon ?? '•'} {income.salesChannelRef.name}</span>
+                                    <span title={statusLabel}
+                                          className={`${badgeClass(status.className)} income-badge-compact`}>{status.icon} {statusLabel}</span>
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
+                };
             })]}/>
             {!incomes.length && !cashRegisterGroups.length ?
                 <div className="record-empty-state">{emptyMessage}</div> : null}
         </div>
 
         <div className="table-scroll incomes-table-scroll">
-            <table className="expenses-table incomes-table compact-incomes-table" data-sortable-table data-month-grouping={monthGrouping} data-default-sort="credit-date" data-default-sort-dir="desc">
+            <table className="expenses-table incomes-table compact-incomes-table" data-sortable-table
+                   data-month-grouping={monthGrouping} data-default-sort="credit-date" data-default-sort-dir="desc">
                 <thead>
                 <tr>
                     <th className="cell-option">
-                        <input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutti gli incassi"/>
+                        <input type="checkbox" className="bulk-select-all" data-bulk-target={formId}
+                               aria-label="Seleziona tutti gli incassi"/>
                     </th>
-                    <th data-sort-key="billing-period" data-sort-type="number" className="cell-billing-period">Periodo fatt.</th>
-                    <th data-sort-key="order-date" data-sort-type="date" className="cell-order-date">Data riferimento</th>
+                    <th data-sort-key="billing-period" data-sort-type="number" className="cell-billing-period">Periodo
+                        fatt.
+                    </th>
+                    <th data-sort-key="order-date" data-sort-type="date" className="cell-order-date">Data riferimento
+                    </th>
                     <th data-sort-key="sales-channel" className="cell-category">Canale vendita</th>
                     {!hideCustomer ? <th data-sort-key="customer" className="cell-supplier">Cliente</th> : null}
-                    <th data-sort-key="fiscal" className="cell-fiscal">Fisc.</th>
+                    <th data-sort-key="fiscal" className="cell-fiscal">Fisc</th>
                     <th data-sort-key="amount" data-sort-type="number" className="cell-amount">Importo</th>
                     <th data-sort-key="description" className="cell-description">Descrizione</th>
                     {/*<th data-sort-key="vat" data-sort-type="number" className="cell-vat">IVA</th>*/}
@@ -399,7 +465,8 @@ export default function IncomesList({
                                tabIndex={0}
                                key={`cash-${group.key}`}>
                         <td className="cell-option">
-                            <input type="checkbox" disabled aria-label="I cumulativi degli scontrini non sono selezionabili"/>
+                            <input type="checkbox" disabled
+                                   aria-label="I cumulativi degli scontrini non sono selezionabili"/>
                         </td>
                         <td>{formatPeriod(group.billingMonth, group.billingYear)}</td>
                         <td>{compactDateTableLabel(group.latestCreditDate)}</td>
@@ -407,7 +474,8 @@ export default function IncomesList({
                         {!hideCustomer ? <td>🧾 Registratore di cassa</td> : null}
                         <td>{fiscalBadge(group.isFiscal)}</td>
                         <td><strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong>
-                            <span className="income-table-payment-icon" title={group.paymentMethod} aria-label={`Metodo di pagamento: ${group.paymentMethod}`}>{group.paymentMethodIcon ?? '•'}</span>
+                            <span className="income-table-payment-icon" title={group.paymentMethod}
+                                  aria-label={`Metodo di pagamento: ${group.paymentMethod}`}>{group.paymentMethodIcon ?? '•'}</span>
                         </td>
                         <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
                         {/*<td>{aggregateVatBadge(group)}</td>*/}
@@ -432,32 +500,45 @@ export default function IncomesList({
                     });
                     const invoice = incomeInvoiceStatusStyles[income.invoiceStatus || 'NONE'] ?? incomeInvoiceStatusStyles.NONE;
                     const rowClass = ['clickable-desktop-row', status === incomeCreditStatusStyles.SCADUTO ? 'income-row-overdue' : !income.isCredited || income.invoiceStatus === 'NON_INVIATA' || income.invoiceStatus === 'PARZIALE' ? 'income-row-warning' : ''].filter(Boolean).join(' ');
-                    return <tr className={rowClass} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`} data-sort-row
+                    return <tr className={rowClass} data-row-href={`/incomes/${income.id}?returnTo=${returnTo}`}
+                               data-sort-row
                                data-sort-billing-period={String(income.billingYear * 12 + income.billingMonth)}
                                data-sort-order-date={dateSortValue(income.orderDate ?? income.creditDate)}
                                data-sort-credit-date={dateSortValue(income.creditDate)}
-                               data-sort-sales-channel={income.salesChannelRef.name} data-sort-customer={income.customer?.businessName ?? ''} data-sort-fiscal={income.isFiscal ? '1' : '0'}
+                               data-sort-sales-channel={income.salesChannelRef.name}
+                               data-sort-customer={income.customer?.businessName ?? ''}
+                               data-sort-fiscal={income.isFiscal ? '1' : '0'}
                                data-sort-description={income.description ?? ''}
-                               data-sort-amount={String(Number(income.amount))} data-sort-vat={String(Number(income.vatRate))}
-                               data-sort-credit-status={statusLabel} data-sort-invoice-status={invoice.label} tabIndex={0} key={income.id}>
+                               data-sort-amount={String(Number(income.amount))}
+                               data-sort-vat={String(Number(income.vatRate))}
+                               data-sort-credit-status={statusLabel} data-sort-invoice-status={invoice.label}
+                               tabIndex={0} key={income.id}>
                         <td className="cell-option">
-                            <input form={formId} type="checkbox" name="ids" value={income.id} data-credit-complete={creditState === 'ACCREDITATO' ? "true" : "false"} aria-label={`Seleziona incasso ${income.id}`}/>
+                            <input form={formId} type="checkbox" name="ids" value={income.id}
+                                   data-credit-complete={creditState === 'ACCREDITATO' ? "true" : "false"}
+                                   aria-label={`Seleziona incasso ${income.id}`}/>
                         </td>
                         <td>{formatPeriod(income.billingMonth, income.billingYear)}</td>
                         <td>{compactDateTableLabel(income.orderDate ?? income.creditDate)}</td>
                         <td>{income.salesChannelRef.icon ?? '  •  '} {income.salesChannelRef.name}</td>
                         {!hideCustomer ? <td>{income.customer ?
-                            <Link href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td> : null}
+                            <Link
+                                href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td> : null}
                         <td>{fiscalBadge(income.isFiscal)}</td>
                         <td className="cell-amount">
                             <strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
-                            <span className="income-table-payment-icon" title={income.paymentMethodRef.name} aria-label={`Metodo di pagamento: ${income.paymentMethodRef.name}`}>{income.paymentMethodRef.icon ?? '•'}</span>
+                            <span className="income-table-payment-icon" title={income.paymentMethodRef.name}
+                                  aria-label={`Metodo di pagamento: ${income.paymentMethodRef.name}`}>{income.paymentMethodRef.icon ?? '•'}</span>
                         </td>
-                        <td>{income.recurringIncomeId ? <span className="badge color-badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null} {income.description ?? '-'}</td>
+                        <td>{income.recurringIncomeId ? <span
+                            className="badge color-badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null} {income.description ?? '-'}</td>
                         {/*<td>{vatBadge(income.vatRate)}</td>*/}
-                         <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
+                        <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
                         <td className="text-center">{income.isFiscal ?
-                            <span className="expense-invoice-indicator"><span className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span><ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/></span> :
+                            <span className="expense-invoice-indicator"><span
+                                className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span><ExpenseInvoiceAttachmentsLink
+                                attachments={invoiceAttachments(income)}
+                                endpointBase="/api/income-attachments"/></span> :
                             <span className="badge tone-muted">✕</span>}
                         </td>
                         <td className="text-center">{compactDateTableLabel(income.creditDate)}</td>

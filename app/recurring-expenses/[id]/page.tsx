@@ -119,7 +119,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
             take: 100
         }),
         prisma.employee.findMany({
-            where: {workspaceId: current.workspace.id},
+            where: {workspaceId: current.workspace.id, companyId: current.company.id},
             orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]
         })
     ]);
@@ -409,7 +409,7 @@ export default async function RecurringExpenseDetailPage({params, searchParams}:
                 </section>
 
                 </>}>
-                <section className="record-detail-section record-list-card recurring-generated-list">
+                <section className="record-detail-section record-list-card record-list-grid recurring-generated-list">
                     <div className="record-detail-section-heading mobile-record-list-header">
                         <div>
                             <div className="info-title-row"><h2>Spese generate</h2><InfoHint compactOnly title="Spese generate">Ultime spese create da questa regola ricorrente.</InfoHint></div><p className="muted info-hint-desktop-text">Ultime spese create da questa regola ricorrente.</p>

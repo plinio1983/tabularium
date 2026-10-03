@@ -240,7 +240,7 @@ export default async function SuppliersPage({searchParams}: {
         <script
             dangerouslySetInnerHTML={{__html: `document.addEventListener('submit', function(event) { const form = event.target; if (form && form.classList && form.classList.contains('confirm-delete-form')) { const message = form.getAttribute('data-confirm') || 'Confermi la rimozione?'; if (!confirm(message)) event.preventDefault(); } });`}}/>
 
-        <div className="card record-list-card fixed">
+        <div className="card record-list-card record-list-grid fixed">
             <div className="list-heading recurring-list-heading">
                 <div>
                     <div className="info-title-row">

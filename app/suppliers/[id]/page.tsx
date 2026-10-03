@@ -222,7 +222,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
     </div>
 
     </>}>
-        <div className="card record-list-card supplier-linked-expenses-list">
+        <div className="card record-list-card record-list-grid supplier-linked-expenses-list">
       <div className="list-heading mobile-record-list-header">
         <div>
           <h2>Spese collegate</h2>
