@@ -1165,9 +1165,9 @@ body.drawer-open {
 }
 
 .mobile-record-item-invoice-waiting {
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 72%);
+  background: linear-gradient(90deg, rgba(255, 248, 223, .82), transparent 72%);
+  //background: linear-gradient(135deg, #eff6ff 0%, #ffffff 72%);
   border-color: #93c5fd;
-  /*box-shadow: 0 10px 24px rgba(161, 92, 0, .10);*/
 }
 
 .tone-sdi {

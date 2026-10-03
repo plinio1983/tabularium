@@ -1647,7 +1647,8 @@ body.invoice-attachments-modal-open {
 }
 
 .mobile-record-item-unpaid {
-  background: linear-gradient(90deg, rgba(255, 248, 223, .82), transparent 72%);
+  //background: linear-gradient(90deg, rgba(255, 248, 223, .82), transparent 72%);
+  //background: linear-gradient(135deg, #eff6ff 0%, #ffffff 72%);
 }
 
 .mobile-record-select {
@@ -1732,7 +1733,7 @@ body.invoice-attachments-modal-open {
   display: flex;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.25;
+  line-height: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1773,11 +1774,20 @@ body.invoice-attachments-modal-open {
   }
 
   .expense-mobile-description {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    @media (max-width:762px) {
+      max-width: 390px;
+    }
+
+    @media (max-width: 576px) {
+      max-width: 225px;
+    }
+
     @media (max-width: 420px) {
       max-width: 150px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
     }
   }
 }
@@ -1808,6 +1818,7 @@ body.invoice-attachments-modal-open {
 .mobile-record-meta span {
   display: inline-flex;
   align-items: center;
+  line-height: 1;
   /*min-height: 22px;*/
   /*padding: 3px 7px;*/
   border-radius: 999px;

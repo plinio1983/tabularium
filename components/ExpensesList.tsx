@@ -373,10 +373,10 @@ export default function ExpensesList({
                 let recordAddClass = '';
                 if (overdue) {
                     recordAddClass = 'mobile-record-item-overdue';
-                } else if (unpaid) {
-                    recordAddClass = 'mobile-record-item-unpaid';
                 } else if (invoiceWaiting) {
                     recordAddClass = 'mobile-record-item-invoice-waiting';
+                } else if (unpaid) {
+                    recordAddClass = 'mobile-record-item-unpaid';
                 }
                 const recordClass = `mobile-record-item ${recordAddClass}`;
                 const detailHref = expenseDetailHref(expense, returnTo, linkRecurringExpensesToDefinition);
@@ -449,7 +449,7 @@ export default function ExpensesList({
                                         <span title={expense.category.name} className="text-secondary strong">
                                             {categoryLabel(expense.category, expense.category.code)}
                                         </span> : null}
-                                    &nbsp;•&nbsp;
+                                    <span>&nbsp;•&nbsp;</span>
                                     {/*{expense.category ?*/}
                                     {/*    <span title={expense.category.name} className={badgeClass(categoryClassName)}>*/}
                                     {/*        {categoryLabel(expense.category, expense.category.code)}*/}
