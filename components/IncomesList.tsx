@@ -323,7 +323,7 @@ export default function IncomesList({
 
                                     {income.isFiscal ?
                                         <span className="expense-invoice-indicator">
-                                            &nbsp; •
+                                            &nbsp;
                                             <span className="expense-invoice-indicator">{MobileInvoiceBadge(true, income.invoiceStatus)}</span>
                                             {/*<span title={invoiceStyle.label} className={`${badgeClass(invoiceStyle.className)} income-badge-compact`}>{invoiceStyle.icon} {invoiceStyle.label}</span>*/}
                                             <ExpenseInvoiceAttachmentsLink attachments={invoiceAttachments(income)} endpointBase="/api/income-attachments"/>
