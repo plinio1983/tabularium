@@ -50,13 +50,6 @@ function filterSearch(search: string) {
   return value ? `?${value}` : '';
 }
 
-// const links = [
-//   { href: '/', label: 'Dashboard', shortLabel: 'Home', icon: '⌂', match: (pathname: string) => pathname === '/' },
-//   { href: '/expenses', label: 'Spese', shortLabel: 'Spese', icon: '−', match: (pathname: string) => pathname.startsWith('/expenses') },
-//   { href: '/incomes', label: 'Incassi', shortLabel: 'Incassi', icon: '+', match: (pathname: string) => pathname.startsWith('/incomes') },
-//   { href: '/suppliers', label: 'Fornitori', shortLabel: 'Fornitori', icon: '◇', match: (pathname: string) => pathname.startsWith('/suppliers') },
-// ];
-
 function MainNavContent() {
   const pathname = usePathname() || '/';
   const searchParams = useSearchParams();
@@ -69,7 +62,7 @@ function MainNavContent() {
       { href: '/expenses', label: 'Spese', shortLabel: 'Spese', icon: '−', match: (pathname: string) => isDocumentNavigationActive(pathname, '/expenses') },
       { href: '/incomes', label: 'Incassi', shortLabel: 'Incassi', icon: '+', match: (pathname: string) => isDocumentNavigationActive(pathname, '/incomes') },
       { href: currentMonthHref, label: 'Report', shortLabel: 'Report', icon: <MonthlyReportIcon/>, match: (currentPathname: string) => currentPathname.startsWith('/months/') },
-      { href: '/suppliers', label: 'Fornitori', shortLabel: 'Fornitori', icon: '◇', match: (pathname: string) => isDocumentNavigationActive(pathname, '/suppliers'), isMonthLink: true },
+      { href: '/incomes/cash-register/receipts', label: 'Scontrini', shortLabel: 'Scontrini', icon: '🧾', match: (pathname: string) => isDocumentNavigationActive(pathname, '/incomes/cash-register/receipts'), isMonthLink: true },
   ];
   const navigationMobileLinks = [
       navigationLinks[0],

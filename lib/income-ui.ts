@@ -12,8 +12,8 @@ export const saleCategoryTones: Record<string, string> = {
 };
 
 export const fiscalStyles = {
-  yes: { label: 'Si', icon: '✓', className: 'tone-yes' },
-  no: { label: 'No', icon: '×', className: 'tone-no' }
+  yes: { label: 'Si', icon: '✓', className: '-tone-yes' },
+  no: { label: 'No', icon: '×', className: 'tone-muted' }
 };
 
 export const incomeInvoiceStatusStyles: Record<string, { label: string; icon: string; className: string }> = {

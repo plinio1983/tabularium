@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import ShellChrome from '@/components/ShellChrome';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
 import NavigationProgress from '@/components/NavigationProgress';
+import MobilePageTransition from '@/components/MobilePageTransition';
 import {CompanyTimeZoneProvider} from '@/components/CompanyTimeZoneProvider';
 import {getCurrentSession} from '@/lib/auth';
 
@@ -29,6 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return <html lang="it"><body><main className="shell">
     <CompanyTimeZoneProvider timeZone={current?.company?.timeZone}>
     <Suspense fallback={null}><NavigationProgress /></Suspense>
+    <MobilePageTransition />
     <ShellChrome slot="header" userName={current?.user.name} />
     <ClickableDesktopRows />
 

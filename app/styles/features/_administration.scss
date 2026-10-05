@@ -98,12 +98,12 @@ table {
   }
 
   .cell-order-date {
-    width: 8%;
+    width: 6%;
     //text-align: center;
   }
 
   .cell-billing-period {
-    width: 8%;
+    width: 6%;
     text-align: left;
   }
 
@@ -119,22 +119,22 @@ table {
 
   .cell-category {
     //width: 122px;
-    width: 10%;
-    text-align: center;
+    width: 8%;
+    text-align: left;
   }
 
   .cell-ebilling {
-    width: 8%;
+    width: 7%;
     text-align: center;
   }
 
   .cell-type {
-    width: 4%;
+    width: 5%;
     text-align: center;
   }
 
   .cell-fiscal {
-    width: 56px;
+    //width: 56px;
     text-align: center;
   }
 
@@ -146,24 +146,25 @@ table {
 
   .cell-residual {
     width: 8%;
-    text-align: right;
+    //text-align: right;
   }
 
   .cell-amount {
-    width: 10%;
+    width: 9%;
     //width: 120px;
     min-width: 112px;
     max-width: 145px;
   }
 
   .cell-vat {
-    width: 56px;
+    //width: 56px;
+    width: 4%;
     text-align: center;
   }
 
   .cell-invoice-state {
     //width: 90px;
-    width: 10%;
+    width: 8%;
     text-align: center;
   }
 
@@ -174,7 +175,7 @@ table {
   }
 
   .cell-payment-state {
-    width: 13%;
+    width: 11%;
     text-align: center;
   }
 
@@ -184,7 +185,7 @@ table {
   }
 
   .cell-description {
-    width: 16%;
+    width: 14%;
     //max-width: 210px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2335,13 +2336,6 @@ table {
 
   .payment-status-note {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 900px) {
-
-  .floating-bulk-actions-inner .floating-bulk-select-all-inline {
-    //padding-left: 15px;
   }
 }
 

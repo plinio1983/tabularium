@@ -107,7 +107,9 @@ function creditStatus(income: IncomeItem, timeZone: string) {
 
 function fiscalBadge(value: boolean) {
     const style = value ? fiscalStyles.yes : fiscalStyles.no;
-    return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ Fis' : '✕ Nf'}</span>;
+    return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ Fisc' : '✕ No'}</span>;
+    // const style = value ? "text-ok" : "text-muted";
+    // return <span className={`${style}`}>{value ? '✓ Fis' : '✕ Nf'}</span>;
 }
 
 function MobileInvoiceBadge(value: boolean, invoiceStatus?: string | null) {
@@ -479,7 +481,7 @@ export default function IncomesList({
                         </td>
                         <td>{group.count} {group.count === 1 ? 'scontrino' : 'scontrini'}</td>
                         {/*<td>{aggregateVatBadge(group)}</td>*/}
-                        <td>
+                        <td className="cell-credit-state">
                             <span className={badgeClass(credited.className)}>{credited.icon} {credited.label}</span>
                         </td>
                         <td className="text-center"><span className="badge badge-color tone-muted">✕</span></td>
@@ -533,7 +535,10 @@ export default function IncomesList({
                         <td>{income.recurringIncomeId ? <span
                             className="badge color-badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null} {income.description ?? '-'}</td>
                         {/*<td>{vatBadge(income.vatRate)}</td>*/}
-                        <td><span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span></td>
+                        <td className="cell-credit-state">
+                            {/*{ creditState === 'ACCREDITATO' ? <small className="text-ok strong">{status.icon} {statusLabel}</small> : <span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span>}*/}
+                            <span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span>
+                        </td>
                         <td className="text-center">{income.isFiscal ?
                             <span className="expense-invoice-indicator"><span
                                 className={badgeClass(invoice.className)}>{invoice.icon} {invoice.label}</span><ExpenseInvoiceAttachmentsLink

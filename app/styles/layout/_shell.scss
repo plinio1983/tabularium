@@ -24,6 +24,20 @@
   width: 100%;
 }
 
+// Detached, inert copy of the outgoing mobile page; chrome stays outside it.
+.mobile-page-transition-snapshot {
+  position: fixed;
+  bottom: 0;
+  overflow: clip;
+  pointer-events: none;
+  z-index: 30;
+  background: var(--bg);
+}
+
+@media (max-width: 760px) {
+  body { overflow-x: clip; }
+}
+
 .shell .nav,
 .shell .app-content {
   &.fixed {

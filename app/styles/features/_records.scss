@@ -1415,7 +1415,10 @@ body.drawer-open {
   padding-left: 12px;
   padding-right: 12px;
 
-  &:not(.btn) { padding-top: 9px; padding-bottom: 9px; }
+  &:not(.btn) {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
 }
 
 .totals-row {
@@ -1951,7 +1954,9 @@ body.drawer-open {
 }
 
 .compact-expenses-table .tone-paid,
-.compact-expenses-table .tone-received {
+.compact-expenses-table .tone-received,
+.compact-incomes-table .tone-received,
+.compact-incomes-table .tone-yes {
   background: transparent;
   border: 0 !important;
   padding: 0 !important;
@@ -2811,9 +2816,11 @@ table th, table td {
   }
 }
 
-@media (max-width: 760px) {
-  .cash-register-receipts-page {
-    .mobile-record-summary > .card,
-    .mobile-record-list-pane > .card { padding: 14px; }
-  }
-}
+//@media (max-width: 760px) {
+//  .cash-register-receipts-page {
+//    .mobile-record-summary > .card,
+//    .mobile-record-list-pane > .card {
+//      padding: 14px;
+//    }
+//  }
+//}

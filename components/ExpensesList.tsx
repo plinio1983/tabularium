@@ -196,7 +196,7 @@ function invoiceBadge(value: boolean, invoiceStatus?: string) {
 
     } else {
         label = '@ Fatt';
-        cssClass = 'text-primary strong';
+        cssClass = '-text-primary strong';
         return <span className={cssClass}>{label}</span>;
     }
 }

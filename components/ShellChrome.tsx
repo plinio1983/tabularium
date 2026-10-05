@@ -97,11 +97,11 @@ function DesktopHeader({
             </Suspense>
         </div> : null}
         {receiptListPage ? <div className="receipt-list-mobile-header-actions" aria-label="Azioni scontrini">
-            <Link className="btn btn-sm btn-default" href="/incomes">
+            <Link className="btn btn-sm btn-ghost" href="/incomes">
                 <span className="btn-icon" aria-hidden="true">↩</span>Incassi
             </Link>
             <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register" aria-label="Apri registratore di cassa">
-                <span className="btn-icon" aria-hidden="true">🧮</span>Reg. di Cassa
+                <span className="btn-icon" aria-hidden="true">🧮</span>Registratore
             </Link>
         </div> : null}
         {employeePage ? <div className="employee-mobile-header-actions" aria-label="Azioni dipendenti">
@@ -149,7 +149,9 @@ function DesktopHeader({
         </div> : null}
         {incomePage ? <div className="income-mobile-header-actions" aria-label="Azioni incassi">
             <Link className="btn btn-sm btn-secondary" href="/recurring-incomes">
-                <span className="btn-icon" aria-hidden="true">↻</span>Entrate ricorrenti
+                <span className="btn-icon" aria-hidden="true">↻</span>
+                <span className="hidden-xs-up">Ricorrenti</span>
+                <span className="hidden-xs-down">Entrate ricorrenti</span>
             </Link>
             <button className="btn btn-sm btn-primary income-add-btn" type="button" data-income-new>
                 <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Incasso
@@ -161,14 +163,14 @@ function DesktopHeader({
         </div> : null}
         {recurringExpensePage ?
             <div className="recurring-expense-mobile-header-actions" aria-label="Azioni uscite ricorrenti">
-                <Link className="btn btn-sm btn-default" href="/expenses"><span className="btn-icon" aria-hidden="true">↩</span>Spese</Link>
+                <Link className="btn btn-sm btn-ghost" href="/expenses"><span className="btn-icon" aria-hidden="true">↩</span>Spese</Link>
                 <button className="btn btn-sm btn-primary" type="button" data-recurring-expense-new>
                     <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Aggiungi
                 </button>
             </div> : null}
         {recurringIncomePage ?
             <div className="recurring-income-mobile-header-actions" aria-label="Azioni entrate ricorrenti">
-                <Link className="btn btn-sm btn-default" href="/incomes">
+                <Link className="btn btn-sm btn-ghost" href="/incomes">
                     <span className="btn-icon" aria-hidden="true">↩</span>Incassi
                 </Link>
                 <button className="btn btn-sm btn-primary" type="button" data-income-new data-income-new-type="recurring">

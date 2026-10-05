@@ -124,7 +124,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     returnQuery.set('mobileList', '1');
     const receiptListReturnTo = `/incomes/cash-register/receipts${returnQuery.size ? `?${returnQuery}` : ''}`;
 
-    const activeFiltersBox = <div className="recurring-active-filters">
+    const activeFiltersBox = <div key="receipt-active-filters" className="recurring-active-filters">
                     <div>
                         <span className="recurring-active-filters-title">Filtri attivi</span>
                         <div className="recurring-active-filter-tags">{activeFilters.map(item =>
@@ -136,7 +136,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     return <div className="grid cash-register-receipts-page">
         <MobileRecordViews kind="income" title="Andamento scontrini" linkLabel="Visualizza scontrini" count={receiptCount} summary={<>
         <CashRegisterReceiptTrendChart key={`${dateFrom}-${dateTo}-${annual}`} points={trend} annual={annual}
-            headerActions={<div className="toolbar-actions">
+            headerActions={<div key="receipt-header-actions" className="toolbar-actions">
                 <Link className="btn btn-sm btn-ghost" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
                 <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register"><span className="btn-icon">🧮</span> Reg. di cassa</Link>
             </div>}

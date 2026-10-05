@@ -635,6 +635,39 @@
   font-size: 13px;
 }
 
+.incomes-table {
+  .cell-option {
+    width: 47px !important;
+  }
+
+  .cell-billing-period {
+    width: 8%;
+    text-align: left;
+  }
+
+  .cell-order-date {
+    width: 7%;
+  }
+
+  .cell-category {
+    width: 10%;
+    text-align: left;
+  }
+
+  .cell-supplier {
+    width: 12%;
+    text-align: left;
+  }
+
+  .cell-fiscal {
+    width: 5%;
+  }
+
+  .cell-amount {
+    width: 12%;
+  }
+}
+
 .incomes-table-scroll {
   width: 100%;
   overflow-x: auto;
@@ -2753,7 +2786,15 @@ body.bulk-attachments-modal-open {
   gap: 8px;
   flex: 0 0 auto;
   min-height: 30px;
-  padding-left: 25px;
+  padding-left: 18px;
+
+  @media (min-width: 577px) and (max-width: 760px) {
+    padding-left: 18px;
+  }
+
+  @media(max-width: 576px) {
+    padding-left: 14px;
+  }
 }
 
 
@@ -2791,6 +2832,10 @@ body.bulk-attachments-modal-open {
 }
 
 .record-list-card.record-list-grid {
+  @media(max-width: 760px) {
+    padding: 12px 6px;
+    border: 0;
+  }
   @media(max-width: 576px) {
     padding: 12px 0;
     border: 0;

@@ -1759,12 +1759,6 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 }
 
 @media (max-width: 760px) {
-  .floating-bulk-actions-inner .floating-bulk-select-all-inline {
-    padding: 5px 0 2px 14px;
-  }
-}
-
-@media (max-width: 760px) {
   .floating-bulk-actions-inner .floating-bulk-menu-wrap .floating-bulk-menu-trigger {
     width: auto;
     padding: 0 12px;
