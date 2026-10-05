@@ -105,11 +105,21 @@ function creditStatus(income: IncomeItem, timeZone: string) {
     return incomeCreditStatusStyles[incomeCreditState(income, new Date(), timeZone)];
 }
 
-function fiscalBadge(value: boolean) {
-    const style = value ? fiscalStyles.yes : fiscalStyles.no;
-    return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value ? '✓ Fisc' : '✕ No'}</span>;
+function fiscalBadgeLabel(value: IncomeCashRegisterGroup) {
+   const style = value ? "text-ok" : "text-muted";
+   return <span className={`${style}`}>{value ? '✓ Fis' : '✕ Nf'}</span>;
+}
+
+function fiscalBadge(value: IncomeItem) {
     // const style = value ? "text-ok" : "text-muted";
     // return <span className={`${style}`}>{value ? '✓ Fis' : '✕ Nf'}</span>;
+
+    //const style = value.isFiscal ? fiscalStyles.yes : fiscalStyles.no;
+    //return <span className={`${badgeClass(style.className)} income-badge-compact`}>{value.isFiscal ? '✓ Fisc' : '--'}</span>;
+
+    const rate = Number(value.vatRate) || 0;
+    const style = vatStyles[String(rate)] ?? vatStyles['0'];
+    return <span className={`${badgeClass(style.className)} income-badge-compact`}>{rate ? `${rate}%` : '--'}</span>;
 }
 
 function MobileInvoiceBadge(value: boolean, invoiceStatus?: string | null) {
@@ -474,7 +484,7 @@ export default function IncomesList({
                         <td>{compactDateTableLabel(group.latestCreditDate)}</td>
                         <td>{group.salesChannelIcon ?? '  •  '} {group.salesChannel}</td>
                         {!hideCustomer ? <td>🧾 Registratore di cassa</td> : null}
-                        <td>{fiscalBadge(group.isFiscal)}</td>
+                        <td>{fiscalBadgeLabel(group)}</td>
                         <td><strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong>
                             <span className="income-table-payment-icon" title={group.paymentMethod}
                                   aria-label={`Metodo di pagamento: ${group.paymentMethod}`}>{group.paymentMethodIcon ?? '•'}</span>
@@ -526,7 +536,7 @@ export default function IncomesList({
                         {!hideCustomer ? <td>{income.customer ?
                             <Link
                                 href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td> : null}
-                        <td>{fiscalBadge(income.isFiscal)}</td>
+                        <td>{fiscalBadge(income)}</td>
                         <td className="cell-amount">
                             <strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
                             <span className="income-table-payment-icon" title={income.paymentMethodRef.name}

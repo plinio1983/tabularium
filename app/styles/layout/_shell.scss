@@ -41,10 +41,16 @@
 .shell .nav,
 .shell .app-content {
   &.fixed {
-    max-width: 1280px;
     width: calc(100%);
+    max-width: 1280px;
     min-width: 0;
     margin: 0 auto 12px;
+  }
+}
+
+.floating-bulk-actions-bar {
+  &.fixed {
+    margin: 0 auto;
   }
 }
 

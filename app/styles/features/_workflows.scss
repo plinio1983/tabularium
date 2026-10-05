@@ -2788,15 +2788,18 @@ body.bulk-attachments-modal-open {
   min-height: 30px;
   padding-left: 18px;
 
+  @media(max-width: 576px) {
+    padding-left: 14px;
+  }
+
   @media (min-width: 577px) and (max-width: 760px) {
     padding-left: 18px;
   }
 
-  @media(max-width: 576px) {
-    padding-left: 14px;
+  @media(min-width: 900px) {
+    padding-left: 29px;
   }
 }
-
 
 .bulk-select-all-inline {
   display: none;

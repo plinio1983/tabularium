@@ -204,9 +204,11 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                               title={receipt.description || undefined}>{receipt.description || '—'}</span></td>
                     <td>{receipt.salesChannelIcon ?? '•'} {receipt.salesChannel}</td>
                     <td className="cell-amount"><strong className="text-accent">{euro(receipt.amount)}</strong></td>
-                    <td><span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-no'}`}>
-                        {receipt.isFiscal ? '✓ Fisc' : '✕ Non fisc'}
-                    </span></td>
+                    <td>
+                        {/*<span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-muted'}`}>*/}
+                        <small className={`strong ${receipt.isFiscal ? 'text-ok' : 'text-muted'}`}>
+                        {receipt.isFiscal ? '✓ Fiscale' : '✕ Non fisc'}
+                    </small></td>
                     <td>{receipt.paymentMethodIcon ?? '•'} {receipt.paymentMethod}</td>
                     <td className="text-center">{receipt.isFiscal ?
                         <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}</td>

@@ -27,6 +27,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const current = await getCurrentSession();
+  let style = current?.user.name ? 'app-content fixed' : 'app-content ' ;
   return <html lang="it"><body><main className="shell">
     <CompanyTimeZoneProvider timeZone={current?.company?.timeZone}>
     <Suspense fallback={null}><NavigationProgress /></Suspense>
@@ -58,7 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           .catch(function () {});
       }
     ` }} />
-    <div className="app-content fixed">{children}{/* dms-root-suspense-boundary */}</div>
+      <div className={style}>{children}{/* dms-root-suspense-boundary */}</div>
     <ShellChrome slot="footer" />
     </CompanyTimeZoneProvider>
   </main></body></html>;
