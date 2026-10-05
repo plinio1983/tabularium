@@ -82,7 +82,8 @@ function DesktopHeader({
         {/*    <img className="site-header-logo" src={logoIcon.src} alt="Tabularium" width={logoIcon.width} height={logoIcon.height} />*/}
         {/*</div>*/}
         <div className="site-header-brand">
-            <img className="site-header-logo" src={logoHorizontal.src} alt="Tabularium" width={logoHorizontal.width} height={logoHorizontal.height}/>
+            <img className="site-header-logo" src={logoHorizontal.src} alt="Tabularium" width={logoHorizontal.width}
+                 height={logoHorizontal.height}/>
         </div>
         {ledgerKind ? <div className="ledger-mobile-header-actions">
             <div className="info-title-row">
@@ -101,7 +102,8 @@ function DesktopHeader({
             <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/incomes">
                 <span className="btn-icon" aria-hidden="true">↩</span>Incassi
             </Link>
-            <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register" aria-label="Apri registratore di cassa">
+            <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register"
+                  aria-label="Apri registratore di cassa">
                 <span className="btn-icon" aria-hidden="true">🧮</span>Registratore
             </Link>
         </div> : null}
@@ -117,13 +119,18 @@ function DesktopHeader({
         </div> : null}
         {settingsPage ? <Suspense fallback={null}><SettingsMobileHeader/></Suspense> : null}
         {importPage ? <div className="import-mobile-header-actions" aria-label="Azioni importazione">
-            <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/" aria-label="Indietro alla dashboard">
+            <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/"
+                  aria-label="Indietro alla dashboard">
                 <span className="btn-icon" aria-hidden="true">↩</span>Indietro
             </Link>
         </div> : null}
         {companyPage ? <div className="company-mobile-header-actions" aria-label="Azioni società">
-            <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/settings" aria-label="Indietro"><span className="btn-icon">↩</span><span className="company-header-back-label">Indietro</span></Link>
-            <button className="btn btn-sm btn-primary" type="button" data-company-new><span className="btn-icon btn-icon-add">＋</span>Nuova società</button>
+            <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/settings"
+                  aria-label="Indietro"><span className="btn-icon">↩</span><span
+                className="company-header-back-label">Indietro</span></Link>
+            <button className="btn btn-sm btn-primary" type="button" data-company-new><span
+                className="btn-icon btn-icon-add">＋</span>Nuova società
+            </button>
         </div> : null}
         {supplierPage ? <div className="supplier-mobile-header-actions" aria-label="Azioni fornitori">
             <button className="btn btn-sm btn-primary" type="button" data-supplier-new>
@@ -151,12 +158,15 @@ function DesktopHeader({
             </button>
         </div> : null}
         {expensePage ? <div className="expense-mobile-header-actions" aria-label="Azioni spese">
-            <Link className="btn btn-sm btn-secondary" href="/recurring-expenses"><span className="btn-icon" aria-hidden="true">↻</span>Spese ricorrenti</Link>
-            <ExpenseNewTriggerButton className="btn btn-sm btn-primary" floatingLabel="Spesa"><span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Spesa</ExpenseNewTriggerButton>
+            <Link className="btn btn-sm btn-secondary" href="/recurring-expenses">
+                <span className="btn-icon" aria-hidden="true">↻</span>Ricorrenti</Link>
+            <ExpenseNewTriggerButton className="btn btn-sm btn-primary" floatingLabel="Spesa"><span
+                className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Spesa</ExpenseNewTriggerButton>
         </div> : null}
         {recurringExpensePage ?
             <div className="recurring-expense-mobile-header-actions" aria-label="Azioni uscite ricorrenti">
-                <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/expenses"><span className="btn-icon" aria-hidden="true">↩</span>Spese</Link>
+                <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/expenses"><span
+                    className="btn-icon" aria-hidden="true">↩</span>Spese</Link>
                 <button className="btn btn-sm btn-primary" type="button" data-recurring-expense-new>
                     <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Aggiungi
                 </button>
@@ -166,7 +176,8 @@ function DesktopHeader({
                 <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/incomes">
                     <span className="btn-icon" aria-hidden="true">↩</span>Incassi
                 </Link>
-                <button className="btn btn-sm btn-primary" type="button" data-income-new data-income-new-type="recurring">
+                <button className="btn btn-sm btn-primary" type="button" data-income-new
+                        data-income-new-type="recurring">
                     <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Aggiungi
                 </button>
             </div> : null}
@@ -199,7 +210,15 @@ export default function ShellChrome({slot, userName}: Props) {
             </>;
         }
 
-        return <DesktopHeader ledgerKind={pathname === '/incomes/credits' ? 'credits' : pathname === '/expenses/payments' ? 'payments' : null} reportPage={/^\/months\/\d+\/\d+$/.test(pathname)} receiptListPage={pathname === '/incomes/cash-register/receipts'} employeePage={pathname === '/employees'} clientPage={pathname === '/clients'} supplierPage={pathname === '/suppliers'} companyPage={false} importPage={pathname === '/expenses/import'} settingsPage={isSettingsPath(pathname)} dashboardPage={pathname === '/'} incomePage={pathname === '/incomes'} expensePage={pathname === '/expenses'} recurringExpensePage={pathname === '/recurring-expenses'} recurringIncomePage={pathname === '/recurring-incomes'} userName={userName}/>;
+        return <DesktopHeader
+            ledgerKind={pathname === '/incomes/credits' ? 'credits' : pathname === '/expenses/payments' ? 'payments' : null}
+            reportPage={/^\/months\/\d+\/\d+$/.test(pathname)}
+            receiptListPage={pathname === '/incomes/cash-register/receipts'} employeePage={pathname === '/employees'}
+            clientPage={pathname === '/clients'} supplierPage={pathname === '/suppliers'} companyPage={false}
+            importPage={pathname === '/expenses/import'} settingsPage={isSettingsPath(pathname)}
+            dashboardPage={pathname === '/'} incomePage={pathname === '/incomes'} expensePage={pathname === '/expenses'}
+            recurringExpensePage={pathname === '/recurring-expenses'}
+            recurringIncomePage={pathname === '/recurring-incomes'} userName={userName}/>;
     }
 
     if (isFooterHiddenPath(pathname)) return null;
