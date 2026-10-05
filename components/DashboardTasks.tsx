@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
 import {euro} from '@/lib/money';
-import {summarizeDashboardTasks, expenseTaskLabels, incomeTaskLabels} from '@/lib/dashboard-tasks';
+import {summarizeDashboardTasks, expenseTaskLabels, incomeTaskLabels, dashboardTaskHref} from '@/lib/dashboard-tasks';
 
 export default async function DashboardTasks({workspaceId, companyId, timeZone, now}: {
     workspaceId: number; companyId: number; timeZone: string; now: Date;
@@ -28,25 +28,25 @@ export function DashboardTasksSummary({totals}: { totals: ReturnType<typeof summ
     const rows = [
         {
             label: expenseTaskLabels.overdue,
-            href: '/expenses?pending=overdue', ...totals.overdue,
+            href: dashboardTaskHref('expenses', 'overdue'), ...totals.overdue,
             detail: 'Residuo da pagare',
             critical: true
         },
         {
             label: incomeTaskLabels.missing_invoice,
-            href: '/incomes?pending=missing_invoice', ...totals.invoicesNotEmitted,
+            href: dashboardTaskHref('incomes', 'missing_invoice'), ...totals.invoicesNotEmitted,
             detail: 'Importo documenti',
             critical: false
         },
         {
             label: expenseTaskLabels.missing_invoice,
-            href: '/expenses?pending=missing_invoice', ...totals.invoicesNotReceived,
+            href: dashboardTaskHref('expenses', 'missing_invoice'), ...totals.invoicesNotReceived,
             detail: 'Importo documenti',
             critical: false
         },
         {
             label: incomeTaskLabels.uncredited,
-            href: '/incomes?pending=uncredited', ...totals.uncredited,
+            href: dashboardTaskHref('incomes', 'uncredited'), ...totals.uncredited,
             detail: 'Residuo da incassare',
             critical: false
         },

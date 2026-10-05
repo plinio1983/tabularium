@@ -10,6 +10,7 @@ import UserMenu from '@/components/UserMenu';
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import ReportMobileModeSwitch from '@/components/ReportMobileModeSwitch';
 import InfoHint from '@/components/InfoHint';
+import SettingsMobileHeader, {isSettingsPath} from '@/components/SettingsMobileHeader';
 import logoHorizontal from '../public/img/tabularium-logo-horiz.png';
 
 type Props = {
@@ -97,7 +98,7 @@ function DesktopHeader({
             </Suspense>
         </div> : null}
         {receiptListPage ? <div className="receipt-list-mobile-header-actions" aria-label="Azioni scontrini">
-            <Link className="btn btn-sm btn-ghost" href="/incomes">
+            <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/incomes">
                 <span className="btn-icon" aria-hidden="true">↩</span>Incassi
             </Link>
             <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register" aria-label="Apri registratore di cassa">
@@ -114,22 +115,14 @@ function DesktopHeader({
                 <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Nuovo cliente
             </button>
         </div> : null}
-        {settingsPage ? <div className="settings-mobile-header-actions" aria-label="Impostazioni">
-            <Link className="btn btn-ghost btn-icon-only" href="/" replace aria-label="Indietro alla dashboard" title="Indietro">
-                <span className="btn-icon" aria-hidden="true">↩</span>
-            </Link>
-            <div className="info-title-row">
-                <h2>Impostazioni</h2>
-                <InfoHint compactOnly title="Impostazioni">Gestisci account, workspace e configurazioni contabili.</InfoHint>
-            </div>
-        </div> : null}
+        {settingsPage ? <Suspense fallback={null}><SettingsMobileHeader/></Suspense> : null}
         {importPage ? <div className="import-mobile-header-actions" aria-label="Azioni importazione">
-            <Link className="btn btn-sm btn-ghost" href="/" aria-label="Indietro alla dashboard">
+            <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/" aria-label="Indietro alla dashboard">
                 <span className="btn-icon" aria-hidden="true">↩</span>Indietro
             </Link>
         </div> : null}
         {companyPage ? <div className="company-mobile-header-actions" aria-label="Azioni società">
-            <Link className="btn btn-sm btn-ghost" href="/settings" aria-label="Indietro"><span className="btn-icon">↩</span><span className="company-header-back-label">Indietro</span></Link>
+            <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/settings" aria-label="Indietro"><span className="btn-icon">↩</span><span className="company-header-back-label">Indietro</span></Link>
             <button className="btn btn-sm btn-primary" type="button" data-company-new><span className="btn-icon btn-icon-add">＋</span>Nuova società</button>
         </div> : null}
         {supplierPage ? <div className="supplier-mobile-header-actions" aria-label="Azioni fornitori">
@@ -163,14 +156,14 @@ function DesktopHeader({
         </div> : null}
         {recurringExpensePage ?
             <div className="recurring-expense-mobile-header-actions" aria-label="Azioni uscite ricorrenti">
-                <Link className="btn btn-sm btn-ghost" href="/expenses"><span className="btn-icon" aria-hidden="true">↩</span>Spese</Link>
+                <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/expenses"><span className="btn-icon" aria-hidden="true">↩</span>Spese</Link>
                 <button className="btn btn-sm btn-primary" type="button" data-recurring-expense-new>
                     <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Aggiungi
                 </button>
             </div> : null}
         {recurringIncomePage ?
             <div className="recurring-income-mobile-header-actions" aria-label="Azioni entrate ricorrenti">
-                <Link className="btn btn-sm btn-ghost" href="/incomes">
+                <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/incomes">
                     <span className="btn-icon" aria-hidden="true">↩</span>Incassi
                 </Link>
                 <button className="btn btn-sm btn-primary" type="button" data-income-new data-income-new-type="recurring">
@@ -206,7 +199,7 @@ export default function ShellChrome({slot, userName}: Props) {
             </>;
         }
 
-        return <DesktopHeader ledgerKind={pathname === '/incomes/credits' ? 'credits' : pathname === '/expenses/payments' ? 'payments' : null} reportPage={/^\/months\/\d+\/\d+$/.test(pathname)} receiptListPage={pathname === '/incomes/cash-register/receipts'} employeePage={pathname === '/employees'} clientPage={pathname === '/clients'} supplierPage={pathname === '/suppliers'} companyPage={pathname === '/settings/company-settings'} importPage={pathname === '/expenses/import'} settingsPage={pathname === '/settings'} dashboardPage={pathname === '/'} incomePage={pathname === '/incomes'} expensePage={pathname === '/expenses'} recurringExpensePage={pathname === '/recurring-expenses'} recurringIncomePage={pathname === '/recurring-incomes'} userName={userName}/>;
+        return <DesktopHeader ledgerKind={pathname === '/incomes/credits' ? 'credits' : pathname === '/expenses/payments' ? 'payments' : null} reportPage={/^\/months\/\d+\/\d+$/.test(pathname)} receiptListPage={pathname === '/incomes/cash-register/receipts'} employeePage={pathname === '/employees'} clientPage={pathname === '/clients'} supplierPage={pathname === '/suppliers'} companyPage={false} importPage={pathname === '/expenses/import'} settingsPage={isSettingsPath(pathname)} dashboardPage={pathname === '/'} incomePage={pathname === '/incomes'} expensePage={pathname === '/expenses'} recurringExpensePage={pathname === '/recurring-expenses'} recurringIncomePage={pathname === '/recurring-incomes'} userName={userName}/>;
     }
 
     if (isFooterHiddenPath(pathname)) return null;

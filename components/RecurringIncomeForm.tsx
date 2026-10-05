@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import InfoHint from '@/components/InfoHint';
 import {weekdayOptions, weekdayLabel, weekdayFromDate} from '@/lib/recurring-cadence';
 import {FormEvent, useRef, useState} from 'react';
@@ -334,6 +335,6 @@ export default function RecurringIncomeForm({
             <p className="inline-warning full">{error}</p> : null}
             <button className="btn btn-md btn-primary" type="submit" disabled={submitting}><span className="btn-icon">✓</span> {submitting ? 'Salvataggio...' : 'Salva entrata'}</button>
             {onCancel ? <button className="btn btn-md btn-default" type="button" onClick={onCancel}><span className="btn-icon">×</span> Annulla</button> :
-                <a className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</a>}</div>
+                <Link data-page-transition="backward" className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</Link>}</div>
     </form>;
 }

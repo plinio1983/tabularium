@@ -48,7 +48,7 @@ function applySort(table: HTMLTableElement, key: string, direction: 'asc' | 'des
   rows.forEach(row => body.appendChild(row));
   body.querySelectorAll('[data-month-heading]').forEach(row => row.remove());
   if (temporal && table.dataset.monthGrouping === 'true') {
-    const keys = rows.map(row => listMonthKey(dateValue(row), key === 'billing-period' ? 'billing' : 'date'));
+    const keys = rows.map(row => listMonthKey(dateValue(row), key === 'billing-period' ? 'billing' : 'date', table.dataset.monthTimeZone ?? 'UTC'));
     if (hasMultipleMonths(keys)) rows.forEach((row, index) => {
       if (index > 0 && keys[index] === keys[index - 1]) return;
       const separator = document.createElement('tr');

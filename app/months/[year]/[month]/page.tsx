@@ -234,11 +234,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                 {/*</span>*/}
 
                 <div className="trend-mode-toggle report-period-type-toggle" role="group" aria-label="Tipo di periodo">
-                    <Link className={periodType === 'month' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${lastCompletedMonth.year}/${lastCompletedMonth.month}?mode=${mode}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Mese</Link>
-                    <Link className={periodType === 'quarter' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/${(quarter - 1) * 3 + 1}?mode=${mode}&period=quarter${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Trimestre</Link>
-                    <Link className={periodType === 'year' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/1?mode=${mode}&period=year${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Anno</Link>
+                    <Link scroll={false} className={periodType === 'month' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${lastCompletedMonth.year}/${lastCompletedMonth.month}?mode=${mode}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Mese</Link>
+                    <Link scroll={false} className={periodType === 'quarter' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/${(quarter - 1) * 3 + 1}?mode=${mode}&period=quarter${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Trimestre</Link>
+                    <Link scroll={false} className={periodType === 'year' ? 'trend-mode-button is-active' : 'trend-mode-button'} href={`/months/${year}/1?mode=${mode}&period=year${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}>Anno</Link>
                 </div>
-                <YearNavigationSelect options={yearNavOptions} year={year}/>
+                <YearNavigationSelect options={yearNavOptions} year={year} scroll={false}/>
                 {periodType === 'month' ? <MonthReportMonthSelect
                     options={monthNavOptions}
                     value={currentReportHref}
@@ -250,7 +250,7 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                         const isActive = optionValue === (periodType === 'month' ? month : quarter);
                         return option.disabled
                             ? <button className="btn-sm btn-action month-report-month-button" type="button" disabled key={optionValue}>{option.label}</button>
-                            : <Link className={isActive ? 'btn-sm btn-action btn-active month-report-month-button' : 'btn-sm btn-action month-report-month-button'} href={option.href} aria-current={isActive ? 'page' : undefined} key={optionValue}>{option.label}</Link>;
+                            : <Link scroll={false} className={isActive ? 'btn-sm btn-action btn-active month-report-month-button' : 'btn-sm btn-action month-report-month-button'} href={option.href} aria-current={isActive ? 'page' : undefined} key={optionValue}>{option.label}</Link>;
                     })}
                 </div> : null}
             </div>
@@ -263,11 +263,11 @@ export default async function MonthPage({params, searchParams}: { params: Promis
                     </div>
                 </div>
                 <div className="trend-mode-toggle month-report-mode-toggle" role="group" aria-label="Tipo andamento mensile">
-                    <Link
+                    <Link scroll={false}
                         className={mode === 'overall' ? 'trend-mode-button is-active' : 'trend-mode-button'}
                         href={`/months/${year}/${month}?mode=overall${periodQuery}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}
                     >Complessivo</Link>
-                    <Link
+                    <Link scroll={false}
                         className={mode === 'fiscal' ? 'trend-mode-button is-active' : 'trend-mode-button'}
                         href={`/months/${year}/${month}?mode=fiscal${periodQuery}${includeCurrentMonthQuery}&returnTo=${encodeURIComponent(backHref)}`}
                     >Fiscale</Link>

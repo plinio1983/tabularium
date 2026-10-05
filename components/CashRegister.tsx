@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from '@/lib/currency-input';
@@ -383,7 +384,7 @@ export default function CashRegister({
                 </a>
             </div>
             <div className="cash-register-header-actions">
-                <a aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" href={mode === 'edit' ? returnTo : '/incomes/'}><span className="btn-icon" aria-hidden="true">×</span></a>
+                <Link data-page-transition="backward" aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" href={mode === 'edit' ? returnTo : '/incomes/'}><span className="btn-icon" aria-hidden="true">×</span></Link>
                 {/*<DetailBackButton href={mode === 'edit' ? '/incomes/cash-register/receipts' : '/incomes'}/>*/}
             </div>
         </header>
@@ -480,7 +481,7 @@ export default function CashRegister({
                     </div>
                 </div>
                 <button className="cash-register-edit-cancel btn btn-md btn-default" type="button"
-                        disabled={sending} onClick={() => router.push(returnTo)}>
+                        data-page-transition-back={returnTo} disabled={sending} onClick={() => router.push(returnTo)}>
                     <span className="btn-icon" aria-hidden="true">×</span> ANNULLA
                 </button>
                 <button className="cash-register-submit" type="button"

@@ -43,49 +43,44 @@ body:has(.detail-page-no-site-header) .shell {
   min-width: 706px;
   max-width: 100%;
 
-  .cell-option {
-    width: 5% !important;
-    min-width: 46px;
-    max-width: 52px;
-    text-align: center;
-  }
+  .cell-option {}
   .cell-id {
-    width: 7%;
+    width: 6%;
     min-width: 56px;
     max-width: 64px;
   }
   .cell-date {
-    width: 12%;
+    width: 13%;
     min-width: 110px;
     max-width: 127px;
   }
   .cell-description {
-    width: 17%;
+    width: 18%;
     min-width: 110px;
     max-width: 127px;
   }
   .cell-method {
-    width: 10%;
+    width: 11%;
     min-width: 100px;
     max-width: 130px;
   }
   .cell-fiscal {
-    width: 10%;
+    width: 11%;
     min-width: 64px;
     max-width: 110px;
   }
   .cell-amount {
-    width: 12%;
+    width: 11%;
     min-width: 110px;
     max-width: 170px;
   }
   .cell-vat {
-    width: 7%;
+    width: 8%;
     min-width: 56px;
     max-width: 84px;
   }
   .cell-channel {
-    width: 17%;
+    width: 18%;
     min-width: 110px;
     max-width: 170px;
   }
@@ -767,55 +762,6 @@ table {
 
 .settings-entity-actions .category-settings-delete-form {
   margin: 0;
-}
-
-.expense-category-edit-backdrop {
-  z-index: 10100;
-}
-
-.expense-category-edit-toolbar {
-  margin: 0;
-}
-
-.expense-category-edit-form {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding: 18px;
-
-  .app-form-field input,
-  .app-select-control select {
-    min-height: 48px;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
-    font-size: 15px;
-    font-weight: 700;
-  }
-
-  @media (max-width: 760px) {
-    grid-template-columns: minmax(0, 1fr);
-    align-content: start;
-    padding: 14px 0 calc(92px + env(safe-area-inset-bottom));
-
-    .span-2,
-    .full {
-      grid-column: 1;
-    }
-
-    .app-form-field input,
-    .app-select-control select {
-      min-height: 54px;
-      border-radius: 16px;
-      font-size: 16px;
-    }
-
-  }
-}
-
-.expense-category-edit-actions {
-  justify-content: flex-end;
-  padding-top: 4px;
-  border-top: 1px solid var(--line);
 }
 
 .vat-settlement-category-card {
@@ -3633,24 +3579,7 @@ body:has(.dashboard-grid) {
   }
 }
 
-@media (max-width: 760px) {
-  .expense-category-edit-backdrop {
-    padding: 0;
-  }
-}
 
-@media (max-width: 760px) {
-  .expense-category-edit-modal {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100dvh;
-    max-height: 100dvh;
-    padding: 14px;
-    border: 0;
-    border-radius: 0;
-    overflow-y: auto;
-  }
-}
 
 @media (max-width: 760px) {
   .vat-settlement-category-card {
@@ -3767,5 +3696,174 @@ body:has(.dashboard-grid) {
 @media (max-width: 760px) {
   .company-settings-page > .toolbar-card {
     display: none;
+  }
+}
+
+.workspace-audit-mobile-list {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .settings-admin-page {
+    margin-top: 0;
+    gap: 10px;
+    min-width: 0;
+
+    > .toolbar-card {
+      display: none;
+    }
+
+    .settings-category-hub {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .settings-category-link {
+      padding: 12px;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .settings-category-link-icon {
+      flex: 0 0 auto;
+      font-size: 24px;
+    }
+
+    .settings-category-link > span:not(.settings-category-link-icon) {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .settings-category-link small {
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .settings-entity-list-card,
+    .account-styled-form,
+    .account-sessions-card,
+    .workspace-profile-card,
+    .workspace-edit-card,
+    .workspace-audit-link,
+    .company-settings-card {
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .settings-entity-list {
+      gap: 8px;
+    }
+
+    .settings-entity-item {
+      padding: 10px;
+      gap: 8px;
+    }
+
+    .settings-entity-copy {
+      overflow-wrap: anywhere;
+    }
+
+    .settings-entity-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .account-styled-form .account-form-section-grid,
+    .account-styled-form .account-password-grid {
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .account-styled-form .account-form-section > summary {
+      padding: 10px 12px;
+    }
+
+    .account-styled-form .app-form-field input,
+    .workspace-edit-form .app-form-field input,
+    .settings-entity-create-form .app-form-field input,
+    .settings-entity-create-form .app-select-control select,
+    .sales-channel-register-card select {
+      min-height: 44px;
+      height: 44px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .workspace-form-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+  }
+
+  .settings-page-header .settings-mobile-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 6px;
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .info-hint-trigger {
+      flex: 0 0 auto;
+    }
+  }
+
+  .settings-mobile-header-actions > .btn {
+    flex: 0 0 auto;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .settings-admin-page .company-help {
+    display: none;
+  }
+
+  .settings-admin-page .cash-register-routing-content {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .settings-admin-page .cash-register-routing-table {
+    tbody { gap: 8px; }
+    tr { padding: 10px; gap: 8px; border-radius: 10px; }
+    select { min-height: 44px; height: 44px; border-radius: 10px; }
+  }
+
+  .workspace-audit-table {
+    display: none;
+  }
+
+  .workspace-audit-mobile-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .workspace-audit-mobile-item {
+    padding: 12px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+
+    p { margin: 8px 0; }
+    dl { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; }
+    dl > div { display: flex; gap: 6px; min-width: 0; }
+    dt { color: var(--muted); }
+    dd { margin: 0; }
+  }
+
+  .workspace-audit-mobile-heading {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 12px;
+
+    time { font-size: 12px; color: var(--muted); }
   }
 }

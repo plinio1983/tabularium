@@ -90,11 +90,12 @@ export async function generateRecurringIncomes(todayInput = new Date()): Promise
 export async function settleAutomaticRecurringCredits(todayInput = new Date()): Promise<AutomaticIncomeCreditJobResult> {
   const result: AutomaticIncomeCreditJobResult = { checked: 0, created: 0, skipped: 0, errors: [] };
   const incomes = await prisma.income.findMany({
-    where: { isCredited: false, dueDate: {not: null}, recurringIncome: { isAutomaticCredit: true } },
+    where: { incomeType: 'STANDARD', isCredited: false, dueDate: {not: null}, recurringIncome: { isAutomaticCredit: true } },
     include: { credits: true, recurringIncome: true, company: true }
   });
   for (const income of incomes) {
     result.checked++;
+    if (income.incomeType === 'CASH_REGISTER') {result.skipped++; continue;}
     try {
       if (!income.dueDate || calendarDateInput(income.dueDate) > dateInputInTimeZone(income.company.timeZone, todayInput)) { result.skipped++; continue; }
       const definition = income.recurringIncome;

@@ -28,3 +28,12 @@ export async function loadMovementLedger(db: Prisma.TransactionClient, kind: Led
   const rows = await db.$queryRaw<Movement[]>(Prisma.sql`${filtered} SELECT id, "documentId", date, amount::text, party, description, method, "methodIcon", bank, type FROM filtered ${ledgerOrder(filters)} LIMIT ${ledgerPageSize} OFFSET ${(page - 1) * ledgerPageSize}`);
   return {summary, total, groups, options, channels, rows, page, pages};
 }
+
+/** Same source, filters and order as the ledger, without its page offset. */
+export async function loadMovementLedgerExport(db: Prisma.TransactionClient, kind: LedgerKind, workspaceId: number, companyId: number, timeZone: string, filters: ReturnType<typeof ledgerFilters>, limit: number) {
+  const source = ledgerSource(kind, workspaceId, companyId);
+  const where = ledgerWhere(filters, timeZone);
+  return db.$queryRaw<Movement[]>(Prisma.sql`WITH movements AS (${source}), filtered AS (SELECT * FROM movements ${where})
+    SELECT id, "documentId", date, amount::text, party, description, method, "methodIcon", bank, type
+    FROM filtered ${ledgerOrder(filters)} LIMIT ${limit + 1}`);
+}

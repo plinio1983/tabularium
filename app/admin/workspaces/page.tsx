@@ -17,7 +17,7 @@ export default async function SystemWorkspacesPage() {
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="btn btn-sm btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
+        <Link data-page-transition="backward" className="btn btn-sm btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
         <h2>Workspace sistema</h2>
         <p className="muted">Workspace creati dagli utenti e relativi proprietari.</p>
       </div>

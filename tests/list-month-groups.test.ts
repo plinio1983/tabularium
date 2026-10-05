@@ -104,3 +104,48 @@ test('desktop: aggiorna i titoli cambiando data/direzione e li rimuove per impor
   sortTable(table, 'order-date', 'desc');
   assert.deepEqual(labels(), []);
 });
+
+test('scontrini mobile: gruppi condivisi nel fuso della società, senza titoli per un solo mese', () => {
+  const ReceiptList = load('../components/CashRegisterReceiptList.tsx', '', {require: (name: string) => {
+    if (name === '@/components/CompanyTimeZoneProvider') return {useCompanyTimeZone: () => 'Europe/Rome'};
+    if (name === '@/components/MonthGroupedRecords') return {default: MonthGroupedRecords};
+    if (name === './MobileRecordViews') return {MobileRecordCloseButton: () => null};
+    if (name.startsWith('@/components/')) return {default: () => null};
+    return require(name);
+  }}).default;
+  const receipt = (id: number, creditDate: string) => ({id, creditDate, description: `Ricevuta ${id}`, amount: 10, recurringIncomeId: null,
+    isFiscal: true, vatRate: 22, salesChannelId: 1, paymentMethodId: 1, salesChannel: 'Negozio', paymentMethod: 'Contanti'});
+  const rows = [receipt(1, '2026-09-30T22:30:00Z'), receipt(2, '2026-09-01T10:00:00Z'), receipt(3, '2025-09-01T10:00:00Z')];
+  const renderReceipts = (receipts = rows, monthGrouping = true) => renderToStaticMarkup(createElement(ReceiptList, {receipts, monthGrouping, returnTo: '/incomes/cash-register/receipts'}));
+  const html = renderReceipts();
+  assert.match(html, /data-month-grouping="true" data-month-time-zone="Europe\/Rome"/);
+  const headings = Array.from(html.matchAll(/<h2 class="list-month-heading">([^<]+)<\/h2>/g), match => match[1]);
+  assert.deepEqual(headings, ['Ottobre 2026', 'Settembre 2026', 'Settembre 2025']);
+  assert.ok(html.indexOf('Ottobre 2026') < html.indexOf('Settembre 2026'));
+  assert.equal((html.match(/name="ids"/g) ?? []).length, 6);
+  assert.doesNotMatch(renderReceipts([rows[1]]), /list-month-heading/);
+  assert.doesNotMatch(renderReceipts([], true), /list-month-heading/);
+  assert.doesNotMatch(renderReceipts(rows, false), /list-month-heading/);
+});
+
+test('scontrini desktop: raggruppamento nel fuso della società e colonne complete', () => {
+  const body = new Element();
+  for (const date of ['2026-09-30T22:30:00Z', '2026-09-01T10:00:00Z']) {
+    const row = new Element(); row.cells = Array.from({length: 9}, () => ({}));
+    row.attrs = {'data-sort-row': '', 'data-sort-date': String(new Date(date).getTime()), 'data-sort-amount': '10'};
+    body.appendChild(row);
+  }
+  const header = new Element();
+  const table = {dataset: {monthGrouping: 'true', monthTimeZone: 'Europe/Rome'}, tBodies: {item: () => body},
+    querySelector: (selector: string) => {header.attrs['data-sort-type'] = selector.includes('date') ? 'date' : 'number'; return header;},
+    querySelectorAll: () => [header]};
+  const {sortTable} = load('../components/SortableTableController.tsx', '\nexports.sortTable = applySort;', {document: {createElement: () => new Element()}});
+  const labels = () => body.children.filter(row => row.dataset.monthHeading).map(row => row.children[0].children[0].textContent);
+  sortTable(table, 'date', 'desc');
+  assert.deepEqual(labels(), ['Ottobre 2026', 'Settembre 2026']);
+  assert.ok(body.children.filter(row => row.dataset.monthHeading).every(row => row.children[0].colSpan === 9));
+  sortTable(table, 'date', 'asc');
+  assert.deepEqual(labels(), ['Settembre 2026', 'Ottobre 2026']);
+  sortTable(table, 'amount', 'desc');
+  assert.deepEqual(labels(), []);
+});

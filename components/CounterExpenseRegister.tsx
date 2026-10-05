@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import CounterExpenseForm from './CounterExpenseForm';
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
 
 export default function CounterExpenseRegister({initialDate, categories, methods, banks}: Props) {
   return <div className="card">
-    <div className="modal-title"><h2>Spesa da banco</h2><a className="btn btn-neutral btn-icon-only modal-close-button" href="/expenses" aria-label="Torna alle spese"><span className="btn-icon">×</span></a></div>
+    <div className="modal-title"><h2>Spesa da banco</h2><Link data-page-transition="backward" className="btn btn-neutral btn-icon-only modal-close-button" href="/expenses" aria-label="Torna alle spese"><span className="btn-icon">×</span></Link></div>
     <CounterExpenseForm initialDate={initialDate} categories={categories} banks={banks} paymentMethods={methods}/>
   </div>;
 }

@@ -1,15 +1,17 @@
 'use client';
 
 import {useEffect, useLayoutEffect, useRef} from 'react';
-import {usePathname} from 'next/navigation';
-import {pageTransitionDirection, shouldTransitionPage, type PageTransitionDirection} from '@/lib/page-transition';
+import {usePathname, useSearchParams} from 'next/navigation';
+import {pageTransitionKey, pageTransitionDirection, shouldTransitionPage, type PageTransitionDirection} from '@/lib/page-transition';
 
 const historyKey = 'tabulariumPageIndex';
 const duration = 280;
 
-/** Animate only route changes; query updates keep their existing local transitions. */
+/** Animate pages and settings sections; filters keep their existing local transitions. */
 export default function MobilePageTransition() {
-  const pathname = usePathname();
+  const routePathname = usePathname();
+  const params = useSearchParams();
+  const pathname = pageTransitionKey(routePathname, params);
   const previousPath = useRef(pathname);
   const historyIndex = useRef(0);
   const historyNavigation = useRef(false);
@@ -76,18 +78,25 @@ export default function MobilePageTransition() {
 
     function onClick(event: MouseEvent) {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
-      if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
-      const url = new URL(link.href, window.location.href);
+      const link = event.target instanceof Element ? event.target.closest<HTMLElement>('a[href], [data-page-transition-back]') : null;
+      if (!link || link.hasAttribute('download') || (link.getAttribute('target') && link.getAttribute('target') !== '_self')) return;
+      const href = link.getAttribute('data-page-transition-back') || link.getAttribute('href');
+      if (!href) return;
+      const url = new URL(href, window.location.href);
       if (url.origin !== window.location.origin || link.getAttribute('aria-disabled') === 'true') return;
-      capture(url.pathname, pageTransitionDirection(previousPath.current, url.pathname));
+      const destination = pageTransitionKey(url.pathname, url.searchParams);
+      const direction = link.getAttribute('data-page-transition') === 'backward' || link.hasAttribute('data-page-transition-back')
+        ? 'backward' : pageTransitionDirection(previousPath.current, destination);
+      capture(destination, direction);
     }
 
     function onPopState(event: PopStateEvent) {
       const index = event.state?.[historyKey];
       const direction = typeof index === 'number' && index > historyIndex.current ? 'forward' : 'backward';
-      capture(window.location.pathname, direction);
-      historyNavigation.current = previousPath.current !== window.location.pathname;
+      const url = new URL(window.location.href);
+      const destination = pageTransitionKey(url.pathname, url.searchParams);
+      capture(destination, direction);
+      historyNavigation.current = previousPath.current !== destination;
       if (typeof index === 'number') historyIndex.current = index;
     }
 

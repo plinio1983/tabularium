@@ -1,7 +1,8 @@
 import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
-import {parseExpenseTask, matchesExpenseTask, expenseTaskLabels} from '@/lib/dashboard-tasks';
+import {normalizeDashboardTaskParams} from '@/lib/dashboard-tasks';
+import {redirect} from 'next/navigation';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
 import {euro, moneyTone} from '@/lib/money';
@@ -394,6 +395,7 @@ function fiscalQuarterRange(year: number, quarterIndex: number) {
 }
 
 function getQuickDateRange(value: string, selectedYear: string | undefined, now: Date) {
+    if (value === 'all') return {from: '', to: ''};
     const parsedYear = Number(selectedYear);
     const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
     const month = now.getMonth();
@@ -489,6 +491,7 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+    ['all', 'Tutti i periodi'],
     ['last_30_days', 'Ultimi 30 giorni'],
     ['last_90_days', 'Ultimi 90 giorni'],
     ['year_to_date', 'Anno intero'],
@@ -600,14 +603,14 @@ export default async function ExpensesPage({searchParams}: {
     const companyNow = civilDateInTimeZone(current.company.timeZone);
     const rawFilters = (await searchParams) ?? {};
     const filters = stripFlashRecord(rawFilters);
-    const pendingTask = parseExpenseTask(inputDefault(filters, 'pending'));
-    const pendingNow = new Date();
+
     const currentQuery = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
         if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
         else if (value) currentQuery.set(key, value);
     });
     stripFlashSearchParams(currentQuery);
+    if (currentQuery.has('pending')) redirect(`/expenses?${normalizeDashboardTaskParams('expenses', currentQuery)}`);
     const currentQueryString = currentQuery.toString();
     const listHref = `/expenses${currentQueryString ? `?${currentQueryString}` : ''}`;
     const mobileListQuery = new URLSearchParams(currentQuery);
@@ -622,14 +625,14 @@ export default async function ExpensesPage({searchParams}: {
     const useOrderDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useOrderDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomOrderDateFilter = useOrderDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'orderDateFrom') || inputDefault(filters, 'orderDateTo'));
-    const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasOrderDateFilter && !pendingTask ? 'last_90_days' : '')) : '';
+    const quickDateFilter = useOrderDateFilter ? (rawDateQuickFilter || (!hasOrderDateFilter ? 'last_90_days' : '')) : '';
     const dateQuickSelectorValue = hasCustomOrderDateFilter ? 'custom' : quickDateFilter;
     const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
     const orderDateFromDefault = useOrderDateFilter ? (quickDateRange?.from || inputDefault(filters, 'orderDateFrom')) : '';
     const orderDateToDefault = useOrderDateFilter ? (quickDateRange?.to || inputDefault(filters, 'orderDateTo')) : '';
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || (
         !inputDefault(filters, 'billingPeriodFrom') && !inputDefault(filters, 'billingPeriodTo') && !inputDefault(filters, 'period')
-            && !pendingTask ? 'last_90_days'
+            ? 'last_90_days'
             : ''
     )) : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
@@ -689,7 +692,6 @@ export default async function ExpensesPage({searchParams}: {
     const attachmentsFilter = inputDefault(filters, 'attachments');
     const totalsFilterHref = (extraFilters: Record<string, string>) => {
         const query = new URLSearchParams();
-        if (pendingTask) query.set('pending', pendingTask);
         if (useFiscalPeriodFilter) {
             if (billingPeriodFromFilter) query.set('billingPeriodFrom', billingPeriodFromFilter);
             if (billingPeriodToFilter) query.set('billingPeriodTo', billingPeriodToFilter);
@@ -743,7 +745,6 @@ export default async function ExpensesPage({searchParams}: {
     };
 
     const periodExpenses = expenses.filter(expense => {
-        if (pendingTask && !matchesExpenseTask(expense, pendingTask, pendingNow, current.company.timeZone)) return false;
         if (!matchesBillingPeriod(expense.month, expense.year, billingPeriodFromKey, billingPeriodToKey)) return false;
         if (!matchesIsoDate(expense.receivedDate, orderDateFromFilter, orderDateToFilter)) return false;
         return true;
@@ -923,7 +924,6 @@ export default async function ExpensesPage({searchParams}: {
     }, new Map<string, ExpenseCategoryDatum>()).values()).sort((a, b) => b.total - a.total);
 
     const activeFilterItems = [
-        pendingTask && {label: 'Da gestire', value: expenseTaskLabels[pendingTask]},
         orderDateFromDefault && {label: 'Data ordine da', value: formatDateInputLabel(orderDateFromDefault)},
         orderDateToDefault && {label: 'Data ordine a', value: formatDateInputLabel(orderDateToDefault)},
         billingPeriodFromFilter && {label: 'Periodo fatt. da', value: billingPeriodFromFilter},
@@ -1002,10 +1002,6 @@ export default async function ExpensesPage({searchParams}: {
         />
 
         <MobileRecordViews title="Lista spese" count={filteredExpenses.length} summary={<>
-        {pendingTask ? <div className="card pending-list-banner" role="status">
-            <div><strong>Da gestire · {expenseTaskLabels[pendingTask]}</strong><p className="muted">Tutti i periodi, salvo ulteriori filtri selezionati.</p></div>
-            <Link className="btn btn-sm btn-default" href="/expenses">Rimuovi filtro pendenze</Link>
-        </div> : null}
 
         <div className="card record-list-card">
             <div className="mobile-page-title expense-mobile-page-title">
@@ -1141,6 +1137,7 @@ export default async function ExpensesPage({searchParams}: {
           const to = document.getElementById('billingPeriodTo');
           if (!quick || !from || !to) return;
           const computeRange = (value) => {
+                    if (value === 'all') return {from: '', to: ''};
             const now = new Date();
             const y = now.getFullYear();
             const m = now.getMonth();
@@ -1186,6 +1183,7 @@ export default async function ExpensesPage({searchParams}: {
           const to = document.getElementById('orderDateTo');
           if (!quick || !from || !to) return;
           const computeRange = (value) => {
+                    if (value === 'all') return {from: '', to: ''};
             const now = new Date();
             const y = now.getFullYear();
             const m = now.getMonth();

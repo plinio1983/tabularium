@@ -1,7 +1,8 @@
 import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
-import {parseIncomeTask, matchesIncomeTask, incomeTaskLabels} from '@/lib/dashboard-tasks';
+import {normalizeDashboardTaskParams, matchesIncomeTask} from '@/lib/dashboard-tasks';
+import {redirect} from 'next/navigation';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
 import {euro, moneyTone} from '@/lib/money';
@@ -227,6 +228,7 @@ function fiscalQuarterRange(year: number, quarterIndex: number) {
 }
 
 function getQuickDateRange(value: string, selectedYear: string | undefined, now: Date) {
+    if (value === 'all') return {from: '', to: ''};
     const parsedYear = Number(selectedYear);
     const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
     const month = now.getMonth();
@@ -293,6 +295,7 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+    ['all', 'Tutti i periodi'],
     ['last_30_days', 'Ultimi 30 giorni'],
     ['last_90_days', 'Ultimi 90 giorni'],
     ['year_to_date', 'Anno intero'],
@@ -560,13 +563,14 @@ export default async function IncomesPage({searchParams}: {
     const companyNow = civilDateInTimeZone(current.company.timeZone);
     const rawFilters = (await searchParams) ?? {};
     const filters = stripFlashRecord(rawFilters);
-    const pendingTask = parseIncomeTask(inputDefault(filters, 'pending'));
+
     const currentQuery = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
         if (Array.isArray(value)) value.forEach(item => item && currentQuery.append(key, item));
         else if (value) currentQuery.set(key, value);
     });
     stripFlashSearchParams(currentQuery);
+    if (currentQuery.has('pending')) redirect(`/incomes?${normalizeDashboardTaskParams('incomes', currentQuery)}`);
     const currentQueryString = currentQuery.toString();
     const listHref = `/incomes${currentQueryString ? `?${currentQueryString}` : ''}`;
     const mobileListQuery = new URLSearchParams(currentQuery);
@@ -581,14 +585,14 @@ export default async function IncomesPage({searchParams}: {
     const useCreditDateFilter = !useFiscalPeriodFilter;
     const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
     const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
-    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasCreditDateFilter && !pendingTask ? 'last_90_days' : '')) : '';
+    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasCreditDateFilter ? 'last_90_days' : '')) : '';
     const dateQuickSelectorValue = hasCustomCreditDateFilter ? 'custom' : quickDateFilter;
     const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
     const creditDateFromDefault = useCreditDateFilter ? (quickDateRange?.from || inputDefault(filters, 'creditDateFrom')) : '';
     const creditDateToDefault = useCreditDateFilter ? (quickDateRange?.to || inputDefault(filters, 'creditDateTo')) : '';
     const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || (
         !inputDefault(filters, 'billingPeriodFrom') && !inputDefault(filters, 'billingPeriodTo') && !inputDefault(filters, 'billingPeriod')
-            && !pendingTask ? 'last_90_days'
+            ? 'last_90_days'
             : ''
     )) : '';
     const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
@@ -643,7 +647,6 @@ export default async function IncomesPage({searchParams}: {
     const creditStatusFilter = inputDefault(filters, 'creditStatus');
     const totalsFilterHref = (extraFilters: Record<string, string>) => {
         const query = new URLSearchParams();
-        if (pendingTask) query.set('pending', pendingTask);
         if (useFiscalPeriodFilter) {
             if (billingPeriodFromFilter) query.set('billingPeriodFrom', billingPeriodFromFilter);
             if (billingPeriodToFilter) query.set('billingPeriodTo', billingPeriodToFilter);
@@ -676,7 +679,6 @@ export default async function IncomesPage({searchParams}: {
         return matchesIsoDate(income.creditDate, creditDateFromFilter, creditDateToFilter, current.company.timeZone, true);
     };
     const periodIncomes = incomes.filter(income => {
-        if (pendingTask && !matchesIncomeTask(income, pendingTask)) return false;
         if (!matchesCreditDate(income)) return false;
         if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
         return true;
@@ -693,12 +695,13 @@ export default async function IncomesPage({searchParams}: {
         if (!matchesEntityQuickSearch(customerQuickFilter, income.customer?.businessName, income.description)) return false;
         if (fiscalFilter === 'yes' && !income.isFiscal) return false;
         if (fiscalFilter === 'no' && income.isFiscal) return false;
-        if (invoiceStatusModeFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
-        if (invoiceStatusFilter === 'not_emitted' && income.invoiceStatus === 'EMESSA') return false;
+        if (invoiceStatusModeFilter === 'not_emitted' && !matchesIncomeTask(income, 'missing_invoice')) return false;
+        if (invoiceStatusFilter === 'not_emitted' && !matchesIncomeTask(income, 'missing_invoice')) return false;
         if (invoiceStatusFilter && invoiceStatusFilter !== 'not_emitted' && income.invoiceStatus !== invoiceStatusFilter) return false;
         if (vatRateFilter && Number(income.vatRate.toString()) !== Number(vatRateFilter)) return false;
         if (!matchesIsoDate(income.dueDate, dueDateFromFilter, dueDateToFilter, current.company.timeZone, true)) return false;
-        if (creditStatusFilter && incomeCreditState(income, new Date(), current.company.timeZone) !== creditStatusFilter) return false;
+        if (creditStatusFilter === 'not_complete' && !matchesIncomeTask(income, 'uncredited')) return false;
+        if (creditStatusFilter && creditStatusFilter !== 'not_complete' && incomeCreditState(income, new Date(), current.company.timeZone) !== creditStatusFilter) return false;
         return true;
     });
 
@@ -784,7 +787,6 @@ export default async function IncomesPage({searchParams}: {
     const residualVatDebt = recoverableExpenseVat === null ? null : totals.vatDebt - recoverableExpenseVat;
 
     const activeFilterItems = [
-        pendingTask && {label: 'Da gestire', value: incomeTaskLabels[pendingTask]},
         orderDateFromFilter && {label: 'Data ordine da', value: formatDateInputLabel(orderDateFromFilter)},
         orderDateToFilter && {label: 'Data ordine a', value: formatDateInputLabel(orderDateToFilter)},
         creditDateFromDefault && {label: 'Data accredito da', value: formatDateInputLabel(creditDateFromDefault)},
@@ -804,7 +806,7 @@ export default async function IncomesPage({searchParams}: {
         vatRateFilter && {label: 'IVA', value: `${vatRateFilter}%`},
         dueDateFromFilter && {label: 'Scadenza da', value: formatDateInputLabel(dueDateFromFilter)},
         dueDateToFilter && {label: 'Scadenza a', value: formatDateInputLabel(dueDateToFilter)},
-        creditStatusFilter && {label: 'Stato accredito', value: creditStatusFilter.replaceAll('_', ' ')}
+        creditStatusFilter && {label: 'Stato accredito', value: creditStatusFilter === 'not_complete' ? 'Con residuo da accreditare' : creditStatusFilter.replaceAll('_', ' ')}
     ].filter(Boolean) as Array<{ label: string; value: string }>;
 
     const mobileSort = inputDefault(filters, 'mobileSort') || incomeMobileSortOptions[0].value;
@@ -890,10 +892,6 @@ export default async function IncomesPage({searchParams}: {
         />
 
         <MobileRecordViews kind="income" title="Lista incassi" count={standardFilteredIncomes.length + cashRegisterGroups.length} summary={<>
-        {pendingTask ? <div className="card pending-list-banner" role="status">
-            <div><strong>Da gestire · {incomeTaskLabels[pendingTask]}</strong><p className="muted">Tutti i periodi, salvo ulteriori filtri selezionati.</p></div>
-            <Link className="btn btn-sm btn-default" href="/incomes">Rimuovi filtro pendenze</Link>
-        </div> : null}
 
         <div className="card record-list-card">
             <div className="mobile-page-title income-mobile-page-title">
@@ -1026,6 +1024,7 @@ export default async function IncomesPage({searchParams}: {
                   const to = document.getElementById('incomeBillingPeriodTo');
                   if (!quick || !from || !to) return;
                   const computeRange = (value) => {
+                    if (value === 'all') return {from: '', to: ''};
                     const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
                     const fmt = (year, monthIndex) => { const date = new Date(year, monthIndex, 1); return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0'); };
                     const currentQuarter = Math.floor(m / 3);
@@ -1051,6 +1050,7 @@ export default async function IncomesPage({searchParams}: {
                   const to = document.getElementById('creditDateTo');
                   if (!quick || !from || !to) return;
                   const computeRange = (value) => {
+                    if (value === 'all') return {from: '', to: ''};
                     const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
                     const fmt = (date) => date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
                     const fiscalQuarterRange = (yy, quarter) => ({ from: fmt(new Date(yy, quarter * 3, 1)), to: fmt(new Date(yy, quarter * 3 + 3, 0)) });

@@ -1,3 +1,4 @@
+import {isSingleMonthRange} from '@/lib/list-month-groups';
 import MobileRecordViews from '@/components/MobileRecordViews';
 import LiveSearch from '@/components/LiveSearch';
 import Link from 'next/link';
@@ -137,13 +138,14 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         <MobileRecordViews kind="income" title="Andamento scontrini" linkLabel="Visualizza scontrini" count={receiptCount} summary={<>
         <CashRegisterReceiptTrendChart key={`${dateFrom}-${dateTo}-${annual}`} points={trend} annual={annual}
             headerActions={<div key="receipt-header-actions" className="toolbar-actions">
-                <Link className="btn btn-sm btn-ghost" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
+                <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
                 <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register"><span className="btn-icon">🧮</span> Reg. di cassa</Link>
             </div>}
             activeFilters={activeFiltersBox}
             periodSelector={<CashRegisterReceiptPeriodSelector key="receipt-period" dateQuick={period.quick} dateYear={String(billingYear)} years={years}/>}/>
         </>}>
         <CashRegisterReceiptList
+            monthGrouping={!isSingleMonthRange(dateFrom, dateTo)}
             headerContent={<>
                 <LiveSearch name="search" label="Ricerca scontrino" placeholder="Descrizione scontrino"/>
             </>}

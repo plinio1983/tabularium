@@ -62,6 +62,7 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+  ["all", "Tutti i periodi"],
   ["last_30_days", "Ultimi 30 giorni"],
   ["last_90_days", "Ultimi 90 giorni"],
   ["year_to_date", "Anno intero"],
@@ -124,6 +125,7 @@ function quickBillingPeriodRange(value: string, now: Date) {
 }
 
 function quickOrderDateRange(value: string, now: Date) {
+  if (value === 'all') return {from: '', to: ''};
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
@@ -260,7 +262,6 @@ export default function ExpenseFiltersDrawer({
   const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri spese"
     actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push(listAction ? '/expenses?mobileList=1' : '/expenses');}}/>}>
       <form id={formId} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters expense-drawer-filters" action="/expenses" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
-        {inputDefault(filters, "pending") ? <input type="hidden" name="pending" value={inputDefault(filters, "pending")}/> : null}
         <input type="hidden" name="mobileList" value={listAction ? "1" : inputDefault(filters, "mobileList")}/>
         <input type="hidden" name="supplierQuick" value={inputDefault(filters, "supplierQuick")}/>
         <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>

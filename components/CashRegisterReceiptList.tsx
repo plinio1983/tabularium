@@ -2,6 +2,8 @@
 
 import RecordConversionListController from '@/components/RecordConversionListController';
 import InfoHint from '@/components/InfoHint';
+import MonthGroupedRecords from '@/components/MonthGroupedRecords';
+import type {DateSort} from '@/lib/list-month-groups';
 import {MobileRecordCloseButton} from './MobileRecordViews';
 
 import Link from 'next/link';
@@ -44,13 +46,15 @@ function receiptDate(value: string, timeZone: string) {
     return `${part('day')} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${part('hour')}:${part('minute')}`;
 }
 
-export default function CashRegisterReceiptList({receipts, filtersTrigger, headerContent, returnTo}: {
+export default function CashRegisterReceiptList({receipts, filtersTrigger, headerContent, returnTo, monthGrouping = false}: {
     receipts: Receipt[];
+    monthGrouping?: boolean;
     filtersTrigger?: ReactNode;
     headerContent?: ReactNode;
     returnTo: string
 }) {
     const timeZone = useCompanyTimeZone();
+    const dateSort: DateSort = {field: 'creditDate', direction: 'desc', kind: 'date', timeZone};
     const [detailId, setDetailId] = useState<number | null>(null);
     const closeDetail = useCallback(() => setDetailId(null), []);
 
@@ -115,8 +119,12 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                         className="hidden-sm-down hidden-xs-down">Azioni</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
-                        <button type="button" className="btn btn-sm btn-option" data-bulk-convert="incomes" data-bulk-form={formId}
-                                data-convert-eligible-ids={receipts.filter(receipt => canConvertIncome({incomeType: 'CASH_REGISTER', recurringIncomeId: receipt.recurringIncomeId})).map(receipt => receipt.id).join(',')}
+                        <button type="button" className="btn btn-sm btn-option" data-bulk-convert="incomes"
+                                data-bulk-form={formId}
+                                data-convert-eligible-ids={receipts.filter(receipt => canConvertIncome({
+                                    incomeType: 'CASH_REGISTER',
+                                    recurringIncomeId: receipt.recurringIncomeId
+                                })).map(receipt => receipt.id).join(',')}
                                 data-return-to={encodedReturnTo} disabled title="Seleziona un solo record convertibile">
                             <span className="btn-icon">⇄</span><span>Converti tipo</span>
                         </button>
@@ -166,7 +174,7 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
 
         <div className="table-scroll cash-register-receipt-table-scroll">
             <table className="expenses-table compact-incomes-table cash-register-receipt-table"
-                   data-sortable-table data-default-sort="date" data-default-sort-dir="desc">
+                   data-sortable-table data-month-grouping={monthGrouping} data-month-time-zone={timeZone} data-default-sort="date" data-default-sort-dir="desc">
                 <thead>
                 <tr>
                     <th className="cell-option">
@@ -179,8 +187,8 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     <th data-sort-key="channel" className="cell-channel">Canale vendita</th>
                     <th data-sort-key="amount" data-sort-type="number" className="cell-amount">Importo</th>
                     <th data-sort-key="fiscal" className="cell-fiscal">Fiscalità</th>
-                    <th data-sort-key="method" className="cell-method">Metodo pagamento</th>
                     <th data-sort-key="vat" data-sort-type="number" className="cell-vat">IVA</th>
+                    <th data-sort-key="method" className="cell-method">Metodo pagamento</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -204,14 +212,17 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                               title={receipt.description || undefined}>{receipt.description || '—'}</span></td>
                     <td>{receipt.salesChannelIcon ?? '•'} {receipt.salesChannel}</td>
                     <td className="cell-amount"><strong className="text-accent">{euro(receipt.amount)}</strong></td>
-                    <td>
+                    <td className="cell-fiscal">
                         {/*<span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-muted'}`}>*/}
                         <small className={`strong ${receipt.isFiscal ? 'text-ok' : 'text-muted'}`}>
-                        {receipt.isFiscal ? '✓ Fiscale' : '✕ Non fisc'}
-                    </small></td>
+                            {receipt.isFiscal ? '✓ Fiscale' : '✕ Non fisc'}
+                        </small>
+                    </td>
+                    <td className="cell-vat text-center">{receipt.isFiscal ?
+                        <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}
+                    </td>
                     <td>{receipt.paymentMethodIcon ?? '•'} {receipt.paymentMethod}</td>
-                    <td className="text-center">{receipt.isFiscal ?
-                        <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}</td>
+
                 </tr>)}
                 {!receipts.length ? <tr>
                     <td colSpan={9}>Nessuno scontrino nel periodo selezionato.</td>
@@ -221,7 +232,10 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
         </div>
 
         <div className="cash-register-receipt-list cash-register-receipt-mobile-list" aria-label="Andamento scontrini">
-            {receipts.map(receipt => <article className="cash-register-receipt-row"
+            <MonthGroupedRecords enabled={monthGrouping} sort={dateSort} records={receipts.map(receipt => ({
+                key: receipt.id,
+                value: new Date(receipt.creditDate).getTime(),
+                content: <article className="cash-register-receipt-row"
                                               key={receipt.id} {...detailTrigger(receipt.id)}>
                 <div className="mobile-record-select cash-register-receipt-select">
                     <input form={formId} type="checkbox" name="ids" value={receipt.id}
@@ -247,7 +261,8 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     </div>
                     <strong className="cash-register-receipt-amount">{euro(receipt.amount)}</strong>
                 </div>
-            </article>)}
+            </article>
+            }))}/>
             {!receipts.length ?
                 <div className="record-empty-state">Nessuno scontrino nel periodo selezionato.</div> : null}
         </div>

@@ -12,10 +12,11 @@ const source = ts.transpileModule(readFileSync(new URL('../components/MovementLe
   compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true}
 }).outputText;
 
-async function render(kind: ledger.LedgerKind, page: number) {
+async function render(kind: ledger.LedgerKind, page: number, role = 'ACCOUNTANT') {
   const exports: any = {};
   runInNewContext(source, {exports, require: (name: string) => {
-    if (name === '@/lib/auth') return {requireWorkspace: async () => ({workspace: {id: 1}, company: {id: 1, name: 'Test', timeZone: 'Europe/Rome'}})};
+    if (name === '@/lib/auth') return {workspaceOperationalRoles: ['OWNER', 'ADMIN', 'ACCOUNTANT'], hasWorkspaceRole: (role: string, roles: string[]) => roles.includes(role), requireWorkspace: async () => ({membership: {role}, workspace: {id: 1}, company: {id: 1, name: 'Test', timeZone: 'Europe/Rome'}})};
+    if (name === '@/lib/movement-ledger-export') return {ledgerExportLimit: 5000};
     if (name === '@/lib/prisma') return {prisma: {}};
     if (name === '@/lib/movement-ledger') return ledger;
     if (name === '@/lib/live-search') return liveSearch;
@@ -63,5 +64,22 @@ for (const kind of ['payments', 'credits'] as const) {
         }
       }
     }
+  });
+}
+
+for (const kind of ['payments', 'credits'] as const) {
+  test(`${kind}: export appears beside both filter triggers with the active filters and ordering`, async () => {
+    const all = nodes(await render(kind, 2));
+    for (const id of ['ledger-list-filter-trigger', 'ledger-mobile-filter-trigger']) {
+      const actions = all.find(node => node.props?.id === id);
+      const button = nodes(actions).find(node => node.type === 'a');
+      assert.equal(button.props['aria-label'], 'Esporta CSV');
+      const url = new URL(button.props.href, 'http://test');
+      assert.equal(url.pathname, `/api/exports/${kind}`);
+      for (const [key, value] of Object.entries({search: 'Acme', dateMode: 'all', sort: 'amount', direction: 'asc', mobileList: '1'})) assert.equal(url.searchParams.get(key), value);
+      assert.ok(url.searchParams.has('exportFrom') && url.searchParams.has('exportTo'));
+      assert.ok(button.props.children.includes(id === 'ledger-list-filter-trigger' ? 'Esporta CSV' : null));
+    }
+    assert.equal(nodes(await render(kind, 1, 'VIEWER')).some(node => node.props?.['aria-label'] === 'Esporta CSV'), false);
   });
 }

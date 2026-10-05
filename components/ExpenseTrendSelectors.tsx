@@ -14,6 +14,7 @@ function openFiltersDrawer() {
 
 function goWithQuick(value: string, year: string, now: Date) {
   const params = new URLSearchParams(window.location.search);
+  params.delete("page");
   params.delete("new");
   params.delete("orderDateFrom");
   params.delete("orderDateTo");

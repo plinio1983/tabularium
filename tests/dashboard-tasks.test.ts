@@ -58,3 +58,39 @@ test('filtri sconosciuti ignorati e prospetto vuoto con quattro conteggi a zero'
     assert.deepEqual(value, {count: 0, amount: 0});
   }
 });
+
+test('scorciatoie dashboard: filtri standard modificabili, tutti i periodi e lista mobile aperta', async () => {
+  const {dashboardTaskHref, normalizeDashboardTaskParams} = await import('../lib/dashboard-tasks');
+  const cases = [
+    {href: dashboardTaskHref('expenses', 'overdue'), path: '/expenses', field: 'paymentStatus', value: 'overdue'},
+    {href: dashboardTaskHref('expenses', 'missing_invoice'), path: '/expenses', field: 'invoiceStatus', value: 'not_received'},
+    {href: dashboardTaskHref('incomes', 'missing_invoice'), path: '/incomes', field: 'invoiceStatus', value: 'not_emitted'},
+    {href: dashboardTaskHref('incomes', 'uncredited'), path: '/incomes', field: 'creditStatus', value: 'not_complete'},
+  ];
+  for (const item of cases) {
+    const url = new URL(item.href, 'https://example.test');
+    assert.equal(url.pathname, item.path);
+    assert.equal(url.searchParams.has('pending'), false);
+    assert.equal(url.searchParams.get('dateQuick'), 'all');
+    assert.equal(url.searchParams.get('mobileList'), '1');
+    assert.equal(url.searchParams.get(item.field), item.value);
+    // Changing a standard filter must remove the restriction from the dashboard.
+    url.searchParams.delete(item.field);
+    assert.equal(normalizeDashboardTaskParams(item.path === '/expenses' ? 'expenses' : 'incomes', url.searchParams).has(item.field), false);
+  }
+});
+
+test('vecchi link dashboard normalizzati conservando periodo e ricerca senza filtri nascosti', async () => {
+  const {normalizeDashboardTaskParams} = await import('../lib/dashboard-tasks');
+  const params = new URLSearchParams('pending=overdue&dateQuick=last_30_days&supplierQuick=energia&mobileList=1');
+  const normal = normalizeDashboardTaskParams('expenses', params);
+  assert.equal(normal.has('pending'), false);
+  assert.equal(normal.get('paymentStatus'), 'overdue');
+  assert.equal(normal.get('dateQuick'), 'last_30_days');
+  assert.equal(normal.get('supplierQuick'), 'energia');
+  assert.equal(normal.get('mobileList'), '1');
+  assert.equal(params.get('pending'), 'overdue');
+  const unknown = normalizeDashboardTaskParams('incomes', new URLSearchParams('pending=invalid'));
+  assert.equal(unknown.has('pending'), false);
+  assert.equal(unknown.has('creditStatus'), false);
+});

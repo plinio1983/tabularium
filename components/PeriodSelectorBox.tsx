@@ -40,7 +40,7 @@ export default function PeriodSelectorBox({dateQuick, dateYear, useFiscalPeriodF
           {periodOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
         <select aria-label="Anno" value={currentQuickYear}
-                disabled={useFiscalPeriodFilter || Boolean(inactivePeriodLabel) || currentQuickValue === 'custom' || isRollingPeriod(currentQuickValue)}
+                disabled={useFiscalPeriodFilter || Boolean(inactivePeriodLabel) || currentQuickValue === 'custom' || currentQuickValue === 'all' || isRollingPeriod(currentQuickValue)}
                 onChange={(event) => onSelect(currentQuickValue, event.currentTarget.value)}>
           {years.map(year => <option key={year} value={year}>{year}</option>)}
         </select>

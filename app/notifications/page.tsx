@@ -9,7 +9,7 @@ export default async function NotificationsPage() {
   return <div className="grid notifications-page">
     <div className="toolbar-card notifications-toolbar">
       <div><h2>Notifiche</h2><p className="muted">Scadenze, automazioni e aggiornamenti importanti del sistema.</p></div>
-      <Link className="btn btn-sm btn-default" href="/">Torna alla dashboard</Link>
+      <Link data-page-transition="backward" className="btn btn-sm btn-default" href="/">Torna alla dashboard</Link>
     </div>
     <NotificationsPageClient />
   </div>;

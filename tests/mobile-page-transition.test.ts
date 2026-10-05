@@ -8,7 +8,7 @@ import * as helpers from '../lib/page-transition';
 function setup({mobile = true, reduced = false} = {}) {
   const listeners = new Map<string, Function>();
   const refs: any[] = [];
-  let hook = 0, pathname = '/expenses';
+  let hook = 0, pathname = '/expenses', params = new URLSearchParams();
   const effects: Function[] = [], layoutEffects: Function[] = [];
   const slides: any[] = [];
   const layers: any[] = [];
@@ -23,7 +23,7 @@ function setup({mobile = true, reduced = false} = {}) {
     removed = false;
     closest() { return this; }
     hasAttribute(name: string) { return this.attributes.has(name); }
-    getAttribute(name: string) { return this.attributes.get(name) ?? null; }
+    getAttribute(name: string) { return this.attributes.get(name) ?? (name === 'href' ? this.href : null); }
     setAttribute(name: string, value: string) { this.attributes.set(name, value); }
     removeAttribute(name: string) { this.attributes.delete(name); }
     querySelectorAll() { return []; }
@@ -51,7 +51,7 @@ function setup({mobile = true, reduced = false} = {}) {
         useRef(value: unknown) {const index = hook++; return refs[index] ?? (refs[index] = {current: value});},
         useEffect(effect: Function) {effects.push(effect);}, useLayoutEffect(effect: Function) {layoutEffects.push(effect);}
       };
-      if (name === 'next/navigation') return {usePathname: () => pathname};
+      if (name === 'next/navigation') return {usePathname: () => pathname, useSearchParams: () => params};
       return helpers;
     },
     document: {styleSheets: [], querySelector: () => content, createElement: () => new Element(), body: {append(node: Element) {layers.push(node);}},
@@ -63,17 +63,19 @@ function setup({mobile = true, reduced = false} = {}) {
   layoutEffects.forEach(effect => effect());
   const cleanup = effects[0]();
   return {slides, layers, history, cleanup,
-    click(href = '/expenses/42', extra = {}) {
+    click(href = '/expenses/42', extra = {}, attributes: Record<string, string> = {}) {
       const link = new Element(); link.href = `http://localhost${href}`;
+      for (const [key, value] of Object.entries(attributes)) link.attributes.set(key, value);
       listeners.get('click')!({target: link, button: 0, ...extra});
     },
     route(to: string) {
-      pathname = to; location.pathname = to; hook = 0;
+      const url = new URL(to, location.origin);
+      pathname = url.pathname; params = url.searchParams; location.pathname = pathname; location.href = url.href; hook = 0;
       exports.default();
       layoutEffects.at(-1)!();
     },
     pop(to: string, index: number) {
-      location.pathname = to; history.state = {...history.state, tabulariumPageIndex: index};
+      location.pathname = new URL(to, location.origin).pathname; location.href = new URL(to, location.origin).href; history.state = {...history.state, tabulariumPageIndex: index};
       listeners.get('popstate')!({state: history.state});
     }
   };
@@ -123,5 +125,48 @@ test('modified clicks do not capture an outgoing page', () => {
   app.click('/expenses/42', {ctrlKey: true});
   app.route('/expenses/42');
   assert.equal(app.layers.length, 0);
+  app.cleanup();
+});
+
+test('settings pages and payment sections slide forward and reverse on return', () => {
+  const app = setup();
+  for (const to of ['/settings', '/settings/categories', '/settings/categories/expenses']) {
+    app.click(to); app.route(to);
+    assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(100%)');
+  }
+  app.click('/settings/categories'); app.route('/settings/categories');
+  assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(-100%)');
+  app.click('/settings/payment-credit'); app.route('/settings/payment-credit');
+  app.click('/settings/payment-credit?section=banks'); app.route('/settings/payment-credit?section=banks');
+  assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(100%)');
+  app.click('/settings/payment-credit'); app.route('/settings/payment-credit');
+  assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(-100%)');
+  app.pop('/settings/payment-credit?section=banks', 6); app.route('/settings/payment-credit?section=banks');
+  assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(-100%)');
+  app.cleanup();
+});
+
+test('explicit Back links return across unrelated routes and retain filtered URLs', () => {
+  const app = setup();
+  for (const [from, to] of [
+    ['/account/workspace', '/settings'],
+    ['/suppliers/42', '/expenses?period=custom&mobileList=1'],
+    ['/expenses/42', '/months/2026/9?mode=fiscal'],
+    ['/incomes/cash-register', '/incomes/cash-register/receipts?mobileList=1']
+  ]) {
+    app.route(from);
+    app.click(to, {}, {'data-page-transition': 'backward'}); app.route(to);
+    assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(-100%)');
+    assert.equal(app.slides.at(-1).frames[1].transform, 'translateX(100%)');
+  }
+  app.cleanup();
+});
+
+test('programmatic return buttons use the same backward transition', () => {
+  const app = setup();
+  app.route('/incomes/cash-register');
+  const to = '/incomes/cash-register/receipts?mobileList=1';
+  app.click(to, {}, {'data-page-transition-back': to}); app.route(to);
+  assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(-100%)');
   app.cleanup();
 });

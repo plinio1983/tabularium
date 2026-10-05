@@ -19,6 +19,7 @@ export default function ReportMobileModeSwitch() {
             key={value}
             className={mode === value ? 'trend-mode-button is-active' : 'trend-mode-button'}
             href={modeHref(value)}
+            scroll={false}
             aria-current={mode === value ? 'page' : undefined}
         >{value === 'overall' ? 'Complessivo' : 'Fiscale'}</Link>)}
     </div>;

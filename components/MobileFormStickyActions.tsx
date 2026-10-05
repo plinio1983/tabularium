@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import {useEffect, useRef, useState} from "react";
 import {createPortal} from "react-dom";
 
@@ -87,7 +88,7 @@ export default function MobileFormStickyActions({
                     <span className="btn-icon">×</span> Annulla
                 </button>
             ) : cancelHref ? (
-                <a className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</a>
+                <Link data-page-transition="backward" className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</Link>
             ) : (
                 <span aria-hidden="true"/>
             )}

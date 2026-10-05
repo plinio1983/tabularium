@@ -20,7 +20,7 @@ export default function MonthReportMonthSelect({ options, value, ariaLabel = 'Se
       const href = event.currentTarget.value;
       if (href) {
         event.currentTarget.dispatchEvent(new Event('tabularium:navigation-start', { bubbles: true }));
-        router.push(href);
+        router.push(href, {scroll: false});
       }
     }}
   >

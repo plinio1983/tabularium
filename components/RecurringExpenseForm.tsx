@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import InfoHint from '@/components/InfoHint';
 import {weekdayOptions, weekdayLabel, weekdayFromDate} from '@/lib/recurring-cadence';
 import {type FormEvent, type ReactNode, useEffect, useId, useRef, useState} from "react";
@@ -1068,7 +1069,7 @@ export default function RecurringExpenseForm({
                     <button type="button" className="btn btn-md btn-default" onClick={onCancel}>
                         <span className="btn-icon">×</span> Annulla</button>
                 ) : cancelHref ? (
-                    <a className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</a>
+                    <Link data-page-transition="backward" className="btn btn-md btn-default" href={cancelHref}><span className="btn-icon">×</span> Annulla</Link>
                 ) : null}
             </div>
         </form>

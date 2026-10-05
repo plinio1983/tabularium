@@ -102,9 +102,7 @@ export default async function ExpenseDetailPage({params, searchParams}: {
 
     const conversionUnavailableReason = !hasWorkspaceRole(current.membership.role, workspaceOperationalRoles)
         ? 'Non hai i permessi necessari per convertire questa spesa.'
-        : expense.isRecurring || expense.recurringExpenseId
-            ? 'La conversione non è disponibile per le spese ricorrenti o generate da una ricorrenza.'
-            : !canConvertExpense(expense)
+        : !canConvertExpense(expense)
                 ? 'La conversione non è disponibile per le spese di tipo Saldo IVA.'
                 : null;
 

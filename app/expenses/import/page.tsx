@@ -39,7 +39,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
     <div className="toolbar-card import-hero-card">
       <div className="import-hero-title">
         {/*<span className="badge">Importazione dati</span>*/}
-        <Link className="btn btn-sm btn-ghost" href="/"><span className="btn-icon">↩</span> Torna alla dashboard</Link>
+        <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/"><span className="btn-icon">↩</span> Torna alla dashboard</Link>
         <h2>Importa dati da Excel / ODS</h2>
         <p className="muted">Importa dati, definizioni ricorrenti, incassi, clienti o fornitori usando il relativo modello compilabile.</p>
       </div>
@@ -112,7 +112,7 @@ async function ImportExpensesContent({ searchParams }: { searchParams?: Promise<
         </label>
 
         <div className="actions-row right-actions">
-          <Link className="btn btn-sm btn-default" href="/"><span className="btn-icon">✕</span> Annulla</Link>
+          <Link data-page-transition="backward" className="btn btn-sm btn-default" href="/"><span className="btn-icon">✕</span> Annulla</Link>
           <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">⬆</span>Avvia importazione</button>
         </div>
       </form>

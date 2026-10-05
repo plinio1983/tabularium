@@ -1,7 +1,9 @@
+import ActionFeedbackBanner from './ActionFeedbackBanner';
+import {ledgerExportLimit} from '@/lib/movement-ledger-export';
 import MobileRecordViews, {MobileRecordCloseButton} from './MobileRecordViews';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
-import {requireWorkspace} from '@/lib/auth';
+import {hasWorkspaceRole, workspaceOperationalRoles, requireWorkspace} from '@/lib/auth';
 import {dateInputInTimeZone} from '@/lib/company-time';
 import {formatItalianCompactDate} from '@/lib/date-format';
 import {
@@ -74,6 +76,12 @@ export default async function MovementLedgerPage({kind, searchParams}: {
         pages
     } = await loadMovementLedger(prisma, kind, current.workspace.id, current.company.id, current.company.timeZone, filters);
     const returnTo = filteredListHref(path, {...params, page: String(page), mobileList: '1'});
+    const exportHref = filteredListHref(`/api/exports/${kind}`, {...params, exportFrom: filters.period.from, exportTo: filters.period.to, mobileList: '1'});
+    const canExport = hasWorkspaceRole(current.membership.role, workspaceOperationalRoles);
+    const exportButton = (compact: boolean) => canExport && summary.count > 0 ? <a className={`btn btn-sm btn-default${compact ? ' btn-icon-only' : ''}`} href={exportHref} aria-label="Esporta CSV" title="Esporta tutti i movimenti filtrati">
+        <span className="btn-icon" aria-hidden="true">⇩</span>{compact ? null : 'Esporta CSV'}
+    </a> : null;
+
     // Opening the compact list updates browser history without rerendering these server links.
     const pageHref = (next: number) => filteredListHref(path, {...params, page: String(next), mobileList: '1'});
     const sortHeader = (column: typeof filters.sort, label: string) => <SortableColumnHeader key={column} label={label}
@@ -122,7 +130,7 @@ export default async function MovementLedgerPage({kind, searchParams}: {
 
                 </div>
                 <div className="toolbar-actions">
-                    <Link className="btn btn-md btn-default" href={documentPath}><span className="btn-icon"
+                    <Link data-page-transition="backward" className="btn btn-md btn-default" href={documentPath}><span className="btn-icon"
                                                                                        aria-hidden="true">↩</span>Torna
                         a {isPayment ? 'Spese' : 'Incassi'}
                     </Link><Link className="btn btn-md btn-default"
@@ -164,14 +172,19 @@ export default async function MovementLedgerPage({kind, searchParams}: {
         </>}>
             <section className="card ledger-list">
                 <div className="ledger-list-header mobile-record-list-header"><h3>Lista {title.toLowerCase()}</h3>
-                    <div id="ledger-list-filter-trigger"/>
+                    <div id="ledger-list-filter-trigger" className="toolbar-actions">{exportButton(false)}</div>
                     <MobileRecordCloseButton/>
                 </div>
+                <ActionFeedbackBanner searchParams={params} errorMessages={{
+                    export_limit: `Esporta al massimo ${ledgerExportLimit.toLocaleString('it-IT')} movimenti. Restringi i filtri e riprova.`,
+                    export_empty: 'Nessun movimento da esportare per i filtri selezionati.',
+                    export_failed: 'Esportazione non completata. Riprova.'
+                }}/>
                 <LiveSearch name="search" label={isPayment ? 'Cerca pagamento' : 'Cerca accredito'}
                             placeholder="Nome, descrizione o numero del documento"/>
                 <div className="ledger-list-results-row">
                     <p className="muted">{summary.count ? `Mostrati ${(page - 1) * ledgerPageSize + 1}–${Math.min(page * ledgerPageSize, summary.count)} di ${summary.count}` : 'Nessun movimento per i filtri selezionati.'}</p>
-                    <div id="ledger-mobile-filter-trigger"/>
+                    <div id="ledger-mobile-filter-trigger" className="toolbar-actions">{exportButton(true)}</div>
                 </div>
                 {rows.length ?
                     <div className="mobile-record-list ledger-mobile-list" aria-label={`Lista ${title.toLowerCase()}`}>

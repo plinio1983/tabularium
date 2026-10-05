@@ -6,10 +6,10 @@ export const conversionLabels: Record<string, string> = {
 };
 
 export function canConvertExpense(source: {expenseType: string; isRecurring: boolean; recurringExpenseId: number | null}) {
-    return expenseConversionTypes.some(type => type === source.expenseType) && !source.isRecurring && !source.recurringExpenseId;
+    return expenseConversionTypes.some(type => type === source.expenseType);
 }
 export function canConvertIncome(source: {incomeType: string; recurringIncomeId: number | null}) {
-    return ['STANDARD', 'CASH_REGISTER'].includes(source.incomeType) && !source.recurringIncomeId;
+    return ['STANDARD', 'CASH_REGISTER'].includes(source.incomeType);
 }
 
 export function expenseConversionDefaults<T extends {amount?: string | number | {toString(): string} | null; expenseType?: string}>(source: T, target: ExpenseConversionType) {

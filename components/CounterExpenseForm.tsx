@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import {Fragment, useEffect, useRef, useState, type FormEvent, type ReactNode} from 'react';
 import {useRouter} from 'next/navigation';
 import {DateField, FormField, SelectField} from './FormControls';
@@ -194,7 +195,7 @@ export default function CounterExpenseForm({categories, banks, paymentMethods, i
     </details>
     {error ? <p className="text-critical full" role="alert">{error}</p> : null}
     <div className="actions-row full form-actions-row form-sticky-actions hidden-md-down">
-      {onCancel ? <button className="btn btn-md btn-default" type="button" disabled={busy} onClick={onCancel}><span className="btn-icon">×</span>Annulla</button> : <a className="btn btn-md btn-ghost" href={cancelHref}><span className="btn-icon">↩</span>Indietro</a>}
+      {onCancel ? <button className="btn btn-md btn-default" type="button" disabled={busy} onClick={onCancel}><span className="btn-icon">×</span>Annulla</button> : <Link data-page-transition="backward" className="btn btn-md btn-ghost" href={cancelHref}><span className="btn-icon">↩</span>Indietro</Link>}
       <button className="btn btn-md btn-primary" disabled={busy} type="submit"><span className="btn-icon">✓</span>{busy ? 'Salvataggio…' : submitLabel ?? (initialExpense?.id ? 'Salva modifiche' : 'Paga')}</button>
     </div>
     {!hideMobileActions ? <MobileFormStickyActions currentStep={displayedStep} submitStep={totalSteps} onBack={back} onNext={next} onCancel={onCancel} cancelHref={cancelHref} isSubmitting={busy} submitLabel={submitLabel ?? (initialExpense?.id ? 'Salva modifiche' : 'Paga')}/> : null}

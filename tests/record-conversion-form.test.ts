@@ -138,3 +138,16 @@ test('inline income conversion uses the modal and closes without navigation', ()
     assert.equal(closed, true);
     assert.equal(app.navigation.length, 0);
 });
+
+test('movimento generato: mostra ambito della conversione e condizioni da banco senza alterare la ricorrenza nel form', () => {
+    const app = setup('expenses', {generatedFromRecurrence: true});
+    let all = nodes(app.render());
+    assert.ok(all.some(node => typeof node.props?.children === 'string' && node.props.children.includes('prossime occorrenze manterranno')));
+    all.find(node => node.type === './ExpenseTypeChoice').props.onSelectCounter();
+    all = nodes(app.render());
+    assert.ok(all.some(node => typeof node.props?.children === 'string' && node.props.children.includes('unico pagamento già registrato')));
+    all.find(node => node.type === './ExpenseTypeChoice').props.onSelect('payroll');
+    const form = nodes(app.render()).find(node => node.type === '@/components/ExpenseForm');
+    assert.equal(form.props.initialExpense.isRecurring, false);
+    assert.equal(form.props.preserveLinkedRecords, true);
+});

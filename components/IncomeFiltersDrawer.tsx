@@ -52,6 +52,7 @@ const quarterQuickOptions = [
 ];
 
 const quickDateOptions = [
+  ["all", "Tutti i periodi"],
   ["last_30_days", "Ultimi 30 giorni"],
   ["last_90_days", "Ultimi 90 giorni"],
   ["year_to_date", "Anno intero"],
@@ -118,6 +119,7 @@ function quickBillingPeriodRange(value: string, now: Date) {
 }
 
 function quickDateRange(value: string, now: Date) {
+  if (value === 'all') return {from: '', to: ''};
   const year = now.getFullYear();
   const month = now.getMonth();
   const currentQuarter = Math.floor(month / 3);
@@ -267,7 +269,6 @@ export default function IncomeFiltersDrawer({
   const drawer = <FilterDrawer open={open} onClose={() => setOpen(false)} title="Filtri incassi" panelClassName="record-filter-drawer-panel transaction-filter-drawer-panel income-filter-drawer-panel"
     actions={<EntityFormActions layout="drawer" formId={formId} onCancel={() => setOpen(false)} submitLabel="Filtra" onReset={() => {setOpen(false); router.push(listAction ? '/incomes?mobileList=1' : '/incomes');}}/>}>
       <form id={formId} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters income-drawer-filters" action="/incomes" method="get" onSubmit={handleFiltersSubmit} onChange={handleFiltersChange}>
-        {inputDefault(filters, "pending") ? <input type="hidden" name="pending" value={inputDefault(filters, "pending")}/> : null}
         <input type="hidden" name="mobileList" value={listAction ? "1" : inputDefault(filters, "mobileList")}/>
         <input type="hidden" name="customerQuick" value={inputDefault(filters, "customerQuick")}/>
         <input type="hidden" name="mobileSort" value={inputDefault(filters, "mobileSort")}/>
@@ -332,6 +333,7 @@ export default function IncomeFiltersDrawer({
 
         <FilterField label="Stato accredito" icon="✓"><select name="creditStatus" defaultValue={inputDefault(filters, "creditStatus")}>
           <option value="">Tutti</option>
+          <option value="not_complete">Con residuo da accreditare</option>
           <option value="DA_ACCREDITARE">Da accreditare</option>
           <option value="PARZIALE">Accreditato parzialmente</option>
           <option value="SCADUTO">Scaduto</option>

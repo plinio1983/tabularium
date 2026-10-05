@@ -66,6 +66,12 @@ function aggregateVatLabel(group: IncomeCashRegisterGroup) {
     return group.vatRates.length === 1 ? `${group.vatRates[0]}%` : 'Mista';
 }
 
+function vatBadgeLabel(value: IncomeCashRegisterGroup) {
+    const rate = Number(value.vatRates);
+    const style = vatStyles[String(rate)] ?? vatStyles['0'];
+    return <span className={badgeClass(style.className)}>{rate}%</span>;
+}
+
 function vatBadge(value: unknown) {
     const rate = Number(value);
     const style = vatStyles[String(rate)] ?? vatStyles['0'];
@@ -107,7 +113,7 @@ function creditStatus(income: IncomeItem, timeZone: string) {
 
 function fiscalBadgeLabel(value: IncomeCashRegisterGroup) {
    const style = value ? "text-ok" : "text-muted";
-   return <span className={`${style}`}>{value ? '✓ Fis' : '✕ Nf'}</span>;
+   return <span className={`${style}`}>{value ? '✓ Fisc' : '✕ Nf'}</span>;
 }
 
 function fiscalBadge(value: IncomeItem) {
@@ -484,7 +490,8 @@ export default function IncomesList({
                         <td>{compactDateTableLabel(group.latestCreditDate)}</td>
                         <td>{group.salesChannelIcon ?? '  •  '} {group.salesChannel}</td>
                         {!hideCustomer ? <td>🧾 Registratore di cassa</td> : null}
-                        <td>{fiscalBadgeLabel(group)}</td>
+                        {/*<td>{fiscalBadgeLabel(group)}</td>*/}
+                        <td>{vatBadgeLabel(group)}</td>
                         <td><strong className={moneyTone(group.amount)}>{euro(group.amount)}</strong>
                             <span className="income-table-payment-icon" title={group.paymentMethod}
                                   aria-label={`Metodo di pagamento: ${group.paymentMethod}`}>{group.paymentMethodIcon ?? '•'}</span>
@@ -536,7 +543,8 @@ export default function IncomesList({
                         {!hideCustomer ? <td>{income.customer ?
                             <Link
                                 href={`/clients/${income.customer.id}?returnTo=${returnTo}`}>{income.customer.businessName}</Link> : '-'}</td> : null}
-                        <td>{fiscalBadge(income)}</td>
+                        {/*<td>{fiscalBadge(income)}</td>*/}
+                        <td>{vatBadge(income.vatRate)}</td>
                         <td className="cell-amount">
                             <strong className={moneyTone(Number(income.amount))}>{euro(Number(income.amount))}</strong>
                             <span className="income-table-payment-icon" title={income.paymentMethodRef.name}
@@ -544,7 +552,6 @@ export default function IncomesList({
                         </td>
                         <td>{income.recurringIncomeId ? <span
                             className="badge color-badge recurring-expense-badge">{incomeTypeLabel(income)}</span> : null} {income.description ?? '-'}</td>
-                        {/*<td>{vatBadge(income.vatRate)}</td>*/}
                         <td className="cell-credit-state">
                             {/*{ creditState === 'ACCREDITATO' ? <small className="text-ok strong">{status.icon} {statusLabel}</small> : <span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span>}*/}
                             <span className={badgeClass(status.className)}>{status.icon} {statusLabel}</span>

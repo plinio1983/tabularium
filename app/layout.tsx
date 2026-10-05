@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return <html lang="it"><body><main className="shell">
     <CompanyTimeZoneProvider timeZone={current?.company?.timeZone}>
     <Suspense fallback={null}><NavigationProgress /></Suspense>
-    <MobilePageTransition />
+    <Suspense fallback={null}><MobilePageTransition /></Suspense>
     <ShellChrome slot="header" userName={current?.user.name} />
     <ClickableDesktopRows />
 

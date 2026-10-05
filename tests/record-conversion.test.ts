@@ -130,10 +130,9 @@ test('conferma richiede il riepilogo esatto, senza modifiche dopo anteprima', as
     assert.equal(h.updates.length, 0);
 });
 
-test('importo insufficiente, periodo errato e ricorrenze non producono scritture', async () => {
+test('importo insufficiente, periodo errato e Saldo IVA non producono scritture', async () => {
     assert.equal((await setup().send({...payrollInput, payrollNetAmount: '10', payrollExtraCompensation: '0'})).status, 400);
     assert.equal((await setup().send({...payrollInput, payrollPeriodStart: '2026-09-31'})).status, 400);
-    assert.equal((await setup({...expense(), recurringExpenseId: 4}).send(payrollInput)).status, 400);
     assert.equal((await setup({...expense(), expenseType: 'VAT_SETTLEMENT'}).send(payrollInput)).status, 400);
 });
 
@@ -245,4 +244,61 @@ test('da banco: metodo non valido, aliquota errata, snapshot scaduto e audit fal
     const review = await failing.send(counterInput);
     assert.equal((await failing.send({...counterInput, confirmed: true, reviewToken: review.body.reviewToken})).status, 500);
     assert.equal(failing.updates.length, 0);
+});
+
+test('movimenti generati: conversione preserva origine, automazione, pagamenti e allegati', async () => {
+    for (const targetType of ['PAYROLL', 'TAX_CONTRIBUTION', 'STANDARD']) {
+        const source = {...expense(), expenseType: targetType === 'STANDARD' ? 'PAYROLL' : 'STANDARD',
+            isRecurring: true, recurringExpenseId: 42, recurringExpensePeriodKey: '2026-09', isAutomaticPayment: true};
+        const h = setup(source);
+        const input = {...payrollInput, targetType, supplierId: 5, taxAuthorityId: 9};
+        const preview = await h.send(input);
+        assert.equal(preview.status, 200);
+        assert.ok(preview.body.warnings.some((warning: string) => warning.includes('solo questo movimento')));
+        assert.equal((await h.send({...input, confirmed: true, reviewToken: preview.body.reviewToken})).status, 200);
+        const data = h.updates[0].data;
+        assert.equal(data.expenseType, targetType);
+        for (const field of ['isRecurring', 'recurringExpenseId', 'recurringExpensePeriodKey', 'isAutomaticPayment', 'payments', 'attachments']) {
+            assert.equal(field in data, false, field);
+        }
+        assert.equal(h.audits[0].data.metadata.after.recurringExpenseId, 42);
+        assert.equal(h.audits[0].data.metadata.after.recurringExpensePeriodKey, '2026-09');
+    }
+});
+
+test('spesa generata da banco: conserva il pagamento completo, rifiuta assenti, parziali e multipli', async () => {
+    const source: RecordData = {...expense(), isRecurring: true, recurringExpenseId: 42, recurringExpensePeriodKey: '2026-09'};
+    source.payments[0].amount = '100';
+    const h = setup(source);
+    const preview = await h.send(counterInput);
+    assert.equal(preview.status, 200);
+    assert.equal((await h.send({...counterInput, confirmed: true, reviewToken: preview.body.reviewToken})).status, 200);
+    const data = h.updates[0].data;
+    assert.equal(data.expenseType, 'COUNTER');
+    for (const field of ['payments', 'attachments', 'recurringExpenseId', 'recurringExpensePeriodKey', 'isRecurring']) assert.equal(field in data, false);
+    for (const payments of [[], [{...source.payments[0], amount: '20'}], [source.payments[0], {...source.payments[0], id: 32}]]) {
+        const invalid = setup({...source, payments});
+        const result = await invalid.send(counterInput);
+        assert.equal(result.status, 400);
+        assert.match(result.body.error, /unico pagamento/);
+        assert.equal(invalid.updates.length, 0);
+    }
+    assert.equal((await setup(source).send({...counterInput, amount: '120'})).status, 400);
+});
+
+test('incasso generato: scontrino e conversione inversa mantengono origine e accredito', async () => {
+    for (const incomeType of ['STANDARD', 'CASH_REGISTER']) {
+        const source = {...income(), incomeType, recurringIncomeId: 42, recurringIncomePeriodKey: '2026-09'};
+        const input = incomeType === 'STANDARD' ? cashInput : {...cashInput, targetType: 'STANDARD', customerId: 5, orderDate: '2026-09-10', dueDate: '2026-09-10', billingPeriod: '2026-09'};
+        const h = setup(source);
+        const preview = await h.send(input, 'incomes');
+        assert.equal(preview.status, 200);
+        assert.ok(preview.body.warnings.some((warning: string) => warning.includes('prossime occorrenze')));
+        assert.equal((await h.send({...input, confirmed: true, reviewToken: preview.body.reviewToken}, 'incomes')).status, 200);
+        for (const field of ['credits', 'attachments', 'recurringIncomeId', 'recurringIncomePeriodKey']) assert.equal(field in h.updates[0].data, false);
+        assert.equal(h.audits[0].data.metadata.after.recurringIncomeId, 42);
+    }
+    const h = setup({...income(), recurringIncomeId: 42, credits: [], isCredited: false});
+    assert.equal((await h.send(cashInput, 'incomes')).status, 400);
+    assert.equal(h.updates.length, 0);
 });

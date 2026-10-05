@@ -14,7 +14,7 @@ import {conversionLabels, expenseConversionDefaults, expenseConversionTypes, typ
 
 type ExpenseProps = ComponentProps<typeof ExpenseForm>;
 type IncomeProps = ComponentProps<typeof IncomeForm>;
-export type RecordConversionFormProps = {id: number; snapshot: string; returnHref: string; onClose?: () => void; onSaved?: () => void} & (
+export type RecordConversionFormProps = {id: number; snapshot: string; returnHref: string; generatedFromRecurrence?: boolean; onClose?: () => void; onSaved?: () => void} & (
     {kind: 'expenses'; sourceType: ExpenseConversionType; formProps: ExpenseProps} |
     {kind: 'incomes'; sourceType: 'STANDARD' | 'CASH_REGISTER'; formProps: IncomeProps}
 );
@@ -67,7 +67,7 @@ export default function RecordConversionForm(props: RecordConversionFormProps) {
     }
 
     const close = () => {if (!busyRef.current) {if (props.onClose) props.onClose(); else router.replace(props.returnHref, {scroll: false});}};
-    const preserved = target === 'COUNTER' ? props.kind === 'expenses' && props.formProps.initialExpense?.payments?.length ? 'La spesa sarà interamente pagata: il primo pagamento sarà portato all’importo totale e gli eventuali successivi saranno eliminati. Gli allegati rimangono collegati.' : 'La spesa sarà interamente pagata: verrà creato un pagamento dell’importo totale con i dati indicati. Gli allegati rimangono collegati.' : 'Pagamenti, accrediti e allegati rimangono collegati allo stesso record. Per modificarli usa le rispettive funzioni dopo la conversione.';
+    const preserved = target === 'COUNTER' && props.generatedFromRecurrence ? 'Serve un unico pagamento già registrato per l’intero importo. La conversione conserva importo, pagamento e allegati.' : target === 'COUNTER' ? props.kind === 'expenses' && props.formProps.initialExpense?.payments?.length ? 'La spesa sarà interamente pagata: il primo pagamento sarà portato all’importo totale e gli eventuali successivi saranno eliminati. Gli allegati rimangono collegati.' : 'La spesa sarà interamente pagata: verrà creato un pagamento dell’importo totale con i dati indicati. Gli allegati rimangono collegati.' : 'Pagamenti, accrediti e allegati rimangono collegati allo stesso record. Per modificarli usa le rispettive funzioni dopo la conversione.';
     const payrollNote = 'L’importo originale è proposto come netto. Completa dipendente e periodo lavorato; verifica gli eventuali compensi extra.';
     const typeChoice = props.kind === 'expenses' ? <ExpenseTypeChoice title="Seleziona il tipo in cui convertire" selected={choiceTypes[target as ExpenseConversionType]}
                         availableTypes={expenseConversionTypes.map(type => choiceTypes[type])} disabledTypes={[choiceTypes[props.sourceType as ExpenseConversionType]]} showCounter onSelectCounter={() => {if (props.sourceType !== 'COUNTER') {setTarget('COUNTER'); setError('');}}} disabled={busy}
@@ -77,6 +77,7 @@ export default function RecordConversionForm(props: RecordConversionFormProps) {
                         }}/> : null;
     const content = <>
             <p className="field-note record-conversion-note">{preserved}</p>
+            {props.generatedFromRecurrence ? <p className="field-note record-conversion-note">La conversione riguarda solo questo movimento. Il collegamento alla ricorrenza rimane invariato e le prossime occorrenze manterranno il tipo della ricorrenza.</p> : null}
             {error ? <p className="text-critical" role="alert" tabIndex={-1} ref={errorMessage}>{error}</p> : null}
             <div hidden={Boolean(review)} className={props.kind === 'expenses' ? `expense-creation-stage ${typeConfirmed ? 'is-confirmed' : ''}` : undefined}>
                 {props.kind === 'expenses' ? <>
@@ -129,7 +130,7 @@ export default function RecordConversionForm(props: RecordConversionFormProps) {
     return <div className="modal-page-wrap record-conversion"><div className="modal-card modal-card-wide modal-page-card">
         <div className="toolbar-card modal-toolbar-card">
             <div><h2>Converti incasso #{props.id}</h2><p className="muted">Tipo attuale: {typeLabel(props.sourceType)}</p></div>
-            <Link className="btn btn-sm btn-default" href={props.returnHref}>Annulla</Link>
+            <Link data-page-transition="backward" className="btn btn-sm btn-default" href={props.returnHref}>Annulla</Link>
         </div>
         {content}
     </div></div>;

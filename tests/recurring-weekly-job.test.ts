@@ -64,3 +64,19 @@ test('esclusione di una spesa settimanale non esclude le altre settimane', async
   assert.equal(result.created, 3);
   assert.deepEqual(h.records.map(record => record[h.keyField]), ['2026-03-01', '2026-03-22', '2026-03-29']);
 });
+
+for (const kind of ['expense', 'income'] as const) {
+  test(`${kind}: occorrenza convertita con scadenza modificata non viene rigenerata`, async () => {
+    const h = job(kind);
+    assert.equal((await h.run()).created, 4);
+    const record = h.records[0];
+    const id = record.id;
+    record[kind === 'expense' ? 'expenseType' : 'incomeType'] = kind === 'expense' ? 'TAX_CONTRIBUTION' : 'CASH_REGISTER';
+    record.dueDate = new Date('2026-04-10T00:00:00Z');
+    assert.equal((await h.run()).created, 0);
+    assert.equal(h.records.length, 4);
+    assert.equal(h.records[0].id, id);
+    assert.equal(h.records[0][h.keyField], '2026-03-01');
+    assert.ok(h.records.slice(1).every(item => kind === 'expense' ? item.expenseType === 'STANDARD' : !item.incomeType || item.incomeType === 'STANDARD'));
+  });
+}

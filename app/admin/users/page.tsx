@@ -18,7 +18,7 @@ export default async function SystemUsersPage() {
   return <div className="grid admin-page">
     <div className="toolbar-card">
       <div>
-        <Link className="btn btn-sm btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
+        <Link data-page-transition="backward" className="btn btn-sm btn-default" href="/admin"><span className="btn-icon">↩</span> Admin</Link>
         <h2>Utenti sistema</h2>
         <p className="muted">Vista globale riservata agli amministratori.</p>
       </div>

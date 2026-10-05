@@ -18,5 +18,5 @@ export default async function RecordConversionPage({kind, id, returnHref: reques
 }
 
 function Unavailable({href}: {href: string}) {
-    return <div className="card"><h2>Conversione non disponibile</h2><p>Le ricorrenze e le spese di tipo Saldo IVA non sono convertibili.</p><Link className="btn btn-md btn-default" href={href}>Torna al dettaglio</Link></div>;
+    return <div className="card"><h2>Conversione non disponibile</h2><p>Le ricorrenze e le spese di tipo Saldo IVA non sono convertibili.</p><Link data-page-transition="backward" className="btn btn-md btn-default" href={href}>Torna al dettaglio</Link></div>;
 }

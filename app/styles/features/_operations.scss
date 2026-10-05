@@ -379,10 +379,7 @@
 }
 
 .cash-register-actions.is-edit-mode .cash-register-edit-cancel {
-  border-color: var(--border);
-  background: var(--card);
-  color: var(--text);
-  font-weight: 850;
+  height: 52px;
 }
 
 .cash-register-actions.has-confirmation {
@@ -1530,7 +1527,7 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 
 @media (max-width: 720px) {
   .toolbar-actions {
-    width: 100%;
+    //width: 100%;
     justify-content: flex-end;
   }
 }

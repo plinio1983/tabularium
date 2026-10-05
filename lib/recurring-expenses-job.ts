@@ -333,6 +333,7 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
   const expenses = await prisma.expense.findMany({
     where: {
       paymentStatus: { not: 'COMPLETATO' },
+      expenseType: {not: 'COUNTER'},
       dueDate: {not: null},
       OR: [
         { isAutomaticPayment: true },
@@ -352,6 +353,7 @@ export async function settleAutomaticRecurringPayments(todayInput = new Date()):
 
   for (const expense of expenses as any[]) {
     result.checked += 1;
+    if (expense.expenseType === 'COUNTER') {result.skipped++; continue;}
 
     try {
       if (!expense.dueDate || calendarDateInput(expense.dueDate) > dateInputInTimeZone(expense.company.timeZone, todayInput)) {

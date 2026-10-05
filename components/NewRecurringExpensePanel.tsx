@@ -43,7 +43,7 @@ export default function NewRecurringExpensePanel({ categories, banks, paymentMet
 
   return <>
     <div className="toolbar-actions record-toolbar-actions">
-      <Link className="btn btn-sm btn-default" href="/expenses"><span className="btn-icon">↩</span> Lista spese</Link>
+      <Link data-page-transition="backward" className="btn btn-sm btn-default" href="/expenses"><span className="btn-icon">↩</span> Lista spese</Link>
       <button className="btn btn-sm btn-secondary" type="button" data-recurring-expense-new><span className="btn-icon btn-icon-add">＋</span>Spesa ricorrente</button>
     </div>
 

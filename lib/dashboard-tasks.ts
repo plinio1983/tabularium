@@ -14,6 +14,27 @@ export function parseIncomeTask(value: string): IncomeTask | null {
   return value === 'uncredited' || value === 'missing_invoice' ? value : null;
 }
 
+/** Dashboard shortcuts use the same editable filters as the record lists. */
+export function normalizeDashboardTaskParams(kind: 'expenses' | 'incomes', input: URLSearchParams) {
+  const params = new URLSearchParams(input);
+  const task = kind === 'expenses' ? parseExpenseTask(params.get('pending') || '') : parseIncomeTask(params.get('pending') || '');
+  params.delete('pending');
+  if (!task) return params;
+  if (![ 'dateQuick', 'billingPeriodQuick', 'billingPeriodFrom', 'billingPeriodTo', 'billingPeriod', 'period',
+    'orderDateFrom', 'orderDateTo', 'creditDateFrom', 'creditDateTo' ].some(key => params.get(key))) params.set('dateQuick', 'all');
+  if (task === 'overdue') params.set('paymentStatus', 'overdue');
+  else if (task === 'uncredited') params.set('creditStatus', 'not_complete');
+  else params.set('invoiceStatus', kind === 'expenses' ? 'not_received' : 'not_emitted');
+  return params;
+}
+
+export function dashboardTaskHref(kind: 'expenses', task: ExpenseTask): string;
+export function dashboardTaskHref(kind: 'incomes', task: IncomeTask): string;
+export function dashboardTaskHref(kind: 'expenses' | 'incomes', task: ExpenseTask | IncomeTask) {
+  const params = normalizeDashboardTaskParams(kind, new URLSearchParams({pending: task, mobileList: '1'}));
+  return `/${kind}?${params}`;
+}
+
 type TaskExpense = ExpenseWithPayments & {isDeclared: boolean; invoiceStatus?: unknown; expenseType?: unknown};
 type TaskIncome = {amount: unknown; credits: Array<{amount: unknown}>; isFiscal: boolean; invoiceStatus?: string | null; incomeType?: string};
 

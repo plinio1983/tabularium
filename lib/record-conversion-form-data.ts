@@ -28,6 +28,7 @@ export async function loadRecordConversionForm(kind: 'expenses' | 'incomes', id:
             prisma.employee.findMany({where: {workspaceId: current.workspace.id, companyId: current.company.id, status: 'ACTIVE'}, orderBy: [{lastName: 'asc'}, {firstName: 'asc'}]})
         ]);
         return {kind: 'expenses', id, sourceType: source.expenseType as ExpenseConversionType, snapshot: conversionSnapshot(source), returnHref,
+            generatedFromRecurrence: Boolean(source.isRecurring || source.recurringExpenseId),
             formProps: {banks: bankOptions, paymentMethods: methodOptions,
                 categories: orderExpenseCategories(categories).map(category => ({id: category.id, code: category.code, name: category.name, icon: category.icon})),
                 suppliers: suppliers.map(supplier => ({id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, defaultExpenseCategoryId: supplier.defaultExpenseCategoryId, defaultVatRate: supplier.defaultVatRate?.toString()})),
@@ -50,6 +51,7 @@ export async function loadRecordConversionForm(kind: 'expenses' | 'incomes', id:
         prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]})
     ]);
     return {kind: 'incomes', id, sourceType: source.incomeType, snapshot: conversionSnapshot(source), returnHref,
+        generatedFromRecurrence: Boolean(source.recurringIncomeId),
         formProps: {banks: bankOptions, paymentMethods: methodOptions,
             customers: customers.map(customer => ({id: customer.id, businessName: customer.businessName, alias: customer.alias, defaultSalesChannelId: customer.defaultSalesChannelId})),
             salesChannels: salesChannels.map(channel => ({id: channel.id, code: channel.code, name: channel.name, icon: channel.icon, isDefault: channel.isDefault})),

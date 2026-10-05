@@ -64,7 +64,7 @@ export default async function WorkspaceAccountPage({ searchParams }: { searchPar
           <small className="app-form-field-hint">Questo nome sarà visibile agli utenti che lavorano nel workspace.</small>
         </div>
         <div className="actions-row workspace-form-actions">
-          <Link className="btn btn-md btn-default" href="/settings"><span className="btn-icon">×</span> Annulla</Link>
+          <Link data-page-transition="backward" className="btn btn-md btn-default" href="/settings"><span className="btn-icon">×</span> Annulla</Link>
           <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">✓</span> Salva workspace</button>
         </div>
       </form> : <div className="workspace-readonly-notice">

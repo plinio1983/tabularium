@@ -7,7 +7,7 @@ type YearOption = {
     href: string;
 };
 
-export default function YearNavigationSelect({options, year}: { options: YearOption[]; year: number }) {
+export default function YearNavigationSelect({options, year, scroll = true}: { options: YearOption[]; year: number; scroll?: boolean }) {
     const router = useRouter();
 
     return <label className="year-navigation-select">
@@ -19,7 +19,7 @@ export default function YearNavigationSelect({options, year}: { options: YearOpt
                 const option = options.find(item => item.year === Number(event.currentTarget.value));
                 if (!option) return;
                 event.currentTarget.dispatchEvent(new Event('tabularium:navigation-start', {bubbles: true}));
-                router.push(option.href);
+                router.push(option.href, {scroll});
             }}
         >
             {options.map(option => <option key={option.year} value={option.year}>{option.year}</option>)}

@@ -1,5 +1,6 @@
 export const defaultQuickPeriod = 'last_90_days';
 export const periodOptions = [
+  ['all', 'Tutti i periodi'],
   ['last_30_days', 'Ultimi 30 giorni'], ['last_90_days', 'Ultimi 90 giorni'], ['year_to_date', 'Anno intero'],
   ...['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'].map((label, index) => [`month_${String(index + 1).padStart(2, '0')}`, label]),
   ['quarter_1', 'T.1 [ Gen - Mar ]'], ['quarter_2', 'T.2 [ Apr - Giu ]'], ['quarter_3', 'T.3 [ Lug - Set ]'], ['quarter_4', 'T.4 [ Ott - Dic ]'],

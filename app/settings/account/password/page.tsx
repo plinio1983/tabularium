@@ -74,7 +74,7 @@ export default async function PasswordSettingsPage({searchParams}: {
       </details>
 
       <div className="actions-row full form-actions-row account-form-actions">
-        <Link className="btn btn-md btn-default" href="/settings/account"><span className="btn-icon">×</span> Annulla</Link>
+        <Link data-page-transition="backward" className="btn btn-md btn-default" href="/settings/account"><span className="btn-icon">×</span> Annulla</Link>
         <button type="submit" className="btn btn-md btn-primary"><span className="btn-icon">✓</span> Salva password</button>
       </div>
     </form>

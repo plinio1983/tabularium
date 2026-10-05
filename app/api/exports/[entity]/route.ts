@@ -1,3 +1,9 @@
+import {ledgerFilters, type LedgerParams} from '@/lib/movement-ledger';
+import {loadMovementLedgerExport} from '@/lib/movement-ledger-data';
+import {ledgerExportLimit, movementLedgerCsv} from '@/lib/movement-ledger-export';
+import {dateInputInTimeZone} from '@/lib/company-time';
+import {filteredListHref} from '@/lib/live-search';
+import {appendFlash} from '@/lib/flash';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getWorkspaceApiAccess, workspaceOperationalRoles } from '@/lib/auth';
@@ -149,4 +155,31 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
     ])
   );
   return csvDownload(csv, filename(entity));
+}
+
+export async function GET(request: Request, {params}: {params: Promise<{entity: string}>}) {
+  const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
+  if (!access.ok) return NextResponse.json({error: access.error}, {status: access.status});
+  const {entity} = await params;
+  if (entity !== 'payments' && entity !== 'credits') return NextResponse.json({error: 'Esportazione non supportata'}, {status: 404});
+  const url = new URL(request.url);
+  const query: LedgerParams = {};
+  for (const key of url.searchParams.keys()) query[key] = url.searchParams.getAll(key);
+  const exportFrom = url.searchParams.get('exportFrom');
+  const exportTo = url.searchParams.get('exportTo');
+  delete query.exportFrom;
+  delete query.exportTo;
+  const path = entity === 'payments' ? '/expenses/payments' : '/incomes/credits';
+  const errorResponse = (error: string) => NextResponse.redirect(new URL(appendFlash(filteredListHref(path, query), {error}), request.url), 303);
+  const {workspace, company} = access.current;
+  const today = dateInputInTimeZone(company.timeZone);
+  const filters = ledgerFilters({...query, ...(exportFrom && exportTo ? {dateFrom: exportFrom, dateTo: exportTo} : {})}, today);
+  try {
+    const rows = await loadMovementLedgerExport(prisma, entity, workspace.id, company.id, company.timeZone, filters, ledgerExportLimit);
+    if (rows.length > ledgerExportLimit) return errorResponse('export_limit');
+    if (!rows.length) return errorResponse('export_empty');
+    return csvDownload(movementLedgerCsv(entity, rows, company.timeZone), `${entity === 'payments' ? 'pagamenti' : 'accrediti'}-${today}.csv`);
+  } catch {
+    return errorResponse('export_failed');
+  }
 }

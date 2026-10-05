@@ -27,7 +27,7 @@ export default async function NewRecurringExpensePage({ searchParams }: { search
     <div className="modal-card modal-card-wide modal-page-card recurring-wizard-page-card">
       <div className="toolbar-card modal-toolbar-card">
         <div><h2>Spesa ricorrente</h2><p className="muted">Configura una regola ricorrente.</p></div>
-        <Link className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">×</span> Annulla</Link>
+        <Link data-page-transition="backward" className="btn btn-sm btn-default" href={returnTo}><span className="btn-icon">×</span> Annulla</Link>
       </div>
       <RecurringExpenseForm
         categories={orderedCategories.map(c => ({ id: c.id, code: c.code, name: c.name, icon: c.icon }))}

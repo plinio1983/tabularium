@@ -633,12 +633,8 @@
 
 .incomes-table {
   font-size: 13px;
-}
 
-.incomes-table {
-  .cell-option {
-    width: 47px !important;
-  }
+  .cell-option {}
 
   .cell-billing-period {
     width: 8%;
@@ -646,7 +642,11 @@
   }
 
   .cell-order-date {
-    width: 7%;
+    width: 8%;
+  }
+
+  .cell-supplier {
+    width: 13%;
   }
 
   .cell-category {
@@ -654,13 +654,8 @@
     text-align: left;
   }
 
-  .cell-supplier {
-    width: 12%;
-    text-align: left;
-  }
-
   .cell-fiscal {
-    width: 5%;
+    width: 6%;
   }
 
   .cell-amount {

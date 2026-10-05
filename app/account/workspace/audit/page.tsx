@@ -29,13 +29,13 @@ export default async function WorkspaceAuditPage() {
         <h2>Registro attività</h2>
         <p className="muted">Ultime 200 operazioni sensibili eseguite nel workspace.</p>
       </div>
-      <a className="btn btn-md btn-ghost" href="/account/workspace">
+      <Link data-page-transition="backward" className="btn btn-md btn-ghost" href="/account/workspace">
         <span className="btn-icon">↩</span> Indietro
-      </a>
+      </Link>
       {/*<Link className="btn btn-md btn-default" href="/account/workspace">↩ Indietro</Link>*/}
     </div>
 
-    <div className="card table-wrap">
+    <div className="card table-wrap workspace-audit-table">
       <table>
         <thead><tr><th>Data</th><th>Utente</th><th>Operazione</th><th>Elemento</th><th>ID</th></tr></thead>
         <tbody>
@@ -50,5 +50,16 @@ export default async function WorkspaceAuditPage() {
         </tbody>
       </table>
     </div>
+    <section className="workspace-audit-mobile-list" aria-label="Registro attività">
+      {entries.map(entry => <article className="card workspace-audit-mobile-item" key={entry.id.toString()}>
+        <div className="workspace-audit-mobile-heading">
+          <strong>{actionLabels[entry.action] || entry.action}</strong>
+          <time dateTime={entry.createdAt.toISOString()}>{entry.createdAt.toLocaleString('it-IT')}</time>
+        </div>
+        <p>{entry.user.name || entry.user.email}</p>
+        <dl><div><dt>Elemento</dt><dd>{entry.entityType}</dd></div><div><dt>ID</dt><dd>{entry.entityId || '—'}</dd></div></dl>
+      </article>)}
+      {!entries.length ? <p className="card muted">Nessuna attività registrata.</p> : null}
+    </section>
   </div>;
 }

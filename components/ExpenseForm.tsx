@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import InfoHint from '@/components/InfoHint';
 import LinkedRecordFields from '@/components/LinkedRecordFields';
 
@@ -1910,8 +1911,8 @@ export default function ExpenseForm({
                     <button className="btn btn-md btn-default" type="button" onClick={onCancel}><span
                         className="btn-icon">×</span> Annulla</button>
                 ) : (
-                    <a className="btn btn-md btn-default" href={cancelHref ?? "/expenses"}><span
-                        className="btn-icon">×</span> Annulla</a>
+                    <Link data-page-transition="backward" className="btn btn-md btn-default" href={cancelHref ?? "/expenses"}><span
+                        className="btn-icon">×</span> Annulla</Link>
                 )}
             </div>
         </form>

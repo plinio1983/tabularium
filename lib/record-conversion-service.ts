@@ -53,7 +53,7 @@ const incomeSchema = z.object({
 });
 
 async function expenseData(tx: Tx, source: ConversionExpense, raw: Record<string, FormDataEntryValue>, workspaceId: number, companyId: number) {
-    if (!canConvertExpense(source)) throw new ConversionError('Questo tipo di spesa o una spesa ricorrente non può essere convertito.');
+    if (!canConvertExpense(source)) throw new ConversionError('Questo tipo di spesa non può essere convertito.');
     if (raw.targetType === 'COUNTER') return counterExpenseData(tx, source, raw, workspaceId, companyId);
     const input = expenseSchema.parse(raw);
     if (input.targetType === source.expenseType) throw new ConversionError('Seleziona un tipo diverso da quello attuale.');
@@ -98,6 +98,12 @@ async function counterExpenseData(tx: Tx, source: ConversionExpense, raw: Record
     if (source.expenseType === 'COUNTER') throw new ConversionError('Seleziona un tipo diverso da quello attuale.');
     const input = counterConversionSchema.parse(raw);
     const first = source.payments[0];
+    const generated = Boolean(source.isRecurring || source.recurringExpenseId);
+    if (generated && (source.payments.length !== 1
+        || Math.abs(Number(first.amount) - input.amount) > 0.005
+        || Math.abs(Number(source.amount) - input.amount) > 0.005)) {
+        throw new ConversionError('Per convertire una spesa generata da una ricorrenza in una spesa da banco serve un unico pagamento già registrato per l’intero importo. La conversione non crea o modifica pagamenti.');
+    }
     const paymentDate = first ? first.paymentDate : new Date(input.paymentDate);
     if (!paymentDate) throw new ConversionError('Il primo pagamento non ha una data. Completa il pagamento prima della conversione.');
     const method = await tx.paymentMethod.findFirst({where: {id: first ? first.paymentMethodId : input.paymentMethodId, workspaceId, kind: {in: ['EXPENSE', 'BOTH']}}});
@@ -118,14 +124,14 @@ async function counterExpenseData(tx: Tx, source: ConversionExpense, raw: Record
         ...period, isDeclared: input.isDeclared, vatRate: input.isDeclared ? input.vatRate : 0,
         hasElectronicInvoice: false, invoiceStatus: 'NON_PREVISTA' as const, affectsFiscalProfit: false,
         paidAmount: input.amount, isComplete: true, paymentStatus: 'COMPLETATO' as const,
-        payments: first ? {update: {where: {id: first.id}, data: {amount: input.amount, bankId}},
+        ...(generated ? {} : {payments: first ? {update: {where: {id: first.id}, data: {amount: input.amount, bankId}},
             deleteMany: {id: {in: source.payments.slice(1).map(payment => payment.id)}}}
-            : {create: {amount: input.amount, paymentDate, paymentMethodId: method.id, bankId}}
+            : {create: {amount: input.amount, paymentDate, paymentMethodId: method.id, bankId}}})
     };
 }
 
 async function incomeData(tx: Tx, source: ConversionIncome, raw: Record<string, FormDataEntryValue>, workspaceId: number, timeZone: string) {
-    if (!canConvertIncome(source)) throw new ConversionError('Gli incassi ricorrenti non possono essere convertiti.');
+    if (!canConvertIncome(source)) throw new ConversionError('Questo tipo di incasso non può essere convertito.');
     const input = incomeSchema.parse(raw);
     if (input.targetType === source.incomeType) throw new ConversionError('Seleziona un tipo diverso da quello attuale.');
     if (!await tx.incomeSalesChannel.findFirst({where: {id: input.salesChannelId, workspaceId}})) throw new ConversionError('Canale di vendita non valido.');
@@ -227,6 +233,10 @@ export async function handleRecordConversion(kind: 'expenses' | 'incomes', reque
             const counter = kind === 'expenses' && 'expenseType' in data && data.expenseType === 'COUNTER';
             const payments = counter ? (source as ConversionExpense).payments : [];
             const warnings = counter && payments.length > 1 ? [`La spesa contiene ${payments.length} pagamenti. I ${payments.length - 1} pagamenti successivi al primo saranno eliminati e l’importo del primo sarà impostato a ${display(data.amount, 'amount')}, pari all’importo totale della spesa.`] : [];
+            const generated = kind === 'expenses'
+                ? Boolean((source as ConversionExpense).isRecurring || (source as ConversionExpense).recurringExpenseId)
+                : Boolean((source as ConversionIncome).recurringIncomeId);
+            if (generated) warnings.push('La conversione riguarda solo questo movimento. Il collegamento alla ricorrenza rimane invariato e le prossime occorrenze manterranno il tipo della ricorrenza.');
             const reviewToken = conversionSnapshot({snapshot, data});
             if (raw.confirmed === 'true') {
                 if (raw.reviewToken !== reviewToken) throw new ConversionError('I dati sono cambiati: verifica nuovamente il riepilogo.', 409);
@@ -244,7 +254,7 @@ export async function handleRecordConversion(kind: 'expenses' | 'incomes', reque
                 .map(async ([key, value]) => ({label: fieldLabels[key] ?? key,
                     before: await displayField(tx, current.workspace.id, key, before[key]),
                     after: await displayField(tx, current.workspace.id, key, value)})));
-            if (counter) changes.push({label: 'Pagamenti', before: `${payments.length} pagamenti; primo: ${payments.length ? display(payments[0].amount, 'amount') : '—'}`,
+            if (counter && !generated) changes.push({label: 'Pagamenti', before: `${payments.length} pagamenti; primo: ${payments.length ? display(payments[0].amount, 'amount') : '—'}`,
                 after: `Un pagamento di ${display(data.amount, 'amount')}`});
             return {saved: false, reviewToken, changes, warnings};
         }, {isolationLevel: 'Serializable', timeout: 15000});
