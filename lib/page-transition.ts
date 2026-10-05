@@ -17,3 +17,9 @@ export function pageTransitionKey(pathname: string, params: {get: (name: string)
   return pathname === '/settings/payment-credit' && ['banks', 'methods', 'routing'].includes(section ?? '')
     ? `${pathname}?section=${section}` : pathname;
 }
+
+export const pageReturnEvent = 'app-page-return';
+/** Prepare the usual backward slide before a programmatic return. */
+export function preparePageReturn(href: string) {
+  window.dispatchEvent(new CustomEvent(pageReturnEvent, {detail: {href}}));
+}

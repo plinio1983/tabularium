@@ -2221,7 +2221,8 @@
 }
 
 @media (max-width: 900px) {
-  .income-mobile-wizard .income-wizard-amount .money-input {
+  .income-mobile-wizard .income-wizard-amount .money-input,
+  .bulk-edit-fields-modal .income-wizard-amount .money-input {
     width: 100%;
     min-height: 70px;
     overflow: hidden;
@@ -2231,14 +2232,16 @@
 }
 
 @media (max-width: 900px) {
-  .income-mobile-wizard .income-wizard-amount .money-input > span {
+  .income-mobile-wizard .income-wizard-amount .money-input > span,
+  .bulk-edit-fields-modal .income-wizard-amount .money-input > span {
     left: 16px;
     font-size: 24px;
   }
 }
 
 @media (max-width: 900px) {
-  .income-mobile-wizard .income-wizard-amount .money-input input {
+  .income-mobile-wizard .income-wizard-amount .money-input input,
+  .bulk-edit-fields-modal .income-wizard-amount .money-input input {
     width: 100%;
     height: 68px;
     padding: 6px 14px 6px 48px;

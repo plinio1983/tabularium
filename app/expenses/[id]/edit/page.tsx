@@ -1,3 +1,4 @@
+import {ResponsiveRecordEdit} from '@/components/SingleRecordFieldsModal';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import ExpenseForm from '@/components/ExpenseForm';
@@ -27,7 +28,7 @@ export default async function EditExpensePage({ params, searchParams }: { params
 
   const orderedCategories = orderExpenseCategories(categories);
 
-  return <div className="grid edit-expense-dedicated-page page-no-site-header">
+  return <ResponsiveRecordEdit kind="expenses" returnTo={returnTo} record={{id: expense.id, amount: expense.amount.toString(), vatRate: expense.vatRate.toString(), expenseType: expense.expenseType, receivedDate: expense.receivedDate, dueDate: expense.dueDate, supplierId: expense.supplierId, merchant: expense.merchant, categoryId: expense.categoryId, month: expense.month, year: expense.year, hasElectronicInvoice: expense.hasElectronicInvoice, invoiceStatus: expense.invoiceStatus, isDeclared: expense.isDeclared, notes: expense.notes, description: expense.description}} categories={orderedCategories.map(c => ({id: c.id, name: c.name, icon: c.icon}))} suppliers={suppliers.map(supplier => ({id: supplier.id, businessName: supplier.businessName, alias: supplier.alias, systemRole: supplier.systemRole}))}><div className="grid edit-expense-dedicated-page page-no-site-header">
     <ExpenseForm
           title="Modifica spesa"
           cancelHref={returnTo}
@@ -75,5 +76,5 @@ export default async function EditExpensePage({ params, searchParams }: { params
             }))
           }}
         />
-  </div>;
+  </div></ResponsiveRecordEdit>;
 }

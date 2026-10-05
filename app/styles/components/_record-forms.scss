@@ -1912,7 +1912,7 @@
 }
 
 @media (max-width: 900px) {
-  :is(.single-expense-form, .income-mobile-wizard) .app-amount-keypad {
+  :is(.single-expense-form, .income-mobile-wizard, .bulk-edit-fields-modal) .app-amount-keypad {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
@@ -1921,7 +1921,7 @@
     padding: 0;
   }
 
-  :is(.single-expense-form, .income-mobile-wizard) .app-amount-keypad > button {
+  :is(.single-expense-form, .income-mobile-wizard, .bulk-edit-fields-modal) .app-amount-keypad > button {
     width: 100%;
     min-width: 0;
     height: 54px;
@@ -1937,6 +1937,21 @@
     font-weight: 850;
     line-height: 1;
     text-align: center;
+  }
+}
+
+@media (max-width: 900px) {
+  .bulk-edit-fields-modal .bulk-edit-amount-form {
+    background: #fff;
+  }
+
+  .bulk-edit-fields-modal .income-wizard-amount {
+    flex: 0 0 auto;
+  }
+
+  .bulk-edit-fields-modal .income-amount-field {
+    display: grid;
+    gap: 8px;
   }
 }
 

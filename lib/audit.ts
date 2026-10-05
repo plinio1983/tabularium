@@ -17,8 +17,8 @@ function requestIp(request?: Request) {
   return forwarded || request.headers.get('x-real-ip') || null;
 }
 
-export async function writeAuditLog(input: AuditInput) {
-  await prisma.auditLog.create({
+export async function writeAuditLog(input: AuditInput, db: Pick<Prisma.TransactionClient, 'auditLog'> = prisma) {
+  await db.auditLog.create({
     data: {
       workspaceId: input.workspaceId,
       userId: input.userId,

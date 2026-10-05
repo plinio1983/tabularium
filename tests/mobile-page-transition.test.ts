@@ -63,6 +63,7 @@ function setup({mobile = true, reduced = false} = {}) {
   layoutEffects.forEach(effect => effect());
   const cleanup = effects[0]();
   return {slides, layers, history, cleanup,
+    returnTo(href: string) {listeners.get(helpers.pageReturnEvent)!({detail: {href}});},
     click(href = '/expenses/42', extra = {}, attributes: Record<string, string> = {}) {
       const link = new Element(); link.href = `http://localhost${href}`;
       for (const [key, value] of Object.entries(attributes)) link.attributes.set(key, value);
@@ -168,5 +169,15 @@ test('programmatic return buttons use the same backward transition', () => {
   const to = '/incomes/cash-register/receipts?mobileList=1';
   app.click(to, {}, {'data-page-transition-back': to}); app.route(to);
   assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(-100%)');
+  app.cleanup();
+});
+
+test('programmatic cancellation reverses transitions even across unrelated routes', () => {
+  const app = setup();
+  app.route('/expenses/42/edit');
+  const destination = '/expenses/payments?mobileList=1';
+  app.returnTo(destination); app.route(destination);
+  assert.equal(app.slides.at(-2).frames[0].transform, 'translateX(-100%)');
+  assert.equal(app.slides.at(-1).frames[1].transform, 'translateX(100%)');
   app.cleanup();
 });

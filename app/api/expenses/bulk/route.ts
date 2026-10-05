@@ -1,3 +1,4 @@
+import {updateSingleRecordFields} from '@/lib/single-record-fields';
 import {requirePaymentDate} from '@/lib/payment-date';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -40,6 +41,13 @@ export async function POST(request: Request) {
   const action = String(formData.get('bulkAction') || '');
   const ids = selectedIds(formData);
   const redirectTo = safeReturnTo(request);
+  if (action === 'change_details' || action === 'change_notes' || action === 'change_amount' || action === 'change_identity') {
+    try {
+      await updateSingleRecordFields(prisma, 'expenses', current.workspace.id, current.company.id, ids, formData, tx => writeAuditLog({workspaceId: current.workspace.id, userId: current.user.id, action: 'UPDATE', entityType: 'Expense', entityId: ids[0], metadata: {operation: action}, request}, tx));
+      return redirectToPath(appendFlash(redirectTo, {saved: 'updated'}));
+    } catch {return redirectToPath(appendFlash(redirectTo, {error: 'invalid'}));}
+  }
+
 
   if (!ids.length || !action) {
     return redirectToPath(redirectTo);

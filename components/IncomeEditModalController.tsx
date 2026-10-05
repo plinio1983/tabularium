@@ -1,11 +1,13 @@
 "use client";
 
+import SingleRecordFieldsModal, {useMobileRecordEditor, supportsRecordFields} from './SingleRecordFieldsModal';
 import { useEffect, useState } from "react";
 import IncomeForm from "@/components/IncomeForm";
 import { clampDateToToday, clampPeriodToCurrentMonth } from "@/lib/copy-dates";
 
 type EditIncome = {
   id: number;
+  incomeType?: string;
   customerId?: number | null;
   salesChannelId: number;
   description?: string | null;
@@ -46,6 +48,7 @@ type Props = {
 };
 
 export default function IncomeEditModalController({ returnTo, banks, paymentMethods, salesChannels, customers }: Props) {
+  const mobileEditor = useMobileRecordEditor();
   const [income, setIncome] = useState<EditIncome | null>(null);
   const [mode, setMode] = useState<"edit" | "copy" | "credit" | "attachments">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -129,7 +132,7 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
     {loadingId ? <div className="inline-modal-loading">Caricamento incasso #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {income ? <div className="modal-backdrop app-form-modal edit-income-client-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : mode === "credit" ? `Inserisci accredito per l’incasso ${income.id}` : mode === "attachments" ? `Modifica allegati dell’incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
+    {income && mode === "edit" && mobileEditor && supportsRecordFields(income) ? <SingleRecordFieldsModal kind="incomes" record={income} returnTo={returnTo} onClose={() => setIncome(null)} customers={customers} salesChannels={salesChannels}/> : income ? <div className="modal-backdrop app-form-modal edit-income-client-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia incasso ${income.id}` : mode === "credit" ? `Inserisci accredito per l’incasso ${income.id}` : mode === "attachments" ? `Modifica allegati dell’incasso ${income.id}` : `Modifica incasso ${income.id}`} onMouseDown={() => setIncome(null)}>
       <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>

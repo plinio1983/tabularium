@@ -2,7 +2,7 @@
 
 import {useEffect, useLayoutEffect, useRef} from 'react';
 import {usePathname, useSearchParams} from 'next/navigation';
-import {pageTransitionKey, pageTransitionDirection, shouldTransitionPage, type PageTransitionDirection} from '@/lib/page-transition';
+import {pageReturnEvent, pageTransitionKey, pageTransitionDirection, shouldTransitionPage, type PageTransitionDirection} from '@/lib/page-transition';
 
 const historyKey = 'tabulariumPageIndex';
 const duration = 280;
@@ -100,16 +100,24 @@ export default function MobilePageTransition() {
       if (typeof index === 'number') historyIndex.current = index;
     }
 
+    function onPageReturn(event: Event) {
+      const href = (event as CustomEvent<{href: string}>).detail?.href;
+      if (!href) return;
+      const url = new URL(href, window.location.href);
+      if (url.origin === window.location.origin) capture(pageTransitionKey(url.pathname, url.searchParams), 'backward');
+    }
     function onResize() { if (!enabled()) clear(); }
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     document.addEventListener('click', onClick, true);
     window.addEventListener('popstate', onPopState);
+    window.addEventListener(pageReturnEvent, onPageReturn);
     window.addEventListener('resize', onResize);
     reducedMotion.addEventListener('change', onResize);
     return () => {
       clear();
       document.removeEventListener('click', onClick, true);
       window.removeEventListener('popstate', onPopState);
+      window.removeEventListener(pageReturnEvent, onPageReturn);
       window.removeEventListener('resize', onResize);
       reducedMotion.removeEventListener('change', onResize);
     };

@@ -1,5 +1,6 @@
 "use client";
 
+import SingleRecordFieldsModal, {useMobileRecordEditor, supportsRecordFields} from './SingleRecordFieldsModal';
 import { useEffect, useState } from "react";
 import CounterExpenseForm from "@/components/CounterExpenseForm";
 import {useRouter} from "next/navigation";
@@ -82,6 +83,7 @@ function selectedExpenseIdsFromBulk(formId: string) {
 }
 
 export default function ExpenseEditModalController({ categories, banks, paymentMethods, suppliers, employees = [], listHref, formId = "expenseBulkForm" }: Props) {
+  const mobileEditor = useMobileRecordEditor();
   const [availableEmployees, setAvailableEmployees] = useState(employees);
   const router = useRouter();
   const [expense, setExpense] = useState<EditExpense | null>(null);
@@ -163,7 +165,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
     {loadingId ? <div className="inline-modal-loading">Caricamento spesa #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 
-    {expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : mode === "payment" ? `Inserisci pagamento per la spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
+    {expense && mode === "edit" && mobileEditor && supportsRecordFields(expense) ? <SingleRecordFieldsModal kind="expenses" record={expense} returnTo={listHref} onClose={() => setExpense(null)} categories={categories} suppliers={suppliers}/> : expense ? <div className="modal-backdrop app-form-modal edit-expense-client-modal app-wizard-modal" role="dialog" aria-modal="true" aria-label={mode === "copy" ? `Copia spesa ${expense.id}` : mode === "payment" ? `Inserisci pagamento per la spesa ${expense.id}` : `Modifica spesa ${expense.id}`} onMouseDown={() => setExpense(null)}>
       <div className="modal-card modal-card-wide app-wizard-modal-card" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-title">
           <div>
