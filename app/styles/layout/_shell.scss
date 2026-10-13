@@ -50,6 +50,8 @@
 
 .floating-bulk-actions-bar {
   &.fixed {
+    width: calc(100%);
+    max-width: 1280px;
     margin: 0 auto;
   }
 }
@@ -222,6 +224,7 @@
 .employee-mobile-header-actions,
 .client-mobile-header-actions,
 .supplier-mobile-header-actions,
+.product-tracking-mobile-header-actions,
 .dashboard-mobile-header-actions,
 .income-mobile-header-actions {
   display: none;
@@ -251,12 +254,14 @@
   .employee-page-header .site-header-brand,
   .client-page-header .site-header-brand,
   .supplier-page-header .site-header-brand,
+  .product-tracking-page-header .site-header-brand,
   .report-page-header .site-header-actions .nav-links,
   .ledger-page-header .site-header-actions .nav-links,
   .receipt-list-page-header .site-header-actions .nav-links,
   .employee-page-header .site-header-actions .nav-links,
   .client-page-header .site-header-actions .nav-links,
   .supplier-page-header .site-header-actions .nav-links,
+  .product-tracking-page-header .site-header-actions .nav-links,
   .dashboard-page-header .site-header-brand,
   .dashboard-page-header .site-header-actions .nav-links,
   .income-page-header .site-header-brand,
@@ -278,6 +283,7 @@
   .employee-page-header,
   .client-page-header,
   .supplier-page-header,
+  .product-tracking-page-header,
   .dashboard-page-header,
   .income-page-header {
     align-items: center;
@@ -292,6 +298,7 @@
   .employee-mobile-header-actions,
   .client-mobile-header-actions,
   .supplier-mobile-header-actions,
+  .product-tracking-mobile-header-actions,
   .dashboard-mobile-header-actions,
   .income-mobile-header-actions {
     display: flex;
@@ -316,6 +323,7 @@
   .employee-mobile-header-actions .btn,
   .client-mobile-header-actions .btn,
   .supplier-mobile-header-actions .btn,
+  .product-tracking-mobile-header-actions .btn,
   .income-mobile-header-actions .btn {
     min-width: 0;
     white-space: nowrap;
@@ -329,6 +337,7 @@
   .employee-page-header .site-header-actions,
   .client-page-header .site-header-actions,
   .supplier-page-header .site-header-actions,
+  .product-tracking-page-header .site-header-actions,
   .dashboard-page-header .site-header-actions,
   .income-page-header .site-header-actions {
     flex: 0 0 auto;

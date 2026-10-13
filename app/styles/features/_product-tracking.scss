@@ -1,0 +1,164 @@
+// Shared form, list and detail primitives own the visual styling.
+.product-tracking-fields {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.product-tracking-summary-card > .record-top-summary {
+  margin-top: 0;
+  padding: 0;
+  border-top: 0;
+}
+
+.product-trackings-page .list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  > div:first-child { min-width: 0; }
+  > .app-filter-trigger { flex: 0 0 auto; margin-left: auto; }
+}
+
+.product-tracking-mobile-item {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 12px 0;
+
+  .party-mobile-link { padding: 4px; }
+  .mobile-record-title-left { min-width: 0; }
+  .mobile-record-title-left strong { display: block; }
+  .mobile-record-title-right { flex: 0 0 auto; max-width: 45%; }
+  .mobile-record-title-right .badge {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .mobile-record-subtitle { gap: 10px; }
+  .mobile-record-subtitle > .party-mobile-row-grow {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-record-meta { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .party-mobile-row, .party-mobile-row-right { display: inline-flex; align-items: center; gap: 5px; }
+  .record-detail-badge-row { gap: 5px; }
+  .record-detail-badge-row .badge { white-space: normal; font-size: 11px; }
+
+  @media (max-width: 390px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .product-trackings-page { gap: 12px; }
+  .product-trackings-page > .record-list-card,
+  .product-trackings-page > .product-tracking-summary-card { padding: 14px; }
+}
+
+.product-tracking-modal .attachment-type-item {
+  min-width: 0;
+
+  .attachment-type-item-heading a {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.app-record-form .product-tracking-invoice-summary {
+  grid-template-columns: minmax(180px, 1.4fr) minmax(145px, .8fr) minmax(90px, .45fr) auto;
+
+  .payment-summary-primary strong,
+  .payment-summary-primary a {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+  }
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.product-tracking-invoice-editor {
+  .product-tracking-fields,
+  .payment-edit-actions { grid-column: 1 / -1; }
+}
+
+@media (width < 900px) {
+  .record-detail-payment-summary-list .product-tracking-invoice-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    > .payment-summary-primary,
+    > .payment-row-actions { grid-column: 1 / -1; }
+
+    > .payment-summary-date { grid-column: 1; grid-row: 2; }
+    > .payment-summary-meta {
+      grid-column: 2;
+      grid-row: 2;
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+.product-tracking-invoice-list {
+  .form-summary {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .product-tracking-wizard {
+    .product-tracking-desktop-actions { display: none; }
+
+    .product-tracking-fields > details.app-form-wizard-step > summary,
+    .app-form-wizard-step-3 > details > summary { display: none; }
+
+    .product-tracking-fields > .app-form-wizard-step,
+    .app-form-wizard-step-3 > details {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+  }
+}
+
+.product-tracking-invoice-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  > h2 { margin: 0; }
+}
+
+.app-record-form .product-tracking-document-summary {
+  grid-template-columns: minmax(180px, 1.4fr) minmax(110px, .45fr) auto;
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+
+    > .payment-summary-primary,
+    > .payment-summary-meta,
+    > .payment-row-actions { grid-column: 1 / -1; }
+    > .payment-summary-meta { grid-row: auto; grid-template-columns: minmax(0, 1fr); }
+  }
+}
+
+@media (max-width: 900px) {
+  .product-tracking-wizard .app-form-wizard-step-2 > details {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+
+    > summary { display: none; }
+  }
+}

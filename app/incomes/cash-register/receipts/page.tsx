@@ -7,7 +7,7 @@ import {requireWorkspace} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {orderPaymentMethods} from '@/lib/workspace-defaults';
 import CashRegisterReceiptTrendChart from '@/components/CashRegisterReceiptTrendChart';
-import {buildDailyReceiptTrendRange, buildMonthlyReceiptTrend} from '@/lib/cash-register-trend';
+import {buildDailyReceiptTrendRange, buildMonthlyReceiptTrend, trimReceiptTrendAfterLastMovement} from '@/lib/cash-register-trend';
 import {Prisma} from '@/generated/prisma/client';
 import CashRegisterReceiptFiltersDrawer from '@/components/CashRegisterReceiptFiltersDrawer';
 import CashRegisterReceiptPeriodSelector from '@/components/CashRegisterReceiptPeriodSelector';
@@ -92,7 +92,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     ]);
     const orderedMethods = orderPaymentMethods(methods, 'INCOME');
     const aggregates = dailyAggregates.map(item => ({day: item.day, count: item.count, total: Number(item.total)}));
-    const trend = annual ? buildMonthlyReceiptTrend(billingYear, aggregates) : buildDailyReceiptTrendRange(dateFrom, dateTo, aggregates);
+    const trend = trimReceiptTrendAfterLastMovement(annual ? buildMonthlyReceiptTrend(billingYear, aggregates) : buildDailyReceiptTrendRange(dateFrom, dateTo, aggregates));
     const receiptCount = trend.reduce((sum, point) => sum + point.count, 0);
     const selectedMethod = orderedMethods.find(item => item.id === methodId);
     const selectedChannel = channels.find(item => item.id === channelId);

@@ -24,6 +24,7 @@ const mainMenuLinks = [
     {href: (_timeZone: string) => '/expenses/payments', label: 'Pagamenti', icon: '↗'},
     {href: (_timeZone: string) => '/incomes/credits', label: 'Accrediti', icon: '↙'},
     {href: (_timeZone: string) => '/expenses/import', label: 'Importa dati', icon: '⬆'},
+    {href: (_timeZone: string) => '/product-trackings', label: 'Tracciamento prodotti', icon: '▤'},
 ] as const;
 
 export default function SettingsMenu() {

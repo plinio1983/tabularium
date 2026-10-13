@@ -2,13 +2,13 @@
 
 import MobileFormStickyActions from '@/components/MobileFormStickyActions';
 
-export default function EntityFormActions({onCancel, submitLabel, mobileSubmitLabel = 'Salva', submitting = false, submittingLabel = 'Salvataggio…', layout = 'form', formId, onReset}: {
-  onCancel: () => void; submitLabel: string; mobileSubmitLabel?: string; submitting?: boolean; submittingLabel?: string;
+export default function EntityFormActions({onCancel, submitLabel, mobileSubmitLabel = 'Salva', submitting = false, submitDisabled = false, submittingLabel = 'Salvataggio…', layout = 'form', formId, onReset}: {
+  onCancel: () => void; submitLabel: string; mobileSubmitLabel?: string; submitting?: boolean; submitDisabled?: boolean; submittingLabel?: string;
   layout?: 'form' | 'drawer'; formId?: string; onReset?: () => void;
 }) {
   const buttons = <>
     {layout !== 'drawer' ? <button className="btn btn-md btn-default" type="button" onClick={onCancel} disabled={submitting}><span className="btn-icon">✕</span> Annulla</button> : null}
-    <button className="btn btn-md btn-primary" type="submit" form={formId} disabled={submitting}><span className="btn-icon">✓</span> {submitting ? submittingLabel : submitLabel}</button>
+    <button className="btn btn-md btn-primary" type="submit" form={formId} disabled={submitting || submitDisabled}><span className="btn-icon">✓</span> {submitting ? submittingLabel : submitLabel}</button>
   </>;
   // Drawer actions stay inside the dialog's focus scope, outside its scrolling form.
   if (layout === 'drawer') return <div className="filter-drawer-actions entity-form-actions">
@@ -21,6 +21,6 @@ export default function EntityFormActions({onCancel, submitLabel, mobileSubmitLa
         {buttons}
       </div>
     </div>
-    <MobileFormStickyActions currentStep={1} submitStep={1} onBack={() => undefined} onNext={() => undefined} onCancel={onCancel} submitLabel={mobileSubmitLabel} submittingLabel={submittingLabel} isSubmitting={submitting}/>
+    <MobileFormStickyActions currentStep={1} submitStep={1} onBack={() => undefined} onNext={() => undefined} onCancel={onCancel} submitLabel={mobileSubmitLabel} submittingLabel={submittingLabel} isSubmitting={submitting} submitDisabled={submitDisabled}/>
   </>;
 }

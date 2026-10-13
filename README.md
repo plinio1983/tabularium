@@ -100,3 +100,39 @@ Import da terminale:
 npm run import:expenses -- ./file.ods
 npm run import:expenses -- ./file.ods --clear
 ```
+
+## Tracciamento prodotti
+
+La voce **Tracciamento prodotti** nel menu laterale apre `/product-trackings`.
+Le tracciature appartengono all’azienda attiva e comprendono nome e lotto obbligatori,
+alias e data ingresso facoltativi, fino a 5 fatture e 5 documenti di tracciamento.
+Ogni fattura richiede la propria data. Sono ammessi i formati già supportati dagli
+allegati dell’app, fino a 10 MB per file.
+
+Le fatture si aggiungono singolarmente con **Aggiungi fattura**: documento e data
+obbligatoria, poi **Conferma**. Nel form diventano record modificabili o eliminabili
+prima del salvataggio della tracciatura. Dal dettaglio, **Aggiungi fattura** apre la
+modale di modifica sopra il dettaglio, senza cambiare pagina, al passaggio Fatture con un nuovo record da compilare; modifica
+ed eliminazione delle fatture esistenti salvano subito la singola operazione. La modifica permette di aggiornare la data o sostituire il file.
+I documenti di tracciamento seguono lo stesso flusso con **Aggiungi documento**,
+**Conferma**, **Modifica** ed **Elimina**, senza campo data. Dal dettaglio l’aggiunta
+apre la modale sopra la pagina al secondo passaggio; i documenti già presenti
+si possono sostituire o eliminare singolarmente.
+
+Su mobile il form usa tre passaggi: Merce, Documenti di tracciamento e Fatture.
+I dati e i file restano in memoria passando avanti e indietro; gli allegati sono
+facoltativi e il salvataggio avviene soltanto all’ultimo passaggio.
+
+La lista offre ricerca per nome/lotto/alias, filtri avanzati e quattro contatori
+cliccabili: fattura mancante, documento di tracciamento mancante, ultima fattura
+oltre sei mesi e ingresso oltre sei mesi. I contatori seguono i filtri correnti;
+le soglie usano mesi di calendario e la data corrente nel fuso orario dell’azienda.
+Il collegamento a più spese è previsto per un aggiornamento successivo.
+
+Per aggiornare un database esistente usare le migrazioni, includendo
+`20261013180000_product_trackings`, e rigenerare il client Prisma:
+
+```bash
+npx prisma migrate deploy
+npm run db:generate
+```

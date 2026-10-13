@@ -24,6 +24,8 @@ function isCompactMobileHeaderPath(pathname: string) {
         || /^\/recurring-incomes\/\d+$/.test(pathname)
         || /^\/incomes\/\d+$/.test(pathname)
         || /^\/suppliers\/\d+$/.test(pathname)
+        || /^\/product-trackings\/\d+(?:\/edit)?$/.test(pathname)
+        || pathname === '/product-trackings/new'
         || /^\/clients\/\d+$/.test(pathname)
         || pathname === '/expenses/new'
         || pathname === '/expenses/counter'
@@ -48,6 +50,7 @@ function DesktopHeader({
                            employeePage = false,
                            clientPage = false,
                            supplierPage = false,
+                           productTrackingPage = false,
                            companyPage = false,
                            importPage = false,
                            settingsPage = false,
@@ -65,6 +68,7 @@ function DesktopHeader({
     employeePage?: boolean;
     clientPage?: boolean;
     supplierPage?: boolean;
+    productTrackingPage?: boolean;
     companyPage?: boolean;
     importPage?: boolean;
     settingsPage?: boolean;
@@ -75,7 +79,7 @@ function DesktopHeader({
     recurringIncomePage?: boolean;
     userName?: string | null
 }) {
-    const className = `${compactOnMobile ? "nav compact-mobile-header-path" : "nav fixed"}${ledgerKind ? " ledger-page-header" : ""}${reportPage ? " report-page-header" : ""}${receiptListPage ? " receipt-list-page-header" : ""}${employeePage ? " employee-page-header" : ""}${clientPage ? " client-page-header" : ""}${supplierPage ? " supplier-page-header" : ""}${companyPage ? " company-page-header" : ""}${importPage ? " import-page-header" : ""}${settingsPage ? " settings-page-header" : ""}${dashboardPage ? " dashboard-page-header" : ""}${incomePage ? " income-page-header" : ""}${expensePage ? " expense-page-header" : ""}${recurringExpensePage ? " recurring-expense-page-header" : ""}${recurringIncomePage ? " recurring-income-page-header" : ""}`;
+    const className = `${compactOnMobile ? "nav compact-mobile-header-path" : "nav fixed"}${ledgerKind ? " ledger-page-header" : ""}${reportPage ? " report-page-header" : ""}${receiptListPage ? " receipt-list-page-header" : ""}${employeePage ? " employee-page-header" : ""}${clientPage ? " client-page-header" : ""}${supplierPage ? " supplier-page-header" : ""}${productTrackingPage ? " product-tracking-page-header" : ""}${companyPage ? " company-page-header" : ""}${importPage ? " import-page-header" : ""}${settingsPage ? " settings-page-header" : ""}${dashboardPage ? " dashboard-page-header" : ""}${incomePage ? " income-page-header" : ""}${expensePage ? " expense-page-header" : ""}${recurringExpensePage ? " recurring-expense-page-header" : ""}${recurringIncomePage ? " recurring-income-page-header" : ""}`;
 
     return <div className={className}>
         {/*<div className="site-header-brand compact hidden-md-up">*/}
@@ -137,6 +141,7 @@ function DesktopHeader({
                 <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Nuovo Fornitore
             </button>
         </div> : null}
+        {productTrackingPage ? <div id="product-tracking-mobile-header-actions" className="product-tracking-mobile-header-actions" aria-label="Azioni tracciamento prodotti"/> : null}
         {dashboardPage ? <div className="dashboard-mobile-header-actions" aria-label="Azioni dashboard">
             <Suspense fallback={null}>
                 <ExpenseNewTriggerButton className="btn btn-sm btn-primary" floatingLabel="Spesa">
@@ -214,7 +219,7 @@ export default function ShellChrome({slot, userName}: Props) {
             ledgerKind={pathname === '/incomes/credits' ? 'credits' : pathname === '/expenses/payments' ? 'payments' : null}
             reportPage={/^\/months\/\d+\/\d+$/.test(pathname)}
             receiptListPage={pathname === '/incomes/cash-register/receipts'} employeePage={pathname === '/employees'}
-            clientPage={pathname === '/clients'} supplierPage={pathname === '/suppliers'} companyPage={false}
+            clientPage={pathname === '/clients'} supplierPage={pathname === '/suppliers'} productTrackingPage={pathname === '/product-trackings'} companyPage={false}
             importPage={pathname === '/expenses/import'} settingsPage={isSettingsPath(pathname)}
             dashboardPage={pathname === '/'} incomePage={pathname === '/incomes'} expensePage={pathname === '/expenses'}
             recurringExpensePage={pathname === '/recurring-expenses'}

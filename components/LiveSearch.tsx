@@ -6,7 +6,7 @@ import SearchIcon from '@/components/SearchIcon';
 import {liveSearchParams} from '@/lib/live-search';
 
 type Props = {name: string; label: string; placeholder: string};
-const storagePaths = new Set(['/expenses', '/incomes', '/suppliers']);
+const storagePaths = new Set(['/expenses', '/incomes', '/suppliers', '/product-trackings']);
 
 export default function LiveSearch({name, label, placeholder}: Props) {
   const router = useRouter();

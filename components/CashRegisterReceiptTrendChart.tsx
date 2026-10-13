@@ -43,7 +43,7 @@ export default function CashRegisterReceiptTrendChart({points, annual = false, p
   return <section className="card cash-register-trend-card fixed" aria-labelledby="cash-register-trend-title">
     <div className="cash-register-trend-heading">
       <div>
-        <div className="info-title-row"><h2 id="cash-register-trend-title">Andamento scontrini</h2><InfoHint compactOnly title="Lettura del grafico">Incasso {annual ? 'mensile' : 'giornaliero'}. {annual ? 'I mesi' : 'I giorni'} senza movimenti restano visibili a zero.</InfoHint></div><p className="muted info-hint-desktop-text">Incasso {annual ? 'mensile' : 'giornaliero'}. {annual ? 'I mesi' : 'I giorni'} senza movimenti restano visibili a zero.</p>
+        <div className="info-title-row"><h2 id="cash-register-trend-title">Andamento scontrini</h2><InfoHint compactOnly title="Lettura del grafico">Incasso {annual ? 'mensile' : 'giornaliero'} fino all’ultimo scontrino registrato. {annual ? 'I mesi' : 'I giorni'} precedenti senza movimenti restano visibili a zero.</InfoHint></div><p className="muted info-hint-desktop-text">Incasso {annual ? 'mensile' : 'giornaliero'} fino all’ultimo scontrino registrato. {annual ? 'I mesi' : 'I giorni'} precedenti senza movimenti restano visibili a zero.</p>
       </div>
       {headerActions}
     </div>

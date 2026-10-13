@@ -407,6 +407,13 @@ body.drawer-open {
   //grid-template-columns: .2fr auto auto;
 }
 
+.recurring-expenses-mobile-list .recurring-mobile-top-middle {
+  align-items: center;
+  gap: 8px;
+
+  > .recurring-mobile-status { flex-shrink: 0; }
+}
+
 .recurring-mobile-main-title {
   display: flex;
   gap: 2px;
@@ -715,6 +722,7 @@ body.drawer-open {
   .employees-page > .toolbar-card,
   .client-page-content > .toolbar-card,
   .supplier-page-content > .toolbar-card,
+  .product-trackings-page > .toolbar-card,
   .income-page-content > .toolbar-card,
   .expense-page-content > .record-toolbar-card,
   .expense-page-content > .toolbar-card,

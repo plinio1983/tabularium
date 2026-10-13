@@ -131,6 +131,7 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  productTrackings                   ProductTracking[]
   members                            WorkspaceMember[]
   sessions                           AuthSession[]
   companies                          Company[]
@@ -295,6 +296,7 @@ model Company {
   workspace         Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   primaryBankId     Int?
   primaryBank       Bank?              @relation("CompanyPrimaryBank", fields: [primaryBankId], references: [id], onDelete: SetNull)
+  productTrackings  ProductTracking[]
   expenses          Expense[]
   incomes           Income[]
   recurringExpenses RecurringExpense[]
@@ -911,4 +913,42 @@ model IncomeAttachment {
 
   @@index([incomeId])
   @@index([type])
+}
+
+model ProductTracking {
+  id          Int                         @id @default(autoincrement())
+  workspaceId Int
+  workspace   Workspace                   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  companyId   Int
+  company     Company                     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  batch       String
+  alias       String?
+  entryDate   DateTime?                   @db.Date
+  createdAt   DateTime                    @default(now())
+  updatedAt   DateTime                    @updatedAt
+  attachments ProductTrackingAttachment[]
+
+  @@index([workspaceId, companyId, createdAt])
+  @@index([companyId, entryDate])
+}
+
+enum ProductTrackingAttachmentKind {
+  INVOICE
+  TRACKING
+}
+
+model ProductTrackingAttachment {
+  id           Int                           @id @default(autoincrement())
+  trackingId   Int
+  tracking     ProductTracking               @relation(fields: [trackingId], references: [id], onDelete: Cascade)
+  kind         ProductTrackingAttachmentKind
+  invoiceDate  DateTime?                     @db.Date
+  originalName String
+  path         String
+  mimeType     String?
+  sizeBytes    Int?
+  createdAt    DateTime                      @default(now())
+
+  @@index([trackingId, kind])
 }

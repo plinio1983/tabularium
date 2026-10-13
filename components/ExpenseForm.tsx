@@ -11,6 +11,7 @@ import {CurrencyInput} from "@/components/CurrencyInput";
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {dateInputInTimeZone, monthInputInTimeZone} from '@/lib/company-time';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from "@/lib/currency-input";
+import EmployeeAutocomplete from "@/components/EmployeeAutocomplete";
 import DescriptionAutocomplete from "@/components/DescriptionAutocomplete";
 import SupplierCreateModal from "@/components/SupplierCreateModal";
 import MobileFormStickyActions from "@/components/MobileFormStickyActions";
@@ -1143,20 +1144,11 @@ export default function ExpenseForm({
                         <input value={vatSettlementSupplier?.businessName ?? "Non configurato"} readOnly/>
                         <input type="hidden" name="supplierId" value={vatSettlementSupplier?.id ?? ""}/>
                         <input type="hidden" name="merchant" value={vatSettlementSupplier?.businessName ?? ""}/>
-                    </label> : isPayroll ? <SelectField
+                    </label> : isPayroll ? <EmployeeAutocomplete
                         className="app-form-wizard-step app-form-wizard-step-3"
-                        label="Dipendente"
-                        icon="♙"
-                        name="employeeId"
-                        required
+                        employees={employees}
                         value={employeeId}
                         onChange={setEmployeeId}
-                        options={[{value: "", label: "Seleziona dipendente"}, ...employees
-                            .filter(employee => employee.status === "ACTIVE" || employee.id === initialExpense?.employeeId)
-                            .map(employee => ({
-                                value: employee.id,
-                                label: `${employee.lastName} ${employee.firstName}${employee.employeeCode ? ` · ${employee.employeeCode}` : ""}${employee.status === "INACTIVE" ? " · Inattivo" : ""}`
-                            }))]}
                     /> : isTaxContribution ? <SelectField
                         className="app-form-wizard-step app-form-wizard-step-3"
                         label="Ente beneficiario"

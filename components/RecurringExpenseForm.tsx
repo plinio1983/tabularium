@@ -1,5 +1,7 @@
 "use client";
 
+import EmployeeAutocomplete from "@/components/EmployeeAutocomplete";
+
 import Link from 'next/link';
 import InfoHint from '@/components/InfoHint';
 import {weekdayOptions, weekdayLabel, weekdayFromDate} from '@/lib/recurring-cadence';
@@ -760,10 +762,7 @@ export default function RecurringExpenseForm({
                         ...taxAuthorities.filter(item => item.isActive !== false || String(item.id) === taxAuthorityId).map(item => ({value: item.id, label: item.shortName ? `${item.shortName} · ${item.name}` : item.name}))
                     ]}/> : null}
 
-                    {isPayroll ? <SelectField label="Dipendente" icon="♙" name="employeeId" required value={employeeId} onChange={setEmployeeId} options={[
-                        {value: "", label: "Seleziona dipendente", disabled: true},
-                        ...employees.filter(item => item.status === "ACTIVE" || String(item.id) === employeeId).map(item => ({value: item.id, label: `${item.lastName} ${item.firstName}${item.employeeCode ? ` · ${item.employeeCode}` : ""}`}))
-                    ]}/> : null}
+                    {isPayroll ? <EmployeeAutocomplete employees={employees} value={employeeId} onChange={setEmployeeId}/> : null}
 
                     <SelectField label="Categoria" icon="◇" name="categoryId" required value={categoryId} onChange={setCategoryId} options={[
                         {value: "", label: "Seleziona categoria", disabled: true},

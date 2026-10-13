@@ -269,6 +269,7 @@ export type WorkspaceWhereInput = {
   cashRegisterSalesChannelId?: Prisma.IntNullableFilter<"Workspace"> | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.IntNullableFilter<"Workspace"> | number | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  productTrackings?: Prisma.ProductTrackingListRelationFilter
   members?: Prisma.WorkspaceMemberListRelationFilter
   sessions?: Prisma.AuthSessionListRelationFilter
   companies?: Prisma.CompanyListRelationFilter
@@ -306,6 +307,7 @@ export type WorkspaceOrderByWithRelationInput = {
   cashRegisterSalesChannelId?: Prisma.SortOrderInput | Prisma.SortOrder
   cashRegisterPrimaryPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   owner?: Prisma.UserOrderByWithRelationInput
+  productTrackings?: Prisma.ProductTrackingOrderByRelationAggregateInput
   members?: Prisma.WorkspaceMemberOrderByRelationAggregateInput
   sessions?: Prisma.AuthSessionOrderByRelationAggregateInput
   companies?: Prisma.CompanyOrderByRelationAggregateInput
@@ -346,6 +348,7 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   cashRegisterSalesChannelId?: Prisma.IntNullableFilter<"Workspace"> | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.IntNullableFilter<"Workspace"> | number | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  productTrackings?: Prisma.ProductTrackingListRelationFilter
   members?: Prisma.WorkspaceMemberListRelationFilter
   sessions?: Prisma.AuthSessionListRelationFilter
   companies?: Prisma.CompanyListRelationFilter
@@ -409,6 +412,7 @@ export type WorkspaceCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -445,6 +449,7 @@ export type WorkspaceUncheckedCreateInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -472,6 +477,7 @@ export type WorkspaceUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -508,6 +514,7 @@ export type WorkspaceUncheckedUpdateInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1150,10 +1157,25 @@ export type WorkspaceUpdateOneWithoutIncomesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutIncomesInput, Prisma.WorkspaceUpdateWithoutIncomesInput>, Prisma.WorkspaceUncheckedUpdateWithoutIncomesInput>
 }
 
+export type WorkspaceCreateNestedOneWithoutProductTrackingsInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutProductTrackingsInput, Prisma.WorkspaceUncheckedCreateWithoutProductTrackingsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutProductTrackingsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutProductTrackingsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutProductTrackingsInput, Prisma.WorkspaceUncheckedCreateWithoutProductTrackingsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutProductTrackingsInput
+  upsert?: Prisma.WorkspaceUpsertWithoutProductTrackingsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutProductTrackingsInput, Prisma.WorkspaceUpdateWithoutProductTrackingsInput>, Prisma.WorkspaceUncheckedUpdateWithoutProductTrackingsInput>
+}
+
 export type WorkspaceCreateWithoutOwnerInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -1189,6 +1211,7 @@ export type WorkspaceUncheckedCreateWithoutOwnerInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1257,6 +1280,7 @@ export type WorkspaceCreateWithoutMembersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
@@ -1292,6 +1316,7 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1334,6 +1359,7 @@ export type WorkspaceUpdateWithoutMembersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
@@ -1369,6 +1395,7 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1395,6 +1422,7 @@ export type WorkspaceCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
@@ -1430,6 +1458,7 @@ export type WorkspaceUncheckedCreateWithoutSessionsInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1472,6 +1501,7 @@ export type WorkspaceUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
@@ -1507,6 +1537,7 @@ export type WorkspaceUncheckedUpdateWithoutSessionsInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1533,6 +1564,7 @@ export type WorkspaceCreateWithoutAuditLogsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -1568,6 +1600,7 @@ export type WorkspaceUncheckedCreateWithoutAuditLogsInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1610,6 +1643,7 @@ export type WorkspaceUpdateWithoutAuditLogsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -1645,6 +1679,7 @@ export type WorkspaceUncheckedUpdateWithoutAuditLogsInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1671,6 +1706,7 @@ export type WorkspaceCreateWithoutCompaniesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
@@ -1706,6 +1742,7 @@ export type WorkspaceUncheckedCreateWithoutCompaniesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1748,6 +1785,7 @@ export type WorkspaceUpdateWithoutCompaniesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
@@ -1783,6 +1821,7 @@ export type WorkspaceUncheckedUpdateWithoutCompaniesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1809,6 +1848,7 @@ export type WorkspaceCreateWithoutNotificationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -1844,6 +1884,7 @@ export type WorkspaceUncheckedCreateWithoutNotificationsInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1886,6 +1927,7 @@ export type WorkspaceUpdateWithoutNotificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -1921,6 +1963,7 @@ export type WorkspaceUncheckedUpdateWithoutNotificationsInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1947,6 +1990,7 @@ export type WorkspaceCreateWithoutEmployeesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -1982,6 +2026,7 @@ export type WorkspaceUncheckedCreateWithoutEmployeesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2024,6 +2069,7 @@ export type WorkspaceUpdateWithoutEmployeesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -2059,6 +2105,7 @@ export type WorkspaceUncheckedUpdateWithoutEmployeesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -2085,6 +2132,7 @@ export type WorkspaceCreateWithoutExpenseCategoriesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2120,6 +2168,7 @@ export type WorkspaceUncheckedCreateWithoutExpenseCategoriesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2151,6 +2200,7 @@ export type WorkspaceCreateWithoutVatSettlementCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2185,6 +2235,7 @@ export type WorkspaceUncheckedCreateWithoutVatSettlementCategoryInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2233,6 +2284,7 @@ export type WorkspaceUpdateWithoutExpenseCategoriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -2268,6 +2320,7 @@ export type WorkspaceUncheckedUpdateWithoutExpenseCategoriesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -2310,6 +2363,7 @@ export type WorkspaceCreateWithoutIncomeCategoriesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2345,6 +2399,7 @@ export type WorkspaceUncheckedCreateWithoutIncomeCategoriesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2376,6 +2431,7 @@ export type WorkspaceCreateWithoutCashRegisterIncomeCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2410,6 +2466,7 @@ export type WorkspaceUncheckedCreateWithoutCashRegisterIncomeCategoryInput = {
   vatSettlementCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2458,6 +2515,7 @@ export type WorkspaceUpdateWithoutIncomeCategoriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -2493,6 +2551,7 @@ export type WorkspaceUncheckedUpdateWithoutIncomeCategoriesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -2535,6 +2594,7 @@ export type WorkspaceCreateWithoutIncomeSalesChannelsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2570,6 +2630,7 @@ export type WorkspaceUncheckedCreateWithoutIncomeSalesChannelsInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2601,6 +2662,7 @@ export type WorkspaceCreateWithoutCashRegisterSalesChannelInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2635,6 +2697,7 @@ export type WorkspaceUncheckedCreateWithoutCashRegisterSalesChannelInput = {
   vatSettlementCategoryId?: number | null
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2683,6 +2746,7 @@ export type WorkspaceUpdateWithoutIncomeSalesChannelsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -2718,6 +2782,7 @@ export type WorkspaceUncheckedUpdateWithoutIncomeSalesChannelsInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -2760,6 +2825,7 @@ export type WorkspaceCreateWithoutBanksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2795,6 +2861,7 @@ export type WorkspaceUncheckedCreateWithoutBanksInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2837,6 +2904,7 @@ export type WorkspaceUpdateWithoutBanksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -2872,6 +2940,7 @@ export type WorkspaceUncheckedUpdateWithoutBanksInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -2898,6 +2967,7 @@ export type WorkspaceCreateWithoutPaymentMethodsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2933,6 +3003,7 @@ export type WorkspaceUncheckedCreateWithoutPaymentMethodsInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -2964,6 +3035,7 @@ export type WorkspaceCreateWithoutCashRegisterPrimaryPaymentMethodInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -2998,6 +3070,7 @@ export type WorkspaceUncheckedCreateWithoutCashRegisterPrimaryPaymentMethodInput
   vatSettlementCategoryId?: number | null
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -3046,6 +3119,7 @@ export type WorkspaceUpdateWithoutPaymentMethodsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -3081,6 +3155,7 @@ export type WorkspaceUncheckedUpdateWithoutPaymentMethodsInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -3123,6 +3198,7 @@ export type WorkspaceCreateWithoutCashRegisterBankRulesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -3158,6 +3234,7 @@ export type WorkspaceUncheckedCreateWithoutCashRegisterBankRulesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -3200,6 +3277,7 @@ export type WorkspaceUpdateWithoutCashRegisterBankRulesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -3235,6 +3313,7 @@ export type WorkspaceUncheckedUpdateWithoutCashRegisterBankRulesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -3261,6 +3340,7 @@ export type WorkspaceCreateWithoutSuppliersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -3296,6 +3376,7 @@ export type WorkspaceUncheckedCreateWithoutSuppliersInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -3338,6 +3419,7 @@ export type WorkspaceUpdateWithoutSuppliersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -3373,6 +3455,7 @@ export type WorkspaceUncheckedUpdateWithoutSuppliersInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -3399,6 +3482,7 @@ export type WorkspaceCreateWithoutTaxAuthoritiesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -3434,6 +3518,7 @@ export type WorkspaceUncheckedCreateWithoutTaxAuthoritiesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -3476,6 +3561,7 @@ export type WorkspaceUpdateWithoutTaxAuthoritiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -3511,6 +3597,7 @@ export type WorkspaceUncheckedUpdateWithoutTaxAuthoritiesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -3537,6 +3624,7 @@ export type WorkspaceCreateWithoutCustomersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -3572,6 +3660,7 @@ export type WorkspaceUncheckedCreateWithoutCustomersInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -3614,6 +3703,7 @@ export type WorkspaceUpdateWithoutCustomersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -3649,6 +3739,7 @@ export type WorkspaceUncheckedUpdateWithoutCustomersInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -3675,6 +3766,7 @@ export type WorkspaceCreateWithoutRecurringExpensesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -3710,6 +3802,7 @@ export type WorkspaceUncheckedCreateWithoutRecurringExpensesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -3752,6 +3845,7 @@ export type WorkspaceUpdateWithoutRecurringExpensesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -3787,6 +3881,7 @@ export type WorkspaceUncheckedUpdateWithoutRecurringExpensesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -3813,6 +3908,7 @@ export type WorkspaceCreateWithoutRecurringIncomesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -3848,6 +3944,7 @@ export type WorkspaceUncheckedCreateWithoutRecurringIncomesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -3890,6 +3987,7 @@ export type WorkspaceUpdateWithoutRecurringIncomesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -3925,6 +4023,7 @@ export type WorkspaceUncheckedUpdateWithoutRecurringIncomesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -3951,6 +4050,7 @@ export type WorkspaceCreateWithoutExpensesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -3986,6 +4086,7 @@ export type WorkspaceUncheckedCreateWithoutExpensesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -4028,6 +4129,7 @@ export type WorkspaceUpdateWithoutExpensesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -4063,6 +4165,7 @@ export type WorkspaceUncheckedUpdateWithoutExpensesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -4089,6 +4192,7 @@ export type WorkspaceCreateWithoutMonthlyRevenuesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -4124,6 +4228,7 @@ export type WorkspaceUncheckedCreateWithoutMonthlyRevenuesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -4166,6 +4271,7 @@ export type WorkspaceUpdateWithoutMonthlyRevenuesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -4201,6 +4307,7 @@ export type WorkspaceUncheckedUpdateWithoutMonthlyRevenuesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -4227,6 +4334,7 @@ export type WorkspaceCreateWithoutIncomesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  productTrackings?: Prisma.ProductTrackingCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
@@ -4262,6 +4370,7 @@ export type WorkspaceUncheckedCreateWithoutIncomesInput = {
   cashRegisterIncomeCategoryId?: number | null
   cashRegisterSalesChannelId?: number | null
   cashRegisterPrimaryPaymentMethodId?: number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedCreateNestedManyWithoutWorkspaceInput
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -4304,6 +4413,7 @@ export type WorkspaceUpdateWithoutIncomesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -4339,6 +4449,7 @@ export type WorkspaceUncheckedUpdateWithoutIncomesInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -4360,6 +4471,148 @@ export type WorkspaceUncheckedUpdateWithoutIncomesInput = {
   cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
+export type WorkspaceCreateWithoutProductTrackingsInput = {
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.AuthSessionCreateNestedManyWithoutWorkspaceInput
+  companies?: Prisma.CompanyCreateNestedManyWithoutWorkspaceInput
+  expenseCategories?: Prisma.ExpenseCategoryCreateNestedManyWithoutWorkspaceInput
+  incomeCategories?: Prisma.IncomeCategoryCreateNestedManyWithoutWorkspaceInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelCreateNestedManyWithoutWorkspaceInput
+  banks?: Prisma.BankCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutWorkspaceInput
+  suppliers?: Prisma.SupplierCreateNestedManyWithoutWorkspaceInput
+  taxAuthorities?: Prisma.TaxAuthorityCreateNestedManyWithoutWorkspaceInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutWorkspaceInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutWorkspaceInput
+  recurringExpenses?: Prisma.RecurringExpenseCreateNestedManyWithoutWorkspaceInput
+  recurringIncomes?: Prisma.RecurringIncomeCreateNestedManyWithoutWorkspaceInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutWorkspaceInput
+  monthlyRevenues?: Prisma.MonthlyRevenueCreateNestedManyWithoutWorkspaceInput
+  incomes?: Prisma.IncomeCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleCreateNestedManyWithoutWorkspaceInput
+  vatSettlementCategory?: Prisma.ExpenseCategoryCreateNestedOneWithoutVatSettlementForWorkspacesInput
+  cashRegisterIncomeCategory?: Prisma.IncomeCategoryCreateNestedOneWithoutCashRegisterForWorkspacesInput
+  cashRegisterSalesChannel?: Prisma.IncomeSalesChannelCreateNestedOneWithoutCashRegisterForWorkspacesInput
+  cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutCashRegisterPrimaryForWorkspacesInput
+}
+
+export type WorkspaceUncheckedCreateWithoutProductTrackingsInput = {
+  id?: number
+  name: string
+  ownerId: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  vatSettlementCategoryId?: number | null
+  cashRegisterIncomeCategoryId?: number | null
+  cashRegisterSalesChannelId?: number | null
+  cashRegisterPrimaryPaymentMethodId?: number | null
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.AuthSessionUncheckedCreateNestedManyWithoutWorkspaceInput
+  companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutWorkspaceInput
+  expenseCategories?: Prisma.ExpenseCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomeCategories?: Prisma.IncomeCategoryUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUncheckedCreateNestedManyWithoutWorkspaceInput
+  banks?: Prisma.BankUncheckedCreateNestedManyWithoutWorkspaceInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutWorkspaceInput
+  suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutWorkspaceInput
+  taxAuthorities?: Prisma.TaxAuthorityUncheckedCreateNestedManyWithoutWorkspaceInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutWorkspaceInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutWorkspaceInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutWorkspaceInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUncheckedCreateNestedManyWithoutWorkspaceInput
+  incomes?: Prisma.IncomeUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutWorkspaceInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutProductTrackingsInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutProductTrackingsInput, Prisma.WorkspaceUncheckedCreateWithoutProductTrackingsInput>
+}
+
+export type WorkspaceUpsertWithoutProductTrackingsInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutProductTrackingsInput, Prisma.WorkspaceUncheckedUpdateWithoutProductTrackingsInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutProductTrackingsInput, Prisma.WorkspaceUncheckedCreateWithoutProductTrackingsInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutProductTrackingsInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutProductTrackingsInput, Prisma.WorkspaceUncheckedUpdateWithoutProductTrackingsInput>
+}
+
+export type WorkspaceUpdateWithoutProductTrackingsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
+  companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryUpdateManyWithoutWorkspaceNestedInput
+  incomeCategories?: Prisma.IncomeCategoryUpdateManyWithoutWorkspaceNestedInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUpdateManyWithoutWorkspaceNestedInput
+  banks?: Prisma.BankUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutWorkspaceNestedInput
+  suppliers?: Prisma.SupplierUpdateManyWithoutWorkspaceNestedInput
+  taxAuthorities?: Prisma.TaxAuthorityUpdateManyWithoutWorkspaceNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutWorkspaceNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutWorkspaceNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUpdateManyWithoutWorkspaceNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUpdateManyWithoutWorkspaceNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutWorkspaceNestedInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUpdateManyWithoutWorkspaceNestedInput
+  incomes?: Prisma.IncomeUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUpdateManyWithoutWorkspaceNestedInput
+  vatSettlementCategory?: Prisma.ExpenseCategoryUpdateOneWithoutVatSettlementForWorkspacesNestedInput
+  cashRegisterIncomeCategory?: Prisma.IncomeCategoryUpdateOneWithoutCashRegisterForWorkspacesNestedInput
+  cashRegisterSalesChannel?: Prisma.IncomeSalesChannelUpdateOneWithoutCashRegisterForWorkspacesNestedInput
+  cashRegisterPrimaryPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutCashRegisterPrimaryForWorkspacesNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutProductTrackingsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  vatSettlementCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomeCategories?: Prisma.IncomeCategoryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomeSalesChannels?: Prisma.IncomeSalesChannelUncheckedUpdateManyWithoutWorkspaceNestedInput
+  banks?: Prisma.BankUncheckedUpdateManyWithoutWorkspaceNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutWorkspaceNestedInput
+  suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutWorkspaceNestedInput
+  taxAuthorities?: Prisma.TaxAuthorityUncheckedUpdateManyWithoutWorkspaceNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutWorkspaceNestedInput
+  recurringExpenses?: Prisma.RecurringExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
+  recurringIncomes?: Prisma.RecurringIncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutWorkspaceNestedInput
+  monthlyRevenues?: Prisma.MonthlyRevenueUncheckedUpdateManyWithoutWorkspaceNestedInput
+  incomes?: Prisma.IncomeUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutWorkspaceNestedInput
+  cashRegisterBankRules?: Prisma.CashRegisterBankRuleUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
 export type WorkspaceCreateManyOwnerInput = {
   id?: number
   name: string
@@ -4375,6 +4628,7 @@ export type WorkspaceUpdateWithoutOwnerInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -4410,6 +4664,7 @@ export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -4459,6 +4714,7 @@ export type WorkspaceUpdateWithoutVatSettlementCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -4493,6 +4749,7 @@ export type WorkspaceUncheckedUpdateWithoutVatSettlementCategoryInput = {
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -4542,6 +4799,7 @@ export type WorkspaceUpdateWithoutCashRegisterIncomeCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -4576,6 +4834,7 @@ export type WorkspaceUncheckedUpdateWithoutCashRegisterIncomeCategoryInput = {
   vatSettlementCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -4625,6 +4884,7 @@ export type WorkspaceUpdateWithoutCashRegisterSalesChannelInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -4659,6 +4919,7 @@ export type WorkspaceUncheckedUpdateWithoutCashRegisterSalesChannelInput = {
   vatSettlementCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterPrimaryPaymentMethodId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -4708,6 +4969,7 @@ export type WorkspaceUpdateWithoutCashRegisterPrimaryPaymentMethodInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+  productTrackings?: Prisma.ProductTrackingUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutWorkspaceNestedInput
@@ -4742,6 +5004,7 @@ export type WorkspaceUncheckedUpdateWithoutCashRegisterPrimaryPaymentMethodInput
   vatSettlementCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterIncomeCategoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   cashRegisterSalesChannelId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  productTrackings?: Prisma.ProductTrackingUncheckedUpdateManyWithoutWorkspaceNestedInput
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.AuthSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -4781,6 +5044,7 @@ export type WorkspaceUncheckedUpdateManyWithoutCashRegisterPrimaryPaymentMethodI
  */
 
 export type WorkspaceCountOutputType = {
+  productTrackings: number
   members: number
   sessions: number
   companies: number
@@ -4804,6 +5068,7 @@ export type WorkspaceCountOutputType = {
 }
 
 export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  productTrackings?: boolean | WorkspaceCountOutputTypeCountProductTrackingsArgs
   members?: boolean | WorkspaceCountOutputTypeCountMembersArgs
   sessions?: boolean | WorkspaceCountOutputTypeCountSessionsArgs
   companies?: boolean | WorkspaceCountOutputTypeCountCompaniesArgs
@@ -4834,6 +5099,13 @@ export type WorkspaceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
    * Select specific fields to fetch from the WorkspaceCountOutputType
    */
   select?: Prisma.WorkspaceCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountProductTrackingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductTrackingWhereInput
 }
 
 /**
@@ -4988,6 +5260,7 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   cashRegisterSalesChannelId?: boolean
   cashRegisterPrimaryPaymentMethodId?: boolean
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  productTrackings?: boolean | Prisma.Workspace$productTrackingsArgs<ExtArgs>
   members?: boolean | Prisma.Workspace$membersArgs<ExtArgs>
   sessions?: boolean | Prisma.Workspace$sessionsArgs<ExtArgs>
   companies?: boolean | Prisma.Workspace$companiesArgs<ExtArgs>
@@ -5064,6 +5337,7 @@ export type WorkspaceSelectScalar = {
 export type WorkspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "ownerId" | "createdAt" | "updatedAt" | "vatSettlementCategoryId" | "cashRegisterIncomeCategoryId" | "cashRegisterSalesChannelId" | "cashRegisterPrimaryPaymentMethodId", ExtArgs["result"]["workspace"]>
 export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  productTrackings?: boolean | Prisma.Workspace$productTrackingsArgs<ExtArgs>
   members?: boolean | Prisma.Workspace$membersArgs<ExtArgs>
   sessions?: boolean | Prisma.Workspace$sessionsArgs<ExtArgs>
   companies?: boolean | Prisma.Workspace$companiesArgs<ExtArgs>
@@ -5109,6 +5383,7 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "Workspace"
   objects: {
     owner: Prisma.$UserPayload<ExtArgs>
+    productTrackings: Prisma.$ProductTrackingPayload<ExtArgs>[]
     members: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
     sessions: Prisma.$AuthSessionPayload<ExtArgs>[]
     companies: Prisma.$CompanyPayload<ExtArgs>[]
@@ -5539,6 +5814,7 @@ readonly fields: WorkspaceFieldRefs;
 export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   owner<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  productTrackings<T extends Prisma.Workspace$productTrackingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$productTrackingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductTrackingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   members<T extends Prisma.Workspace$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.Workspace$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   companies<T extends Prisma.Workspace$companiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$companiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5999,6 +6275,30 @@ export type WorkspaceDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Workspaces to delete.
    */
   limit?: number
+}
+
+/**
+ * Workspace.productTrackings
+ */
+export type Workspace$productTrackingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductTracking
+   */
+  select?: Prisma.ProductTrackingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductTracking
+   */
+  omit?: Prisma.ProductTrackingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductTrackingInclude<ExtArgs> | null
+  where?: Prisma.ProductTrackingWhereInput
+  orderBy?: Prisma.ProductTrackingOrderByWithRelationInput | Prisma.ProductTrackingOrderByWithRelationInput[]
+  cursor?: Prisma.ProductTrackingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductTrackingScalarFieldEnum | Prisma.ProductTrackingScalarFieldEnum[]
 }
 
 /**

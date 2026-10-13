@@ -7,6 +7,7 @@ type FeedbackMessages = Record<string, string>;
 const filterStorageKeys = [
   'dmsAccounting.expenses.filters',
   'dmsAccounting.incomes.filters',
+  'dmsAccounting.product-trackings.filters',
   'dmsAccounting.suppliers.filters'
 ];
 

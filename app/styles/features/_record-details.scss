@@ -413,6 +413,31 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   box-shadow: 0 24px 70px rgba(15, 23, 42, .08);
   background: radial-gradient(circle at 12% 0%, rgba(63, 111, 255, .11), transparent 34%),
   linear-gradient(135deg, #f8fbff 0%, #ffffff 62%);
+
+  @media (max-width: 700px) {
+    border-radius: 20px;
+  }
+}
+
+.record-tracking .record-detail-hero {
+  grid-template-columns: 1fr;
+}
+
+.record-tracking .record-detail-hero .record-detail-title-block .record-detail-title-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  @media(min-width: 760px) {
+    gap: 16px;
+    flex-direction: row;
+    align-items: flex-end;
+    //justify-content: flex-end;
+  }
+}
+
+.record-tracking .record-detail-hero .record-detail-meta-line {
+  display: flex;
 }
 
 .record-detail-hero {
@@ -481,7 +506,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   display: inline-flex;
   white-space: nowrap;
   align-items: center;
-  min-height: 30px;
+  //min-height: 30px;
   max-width: fit-content;
   padding: 6px 10px;
   border: 1px solid rgba(226, 232, 240, .9);
@@ -575,6 +600,10 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 4px;
+}
+
+.record-detail-badge-row:empty {
+  display: none;
 }
 
 .record-detail-action-row {
@@ -827,7 +856,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
 }
 
 .record-detail-section-heading p {
-  margin: 0;
+  margin: 5px 0 0 0;
   color: var(--muted);
   font-size: 13px;
 }
@@ -2176,12 +2205,6 @@ body.invoice-attachments-modal-open {
     gap: 8px;
     flex-grow: 1;
     justify-content: flex-end;
-  }
-}
-
-@media (max-width: 700px) {
-  .record-detail-document {
-    border-radius: 20px;
   }
 }
 

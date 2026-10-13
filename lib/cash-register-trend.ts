@@ -78,3 +78,10 @@ export function buildMonthlyReceiptTrend(
     };
   });
 }
+
+// Empty intervals before the last recorded receipt remain part of the trend.
+export function trimReceiptTrendAfterLastMovement(points: DailyReceiptTrend[]): DailyReceiptTrend[] {
+  let lastIndex = points.length - 1;
+  while (lastIndex >= 0 && points[lastIndex].count <= 0) lastIndex--;
+  return points.slice(0, lastIndex + 1);
+}

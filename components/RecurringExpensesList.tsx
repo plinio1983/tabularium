@@ -416,7 +416,6 @@ export default function RecurringExpensesList({
                             <RecurringStateCard kind="expense" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)}>
                                 <div className="recurring-mobile-top">
                                     <div className="recurring-mobile-main-title">
-                                        <RecurringStateBadge kind="expense" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)}/>
                                         <span className="badge tone-insurance">{cadence}</span>
                                         <span className="badge">{expenseTypeLabels[item.expenseType] ?? 'Singola'}</span>
                                         <span className="badge">{dueLabel(item)}</span>
@@ -424,6 +423,7 @@ export default function RecurringExpensesList({
                                     <strong className="recurring-mobile-amount">{euro(item.amount.toString())}</strong>
                                 </div>
                                 <div className="recurring-mobile-top-middle">
+                                    <RecurringStateBadge kind="expense" id={item.id} active={item.isActive} archived={Boolean(item.archivedAt)}/>
                                     <strong>{supplier}</strong>
                                     <div className="recurring-mobile-right"><strong>{payment}</strong></div>
                                 </div>

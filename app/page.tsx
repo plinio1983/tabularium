@@ -1601,6 +1601,10 @@ export default async function Dashboard({searchParams}: {
             showToolbar={false}
         />
         <div className="dashboard-actions toolbar-card dashboard-header-card">
+            <div className="hidden-sm-down">
+                <h2>Dashboard</h2>
+                <p className="muted">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
+            </div>
             <div className="actions-row dashboard-top-actions">
                 <ExpenseNewTriggerButton className="btn btn-sm btn-primary"><span
                     className="btn-icon btn-icon-add">＋</span> Spesa
@@ -1630,8 +1634,11 @@ export default async function Dashboard({searchParams}: {
             <div className="flex">
                 <form className="period-selector dashboard-year-selector" method="get">
                     <div className="dashboard-title-block mb-6">
-                        <div className="info-title-row"><h2>Dashboard</h2><InfoHint compactOnly title="Dashboard">I riepiloghi fanno riferimento al periodo consolidato indicato. Liquidità e scadenze sono aggiornate a oggi.</InfoHint></div>
-                        <p className="muted">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
+                        <div className="info-title-row">
+                            <h2 className="hidden-sm-down">Riepilogo</h2>
+                            <h2 className="hidden-sm-up">Dashboard</h2>
+                            <InfoHint compactOnly title="Dashboard">I riepiloghi fanno riferimento al periodo consolidato indicato. Liquidità e scadenze sono aggiornate a oggi.</InfoHint></div>
+                        <p className="muted hidden-sm-up">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
                     </div>
                     <div className="dashboard-selector-wrapper">
                     <span className="selector-label">Anno fiscale</span>

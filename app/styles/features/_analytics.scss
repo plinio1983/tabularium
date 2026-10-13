@@ -4362,6 +4362,7 @@ html, body {
   gap: 12px;
   align-items: center;
   flex-grow: 1;
+  justify-content: end;
 }
 
 .dashboard-year-selector .dashboard-title-block {
@@ -5749,7 +5750,7 @@ html, body {
   margin: 5px 0 0;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 760px) {
   .dashboard-grid {
     gap: 0;
 

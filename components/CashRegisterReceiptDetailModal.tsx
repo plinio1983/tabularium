@@ -122,7 +122,6 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
             </div>
             <footer className="receipt-detail-footer">
                 <button className="btn btn-md btn-default" type="button" onClick={onClose}>Chiudi</button>
-                {receipt ? <Link className="btn btn-md btn-default" href={`/incomes/${receipt.id}/convert`}><span className="btn-icon">⇄</span> Converti tipo</Link> : null}
                 {receipt ? <Link className="btn btn-md btn-primary" href={`/incomes/cash-register?editId=${receipt.id}&returnTo=${encodeURIComponent(returnTo)}`}>
                     <span className="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m16 4 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/></svg></span>
                     Modifica scontrino

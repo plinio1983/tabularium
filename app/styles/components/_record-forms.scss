@@ -446,6 +446,11 @@
 
 .app-record-form .form-section-stack {
   padding: 18px;
+  //padding: 0;
+
+  @media (max-width: 900px) {
+    padding: 12px;
+  }
 }
 
 .app-record-form .toggle-field-wrap {
@@ -592,6 +597,11 @@
 
 .payment-summary-primary {
   background: linear-gradient(135deg, #eef2ff, #f5f7ff);
+}
+
+.payment-summary-secondary {
+  display: flex;
+  gap: 8px;
 }
 
 .payment-summary-kicker,
@@ -1129,12 +1139,6 @@
 @media (max-width: 900px) {
   .app-record-form .form-section > summary span {
     font-size: 15px;
-  }
-}
-
-@media (max-width: 900px) {
-  .app-record-form .form-section-stack {
-    padding: 12px;
   }
 }
 
