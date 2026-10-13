@@ -85,7 +85,7 @@ Il repository e' privato. Esegui il login una tantum sia sulla macchina che effe
 
 ```bash
 docker login --username 883377
-ssh -i resources/contabo_rsa root@178.18.248.213
+ssh -i resources/prod01_ed25519 root@178.18.248.213
 docker login --username 883377
 ```
 
@@ -106,7 +106,7 @@ Percorso usato dagli esempi:
 Connessione SSH dal repository locale:
 
 ```bash
-ssh -i resources/contabo_rsa root@178.18.248.213
+ssh -i resources/prod01_ed25519 root@178.18.248.213
 ```
 
 Sul server, una tantum:
@@ -152,7 +152,7 @@ cp deploy.conf.example deploy.conf
 ```bash
 SERVER_HOST="178.18.248.213"
 SERVER_USER="root"
-SSH_KEY="resources/contabo_rsa"
+SSH_KEY="resources/prod01_ed25519"
 REMOTE_DIR="/app/tabularium"
 IMAGE_REPOSITORY="883377/tabularium"
 ```
@@ -171,7 +171,7 @@ Le opzioni CLI sovrascrivono la configurazione:
   --config ./deploy.conf \
   --server-user root \
   --server-host 178.18.248.213 \
-  --ssh-key resources/contabo_rsa \
+  --ssh-key resources/prod01_ed25519 \
   --remote-dir /app/tabularium
 ```
 
@@ -216,7 +216,7 @@ IMAGE_NAME="883377/tabularium:${IMAGE_TAG}"
 docker build --pull -t "${IMAGE_NAME}" -t "883377/tabularium:latest" .
 docker push "${IMAGE_NAME}"
 docker push "883377/tabularium:latest"
-ssh -i resources/contabo_rsa root@178.18.248.213
+ssh -i resources/prod01_ed25519 root@178.18.248.213
 ```
 
 Sul server:
