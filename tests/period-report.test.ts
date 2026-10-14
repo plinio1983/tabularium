@@ -154,3 +154,18 @@ test('fiscale: totale in attesa di fattura nullo senza fatture mancanti', () => 
   assert.equal(report.summary.fattureNonRicevute, 0);
   assert.equal(report.summary.totaleInAttesaFattura, 0);
 });
+
+test('multi-rate mixed receipts preserve VAT and fiscal subtotals in overall and fiscal reports', () => {
+  const record = income({incomeType: 'CASH_REGISTER', amount: 28.2, vatRate: 0, receiptFiscalAmount: 23.2, receiptVatAmount: 3.2, credits: [{amount: 28.2, creditDate: date('2026-09-10T12:00:00Z')}]});
+  const overall = buildPeriodReport(september, [record], [], 'overall');
+  close(overall.summary.incassoTotale, 28.2);
+  close(overall.summary.incassoFiscale, 23.2);
+  close(overall.summary.incassoNonFiscale, 5);
+  close(overall.summary.ivaGenerataIncassi, 3.2);
+  reconcile(overall);
+  const fiscal = buildPeriodReport(september, [record], [], 'fiscal');
+  close(fiscal.summary.incassoTotale, 23.2);
+  close(fiscal.summary.ivaGenerataIncassi, 3.2);
+  close(fiscal.summary.imponibileIncassi, 20);
+  reconcile(fiscal);
+});

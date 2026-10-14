@@ -1,3 +1,4 @@
+import {incomeFiscalAmount, incomeVatAmount} from '@/lib/cash-register-lines';
 import {resolveIncomeSearch, matchesIncomeSearch, inputDefault, fiscalQuarterRange, matchesBillingPeriod, matchesIsoDate} from '@/lib/incomes-search';
 import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
@@ -392,7 +393,7 @@ export default async function IncomesPage({searchParams}: {
                 salesChannelRef: true,
                 customer: true,
                 credits: true,
-                attachments: true
+                attachments: true, receiptLines: {orderBy: {position: 'asc'}}
             },
             orderBy: [{creditDate: 'desc'}, {id: 'desc'}]
         }),
@@ -459,16 +460,17 @@ export default async function IncomesPage({searchParams}: {
     const summarizeIncomes = (list: typeof incomes) => list.reduce((acc, income) => {
         const amount = Number(income.amount.toString());
         const vatRate = Number(income.vatRate.toString());
-        const vatDebt = income.isFiscal ? vatAmountFromGross(amount, vatRate) : 0;
+        const vatDebt = incomeVatAmount(income);
         acc.total += amount;
         const credited = income.credits.reduce((sum, credit) => sum + Number(credit.amount), 0);
         acc.uncredited += Math.max(0, amount - credited);
         acc.vatDebt += vatDebt;
         if (income.isFiscal) {
-            acc.fiscal += amount;
-            acc.taxable += amount - vatDebt;
+            acc.fiscal += incomeFiscalAmount(income);
+            acc.taxable += incomeFiscalAmount(income) - vatDebt;
             if (income.invoiceStatus !== 'EMESSA') acc.invoicesNotSent += 1;
-        } else acc.nonFiscal += amount;
+        }
+        acc.nonFiscal += amount - incomeFiscalAmount(income);
         return acc;
     }, {total: 0, uncredited: 0, fiscal: 0, nonFiscal: 0, taxable: 0, vatDebt: 0, invoicesNotSent: 0});
 
@@ -516,12 +518,13 @@ export default async function IncomesPage({searchParams}: {
     }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
 
     const incomesByFiscalStatus = Array.from(filteredIncomes.reduce((map, income) => {
-        const name = income.isFiscal ? 'Dichiarato' : 'Non dichiarato';
-        const code = income.isFiscal ? 'FISC' : 'NFISC';
-        const key = `${code}-${name}`;
-        const current = map.get(key) ?? {name, code, total: 0};
-        current.total += Number(income.amount.toString());
-        map.set(key, current);
+        for (const [name, code, amount] of [['Dichiarato', 'FISC', incomeFiscalAmount(income)], ['Non dichiarato', 'NFISC', Number(income.amount) - incomeFiscalAmount(income)]] as const) {
+            if (!amount) continue;
+            const key = `${code}-${name}`;
+            const current = map.get(key) ?? {name, code, total: 0};
+            current.total += amount;
+            map.set(key, current);
+        }
         return map;
     }, new Map<string, { name: string; code: string; total: number }>()).values()).sort((a, b) => b.total - a.total);
 

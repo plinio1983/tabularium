@@ -140,3 +140,11 @@ npm run db:generate
 ### Esportazione della ricerca di spese e incassi
 
 Nelle liste principali di spese e incassi, il pulsante **Esporta CSV** nella action bar e nella floating bar esporta tutti i risultati della ricerca corrente, indipendentemente dalle checkbox. Sostituisce il pulsante diretto Copia, che resta disponibile nel menu Azioni. La voce **Esporta selezionati** nel menu mantiene l’esportazione dei soli ID selezionati e il limite di 5.000 record. L’export della ricerca non tronca i risultati; gli scontrini raggruppati nella lista incassi sono esportati come singoli record. Filtri, società e permessi vengono applicati lato server.
+
+### Registratore di cassa con più importi
+
+Il registratore consente di preparare uno scontrino con più importi, ognuno fiscale (IVA 0%, 4%, 10%, 22%) o non fiscale. Data, categoria contabile, canale di vendita e descrizione sono comuni allo scontrino. Dopo **Aggiungi**, il display mostra il totale provvisorio e il pannello scorre ai metodi di incasso; digitando un nuovo importo torna al pannello IVA. Azzerare il nuovo importo conserva le righe già aggiunte. **Annulla ultimo inserimento** riporta l’ultima riga in digitazione. La scelta del metodo apre il riepilogo; solo **INCASSA** salva un documento con un accredito e tutte le righe, in transazione. Gli scontrini che includono importi non fiscali richiedono contanti.
+
+I dati di dettaglio sono in `IncomeReceiptLine`; i subtotali fiscali e IVA sono salvati sull’incasso per mantenere corretti i report. I vecchi scontrini senza righe sono letti come documenti con un solo importo. Modifica e copia utilizzano il registratore e preservano le righe; la conversione diretta di uno scontrino con più importi è bloccata per evitare la perdita delle aliquote. Il CSV Scontrini v2 conserva importi e categoria, mantenendo l’importazione del formato v1. L’export generale degli incassi include gli importi dello scontrino in una colonna JSON.
+
+La migrazione `20261014190000_cash_register_lines` va applicata prima di utilizzare il nuovo codice; rigenerare il client Prisma. I test del database usano uno schema temporaneo isolato (`RECEIPT_TEST_DATABASE=1`).

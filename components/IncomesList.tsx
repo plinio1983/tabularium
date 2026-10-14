@@ -58,18 +58,20 @@ function cashRegisterGroupHref(group: IncomeCashRegisterGroup, mobileList = fals
         month,
         paymentMethodId: String(group.paymentMethodId),
         salesChannelId: String(group.salesChannelId),
-        fiscal: group.isFiscal ? 'yes' : 'no'
+        fiscal: group.mixedFiscal ? 'mixed' : group.isFiscal ? 'yes' : 'no'
     });
     if (mobileList) query.set('mobileList', '1');
     return `/incomes/cash-register/receipts?${query}`;
 }
 
 function aggregateVatLabel(group: IncomeCashRegisterGroup) {
-    return group.vatRates.length === 1 ? `${group.vatRates[0]}%` : 'Mista';
+    return !group.isFiscal ? '—' : group.mixedFiscal ? 'Mista' : group.vatRates.length === 1 ? `${group.vatRates[0]}%` : 'Mista';
 }
 
 function vatBadgeLabel(value: IncomeCashRegisterGroup) {
-    const rate = Number(value.vatRates);
+    if (!value.isFiscal) return <span className="badge tone-muted">—</span>;
+    if (value.mixedFiscal || value.vatRates.length !== 1) return <span className="badge tone-neutral">Mista</span>;
+    const rate = value.vatRates[0];
     const style = vatStyles[String(rate)] ?? vatStyles['0'];
     return <span className={badgeClass(style.className)}>{rate}%</span>;
 }
@@ -315,10 +317,10 @@ export default function IncomesList({
                                 <div className="mobile-record-header">
                                     <div className="left-side flex-grow">
                                         {/*<span className={`${badgeClass(fiscalStyle.className)} income-badge-compact`}>{group.isFiscal ? '✓ Fis' : '✕ Nf'}</span>*/}
-                                        {group.isFiscal ? <span className="text-primary strong">✓ Fisc</span> :
+                                        {group.mixedFiscal ? <span className="text-primary strong">Mista</span> : group.isFiscal ? <span className="text-primary strong">✓ Fisc</span> :
                                             <span className="text-muted strong">✕ Non Fisc</span>}
-                                        {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{Number(group.vatRates)}%</span>*/}
-                                        <span className="text-muted">&nbsp; • &nbsp;{Number(group.vatRates)}%</span>
+                                        {/*<span className={badgeClass(vatStyle.className)}>• &nbsp;{aggregateVatLabel(group)}</span>*/}
+                                        <span className="text-muted">&nbsp; • &nbsp;{aggregateVatLabel(group)}</span>
                                         {/*<span className="text-muted">&nbsp; • &nbsp;{formatPeriod(group.billingMonth, group.billingYear)}</span>*/}
                                         <span
                                             className="text-muted">&nbsp; • &nbsp;{formatMonthPeriod(group.billingMonth)}</span>

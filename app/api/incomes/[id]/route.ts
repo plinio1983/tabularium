@@ -84,6 +84,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (!existing) {
     return redirectToPath(appendFlash(returnTo || '/incomes', { error: 'not_found' }));
   }
+  if (existing.incomeType === 'CASH_REGISTER') return redirectToPath(`/incomes/cash-register?editId=${incomeId}&returnTo=${encodeURIComponent(returnTo || '/incomes')}`);
   const firstCredit = credits[0];
   const latestCredit = [...credits].sort((a, b) => b.creditDate.localeCompare(a.creditDate))[0];
   const legacyMethod = methods.find(method => method.id === (firstCredit?.paymentMethodId ?? parsed.paymentMethodId)) ?? fallbackMethod;

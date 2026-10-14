@@ -1,3 +1,4 @@
+import {incomeFiscalAmount, incomeVatAmount} from './cash-register-lines';
 import { prisma } from './prisma';
 import { isExpenseInvoiceNotReceived } from './expense-invoice';
 import {expenseResidualAmount, isExpensePastDue} from './expense-calculations';
@@ -109,7 +110,7 @@ function computeVatBalance(incomes: any[], expenses: any[], periods?: Array<{ ye
       const period = periodFromKey(key);
       if (!incomeMatchesPeriod(income, period.year, period.month)) return sum;
     }
-    return sum + vatAmountFromGross(Number(income.amount), Number(income.vatRate));
+    return sum + incomeVatAmount(income);
   }, 0);
 
   const expenseVatForKey = (key?: number, kind: 'deductible' | 'settled' = 'deductible') => expenses.reduce((sum, expense) => {
@@ -148,9 +149,9 @@ export function expenseAffectsFiscalAccounting(expense: {expenseType?: unknown; 
 }
 
 function summarizeRecords(incomes: any[], expenses: any[], periods?: Array<{ year: number; month: number }>, options: SummaryOptions = {}) {
-  const incassoTotale = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
+  const incassoTotale = incomes.reduce((sum, income) => sum + (options.fiscalOnly ? incomeFiscalAmount(income) : Number(income.amount)), 0);
   const nonAccreditato = incomes.reduce((sum, income) => sum + incomeCreditSummary(income).residual, 0);
-  const incassoFiscale = incomes.reduce((sum, income) => income.isFiscal ? sum + Number(income.amount) : sum, 0);
+  const incassoFiscale = incomes.reduce((sum, income) => sum + incomeFiscalAmount(income), 0);
   const incassoNonFiscale = incassoTotale - incassoFiscale;
 
   const costExpenses = options.fiscalReport ? expenses.filter(expenseAffectsFiscalProfit) : expenses;
@@ -337,12 +338,13 @@ export async function getAccountingDashboardReport(
 
   const incomesByFiscalStatusMap = new Map<string, { name: string; code: string; total: number }>();
   for (const income of yearlyIncomes) {
-    const name = income.isFiscal ? 'Dichiarato' : 'Non dichiarato';
-    const code = income.isFiscal ? 'FISC' : 'NFISC';
-    const key = `${code}-${name}`;
-    const current = incomesByFiscalStatusMap.get(key) ?? { name, code, total: 0 };
-    current.total += Number(income.amount);
-    incomesByFiscalStatusMap.set(key, current);
+    for (const [name, code, amount] of [['Dichiarato', 'FISC', incomeFiscalAmount(income)], ['Non dichiarato', 'NFISC', Number(income.amount) - incomeFiscalAmount(income)]] as const) {
+      if (!amount) continue;
+      const key = `${code}-${name}`;
+      const current = incomesByFiscalStatusMap.get(key) ?? {name, code, total: 0};
+      current.total += amount;
+      incomesByFiscalStatusMap.set(key, current);
+    }
   }
   const incomesByFiscalStatus = Array.from(incomesByFiscalStatusMap.values()).sort((a, b) => b.total - a.total);
 
@@ -433,7 +435,7 @@ function reportMovements(records: any[], kind: 'income' | 'expense', mode: 'fisc
       description: record.description ?? '',
       fiscal: kind === 'income' ? record.isFiscal : expenseAffectsFiscalProfit(record),
     };
-    if (mode === 'fiscal') return [{...common, key: String(record.id), date: new Date(Date.UTC(kind === 'income' ? record.billingYear : record.year, (kind === 'income' ? record.billingMonth : record.month) - 1, 1)), amount: Number(record.amount)}];
+    if (mode === 'fiscal') return [{...common, key: String(record.id), date: new Date(Date.UTC(kind === 'income' ? record.billingYear : record.year, (kind === 'income' ? record.billingMonth : record.month) - 1, 1)), amount: kind === 'income' ? incomeFiscalAmount(record) : Number(record.amount)}];
     return (kind === 'income' ? record.credits : record.payments).map((movement: any, index: number) => ({
       ...common,
       key: `${record.id}-${movement.id ?? index}`,
@@ -447,7 +449,7 @@ export function buildPeriodReport(periods: Array<{year: number; month: number}>,
   const firstPeriod = periods[0] ?? emptyPeriod;
   if (!firstPeriod) throw new Error('At least one report period is required.');
   const records = periodReportRecords(periods, incomes, expenses, mode, timeZone);
-  const options = {timeZone, fiscalReport: mode === 'fiscal'};
+  const options = {timeZone, fiscalReport: mode === 'fiscal', fiscalOnly: mode === 'fiscal'};
   const summary = summarizeRecords(records.incomes, records.expenses, undefined, options);
   const monthlyBreakdown = periods.map(period => {
     const monthRecords = periodReportRecords([period], incomes, expenses, mode, timeZone);

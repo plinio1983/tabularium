@@ -11,6 +11,8 @@ backups/
 prisma/migrations
 !prisma/migrations/
 prisma/migrations/*
+!prisma/migrations/20261014190000_cash_register_lines/
+!prisma/migrations/20261014190000_cash_register_lines/migration.sql
 !prisma/migrations/20261013180000_product_trackings/
 !prisma/migrations/20261013180000_product_trackings/migration.sql
 !prisma/migrations/20261002120000_require_expense_payment_date/

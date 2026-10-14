@@ -1,3 +1,4 @@
+import {existingReceiptLines, receiptLineSummary} from '@/lib/cash-register-lines';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
 import MobileRecordViews from '@/components/MobileRecordViews';
 import LiveSearch from '@/components/LiveSearch';
@@ -37,10 +38,10 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const fiscal = value(params, 'fiscal');
     const methodFilter = methodId ? Prisma.sql`AND "paymentMethodId" = ${methodId}` : Prisma.empty;
     const channelFilter = channelId ? Prisma.sql`AND "salesChannelId" = ${channelId}` : Prisma.empty;
-    const fiscalFilter = fiscal === 'yes'
+    const fiscalFilter = fiscal === 'mixed' ? Prisma.sql`AND "receiptFiscalAmount" > 0 AND "receiptFiscalAmount" < amount` : fiscal === 'yes'
         ? Prisma.sql`AND "isFiscal" = true`
         : fiscal === 'no'
-            ? Prisma.sql`AND "isFiscal" = false`
+            ? Prisma.sql`AND coalesce("receiptFiscalAmount", CASE WHEN "isFiscal" THEN amount ELSE 0 END) < amount`
             : Prisma.empty;
     const creditDateFilter = {
         gte: zonedMidnightUtc(dateFrom, timeZone),
@@ -58,9 +59,9 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
                 creditDate: creditDateFilter,
                 ...(methodId ? {paymentMethodId: methodId} : {}),
                 ...(channelId ? {salesChannelId: channelId} : {}),
-                ...(fiscal === 'yes' ? {isFiscal: true} : fiscal === 'no' ? {isFiscal: false} : {})
+                ...(fiscal === 'yes' ? {isFiscal: true} : fiscal === 'no' ? {OR: [{isFiscal: false}, {receiptLines: {some: {isFiscal: false}}}]} : fiscal === 'mixed' ? {receiptLines: {some: {isFiscal: false}}, isFiscal: true} : {})
             },
-            include: {paymentMethodRef: true, salesChannelRef: true},
+            include: {paymentMethodRef: true, salesChannelRef: true, receiptLines: {orderBy: {position: 'asc'}}},
             orderBy: [{creditDate: 'desc'}, {id: 'desc'}],
             take: 1000
         }),
@@ -101,7 +102,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         {label: 'Periodo', value: `${new Date(`${dateFrom}T12:00:00Z`).toLocaleDateString('it-IT', {timeZone: 'UTC'})} – ${new Date(`${dateTo}T12:00:00Z`).toLocaleDateString('it-IT', {timeZone: 'UTC'})}`},
         ...(selectedMethod ? [{label: 'Metodo', value: `${selectedMethod.icon ? `${selectedMethod.icon} ` : ''}${selectedMethod.name}`}] : []),
         ...(selectedChannel ? [{label: 'Canale', value: `${selectedChannel.icon ? `${selectedChannel.icon} ` : ''}${selectedChannel.name}`}] : []),
-        ...(fiscal === 'yes' ? [{label: 'Fiscalità', value: 'Fiscali'}] : fiscal === 'no' ? [{label: 'Fiscalità', value: 'Non fiscali'}] : []),
+        ...(['yes', 'no', 'mixed'].includes(fiscal) ? [{label: 'Fiscalità', value: fiscal === 'mixed' ? 'Misti' : fiscal === 'yes' ? 'Fiscali' : 'Non fiscali'}] : []),
     ];
     const firstAvailableYear = Math.min(
         billingYear,
@@ -121,7 +122,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     }
     if (methodId) returnQuery.set('paymentMethodId', String(methodId));
     if (channelId) returnQuery.set('salesChannelId', String(channelId));
-    if (fiscal === 'yes' || fiscal === 'no') returnQuery.set('fiscal', fiscal);
+    if (['yes', 'no', 'mixed'].includes(fiscal)) returnQuery.set('fiscal', fiscal);
     returnQuery.set('mobileList', '1');
     const receiptListReturnTo = `/incomes/cash-register/receipts${returnQuery.size ? `?${returnQuery}` : ''}`;
 
@@ -159,6 +160,8 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
                 creditDate: receipt.creditDate.toISOString(),
                 isFiscal: receipt.isFiscal,
                 vatRate: Number(receipt.vatRate),
+                mixed: receiptLineSummary(existingReceiptLines(receipt)).mixed,
+                vatLabel: [...new Set(existingReceiptLines(receipt).filter(line => line.isFiscal).map(line => `${line.vatRate}%`))].join(' / '),
                 salesChannelId: receipt.salesChannelId,
                 paymentMethodId: receipt.paymentMethodId,
                 salesChannel: receipt.salesChannelRef.name,

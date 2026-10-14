@@ -1,8 +1,9 @@
+import {existingReceiptLines, receiptLinesData, receiptLineSummary} from './cash-register-lines';
 import {createHash} from 'node:crypto';
 import {Prisma} from '@/generated/prisma/client';
 import {parseReceiptCsv, receiptImportKey, receiptOrigin, type ReceiptCsvRow} from './receipt-csv';
 
-export const receiptInclude = {salesChannelRef: true, paymentMethodRef: true, creditBank: true, credits: true} satisfies Prisma.IncomeInclude;
+export const receiptInclude = {salesChannelRef: true, paymentMethodRef: true, creditBank: true, credits: true, incomeCategory: true, receiptLines: {orderBy: {position: 'asc'}}} satisfies Prisma.IncomeInclude;
 type Receipt = Prisma.IncomeGetPayload<{include: typeof receiptInclude}>;
 export function receiptToCsvRow(item: Receipt): ReceiptCsvRow {
   const credit = item.credits[0];
@@ -11,6 +12,7 @@ export function receiptToCsvRow(item: Receipt): ReceiptCsvRow {
     origin: receiptOrigin(item), date: item.creditDate.toISOString(), description: item.description ?? '', amount: item.amount.toFixed(2),
     fiscal: item.isFiscal, vat: item.vatRate.toString(), channelCode: item.salesChannelRef.code, channel: item.salesChannelRef.name,
     method: item.paymentMethodRef.name, bank: item.creditBank.name, period: `${item.billingYear}-${String(item.billingMonth).padStart(2, '0')}`, notes: item.notes ?? '',
+    ...(item.receiptLines?.length ? {lines: existingReceiptLines(item)} : {}), category: item.incomeCategory?.name,
   };
 }
 export type ReceiptImportContext = {workspaceId: number; companyId: number};
@@ -19,7 +21,7 @@ export type ReceiptPreviewRow = {line: number; origin: string; description: stri
 export type ReceiptPreview = {rows: ReceiptPreviewRow[]; counts: Record<ReceiptPreviewRow['status'], number>; token: string};
 const identity = (value: string) => value.trim().toLocaleLowerCase('it-IT');
 function comparable(row: Prepared) {
-  return JSON.stringify([row.date, row.description, row.amount, row.fiscal, row.vat, row.channelId, row.methodId, row.bankId, row.period, row.notes]);
+  return JSON.stringify([row.date, row.description, row.amount, row.fiscal, row.vat, row.channelId, row.methodId, row.bankId, row.period, row.notes, row.categoryId, receiptLinesData(row.lines ?? [{amount: Number(row.amount), isFiscal: row.fiscal, vatRate: Number(row.vat)}])]);
 }
 
 export async function prepareReceiptImport(db: Prisma.TransactionClient, text: string, context: ReceiptImportContext) {
@@ -60,9 +62,9 @@ export async function prepareReceiptImport(db: Prisma.TransactionClient, text: s
       if (row.channel && identity(row.channel) !== identity(channel.name)) throw new Error('Codice e nome del canale non corrispondono.');
       const method = resolve(methods, row.method, 'Metodo');
       if (!method.cashRegisterEnabled || !['INCOME', 'BOTH'].includes(method.kind)) throw new Error('Metodo non abilitato per il registratore di cassa.');
-      if (!row.fiscal && method.systemRole !== 'CASH') throw new Error('Gli scontrini non fiscali richiedono il metodo contanti.');
+      if ((row.lines ? receiptLineSummary(row.lines).hasNonFiscal : !row.fiscal) && method.systemRole !== 'CASH') throw new Error('Gli scontrini non fiscali richiedono il metodo contanti.');
       const bank = resolve(banks, row.bank, 'Banca');
-      const prepared: Prepared = {...row, channelId: channel.id, methodId: method.id, bankId: bank.id, categoryId: category.id, customerId: customer.id};
+      const prepared: Prepared = {...row, channelId: channel.id, methodId: method.id, bankId: bank.id, categoryId: row.category ? resolve(categories, row.category, 'Categoria').id : category.id, customerId: customer.id};
       const previous = pending.get(row.origin), stored = existingByOrigin.get(row.origin);
       if (previous || stored) {
         let same = previous ? comparable(previous) === comparable(prepared) : false;
@@ -87,11 +89,13 @@ export async function commitReceiptImport(db: Prisma.TransactionClient, text: st
   if (plan.preview.counts.invalid || plan.preview.counts.conflict) throw new Error('Correggi errori e conflitti nel file prima di importare.');
   for (const row of plan.pending) {
     const date = new Date(row.date);
+    const lines = row.lines ?? [{amount: Number(row.amount), isFiscal: row.fiscal, vatRate: Number(row.vat)}];
+    const summary = receiptLineSummary(lines);
     await db.income.create({data: {
       ...context, incomeType: 'CASH_REGISTER', cashRegisterRequestId: receiptImportKey(context.companyId, row.origin),
       customerId: row.customerId, incomeCategoryId: row.categoryId, salesChannelId: row.channelId,
       paymentMethodId: row.methodId, creditBankId: row.bankId, description: row.description || null, notes: row.notes || null,
-      amount: row.amount, vatRate: row.vat, isFiscal: row.fiscal, invoiceStatus: row.fiscal ? 'EMESSA' : null,
+      amount: row.amount, vatRate: row.vat, isFiscal: row.fiscal, receiptFiscalAmount: summary.receiptFiscalAmount, receiptVatAmount: summary.receiptVatAmount, receiptLines: {create: receiptLinesData(lines)}, invoiceStatus: row.fiscal ? 'EMESSA' : null,
       creditDate: date, orderDate: date, isCredited: true, billingYear: Number(row.period.slice(0, 4)), billingMonth: Number(row.period.slice(5)),
       credits: {create: {amount: row.amount, creditDate: date, paymentMethodId: row.methodId, bankId: row.bankId}},
     }});

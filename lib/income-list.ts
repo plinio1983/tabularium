@@ -1,3 +1,4 @@
+import {incomeFiscalAmount} from './cash-register-lines';
 export type IncomeCashRegisterGroup = {
   key: string;
   billingYear: number;
@@ -13,6 +14,7 @@ export type IncomeCashRegisterGroup = {
   count: number;
   latestCreditDate: Date | null;
   vatRates: number[];
+  mixedFiscal?: boolean;
 };
 
 type IncomeListRecord = {
@@ -27,6 +29,8 @@ type IncomeListRecord = {
   amount: unknown;
   creditDate: Date | null;
   vatRate: unknown;
+  receiptFiscalAmount?: unknown;
+  receiptLines?: Array<{isFiscal: boolean; vatRate: unknown}>;
 };
 
 /**
@@ -44,7 +48,7 @@ export function prepareIncomeList<T extends IncomeListRecord>(incomes: T[]) {
         income.billingMonth,
         income.paymentMethodId,
         income.salesChannelId,
-        income.isFiscal ? '1' : '0'
+        income.isFiscal && incomeFiscalAmount(income) < Number(income.amount) ? 'mixed' : income.isFiscal ? '1' : '0'
       ].join(':');
       const current = groups.get(key) ?? {
         key,
@@ -57,6 +61,7 @@ export function prepareIncomeList<T extends IncomeListRecord>(incomes: T[]) {
         salesChannel: income.salesChannelRef.name,
         salesChannelIcon: income.salesChannelRef.icon,
         isFiscal: income.isFiscal,
+        mixedFiscal: income.isFiscal && incomeFiscalAmount(income) < Number(income.amount),
         amount: 0,
         count: 0,
         latestCreditDate: income.creditDate,
@@ -67,8 +72,8 @@ export function prepareIncomeList<T extends IncomeListRecord>(incomes: T[]) {
       if (income.creditDate && (!current.latestCreditDate || income.creditDate > current.latestCreditDate)) {
         current.latestCreditDate = income.creditDate;
       }
-      const vatRate = Number(income.vatRate);
-      if (!current.vatRates.includes(vatRate)) current.vatRates.push(vatRate);
+      const rates = income.receiptLines?.length ? income.receiptLines.filter(line => line.isFiscal).map(line => Number(line.vatRate)) : [Number(income.vatRate)];
+      for (const rate of rates) if (!current.vatRates.includes(rate)) current.vatRates.push(rate);
       groups.set(key, current);
       return groups;
     }, new Map<string, IncomeCashRegisterGroup>()).values())

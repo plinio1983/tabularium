@@ -104,7 +104,7 @@ export default function CashRegisterReceiptFiltersDrawer({
             <select name="fiscal" defaultValue={fiscal}>
                 <option value="">Fiscali e non fiscali</option>
                 <option value="yes">Fiscali</option>
-                <option value="no">Non fiscali</option>
+                <option value="mixed">Misti</option><option value="no">Non fiscali</option>
             </select>
         </FilterField>
 

@@ -18,7 +18,7 @@ test('PostgreSQL: receipt import is atomic, repeatable, scoped and preserves exp
     for (const [name, values] of Object.entries({IncomeType: ['STANDARD', 'CASH_REGISTER'], PaymentMethodSystemRole: ['CASH'], CustomerSystemRole: ['DEFAULT', 'CASH_REGISTER']})) {
       await db.$executeRawUnsafe(`CREATE TYPE "${schema}"."${name}" AS ENUM (${values.map(value => `'${value}'`).join(',')})`);
     }
-    for (const table of ['Income', 'IncomeCredit', 'IncomeSalesChannel', 'PaymentMethod', 'Bank', 'IncomeCategory', 'Customer']) {
+    for (const table of ['Income', 'IncomeReceiptLine', 'IncomeCredit', 'IncomeSalesChannel', 'PaymentMethod', 'Bank', 'IncomeCategory', 'Customer']) {
       await db.$executeRawUnsafe(`CREATE TABLE "${schema}"."${table}" (LIKE public."${table}" INCLUDING ALL)`);
       // All defaults point at private sequences; production sequences are never used.
       await db.$executeRawUnsafe(`CREATE SEQUENCE "${schema}"."${table}_test_seq" START 100`);
@@ -44,7 +44,7 @@ test('PostgreSQL: receipt import is atomic, repeatable, scoped and preserves exp
     assert.equal(stored.incomeType, 'CASH_REGISTER');
     assert.equal(stored.credits.length, 1);
     assert.equal(stored.credits[0].amount.toString(), '12.5');
-    assert.deepEqual(parseReceiptCsv(exportReceiptCsv([receiptToCsvRow(stored)]))[0].row, sample);
+    assert.deepEqual(parseReceiptCsv(exportReceiptCsv([receiptToCsvRow(stored)]))[0].row, {...sample, lines: [{amount: 12.5, isFiscal: true, vatRate: 0, description: null}], category: 'Predefinita'});
     const repeat = await prepareReceiptImport(db, text, context);
     assert.equal(repeat.preview.counts.duplicate, 1);
     assert.deepEqual(await commit(text, repeat.preview.token), {imported: 0, duplicates: 1});
@@ -82,6 +82,16 @@ test('PostgreSQL: receipt import is atomic, repeatable, scoped and preserves exp
       const nativePlan = await prepareReceiptImport(db, nativeCsv, context);
       assert.equal(nativePlan.preview.counts.duplicate, 1, 'native and legacy exports are recognized in their original company');
     }
+    const mixed = {...sample, origin: 'mixed-1', amount: '28.20', vat: '0', lines: [{amount: 12.2, isFiscal: true, vatRate: 22}, {amount: 11, isFiscal: true, vatRate: 10}, {amount: 5, isFiscal: false, vatRate: 0}], category: 'Predefinita'};
+    const mixedCsv = exportReceiptCsv([mixed]);
+    const mixedPlan = await prepareReceiptImport(db, mixedCsv, context);
+    assert.equal(mixedPlan.preview.counts.new, 1);
+    await commit(mixedCsv, mixedPlan.preview.token);
+    const mixedStored = await db.income.findFirstOrThrow({where: {cashRegisterRequestId: 'csv:1:mixed-1'}, include: receiptInclude});
+    assert.equal(mixedStored.receiptLines.length, 3);
+    assert.equal(mixedStored.receiptVatAmount!.toString(), '3.2');
+    assert.equal(mixedStored.receiptFiscalAmount!.toString(), '23.2');
+    assert.equal((await prepareReceiptImport(db, exportReceiptCsv([receiptToCsvRow(mixedStored)]), context)).preview.counts.duplicate, 1);
   } finally {
     await db.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
     await db.$disconnect();

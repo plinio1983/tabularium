@@ -855,6 +855,9 @@ model Income {
   vatRate                  Decimal            @default(22) @db.Decimal(5, 2)
   notes                    String?
   incomeType               IncomeType         @default(STANDARD)
+  receiptFiscalAmount      Decimal?           @db.Decimal(12, 2)
+  receiptVatAmount         Decimal?           @db.Decimal(12, 2)
+  receiptLines             IncomeReceiptLine[]
   cashRegisterRequestId    String?
   credits                  IncomeCredit[]
   attachments              IncomeAttachment[]
@@ -951,4 +954,17 @@ model ProductTrackingAttachment {
   createdAt    DateTime                      @default(now())
 
   @@index([trackingId, kind])
+}
+
+model IncomeReceiptLine {
+  id          Int     @id @default(autoincrement())
+  incomeId    Int
+  income      Income  @relation(fields: [incomeId], references: [id], onDelete: Cascade)
+  position    Int
+  amount      Decimal @db.Decimal(12, 2)
+  isFiscal    Boolean
+  vatRate     Decimal @db.Decimal(5, 2)
+  description String?
+
+  @@unique([incomeId, position])
 }

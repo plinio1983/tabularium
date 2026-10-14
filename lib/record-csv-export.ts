@@ -1,13 +1,14 @@
+import {existingReceiptLines} from './cash-register-lines';
 import type {Prisma} from '@/generated/prisma/client';
 import {createCsv} from './csv-export';
 
-export const incomesCsvInclude = { customer: true, salesChannelRef: true, paymentMethodRef: true, creditBank: true, credits: {include: {paymentMethod: true, bank: true}, orderBy: {creditDate: 'asc'}} } as const satisfies Prisma.IncomeInclude;
+export const incomesCsvInclude = { receiptLines: {orderBy: {position: 'asc'}}, customer: true, salesChannelRef: true, paymentMethodRef: true, creditBank: true, credits: {include: {paymentMethod: true, bank: true}, orderBy: {creditDate: 'asc'}} } as const satisfies Prisma.IncomeInclude;
 
 type IncomeCsvRecord = Prisma.IncomeGetPayload<{include: typeof incomesCsvInclude}>;
 
 export function incomesCsv(records: IncomeCsvRecord[]) {
     return createCsv(
-      ['ID', 'Data ordine', 'Data scadenza', 'Data ultimo accredito', 'Periodo contabile', 'Cliente', 'Descrizione', 'Canale di vendita', 'Importo', 'IVA %', 'Fiscale', 'Stato fattura', 'Accreditato', 'Totale accreditato', 'Residuo', 'Accrediti', 'Tipo', 'Note'],
+      ['ID', 'Data ordine', 'Data scadenza', 'Data ultimo accredito', 'Periodo contabile', 'Cliente', 'Descrizione', 'Canale di vendita', 'Importo', 'IVA %', 'Fiscale', 'Stato fattura', 'Accreditato', 'Totale accreditato', 'Residuo', 'Accrediti', 'Tipo', 'Note', 'Importi scontrino (JSON)'],
       records.map(record => [
         record.id, record.orderDate, record.dueDate, record.creditDate, `${record.billingYear}-${String(record.billingMonth).padStart(2, '0')}`,
         record.customer?.businessName, record.description, record.salesChannelRef.name,
@@ -15,7 +16,7 @@ export function incomesCsv(records: IncomeCsvRecord[]) {
         record.credits.reduce((sum, credit) => sum + Number(credit.amount), 0),
         Math.max(0, Number(record.amount) - record.credits.reduce((sum, credit) => sum + Number(credit.amount), 0)),
         record.credits.map(credit => [credit.creditDate.toISOString().slice(0, 10), credit.paymentMethod.name, credit.bank.name, decimal(credit.amount)].join(' | ')).join(' ; '),
-        record.incomeType, record.notes
+        record.incomeType, record.notes, record.incomeType === 'CASH_REGISTER' ? JSON.stringify(existingReceiptLines(record)) : ''
       ])
     );
 }

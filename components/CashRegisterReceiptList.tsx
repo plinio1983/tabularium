@@ -22,7 +22,7 @@ type Receipt = {
     amount: number;
     creditDate: string;
     isFiscal: boolean;
-    vatRate: number;
+    vatRate: number; mixed?: boolean; vatLabel?: string;
     salesChannelId: number;
     paymentMethodId: number;
     salesChannel: string;
@@ -213,11 +213,11 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     <td className="cell-fiscal">
                         {/*<span className={`badge ${receipt.isFiscal ? 'tone-yes' : 'tone-muted'}`}>*/}
                         <small className={`strong ${receipt.isFiscal ? 'text-ok' : 'text-muted'}`}>
-                            {receipt.isFiscal ? '✓ Fiscale' : '✕ Non fisc'}
+                            {receipt.mixed ? 'Mista' : receipt.isFiscal ? '✓ Fiscale' : '✕ Non fisc'}
                         </small>
                     </td>
                     <td className="cell-vat text-center">{receipt.isFiscal ?
-                        <span className="badge tone-neutral">{receipt.vatRate}%</span> : '—'}
+                        <span className="badge tone-neutral">{receipt.vatLabel || `${receipt.vatRate}%`}</span> : '—'}
                     </td>
                     <td>{receipt.paymentMethodIcon ?? '•'} {receipt.paymentMethod}</td>
 
@@ -250,8 +250,8 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     <div className="cash-register-receipt-channel">
                         <span>{receipt.salesChannelIcon ?? ''} {receipt.salesChannel}</span>
                         <small>
-                            <span>{receipt.isFiscal ? `✓ Fiscale · ` : '✕ Non fiscale '}</span>
-                            <strong>{receipt.isFiscal ? ` IVA ${receipt.vatRate}%` : ''}</strong>
+                            <span>{receipt.mixed ? 'Mista · ' : receipt.isFiscal ? `✓ Fiscale · ` : '✕ Non fiscale '}</span>
+                            <strong>{receipt.isFiscal ? ` IVA ${receipt.vatLabel || `${receipt.vatRate}%`}` : ''}</strong>
                         </small>
                     </div>
                     <div className="cash-register-receipt-mobile-description">

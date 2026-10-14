@@ -9,7 +9,7 @@ import {assertCoveredAmount, canConvertExpense, canConvertIncome, conversionLabe
 import {yearMonthInTimeZone} from '@/lib/company-time';
 
 export const conversionExpenseInclude = {payments: {orderBy: {id: 'asc' as const}}, attachments: {orderBy: {id: 'asc' as const}}};
-export const conversionIncomeInclude = {credits: {orderBy: {id: 'asc' as const}}, attachments: {orderBy: {id: 'asc' as const}}};
+export const conversionIncomeInclude = {receiptLines: {orderBy: {position: 'asc' as const}}, credits: {orderBy: {id: 'asc' as const}}, attachments: {orderBy: {id: 'asc' as const}}};
 export type ConversionExpense = Prisma.ExpenseGetPayload<{include: typeof conversionExpenseInclude}>;
 export type ConversionIncome = Prisma.IncomeGetPayload<{include: typeof conversionIncomeInclude}>;
 type Tx = Prisma.TransactionClient;
@@ -225,6 +225,7 @@ export async function handleRecordConversion(kind: 'expenses' | 'incomes', reque
                 ? await tx.expense.findFirst({where, include: conversionExpenseInclude})
                 : await tx.income.findFirst({where, include: conversionIncomeInclude});
             if (!source) throw new ConversionError('Record non trovato.', 404);
+            if (kind === 'incomes' && (source as ConversionIncome).receiptLines?.length > 1) throw new ConversionError('Uno scontrino con più importi deve essere modificato dal registratore di cassa; la conversione diretta non conserva le aliquote delle righe.', 409);
             const snapshot = conversionSnapshot(source);
             if (raw.snapshot !== snapshot) throw new ConversionError('Il record o i suoi collegamenti sono cambiati. Ricarica la pagina e ripeti la conversione.', 409);
             const data = kind === 'expenses'
@@ -241,7 +242,7 @@ export async function handleRecordConversion(kind: 'expenses' | 'incomes', reque
             if (raw.confirmed === 'true') {
                 if (raw.reviewToken !== reviewToken) throw new ConversionError('I dati sono cambiati: verifica nuovamente il riepilogo.', 409);
                 if (kind === 'expenses') await tx.expense.update({where, data: data as Prisma.ExpenseUncheckedUpdateInput});
-                else await tx.income.update({where, data: data as Prisma.IncomeUncheckedUpdateInput});
+                else await tx.income.update({where, data: {...data as Prisma.IncomeUncheckedUpdateInput, receiptFiscalAmount: null, receiptVatAmount: null, receiptLines: {deleteMany: {}}}});
                 await tx.auditLog.create({data: {workspaceId: current.workspace.id, userId: current.user.id,
                     action: 'UPDATE', entityType: kind === 'expenses' ? 'Expense' : 'Income', entityId: String(id),
                     metadata: JSON.parse(JSON.stringify({operation: 'convert_type', before: source, after: counter ? await tx.expense.findFirst({where, include: conversionExpenseInclude}) : {...source, ...data}})),

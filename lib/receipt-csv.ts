@@ -1,10 +1,12 @@
+import {receiptLineSummary, type ReceiptLine} from './cash-register-lines';
 import {createCsv} from './csv-export';
 
 export const receiptCsvHeaders = ['Versione', 'Identificativo origine', 'Data e ora', 'Descrizione', 'Importo', 'Fiscale', 'IVA %', 'Codice canale', 'Canale di vendita', 'Metodo pagamento', 'Banca', 'Periodo contabile', 'Note'] as const;
+const receiptCsvHeadersV2 = [...receiptCsvHeaders, 'Importi (JSON)', 'Categoria'];
 export const receiptCsvLimit = 1000;
 export type ReceiptCsvRow = {
   origin: string; date: string; description: string; amount: string; fiscal: boolean; vat: string;
-  channelCode: string; channel: string; method: string; bank: string; period: string; notes: string;
+  channelCode: string; channel: string; method: string; bank: string; period: string; notes: string; lines?: ReceiptLine[]; category?: string;
 };
 export type ParsedReceiptRow = {line: number; row?: ReceiptCsvRow; error?: string};
 
@@ -12,9 +14,11 @@ export type ParsedReceiptRow = {line: number; row?: ReceiptCsvRow; error?: strin
 const protectText = (text: string) => /^['=+\-@\t\r\n]/.test(text) ? `'${text}` : text;
 const unprotectText = (text: string) => /^'['=+\-@\t\r\n]/.test(text) ? text.slice(1) : text;
 export function exportReceiptCsv(rows: ReceiptCsvRow[]) {
-  return createCsv([...receiptCsvHeaders], rows.map(row => [
-    '1', protectText(row.origin), row.date, protectText(row.description), row.amount.replace('.', ','), row.fiscal,
+  const extended = rows.some(row => row.lines?.length || row.category);
+  return createCsv(extended ? receiptCsvHeadersV2 : [...receiptCsvHeaders], rows.map(row => [
+    extended ? '2' : '1', protectText(row.origin), row.date, protectText(row.description), row.amount.replace('.', ','), row.fiscal,
     row.vat, protectText(row.channelCode), protectText(row.channel), protectText(row.method), protectText(row.bank), row.period, protectText(row.notes),
+    ...(extended ? [JSON.stringify(row.lines ?? [{amount: Number(row.amount), isFiscal: row.fiscal, vatRate: Number(row.vat)}]), protectText(row.category ?? '')] : []),
   ]));
 }
 
@@ -48,14 +52,14 @@ function csvRecords(input: string) {
 export function parseReceiptCsv(input: string): ParsedReceiptRow[] {
   const records = csvRecords(input);
   const header = records.shift()?.cells.map(value => value.trim());
-  if (!header || header.length !== receiptCsvHeaders.length || !receiptCsvHeaders.every((name, index) => header[index] === name)) throw new Error('Colonne non valide. Usa il modello CSV Scontrini o un file esportato dalla pagina Andamento scontrini.');
+  if (!header || ![receiptCsvHeaders.length, receiptCsvHeadersV2.length].includes(header.length) || !receiptCsvHeaders.every((name, index) => header[index] === name)) throw new Error('Colonne non valide. Usa il modello CSV Scontrini o un file esportato dalla pagina Andamento scontrini.');
   if (!records.length) throw new Error('Il file non contiene scontrini.');
   if (records.length > receiptCsvLimit) throw new Error(`Sono consentiti al massimo ${receiptCsvLimit} scontrini per file.`);
   return records.map(({line, cells}) => {
     try {
       if (cells.length !== header.length) throw new Error('Numero di colonne non valido.');
       const [version, rawOrigin, rawDate, rawDescription, rawAmount, rawFiscal, rawVat, rawCode, rawChannel, rawMethod, rawBank, rawPeriod, rawNotes] = cells;
-      if (version !== '1') throw new Error('Versione CSV non supportata.');
+      if (!['1', '2'].includes(version) || version === '2' && header.length !== receiptCsvHeadersV2.length) throw new Error('Versione CSV non supportata.');
       const origin = unprotectText(rawOrigin).trim();
       if (!origin || origin.length > 180 || /[\r\n\u0000]/.test(origin)) throw new Error('Identificativo origine obbligatorio, massimo 180 caratteri.');
       const date = rawDate.trim();
@@ -76,7 +80,19 @@ export function parseReceiptCsv(input: string): ParsedReceiptRow[] {
       if (description.length > 200 || notes.length > 10000 || cells.some(value => value.includes('\u0000'))) throw new Error('Testo troppo lungo o caratteri non validi.');
       const channelCode = unprotectText(rawCode).trim(), channel = unprotectText(rawChannel).trim(), method = unprotectText(rawMethod).trim(), bank = unprotectText(rawBank).trim();
       if ((!channelCode && !channel) || !method || !bank) throw new Error('Canale, metodo e banca sono obbligatori.');
-      return {line, row: {origin, date: new Date(date).toISOString(), description, amount, fiscal, vat: String(Number(vat)), channelCode, channel, method, bank, period, notes}};
+      let lines: ReceiptLine[] | undefined;
+      let category: string | undefined;
+      if (version === '2') {
+        if (header[13] !== 'Importi (JSON)' || header[14] !== 'Categoria') throw new Error('Colonne dettaglio non valide.');
+        const rawLines = JSON.parse(cells[13]);
+        if (!Array.isArray(rawLines)) throw new Error('Importi non validi.');
+        lines = rawLines;
+        const summary = receiptLineSummary(lines!);
+        if (Math.round(summary.amount * 100) !== Math.round(Number(amount) * 100) || summary.isFiscal !== fiscal || summary.vatRate !== Number(vat)) throw new Error('Totale o fiscalità non corrispondenti agli importi.');
+        category = unprotectText(cells[14]).trim();
+        if (category.length > 250) throw new Error('Categoria non valida.');
+      }
+      return {line, row: {origin, date: new Date(date).toISOString(), description, amount, fiscal, vat: String(Number(vat)), channelCode, channel, method, bank, period, notes, ...(lines ? {lines, category} : {})}};
     } catch (error) {return {line, error: error instanceof Error ? error.message : 'Riga non valida.'};}
   });
 }

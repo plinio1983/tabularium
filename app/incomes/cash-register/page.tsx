@@ -1,3 +1,5 @@
+import {resolveDefaultIncomeCategory} from '@/lib/income-category';
+import {existingReceiptLines} from '@/lib/cash-register-lines';
 import {redirect} from 'next/navigation';
 import CashRegister from '@/components/CashRegister';
 import {requireWorkspace} from '@/lib/auth';
@@ -23,7 +25,7 @@ export default async function CashRegisterPage({searchParams}: {
     const copyId = Number(paramValue(params, 'copyId')) || null;
     const returnTo = pathFromUrl(paramValue(params, 'returnTo'), '/incomes/cash-register/receipts');
     const sourceId = editId ?? copyId;
-    const [workspace, methods, banks, channels, sourceReceipt, bankRules] = await Promise.all([
+    const [workspace, methods, banks, channels, sourceReceipt, bankRules, categories, defaultCategory] = await Promise.all([
         prisma.workspace.findUnique({
             where: {id: current.workspace.id},
             select: {cashRegisterSalesChannelId: true, cashRegisterPrimaryPaymentMethodId: true}
@@ -41,18 +43,22 @@ export default async function CashRegisterPage({searchParams}: {
             orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]
         }),
         sourceId ? prisma.income.findFirst({
-            where: {id: sourceId, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'}
+            where: {id: sourceId, workspaceId: current.workspace.id, companyId: current.company.id, incomeType: 'CASH_REGISTER'}, include: {receiptLines: {orderBy: {position: 'asc'}}}
         }) : null,
         prisma.cashRegisterBankRule.findMany({
             where: {workspaceId: current.workspace.id},
             select: {paymentMethodId: true, salesChannelId: true, bankId: true}
-        })
+        }),
+        prisma.incomeCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
+        resolveDefaultIncomeCategory(current.workspace.id)
     ]);
     if (sourceId && !sourceReceipt) redirect('/incomes/cash-register/receipts');
-    if (!workspace?.cashRegisterSalesChannelId || !methods.length || !channels.length) {
+    if (!workspace?.cashRegisterSalesChannelId || !methods.length || !channels.length || !defaultCategory) {
         redirect('/settings/payment-credit?error=cash_register_invalid');
     }
     return <CashRegister
+        categories={categories}
+        defaultCategoryId={defaultCategory!.id}
         methods={orderPaymentMethods(methods, 'INCOME').map(method => ({
             id: method.id,
             name: method.name,
@@ -81,6 +87,8 @@ export default async function CashRegisterPage({searchParams}: {
             isFiscal: sourceReceipt.isFiscal,
             vatRate: Number(sourceReceipt.vatRate),
             salesChannelId: sourceReceipt.salesChannelId,
+            incomeCategoryId: sourceReceipt.incomeCategoryId,
+            receiptLines: existingReceiptLines(sourceReceipt),
             paymentMethodId: sourceReceipt.paymentMethodId,
             bankId: sourceReceipt.creditBankId,
             description: sourceReceipt.description

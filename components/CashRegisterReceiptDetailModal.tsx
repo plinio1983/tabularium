@@ -1,5 +1,7 @@
 'use client';
 
+import {type ReceiptLine, receiptLineSummary} from '@/lib/cash-register-lines';
+
 import {useEffect, useId, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import Link from 'next/link';
@@ -16,6 +18,7 @@ type ReceiptDetail = {
     salesChannel: string;
     paymentMethod: string;
     bank: string;
+    category?: string; lines?: ReceiptLine[]; mixed?: boolean;
 };
 
 export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onClose}: {
@@ -53,28 +56,43 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
                 const payload = await response.json();
                 if (!controller.signal.aborted) setReceipt(payload.receipt);
             })
-            .catch(reason => {if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : 'Impossibile caricare lo scontrino.');});
+            .catch(reason => {
+                if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : 'Impossibile caricare lo scontrino.');
+            });
         return () => controller.abort();
     }, [receiptId, retry]);
 
     return createPortal(<div className="modal-backdrop app-form-modal cash-register-receipt-detail-modal"
-        role="dialog" aria-modal="true" aria-labelledby={titleId}
-        onMouseDown={event => {if (event.target === event.currentTarget) onClose();}}
-        onKeyDown={event => {
-            if (event.key === 'Escape') {event.stopPropagation(); onClose();}
-            if (event.key !== 'Tab') return;
-            const controls = cardRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], [tabindex="0"]');
-            if (!controls?.length) return;
-            const first = controls[0];
-            const last = controls[controls.length - 1];
-            if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last.focus();}
-            if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first.focus();}
-        }}>
+                             role="dialog" aria-modal="true" aria-labelledby={titleId}
+                             onMouseDown={event => {
+                                 if (event.target === event.currentTarget) onClose();
+                             }}
+                             onKeyDown={event => {
+                                 if (event.key === 'Escape') {
+                                     event.stopPropagation();
+                                     onClose();
+                                 }
+                                 if (event.key !== 'Tab') return;
+                                 const controls = cardRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], [tabindex="0"]');
+                                 if (!controls?.length) return;
+                                 const first = controls[0];
+                                 const last = controls[controls.length - 1];
+                                 if (event.shiftKey && document.activeElement === first) {
+                                     event.preventDefault();
+                                     last.focus();
+                                 }
+                                 if (!event.shiftKey && document.activeElement === last) {
+                                     event.preventDefault();
+                                     first.focus();
+                                 }
+                             }}>
         <div className="modal-card cash-register-receipt-detail-card" ref={cardRef}>
             <header className="receipt-detail-header">
                 <span className="receipt-detail-symbol" aria-hidden="true"><ReceiptDetailIcon kind="receipt"/></span>
                 <div><p>Registratore di cassa</p><h2 id={titleId}>Scontrino <span>#{receiptId}</span></h2></div>
-                <button ref={closeRef} className="btn btn-neutral btn-icon-only modal-close-button receipt-detail-close" type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}><span className="btn-icon" aria-hidden="true">×</span></button>
+                <button ref={closeRef} className="btn btn-neutral btn-icon-only modal-close-button receipt-detail-close"
+                        type="button" aria-label="Chiudi dettaglio scontrino" onClick={onClose}><span
+                    className="btn-icon" aria-hidden="true">×</span></button>
             </header>
             <div className="receipt-detail-body" aria-busy={!receipt && !error}>
                 {!receipt && !error ? <div className="receipt-detail-loading" role="status">
@@ -84,24 +102,43 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
                 {error ? <div className="receipt-detail-error" role="alert">
                     <span className="receipt-detail-error-icon" aria-hidden="true">!</span>
                     <h3>Dettaglio non disponibile</h3><p>{error}</p>
-                    <button className="btn btn-md btn-default" type="button" onClick={() => setRetry(value => value + 1)}>Riprova</button>
+                    <button className="btn btn-md btn-default" type="button"
+                            onClick={() => setRetry(value => value + 1)}>Riprova
+                    </button>
                 </div> : null}
                 {receipt ? <>
                     <section className="receipt-detail-total" aria-label="Importo e fiscalità">
                         <div className="receipt-detail-status-row">
-                            <span className={`receipt-detail-status ${receipt.isFiscal ? 'is-fiscal' : 'is-non-fiscal'}`}>
-                                <span aria-hidden="true">{receipt.isFiscal ? '✓' : '—'}</span> {receipt.isFiscal ? 'Fiscale' : 'Non fiscale'}
+                            <span
+                                className={`receipt-detail-status ${receipt.isFiscal ? 'is-fiscal' : 'is-non-fiscal'}`}>
+                                <span
+                                    aria-hidden="true">{receipt.isFiscal ? '✓' : '—'}</span> {receipt.mixed ? 'Fiscalità / IVA mista' : receipt.isFiscal ? 'Fiscale' : 'Non fiscale'}
                             </span>
-                            <span className="receipt-detail-tax">{receipt.isFiscal ? `IVA ${receipt.vatRate}% inclusa` : 'IVA non applicabile'}</span>
+                            <span
+                                className="receipt-detail-tax">{receipt.mixed ? 'IVA per importo' : receipt.isFiscal ? `IVA ${receipt.vatRate}% inclusa` : 'IVA non applicabile'}</span>
                         </div>
                         <p className="receipt-detail-amount-label">Totale incassato</p>
                         <strong className="receipt-detail-amount">{euro(receipt.amount)}</strong>
                         <time className="receipt-detail-date" dateTime={receipt.creditDate}>
-                            {new Intl.DateTimeFormat('it-IT', {dateStyle: 'long', timeZone}).format(new Date(receipt.creditDate))}
+                            {new Intl.DateTimeFormat('it-IT', {
+                                dateStyle: 'long',
+                                timeZone
+                            }).format(new Date(receipt.creditDate))}
                             <span aria-hidden="true">·</span>
-                            <span>ore {new Intl.DateTimeFormat('it-IT', {hour: '2-digit', minute: '2-digit', timeZone}).format(new Date(receipt.creditDate))}</span>
+                            <span>ore {new Intl.DateTimeFormat('it-IT', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                timeZone
+                            }).format(new Date(receipt.creditDate))}</span>
                         </time>
                     </section>
+                    {receipt.lines?.length ? <section className="receipt-detail-information"><h3>Importi inseriti</h3>
+                        <ul className="cash-register-line-list">{receipt.lines.map((line, index) => <li key={index}>
+                            <span>{line.isFiscal ? `Rep. ${line.vatRate}%` : 'Non fiscale'}{line.description ? ` · ${line.description}` : ''}</span><strong>{euro(line.amount)}</strong>
+                        </li>)}</ul>
+                        <p className="muted">
+                            IVA inclusa {euro(receiptLineSummary(receipt.lines).receiptVatAmount)}</p>{receipt.category &&
+                            <p>Categoria: {receipt.category}</p>}</section> : null}
                     <section className="receipt-detail-information" aria-label="Dati dello scontrino">
                         <div className="receipt-detail-description">
                             <h3>Descrizione</h3>
@@ -112,8 +149,10 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
                                 ['channel', 'Canale di vendita', receipt.salesChannel],
                                 ['payment', 'Metodo di pagamento', receipt.paymentMethod],
                                 ['bank', 'Conto di accredito', receipt.bank]
-                            ] as const).map(([kind, label, value]) => <div className={`receipt-detail-fact is-${kind}`} key={kind}>
-                                <dt><span className="receipt-detail-fact-icon" aria-hidden="true"><ReceiptDetailIcon kind={kind}/></span>{label}</dt>
+                            ] as const).map(([kind, label, value]) => <div className={`receipt-detail-fact is-${kind}`}
+                                                                           key={kind}>
+                                <dt><span className="receipt-detail-fact-icon" aria-hidden="true"><ReceiptDetailIcon
+                                    kind={kind}/></span>{label}</dt>
                                 <dd>{value?.trim() || 'Non specificato'}</dd>
                             </div>)}
                         </dl>
@@ -122,8 +161,11 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
             </div>
             <footer className="receipt-detail-footer">
                 <button className="btn btn-md btn-default" type="button" onClick={onClose}>Chiudi</button>
-                {receipt ? <Link className="btn btn-md btn-primary" href={`/incomes/cash-register?editId=${receipt.id}&returnTo=${encodeURIComponent(returnTo)}`}>
-                    <span className="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m16 4 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/></svg></span>
+                {receipt ? <Link className="btn btn-md btn-primary"
+                                 href={`/incomes/cash-register?editId=${receipt.id}&returnTo=${encodeURIComponent(returnTo)}`}>
+                    <span className="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    strokeWidth="1.8" aria-hidden="true"><path
+                        d="m16 4 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/></svg></span>
                     Modifica scontrino
                 </Link> : null}
             </footer>
@@ -131,11 +173,23 @@ export default function CashRegisterReceiptDetailModal({receiptId, returnTo, onC
     </div>, document.body);
 }
 
-function ReceiptDetailIcon({kind}: {kind: 'receipt' | 'channel' | 'payment' | 'bank'}) {
-    return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-        {kind === 'receipt' ? <><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 7h6M9 11h6M9 15h3"/></> : null}
-        {kind === 'channel' ? <><path d="m3 9 2-5h14l2 5M4 13v7h16v-7M9 20v-6h6v6"/><path d="M3 9v1a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0V9H3Z"/></> : null}
-        {kind === 'payment' ? <><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h3"/></> : null}
-        {kind === 'bank' ? <><path d="m3 8 9-5 9 5H3ZM5 11v6m7-6v6m7-6v6M3 21h18M4 18h16"/></> : null}
+function ReceiptDetailIcon({kind}: { kind: 'receipt' | 'channel' | 'payment' | 'bank' }) {
+    return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"
+                strokeLinejoin="round">
+        {kind === 'receipt' ? <>
+            <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/>
+            <path d="M9 7h6M9 11h6M9 15h3"/>
+        </> : null}
+        {kind === 'channel' ? <>
+            <path d="m3 9 2-5h14l2 5M4 13v7h16v-7M9 20v-6h6v6"/>
+            <path d="M3 9v1a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0V9H3Z"/>
+        </> : null}
+        {kind === 'payment' ? <>
+            <rect x="3" y="5" width="18" height="14" rx="3"/>
+            <path d="M3 10h18M7 15h3"/>
+        </> : null}
+        {kind === 'bank' ? <>
+            <path d="m3 8 9-5 9 5H3ZM5 11v6m7-6v6m7-6v6M3 21h18M4 18h16"/>
+        </> : null}
     </svg>;
 }

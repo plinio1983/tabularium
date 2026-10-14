@@ -1,3 +1,4 @@
+import {incomeVatAmount, existingReceiptLines, receiptLineSummary} from '@/lib/cash-register-lines';
 import {incomeTypeLabel} from '@/lib/record-type-label';
 import InfoHint from '@/components/InfoHint';
 import RecordDetailDocument from '@/components/RecordDetailDocument';
@@ -96,7 +97,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                 salesChannelRef: true,
                 customer: true,
                 credits: {include: {paymentMethod: true, bank: true}, orderBy: [{creditDate: 'asc'}, {id: 'asc'}]},
-                attachments: {orderBy: {id: 'asc'}}
+                attachments: {orderBy: {id: 'asc'}}, receiptLines: {orderBy: {position: 'asc'}}
             }
         }),
         prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
@@ -111,7 +112,9 @@ export default async function IncomeDetailPage({params, searchParams}: {
     const amount = Number(income.amount.toString());
     const creditSummary = incomeCreditSummary(income);
     const vatRate = Number(income.vatRate.toString());
-    const vatAmount = income.isFiscal ? vatAmountFromGross(amount, vatRate) : 0;
+    const vatAmount = incomeVatAmount(income);
+    const receiptSummary = income.incomeType === 'CASH_REGISTER' ? receiptLineSummary(existingReceiptLines(income)) : null;
+    const receiptVatLabel = receiptSummary?.mixed ? 'IVA mista' : vatRateLabel(vatRate);
     const netAmount = amount - vatAmount;
     // const supplierName = income.description?.trim() || 'Non indicato';
     const customerName = income.customer?.businessName?.trim() || 'Non indicato';
@@ -219,7 +222,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     <aside className="record-detail-amount-panel">
                         <div className="record-detail-amount-panel-header-row">
                             <span className="record-detail-amount-panel-header">IVA inclusa</span>
-                            <strong className="badge">{vatRateLabel(vatRate)}</strong>
+                            <strong className="badge">{receiptVatLabel}</strong>
                         </div>
                         <strong>{euro(amount)}</strong>
                         <div className="record-detail-badge-row">
@@ -238,7 +241,7 @@ export default async function IncomeDetailPage({params, searchParams}: {
                     </div>
                     <div>
                         <span>IVA</span>
-                        <strong>{euro(vatAmount)} ({vatRateLabel(income.vatRate)})</strong>
+                        <strong>{euro(vatAmount)} ({receiptVatLabel})</strong>
                     </div>
                     <div className="record-detail-payment">
                         {/*<div className="record-detail-payment-icon">{creditStatus.icon}</div>*/}
@@ -315,8 +318,8 @@ export default async function IncomeDetailPage({params, searchParams}: {
                             <span>Contabilità</span><strong>{formatPeriod(income.billingMonth, income.billingYear)}</strong>
                         </div>
                         {/*<div><span>Fiscale</span><strong>{booleanBadge(income.isFiscal)}</strong></div>*/}
-                        <div><span>Fiscale</span><strong>{booleanBadgeSimple(income.isFiscal)}</strong></div>
-                        <div><span>IVA</span><strong>{vatRate}%</strong></div>
+                        <div><span>Fiscale</span><strong>{receiptSummary?.mixed ? 'Mista' : booleanBadgeSimple(income.isFiscal)}</strong></div>
+                        <div><span>IVA</span><strong>{receiptVatLabel}</strong></div>
                         <div><span>Fattura</span><strong>{invoiceStyle.icon} {invoiceStyle.label}</strong></div>
                         {/*<div><span>Imponibile</span><strong>{euro(netAmount)}</strong></div>*/}
                         {/*<div><span>Importo IVA</span><strong>{euro(vatAmount)}</strong></div>*/}

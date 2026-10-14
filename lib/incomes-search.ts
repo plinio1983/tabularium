@@ -1,3 +1,4 @@
+import {incomeFiscalAmount} from './cash-register-lines';
 import type {Prisma} from '@/generated/prisma/client';
 import {calendarDateInput, civilDateInTimeZone, dateInputInTimeZone} from './company-time';
 import {incomeCreditState} from './income-status';
@@ -5,7 +6,7 @@ import {matchesIncomeTask} from './dashboard-tasks';
 import {matchesEntityQuickSearch} from './entity-quick-search';
 
 export type SearchParams = Record<string, string | string[] | undefined>;
-export const incomesSearchInclude = {paymentMethodRef: true, creditBank: true, salesChannelRef: true, customer: true, credits: true, attachments: true} as const satisfies Prisma.IncomeInclude;
+export const incomesSearchInclude = {paymentMethodRef: true, creditBank: true, salesChannelRef: true, customer: true, credits: true, attachments: true, receiptLines: {orderBy: {position: 'asc'}}} as const satisfies Prisma.IncomeInclude;
 type IncomeSearchRecord = Prisma.IncomeGetPayload<{include: typeof incomesSearchInclude}>;
 
 type AmountFilter =
@@ -300,11 +301,11 @@ export function matchesIncomeSearch(income: IncomeSearchRecord, search: ReturnTy
     if (creditChannelFilter && !income.credits.some(credit => credit.bankId === orderedBanks.find(bank => bank.name === creditChannelFilter)?.id)) return false;
     if (!matchesEntityQuickSearch(customerQuickFilter, income.customer?.businessName, income.description)) return false;
     if (fiscalFilter === 'yes' && !income.isFiscal) return false;
-    if (fiscalFilter === 'no' && income.isFiscal) return false;
+    if (fiscalFilter === 'no' && Number(income.amount) <= incomeFiscalAmount(income)) return false;
     if (invoiceStatusModeFilter === 'not_emitted' && !matchesIncomeTask(income, 'missing_invoice')) return false;
     if (invoiceStatusFilter === 'not_emitted' && !matchesIncomeTask(income, 'missing_invoice')) return false;
     if (invoiceStatusFilter && invoiceStatusFilter !== 'not_emitted' && income.invoiceStatus !== invoiceStatusFilter) return false;
-    if (vatRateFilter && Number(income.vatRate.toString()) !== Number(vatRateFilter)) return false;
+    if (vatRateFilter && !(income.receiptLines?.length ? income.receiptLines.some(line => line.isFiscal && Number(line.vatRate) === Number(vatRateFilter)) : Number(income.vatRate.toString()) === Number(vatRateFilter))) return false;
     if (!matchesIsoDate(income.dueDate, dueDateFromFilter, dueDateToFilter, search.timeZone, true)) return false;
     if (creditStatusFilter === 'not_complete' && !matchesIncomeTask(income, 'uncredited')) return false;
     if (creditStatusFilter && creditStatusFilter !== 'not_complete' && incomeCreditState(income, search.now, search.timeZone) !== creditStatusFilter) return false;

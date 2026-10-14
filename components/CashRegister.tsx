@@ -3,9 +3,13 @@
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useRef, useState} from 'react';
+import {createPortal} from 'react-dom';
 import {applyCurrencyInputKeyWithState, formatCurrencyInput, resetCurrencyInput} from '@/lib/currency-input';
 import {useCompanyTimeZone} from '@/components/CompanyTimeZoneProvider';
 import {zonedMidnightUtc} from '@/lib/company-time';
+import {euro} from '@/lib/money';
+import {SelectField} from '@/components/FormControls';
+import {existingReceiptLines, receiptLineSummary, receiptLineLimit, type ReceiptLine} from '@/lib/cash-register-lines';
 
 type Method = {
     id: number;
@@ -13,19 +17,20 @@ type Method = {
     icon: string | null;
     systemRole: string | null;
     defaultBankId: number | null;
-    bankRules: Array<{salesChannelId: number; bankId: number}>;
+    bankRules: Array<{ salesChannelId: number; bankId: number }>
 };
-type Channel = { id: number; name: string; icon: string | null };
-type Bank = { id: number; name: string; icon: string | null };
+type Option = { id: number; name: string; icon?: string | null };
 type InitialReceipt = {
     id: number;
     amount: number;
     isFiscal: boolean;
     vatRate: number;
     salesChannelId: number;
+    incomeCategoryId: number;
     paymentMethodId: number;
     bankId: number;
     description: string | null;
+    receiptLines?: ReceiptLine[]
 };
 
 function cashRegisterDateLabel(value: string) {
@@ -41,18 +46,12 @@ function cashRegisterDateLabel(value: string) {
     return `${part('day')} ${monthLabel.charAt(0).toUpperCase()}${monthLabel.slice(1)} ${part('year')}`;
 }
 
-function euro(value: number) {
-    return new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR'}).format(value);
-}
-
-function newRequestId() {
-    return crypto.randomUUID();
-}
-
 export default function CashRegister({
                                          methods,
                                          banks,
                                          channels,
+                                         categories,
+                                         defaultCategoryId,
                                          defaultChannelId,
                                          primaryMethodId,
                                          initialDate,
@@ -61,8 +60,10 @@ export default function CashRegister({
                                          returnTo
                                      }: {
     methods: Method[];
-    banks: Bank[];
-    channels: Channel[];
+    banks: Option[];
+    channels: Option[];
+    categories: Option[];
+    defaultCategoryId: number;
     defaultChannelId: number;
     primaryMethodId: number | null;
     initialDate: string;
@@ -70,168 +71,156 @@ export default function CashRegister({
     initialReceipt: InitialReceipt | null;
     returnTo: string;
 }) {
-    const timeZone = useCompanyTimeZone();
     const router = useRouter();
+    const timeZone = useCompanyTimeZone();
     const amountRef = useRef<HTMLInputElement>(null);
-    const descriptionRef = useRef<HTMLInputElement>(null);
-    const amountKeyStateRef = useRef<{separatorDigits: 0 | 1 | null}>({separatorDigits: null});
-    const keyboardMethodRefs = useRef<Array<HTMLButtonElement | null>>([]);
-    const keyboardCancelRef = useRef<HTMLButtonElement>(null);
-    const keyboardSubmitRef = useRef<HTMLButtonElement>(null);
-    const [amount, setAmount] = useState(initialReceipt ? String(initialReceipt.amount).replace('.', ',') : '');
-    const amountValueRef = useRef(amount);
+    const amountValueRef = useRef('');
+    const keyState = useRef<{ separatorDigits: 0 | 1 | null }>({separatorDigits: null});
+    const sendingRef = useRef(false);
+    const submitRef = useRef<HTMLButtonElement>(null);
+    const previousFocus = useRef<HTMLElement | null>(null);
+    const [amount, setAmount] = useState('');
+    const [lines, setLines] = useState<ReceiptLine[]>(() => initialReceipt ? existingReceiptLines(initialReceipt) : []);
+    const [isFiscal, setIsFiscal] = useState(true);
+    const [vatRate, setVatRate] = useState(22);
     const [description, setDescription] = useState(initialReceipt?.description === 'Incasso da banco' ? '' : initialReceipt?.description ?? '');
-    const [isFiscal, setIsFiscal] = useState(initialReceipt?.isFiscal ?? true);
-    const [vatRate, setVatRate] = useState(initialReceipt?.vatRate ?? 22);
-    const [lastFiscalVatRate, setLastFiscalVatRate] = useState(initialReceipt?.vatRate || 22);
     const [creditDate, setCreditDate] = useState(initialDate);
-    const [salesChannelId, setSalesChannelId] = useState(String(initialReceipt?.salesChannelId ?? defaultChannelId));
-    const [selectedMethodId, setSelectedMethodId] = useState<number | null>(
-        initialReceipt && !initialReceipt.isFiscal
-            ? methods.find(method => method.systemRole === 'CASH')?.id ?? null
-            : initialReceipt?.paymentMethodId ?? null
-    );
-    const [selectedBankId, setSelectedBankId] = useState<number | null>(initialReceipt?.bankId ?? null);
-    const [requestId, setRequestId] = useState('');
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [keyboardMethodOpen, setKeyboardMethodOpen] = useState(false);
-    const [keyboardMethodIndex, setKeyboardMethodIndex] = useState(0);
-    const [keyboardConfirmationIndex, setKeyboardConfirmationIndex] = useState<0 | 1>(1);
+    const [categoryId] = useState(String(initialReceipt?.incomeCategoryId ?? defaultCategoryId));
+    const [channelId, setChannelId] = useState(String(initialReceipt?.salesChannelId ?? defaultChannelId));
+    const [bankId, setBankId] = useState<number | null>(initialReceipt?.bankId ?? null);
+    const [selectedMethod, setSelectedMethod] = useState<Method | null>(null);
     const [sending, setSending] = useState(false);
     const [notice, setNotice] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null);
-
-    const cashMethod = methods.find(method => method.systemRole === 'CASH') ?? null;
-    const primaryMethod = methods.find(method => method.id === primaryMethodId && method.id !== cashMethod?.id) ?? null;
-    const otherMethods = methods.filter(method => method.id !== cashMethod?.id && method.id !== primaryMethod?.id);
-    const orderedMethods = useMemo(() => {
-        const cash = methods.find(method => method.systemRole === 'CASH') ?? null;
-        const primary = methods.find(method => method.id === primaryMethodId && method.id !== cash?.id) ?? null;
-        return [cash, primary, ...methods.filter(method => method.id !== cash?.id && method.id !== primary?.id)]
-            .filter((method): method is Method => Boolean(method));
-    }, [methods, primaryMethodId]);
-    const selectedMethod = methods.find(method => method.id === selectedMethodId) ?? null;
-    const confirmationLocked = Boolean(selectedMethod && mode === 'create');
+    const [requestId, setRequestId] = useState('');
+    const [mounted, setMounted] = useState(false);
+    const vatPanel = useRef<HTMLDivElement>(null);
+    const methodPanel = useRef<HTMLDivElement>(null);
+    const draftDescriptionRef = useRef<string | null>(null);
     const numericAmount = Number(amount.replace(',', '.'));
-    const hasValidAmount = Number.isFinite(numericAmount) && numericAmount > 0;
-    const netAmount = isFiscal && vatRate > 0
-        ? numericAmount / (1 + vatRate / 100)
-        : numericAmount;
-    const formattedAmount = useMemo(() => formatCurrencyInput(amount), [amount]);
-    const amountDigitCount = amount.replace(/\D/g, '').length;
-    const amountSizeClass = amountDigitCount > 8
-        ? 'is-very-long'
-        : amountDigitCount > 5
-            ? 'is-long'
-            : undefined;
-    const methodIsAvailable = (method: Method) => isFiscal || method.id === cashMethod?.id;
+    const hasDraft = Number.isFinite(numericAmount) && numericAmount > 0;
+    const summary = useMemo(() => lines.length ? receiptLineSummary(lines) : null, [lines]);
+    const showMethods = lines.length > 0 && !hasDraft;
+    const orderedMethods = useMemo(() => [...methods].sort((a, b) => {
+        const rank = (method: Method) => method.systemRole === 'CASH' ? 0 : method.id === primaryMethodId ? 1 : 2;
+        return rank(a) - rank(b);
+    }), [methods, primaryMethodId]);
+    const available = (method: Method) => !summary?.hasNonFiscal || method.systemRole === 'CASH';
+    const taxGroups = useMemo(() => lines.reduce((groups, line) => {
+        const key = line.isFiscal ? `IVA ${line.vatRate}%` : 'Non fiscale';
+        groups.set(key, Math.round(((groups.get(key) ?? 0) + line.amount) * 100) / 100);
+        return groups;
+    }, new Map<string, number>()), [lines]);
 
-    function editMethodBankId(method: Method, channelId: number) {
-        return method.bankRules.find(rule => rule.salesChannelId === channelId)?.bankId
-            ?? method.defaultBankId
-            ?? selectedBankId;
-    }
-
-    function changeEditMethod(methodId: number) {
-        const method = methods.find(item => item.id === methodId);
-        setSelectedMethodId(methodId);
-        if (method) setSelectedBankId(editMethodBankId(method, Number(salesChannelId)));
-    }
-
-    function moveKeyboardMethod(direction: 1 | -1) {
-        setKeyboardMethodIndex(current => {
-            for (let offset = 1; offset <= orderedMethods.length; offset += 1) {
-                const index = (current + direction * offset + orderedMethods.length) % orderedMethods.length;
-                if (methodIsAvailable(orderedMethods[index])) return index;
-            }
-            return current;
-        });
-    }
-
-    function selectKeyboardConfirmation(index: 0 | 1) {
-        setKeyboardConfirmationIndex(index);
-        const button = index === 0 ? keyboardCancelRef.current : keyboardSubmitRef.current;
-        button?.focus({preventScroll: true});
-    }
+    useEffect(() => {
+        setMounted(true);
+        setRequestId(crypto.randomUUID());
+        amountRef.current?.focus();
+    }, []);
+    useEffect(() => {
+        if (vatPanel.current) vatPanel.current.inert = showMethods || Boolean(selectedMethod);
+        if (methodPanel.current) methodPanel.current.inert = !showMethods || Boolean(selectedMethod);
+    }, [showMethods, selectedMethod]);
+    useEffect(() => {
+        if (!selectedMethod) return;
+        const overflow = document.body.style.overflow;
+        previousFocus.current = document.activeElement as HTMLElement | null;
+        document.body.style.overflow = 'hidden';
+        submitRef.current?.focus({preventScroll: true});
+        return () => {
+            document.body.style.overflow = overflow;
+            requestAnimationFrame(() => {
+                if (previousFocus.current?.isConnected && previousFocus.current.getClientRects().length && !previousFocus.current.closest('[inert]')) previousFocus.current.focus({preventScroll: true}); else amountRef.current?.focus({preventScroll: true});
+            });
+        };
+    }, [selectedMethod]);
 
     function focusAmount() {
         requestAnimationFrame(() => amountRef.current?.focus({preventScroll: true}));
     }
 
-    function cancelKeyboardMethodModal() {
-        setSelectedMethodId(null);
-        setKeyboardMethodOpen(false);
+    function changeAmount(next: string) {
+        amountValueRef.current = next;
+        setAmount(next);
         setNotice(null);
+    }
+
+    function appendKey(key: string) {
+        if (selectedMethod || sendingRef.current) return;
+        changeAmount(applyCurrencyInputKeyWithState(amountValueRef.current, key, keyState.current));
         focusAmount();
     }
 
-    useEffect(() => {
-        requestAnimationFrame(() => amountRef.current?.focus({preventScroll: true}));
-    }, []);
+    function clearAmount() {
+        if (selectedMethod || sendingRef.current) return;
+        draftDescriptionRef.current = null;
+        changeAmount(resetCurrencyInput(keyState.current));
+        focusAmount();
+    }
+
+    function addLine() {
+        if (!hasDraft || sendingRef.current || selectedMethod) return;
+        const next = [...lines, {
+            amount: numericAmount,
+            isFiscal,
+            vatRate: isFiscal ? vatRate : 0, ...(draftDescriptionRef.current ? {description: draftDescriptionRef.current} : {})
+        }];
+        try {
+            receiptLineSummary(next);
+        } catch (error) {
+            setNotice({tone: 'error', text: (error as Error).message});
+            return;
+        }
+        setLines(next);
+        clearAmount();
+    }
+
+    function undoLastLine() {
+        if (sendingRef.current || selectedMethod || !lines.length) return;
+        const last = lines[lines.length - 1];
+        setLines(lines.slice(0, -1));
+        setIsFiscal(last.isFiscal);
+        setVatRate(last.vatRate);
+        keyState.current.separatorDigits = null;
+        draftDescriptionRef.current = last.description ?? null;
+        changeAmount(String(last.amount).replace('.', ','));
+        focusAmount();
+    }
+
+    function cancelReceipt() {
+        if (sendingRef.current || selectedMethod) return;
+        setLines([]);
+        setDescription('');
+        setRequestId(crypto.randomUUID());
+        clearAmount();
+    }
+
+    function closeConfirmation() {
+        if (!sendingRef.current) {
+            setSelectedMethod(null);
+            setNotice(null);
+        }
+    }
+
+    function chooseMethod(method: Method) {
+        if (!summary || hasDraft || !available(method) || sendingRef.current) return;
+        if (mode === 'edit' && method.id !== initialReceipt?.paymentMethodId) setBankId(method.bankRules.find(rule => rule.salesChannelId === Number(channelId))?.bankId ?? method.defaultBankId ?? bankId);
+        setSelectedMethod(method);
+        setNotice(null);
+    }
 
     useEffect(() => {
-        if (!keyboardMethodOpen) return;
-        requestAnimationFrame(() => {
+        const handler = (event: KeyboardEvent) => {
+            if (sendingRef.current || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
             if (selectedMethod) {
-                const confirmationButton = keyboardConfirmationIndex === 0
-                    ? keyboardCancelRef.current
-                    : keyboardSubmitRef.current;
-                confirmationButton?.focus({preventScroll: true});
-            } else {
-                keyboardMethodRefs.current[keyboardMethodIndex]?.focus({preventScroll: true});
-            }
-        });
-    }, [keyboardConfirmationIndex, keyboardMethodIndex, keyboardMethodOpen, selectedMethod]);
-
-    useEffect(() => {
-        if (!requestId) setRequestId(newRequestId());
-        const onKey = (event: KeyboardEvent) => {
-            if (event.target === descriptionRef.current) {
-                if (event.key === 'Enter') {
+                if (event.key === 'Escape') {
                     event.preventDefault();
-                    focusAmount();
+                    closeConfirmation();
                 }
                 return;
             }
-            if (keyboardMethodOpen) {
-                if (selectedMethod) {
-                    if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) {
-                        event.preventDefault();
-                        selectKeyboardConfirmation(keyboardConfirmationIndex === 0 ? 1 : 0);
-                    } else if (event.key === 'Enter') {
-                        event.preventDefault();
-                        if (keyboardConfirmationIndex === 0) {
-                            cancelKeyboardMethodModal();
-                        } else {
-                            void submitReceipt();
-                        }
-                    } else if (event.key === 'Escape') {
-                        event.preventDefault();
-                        cancelKeyboardMethodModal();
-                    }
-                    return;
-                }
-                if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-                    event.preventDefault();
-                    moveKeyboardMethod(1);
-                } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    moveKeyboardMethod(-1);
-                } else if (event.key === 'Enter') {
-                    event.preventDefault();
-                    const method = orderedMethods[keyboardMethodIndex];
-                    if (method && methodIsAvailable(method)) {
-                        setSelectedMethodId(method.id);
-                        setKeyboardConfirmationIndex(1);
-                        setNotice(null);
-                    }
-                } else if (event.key === 'Escape') {
-                    event.preventDefault();
-                    setKeyboardMethodOpen(false);
-                    focusAmount();
-                }
-                return;
-            }
-            if (event.key >= '0' && event.key <= '9') {
+            const target = event.target as HTMLElement | null;
+            if (target?.matches('input:not([readonly]), select, textarea') || target?.closest('[contenteditable="true"]')) return;
+            if (/^\d$/.test(event.key)) {
                 event.preventDefault();
                 appendKey(event.key);
             } else if (event.key === ',' || event.key === '.') {
@@ -240,366 +229,235 @@ export default function CashRegister({
             } else if (event.key === 'Backspace') {
                 event.preventDefault();
                 appendKey('backspace');
-            } else if (event.key === 'Enter' && selectedMethod && methodIsAvailable(selectedMethod)) {
+            } else if (event.key === 'Escape' || event.key === 'Delete') {
                 event.preventDefault();
-                void submitReceipt();
-            } else if (event.key === 'Enter' && hasValidAmount && orderedMethods.length) {
+                clearAmount();
+            } else if (event.key === 'Enter' && target === amountRef.current) {
                 event.preventDefault();
-                setMenuOpen(false);
-                const selectedIndex = orderedMethods.findIndex(method => method.id === selectedMethodId && methodIsAvailable(method));
-                const firstAvailableIndex = orderedMethods.findIndex(methodIsAvailable);
-                setKeyboardMethodIndex(selectedIndex >= 0 ? selectedIndex : Math.max(0, firstAvailableIndex));
-                setKeyboardMethodOpen(true);
+                if (hasDraft) addLine();
+                else methodPanel.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
             }
         };
-        window.addEventListener('keydown', onKey);
-        return () => window.removeEventListener('keydown', onKey);
-    }, [requestId, selectedMethodId, amount, description, isFiscal, vatRate, creditDate, salesChannelId, sending, keyboardMethodOpen, keyboardMethodIndex, keyboardConfirmationIndex, orderedMethods, hasValidAmount]);
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [selectedMethod, amount, lines, isFiscal, vatRate]);
 
-    function appendKey(key: string) {
-        if (confirmationLocked) return;
-        setNotice(null);
-        const nextAmount = applyCurrencyInputKeyWithState(amountValueRef.current, key, amountKeyStateRef.current);
-        amountValueRef.current = nextAmount;
-        setAmount(nextAmount);
-        focusAmount();
-    }
-
-    function clearAmount() {
-        const nextAmount = resetCurrencyInput(amountKeyStateRef.current);
-        amountValueRef.current = nextAmount;
-        setAmount(nextAmount);
-        setNotice(null);
-        focusAmount();
-    }
-
-    function toggleFiscal(value: boolean) {
-        if (confirmationLocked) return;
-        setIsFiscal(value);
-        if (!value) {
-            if (vatRate) setLastFiscalVatRate(vatRate);
-            setVatRate(0);
-            setSelectedMethodId(mode === 'create' ? null : cashMethod?.id ?? null);
-        } else {
-            setVatRate(lastFiscalVatRate || 22);
-        }
-        focusAmount();
-    }
-
-    function chooseVat(rate: number) {
-        if (confirmationLocked) return;
-        setVatRate(rate);
-        if (rate > 0) setLastFiscalVatRate(rate);
-        focusAmount();
-    }
-
-    function chooseMethod(id: number) {
-        if (!hasValidAmount) return;
-        const method = methods.find(item => item.id === id);
-        if (!method || !methodIsAvailable(method)) return;
-        setSelectedMethodId(id);
-        setMenuOpen(false);
-        setKeyboardMethodOpen(false);
-        setNotice(null);
-        focusAmount();
-    }
-
-    function cancelMethod() {
-        setSelectedMethodId(null);
-        setMenuOpen(false);
-        setNotice(null);
-        focusAmount();
-    }
-
-    async function submitReceipt(methodOverride?: Method) {
-        const paymentMethod = methodOverride ?? selectedMethod;
-        const editing = mode === 'edit' && initialReceipt;
-        if (!paymentMethod || !methodIsAvailable(paymentMethod) || (!editing && !requestId) || (editing && !selectedBankId) || !Number.isFinite(numericAmount) || numericAmount <= 0 || sending) {
-            setNotice({tone: 'error', text: editing ? 'Inserisci un importo valido, il metodo e la banca.' : 'Inserisci un importo valido e scegli il metodo.'});
-            focusAmount();
-            return;
-        }
+    async function submitReceipt() {
+        if (!selectedMethod || !summary || !available(selectedMethod) || !requestId || sendingRef.current) return;
+        sendingRef.current = true;
         setSending(true);
         setNotice(null);
         try {
-            const localDate = new Date(zonedMidnightUtc(creditDate, timeZone).getTime() + 12 * 60 * 60 * 1000);
-            const response = await fetch(editing ? `/api/cash-register/receipts/${initialReceipt.id}` : '/api/cash-register/receipts', {
-                method: editing ? 'PATCH' : 'POST',
-                headers: {'Content-Type': 'application/json'},
+            const date = new Date(zonedMidnightUtc(creditDate, timeZone).getTime() + 12 * 60 * 60 * 1000);
+            const response = await fetch(mode === 'edit' ? `/api/cash-register/receipts/${initialReceipt!.id}` : '/api/cash-register/receipts', {
+                method: mode === 'edit' ? 'PATCH' : 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    amount: numericAmount,
-                    isFiscal,
-                    vatRate: isFiscal ? vatRate : 0,
-                    creditDate: localDate.toISOString(),
-                    salesChannelId: Number(salesChannelId),
+                    lines,
+                    creditDate: date.toISOString(),
+                    incomeCategoryId: Number(categoryId),
+                    salesChannelId: Number(channelId),
                     description,
-                    paymentMethodId: paymentMethod.id,
-                    ...(editing ? {bankId: selectedBankId} : {}),
-                    ...(!editing ? {requestId} : {})
-                })
+                    paymentMethodId: selectedMethod.id, ...(mode === 'edit' ? {bankId} : {requestId})
+                }),
             });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || 'Registrazione non riuscita');
-            if (editing) {
+            if (mode === 'edit') {
                 router.push(returnTo);
                 router.refresh();
                 return;
             }
-            setNotice({tone: 'ok', text: `Incasso registrato · ${paymentMethod.icon ?? ''} ${paymentMethod.name}`});
-            amountValueRef.current = '';
-            amountKeyStateRef.current.separatorDigits = null;
-            setAmount('');
+            setLines([]);
+            draftDescriptionRef.current = null;
+            changeAmount(resetCurrencyInput(keyState.current));
             setDescription('');
-            setSelectedMethodId(null);
-            setKeyboardMethodOpen(false);
-            setRequestId(newRequestId());
+            setSelectedMethod(null);
+            setRequestId(crypto.randomUUID());
+            setNotice({tone: 'ok', text: `Incasso registrato · ${selectedMethod.name}`});
+            router.refresh();
         } catch (error) {
             setNotice({tone: 'error', text: error instanceof Error ? error.message : 'Registrazione non riuscita'});
         } finally {
+            sendingRef.current = false;
             setSending(false);
-            requestAnimationFrame(() => {
-                const confirmationButton = keyboardConfirmationIndex === 0
-                    ? keyboardCancelRef.current
-                    : keyboardSubmitRef.current;
-                const methodButton = keyboardMethodRefs.current[keyboardMethodIndex];
-                if (keyboardMethodOpen && confirmationButton?.isConnected) {
-                    confirmationButton.focus({preventScroll: true});
-                } else if (keyboardMethodOpen && methodButton?.isConnected) {
-                    methodButton.focus({preventScroll: true});
-                } else {
-                    amountRef.current?.focus({preventScroll: true});
-                }
-            });
         }
     }
 
-    return <main className={`cash-register-shell ${mode === 'edit' ? 'is-editing' : ''} ${notice ? 'has-notice' : ''}`}>
+    return <main className={`cash-register-shell cash-register-multiple ${mode === 'edit' ? 'is-editing' : ''}`}>
         <header className="cash-register-header">
-            <div className="">
+            <div>
                 <h1>{mode === 'edit' ? `Modifica scontrino #${initialReceipt?.id}` : mode === 'copy' ? 'Copia scontrino' : 'Registratore di cassa'}</h1>
-                <a className="btn btn-sm btn-link" href="/incomes/cash-register/receipts">
-                    <span className="btn-icon" aria-hidden="true">📊</span>
-                    <span className="hidden-sm-up">Report scontrini</span>
-                    <span className="hidden-sm-down">Report scontrini</span>
-                </a>
-            </div>
-            <div className="cash-register-header-actions">
-                <Link data-page-transition="backward" aria-label="Chiudi" className="btn btn-neutral btn-icon-only modal-close-button" href={mode === 'edit' ? returnTo : '/incomes/'}><span className="btn-icon" aria-hidden="true">×</span></Link>
-                {/*<DetailBackButton href={mode === 'edit' ? '/incomes/cash-register/receipts' : '/incomes'}/>*/}
-            </div>
+                <a className="btn btn-sm btn-link" href="/incomes/cash-register/receipts">Report scontrini</a></div>
+            <Link data-page-transition="backward" aria-label="Chiudi"
+                  className="btn btn-neutral btn-icon-only modal-close-button"
+                  href={mode === 'edit' ? returnTo : '/incomes'}><span className="btn-icon">×</span></Link>
         </header>
-
         <section className="cash-register-controls" aria-label="Impostazioni incasso">
-            <label className="cash-register-fiscal-switch">
-                <input type="checkbox" checked={isFiscal} disabled={confirmationLocked}
-                       onChange={event => toggleFiscal(event.currentTarget.checked)}/>
-                <span>Fiscale</span>
-                {/*<b>{isFiscal ? 'ON' : 'OFF'}</b>*/}
-            </label>
-            <div className="cash-register-date-control">
-                <input aria-label="Data incasso" type="date" value={creditDate} disabled={confirmationLocked}
-                       onChange={event => setCreditDate(event.currentTarget.value)}/>
-                <span aria-hidden="true">{cashRegisterDateLabel(creditDate)}</span>
-            </div>
-            <select aria-label="Canale di vendita" value={salesChannelId} disabled={confirmationLocked}
-                    onChange={event => setSalesChannelId(event.currentTarget.value)}>
-                {channels.map(channel =>
-                    <option value={channel.id} key={channel.id}>{channel.icon ?? ''} {channel.name}</option>)}
-            </select>
+            <div className="cash-register-date-control"><input aria-label="Data incasso" type="date" value={creditDate}
+                                                               required disabled={Boolean(selectedMethod)}
+                                                               onChange={event => setCreditDate(event.currentTarget.value)}/><span
+                aria-hidden="true">{cashRegisterDateLabel(creditDate)}</span></div>
+            <select aria-label="Canale di vendita" value={channelId} disabled={Boolean(selectedMethod)}
+                    onChange={event => setChannelId(event.currentTarget.value)}>{channels.map(item => <option
+                key={item.id} value={item.id}>{item.icon ?? ''} {item.name}</option>)}</select>
         </section>
-
-        <label className="cash-register-description">
-            <span aria-hidden="true">≡</span>
-            <input ref={descriptionRef} value={description} maxLength={200}
-                   placeholder="Incasso da banco" aria-label="Descrizione dell’incasso"
-                   disabled={confirmationLocked}
-                   onChange={event => setDescription(event.currentTarget.value)}
-                   onKeyDown={event => {
-                       if (event.key !== 'Enter') return;
-                       event.preventDefault();
-                       event.stopPropagation();
-                       focusAmount();
-                   }}/>
-        </label>
-
-        <section className="cash-register-display cash-register-display-with-net">
-            <small className="cash-register-net-amount" aria-live="polite">
-                <span>IVA esclusa</span>
-                <strong>{euro(Number.isFinite(netAmount) ? netAmount : 0)}</strong>
-            </small>
-            <div className="cash-register-display-amount">
-                <span>€</span>
-                <input ref={amountRef} className={amountSizeClass} aria-label="Importo incasso" value={formattedAmount} readOnly
-                       disabled={confirmationLocked} inputMode="none"/>
-                <button type="button" className="amount-clear-button" aria-label="Azzera importo"
-                        disabled={confirmationLocked} onClick={clearAmount}><span className="btn-icon">×</span></button>
-            </div>
-        </section>
-
-        <section className="cash-register-vat" aria-label="Aliquota IVA">
-            {[0, 4, 10, 22].map(rate =>
-                <button type="button" key={rate}
-                        disabled={confirmationLocked || (isFiscal && rate === 0) || (!isFiscal && rate !== 0)}
-                        className={vatRate === rate ? 'is-selected' : ''}
-                        onClick={() => chooseVat(rate)}>{rate}%</button>)}
-        </section>
-
-        <section className="cash-register-keypad" aria-label="Tastiera numerica">
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'backspace'].map(key =>
-                <button type="button" key={key} disabled={confirmationLocked} onClick={() => appendKey(key)}
-                        aria-label={key === 'backspace' ? 'Cancella ultima cifra' : key}>
-                    {key === 'backspace' ? <span className="btn-icon">⌫</span> : key}
-                </button>)}
-        </section>
-
-        {notice ? <div className={`cash-register-notice ${notice.tone === 'error' ? 'is-error' : ''}`} role="status">
-            {notice.text}
-        </div> : null}
-
-        <section className={`cash-register-actions ${mode === 'edit' ? 'is-edit-mode' : ''} ${primaryMethod ? '' : 'without-primary'} ${selectedMethod && mode === 'create' ? 'has-confirmation' : ''}`}>
-            {mode === 'edit' ? <>
-                <div className="payment-select-field">
-                    <span className="payment-select-label"><i aria-hidden="true">▣</i> Metodo di accredito</span>
-                    <div className="payment-select-control">
-                        <select aria-label="Metodo di accredito" value={selectedMethodId ?? ''} required
-                                onChange={event => changeEditMethod(Number(event.currentTarget.value))}>
-                            <option value="">Seleziona metodo</option>
-                            {methods.map(method => <option key={method.id} value={method.id} disabled={!methodIsAvailable(method)}>
-                                {method.icon ?? '•'} {method.name}
-                            </option>)}
-                        </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
-                    </div>
-                </div>
-                <div className="payment-select-field">
-                    <span className="payment-select-label"><i aria-hidden="true">▥</i> Banca di accredito</span>
-                    <div className="payment-select-control">
-                        <select aria-label="Banca di accredito" value={selectedBankId ?? ''} required
-                                onChange={event => setSelectedBankId(Number(event.currentTarget.value) || null)}>
-                            <option value="">Seleziona banca</option>
-                            {banks.map(bank => <option key={bank.id} value={bank.id}>{bank.icon ?? '•'} {bank.name}</option>)}
-                        </select><span className="payment-select-caret" aria-hidden="true">⌄</span>
-                    </div>
-                </div>
-                <button className="cash-register-edit-cancel btn btn-md btn-default" type="button"
-                        data-page-transition-back={returnTo} disabled={sending} onClick={() => router.push(returnTo)}>
-                    <span className="btn-icon" aria-hidden="true">×</span> ANNULLA
-                </button>
-                <button className="cash-register-submit" type="button"
-                        disabled={sending || !hasValidAmount || !selectedMethod || !selectedBankId || !methodIsAvailable(selectedMethod)}
-                        onClick={() => void submitReceipt()}>
-                    <span className="btn-icon">✓</span>
-                    <div className="cash-register-label">
-                        {sending ? 'Salvataggio…' : 'SALVA MODIFICHE'}
-                    </div>
-                </button>
-            </> : null}
-            {mode !== 'edit' ? <>
-            {selectedMethod && mode === 'create' ? <button className="cash-register-cancel btn-danger" type="button"
-                                                           disabled={sending} onClick={cancelMethod}
-                                                           aria-label="Annulla metodo selezionato" title="Annulla">
-                <span className="btn-icon">↵</span>
-            </button> : null}
-            {selectedMethod && mode === 'create' ?
-                <button className="cash-register-submit" type="button" disabled={sending || !hasValidAmount || !methodIsAvailable(selectedMethod)}
-                        onClick={() => void submitReceipt()}>
-                    <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> <span className="cash-register-submit-label">{sending ? 'Invio…' : 'INCASSA'}</span>
-                </button> : <>
-                    {cashMethod ? <button type="button" disabled={!hasValidAmount}
-                                          className={selectedMethodId === cashMethod.id ? 'is-selected' : ''}
-                                          onClick={() => chooseMethod(cashMethod.id)}>
-                        <span className="btn-icon">{cashMethod.icon ?? '💶'}</span>{cashMethod.name}
-                    </button> : null}
-                    {primaryMethod ?
-                        <button type="button" disabled={!hasValidAmount || !methodIsAvailable(primaryMethod)}
-                                className={selectedMethodId === primaryMethod.id ? 'is-selected' : ''}
-                                onClick={() => chooseMethod(primaryMethod.id)}>
-                            <span className="btn-icon">{primaryMethod.icon ?? '💳'}</span>{primaryMethod.name}
-                        </button> : null}
-                    {otherMethods.length ? <div className="cash-register-more">
-                        <button type="button" disabled={!hasValidAmount || !isFiscal}
-                                className={otherMethods.some(method => method.id === selectedMethodId) ? 'is-selected' : ''}
-                                aria-label="Altri metodi" aria-expanded={menuOpen}
-                                onClick={() => setMenuOpen(open => !open)}><span className="btn-icon">•••</span>
-                        </button>
-                    </div> : null}
-                </>}
-            {mode === 'copy' && selectedMethod ?
-                <button className="cash-register-submit" type="button" disabled={sending || !methodIsAvailable(selectedMethod)}
-                        onClick={() => void submitReceipt()}>
-                    <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> {sending ? 'Invio…' : 'INVIA COPIA'}
-                </button> : null}
-            </> : null}
-        </section>
-        {menuOpen && otherMethods.length ? <div className="cash-register-method-backdrop"
-                                                role="presentation"
-                                                onClick={() => setMenuOpen(false)}>
-            <section className="cash-register-method-modal" role="dialog" aria-modal="true"
-                     aria-labelledby="cash-register-method-title" onClick={event => event.stopPropagation()}>
-                <header>
-                    <h2 id="cash-register-method-title">Metodo di pagamento</h2>
-                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" onClick={() => setMenuOpen(false)}><span className="btn-icon">×</span></button>
-                </header>
+        <label className="cash-register-description"><span aria-hidden="true">≡</span><input value={description}
+                                                                                             maxLength={200}
+                                                                                             placeholder="Incasso da banco"
+                                                                                             aria-label="Descrizione dell’incasso"
+                                                                                             disabled={Boolean(selectedMethod)}
+                                                                                             onChange={event => setDescription(event.currentTarget.value)}
+                                                                                             onKeyDown={event => {
+                                                                                                 if (event.key === 'Enter') {
+                                                                                                     event.preventDefault();
+                                                                                                     focusAmount();
+                                                                                                 }
+                                                                                             }}/></label>
+        <section className="cash-register-display cash-register-total-display" aria-label="Totale provvisorio">
+            <div className="cash-register-total-heading">
                 <div>
-                    {otherMethods.map(method =>
-                        <button type="button" key={method.id} disabled={!hasValidAmount || !methodIsAvailable(method)}
-                                className={selectedMethodId === method.id ? 'is-selected' : ''}
-                                onClick={() => chooseMethod(method.id)}>
-                            <span className="btn-icon">{method.icon ?? '•'}</span>{method.name}
-                        </button>)}
+                    <span>Tot · {lines.length} {lines.length === 1 ? 'importo' : 'importi'}</span>
+                </div>
+                <div>
+                    <div><strong aria-live="polite">{euro(summary?.amount ?? 0)}</strong></div>
+                    <small>I.E. <strong className="text-success">{euro(summary?.net ?? 0)}</strong></small>
+                </div>
+            </div>
+            <div className="cash-register-display-amount cash-register-draft-amount"><label><input ref={amountRef}
+                                                                                                   aria-label="Importo da aggiungere"
+                                                                                                   value={formatCurrencyInput(amount)}
+                                                                                                   readOnly
+                                                                                                   disabled={Boolean(selectedMethod)}
+                                                                                                   inputMode="none"/></label>
+                <button type="button" className="amount-clear-button" aria-label="Azzera importo"
+                        disabled={Boolean(selectedMethod)} onClick={clearAmount}><span className="btn-icon">×</span>
+                </button>
+            </div>
+        </section>
+        <section className="cash-register-keypad"
+                 aria-label="Tastiera numerica">{['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'backspace'].map(key =>
+            <button type="button" key={key} disabled={Boolean(selectedMethod)} onClick={() => appendKey(key)}
+                    aria-label={key === 'backspace' ? 'Cancella ultima cifra' : key}>{key === 'backspace' ?
+                <span className="btn-icon">⌫</span> : key}</button>)}</section>
+        <div className="cash-register-panel-slider" data-methods-open={showMethods}>
+            <div ref={vatPanel} className="cash-register-entry-pane">
+                <section className="cash-register-vat" aria-label="Fiscalità e IVA">
+                    <button type="button" className={`cash-register-non-fiscal ${!isFiscal ? 'is-selected' : ''}`}
+                            disabled={!hasDraft} aria-pressed={!isFiscal} onClick={() => {
+                        setIsFiscal(false);
+                        setVatRate(0);
+                        focusAmount();
+                    }}>Non Fisc.
+                    </button>
+                    {[0, 4, 10, 22].map(rate => <button type="button" key={rate} disabled={!hasDraft}
+                                                        className={isFiscal && vatRate === rate ? 'is-selected' : ''}
+                                                        aria-pressed={isFiscal && vatRate === rate} onClick={() => {
+                        setIsFiscal(true);
+                        setVatRate(rate);
+                        focusAmount();
+                    }}>{rate}%</button>)}
+                </section>
+                <button className="btn btn-md btn-primary cash-register-add" type="button"
+                        disabled={!hasDraft || lines.length >= receiptLineLimit} onClick={addLine}>Aggiungi
+                </button>
+            </div>
+            <div ref={methodPanel} className="cash-register-method-pane">
+                <div className="cash-register-cancel-links">
+                    <button type="button" className="btn btn-sm btn-link" disabled={sending || Boolean(selectedMethod)}
+                            onClick={undoLastLine}>
+                        <span className="btn-icon">↩</span> Annulla ultimo
+                    </button>
+                    <button type="button" className="btn btn-sm btn-link text-critical"
+                            disabled={sending || Boolean(selectedMethod)}
+                            onClick={cancelReceipt}>
+                        <span className="btn-icon">×</span> Annulla scontrino
+                    </button>
+                </div>
+                <section className="cash-register-actions cash-register-method-buttons"
+                         aria-label="Metodi di incasso">{orderedMethods.map(method => <button type="button"
+                                                                                              key={method.id}
+                                                                                              disabled={!summary || !available(method)}
+                                                                                              onClick={() => chooseMethod(method)}
+                                                                                              title={!available(method) ? 'Gli importi non fiscali richiedono contanti' : undefined}>
+                    <span className="btn-icon">{method.icon ?? '•'}</span>{method.name}</button>)}</section>
+            </div>
+        </div>
+        {notice && !selectedMethod && <p className={`cash-register-notice ${notice.tone === 'error' ? 'is-error' : ''}`} role="status">{notice.text}</p>}
+        {mounted && selectedMethod && summary && createPortal(<div
+            className="modal-backdrop app-form-modal-backdrop cash-register-confirm-backdrop" onMouseDown={event => {
+            if (event.target === event.currentTarget) closeConfirmation();
+        }}>
+            <section className="modal-card app-form-modal cash-register-confirm-modal" role="dialog" aria-modal="true"
+                     aria-labelledby="cash-register-confirm-title" onKeyDown={event => {
+                if (event.key !== 'Tab') return;
+                const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), select:not(:disabled), a[href], input:not(:disabled)'));
+                const first = controls[0], last = controls[controls.length - 1];
+                if (!first) {
+                    event.preventDefault();
+                    return;
+                }
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }}>
+                <div className="modal-title"><h3 id="cash-register-confirm-title">Riepilogo scontrino</h3>
+                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button"
+                            aria-label="Chiudi riepilogo" disabled={sending} onClick={closeConfirmation}><span
+                        className="btn-icon" aria-hidden="true">×</span></button>
+                </div>
+                <div className="cash-register-confirm-content">
+                    <strong className="cash-register-confirm-total">{euro(summary.amount)}</strong>
+                    <dl className="cash-register-confirm-facts">
+                        <div>
+                            <dt>Data</dt>
+                            <dd>{creditDate.split('-').reverse().join('/')}</dd>
+                        </div>
+                        <div>
+                            <dt>Canale</dt>
+                            <dd>{channels.find(item => String(item.id) === channelId)?.name}</dd>
+                        </div>
+                        <div>
+                            <dt>Metodo di accredito</dt>
+                            <dd>{selectedMethod.name}</dd>
+                        </div>
+                    </dl>
+                    {mode === 'edit' &&
+                        <SelectField label="Banca di accredito" icon="▥" name="bankId" value={String(bankId ?? '')}
+                                     disabled={sending} onChange={value => setBankId(Number(value) || null)} options={[{
+                            value: '',
+                            label: 'Seleziona banca'
+                        }, ...banks.map(bank => ({value: bank.id, label: bank.name, icon: bank.icon ?? undefined}))]}/>}
+                    <div className="cash-register-tax-summary">{[...taxGroups].map(([label, amount]) => <span
+                        className="badge" key={label}>{label} · {euro(amount)}</span>)}</div>
+                    <ul className="cash-register-line-list" aria-label="Importi inseriti">{lines.map((line, index) =>
+                        <li key={index}>
+                            <span>{index + 1}. {line.isFiscal ? `Rep. ${line.vatRate}%` : 'Non fiscale'}{line.description ? ` · ${line.description}` : ''}</span><strong>{euro(line.amount)}</strong>
+                        </li>)}</ul>
+                    {description.trim() && <p className="text-pre">{description}</p>}
+                    <dl className="cash-register-confirm-breakdown" aria-label="Riepilogo fiscalità">
+                        <div>
+                            <dt>IVA</dt>
+                            <dd>{euro(summary.receiptVatAmount)}</dd>
+                        </div>
+                        {/*<div><dt>Fiscale</dt><dd>{euro(summary.receiptFiscalAmount)}</dd></div>*/}
+                        {/*<div><dt>Non fiscale</dt><dd>{euro(Math.round((summary.amount - summary.receiptFiscalAmount) * 100) / 100)}</dd></div>*/}
+                    </dl>
+                    {notice?.tone === 'error' && <p className="form-error" role="alert">{notice.text}</p>}
+                    <button className="btn btn-md btn-link text-critical" type="button" disabled={sending}
+                            onClick={closeConfirmation}>Annulla e torna al registratore
+                    </button>
+                    <button ref={submitRef} className="btn btn-md btn-success cash-register-confirm-submit"
+                            type="button"
+                            disabled={sending || !creditDate || !categoryId || !channelId || mode === 'edit' && !bankId}
+                            onClick={() => void submitReceipt()}><span className="btn-icon"
+                                                                       aria-hidden="true">✓</span>{sending ? 'Salvataggio…' : mode === 'edit' ? 'SALVA MODIFICHE' : 'INCASSA'}
+                    </button>
                 </div>
             </section>
-        </div> : null}
-        {keyboardMethodOpen ? <div className="cash-register-method-backdrop"
-                                   role="presentation"
-                                   onClick={() => {
-                                       if (sending) return;
-                                       setKeyboardMethodOpen(false);
-                                       focusAmount();
-                                   }}>
-            <section className="cash-register-method-modal cash-register-keyboard-method-modal" role="dialog"
-                     aria-modal="true" aria-labelledby="cash-register-keyboard-method-title"
-                     onClick={event => event.stopPropagation()}>
-                <header>
-                    <h2 id="cash-register-keyboard-method-title">Metodo di pagamento</h2>
-                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi" disabled={sending} onClick={() => {
-                        setKeyboardMethodOpen(false);
-                        focusAmount();
-                    }}><span className="btn-icon">×</span>
-                    </button>
-                </header>
-                {!selectedMethod ? <div>
-                    {orderedMethods.map((method, index) =>
-                        <button ref={element => {
-                            keyboardMethodRefs.current[index] = element;
-                        }}
-                                type="button" key={method.id} disabled={sending || !methodIsAvailable(method)}
-                                className={keyboardMethodIndex === index ? 'is-selected' : ''}
-                                onFocus={() => setKeyboardMethodIndex(index)}
-                                onClick={() => {
-                                    setSelectedMethodId(method.id);
-                                    setKeyboardConfirmationIndex(1);
-                                    setNotice(null);
-                                }}>
-                            <span className="btn-icon">{method.icon ?? '•'}</span>{method.name}
-                        </button>)}
-                </div> : <section className="cash-register-actions has-confirmation cash-register-keyboard-confirmation">
-                    <button ref={keyboardCancelRef}
-                            className={`cash-register-cancel btn-danger ${keyboardConfirmationIndex === 0 ? 'is-selected' : ''}`}
-                            type="button" tabIndex={0} disabled={sending}
-                            aria-label="Annulla metodo selezionato" title="Annulla"
-                            onFocus={() => setKeyboardConfirmationIndex(0)}
-                            onClick={cancelKeyboardMethodModal}><span className="btn-icon">↩</span></button>
-                    <button ref={keyboardSubmitRef}
-                            className={`cash-register-submit ${keyboardConfirmationIndex === 1 ? 'is-selected' : ''}`}
-                            type="button" tabIndex={0}
-                            disabled={sending || !hasValidAmount || !methodIsAvailable(selectedMethod)}
-                            onFocus={() => setKeyboardConfirmationIndex(1)}
-                            onClick={() => void submitReceipt()}>
-                        <span className="btn-icon">{selectedMethod.icon ?? '✓'}</span> <span className="cash-register-submit-label">{sending ? 'Invio…' : 'INCASSA'}</span>
-                    </button>
-                </section>}
-                {!selectedMethod ? <p className="cash-register-keyboard-hint">Usa le frecce per scegliere e premi Invio per selezionare.</p> : null}
-            </section>
-        </div> : null}
+        </div>, document.body)}
     </main>;
 }

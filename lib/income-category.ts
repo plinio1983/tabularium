@@ -6,8 +6,8 @@ export const defaultIncomeCategoryIcon = '•';
 
 /**
  * IncomeCategory is retained as a dormant compatibility model. The application
- * assigns one technical category and exposes sales channels as the only active
- * income classification.
+ * assigns one technical category for ordinary incomes. The cash register
+ * exposes configured income categories alongside sales channels.
  */
 export async function resolveDefaultIncomeCategory(workspaceId: number) {
   return prisma.incomeCategory.findFirst({

@@ -64,6 +64,10 @@ export default function IncomeEditModalController({ returnTo, banks, paymentMeth
       if (!response.ok) throw new Error("Impossibile caricare l'incasso.");
       const payload = await response.json();
       const loadedIncome = payload.income as EditIncome;
+      if (loadedIncome.incomeType === 'CASH_REGISTER' && (nextMode === 'edit' || nextMode === 'copy')) {
+        window.location.assign(`/incomes/cash-register?${nextMode === 'copy' ? 'copyId' : 'editId'}=${id}&returnTo=${encodeURIComponent(returnTo)}`);
+        return;
+      }
       const creditedAmount = (loadedIncome.credits ?? []).reduce((sum, credit) => sum + Number(credit.amount ?? 0), 0);
       if (nextMode === "credit" && (loadedIncome.isCredited || creditedAmount >= Number(loadedIncome.amount ?? 0) - 0.005)) {
         setError("Questo incasso risulta già completamente accreditato.");

@@ -1,5 +1,5 @@
 import {ResponsiveRecordEdit} from '@/components/SingleRecordFieldsModal';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import IncomeForm from '@/components/IncomeForm';
 import { requireWorkspace } from '@/lib/auth';
@@ -20,6 +20,7 @@ export default async function EditIncomePage({ params, searchParams }: { params:
     prisma.customer.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' } })
   ]);
   if (!income) notFound();
+  if (income.incomeType === 'CASH_REGISTER') redirect(`/incomes/cash-register?editId=${income.id}&returnTo=${encodedReturnTo}`);
   const orderedBanks = orderBanks(banks);
   const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
 
