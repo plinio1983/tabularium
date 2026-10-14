@@ -3279,6 +3279,7 @@ button.bulk-direct-danger {
 
 
 // Menu actions already visible in the bar stay hidden despite the button display rules.
+.bulk-direct-actions > [hidden],
 .bulk-action-menu-panel button[hidden],
 .floating-bulk-menu-panel button[hidden],
 .bulk-action-modal-actions button[hidden] {

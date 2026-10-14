@@ -146,3 +146,24 @@ test('conversione: selezione singola idonea, duplicati desktop/mobile e reset de
     assert.equal(button.dataset.convertId, '');
   }
 });
+
+test('floating search export stays available without selected records and disables only empty searches', () => {
+  const exports: any = {};
+  const code = readFileSync(new URL('../components/BulkSelectionController.tsx', import.meta.url), 'utf8') + '\nexport {syncFloatingBar};';
+  runInNewContext(ts.transpileModule(code, {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText, {exports, require: () => ({})});
+  let empty = false;
+  const classes = new Set<string>();
+  const exportButton = {disabled: true, title: '', classList: {toggle: (name: string, enabled: boolean) => enabled ? classes.add(name) : classes.delete(name)}};
+  const source = {
+    querySelector: (selector: string) => selector === '[data-bulk-search-export]' ? {getAttribute: () => empty ? 'true' : null} : null,
+    querySelectorAll: () => [],
+  };
+  const floating = {querySelector: (selector: string) => selector === '.floating-bulk-search-export' ? exportButton : null, querySelectorAll: () => []};
+  exports.syncFloatingBar(source, floating);
+  assert.equal(exportButton.disabled, false);
+  assert.equal(classes.has('is-disabled'), false);
+  empty = true;
+  exports.syncFloatingBar(source, floating);
+  assert.equal(exportButton.disabled, true);
+  assert.equal(classes.has('is-disabled'), true);
+});

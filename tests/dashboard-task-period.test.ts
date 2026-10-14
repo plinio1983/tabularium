@@ -7,8 +7,8 @@ import {periodOptions} from '../lib/period-selector';
 
 // Exercise the actual date resolvers used by pages and editable drawers.
 for (const [path, name, hasYear] of [
-  ['app/expenses/page.tsx', 'getQuickDateRange', true],
-  ['app/incomes/page.tsx', 'getQuickDateRange', true],
+  ['lib/expenses-search.ts', 'getQuickDateRange', true],
+  ['lib/incomes-search.ts', 'getQuickDateRange', true],
   ['components/ExpenseFiltersDrawer.tsx', 'quickOrderDateRange', false],
   ['components/IncomeFiltersDrawer.tsx', 'quickDateRange', false],
 ] as const) {

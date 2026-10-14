@@ -14,6 +14,7 @@ function setup(rows: Movement[], denied = false, fail = false) {
   const queries: any[] = [];
   const exports: any = {};
   runInNewContext(compiled, {exports, URL, require: (name: string) => {
+    if (name === '@/lib/search-export') return {};
     if (name === '@/lib/auth') return {workspaceOperationalRoles: ['OWNER', 'ADMIN', 'ACCOUNTANT'], getWorkspaceApiAccess: async () => denied ? {ok: false, status: 403, error: 'Permessi insufficienti'} : {ok: true, current: {workspace: {id: 21}, company: {id: 32, timeZone: 'Europe/Rome'}}}};
     if (name === '@/lib/prisma') return {prisma: {$queryRaw: async (query: any) => {queries.push(query); if (fail) throw new Error('Database non disponibile'); return rows;}}};
     return require(name);
@@ -73,6 +74,6 @@ test('permessi e tipi non supportati impediscono la lettura dei dati', async () 
   assert.equal((await denied.get('payments')).status, 403);
   assert.equal(denied.queries.length, 0);
   const unsupported = setup([row(1)]);
-  assert.equal((await unsupported.get('expenses')).status, 404);
+  assert.equal((await unsupported.get('suppliers')).status, 404);
   assert.equal(unsupported.queries.length, 0);
 });

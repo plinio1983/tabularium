@@ -441,7 +441,9 @@ function makeFloatingBar(sourceBar: HTMLElement) {
   if (edit) actionTarget.appendChild(buildFloatingButton(edit, "Modifica", "✎", "floating-bulk-edit"));
   if (payment) actionTarget.appendChild(buildFloatingButton(payment, "Inserisci pagamento", "€", "floating-bulk-payment"));
   if (credit) actionTarget.appendChild(buildFloatingButton(credit, "Inserisci accredito", "€", "floating-bulk-credit"));
-  if (directCopy) actionTarget.appendChild(buildFloatingButton(directCopy, "Copia", "⧉", "floating-bulk-copy"));
+  if (directCopy && !directCopy.hidden) actionTarget.appendChild(buildFloatingButton(directCopy, "Copia", "⧉", "floating-bulk-copy"));
+  const searchExport = sourceBar.querySelector<HTMLElement>("[data-bulk-search-export]");
+  if (searchExport) actionTarget.appendChild(buildFloatingButton(searchExport, "Esporta CSV", "⇩", "floating-bulk-search-export"));
   sourceBar.querySelectorAll<HTMLElement>("[data-bulk-shortcut]").forEach(source => {
     actionTarget.appendChild(buildFloatingButton(source, source.dataset.floatingLabel ?? "Azione", source.dataset.floatingIcon ?? "", `floating-bulk-shortcut${source.classList.contains("hidden-xs-down") ? " hidden-xs-down" : ""}`));
   });
@@ -499,6 +501,15 @@ function syncFloatingBar(sourceBar: HTMLElement, floating: HTMLElement) {
   floating
     .querySelector(".floating-bulk-copy")
     ?.classList.toggle("is-disabled", Boolean(sourceDirectCopy?.classList.contains("is-disabled")));
+
+  const sourceExport = sourceBar.querySelector<HTMLElement>("[data-bulk-search-export]");
+  const floatingExport = floating.querySelector<HTMLButtonElement>(".floating-bulk-search-export");
+  if (floatingExport) {
+    const disabled = sourceExport?.getAttribute("aria-disabled") === "true";
+    floatingExport.disabled = disabled;
+    floatingExport.classList.toggle("is-disabled", disabled);
+    floatingExport.title = "Esporta tutti i risultati della ricerca";
+  }
 
   const floatingPayment = floating.querySelector<HTMLButtonElement>(".floating-bulk-payment");
   if (floatingPayment) {

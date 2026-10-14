@@ -1,3 +1,5 @@
+import {searchExportCsv} from '@/lib/search-export';
+import {expensesCsv, incomesCsv, expensesCsvInclude, incomesCsvInclude} from '@/lib/record-csv-export';
 import {ledgerFilters, type LedgerParams} from '@/lib/movement-ledger';
 import {loadMovementLedgerExport} from '@/lib/movement-ledger-data';
 import {ledgerExportLimit, movementLedgerCsv} from '@/lib/movement-ledger-export';
@@ -60,50 +62,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ ent
   if (entity === 'incomes') {
     const records = await prisma.income.findMany({
       where: { id: { in: ids }, workspaceId, companyId },
-      include: { customer: true, salesChannelRef: true, paymentMethodRef: true, creditBank: true, credits: {include: {paymentMethod: true, bank: true}, orderBy: {creditDate: 'asc'}} },
+      include: incomesCsvInclude,
       orderBy: [{ orderDate: 'desc' }, { id: 'desc' }]
     });
-    const csv = createCsv(
-      ['ID', 'Data ordine', 'Data scadenza', 'Data ultimo accredito', 'Periodo contabile', 'Cliente', 'Descrizione', 'Canale di vendita', 'Importo', 'IVA %', 'Fiscale', 'Stato fattura', 'Accreditato', 'Totale accreditato', 'Residuo', 'Accrediti', 'Tipo', 'Note'],
-      records.map(record => [
-        record.id, record.orderDate, record.dueDate, record.creditDate, `${record.billingYear}-${String(record.billingMonth).padStart(2, '0')}`,
-        record.customer?.businessName, record.description, record.salesChannelRef.name,
-        decimal(record.amount), decimal(record.vatRate), record.isFiscal, record.invoiceStatus, record.isCredited,
-        record.credits.reduce((sum, credit) => sum + Number(credit.amount), 0),
-        Math.max(0, Number(record.amount) - record.credits.reduce((sum, credit) => sum + Number(credit.amount), 0)),
-        record.credits.map(credit => [credit.creditDate.toISOString().slice(0, 10), credit.paymentMethod.name, credit.bank.name, decimal(credit.amount)].join(' | ')).join(' ; '),
-        record.incomeType, record.notes
-      ])
-    );
+    const csv = incomesCsv(records);
     return csvDownload(csv, filename(entity));
   }
 
   if (entity === 'expenses') {
     const records = await prisma.expense.findMany({
       where: { id: { in: ids }, workspaceId, companyId },
-      include: {
-        supplier: true,
-        employee: true,
-        category: true,
-        payments: { include: { paymentMethod: true, bank: true }, orderBy: { paymentDate: 'asc' } }
-      },
+      include: expensesCsvInclude,
       orderBy: [{ receivedDate: 'desc' }, { id: 'desc' }]
     });
-    const csv = createCsv(
-      ['ID', 'Data riferimento', 'Data scadenza', 'Periodo contabile', 'Periodo lavorato dal', 'Periodo lavorato al', 'Fornitore/Dipendente', 'Matricola dipendente', 'Descrizione', 'Categoria', 'Importo', 'Netto cedolino', 'Compensi extra', 'Lordo cedolino', 'Costo aziendale', 'IVA %', 'Fiscale', 'Fattura elettronica', 'Stato fattura', 'Stato pagamento', 'Importo pagato', 'Pagamenti', 'Tipo', 'Ricorrente', 'Note'],
-      records.map(record => [
-        record.id, record.receivedDate, record.dueDate, `${record.year}-${String(record.month).padStart(2, '0')}`, record.payrollPeriodStart, record.payrollPeriodEnd,
-        record.supplier?.businessName ?? (record.employee ? `${record.employee.lastName} ${record.employee.firstName}` : record.merchant), record.employee?.employeeCode, record.description, record.category?.name, decimal(record.amount), decimal(record.payrollNetAmount), decimal(record.payrollExtraCompensation), decimal(record.payrollGrossAmount), decimal(record.payrollEmployerCost), decimal(record.vatRate),
-        record.isDeclared, record.hasElectronicInvoice, record.invoiceStatus, record.paymentStatus, decimal(record.paidAmount),
-        record.payments.map(payment => [
-          payment.paymentDate?.toISOString().slice(0, 10) ?? '',
-          payment.paymentMethod.name,
-          payment.bank?.name ?? '',
-          decimal(payment.amount)
-        ].join(' | ')).join(' / '),
-        record.expenseType, record.isRecurring, record.notes
-      ])
-    );
+    const csv = expensesCsv(records);
     return csvDownload(csv, filename(entity));
   }
 
@@ -161,6 +133,20 @@ export async function GET(request: Request, {params}: {params: Promise<{entity: 
   const access = await getWorkspaceApiAccess(workspaceOperationalRoles);
   if (!access.ok) return NextResponse.json({error: access.error}, {status: access.status});
   const {entity} = await params;
+  if (entity === 'expenses' || entity === 'incomes') {
+    const url = new URL(request.url);
+    const query = Object.fromEntries([...url.searchParams.keys()].map(key => [key, url.searchParams.getAll(key)]));
+    const returnHref = filteredListHref(`/${entity}`, query);
+    const errorResponse = (error: string) => NextResponse.redirect(new URL(appendFlash(returnHref, {error}), request.url), 303);
+    const {workspace, company} = access.current;
+    try {
+      const result = await searchExportCsv(entity, workspace.id, company.id, company.timeZone, url.searchParams);
+      if (!result.count) return errorResponse('export_empty');
+      return csvDownload(result.csv, `${entity}-${dateInputInTimeZone(company.timeZone)}.csv`);
+    } catch {
+      return errorResponse('export_failed');
+    }
+  }
   if (entity !== 'payments' && entity !== 'credits') return NextResponse.json({error: 'Esportazione non supportata'}, {status: 404});
   const url = new URL(request.url);
   const query: LedgerParams = {};

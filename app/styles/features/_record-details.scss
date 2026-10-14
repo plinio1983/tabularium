@@ -2795,16 +2795,16 @@ body.invoice-attachments-modal-open {
 
 // Close the group after its last visible action as shortcuts move into the menu.
 @media (min-width: 449px) and (max-width: 576px) {
-  .grouped-bulk-actions-bar .bulk-direct-actions > :is([data-bulk-add-payment], [data-bulk-add-credit]),
-  .floating-bulk-button-group > :is(.floating-bulk-payment, .floating-bulk-credit) {
+  .grouped-bulk-actions-bar .bulk-direct-actions:not(:has([data-bulk-search-export])) > :is([data-bulk-add-payment], [data-bulk-add-credit]),
+  .floating-bulk-button-group:not(:has(.floating-bulk-search-export)) > :is(.floating-bulk-payment, .floating-bulk-credit) {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }
 }
 
 @media (max-width: 448px) {
-  .grouped-bulk-actions-bar .bulk-direct-actions:has([data-bulk-add-payment], [data-bulk-add-credit]) > [data-bulk-edit],
-  .floating-bulk-button-group:has(.floating-bulk-payment, .floating-bulk-credit) > .floating-bulk-edit {
+  .grouped-bulk-actions-bar .bulk-direct-actions:has([data-bulk-add-payment], [data-bulk-add-credit]):not(:has([data-bulk-search-export])) > [data-bulk-edit],
+  .floating-bulk-button-group:has(.floating-bulk-payment, .floating-bulk-credit):not(:has(.floating-bulk-search-export)) > .floating-bulk-edit {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }

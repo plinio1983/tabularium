@@ -1,3 +1,4 @@
+import SearchExportButton from '@/components/SearchExportButton';
 import RecordConversionListController from '@/components/RecordConversionListController';
 import {expenseTypeLabel} from '@/lib/record-type-label';
 import {canConvertExpense} from '@/lib/record-conversion';
@@ -127,6 +128,7 @@ type Props = {
     linkRecurringExpensesToDefinition?: boolean;
     timeZone?: string;
     filterAction?: ReactNode;
+    searchExport?: boolean;
 };
 
 function dateLabel(value?: Date | null) {
@@ -239,7 +241,8 @@ export default function ExpensesList({
                                          employees = [],
                                          linkRecurringExpensesToDefinition = false,
                                          timeZone = DEFAULT_COMPANY_TIME_ZONE,
-                                         filterAction
+                                         filterAction,
+                                         searchExport = false
                                      }: Props) {
     const dateSort = listDateSort(mobileSort, timeZone);
     const mobileItems = mobileExpenses ?? sortExpensesByReceivedDateDesc(expenses);
@@ -288,8 +291,8 @@ export default function ExpensesList({
                             <button className="btn btn-sm btn-option" type="submit" name="bulkAction"
                                     value="export_csv"
                                     formAction="/api/exports/expenses" formMethod="post"
-                                    data-confirm-label="Esporta CSV">
-                                <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
+                                    data-confirm-label="Esporta selezionati">
+                                <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta selezionati</span>
                             </button>
                             <button className="btn btn-sm btn-option" type="submit" name="bulkAction"
                                     value="invoice_emitted">
@@ -320,7 +323,8 @@ export default function ExpensesList({
                             <span className="btn-icon" aria-hidden="true">€</span>
                             <span className="hidden-sm-down">Inserisci pagamento</span>
                         </button>
-                        <button type="button" className="bulk-direct-link is-disabled hidden-xs-down" data-bulk-copy aria-disabled="true" disabled><span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia</span></button>
+                        <button type="button" className="bulk-direct-link is-disabled hidden-xs-down" data-bulk-copy aria-disabled="true" disabled hidden={searchExport}><span className="btn-icon">⧉</span><span className="hidden-sm-down">Copia</span></button>
+                        {searchExport && <SearchExportButton entity="expenses" returnTo={returnTo} disabled={expenses.length === 0}/>}
                     </div>
                 </div>
                 <div className="bulk-inner-container">

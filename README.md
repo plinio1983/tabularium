@@ -136,3 +136,7 @@ Per aggiornare un database esistente usare le migrazioni, includendo
 npx prisma migrate deploy
 npm run db:generate
 ```
+
+### Esportazione della ricerca di spese e incassi
+
+Nelle liste principali di spese e incassi, il pulsante **Esporta CSV** nella action bar e nella floating bar esporta tutti i risultati della ricerca corrente, indipendentemente dalle checkbox. Sostituisce il pulsante diretto Copia, che resta disponibile nel menu Azioni. La voce **Esporta selezionati** nel menu mantiene l’esportazione dei soli ID selezionati e il limite di 5.000 record. L’export della ricerca non tronca i risultati; gli scontrini raggruppati nella lista incassi sono esportati come singoli record. Filtri, società e permessi vengono applicati lato server.

@@ -1,3 +1,4 @@
+import {resolveIncomeSearch, matchesIncomeSearch, inputDefault, fiscalQuarterRange, matchesBillingPeriod, matchesIsoDate} from '@/lib/incomes-search';
 import InfoHint from '@/components/InfoHint';
 import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRecordViews';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
@@ -145,132 +146,14 @@ function periodTotalsLabel({
     return value ? `Andamento complessivo ${formatDateTextInputLabel(value)}` : 'Totali andamento date selezionate';
 }
 
-function inputDefault(searchParams: Record<string, string | string[] | undefined>, key: string) {
-    const value = searchParams[key];
-    return Array.isArray(value) ? value[0] ?? '' : value ?? '';
-}
 
-function normalize(value: unknown) {
-    return String(value ?? '').trim().toLowerCase();
-}
 
-type AmountFilter =
-    | { mode: 'exact'; value: number }
-    | { mode: 'gte'; value: number }
-    | { mode: 'lte'; value: number }
-    | { mode: 'gt'; value: number }
-    | { mode: 'lt'; value: number }
-    | { mode: 'range'; min: number; max: number };
 
-function parseLocaleNumber(value: string) {
-    const raw = String(value ?? '').trim().replace(/€/g, '').replace(/\s/g, '');
-    if (!raw) return null;
-    let normalized = raw;
-    if (raw.includes(',') && raw.includes('.')) {
-        normalized = raw.lastIndexOf(',') > raw.lastIndexOf('.')
-            ? raw.replace(/\./g, '').replace(',', '.')
-            : raw.replace(/,/g, '');
-    } else if (raw.includes(',')) {
-        normalized = raw.replace(/\./g, '').replace(',', '.');
-    }
-    const parsed = Number(normalized);
-    return Number.isFinite(parsed) ? parsed : null;
-}
 
-function parseAmountFilter(value: string): AmountFilter | null {
-    const raw = String(value ?? '').trim();
-    if (!raw) return null;
 
-    const rangeMatch = raw.match(/^(.+?)\s*[-–—]\s*(.+)$/);
-    if (rangeMatch) {
-        const min = parseLocaleNumber(rangeMatch[1]);
-        const max = parseLocaleNumber(rangeMatch[2]);
-        if (min !== null && max !== null) return {mode: 'range', min: Math.min(min, max), max: Math.max(min, max)};
-    }
 
-    const operatorMatch = raw.match(/^(>=|<=|>|<)\s*(.+)$/);
-    if (operatorMatch) {
-        const value = parseLocaleNumber(operatorMatch[2]);
-        if (value !== null) {
-            const operator = operatorMatch[1];
-            if (operator === '>=') return {mode: 'gte', value};
-            if (operator === '<=') return {mode: 'lte', value};
-            if (operator === '>') return {mode: 'gt', value};
-            if (operator === '<') return {mode: 'lt', value};
-        }
-    }
 
-    const parsed = parseLocaleNumber(raw);
-    return parsed === null ? null : {mode: 'exact', value: parsed};
-}
 
-function amountMatchesFilter(amount: number, filterValue: AmountFilter | null) {
-    if (filterValue === null) return true;
-    const cents = Math.round(amount * 100);
-    if (filterValue.mode === 'exact') return cents === Math.round(filterValue.value * 100);
-    if (filterValue.mode === 'gte') return amount >= filterValue.value;
-    if (filterValue.mode === 'lte') return amount <= filterValue.value;
-    if (filterValue.mode === 'gt') return amount > filterValue.value;
-    if (filterValue.mode === 'lt') return amount < filterValue.value;
-    return amount >= filterValue.min && amount <= filterValue.max;
-}
-
-function toDateInputValue(date: Date) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
-
-function fiscalQuarterRange(year: number, quarterIndex: number) {
-    const startMonth = quarterIndex * 3;
-    return {
-        from: toDateInputValue(new Date(year, startMonth, 1)),
-        to: toDateInputValue(new Date(year, startMonth + 3, 0))
-    };
-}
-
-function getQuickDateRange(value: string, selectedYear: string | undefined, now: Date) {
-    if (value === 'all') return {from: '', to: ''};
-    const parsedYear = Number(selectedYear);
-    const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
-    const month = now.getMonth();
-    const currentQuarter = Math.floor(month / 3);
-    const monthMatch = String(value).match(/^month_(\d{2})$/);
-    const quarterMatch = String(value).match(/^quarter_(\d)$/);
-
-    if (value === 'last_30_days' || value === 'last_90_days') {
-        const days = value === 'last_30_days' ? 30 : 90;
-        return {
-            from: toDateInputValue(new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1))),
-            to: toDateInputValue(now)
-        };
-    }
-
-    if (monthMatch) {
-        const selectedMonth = Number(monthMatch[1]) - 1;
-        return {
-            from: toDateInputValue(new Date(year, selectedMonth, 1)),
-            to: toDateInputValue(new Date(year, selectedMonth + 1, 0))
-        };
-    }
-    if (quarterMatch) return fiscalQuarterRange(year, Number(quarterMatch[1]) - 1);
-    if (value === 'previous_month') return {
-        from: toDateInputValue(new Date(year, month - 1, 1)),
-        to: toDateInputValue(new Date(year, month, 0))
-    };
-    if (value === 'two_months_ago') return {
-        from: toDateInputValue(new Date(year, month - 2, 1)),
-        to: toDateInputValue(new Date(year, month - 1, 0))
-    };
-    if (value === 'current_quarter') return fiscalQuarterRange(year, currentQuarter);
-    if (value === 'last_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
-    if (value === 'previous_quarter') return currentQuarter > 0 ? fiscalQuarterRange(year, currentQuarter - 1) : fiscalQuarterRange(year - 1, 3);
-    if (value === 'year_to_date') {
-        return {
-            from: toDateInputValue(new Date(year, 0, 1)),
-            to: toDateInputValue(new Date(year, 11, 31))
-        };
-    }
-    return {from: toDateInputValue(new Date(year, month, 1)), to: toDateInputValue(new Date(year, month + 1, 0))};
-}
 
 const monthQuickOptions = [
     ['month_01', 'Gennaio'],
@@ -303,55 +186,7 @@ const quickDateOptions = [
     ...quarterQuickOptions
 ];
 
-function toMonthInputValue(year: number, monthIndexZeroBased: number) {
-    const date = new Date(year, monthIndexZeroBased, 1);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-}
 
-function getQuickBillingPeriodRange(value: string, selectedYear: string | undefined, now: Date) {
-    const parsedYear = Number(selectedYear);
-    const year = Number.isFinite(parsedYear) && parsedYear > 0 ? parsedYear : now.getFullYear();
-    const month = now.getMonth();
-    const currentQuarter = Math.floor(month / 3);
-    const monthMatch = String(value).match(/^month_(\d{2})$/);
-    const quarterMatch = String(value).match(/^quarter_(\d)$/);
-
-    if (value === 'last_30_days' || value === 'last_90_days') {
-        const days = value === 'last_30_days' ? 30 : 90;
-        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1));
-        return {from: toMonthInputValue(start.getFullYear(), start.getMonth()), to: toMonthInputValue(now.getFullYear(), now.getMonth())};
-    }
-
-    if (monthMatch) {
-        const selectedMonth = Number(monthMatch[1]) - 1;
-        return {from: toMonthInputValue(year, selectedMonth), to: toMonthInputValue(year, selectedMonth)};
-    }
-    if (quarterMatch) {
-        const quarter = Number(quarterMatch[1]) - 1;
-        return {from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2)};
-    }
-    if (value === 'previous_month') return {
-        from: toMonthInputValue(year, month - 1),
-        to: toMonthInputValue(year, month - 1)
-    };
-    if (value === 'current_quarter') return {
-        from: toMonthInputValue(year, currentQuarter * 3),
-        to: toMonthInputValue(year, currentQuarter * 3 + 2)
-    };
-    if (value === 'previous_quarter') {
-        const quarter = currentQuarter - 1;
-        return quarter >= 0
-            ? {from: toMonthInputValue(year, quarter * 3), to: toMonthInputValue(year, quarter * 3 + 2)}
-            : {from: toMonthInputValue(year - 1, 9), to: toMonthInputValue(year - 1, 11)};
-    }
-    if (value === 'year_to_date') {
-        return {
-            from: toMonthInputValue(year, 0),
-            to: toMonthInputValue(year, 11)
-        };
-    }
-    return {from: toMonthInputValue(year, month), to: toMonthInputValue(year, month)};
-}
 
 const quickBillingPeriodOptions = [
     ['last_30_days', 'Ultimi 30 giorni'],
@@ -377,39 +212,10 @@ function periodInputValue(month: number, year: number) {
     return `${year}-${String(month).padStart(2, '0')}`;
 }
 
-function monthInputToKey(value: string) {
-    const match = String(value ?? '').trim().match(/^(\d{4})-(\d{2})$/);
-    if (!match) return null;
-    const year = Number(match[1]);
-    const month = Number(match[2]);
-    if (!year || month < 1 || month > 12) return null;
-    return year * 12 + month;
-}
 
-function normalizePeriodRange(fromKey: number | null, toKey: number | null) {
-    if (fromKey !== null && toKey !== null && fromKey > toKey) {
-        return {fromKey: toKey, toKey: fromKey};
-    }
-    return {fromKey, toKey};
-}
 
-function recordPeriodKey(month: number, year: number) {
-    return Number(year) * 12 + Number(month);
-}
 
-function matchesBillingPeriod(month: number, year: number, fromKey: number | null, toKey: number | null) {
-    const key = recordPeriodKey(month, year);
-    if (fromKey !== null && key < fromKey) return false;
-    if (toKey !== null && key > toKey) return false;
-    return true;
-}
 
-function matchesIsoDate(value: Date | null | undefined, from: string, to: string, timeZone: string, civilDate = false) {
-    const formatted = value ? (civilDate ? calendarDateInput(value) : dateInputInTimeZone(timeZone, value)) : '';
-    if (from && (!formatted || formatted < from)) return false;
-    if (to && (!formatted || formatted > to)) return false;
-    return true;
-}
 
 function fiscalBadge(value: boolean) {
     const item = value ? fiscalStyles.yes : fiscalStyles.no;
@@ -576,26 +382,6 @@ export default async function IncomesPage({searchParams}: {
     const mobileListQuery = new URLSearchParams(currentQuery);
     mobileListQuery.set('mobileList', '1');
     const returnTo = encodeURIComponent(`/incomes?${mobileListQuery}`);
-    const hasFiscalPeriodFilter = Boolean(inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod') || inputDefault(filters, 'billingPeriodQuick'));
-    const hasCreditDateFilter = Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo') || inputDefault(filters, 'dateQuick'));
-    const dateYearFilter = inputDefault(filters, 'dateYear');
-    const billingPeriodYearFilter = inputDefault(filters, 'billingPeriodYear');
-    const viewFilter = inputDefault(filters, 'view');
-    const useFiscalPeriodFilter = viewFilter === 'fiscale' || (viewFilter !== 'andamento' && hasFiscalPeriodFilter);
-    const useCreditDateFilter = !useFiscalPeriodFilter;
-    const rawDateQuickFilter = useCreditDateFilter ? inputDefault(filters, 'dateQuick') : '';
-    const hasCustomCreditDateFilter = useCreditDateFilter && !rawDateQuickFilter && Boolean(inputDefault(filters, 'creditDateFrom') || inputDefault(filters, 'creditDateTo'));
-    const quickDateFilter = useCreditDateFilter ? (rawDateQuickFilter || (!hasCreditDateFilter ? 'last_90_days' : '')) : '';
-    const dateQuickSelectorValue = hasCustomCreditDateFilter ? 'custom' : quickDateFilter;
-    const quickDateRange = quickDateFilter ? getQuickDateRange(quickDateFilter, dateYearFilter, companyNow) : null;
-    const creditDateFromDefault = useCreditDateFilter ? (quickDateRange?.from || inputDefault(filters, 'creditDateFrom')) : '';
-    const creditDateToDefault = useCreditDateFilter ? (quickDateRange?.to || inputDefault(filters, 'creditDateTo')) : '';
-    const quickBillingPeriodFilter = useFiscalPeriodFilter ? (inputDefault(filters, 'billingPeriodQuick') || (
-        !inputDefault(filters, 'billingPeriodFrom') && !inputDefault(filters, 'billingPeriodTo') && !inputDefault(filters, 'billingPeriod')
-            ? 'last_90_days'
-            : ''
-    )) : '';
-    const quickBillingPeriodRange = quickBillingPeriodFilter ? getQuickBillingPeriodRange(quickBillingPeriodFilter, billingPeriodYearFilter, companyNow) : null;
 
     const [incomes, expensesForVat, banks, paymentMethods, salesChannels, customers] = await Promise.all([
         prisma.income.findMany({
@@ -618,33 +404,17 @@ export default async function IncomesPage({searchParams}: {
     ]);
     const orderedBanks = orderBanks(banks);
     const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
-
-    const creditDateFromFilter = useCreditDateFilter ? creditDateFromDefault : '';
-    const creditDateToFilter = useCreditDateFilter ? creditDateToDefault : '';
-    const billingPeriodFromFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.from || inputDefault(filters, 'billingPeriodFrom') || inputDefault(filters, 'billingPeriod')) : '';
-    const billingPeriodToFilter = useFiscalPeriodFilter ? (quickBillingPeriodRange?.to || inputDefault(filters, 'billingPeriodTo') || inputDefault(filters, 'billingPeriod')) : '';
-    const rawBillingPeriodFromKey = monthInputToKey(billingPeriodFromFilter);
-    const rawBillingPeriodToKey = monthInputToKey(billingPeriodToFilter);
+    const search = resolveIncomeSearch(filters, current.company.timeZone, new Date(), incomePaymentMethods, orderedBanks);
     const {
-        fromKey: billingPeriodFromKey,
-        toKey: billingPeriodToKey
-    } = normalizePeriodRange(rawBillingPeriodFromKey, rawBillingPeriodToKey);
-    const hasBillingPeriodRange = billingPeriodFromKey !== null || billingPeriodToKey !== null;
-    const salesChannelFilter = inputDefault(filters, 'salesChannel');
-    const amountFilterRaw = inputDefault(filters, 'amount');
-    const amountFilterValue = parseAmountFilter(amountFilterRaw);
-    const paymentMethodFilter = inputDefault(filters, 'paymentMethod');
-    const creditChannelFilter = inputDefault(filters, 'creditChannel');
-    const customerQuickFilter = normalize(inputDefault(filters, 'customerQuick'));
-    const fiscalFilter = inputDefault(filters, 'fiscal');
-    const invoiceStatusFilter = inputDefault(filters, 'invoiceStatus');
-    const invoiceStatusModeFilter = inputDefault(filters, 'invoiceStatusMode');
-    const vatRateFilter = inputDefault(filters, 'vatRate');
-    const dueDateFromFilter = inputDefault(filters, 'dueDateFrom');
-    const dueDateToFilter = inputDefault(filters, 'dueDateTo');
-    const orderDateFromFilter = inputDefault(filters, 'orderDateFrom');
-    const orderDateToFilter = inputDefault(filters, 'orderDateTo');
-    const creditStatusFilter = inputDefault(filters, 'creditStatus');
+        dateYearFilter, useFiscalPeriodFilter, quickDateFilter, dateQuickSelectorValue,
+        creditDateFromDefault, creditDateToDefault, quickBillingPeriodFilter, creditDateFromFilter,
+        creditDateToFilter, billingPeriodFromFilter, billingPeriodToFilter, hasBillingPeriodRange,
+        salesChannelFilter, amountFilterRaw, paymentMethodFilter, creditChannelFilter,
+        customerQuickFilter, fiscalFilter, invoiceStatusFilter, invoiceStatusModeFilter,
+        vatRateFilter, dueDateFromFilter, dueDateToFilter, orderDateFromFilter,
+        orderDateToFilter, creditStatusFilter, billingPeriodFromKey, billingPeriodToKey
+    } = search;
+
     const totalsFilterHref = (extraFilters: Record<string, string>) => {
         const query = new URLSearchParams();
         if (useFiscalPeriodFilter) {
@@ -684,26 +454,7 @@ export default async function IncomesPage({searchParams}: {
         return true;
     });
 
-    const filteredIncomes = periodIncomes.filter(income => {
-        if (!matchesIsoDate(income.orderDate, orderDateFromFilter, orderDateToFilter, current.company.timeZone, true)) return false;
-        if (!matchesBillingPeriod(income.billingMonth, income.billingYear, billingPeriodFromKey, billingPeriodToKey)) return false;
-        if (useFiscalPeriodFilter && !income.isFiscal) return false;
-        if (salesChannelFilter && income.salesChannelRef.name !== salesChannelFilter) return false;
-        if (!amountMatchesFilter(Number(income.amount.toString()), amountFilterValue)) return false;
-        if (paymentMethodFilter && !income.credits.some(credit => credit.paymentMethodId === incomePaymentMethods.find(method => method.name === paymentMethodFilter)?.id)) return false;
-        if (creditChannelFilter && !income.credits.some(credit => credit.bankId === orderedBanks.find(bank => bank.name === creditChannelFilter)?.id)) return false;
-        if (!matchesEntityQuickSearch(customerQuickFilter, income.customer?.businessName, income.description)) return false;
-        if (fiscalFilter === 'yes' && !income.isFiscal) return false;
-        if (fiscalFilter === 'no' && income.isFiscal) return false;
-        if (invoiceStatusModeFilter === 'not_emitted' && !matchesIncomeTask(income, 'missing_invoice')) return false;
-        if (invoiceStatusFilter === 'not_emitted' && !matchesIncomeTask(income, 'missing_invoice')) return false;
-        if (invoiceStatusFilter && invoiceStatusFilter !== 'not_emitted' && income.invoiceStatus !== invoiceStatusFilter) return false;
-        if (vatRateFilter && Number(income.vatRate.toString()) !== Number(vatRateFilter)) return false;
-        if (!matchesIsoDate(income.dueDate, dueDateFromFilter, dueDateToFilter, current.company.timeZone, true)) return false;
-        if (creditStatusFilter === 'not_complete' && !matchesIncomeTask(income, 'uncredited')) return false;
-        if (creditStatusFilter && creditStatusFilter !== 'not_complete' && incomeCreditState(income, new Date(), current.company.timeZone) !== creditStatusFilter) return false;
-        return true;
-    });
+    const filteredIncomes = periodIncomes.filter(record => matchesIncomeSearch(record, search));
 
     const summarizeIncomes = (list: typeof incomes) => list.reduce((acc, income) => {
         const amount = Number(income.amount.toString());
@@ -740,6 +491,8 @@ export default async function IncomesPage({searchParams}: {
             bulk_copied: 'Incassi copiati.'
         },
         errorMessages: {
+            export_empty: 'Nessun record da esportare per la ricerca corrente.',
+            export_failed: 'Esportazione non completata. Riprova.',
             invalid: 'Controlla i campi dell’incasso.',
             invalid_bulk_dates: 'Modifica non eseguita: controlla data ordine e scadenza degli incassi selezionati.',
             invalid_bulk_customer: 'Seleziona un cliente valido. La modifica è disponibile soltanto per gli incassi standard.',
@@ -1078,6 +831,7 @@ export default async function IncomesPage({searchParams}: {
             <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
             <IncomesList
+                searchExport
                 mobileSort={mobileSort}
                 monthGrouping={!isSingleMonthRange(
                     useFiscalPeriodFilter ? billingPeriodFromFilter : creditDateFromDefault,

@@ -1,3 +1,4 @@
+import SearchExportButton from '@/components/SearchExportButton';
 import RecordConversionListController from '@/components/RecordConversionListController';
 import {incomeTypeLabel} from '@/lib/record-type-label';
 import {canConvertIncome} from '@/lib/record-conversion';
@@ -174,7 +175,8 @@ export default function IncomesList({
                                         timeZone = DEFAULT_COMPANY_TIME_ZONE,
                                         hideCustomer = false,
                                         emptyMessage = 'Nessun incasso trovato.',
-                                        filterAction
+                                        filterAction,
+                                        searchExport = false
                                     }: {
     incomes: IncomeItem[];
     mobileIncomes?: IncomeItem[];
@@ -198,6 +200,7 @@ export default function IncomesList({
     hideCustomer?: boolean;
     emptyMessage?: string;
     filterAction?: ReactNode;
+    searchExport?: boolean;
 }) {
     const dateSort = listDateSort(mobileSort, timeZone);
     const mobileIncomes = suppliedMobileIncomes ?? [...incomes].sort((a, b) => (b.creditDate?.getTime() ?? 0) - (a.creditDate?.getTime() ?? 0) || b.id - a.id);
@@ -249,8 +252,8 @@ export default function IncomesList({
                                 data-bulk-action-proxy="[data-bulk-add-credit]" disabled><span
                             className="btn-icon">€</span><span>Inserisci accredito</span></button>
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
-                                formAction="/api/exports/incomes" formMethod="post" data-confirm-label="Esporta CSV">
-                            <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta CSV</span>
+                                formAction="/api/exports/incomes" formMethod="post" data-confirm-label="Esporta selezionati">
+                            <span className="btn-icon">⇩</span><span className="hidden-sm-down">Esporta selezionati</span>
                         </button>
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction"
                                 value="invoice_emitted">
@@ -277,8 +280,9 @@ export default function IncomesList({
                         <span className="btn-icon" aria-hidden="true">€</span><span className="hidden-sm-down">Inserisci accredito</span>
                     </button>
                     <button type="button" className="bulk-direct-link is-disabled hidden-xs-down" data-bulk-copy
-                            aria-disabled="true" disabled><span className="btn-icon">⧉</span><span
+                            aria-disabled="true" disabled hidden={searchExport}><span className="btn-icon">⧉</span><span
                         className="hidden-sm-down">Copia</span></button>
+                    {searchExport && <SearchExportButton entity="incomes" returnTo={returnTo} disabled={incomes.length === 0 && cashRegisterGroups.length === 0}/>}
                 </div>
             </div>
             <div className="bulk-inner-container">
