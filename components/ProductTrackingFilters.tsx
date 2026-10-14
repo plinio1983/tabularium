@@ -23,7 +23,7 @@ export default function ProductTrackingFilters({filters}: {filters: Record<strin
     }}/> }>
       <form id={id} key={JSON.stringify(filters)} className="record-filters recurring-drawer-filters record-styled-drawer-filters party-filters" action="/product-trackings" method="get">
         {['q', 'mobileSort'].map(key => filters[key] && <input key={key} type="hidden" name={key} value={filters[key]}/>)}
-        {['name', 'batch', 'alias'].map((key, i) => <FormField className="record-filter-field" label={['Nome', 'Lotto', 'Alias'][i]} icon={['▤', '#', '◇'][i]} htmlFor={`${id}-${key}`} key={key}><input id={`${id}-${key}`} name={key} defaultValue={filters[key]} /></FormField>)}
+        {['name', 'batch', 'alias'].map((key, i) => <FormField className="record-filter-field" label={['Riferimento', 'Lotto', 'Nome'][i]} icon={['▤', '#', '◇'][i]} htmlFor={`${id}-${key}`} key={key}><input id={`${id}-${key}`} name={key} defaultValue={filters[key]} /></FormField>)}
         <FormField className="record-filter-field" label="Ingresso dal" icon="◷" htmlFor={`${id}-from`}><input id={`${id}-from`} type="date" name="from" defaultValue={filters.from}/></FormField>
         <FormField className="record-filter-field" label="Ingresso al" icon="◷" htmlFor={`${id}-to`}><input id={`${id}-to`} type="date" name="to" defaultValue={filters.to}/></FormField>
         {['invoice', 'tracking'].map((key, i) => <FormField className="record-filter-field" label={i === 0 ? 'Fattura' : 'Allegato tracciamento'} icon="📎" htmlFor={`${id}-${key}`} key={key}><select id={`${id}-${key}`} name={key} defaultValue={filters[key] ?? ''}><option value="">Tutti</option><option value="present">Presente</option><option value="missing">Mancante</option></select></FormField>)}

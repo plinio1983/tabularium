@@ -82,5 +82,5 @@ export function ledgerWhere(filters: ReturnType<typeof ledgerFilters>, timeZone:
   return clauses.length ? Prisma.sql`WHERE ${Prisma.join(clauses, ' AND ')}` : Prisma.empty;
 }
 export const movementTypeLabels: Record<string, string> = {
-  STANDARD: 'Standard', PAYROLL: 'Busta paga', VAT_SETTLEMENT: 'Saldo IVA', COUNTER: 'Spesa al banco', TAX_CONTRIBUTION: 'Imposte e contributi', CASH_REGISTER: 'Scontrino',
+  STANDARD: 'Standard', PAYROLL: 'Stipendio', VAT_SETTLEMENT: 'Saldo IVA', COUNTER: 'Spesa al banco', TAX_CONTRIBUTION: 'Imposte e contributi', CASH_REGISTER: 'Scontrino',
 };

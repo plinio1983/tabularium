@@ -275,8 +275,7 @@ export default function ExpensesList({
                              data-bulk-form={formId}>
                         <summary className="bulk-action-trigger" aria-label="Azioni multiple">
                             <span className="btn-icon" aria-hidden="true">⚙</span>
-                            <span className="hidden-sm-up hidden-xs-down">Azioni</span>
-                            <span className="hidden-sm-down hidden-xs-down">Azioni</span>
+                            <span className="bulk-label">Azioni</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
                         <button type="button" className="btn btn-sm btn-option" data-bulk-convert="expenses" data-bulk-form={formId}

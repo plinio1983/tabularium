@@ -21,8 +21,8 @@ import {formatItalianCompactDate} from '@/lib/date-format';
 
 const sortOptions = [
     {value: 'created_desc', label: 'Creazione recente'},
-    {value: 'name_asc', label: 'Nome (A–Z)'},
-    {value: 'name_desc', label: 'Nome (Z–A)'},
+    {value: 'name_asc', label: 'Riferimento (A–Z)'},
+    {value: 'name_desc', label: 'Riferimento (Z–A)'},
     {value: 'entry_desc', label: 'Ingresso recente'},
     {value: 'entry_asc', label: 'Ingresso meno recente'},
 ];
@@ -83,9 +83,9 @@ export default async function Page({searchParams}: {
     const canEdit = hasWorkspaceRole(current.membership.role, workspaceOperationalRoles);
     const labels: Record<string, string> = {
         q: 'Ricerca',
-        name: 'Nome',
+        name: 'Riferimento',
         batch: 'Lotto',
-        alias: 'Alias',
+        alias: 'Nome',
         from: 'Dal',
         to: 'Al',
         invoice: 'Fattura',
@@ -129,10 +129,10 @@ export default async function Page({searchParams}: {
                 <div>
                     <div className="info-title-row"><h2>Lista tracciature</h2><InfoHint compactOnly
                                                                                         title="Lista tracciature">Ricerca
-                        per nome, lotto e alias e verifica dei documenti mancanti.</InfoHint></div>
+                        per riferimento, lotto e nome e verifica dei documenti mancanti.</InfoHint></div>
                     <p className="muted">Risultati mostrati: {rows.length}</p></div>
                 <ProductTrackingFilters filters={filters}/></div>
-            <LiveSearch name="q" label="Ricerca merce" placeholder="Nome, lotto o alias"/>
+            <LiveSearch name="q" label="Ricerca merce" placeholder="Riferimento, lotto o nome"/>
             {Object.entries(filters).some(([key]) => key !== 'mobileSort') && <div className="recurring-active-filters">
                 <div><span className="recurring-active-filters-title">Filtri attivi</span>
                     <div className="recurring-active-filter-tags">
@@ -155,9 +155,9 @@ export default async function Page({searchParams}: {
                        data-default-sort-dir={mobileSort.endsWith('_asc') ? 'asc' : 'desc'}>
                     <thead>
                     <tr>
-                        <th data-sort-key="name">Nome</th>
+                        <th data-sort-key="name">Riferimento</th>
                         <th data-sort-key="batch">Lotto</th>
-                        <th data-sort-key="alias">Alias</th>
+                        <th data-sort-key="alias">Nome</th>
                         <th data-sort-key="entry" data-sort-type="date">Data ingresso</th>
                         <th data-sort-key="invoices" data-sort-type="number">Fatture</th>
                         <th data-sort-key="tracking" data-sort-type="number">Tracciamento</th>
@@ -195,7 +195,7 @@ export default async function Page({searchParams}: {
                                 className="badge">Lotto {record.batch}</span></div>
                         </div>
                         <div className="mobile-record-subtitle"><span
-                            className="party-mobile-row-grow">{record.alias || 'Nessun alias'}</span><span
+                            className="party-mobile-row-grow">{record.alias || 'Nome non indicato'}</span><span
                             className="text-right">Ingresso: <strong>{dateLabel(record.entryDate)}</strong></span></div>
                         <div className="mobile-record-meta">
                             <span className="party-mobile-row">

@@ -12,7 +12,7 @@ function expenseSeries(record: ExpenseCategoryTrendRecord) {
   if (record.categoryId && record.category) return {id: record.categoryId, name: record.category.name, icon: record.category.icon ?? null};
   if (record.expenseType === 'VAT_SETTLEMENT') return {id: -1, name: 'Saldo IVA', icon: 'IVA'};
   if (record.expenseType === 'TAX_CONTRIBUTION') return {id: -2, name: 'Imposte e contributi', icon: 'F24'};
-  if (record.expenseType === 'PAYROLL') return {id: -3, name: 'Buste paga', icon: 'BP'};
+  if (record.expenseType === 'PAYROLL') return {id: -3, name: 'Stipendi', icon: 'BP'};
   return {id: 0, name: 'Senza categoria', icon: '•'};
 }
 

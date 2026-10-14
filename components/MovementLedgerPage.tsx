@@ -126,7 +126,7 @@ export default async function MovementLedgerPage({kind, searchParams}: {
                            linkLabel={`Visualizza ${title.toLowerCase()}`} count={summary.count} summary={<>
             <div className="toolbar-card">
                 <div><h2>{title}</h2><p
-                    className="muted">{isPayment ? 'Pagamenti registrati sulle spese, comprese le buste paga.' : 'Accrediti registrati sugli incassi, compresi gli scontrini.'}</p>
+                    className="muted">{isPayment ? 'Pagamenti registrati sulle spese, compresi gli stipendi.' : 'Accrediti registrati sugli incassi, compresi gli scontrini.'}</p>
 
                 </div>
                 <div className="toolbar-actions">

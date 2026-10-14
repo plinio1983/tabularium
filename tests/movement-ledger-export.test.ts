@@ -29,7 +29,7 @@ test('CSV: una riga per movimento, decimali precisi, date locali, valori mancant
   assert.match(csv, /"'=Cliente"/);
   assert.match(csv, /"Test; ""CSV"""/);
   assert.match(csv, /"2";"";"10,50"/);
-  assert.match(csv, /"Busta paga"/);
+  assert.match(csv, /"Stipendio"/);
   assert.match(movementLedgerCsv('credits', [row(1)], 'Europe/Rome'), /"Cliente \/ canale".*"ID incasso"/);
 });
 

@@ -31,7 +31,7 @@ const billingLabels: Record<string, string> = {
 const expenseTypeLabels: Record<string, string> = {
     STANDARD: 'Singola',
     TAX_CONTRIBUTION: 'Imposte',
-    PAYROLL: 'Busta paga'
+    PAYROLL: 'Stipendio'
 };
 const months = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
 const cadenceStyles: Record<string, { icon: string; className: string }> = {
@@ -251,7 +251,6 @@ export default function RecurringExpensesList({
         <div className="list-heading recurring-list-heading mobile-page-title recurring-expense-mobile-page-title">
             <div>
                 <div className="info-title-row"><h2>Uscite ricorrenti</h2><InfoHint compactOnly title="Uscite ricorrenti">Gestisci le regole di spesa ricorrente.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci le regole di spesa ricorrente.</p>
-                <p className="muted">Gestisci le regole di spesa ricorrente.</p>
             </div>
         </div>
         <LiveSearch name="search" label="Ricerca spesa ricorrente" placeholder="Fornitore, esercente, dipendente o descrizione"/>
@@ -297,7 +296,7 @@ export default function RecurringExpensesList({
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form="recurringExpenseBulkForm">
                     <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="hidden-sm-up hidden-xs-down">Azioni</span><span className="hidden-sm-down hidden-xs-down">Azioni</span>
+                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="bulk-label">Azioni</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction" value="delete" data-confirm-label="Elimina"><span className="btn-icon">🗑</span><span>Elimina selezionati</span></button>

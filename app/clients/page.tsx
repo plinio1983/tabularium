@@ -148,9 +148,7 @@ export default async function ClientsPage({searchParams}: {
                     <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu
                              data-bulk-form="clientBulkForm">
                         <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                            <span className="btn-icon" aria-hidden="true">⚙</span><span
-                            className="hidden-sm-up hidden-xs-down">Azioni</span><span
-                            className="hidden-sm-down hidden-xs-down">Azioni</span>
+                            <span className="btn-icon" aria-hidden="true">⚙</span><span className="bulk-label">Azioni</span>
                         </summary>
                         <div className="bulk-action-menu-panel">
                             <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"

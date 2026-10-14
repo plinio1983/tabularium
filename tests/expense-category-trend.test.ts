@@ -11,6 +11,6 @@ test('aggregates expenses by category and preserves special expense groups', () 
   assert.equal(data.total, 350);
   assert.equal(data.months[0].total, 150);
   assert.ok(data.channels.some(category => category.name === 'Saldo IVA'));
-  assert.ok(data.channels.some(category => category.name === 'Buste paga'));
+  assert.ok(data.channels.some(category => category.name === 'Stipendi'));
   assert.equal(data.quarters[1].weeks.reduce((sum, week) => sum + week.total, 0), 200);
 });

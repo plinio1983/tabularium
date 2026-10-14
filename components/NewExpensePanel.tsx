@@ -74,7 +74,7 @@ export default function NewExpensePanel({
             : creationType === 'tax'
                 ? {title: 'Nuove imposte - non IVA', description: 'Registra imposte e contributi non soggetti a IVA.'}
             : creationType === 'payroll'
-                ? {title: 'Nuova busta paga', description: 'Registra la retribuzione di un dipendente.'}
+                ? {title: 'Nuovo stipendio', description: 'Registra la retribuzione di un dipendente.'}
             : {title: 'Nuova spesa singola', description: 'Inserisci una nuova spesa singola.'};
 
     useEffect(() => {
@@ -132,7 +132,7 @@ export default function NewExpensePanel({
             </div>
             <div className="toolbar-actions record-toolbar-actions">
                 {/*<Link className="btn btn-md btn-default expense-import-btn-large" href="/expenses/import"><span className="btn-icon">⬆</span>Importa Excel</Link>*/}
-                <Link className="btn btn-sm btn-ghost" href="/recurring-expenses">
+                <Link className="btn btn-sm btn-secondary" href="/recurring-expenses">
                     <span className="btn-icon">↻</span>Uscite ricorrenti
                 </Link>
                 <button className="btn btn-sm btn-primary" type="button" onClick={() => setIsOpen(true)}>

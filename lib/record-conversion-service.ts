@@ -176,7 +176,7 @@ async function incomeData(tx: Tx, source: ConversionIncome, raw: Record<string, 
 const fieldLabels: Record<string, string> = {
     expenseType: 'Tipo spesa', incomeType: 'Tipo incasso', merchant: 'Soggetto', supplierId: 'Fornitore', employeeId: 'Dipendente', taxAuthorityId: 'Ente',
     categoryId: 'Categoria spesa', customerId: 'Cliente', incomeCategoryId: 'Categoria incasso', salesChannelId: 'Canale di vendita',
-    amount: 'Importo', description: 'Descrizione', notes: 'Note', payrollNetAmount: 'Netto busta paga', payrollExtraCompensation: 'Compensi extra',
+    amount: 'Importo', description: 'Descrizione', notes: 'Note', payrollNetAmount: 'Netto stipendio', payrollExtraCompensation: 'Compensi extra',
     payrollGrossAmount: 'Lordo cedolino', payrollEmployerCost: 'Costo aziendale', payrollPeriodStart: 'Inizio periodo lavorato', payrollPeriodEnd: 'Fine periodo lavorato',
     receivedDate: 'Data ricezione', dueDate: 'Scadenza', month: 'Mese competenza', year: 'Anno competenza', billingMonth: 'Mese competenza', billingYear: 'Anno competenza',
     vatRate: 'IVA (%)', isDeclared: 'Fiscale', isFiscal: 'Fiscale', hasElectronicInvoice: 'Fattura elettronica', invoiceStatus: 'Stato fattura',

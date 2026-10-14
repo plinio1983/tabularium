@@ -3010,6 +3010,22 @@ button.bulk-direct-danger {
   }
 }
 
+.recurring-expenses-card .compact-recurring-expenses-table .bulk-select-all {
+  margin: 4px 0 4px 4px;
+}
+
+.recurring-expenses-card .bulk-actions-bar .bulk-select-all-inline {
+  padding-left: 6px;
+}
+
+.recurring-expenses-card .floating-bulk-actions-bar .bulk-select-all-inline {
+  padding-left: 25px;
+
+  @media (min-width: 760px) and (max-width: 900px) {
+    padding-left: 18px;
+  }
+}
+
 @media (max-width: 760px) {
   .recurring-expenses-desktop-table-scroll {
     display: none !important;

@@ -393,13 +393,8 @@ function makeFloatingBar(sourceBar: HTMLElement) {
     icon.setAttribute("aria-hidden", "true");
     icon.textContent = "⚙";
     const label = document.createElement("span");
-    label.className = "hidden-xs-down";
-    const hLabel = document.createElement("span");
-    hLabel.textContent = "Bulk ";
-    hLabel.className = "floating-bulk-label";
-
-    label.appendChild(hLabel);
-    label.append("Actions");
+    label.className = "floating-bulk-menu-label";
+    label.textContent = "Azioni";
     trigger.appendChild(icon);
     trigger.appendChild(label);
     trigger.appendChild(caret);

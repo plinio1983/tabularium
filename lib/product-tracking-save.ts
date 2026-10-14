@@ -20,9 +20,9 @@ export async function saveTracking(request: Request, id?: number) {
     try {form = await request.formData();} catch {throw new TrackingValidationError('Dati del form non validi.');}
     const name = String(form.get('name') ?? '').trim();
     const batch = String(form.get('batch') ?? '').trim();
-    if (!name || !batch || name.length > 250 || batch.length > 250) throw new TrackingValidationError('Nome e lotto sono obbligatori (massimo 250 caratteri).');
+    if (!name || !batch || name.length > 250 || batch.length > 250) throw new TrackingValidationError('Riferimento e lotto sono obbligatori (massimo 250 caratteri).');
     const alias = String(form.get('alias') ?? '').trim();
-    if (alias.length > 250) throw new TrackingValidationError('Alias troppo lungo.');
+    if (alias.length > 250) throw new TrackingValidationError('Nome troppo lungo.');
     const entryDate = parseTrackingDate(form.get('entryDate'));
     resultId = await prisma.$transaction(async tx => {
       // Serialize edits, including uploads and attachment counts, on the parent row.

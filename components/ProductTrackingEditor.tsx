@@ -158,11 +158,11 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
           </div>
           <fieldset disabled={saving} className="full product-tracking-fields">
             <details className="form-section full entity-form-section app-form-wizard-step app-form-wizard-step-1" data-tracking-step="1" open>
-              <summary><span className="info-label-row"><span><span className="entity-form-section-icon" aria-hidden="true">▤</span>Merce</span><InfoHint compactOnly title="Merce">Nome e lotto obbligatori; alias e data ingresso facoltativi.</InfoHint></span><small className="info-hint-desktop-text">Nome e lotto obbligatori</small></summary>
+              <summary><span className="info-label-row"><span><span className="entity-form-section-icon" aria-hidden="true">▤</span>Merce</span><InfoHint compactOnly title="Merce">Riferimento e lotto obbligatori; nome e data ingresso facoltativi.</InfoHint></span><small className="info-hint-desktop-text">Riferimento e lotto obbligatori</small></summary>
               <div className="form-section-grid entity-form-section-grid">
-                <FormField label="Nome *" icon="▤" htmlFor={`${formId}-name`}><input id={`${formId}-name`} name="name" required autoFocus={initialMobileStep === 1} onChange={event => event.currentTarget.setCustomValidity('')} maxLength={250} defaultValue={record?.name} placeholder="Nome del prodotto"/></FormField>
+                <FormField label="Riferimento *" icon="▤" htmlFor={`${formId}-name`}><input id={`${formId}-name`} name="name" required autoFocus={initialMobileStep === 1} onChange={event => event.currentTarget.setCustomValidity('')} maxLength={250} defaultValue={record?.name} placeholder="Riferimento del prodotto"/></FormField>
                 <FormField label="Lotto *" icon="#" htmlFor={`${formId}-batch`}><input id={`${formId}-batch`} name="batch" required onChange={event => event.currentTarget.setCustomValidity('')} maxLength={250} autoComplete="off" defaultValue={record?.batch} placeholder="Es. LOT-001"/></FormField>
-                <FormField label="Alias" icon="◇" htmlFor={`${formId}-alias`}><input id={`${formId}-alias`} name="alias" maxLength={250} defaultValue={record?.alias ?? ''} placeholder="Nome alternativo"/></FormField>
+                <FormField label="Nome" icon="◇" htmlFor={`${formId}-alias`}><input id={`${formId}-alias`} name="alias" maxLength={250} defaultValue={record?.alias ?? ''} placeholder="Nome del prodotto"/></FormField>
                 <DateField label="Data ingresso" name="entryDate" value={entryDate} onChange={setEntryDate}/>
               </div>
             </details>

@@ -2,7 +2,7 @@
 export const expenseConversionTypes = ['STANDARD', 'PAYROLL', 'TAX_CONTRIBUTION', 'COUNTER'] as const;
 export type ExpenseConversionType = typeof expenseConversionTypes[number];
 export const conversionLabels: Record<string, string> = {
-    STANDARD: 'Singola', PAYROLL: 'Busta paga', TAX_CONTRIBUTION: 'Imposte/F24', CASH_REGISTER: 'Scontrino', COUNTER: 'Da banco'
+    STANDARD: 'Singola', PAYROLL: 'Stipendio', TAX_CONTRIBUTION: 'Imposte/F24', CASH_REGISTER: 'Scontrino', COUNTER: 'Da banco'
 };
 
 export function canConvertExpense(source: {expenseType: string; isRecurring: boolean; recurringExpenseId: number | null}) {

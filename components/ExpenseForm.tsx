@@ -1002,7 +1002,7 @@ export default function ExpenseForm({
                         <span>{["Date", "Importo", "Dettagli", "Pagamenti", "Fattura", "Riepilogo", "Allegati"][mobileStep - 1]}</span>
                     </strong>
                 </div>
-                <InfoHint compactOnly title="Informazioni sul passaggio">{["Date della spesa e periodo di riferimento.", "Importo, IVA e fiscalità. Per le buste paga, l’importo comprende netto cedolino e compensi extra.", "Fornitore, dipendente o ente, descrizione e categoria della spesa.", "Stato, residuo e movimenti di pagamento.", "Fatturazione e periodo fiscale.", "Controlla i dati prima di salvare.", "Allega fatture, documenti o ricevute in PDF, immagini, XML o P7M."][mobileStep - 1]}</InfoHint>
+                <InfoHint compactOnly title="Informazioni sul passaggio">{["Date della spesa e periodo di riferimento.", "Importo, IVA e fiscalità. Per gli stipendi, l’importo comprende netto cedolino e compensi extra.", "Fornitore, dipendente o ente, descrizione e categoria della spesa.", "Stato, residuo e movimenti di pagamento.", "Fatturazione e periodo fiscale.", "Controlla i dati prima di salvare.", "Allega fatture, documenti o ricevute in PDF, immagini, XML o P7M."][mobileStep - 1]}</InfoHint>
                 <div className="app-form-wizard-progress" aria-label={mobileStep === 7 ? `Allegati` : `Passaggio ${(isNoVatExpense && mobileStep === 6 ? 5 : mobileStep) + mobileStepOffset} di ${(isNoVatExpense ? 5 : 6) + mobileStepOffset}`}>
                     <span style={{width: `${isNoVatExpense ? Math.min((mobileStep === 6 ? 5 : mobileStep) + mobileStepOffset, 5 + mobileStepOffset) / (5 + mobileStepOffset) * 100 : Math.min(mobileStep + mobileStepOffset, 6 + mobileStepOffset) / (6 + mobileStepOffset) * 100}%`}}/>
                 </div>
@@ -1301,7 +1301,7 @@ export default function ExpenseForm({
                             <FormField label="Lordo cedolino" icon="€"><MoneyInput name="payrollGrossAmount" value={payrollGrossAmount} onValueChange={setPayrollGrossAmount}/></FormField>
                             <FormField label="Costo complessivo aziendale" icon="€"><MoneyInput name="payrollEmployerCost" value={payrollEmployerCost} onValueChange={setPayrollEmployerCost}/></FormField>
                             <div className="field-note">
-                                <span className="info-label-row"><span>Totale da corrispondere</span><InfoHint compactOnly title="Importo della busta paga">Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</InfoHint></span>
+                                <span className="info-label-row"><span>Totale da corrispondere</span><InfoHint compactOnly title="Importo dello stipendio">Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</InfoHint></span>
                                 <strong>{formatEuro(amountValue)}</strong>
                                 <small className="info-hint-desktop-text">Netto cedolino più compensi extra. Lordo e costo aziendale sono informativi.</small>
                             </div>

@@ -18,7 +18,7 @@ const options: Array<{type: ExpenseCreationType; icon: string; label: string; de
     {type: "single", icon: "●", label: "Singola", description: "Spesa occasionale"},
     {type: "vat", icon: "IVA", label: "Saldo IVA", description: "Versamento IVA"},
     {type: "tax", icon: "F24", label: "Imposte", description: "Imposte e contributi non IVA"},
-    {type: "payroll", icon: "BP", label: "Busta paga", description: "Retribuzione dipendente"},
+    {type: "payroll", icon: "BP", label: "Stipendio", description: "Retribuzione dipendente"},
 ];
 
 export default function ExpenseTypeChoice({

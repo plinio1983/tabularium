@@ -794,7 +794,7 @@ export default function RecurringExpenseForm({
 
             <details className="form-section full recurring-form-section recurring-document-section recurring-amount-section" open>
                 <summary>
-                    <span>{isPayroll ? "Importi busta paga" : isTaxContribution ? "Importo imposta" : "Importo e IVA"}</span>
+                    <span>{isPayroll ? "Importi stipendio" : isTaxContribution ? "Importo imposta" : "Importo e IVA"}</span>
                     <small>{isPayroll ? "Netto, compensi e costo aziendale" : "Fiscalità e importo della spesa"}</small>
                 </summary>
                 <div className="form-section-grid recurring-form-section-grid">

@@ -87,7 +87,7 @@ test('aggiungi spesa dal dipendente mantiene la busta paga e il dipendente preco
   const initialExpense = {expenseType: 'PAYROLL', employeeId: 7};
   const tree = Panel({categories: [], banks: [], paymentMethods: [], suppliers: [], initialExpense, initialOpen: true, showToolbar: false});
   const modal = tree.props.children[1];
-  assert.equal(modal.props['aria-label'], 'Nuova busta paga');
+  assert.equal(modal.props['aria-label'], 'Nuovo stipendio');
   const form = modal.props.children.props.children[1];
   assert.equal(form.props.initialExpense, initialExpense);
 });

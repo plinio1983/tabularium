@@ -138,3 +138,28 @@ test('amount keypad edits cents and keeps description out of the submitted group
   assert.equal(nodes(app.render()).find(node => node.props?.name === 'amount').props.value, 100.52);
   assert.equal(nodes(app.render()).some(node => node.props?.name === 'description'), false);
 });
+
+test('non-fiscal expense locks invoice type and status and submits Non prevista', () => {
+  const app = setup();
+  let all = nodes(app.render());
+  all.find(node => node.type === 'button' && nodes(node).some(child => child.type === 'strong' && child.props.children === 'Informazioni fiscali e contabili')).props.onClick();
+  all = nodes(app.render());
+  assert.equal(all.find(node => node.type === 'SelectField' && node.props.name === 'invoiceStatus').props.value, 'RICEVUTA');
+  all.find(node => node.type === 'button' && node.props.children === 'Non fiscale').props.onClick();
+  all = nodes(app.render());
+  for (const label of ['PDF', 'Elettronica']) {
+    assert.equal(all.find(node => node.type === 'button' && node.props.children === label).props.disabled, true);
+  }
+  const status = all.find(node => node.type === 'SelectField' && node.props.name === 'invoiceStatus');
+  assert.equal(status.props.disabled, true);
+  assert.equal(status.props.value, 'NON_PREVISTA');
+  assert.equal(status.props.options.find((option: any) => option.value === 'NON_PREVISTA').disabled, false);
+  assert.equal(all.find(node => node.type === 'input' && node.props.name === 'invoiceStatus').props.value, 'NON_PREVISTA');
+  assert.equal(all.find(node => node.props?.name === 'electronicInvoice').props.value, 'false');
+  all.find(node => node.type === 'button' && node.props.children === 'Fiscale').props.onClick();
+  all = nodes(app.render());
+  assert.equal(all.find(node => node.type === 'SelectField' && node.props.name === 'invoiceStatus').props.disabled, false);
+  assert.equal(all.find(node => node.type === 'button' && node.props.children === 'Elettronica').props.disabled, false);
+  all.find(node => node.type === 'button' && node.props.children === 'Elettronica').props.onClick();
+  assert.equal(nodes(app.render()).find(node => node.type === 'SelectField' && node.props.name === 'invoiceStatus').props.value, 'IN_ATTESA');
+});

@@ -45,7 +45,7 @@ const generationTimingLabels: Record<string, string> = {
 const expenseTypeLabels: Record<string, string> = {
     STANDARD: 'Singola',
     TAX_CONTRIBUTION: 'Imposte',
-    PAYROLL: 'Busta paga'
+    PAYROLL: 'Stipendio'
 };
 
 const months = ['', 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];

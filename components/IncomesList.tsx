@@ -51,7 +51,7 @@ function invoiceAttachments(income: IncomeItem) {
     return income.attachments?.filter(attachment => attachment.type === 'INVOICE') ?? [];
 }
 
-function cashRegisterGroupHref(group: IncomeCashRegisterGroup) {
+function cashRegisterGroupHref(group: IncomeCashRegisterGroup, mobileList = false) {
     const month = `${group.billingYear}-${String(group.billingMonth).padStart(2, '0')}`;
     const query = new URLSearchParams({
         month,
@@ -59,6 +59,7 @@ function cashRegisterGroupHref(group: IncomeCashRegisterGroup) {
         salesChannelId: String(group.salesChannelId),
         fiscal: group.isFiscal ? 'yes' : 'no'
     });
+    if (mobileList) query.set('mobileList', '1');
     return `/incomes/cash-register/receipts?${query}`;
 }
 
@@ -229,9 +230,7 @@ export default function IncomesList({
             <div className="bulk-action-buttons btn-group">
                 <details className="bulk-action-menu bulk-action-menu-disabled" data-bulk-menu data-bulk-form={formId}>
                     <summary className="bulk-action-trigger" aria-label="Azioni multiple">
-                        <span className="btn-icon" aria-hidden="true">⚙</span><span
-                        className="hidden-sm-up hidden-xs-down">Azioni</span><span
-                        className="hidden-sm-down hidden-xs-down">Azioni</span>
+                        <span className="btn-icon" aria-hidden="true">⚙</span><span className="bulk-label">Azioni</span>
                     </summary>
                     <div className="bulk-action-menu-panel">
                         <button type="button" className="btn btn-sm btn-option" data-bulk-convert="incomes"
@@ -307,7 +306,7 @@ export default function IncomesList({
                             <input type="checkbox" disabled
                                    aria-label="I cumulativi degli scontrini non sono selezionabili"/>
                         </div>
-                        <Link className="mobile-record-link income-mobile-link" href={cashRegisterGroupHref(group)}>
+                        <Link className="mobile-record-link income-mobile-link" href={cashRegisterGroupHref(group, true)}>
                             <div className="mobile-record-main">
                                 <div className="mobile-record-header">
                                     <div className="left-side flex-grow">

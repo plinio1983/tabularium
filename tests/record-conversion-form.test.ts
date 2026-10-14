@@ -88,7 +88,7 @@ test('conversion opens in a modal, requires a target and preserves form data whe
 
 test('shared type cards filter conversion targets without changing the creation selector', () => {
     const conversion = renderToStaticMarkup(createElement(ExpenseTypeChoice, {availableTypes: ['payroll', 'tax'], showCounter: false, onSelect() {}}));
-    assert.match(conversion, /Busta paga/);
+    assert.match(conversion, /Stipendio/);
     assert.match(conversion, /Imposte/);
     assert.doesNotMatch(conversion, /Saldo IVA|Da banco|Spesa occasionale/);
     const creation = renderToStaticMarkup(createElement(ExpenseTypeChoice, {selected: 'single', onSelect() {}}));

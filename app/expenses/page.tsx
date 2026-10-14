@@ -931,7 +931,7 @@ export default async function ExpensesPage({searchParams}: {
         categoryFilter && {label: 'Categoria', value: categoryFilter},
         expenseTypeFilter && {
             label: 'Tipo spesa',
-            value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : expenseTypeFilter === 'tax_contribution' ? 'Imposte - non IVA' : expenseTypeFilter === 'payroll' ? 'Busta paga' : expenseTypeFilter === 'counter' ? 'Banco' : 'Singola'
+            value: expenseTypeFilter === 'recurring' ? 'Ricorrente' : expenseTypeFilter === 'vat_settlement' ? 'Saldo IVA' : expenseTypeFilter === 'tax_contribution' ? 'Imposte - non IVA' : expenseTypeFilter === 'payroll' ? 'Stipendio' : expenseTypeFilter === 'counter' ? 'Banco' : 'Singola'
         },
         inputDefault(filters, 'merchant') && {label: 'Esercente', value: inputDefault(filters, 'merchant')},
         inputDefault(filters, 'supplierQuick') && {label: 'Ricerca spesa', value: inputDefault(filters, 'supplierQuick')},

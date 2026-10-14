@@ -263,7 +263,7 @@ export default async function ExpenseDetailPage({params, searchParams}: {
                             <p className="record-detail-kicker">
                                 <span>Spesa #{expense.id}</span>
                                 <span
-                                    className={isVatSettlement ? 'badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge tone-neutral' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{expense.isRecurring || expense.recurringExpenseId ? expenseTypeLabel(expense) : isVatSettlement ? 'Saldo IVA' : isTaxContribution ? 'Imposte - non IVA' : isPayroll ? 'Busta paga' : expenseTypeLabel(expense)}</span>
+                                    className={isVatSettlement ? 'badge vat-settlement-expense-badge' : isTaxContribution || isPayroll ? 'badge tone-neutral' : expense.isRecurring ? 'badge recurring-expense-badge' : 'badge single-expense-badge'}>{expense.isRecurring || expense.recurringExpenseId ? expenseTypeLabel(expense) : isVatSettlement ? 'Saldo IVA' : isTaxContribution ? 'Imposte - non IVA' : isPayroll ? 'Stipendio' : expenseTypeLabel(expense)}</span>
                             </p>
                             <div className="expense-detail-title">
                                 <strong>{expense.description}</strong>

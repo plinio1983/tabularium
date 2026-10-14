@@ -86,7 +86,7 @@ test('anteprima senza scritture; conferma atomica mantiene ID, pagamenti e alleg
     assert.equal(preview.status, 200);
     assert.equal(h.updates.length, 0);
     assert.equal(h.audits.length, 0);
-    assert.ok(preview.body.changes.some((change: RecordData) => change.after === 'Busta paga'));
+    assert.ok(preview.body.changes.some((change: RecordData) => change.after === 'Stipendio'));
     const result = await h.send({...payrollInput, confirmed: 'true', reviewToken: preview.body.reviewToken});
     assert.equal(result.status, 200);
     const {data, where} = h.updates[0];

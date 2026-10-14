@@ -39,7 +39,7 @@ export function resolvePayrollPeriod(input: {
   const payrollPeriodEnd = validDateInput(input.end);
   if (!payrollPeriodStart || !payrollPeriodEnd) throw new Error('Indica il periodo lavorato completo');
   if (payrollPeriodStart > payrollPeriodEnd) throw new Error('La data iniziale del periodo lavorato non può superare quella finale');
-  if (!validDateInput(input.dueDate)) throw new Error('Indica la data di scadenza della busta paga');
+  if (!validDateInput(input.dueDate)) throw new Error('Indica la data di scadenza dello stipendio');
 
   return {payrollPeriodStart, payrollPeriodEnd};
 }

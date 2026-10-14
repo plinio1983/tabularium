@@ -93,7 +93,7 @@ function DesktopHeader({
             <div className="info-title-row">
                 <h2>{ledgerKind === 'payments' ? 'Pagamenti' : 'Accrediti'}</h2>
                 <InfoHint compactOnly title={ledgerKind === 'payments' ? 'Pagamenti' : 'Accrediti'}>
-                    {ledgerKind === 'payments' ? 'Pagamenti registrati sulle spese, comprese le buste paga.' : 'Accrediti registrati sugli incassi, compresi gli scontrini.'}
+                    {ledgerKind === 'payments' ? 'Pagamenti registrati sulle spese, compresi gli stipendi.' : 'Accrediti registrati sugli incassi, compresi gli scontrini.'}
                 </InfoHint>
             </div>
         </div> : null}

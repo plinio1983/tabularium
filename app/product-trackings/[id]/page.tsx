@@ -76,12 +76,12 @@ export default async function Page({params, searchParams}: {
                     </div>
                     <div className="record-detail-status-strip party-detail-info-strip">
                         <div className="copyable-detail-field">
-                            <span>Nome</span><strong>{record.name}</strong><CopyValueButton value={record.name}/></div>
+                            <span>Riferimento</span><strong>{record.name}</strong><CopyValueButton value={record.name}/></div>
                         <div className="copyable-detail-field">
                             <span>Lotto</span><strong>{record.batch}</strong><CopyValueButton value={record.batch}/>
                         </div>
                         <div className="copyable-detail-field">
-                            <span>Alias</span><strong>{record.alias || '—'}</strong><CopyValueButton
+                            <span>Nome</span><strong>{record.alias || '—'}</strong><CopyValueButton
                             value={record.alias ?? ''}/></div>
                         <div>
                             <span>Data ingresso</span><strong>{record.entryDate ? formatItalianCompactDate(calendarDateInput(record.entryDate)) : '—'}</strong>

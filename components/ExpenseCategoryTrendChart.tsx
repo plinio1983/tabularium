@@ -14,7 +14,7 @@ const money = new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR'
 function categoryParams(name: string) {
   if (name === 'Saldo IVA') return {expenseType: 'vat_settlement'};
   if (name === 'Imposte e contributi') return {expenseType: 'tax_contribution'};
-  if (name === 'Buste paga') return {expenseType: 'payroll'};
+  if (name === 'Stipendi') return {expenseType: 'payroll'};
   if (name === 'Senza categoria') return {};
   return {category: name};
 }
