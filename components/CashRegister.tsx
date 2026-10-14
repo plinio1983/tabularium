@@ -93,9 +93,16 @@ export default function CashRegister({
     const [notice, setNotice] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null);
     const [requestId, setRequestId] = useState('');
     const [mounted, setMounted] = useState(false);
+    const [keyboardSheet, setKeyboardSheet] = useState<'vat' | 'payment' | null>(null);
+    const [keyboardIndex, setKeyboardIndex] = useState(0);
+    const [confirmationAction, setConfirmationAction] = useState<'submit' | 'cancel'>('submit');
     const vatPanel = useRef<HTMLDivElement>(null);
     const methodPanel = useRef<HTMLDivElement>(null);
     const draftDescriptionRef = useRef<string | null>(null);
+    const registerRef = useRef<HTMLElement>(null);
+    const keyboardButtons = useRef<Array<HTMLButtonElement | null>>([]);
+    const cancelRef = useRef<HTMLButtonElement>(null);
+    const keyboardVatOptions = [{isFiscal: false, vatRate: 0}, ...[0, 4, 10, 22].map(rate => ({isFiscal: true, vatRate: rate}))];
     const numericAmount = Number(amount.replace(',', '.'));
     const hasDraft = Number.isFinite(numericAmount) && numericAmount > 0;
     const summary = useMemo(() => lines.length ? receiptLineSummary(lines) : null, [lines]);
@@ -120,19 +127,58 @@ export default function CashRegister({
         if (vatPanel.current) vatPanel.current.inert = showMethods || Boolean(selectedMethod);
         if (methodPanel.current) methodPanel.current.inert = !showMethods || Boolean(selectedMethod);
     }, [showMethods, selectedMethod]);
+    const dialogOpen = Boolean(selectedMethod || keyboardSheet);
+    const keyboardMethods = orderedMethods.filter(available);
     useEffect(() => {
-        if (!selectedMethod) return;
+        if (registerRef.current) registerRef.current.inert = dialogOpen;
+        if (!dialogOpen) return;
         const overflow = document.body.style.overflow;
         previousFocus.current = document.activeElement as HTMLElement | null;
         document.body.style.overflow = 'hidden';
-        submitRef.current?.focus({preventScroll: true});
         return () => {
             document.body.style.overflow = overflow;
+            if (registerRef.current) registerRef.current.inert = false;
             requestAnimationFrame(() => {
                 if (previousFocus.current?.isConnected && previousFocus.current.getClientRects().length && !previousFocus.current.closest('[inert]')) previousFocus.current.focus({preventScroll: true}); else amountRef.current?.focus({preventScroll: true});
             });
         };
-    }, [selectedMethod]);
+    }, [dialogOpen]);
+    useEffect(() => {
+        if (selectedMethod) {
+            (confirmationAction === 'submit' ? submitRef.current : cancelRef.current)?.focus({preventScroll: true});
+        } else if (keyboardSheet) keyboardButtons.current[keyboardIndex]?.focus({preventScroll: true});
+    }, [selectedMethod, keyboardSheet, keyboardIndex, confirmationAction, sending]);
+
+    function closeKeyboardSheet() {
+        setKeyboardSheet(null);
+    }
+
+    function openKeyboardSheet() {
+        if (hasDraft) {
+            setKeyboardIndex(Math.max(0, keyboardVatOptions.findIndex(option => option.isFiscal === isFiscal && option.vatRate === vatRate)));
+            setKeyboardSheet('vat');
+        } else if (summary && keyboardMethods.length) {
+            const preferred = keyboardMethods.findIndex(method => method.id === (mode === 'edit' ? initialReceipt?.paymentMethodId : primaryMethodId));
+            setKeyboardIndex(Math.max(0, preferred));
+            setKeyboardSheet('payment');
+        }
+    }
+
+    function acceptKeyboardChoice(index: number) {
+        if (sendingRef.current) return;
+        if (keyboardSheet === 'vat') {
+            const option = keyboardVatOptions[index];
+            if (!option) return;
+            setIsFiscal(option.isFiscal);
+            setVatRate(option.vatRate);
+            if (addLine(option)) closeKeyboardSheet();
+        } else if (keyboardSheet === 'payment') {
+            const method = keyboardMethods[index];
+            if (!method) return;
+            closeKeyboardSheet();
+            chooseMethod(method);
+        }
+    }
 
     function focusAmount() {
         requestAnimationFrame(() => amountRef.current?.focus({preventScroll: true}));
@@ -145,7 +191,7 @@ export default function CashRegister({
     }
 
     function appendKey(key: string) {
-        if (selectedMethod || sendingRef.current) return;
+        if (selectedMethod || keyboardSheet || sendingRef.current) return;
         changeAmount(applyCurrencyInputKeyWithState(amountValueRef.current, key, keyState.current));
         focusAmount();
     }
@@ -157,21 +203,22 @@ export default function CashRegister({
         focusAmount();
     }
 
-    function addLine() {
-        if (!hasDraft || sendingRef.current || selectedMethod) return;
+    function addLine(option = {isFiscal, vatRate}) {
+        if (!hasDraft || sendingRef.current || selectedMethod) return false;
         const next = [...lines, {
             amount: numericAmount,
-            isFiscal,
-            vatRate: isFiscal ? vatRate : 0, ...(draftDescriptionRef.current ? {description: draftDescriptionRef.current} : {})
+            isFiscal: option.isFiscal,
+            vatRate: option.isFiscal ? option.vatRate : 0, ...(draftDescriptionRef.current ? {description: draftDescriptionRef.current} : {})
         }];
         try {
             receiptLineSummary(next);
         } catch (error) {
             setNotice({tone: 'error', text: (error as Error).message});
-            return;
+            return false;
         }
         setLines(next);
         clearAmount();
+        return true;
     }
 
     function undoLastLine() {
@@ -204,6 +251,7 @@ export default function CashRegister({
     function chooseMethod(method: Method) {
         if (!summary || hasDraft || !available(method) || sendingRef.current) return;
         if (mode === 'edit' && method.id !== initialReceipt?.paymentMethodId) setBankId(method.bankRules.find(rule => rule.salesChannelId === Number(channelId))?.bankId ?? method.defaultBankId ?? bankId);
+        setConfirmationAction('submit');
         setSelectedMethod(method);
         setNotice(null);
     }
@@ -211,10 +259,31 @@ export default function CashRegister({
     useEffect(() => {
         const handler = (event: KeyboardEvent) => {
             if (sendingRef.current || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
-            if (selectedMethod) {
+            if (event.key === 'Enter' && event.repeat) {event.preventDefault(); return;}
+            if (keyboardSheet) {
                 if (event.key === 'Escape') {
                     event.preventDefault();
-                    closeConfirmation();
+                    if (keyboardSheet === 'payment') undoLastLine();
+                    closeKeyboardSheet();
+                }
+                else if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) {
+                    event.preventDefault();
+                    const length = keyboardSheet === 'vat' ? keyboardVatOptions.length : keyboardMethods.length;
+                    const step = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1;
+                    setKeyboardIndex(index => (index + step + length) % length);
+                } else if (event.key === 'Enter' && !(event.target as HTMLElement | null)?.closest('button[aria-label="Chiudi selezione"]')) {event.preventDefault(); acceptKeyboardChoice(keyboardIndex);}
+                return;
+            }
+            if (selectedMethod) {
+                if (event.key === 'Escape') {event.preventDefault(); closeConfirmation(); return;}
+                const target = event.target as HTMLElement | null;
+                if (target?.matches('input, select, textarea') || target?.closest('[contenteditable="true"]')) return;
+                if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) {
+                    event.preventDefault();
+                    setConfirmationAction(action => action === 'submit' ? 'cancel' : 'submit');
+                } else if (event.key === 'Enter' && (target === submitRef.current || target === cancelRef.current || target === amountRef.current)) {
+                    event.preventDefault();
+                    if (confirmationAction === 'submit') void submitReceipt(); else closeConfirmation();
                 }
                 return;
             }
@@ -231,19 +300,18 @@ export default function CashRegister({
                 appendKey('backspace');
             } else if (event.key === 'Escape' || event.key === 'Delete') {
                 event.preventDefault();
-                clearAmount();
+                if (event.key === 'Escape' && showMethods) undoLastLine(); else clearAmount();
             } else if (event.key === 'Enter' && target === amountRef.current) {
                 event.preventDefault();
-                if (hasDraft) addLine();
-                else methodPanel.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
+                openKeyboardSheet();
             }
         };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
-    }, [selectedMethod, amount, lines, isFiscal, vatRate]);
+    }, [selectedMethod, amount, lines, isFiscal, vatRate, keyboardSheet, keyboardIndex, confirmationAction, orderedMethods, primaryMethodId, creditDate, channelId, bankId, description, requestId]);
 
     async function submitReceipt() {
-        if (!selectedMethod || !summary || !available(selectedMethod) || !requestId || sendingRef.current) return;
+        if (!selectedMethod || !summary || !available(selectedMethod) || !requestId || !creditDate || !categoryId || !channelId || mode === 'edit' && !bankId || sendingRef.current) return;
         sendingRef.current = true;
         setSending(true);
         setNotice(null);
@@ -283,7 +351,7 @@ export default function CashRegister({
         }
     }
 
-    return <main className={`cash-register-shell cash-register-multiple ${mode === 'edit' ? 'is-editing' : ''}`}>
+    return <main ref={registerRef} className={`cash-register-shell cash-register-multiple ${mode === 'edit' ? 'is-editing' : ''}`}>
         <header className="cash-register-header">
             <div>
                 <h1>{mode === 'edit' ? `Modifica scontrino #${initialReceipt?.id}` : mode === 'copy' ? 'Copia scontrino' : 'Registratore di cassa'}</h1>
@@ -316,16 +384,16 @@ export default function CashRegister({
         <section className="cash-register-display cash-register-total-display" aria-label="Totale provvisorio">
             <div className="cash-register-total-heading">
                 <div>
-                    <span>Tot · {lines.length} {lines.length === 1 ? 'importo' : 'importi'}</span>
+                    <small>TOT · <strong>{lines.length} {lines.length === 1 ? 'importo' : 'importi'}</strong></small>
                 </div>
                 <div>
-                    <div><strong aria-live="polite">{euro(summary?.amount ?? 0)}</strong></div>
-                    <small>I.E. <strong className="text-success">{euro(summary?.net ?? 0)}</strong></small>
+                    {/*<div><strong aria-live="polite">{euro(summary?.amount ?? 0)}</strong></div>*/}
+                    <small>IVA Esc. <strong className="text-success">{euro(summary?.net ?? 0)}</strong></small>
                 </div>
             </div>
             <div className="cash-register-display-amount cash-register-draft-amount"><label><input ref={amountRef}
                                                                                                    aria-label="Importo da aggiungere"
-                                                                                                   value={formatCurrencyInput(amount)}
+                                                                                                   value={formatCurrencyInput(showMethods ? String(summary?.amount ?? 0).replace('.', ',') : amount)}
                                                                                                    readOnly
                                                                                                    disabled={Boolean(selectedMethod)}
                                                                                                    inputMode="none"/></label>
@@ -358,7 +426,7 @@ export default function CashRegister({
                     }}>{rate}%</button>)}
                 </section>
                 <button className="btn btn-md btn-primary cash-register-add" type="button"
-                        disabled={!hasDraft || lines.length >= receiptLineLimit} onClick={addLine}>Aggiungi
+                        disabled={!hasDraft || lines.length >= receiptLineLimit} onClick={() => addLine()}><span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Aggiungi
                 </button>
             </div>
             <div ref={methodPanel} className="cash-register-method-pane">
@@ -383,6 +451,26 @@ export default function CashRegister({
             </div>
         </div>
         {notice && !selectedMethod && <p className={`cash-register-notice ${notice.tone === 'error' ? 'is-error' : ''}`} role="status">{notice.text}</p>}
+        {mounted && keyboardSheet && createPortal(<div className="cash-register-method-backdrop cash-register-keyboard-backdrop" onMouseDown={event => {
+            if (event.target === event.currentTarget) closeKeyboardSheet();
+        }}>
+            <section className="cash-register-method-modal cash-register-keyboard-choice-modal" role="dialog" aria-modal="true" aria-labelledby="cash-register-keyboard-title" onKeyDown={event => {
+                if (event.key !== 'Tab') return;
+                const controls = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'));
+                const first = controls[0], last = controls[controls.length - 1];
+                if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last?.focus();}
+                else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first?.focus();}
+            }}>
+                <header><h2 id="cash-register-keyboard-title">{keyboardSheet === 'vat' ? 'Seleziona reparto IVA' : 'Seleziona metodo di pagamento'}</h2>
+                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi selezione" onClick={closeKeyboardSheet}><span className="btn-icon" aria-hidden="true">×</span></button>
+                </header>
+                <div>
+                    {keyboardSheet === 'vat' ? keyboardVatOptions.map((option, index) => <button key={index} type="button" ref={node => {keyboardButtons.current[index] = node;}} className={`${keyboardIndex === index ? 'is-selected' : ''} ${!option.isFiscal ? 'is-non-fiscal' : ''}`} aria-pressed={keyboardIndex === index} onFocus={() => setKeyboardIndex(index)} onClick={() => acceptKeyboardChoice(index)}>{option.isFiscal ? `Rep. ${option.vatRate}%` : 'Non Fisc.'}</button>) : keyboardMethods.map((method, index) => <button key={method.id} type="button" ref={node => {keyboardButtons.current[index] = node;}} className={keyboardIndex === index ? 'is-selected' : ''} aria-pressed={keyboardIndex === index} onFocus={() => setKeyboardIndex(index)} onClick={() => acceptKeyboardChoice(index)}><span className="btn-icon" aria-hidden="true">{method.icon ?? '•'}</span>{method.name}</button>)}
+                </div>
+                {notice?.tone === 'error' && <p className="form-error" role="alert">{notice.text}</p>}
+                <p className="cash-register-keyboard-hint">Frecce per scegliere · Invio per confermare · Esc per annullare</p>
+            </section>
+        </div>, document.body)}
         {mounted && selectedMethod && summary && createPortal(<div
             className="modal-backdrop app-form-modal-backdrop cash-register-confirm-backdrop" onMouseDown={event => {
             if (event.target === event.currentTarget) closeConfirmation();
@@ -447,11 +535,12 @@ export default function CashRegister({
                         {/*<div><dt>Non fiscale</dt><dd>{euro(Math.round((summary.amount - summary.receiptFiscalAmount) * 100) / 100)}</dd></div>*/}
                     </dl>
                     {notice?.tone === 'error' && <p className="form-error" role="alert">{notice.text}</p>}
-                    <button className="btn btn-md btn-link text-critical" type="button" disabled={sending}
+                    <button ref={cancelRef} className="btn btn-md btn-link text-critical" type="button" disabled={sending}
+                            onFocus={() => setConfirmationAction('cancel')}
                             onClick={closeConfirmation}>Annulla e torna al registratore
                     </button>
                     <button ref={submitRef} className="btn btn-md btn-success cash-register-confirm-submit"
-                            type="button"
+                            type="button" onFocus={() => setConfirmationAction('submit')}
                             disabled={sending || !creditDate || !categoryId || !channelId || mode === 'edit' && !bankId}
                             onClick={() => void submitReceipt()}><span className="btn-icon"
                                                                        aria-hidden="true">✓</span>{sending ? 'Salvataggio…' : mode === 'edit' ? 'SALVA MODIFICHE' : 'INCASSA'}

@@ -1650,7 +1650,7 @@ body.invoice-attachments-modal-open {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
   gap: 4px;
-  padding: 9px 8px 9px 0;
+  padding: 12px 8px 12px 2px;
   border-bottom: 1px solid var(--line);
 
   @media (max-width: 390px) {

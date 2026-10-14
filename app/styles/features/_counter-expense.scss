@@ -441,13 +441,6 @@
 }
 
 @media (max-width: 760px) {
-  .cash-register-receipt-row {
-    grid-template-columns: 30px minmax(0, 1fr);
-    padding: 10px;
-  }
-}
-
-@media (max-width: 760px) {
   .cash-register-receipt-content {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px 10px;

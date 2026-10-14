@@ -48,7 +48,7 @@ test('cash register adds multiple rates, returns from methods on typing, and ret
   assert.equal(app.button('Carta').props.disabled, true);
   app.type('100'); app.button('Azzera importo').props.onClick();
   assert.equal(app.render().find(node => node.props.className === 'cash-register-panel-slider').props['data-methods-open'], true);
-  assert.ok(app.render().some(node => node.type === 'strong' && node.props.children === euro(28.2)));
+  assert.equal(app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value, '28,20');
   app.button('Annulla ultimo').props.onClick();
   assert.equal(app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value, '5,00');
   assert.equal(app.button('Non Fisc.').props['aria-pressed'], true);
@@ -84,6 +84,8 @@ test('failed receipt submission keeps the confirmation and every amount for retr
 test('computer keyboard adds a default VAT line with Enter and clearing a draft returns to methods', () => {
   const app = setup();
   for (const digit of '1220') app.key(digit);
+  app.key('Enter');
+  assert.ok(app.render().some(node => node.props.id === 'cash-register-keyboard-title' && node.props.children === 'Seleziona reparto IVA'));
   app.key('Enter');
   assert.equal(app.render().find(node => node.props.className === 'cash-register-panel-slider').props['data-methods-open'], true);
   app.key('1');
@@ -122,7 +124,7 @@ test('undoing an imported line preserves its description and a successful checko
   assert.equal(app.posts[0].lines[0].description, 'Articolo originale');
   assert.equal(app.button('Aggiungi').props.disabled, true);
   app.type('200'); app.button('Aggiungi').props.onClick();
-  assert.ok(app.render().some(node => node.type === 'strong' && node.props.children === euro(2)));
+  assert.equal(app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value, '2,00');
 });
 
 
@@ -143,4 +145,89 @@ test('cash register does not expose the technical income category', () => {
   assert.equal(app.render().some(node => node.props['aria-label'] === 'Categoria'), false);
   app.type('1220'); app.button('Aggiungi').props.onClick(); app.button('Cash').props.onClick();
   assert.equal(app.render().some(node => node.type === 'dt' && node.props.children === 'Categoria'), false);
+});
+
+
+test('keyboard VAT modal follows the current department and applies the arrow selection to the line', async () => {
+  const app = setup(); app.type('1220');
+  app.key('Enter');
+  const sheet = () => app.render().find(node => node.props.className === 'cash-register-method-modal cash-register-keyboard-choice-modal');
+  assert.ok(nodes(sheet()).some(node => node.type === 'button' && node.props.children === 'Rep. 22%' && node.props['aria-pressed']));
+  app.key('ArrowLeft');
+  assert.ok(nodes(sheet()).some(node => node.type === 'button' && node.props.children === 'Rep. 10%' && node.props['aria-pressed']));
+  app.key('Enter');
+  assert.equal(sheet(), undefined);
+  app.key('Enter');
+  assert.ok(app.render().some(node => node.props.id === 'cash-register-keyboard-title' && node.props.children === 'Seleziona metodo di pagamento'));
+  app.key('ArrowLeft'); app.key('Enter');
+  assert.ok(app.button('INCASSA'));
+  app.key('Enter'); app.key('Enter');
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(app.posts.length, 1);
+  assert.equal(app.posts[0].lines[0].vatRate, 10);
+  assert.equal(app.posts[0].paymentMethodId, 1);
+});
+
+test('keyboard escape and cancellation preserve drafts and added lines', () => {
+  const app = setup(); app.type('500'); app.button('Non Fisc.').props.onClick();
+  app.key('Enter');
+  const sheet = () => app.render().find(node => node.props.className === 'cash-register-method-modal cash-register-keyboard-choice-modal');
+  assert.ok(nodes(sheet()).some(node => node.type === 'button' && node.props.children === 'Non Fisc.' && node.props['aria-pressed']));
+  app.key('Escape');
+  assert.equal(sheet(), undefined);
+  assert.equal(app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value, '5,00');
+  app.key('Enter'); app.key('Enter'); app.key('Enter');
+  assert.equal(nodes(sheet()).filter(node => node.props['aria-pressed'] !== undefined).length, 1);
+  app.key('Escape');
+  assert.equal(sheet(), undefined);
+  assert.equal(app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value, '5,00');
+  app.key('Enter'); app.key('Enter'); app.key('Enter'); app.key('Enter');
+  app.key('ArrowDown'); app.key('Enter');
+  assert.equal(app.render().some(node => node.props.role === 'dialog'), false);
+  assert.ok(app.render().some(node => node.type === 'strong' && node.props.children === euro(5)));
+  app.key('Enter'); app.key('Enter'); app.key('Escape');
+  assert.equal(app.render().some(node => node.props.role === 'dialog'), false);
+  assert.equal(app.posts.length, 0);
+});
+
+test('keyboard empty input and repeated Enter cannot advance or create extra receipt lines', () => {
+  const app = setup(); app.key('Enter');
+  assert.equal(app.render().some(node => node.props.role === 'dialog'), false);
+  app.type('100'); app.key('Enter'); app.key('Enter', {repeat: true});
+  assert.ok(app.render().some(node => node.props.id === 'cash-register-keyboard-title'));
+  app.key('Enter'); app.key('Enter', {repeat: true});
+  assert.equal(app.render().some(node => node.props.role === 'dialog'), false);
+  assert.equal(app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value, '1,00');
+});
+
+test('main display shows the basket total during payment selection and the draft while entering a new amount', () => {
+  const app = setup();
+  const display = () => app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value;
+  app.type('1220'); app.button('Aggiungi').props.onClick();
+  assert.equal(display(), '12,20');
+  app.type('100');
+  assert.equal(display(), '1,00');
+  app.button('Azzera importo').props.onClick();
+  assert.equal(display(), '12,20');
+  app.type('1100'); app.button('Aggiungi').props.onClick();
+  assert.equal(display(), '23,20');
+  app.button('Annulla ultimo').props.onClick();
+  assert.equal(display(), '11,00');
+});
+
+
+test('Escape at payment selection restores the last amount and VAT, in the register and keyboard modal', () => {
+  for (const openModal of [false, true]) {
+    const app = setup();
+    app.type('1220'); app.button('Aggiungi').props.onClick();
+    app.type('1100'); app.button('10%').props.onClick(); app.button('Aggiungi').props.onClick();
+    if (openModal) app.key('Enter');
+    app.key('Escape');
+    assert.equal(app.render().some(node => node.props.role === 'dialog'), false);
+    assert.equal(app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value, '11,00');
+    assert.equal(app.button('10%').props['aria-pressed'], true);
+    assert.ok(app.render().some(node => node.props.className === 'text-success' && node.props.children === euro(10)));
+    assert.equal(app.render().find(node => node.props.className === 'cash-register-panel-slider').props['data-methods-open'], false);
+    assert.equal(app.posts.length, 0);
+  }
 });

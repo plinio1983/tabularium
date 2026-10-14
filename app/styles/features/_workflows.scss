@@ -2786,15 +2786,24 @@ body.bulk-attachments-modal-open {
 
   @media(max-width: 576px) {
     padding-left: 14px;
+    //padding-left: 12px;
   }
 
   @media (min-width: 577px) and (max-width: 760px) {
-    padding-left: 18px;
+    padding-left: 15px;
   }
 
   @media(min-width: 900px) {
     padding-left: 29px;
   }
+
+  //@media(min-width: 1298px) and (max-width: 1330px) {
+  //  padding-left: 16px;
+  //}
+  //
+  //@media(min-width: 1334px) {
+  //  padding-left: 24px;
+  //}
 }
 
 .bulk-select-all-inline {
