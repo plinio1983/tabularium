@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import InfoHint from '@/components/InfoHint';
 import RecurringStateProvider from '@/components/RecurringStateProvider';
 import {prisma} from '@/lib/prisma';
@@ -57,6 +58,10 @@ export default async function RecurringIncomesPage({searchParams}: {
     }))} paymentMethods={methods} salesChannels={channels} customers={customers}/>
         <div className="toolbar-card record-toolbar-card">
             <div><div className="info-title-row"><h2>Entrate ricorrenti</h2><InfoHint compactOnly title="Entrate ricorrenti">Gestisci le regole che generano periodicamente gli incassi.</InfoHint></div><p className="muted info-hint-desktop-text">Gestisci le regole che generano periodicamente gli incassi.</p></div>
+            <div className="toolbar-actions record-toolbar-actions">
+                <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/incomes"><span className="btn-icon">↩</span> Lista incassi</Link>
+                <button className="btn btn-sm btn-secondary" type="button" data-income-new data-income-new-type="recurring"><span className="btn-icon btn-icon-add">＋</span>Entrata ricorrente</button>
+            </div>
         </div>
         <ActionFeedbackBanner searchParams={query} savedMessages={{activated: 'Ricorrenze attivate.', deactivated: 'Ricorrenze disattivate.',
             created: 'Entrata ricorrente creata.', deleted: 'Entrata ricorrente eliminata.',
