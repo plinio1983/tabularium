@@ -926,6 +926,7 @@ model ProductTracking {
   company     Company                     @relation(fields: [companyId], references: [id], onDelete: Cascade)
   name        String
   batch       String
+  batchYear   Int
   alias       String?
   entryDate   DateTime?                   @db.Date
   createdAt   DateTime                    @default(now())
@@ -947,6 +948,7 @@ model ProductTrackingAttachment {
   tracking     ProductTracking               @relation(fields: [trackingId], references: [id], onDelete: Cascade)
   kind         ProductTrackingAttachmentKind
   invoiceDate  DateTime?                     @db.Date
+  documentDate DateTime?                     @db.Date
   originalName String
   path         String
   mimeType     String?

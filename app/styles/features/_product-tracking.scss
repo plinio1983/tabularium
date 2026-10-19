@@ -86,6 +86,9 @@
 }
 
 .product-tracking-invoice-editor {
+  display: grid;
+  gap: 14px;
+
   .product-tracking-fields,
   .payment-edit-actions { grid-column: 1 / -1; }
 }
@@ -106,15 +109,24 @@
   }
 }
 
-.product-tracking-invoice-list {
-  .form-summary {
-    margin-bottom: 12px;
+.app-record-form .product-tracking-invoice-list {
+  > .form-summary,
+  > .payment-row + .payment-row,
+  > p {
+    margin: 0;
+  }
+
+  // Detail sections already provide their own outer spacing.
+  .record-detail-section & {
+    padding: 0;
   }
 }
 
 @media (max-width: 900px) {
   .product-tracking-wizard {
     .product-tracking-desktop-actions { display: none; }
+
+    .product-tracking-invoice-list { padding: 0; }
 
     .product-tracking-fields > details.app-form-wizard-step > summary,
     .app-form-wizard-step-3 > details > summary { display: none; }
@@ -138,18 +150,6 @@
   > h2 { margin: 0; }
 }
 
-.app-record-form .product-tracking-document-summary {
-  grid-template-columns: minmax(180px, 1.4fr) minmax(110px, .45fr) auto;
-
-  @media (max-width: 900px) {
-    grid-template-columns: minmax(0, 1fr);
-
-    > .payment-summary-primary,
-    > .payment-summary-meta,
-    > .payment-row-actions { grid-column: 1 / -1; }
-    > .payment-summary-meta { grid-row: auto; grid-template-columns: minmax(0, 1fr); }
-  }
-}
 
 @media (max-width: 900px) {
   .product-tracking-wizard .app-form-wizard-step-2 > details {

@@ -73,6 +73,20 @@ test('conferma bulk annullata e download CSV non avviano il loader', async () =>
   assert.equal(button.classes.has('navigation-pending-control'), false);
 });
 
+test('search CSV downloads never leave pending controls or navigation timers', () => {
+  for (const entity of ['expenses', 'incomes', 'receipts']) {
+    const {Element, documentListeners, timers, flushEvents} = setup();
+    const link = new Element();
+    link.attributes.set('href', `/api/exports/${entity}?dateYear=2026`);
+    link.attributes.set('data-bulk-search-export', '');
+    // The floating action forwards its click to this same source anchor.
+    documentListeners.get('click')!({target: link, button: 0, defaultPrevented: false});
+    flushEvents();
+    assert.equal(link.classes.has('navigation-pending-control'), false);
+    assert.equal(timers.size, 0);
+  }
+});
+
 test('navigazione reale termina sul cambio pagina e sul ripristino dal browser', async () => {
   const {Element, documentListeners, windowListeners, effects, flushEvents} = setup();
   const link = new Element();

@@ -462,7 +462,7 @@ export default async function ExpenseDetailPage({params, searchParams}: {
                             <span className="badge">{expense.attachments.length}</span>
                             <button className="btn btn-sm btn-default" type="button"
                                     data-expense-detail-attachments-id={expense.id}>
-                                <span className="btn-icon">✎</span> Modifica allegati
+                                <span className="btn-icon">✎</span> Modifica
                             </button>
                         </div>
                     </div>

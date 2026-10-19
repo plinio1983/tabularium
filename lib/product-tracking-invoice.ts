@@ -1,7 +1,7 @@
 import {parseTrackingDate} from '@/lib/product-tracking';
 
 export type TrackingInvoice = {id: number; originalName: string; invoiceDate: string; sizeBytes?: number | null};
-export type TrackingInvoiceRow = {key: string; id?: number; originalName: string; invoiceDate: string; sizeBytes?: number | null; file?: File};
+export type TrackingInvoiceRow = {key: string; documentDate?: string; id?: number; originalName: string; invoiceDate: string; sizeBytes?: number | null; file?: File};
 export type TrackingInvoiceFormState = {rows: TrackingInvoiceRow[]; removedIds: number[]; hasDraft: boolean};
 
 export function invoiceRow(invoice: TrackingInvoice): TrackingInvoiceRow {

@@ -309,15 +309,51 @@
   background: #e9eff7;
 }
 
+.cash-register-toast-container {
+  position: fixed;
+  inset: calc(12px + env(safe-area-inset-top)) 12px auto;
+  z-index: 130;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
 .cash-register-notice {
-  min-height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(100%, 480px);
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  background: #ecfdf5;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, .16);
   color: #047857;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
-  text-align: center;
+  pointer-events: auto;
+
+  > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  > button {
+    flex: 0 0 36px;
+    min-height: 36px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: inherit;
+    font-size: 24px;
+    cursor: pointer;
+  }
 }
 
 .cash-register-notice.is-error {
+  border-color: #fecaca;
+  background: #fef2f2;
   color: #b91c1c;
 }
 
@@ -2353,8 +2389,13 @@ a.record-top-summary-item.is-invoice-waiting:hover {
     gap: 6px;
 
     .cash-register-keypad {
-      flex-grow: 0;
-      height: 221px;
+      flex: 3 0 221px;
+      height: auto;
+    }
+
+    .cash-register-total-display {
+      flex: 1 0 auto;
+      align-content: center;
     }
 
     .cash-register-header {

@@ -38,11 +38,12 @@ function load(file: string, db: any, options: {denied?: boolean; attachments?: a
   return exports;
 }
 function request(files: {kind: string; name: string; content?: string; date?: string}[] = []) {
-  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001-A');
-  let index = 0;
+  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001-A'); form.set('batchYear', '2026');
+  const indexes: Record<string, number> = {INVOICE: 0, TRACKING: 0};
   for (const item of files) {
     form.append(item.kind, new File([item.content ?? '%PDF-1.7\nfixture'], item.name, {type: 'application/pdf'}));
-    if (item.kind === 'INVOICE') {if (item.date) form.set(`invoiceDate-new-${index}`, item.date); index++;}
+    if (item.date) form.set(`${item.kind === 'INVOICE' ? 'invoiceDate' : 'documentDate'}-new-${indexes[item.kind]}`, item.date);
+    indexes[item.kind]++;
   }
   return new Request('http://localhost/api/product-trackings', {method: 'POST', body: form});
 }
@@ -101,7 +102,7 @@ test('the limit counts retained files and rejects six in either category', async
 test('five invoices plus five tracking documents save with independent dates and company scope', async () => {
   const db = database(); let saved = 0;
   const service = load('lib/product-tracking-save.ts', db, {attachments: {...attachmentTools, saveExpenseAttachmentFiles: async ([file]: File[]) => [{originalName: file.name, path: `${saved++}.pdf`, type: 'DOCUMENT', mimeType: file.type, sizeBytes: file.size}]}});
-  const files = Array.from({length: 5}, (_, i) => ({kind: 'INVOICE', name: `invoice-${i}.pdf`, date: `2026-01-0${i + 1}`})).concat(Array.from({length: 5}, (_, i) => ({kind: 'TRACKING', name: `tracking-${i}.pdf`, date: ''})));
+  const files = Array.from({length: 5}, (_, i) => ({kind: 'INVOICE', name: `invoice-${i}.pdf`, date: `2026-01-0${i + 1}`})).concat(Array.from({length: 5}, (_, i) => ({kind: 'TRACKING', name: `tracking-${i}.pdf`, date: `2026-02-0${i + 1}`})));
   assert.equal((await service.saveTracking(request(files))).status, 200);
   assert.equal(saved, 10); assert.equal(db.writes[0].workspaceId, 2); assert.equal(db.writes[0].companyId, 3);
   const invoices = db.writes[0].attachments.create.filter((a: any) => a.kind === 'INVOICE');
@@ -135,7 +136,7 @@ test('retained invoices require a date while removed invoices do not', async () 
   const deletedPaths: string[] = [];
   const second = database(existing);
   const service = load('lib/product-tracking-save.ts', second, {attachments: {...attachmentTools, deleteExpenseAttachmentFile: async (storedPath: string) => {deletedPaths.push(storedPath);}}});
-  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.append('removedIds', '12');
+  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.set('batchYear', '2026'); form.append('removedIds', '12');
   assert.equal((await service.saveTracking(new Request('http://localhost', {method: 'POST', body: form}), 9)).status, 200);
   assert.deepEqual(deletedPaths, ['test-fixture.pdf']);
 });
@@ -143,7 +144,7 @@ test('retained invoices require a date while removed invoices do not', async () 
 test('an attachment from another tracking cannot be removed through an edited record', async () => {
   const db = database({id: 9, attachments: []});
   const service = load('lib/product-tracking-save.ts', db);
-  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.append('removedIds', '999');
+  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.set('batchYear', '2026'); form.append('removedIds', '999');
   const response = await service.saveTracking(new Request('http://localhost', {method: 'POST', body: form}), 9);
   assert.equal(response.status, 400); assert.equal(db.writes.length, 0);
 });
@@ -237,7 +238,7 @@ test('full tracking edits can replace a saved invoice while preserving its ID', 
     invoiceFile: {saveTrackingInvoiceFile: async () => ({path: 'new.pdf', originalName: 'new.pdf'})},
     attachments: {...attachmentTools, deleteExpenseAttachmentFile: async (storedPath: string) => {deleted.push(storedPath);}},
   });
-  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.set('invoiceDate-12', '2026-01-01');
+  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.set('batchYear', '2026'); form.set('invoiceDate-12', '2026-01-01');
   form.append('invoiceReplacement-12', new File(['%PDF'], 'new.pdf'));
   assert.equal((await service.saveTracking(new Request('http://localhost', {method: 'POST', body: form}), 9)).status, 200);
   assert.equal(replacements[0].where.id, 12); assert.equal(replacements[0].data.path, 'new.pdf'); assert.deepEqual(deleted, ['old.pdf']);
@@ -255,8 +256,9 @@ test('a failed invoice replacement keeps the previous file and removes the new u
   } finally {delete process.env.UPLOADS_DIR; await rm(directory, {recursive: true, force: true});}
 });
 
-function documentRequest() {
+function documentRequest(date = '2026-02-02') {
   const form = new FormData(); form.append('document', new File(['%PDF-1.7\ntracking'], 'tracking.pdf', {type: 'application/pdf'}));
+  form.set('documentDate', date);
   return new Request('http://localhost', {method: 'POST', body: form});
 }
 test('tracking document creation does not require or store an invoice date', async () => {
@@ -265,7 +267,7 @@ test('tracking document creation does not require or store an invoice date', asy
   });
   const response = await service.mutateTrackingDocument(documentRequest(), 9);
   assert.equal(response.status, 200);
-  const record = await response.json(); assert.equal(record.kind, 'TRACKING'); assert.equal(record.invoiceDate, null);
+  const record = await response.json(); assert.equal(record.kind, 'TRACKING'); assert.equal(record.invoiceDate, null); assert.equal(record.documentDate, '2026-02-02T00:00:00.000Z');
 });
 test('tracking documents have their own limit and cannot edit or delete invoice IDs', async () => {
   const full = load('lib/product-tracking-attachment-service.ts', invoiceDatabase(Array.from({length: 5}, (_, i) => ({id: i + 1, kind: 'TRACKING'})), false, 'TRACKING'));
@@ -282,11 +284,11 @@ test('tracking document replacements preserve their ID and delete the old file a
   });
   const response = await service.mutateTrackingDocument(documentRequest(), 9, 4);
   assert.equal(response.status, 200); const record = await response.json();
-  assert.equal(record.id, 4); assert.equal(record.path, 'new-tracking.pdf'); assert.equal(record.invoiceDate, null);
+  assert.equal(record.id, 4); assert.equal(record.path, 'new-tracking.pdf'); assert.equal(record.invoiceDate, null); assert.equal(record.documentDate, '2026-02-02T00:00:00.000Z');
   assert.deepEqual(removed, ['old-tracking.pdf']);
 });
 
-test('the full editor replaces tracking files under their original IDs without requiring dates', async () => {
+test('the full editor replaces tracking files under their original IDs with required document dates', async () => {
   const removed: string[] = [], updates: any[] = [];
   const db = database({id: 9, attachments: [{id: 4, kind: 'TRACKING', path: 'old-tracking.pdf'}]});
   const transaction = db.$transaction;
@@ -298,9 +300,51 @@ test('the full editor replaces tracking files under their original IDs without r
     invoiceFile: {saveTrackingInvoiceFile: async (entries: any[]) => entries.length ? {path: 'new-tracking.pdf', originalName: 'new-tracking.pdf'} : null},
     attachments: {...attachmentTools, deleteExpenseAttachmentFile: async (storedPath: string) => {removed.push(storedPath);}},
   });
-  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001');
+  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.set('batchYear', '2026');
+  form.set('documentDate-4', '2026-02-02');
   form.append('trackingReplacement-4', new File(['%PDF'], 'new-tracking.pdf'));
   assert.equal((await service.saveTracking(new Request('http://localhost', {method: 'POST', body: form}), 9)).status, 200);
   assert.equal(updates[0].where.id, 4); assert.equal(updates[0].data.path, 'new-tracking.pdf');
-  assert.equal(updates[0].data.invoiceDate, null); assert.deepEqual(removed, ['old-tracking.pdf']);
+  assert.equal(updates[0].data.documentDate.toISOString().slice(0, 10), '2026-02-02'); assert.deepEqual(removed, ['old-tracking.pdf']);
+});
+
+ test('tracking document endpoints reject missing and invalid document dates', async () => {
+  const service = load('lib/product-tracking-attachment-service.ts', invoiceDatabase([], false, 'TRACKING'));
+  for (const date of ['', '2026-02-30', 'invalid']) {
+    const response = await service.mutateTrackingDocument(documentRequest(date), 9);
+    assert.equal(response.status, 400);
+  }
+});
+test('full editor requires a document date for retained legacy tracking attachments', async () => {
+  const service = load('lib/product-tracking-save.ts', database({id: 9, attachments: [{id: 4, kind: 'TRACKING', path: 'old.pdf'}]}));
+  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.set('batchYear', '2026');
+  const response = await service.saveTracking(new Request('http://localhost', {method: 'POST', body: form}), 9);
+  assert.equal(response.status, 400);
+  assert.match((await response.json()).error, /data documento/);
+});
+
+test('document date can be updated without replacing the existing file', async () => {
+  const service = load('lib/product-tracking-attachment-service.ts', invoiceDatabase([{id: 4, kind: 'TRACKING', path: 'old.pdf'}], false, 'TRACKING'), {
+    invoiceFile: {saveTrackingInvoiceFile: async () => null},
+  });
+  const form = new FormData(); form.set('documentDate', '2026-03-12');
+  const response = await service.mutateTrackingDocument(new Request('http://localhost', {method: 'POST', body: form}), 9, 4);
+  assert.equal(response.status, 200);
+  const record = await response.json();
+  assert.equal(record.path, 'old.pdf');
+  assert.equal(record.documentDate, '2026-03-12T00:00:00.000Z');
+});
+
+test('batch year is required, validated and saved independently from entry date', async () => {
+  for (const year of ['', '999', '10000', '2026.5', 'invalid']) {
+    const db = database(); const service = load('lib/product-tracking-save.ts', db);
+    const form = new FormData(); form.set('name', 'Olio'); form.set('batch', '001'); form.set('batchYear', year);
+    const response = await service.saveTracking(new Request('http://localhost', {method: 'POST', body: form}));
+    assert.equal(response.status, 400); assert.equal(db.writes.length, 0);
+  }
+  const db = database(); const service = load('lib/product-tracking-save.ts', db);
+  const response = await service.saveTracking(request());
+  assert.equal(response.status, 200);
+  assert.equal(db.writes[0].batchYear, 2026);
+  assert.equal(db.writes[0].entryDate, null);
 });

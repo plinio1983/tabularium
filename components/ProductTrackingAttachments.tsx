@@ -90,7 +90,7 @@ export default function ProductTrackingAttachments({
         setError('');
         try {
             const data = new FormData();
-            if (isInvoice) data.set('invoiceDate', draft.invoiceDate);
+            data.set(isInvoice ? 'invoiceDate' : 'documentDate', isInvoice ? draft.invoiceDate : draft.documentDate ?? '');
             if (draft.file) data.append('document', draft.file);
             const response = await fetch(`/api/product-trackings/${trackingId}/${endpoint}${draft.id ? `/${draft.id}` : ''}`, {
                 method: 'POST',
@@ -98,7 +98,7 @@ export default function ProductTrackingAttachments({
             });
             const payload = await response.json();
             if (!response.ok) throw new Error(payload.error || `Impossibile salvare ${isInvoice ? 'la fattura' : 'il documento'}.`);
-            const confirmed = invoiceRow({...payload, invoiceDate: isInvoice ? calendarDateInput(payload.invoiceDate) : ''});
+            const confirmed = invoiceRow({...payload, invoiceDate: isInvoice ? calendarDateInput(payload.invoiceDate) : '', documentDate: calendarDateInput(payload.documentDate)});
             setRows(current => draft.id ? current.map(row => row.id === draft.id ? confirmed : row) : [...current, confirmed]);
             setDraft(null);
             setFeedback(isInvoice ? draft.id ? 'Fattura aggiornata.' : 'Fattura aggiunta.' : draft.id ? 'Documento aggiornato.' : 'Documento aggiunto.');
@@ -158,8 +158,8 @@ export default function ProductTrackingAttachments({
                     <strong>{row.file?.name ?? row.originalName}</strong>}
             </div>
             {/*<div className="payment-summary-secondary">*/}
-            {isInvoice && <div className="payment-summary-date">
-                <span>Data fattura</span><strong>{formatItalianCompactDate(row.invoiceDate)}</strong></div>}
+            {<div className="payment-summary-date">
+                <span>{isInvoice ? 'Data fattura' : 'Data documento'}</span><strong>{!isInvoice && !row.documentDate ? 'Data documento mancante' : formatItalianCompactDate(isInvoice ? row.invoiceDate : row.documentDate!)}</strong></div>}
             <div className="payment-summary-meta">
                 <div>
                     <span>Dimensione</span><strong>{row.sizeBytes ? `${Math.max(1, Math.round(row.sizeBytes / 1024))} KB` : '—'}</strong>
@@ -177,7 +177,7 @@ export default function ProductTrackingAttachments({
         </article>;
     }
 
-    const content = <div className="-form-section-stack product-tracking-invoice-list">
+    const content = <div className="form-section-stack product-tracking-invoice-list">
         {!trackingId && <div className="form-summary"><span
             className="muted">{isInvoice ? 'Massimo 5 fatture' : 'Massimo 5 documenti'} · 10 MB per documento</span>{addButton}</div>}
         {rows.filter(row => row.key !== draft?.key).map(summary)}
@@ -203,8 +203,8 @@ export default function ProductTrackingAttachments({
                         className="muted">{draft.file?.name ?? (draft.id ? draft.originalName : 'Seleziona un documento')} ·
                         PDF, immagini, XML, P7M · max 10 MB</small>
                 </FormField>
-                {isInvoice && <DateField label="Data fattura *" name="invoiceDraftDate" required value={draft.invoiceDate}
-                           onChange={value => setDraft(current => current ? {...current, invoiceDate: value} : null)}/>}
+                <DateField label={isInvoice ? "Data fattura *" : "Data documento *"} name={isInvoice ? "invoiceDraftDate" : "documentDraftDate"} required value={isInvoice ? draft.invoiceDate : draft.documentDate ?? ''}
+                           onChange={value => setDraft(current => current ? {...current, [isInvoice ? 'invoiceDate' : 'documentDate']: value} : null)}/>
             </fieldset>
             <div className="payment-edit-actions">
                 <button type="button" className="btn btn-sm btn-default" disabled={locked} onClick={() => {
@@ -229,7 +229,7 @@ export default function ProductTrackingAttachments({
         <div className="record-detail-section-heading">
             <div>
                 <div className="product-tracking-invoice-title"><h2>{title}</h2><span className="badge">{rows.length}/5</span></div>
-                <p>{isInvoice ? 'Documenti di fattura con la relativa data.' : 'Documenti associati alla tracciatura.'}</p>
+                <p>{isInvoice ? 'Documenti di fattura con la relativa data.' : 'Documenti associati alla tracciatura con la relativa data.'}</p>
             </div>
             <div className="record-detail-section-heading-actions">
                 {addButton}
@@ -241,9 +241,9 @@ export default function ProductTrackingAttachments({
         <summary>
             <span className="info-label-row">
                 <span><span className="entity-form-section-icon" aria-hidden="true">▤</span>{title} ({rows.length}/5)</span>
-                <InfoHint compactOnly title={title}>{isInvoice ? 'Aggiungi un documento e la data fattura, poi conferma.' : 'Aggiungi un documento di tracciamento, poi conferma.'} I documenti saranno salvati con la tracciatura.</InfoHint>
+                <InfoHint compactOnly title={title}>{isInvoice ? 'Aggiungi un documento e la data fattura, poi conferma.' : 'Aggiungi un documento di tracciamento e la data documento, poi conferma.'} I documenti saranno salvati con la tracciatura.</InfoHint>
             </span>
-            <small className="info-hint-desktop-text">{isInvoice ? 'Un documento e una data per ogni fattura' : 'Documenti singoli, fino a 5 allegati'}</small>
+            <small className="info-hint-desktop-text">{isInvoice ? 'Un documento e una data per ogni fattura' : 'Un documento e una data per ogni allegato, fino a 5 documenti'}</small>
         </summary>
         {content}
     </details>;

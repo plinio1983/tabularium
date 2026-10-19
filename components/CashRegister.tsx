@@ -128,6 +128,11 @@ export default function CashRegister({
         if (methodPanel.current) methodPanel.current.inert = !showMethods || Boolean(selectedMethod);
     }, [showMethods, selectedMethod]);
     const dialogOpen = Boolean(selectedMethod || keyboardSheet);
+    useEffect(() => {
+        if (!notice || dialogOpen) return;
+        const timeout = window.setTimeout(() => setNotice(null), notice.tone === 'ok' ? 4000 : 8000);
+        return () => window.clearTimeout(timeout);
+    }, [notice, dialogOpen]);
     const keyboardMethods = orderedMethods.filter(available);
     useEffect(() => {
         if (registerRef.current) registerRef.current.inert = dialogOpen;
@@ -201,6 +206,12 @@ export default function CashRegister({
         draftDescriptionRef.current = null;
         changeAmount(resetCurrencyInput(keyState.current));
         focusAmount();
+    }
+
+    function clearDisplay() {
+        if (selectedMethod || sendingRef.current) return;
+        if (mode === 'edit' && showMethods) setLines([]);
+        clearAmount();
     }
 
     function addLine(option = {isFiscal, vatRate}) {
@@ -398,7 +409,7 @@ export default function CashRegister({
                                                                                                    disabled={Boolean(selectedMethod)}
                                                                                                    inputMode="none"/></label>
                 <button type="button" className="amount-clear-button" aria-label="Azzera importo"
-                        disabled={Boolean(selectedMethod)} onClick={clearAmount}><span className="btn-icon">×</span>
+                        disabled={Boolean(selectedMethod)} onClick={clearDisplay}><span className="btn-icon">×</span>
                 </button>
             </div>
         </section>
@@ -450,7 +461,12 @@ export default function CashRegister({
                     <span className="btn-icon">{method.icon ?? '•'}</span>{method.name}</button>)}</section>
             </div>
         </div>
-        {notice && !selectedMethod && <p className={`cash-register-notice ${notice.tone === 'error' ? 'is-error' : ''}`} role="status">{notice.text}</p>}
+        {mounted && notice && !dialogOpen && createPortal(<div className="cash-register-toast-container">
+            <div className={`cash-register-notice ${notice.tone === 'error' ? 'is-error' : ''}`}>
+                <span role={notice.tone === 'error' ? 'alert' : 'status'}>{notice.text}</span>
+                <button type="button" aria-label="Chiudi notifica" onClick={() => setNotice(null)}>×</button>
+            </div>
+        </div>, document.body)}
         {mounted && keyboardSheet && createPortal(<div className="cash-register-method-backdrop cash-register-keyboard-backdrop" onMouseDown={event => {
             if (event.target === event.currentTarget) closeKeyboardSheet();
         }}>

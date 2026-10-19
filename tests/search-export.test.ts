@@ -169,3 +169,32 @@ test('empty or failed search export returns to the filtered list without a parti
     assert.equal(url.searchParams.get('error'), error);
   }
 });
+
+test('receipt search export ignores selection, exports beyond the visible limit, and preserves filters', async () => {
+  const queries: any[] = [];
+  const records = Array.from({length: 1001}, (_, id) => ({id: id + 1}));
+  const api = load('app/api/exports/[entity]/route.ts', {
+    '@/lib/auth': {workspaceOperationalRoles: ['OWNER'], getWorkspaceApiAccess: async () => ({ok: true, current: {workspace: {id: 21}, company: {id: 32, timeZone: 'Europe/Rome'}}})},
+    '@/lib/prisma': {prisma: {income: {findMany: async (query: any) => {queries.push(query); return records;}}}},
+    '@/lib/receipt-import': {receiptInclude: {}, receiptToCsvRow: (record: any) => ({origin: `request:${record.id}`, date: '2026-09-10T10:00:00Z', description: 'Vendita', amount: '10.00', fiscal: true, vat: '22', channelCode: 'SHOP', channel: 'Negozio', method: 'Carta', bank: 'Banca', period: '2026-09', notes: ''})},
+  });
+  const response = await api.GET(new Request('http://localhost/api/exports/receipts?dateFrom=2026-09-01&dateTo=2026-09-30&search=Vendita&fiscal=mixed&salesChannelId=7&paymentMethodId=8&ids=1'), {params: Promise.resolve({entity: 'receipts'})});
+  assert.equal(response.status, 200);
+  assert.equal((await response.text()).trimEnd().split('\r\n').length, 1002);
+  const {where, take} = queries[0];
+  assert.equal(take, undefined); assert.equal(where.id, undefined);
+  assert.equal(where.workspaceId, 21); assert.equal(where.companyId, 32);
+  assert.equal(where.incomeType, 'CASH_REGISTER');
+  assert.equal(where.salesChannelId, 7); assert.equal(where.paymentMethodId, 8);
+  assert.equal(where.description.contains, 'Vendita');
+  assert.equal(where.isFiscal, true); assert.equal(where.receiptLines.some.isFiscal, false);
+  assert.equal(where.creditDate.gte.toISOString(), '2026-08-31T22:00:00.000Z');
+  assert.equal(where.creditDate.lt.toISOString(), '2026-09-30T22:00:00.000Z');
+  records.length = 0;
+  const empty = await api.GET(new Request('http://localhost/api/exports/receipts?search=Assente&dateYear=2026'), {params: Promise.resolve({entity: 'receipts'})});
+  assert.equal(empty.status, 303);
+  const url = new URL(empty.headers.get('Location')!);
+  assert.equal(url.pathname, '/incomes/cash-register/receipts');
+  assert.equal(url.searchParams.get('search'), 'Assente');
+  assert.equal(url.searchParams.get('error'), 'export_empty');
+});

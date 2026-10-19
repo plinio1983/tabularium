@@ -1,5 +1,6 @@
 'use client';
 
+import SearchExportButton from '@/components/SearchExportButton';
 import RecordConversionListController from '@/components/RecordConversionListController';
 import InfoHint from '@/components/InfoHint';
 import MonthGroupedRecords from '@/components/MonthGroupedRecords';
@@ -126,9 +127,10 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                                 data-return-to={encodedReturnTo} disabled title="Seleziona un solo record convertibile">
                             <span className="btn-icon">⇄</span><span>Converti tipo</span>
                         </button>
+                        <button type="button" className="btn btn-sm btn-option" data-bulk-action-proxy="[data-bulk-copy]" disabled><span className="btn-icon">⧉</span><span>Copia</span></button>
                         <button className="btn btn-sm btn-option" type="submit" name="bulkAction" value="export_csv"
-                                formAction="/api/exports/receipts" formMethod="post" data-confirm-label="Esporta CSV">
-                            <span className="btn-icon">⇩</span> Esporta CSV
+                                formAction="/api/exports/receipts" formMethod="post" data-confirm-label="Esporta selezionati">
+                            <span className="btn-icon">⇩</span> Esporta selezionati
                         </button>
                         <button className="btn btn-sm btn-option danger-menu-item" type="submit" name="bulkAction"
                                 value="delete">
@@ -147,14 +149,10 @@ export default function CashRegisterReceiptList({receipts, filtersTrigger, heade
                     <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
                         <span className="btn-icon">✎</span><span className="bulk-label">Modifica</span>
                     </a>
-                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true">
+                    <a href="#" className="bulk-direct-link is-disabled" data-bulk-copy aria-disabled="true" hidden>
                         <span className="btn-icon">⧉</span><span className="bulk-label">Copia</span>
                     </a>
-                    <button type="submit" className="bulk-direct-link is-disabled hidden-xs-down" name="bulkAction"
-                            value="export_csv" data-bulk-shortcut data-floating-label="Esporta CSV"
-                            data-floating-icon="⇩" data-confirm-label="Esporta CSV" formAction="/api/exports/receipts"
-                            formMethod="post" disabled><span className="btn-icon">⇩</span><span
-                        className="hidden-sm-down">Esporta CSV</span></button>
+                    <SearchExportButton entity="receipts" returnTo={encodedReturnTo} disabled={!receipts.length}/>
                 </div>
             </div>
             <div className="bulk-inner-container">

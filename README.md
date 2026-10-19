@@ -115,7 +115,7 @@ prima del salvataggio della tracciatura. Dal dettaglio, **Aggiungi fattura** apr
 modale di modifica sopra il dettaglio, senza cambiare pagina, al passaggio Fatture con un nuovo record da compilare; modifica
 ed eliminazione delle fatture esistenti salvano subito la singola operazione. La modifica permette di aggiornare la data o sostituire il file.
 I documenti di tracciamento seguono lo stesso flusso con **Aggiungi documento**,
-**Conferma**, **Modifica** ed **Elimina**, senza campo data. Dal dettaglio l’aggiunta
+**Conferma**, **Modifica** ed **Elimina**, con una **Data documento** obbligatoria per ogni allegato. Dal dettaglio l’aggiunta
 apre la modale sopra la pagina al secondo passaggio; i documenti già presenti
 si possono sostituire o eliminare singolarmente.
 
@@ -148,3 +148,11 @@ Il registratore consente di preparare uno scontrino con più importi, ognuno fis
 I dati di dettaglio sono in `IncomeReceiptLine`; i subtotali fiscali e IVA sono salvati sull’incasso per mantenere corretti i report. I vecchi scontrini senza righe sono letti come documenti con un solo importo. Modifica e copia utilizzano il registratore e preservano le righe; la conversione diretta di uno scontrino con più importi è bloccata per evitare la perdita delle aliquote. Il CSV Scontrini v2 conserva importi e categoria, mantenendo l’importazione del formato v1. L’export generale degli incassi include gli importi dello scontrino in una colonna JSON.
 
 La migrazione `20261014190000_cash_register_lines` va applicata prima di utilizzare il nuovo codice; rigenerare il client Prisma. I test del database usano uno schema temporaneo isolato (`RECEIPT_TEST_DATABASE=1`).
+
+### Date dei documenti di tracciamento
+
+Applicare la migrazione `20261019190000_tracking_document_date` e rigenerare il client Prisma prima di utilizzare il nuovo codice. Ogni documento di tracciamento richiede una propria Data documento, modificabile anche senza sostituire il file. I documenti storici conservano la data vuota e mostrano “Data documento mancante”: la data va compilata alla modifica del documento o al salvataggio del form completo della tracciatura. Non vengono assegnate date automatiche.
+
+### Anno del lotto
+
+Ogni tracciatura richiede un Anno del lotto (intero di quattro cifre), distinto dalla Data ingresso. Le nuove tracciature propongono l’anno corrente nel fuso dell’azienda e lasciano Data ingresso vuota. La migrazione `20261019200000_tracking_batch_year` assegna ai record esistenti l’anno corrente nel fuso aziendale e rende il campo obbligatorio. Anno è visibile nel form dopo Lotto, nella tabella ordinabile, nella lista mobile e nel dettaglio.

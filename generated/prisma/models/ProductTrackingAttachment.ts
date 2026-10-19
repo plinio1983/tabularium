@@ -43,6 +43,7 @@ export type ProductTrackingAttachmentMinAggregateOutputType = {
   trackingId: number | null
   kind: $Enums.ProductTrackingAttachmentKind | null
   invoiceDate: Date | null
+  documentDate: Date | null
   originalName: string | null
   path: string | null
   mimeType: string | null
@@ -55,6 +56,7 @@ export type ProductTrackingAttachmentMaxAggregateOutputType = {
   trackingId: number | null
   kind: $Enums.ProductTrackingAttachmentKind | null
   invoiceDate: Date | null
+  documentDate: Date | null
   originalName: string | null
   path: string | null
   mimeType: string | null
@@ -67,6 +69,7 @@ export type ProductTrackingAttachmentCountAggregateOutputType = {
   trackingId: number
   kind: number
   invoiceDate: number
+  documentDate: number
   originalName: number
   path: number
   mimeType: number
@@ -93,6 +96,7 @@ export type ProductTrackingAttachmentMinAggregateInputType = {
   trackingId?: true
   kind?: true
   invoiceDate?: true
+  documentDate?: true
   originalName?: true
   path?: true
   mimeType?: true
@@ -105,6 +109,7 @@ export type ProductTrackingAttachmentMaxAggregateInputType = {
   trackingId?: true
   kind?: true
   invoiceDate?: true
+  documentDate?: true
   originalName?: true
   path?: true
   mimeType?: true
@@ -117,6 +122,7 @@ export type ProductTrackingAttachmentCountAggregateInputType = {
   trackingId?: true
   kind?: true
   invoiceDate?: true
+  documentDate?: true
   originalName?: true
   path?: true
   mimeType?: true
@@ -216,6 +222,7 @@ export type ProductTrackingAttachmentGroupByOutputType = {
   trackingId: number
   kind: $Enums.ProductTrackingAttachmentKind
   invoiceDate: Date | null
+  documentDate: Date | null
   originalName: string
   path: string
   mimeType: string | null
@@ -251,6 +258,7 @@ export type ProductTrackingAttachmentWhereInput = {
   trackingId?: Prisma.IntFilter<"ProductTrackingAttachment"> | number
   kind?: Prisma.EnumProductTrackingAttachmentKindFilter<"ProductTrackingAttachment"> | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.DateTimeNullableFilter<"ProductTrackingAttachment"> | Date | string | null
+  documentDate?: Prisma.DateTimeNullableFilter<"ProductTrackingAttachment"> | Date | string | null
   originalName?: Prisma.StringFilter<"ProductTrackingAttachment"> | string
   path?: Prisma.StringFilter<"ProductTrackingAttachment"> | string
   mimeType?: Prisma.StringNullableFilter<"ProductTrackingAttachment"> | string | null
@@ -264,6 +272,7 @@ export type ProductTrackingAttachmentOrderByWithRelationInput = {
   trackingId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   invoiceDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  documentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   originalName?: Prisma.SortOrder
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -280,6 +289,7 @@ export type ProductTrackingAttachmentWhereUniqueInput = Prisma.AtLeast<{
   trackingId?: Prisma.IntFilter<"ProductTrackingAttachment"> | number
   kind?: Prisma.EnumProductTrackingAttachmentKindFilter<"ProductTrackingAttachment"> | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.DateTimeNullableFilter<"ProductTrackingAttachment"> | Date | string | null
+  documentDate?: Prisma.DateTimeNullableFilter<"ProductTrackingAttachment"> | Date | string | null
   originalName?: Prisma.StringFilter<"ProductTrackingAttachment"> | string
   path?: Prisma.StringFilter<"ProductTrackingAttachment"> | string
   mimeType?: Prisma.StringNullableFilter<"ProductTrackingAttachment"> | string | null
@@ -293,6 +303,7 @@ export type ProductTrackingAttachmentOrderByWithAggregationInput = {
   trackingId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   invoiceDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  documentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   originalName?: Prisma.SortOrder
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -313,6 +324,7 @@ export type ProductTrackingAttachmentScalarWhereWithAggregatesInput = {
   trackingId?: Prisma.IntWithAggregatesFilter<"ProductTrackingAttachment"> | number
   kind?: Prisma.EnumProductTrackingAttachmentKindWithAggregatesFilter<"ProductTrackingAttachment"> | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ProductTrackingAttachment"> | Date | string | null
+  documentDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ProductTrackingAttachment"> | Date | string | null
   originalName?: Prisma.StringWithAggregatesFilter<"ProductTrackingAttachment"> | string
   path?: Prisma.StringWithAggregatesFilter<"ProductTrackingAttachment"> | string
   mimeType?: Prisma.StringNullableWithAggregatesFilter<"ProductTrackingAttachment"> | string | null
@@ -323,6 +335,7 @@ export type ProductTrackingAttachmentScalarWhereWithAggregatesInput = {
 export type ProductTrackingAttachmentCreateInput = {
   kind: $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Date | string | null
+  documentDate?: Date | string | null
   originalName: string
   path: string
   mimeType?: string | null
@@ -336,6 +349,7 @@ export type ProductTrackingAttachmentUncheckedCreateInput = {
   trackingId: number
   kind: $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Date | string | null
+  documentDate?: Date | string | null
   originalName: string
   path: string
   mimeType?: string | null
@@ -346,6 +360,7 @@ export type ProductTrackingAttachmentUncheckedCreateInput = {
 export type ProductTrackingAttachmentUpdateInput = {
   kind?: Prisma.EnumProductTrackingAttachmentKindFieldUpdateOperationsInput | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -359,6 +374,7 @@ export type ProductTrackingAttachmentUncheckedUpdateInput = {
   trackingId?: Prisma.IntFieldUpdateOperationsInput | number
   kind?: Prisma.EnumProductTrackingAttachmentKindFieldUpdateOperationsInput | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -371,6 +387,7 @@ export type ProductTrackingAttachmentCreateManyInput = {
   trackingId: number
   kind: $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Date | string | null
+  documentDate?: Date | string | null
   originalName: string
   path: string
   mimeType?: string | null
@@ -381,6 +398,7 @@ export type ProductTrackingAttachmentCreateManyInput = {
 export type ProductTrackingAttachmentUpdateManyMutationInput = {
   kind?: Prisma.EnumProductTrackingAttachmentKindFieldUpdateOperationsInput | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -393,6 +411,7 @@ export type ProductTrackingAttachmentUncheckedUpdateManyInput = {
   trackingId?: Prisma.IntFieldUpdateOperationsInput | number
   kind?: Prisma.EnumProductTrackingAttachmentKindFieldUpdateOperationsInput | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -415,6 +434,7 @@ export type ProductTrackingAttachmentCountOrderByAggregateInput = {
   trackingId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   invoiceDate?: Prisma.SortOrder
+  documentDate?: Prisma.SortOrder
   originalName?: Prisma.SortOrder
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
@@ -433,6 +453,7 @@ export type ProductTrackingAttachmentMaxOrderByAggregateInput = {
   trackingId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   invoiceDate?: Prisma.SortOrder
+  documentDate?: Prisma.SortOrder
   originalName?: Prisma.SortOrder
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
@@ -445,6 +466,7 @@ export type ProductTrackingAttachmentMinOrderByAggregateInput = {
   trackingId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   invoiceDate?: Prisma.SortOrder
+  documentDate?: Prisma.SortOrder
   originalName?: Prisma.SortOrder
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
@@ -507,6 +529,7 @@ export type EnumProductTrackingAttachmentKindFieldUpdateOperationsInput = {
 export type ProductTrackingAttachmentCreateWithoutTrackingInput = {
   kind: $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Date | string | null
+  documentDate?: Date | string | null
   originalName: string
   path: string
   mimeType?: string | null
@@ -518,6 +541,7 @@ export type ProductTrackingAttachmentUncheckedCreateWithoutTrackingInput = {
   id?: number
   kind: $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Date | string | null
+  documentDate?: Date | string | null
   originalName: string
   path: string
   mimeType?: string | null
@@ -559,6 +583,7 @@ export type ProductTrackingAttachmentScalarWhereInput = {
   trackingId?: Prisma.IntFilter<"ProductTrackingAttachment"> | number
   kind?: Prisma.EnumProductTrackingAttachmentKindFilter<"ProductTrackingAttachment"> | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.DateTimeNullableFilter<"ProductTrackingAttachment"> | Date | string | null
+  documentDate?: Prisma.DateTimeNullableFilter<"ProductTrackingAttachment"> | Date | string | null
   originalName?: Prisma.StringFilter<"ProductTrackingAttachment"> | string
   path?: Prisma.StringFilter<"ProductTrackingAttachment"> | string
   mimeType?: Prisma.StringNullableFilter<"ProductTrackingAttachment"> | string | null
@@ -570,6 +595,7 @@ export type ProductTrackingAttachmentCreateManyTrackingInput = {
   id?: number
   kind: $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Date | string | null
+  documentDate?: Date | string | null
   originalName: string
   path: string
   mimeType?: string | null
@@ -580,6 +606,7 @@ export type ProductTrackingAttachmentCreateManyTrackingInput = {
 export type ProductTrackingAttachmentUpdateWithoutTrackingInput = {
   kind?: Prisma.EnumProductTrackingAttachmentKindFieldUpdateOperationsInput | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -591,6 +618,7 @@ export type ProductTrackingAttachmentUncheckedUpdateWithoutTrackingInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   kind?: Prisma.EnumProductTrackingAttachmentKindFieldUpdateOperationsInput | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -602,6 +630,7 @@ export type ProductTrackingAttachmentUncheckedUpdateManyWithoutTrackingInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   kind?: Prisma.EnumProductTrackingAttachmentKindFieldUpdateOperationsInput | $Enums.ProductTrackingAttachmentKind
   invoiceDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -616,6 +645,7 @@ export type ProductTrackingAttachmentSelect<ExtArgs extends runtime.Types.Extens
   trackingId?: boolean
   kind?: boolean
   invoiceDate?: boolean
+  documentDate?: boolean
   originalName?: boolean
   path?: boolean
   mimeType?: boolean
@@ -629,6 +659,7 @@ export type ProductTrackingAttachmentSelectCreateManyAndReturn<ExtArgs extends r
   trackingId?: boolean
   kind?: boolean
   invoiceDate?: boolean
+  documentDate?: boolean
   originalName?: boolean
   path?: boolean
   mimeType?: boolean
@@ -642,6 +673,7 @@ export type ProductTrackingAttachmentSelectUpdateManyAndReturn<ExtArgs extends r
   trackingId?: boolean
   kind?: boolean
   invoiceDate?: boolean
+  documentDate?: boolean
   originalName?: boolean
   path?: boolean
   mimeType?: boolean
@@ -655,6 +687,7 @@ export type ProductTrackingAttachmentSelectScalar = {
   trackingId?: boolean
   kind?: boolean
   invoiceDate?: boolean
+  documentDate?: boolean
   originalName?: boolean
   path?: boolean
   mimeType?: boolean
@@ -662,7 +695,7 @@ export type ProductTrackingAttachmentSelectScalar = {
   createdAt?: boolean
 }
 
-export type ProductTrackingAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trackingId" | "kind" | "invoiceDate" | "originalName" | "path" | "mimeType" | "sizeBytes" | "createdAt", ExtArgs["result"]["productTrackingAttachment"]>
+export type ProductTrackingAttachmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trackingId" | "kind" | "invoiceDate" | "documentDate" | "originalName" | "path" | "mimeType" | "sizeBytes" | "createdAt", ExtArgs["result"]["productTrackingAttachment"]>
 export type ProductTrackingAttachmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tracking?: boolean | Prisma.ProductTrackingDefaultArgs<ExtArgs>
 }
@@ -683,6 +716,7 @@ export type $ProductTrackingAttachmentPayload<ExtArgs extends runtime.Types.Exte
     trackingId: number
     kind: $Enums.ProductTrackingAttachmentKind
     invoiceDate: Date | null
+    documentDate: Date | null
     originalName: string
     path: string
     mimeType: string | null
@@ -1116,6 +1150,7 @@ export interface ProductTrackingAttachmentFieldRefs {
   readonly trackingId: Prisma.FieldRef<"ProductTrackingAttachment", 'Int'>
   readonly kind: Prisma.FieldRef<"ProductTrackingAttachment", 'ProductTrackingAttachmentKind'>
   readonly invoiceDate: Prisma.FieldRef<"ProductTrackingAttachment", 'DateTime'>
+  readonly documentDate: Prisma.FieldRef<"ProductTrackingAttachment", 'DateTime'>
   readonly originalName: Prisma.FieldRef<"ProductTrackingAttachment", 'String'>
   readonly path: Prisma.FieldRef<"ProductTrackingAttachment", 'String'>
   readonly mimeType: Prisma.FieldRef<"ProductTrackingAttachment", 'String'>

@@ -22,6 +22,7 @@ export async function mutateTrackingAttachment(request: Request, trackingId: num
       try {form = await request.formData();} catch {throw new TrackingValidationError('Dati del documento non validi.');}
     }
     const invoiceDate = remove || !isInvoice ? null : parseTrackingDate(form!.get('invoiceDate'), true);
+    const documentDate = remove || isInvoice ? null : parseTrackingDate(form!.get('documentDate'), true, 'documento');
     const invoice = await prisma.$transaction(async tx => {
       // The same parent lock is used by the full editor and every invoice operation.
       await tx.$queryRaw`SELECT "id" FROM "ProductTracking" WHERE "id" = ${trackingId} AND "workspaceId" = ${scope.workspaceId} AND "companyId" = ${scope.companyId} FOR UPDATE`;
@@ -38,8 +39,8 @@ export async function mutateTrackingAttachment(request: Request, trackingId: num
         const file = await saveTrackingInvoiceFile(form!.getAll('document'), !invoiceId);
         if (file) uploaded.push(file.path);
         result = existing
-          ? await tx.productTrackingAttachment.update({where: {id: existing.id}, data: {invoiceDate, ...(file ?? {})}})
-          : await tx.productTrackingAttachment.create({data: {trackingId, kind, invoiceDate, ...file!}});
+          ? await tx.productTrackingAttachment.update({where: {id: existing.id}, data: {invoiceDate, documentDate, ...(file ?? {})}})
+          : await tx.productTrackingAttachment.create({data: {trackingId, kind, invoiceDate, documentDate, ...file!}});
         if (existing && file) obsolete.push(existing.path);
       }
       await tx.productTracking.update({where: {id: trackingId}, data: {updatedAt: new Date()}});

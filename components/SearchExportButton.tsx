@@ -1,6 +1,6 @@
 /** Exports the current search independently of the list's selected checkboxes. */
 export default function SearchExportButton({entity, returnTo, disabled = false}: {
-  entity: 'expenses' | 'incomes'; returnTo: string; disabled?: boolean;
+  entity: 'expenses' | 'incomes' | 'receipts'; returnTo: string; disabled?: boolean;
 }) {
   const listUrl = new URL(decodeURIComponent(returnTo), 'http://localhost');
   const params = new URLSearchParams(listUrl.search);

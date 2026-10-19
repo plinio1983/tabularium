@@ -30,12 +30,14 @@ export type ProductTrackingAvgAggregateOutputType = {
   id: number | null
   workspaceId: number | null
   companyId: number | null
+  batchYear: number | null
 }
 
 export type ProductTrackingSumAggregateOutputType = {
   id: number | null
   workspaceId: number | null
   companyId: number | null
+  batchYear: number | null
 }
 
 export type ProductTrackingMinAggregateOutputType = {
@@ -44,6 +46,7 @@ export type ProductTrackingMinAggregateOutputType = {
   companyId: number | null
   name: string | null
   batch: string | null
+  batchYear: number | null
   alias: string | null
   entryDate: Date | null
   createdAt: Date | null
@@ -56,6 +59,7 @@ export type ProductTrackingMaxAggregateOutputType = {
   companyId: number | null
   name: string | null
   batch: string | null
+  batchYear: number | null
   alias: string | null
   entryDate: Date | null
   createdAt: Date | null
@@ -68,6 +72,7 @@ export type ProductTrackingCountAggregateOutputType = {
   companyId: number
   name: number
   batch: number
+  batchYear: number
   alias: number
   entryDate: number
   createdAt: number
@@ -80,12 +85,14 @@ export type ProductTrackingAvgAggregateInputType = {
   id?: true
   workspaceId?: true
   companyId?: true
+  batchYear?: true
 }
 
 export type ProductTrackingSumAggregateInputType = {
   id?: true
   workspaceId?: true
   companyId?: true
+  batchYear?: true
 }
 
 export type ProductTrackingMinAggregateInputType = {
@@ -94,6 +101,7 @@ export type ProductTrackingMinAggregateInputType = {
   companyId?: true
   name?: true
   batch?: true
+  batchYear?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -106,6 +114,7 @@ export type ProductTrackingMaxAggregateInputType = {
   companyId?: true
   name?: true
   batch?: true
+  batchYear?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -118,6 +127,7 @@ export type ProductTrackingCountAggregateInputType = {
   companyId?: true
   name?: true
   batch?: true
+  batchYear?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -217,6 +227,7 @@ export type ProductTrackingGroupByOutputType = {
   companyId: number
   name: string
   batch: string
+  batchYear: number
   alias: string | null
   entryDate: Date | null
   createdAt: Date
@@ -252,6 +263,7 @@ export type ProductTrackingWhereInput = {
   companyId?: Prisma.IntFilter<"ProductTracking"> | number
   name?: Prisma.StringFilter<"ProductTracking"> | string
   batch?: Prisma.StringFilter<"ProductTracking"> | string
+  batchYear?: Prisma.IntFilter<"ProductTracking"> | number
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
@@ -267,6 +279,7 @@ export type ProductTrackingOrderByWithRelationInput = {
   companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
+  batchYear?: Prisma.SortOrder
   alias?: Prisma.SortOrderInput | Prisma.SortOrder
   entryDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -285,6 +298,7 @@ export type ProductTrackingWhereUniqueInput = Prisma.AtLeast<{
   companyId?: Prisma.IntFilter<"ProductTracking"> | number
   name?: Prisma.StringFilter<"ProductTracking"> | string
   batch?: Prisma.StringFilter<"ProductTracking"> | string
+  batchYear?: Prisma.IntFilter<"ProductTracking"> | number
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
@@ -300,6 +314,7 @@ export type ProductTrackingOrderByWithAggregationInput = {
   companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
+  batchYear?: Prisma.SortOrder
   alias?: Prisma.SortOrderInput | Prisma.SortOrder
   entryDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -320,6 +335,7 @@ export type ProductTrackingScalarWhereWithAggregatesInput = {
   companyId?: Prisma.IntWithAggregatesFilter<"ProductTracking"> | number
   name?: Prisma.StringWithAggregatesFilter<"ProductTracking"> | string
   batch?: Prisma.StringWithAggregatesFilter<"ProductTracking"> | string
+  batchYear?: Prisma.IntWithAggregatesFilter<"ProductTracking"> | number
   alias?: Prisma.StringNullableWithAggregatesFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductTracking"> | Date | string
@@ -329,6 +345,7 @@ export type ProductTrackingScalarWhereWithAggregatesInput = {
 export type ProductTrackingCreateInput = {
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -344,6 +361,7 @@ export type ProductTrackingUncheckedCreateInput = {
   companyId: number
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -354,6 +372,7 @@ export type ProductTrackingUncheckedCreateInput = {
 export type ProductTrackingUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -369,6 +388,7 @@ export type ProductTrackingUncheckedUpdateInput = {
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -382,6 +402,7 @@ export type ProductTrackingCreateManyInput = {
   companyId: number
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -391,6 +412,7 @@ export type ProductTrackingCreateManyInput = {
 export type ProductTrackingUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -403,6 +425,7 @@ export type ProductTrackingUncheckedUpdateManyInput = {
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -425,6 +448,7 @@ export type ProductTrackingCountOrderByAggregateInput = {
   companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
+  batchYear?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -435,6 +459,7 @@ export type ProductTrackingAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  batchYear?: Prisma.SortOrder
 }
 
 export type ProductTrackingMaxOrderByAggregateInput = {
@@ -443,6 +468,7 @@ export type ProductTrackingMaxOrderByAggregateInput = {
   companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
+  batchYear?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -455,6 +481,7 @@ export type ProductTrackingMinOrderByAggregateInput = {
   companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
+  batchYear?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -465,6 +492,7 @@ export type ProductTrackingSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  batchYear?: Prisma.SortOrder
 }
 
 export type ProductTrackingScalarRelationFilter = {
@@ -573,6 +601,7 @@ export type ProductTrackingUpdateOneRequiredWithoutAttachmentsNestedInput = {
 export type ProductTrackingCreateWithoutWorkspaceInput = {
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -586,6 +615,7 @@ export type ProductTrackingUncheckedCreateWithoutWorkspaceInput = {
   companyId: number
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -628,6 +658,7 @@ export type ProductTrackingScalarWhereInput = {
   companyId?: Prisma.IntFilter<"ProductTracking"> | number
   name?: Prisma.StringFilter<"ProductTracking"> | string
   batch?: Prisma.StringFilter<"ProductTracking"> | string
+  batchYear?: Prisma.IntFilter<"ProductTracking"> | number
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
@@ -637,6 +668,7 @@ export type ProductTrackingScalarWhereInput = {
 export type ProductTrackingCreateWithoutCompanyInput = {
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -650,6 +682,7 @@ export type ProductTrackingUncheckedCreateWithoutCompanyInput = {
   workspaceId: number
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -686,6 +719,7 @@ export type ProductTrackingUpdateManyWithWhereWithoutCompanyInput = {
 export type ProductTrackingCreateWithoutAttachmentsInput = {
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -700,6 +734,7 @@ export type ProductTrackingUncheckedCreateWithoutAttachmentsInput = {
   companyId: number
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -725,6 +760,7 @@ export type ProductTrackingUpdateToOneWithWhereWithoutAttachmentsInput = {
 export type ProductTrackingUpdateWithoutAttachmentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -739,6 +775,7 @@ export type ProductTrackingUncheckedUpdateWithoutAttachmentsInput = {
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -750,6 +787,7 @@ export type ProductTrackingCreateManyWorkspaceInput = {
   companyId: number
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -759,6 +797,7 @@ export type ProductTrackingCreateManyWorkspaceInput = {
 export type ProductTrackingUpdateWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -772,6 +811,7 @@ export type ProductTrackingUncheckedUpdateWithoutWorkspaceInput = {
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -784,6 +824,7 @@ export type ProductTrackingUncheckedUpdateManyWithoutWorkspaceInput = {
   companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -795,6 +836,7 @@ export type ProductTrackingCreateManyCompanyInput = {
   workspaceId: number
   name: string
   batch: string
+  batchYear: number
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -804,6 +846,7 @@ export type ProductTrackingCreateManyCompanyInput = {
 export type ProductTrackingUpdateWithoutCompanyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -817,6 +860,7 @@ export type ProductTrackingUncheckedUpdateWithoutCompanyInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -829,6 +873,7 @@ export type ProductTrackingUncheckedUpdateManyWithoutCompanyInput = {
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -872,6 +917,7 @@ export type ProductTrackingSelect<ExtArgs extends runtime.Types.Extensions.Inter
   companyId?: boolean
   name?: boolean
   batch?: boolean
+  batchYear?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
@@ -888,6 +934,7 @@ export type ProductTrackingSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   companyId?: boolean
   name?: boolean
   batch?: boolean
+  batchYear?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
@@ -902,6 +949,7 @@ export type ProductTrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   companyId?: boolean
   name?: boolean
   batch?: boolean
+  batchYear?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
@@ -916,13 +964,14 @@ export type ProductTrackingSelectScalar = {
   companyId?: boolean
   name?: boolean
   batch?: boolean
+  batchYear?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "name" | "batch" | "alias" | "entryDate" | "createdAt" | "updatedAt", ExtArgs["result"]["productTracking"]>
+export type ProductTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "name" | "batch" | "batchYear" | "alias" | "entryDate" | "createdAt" | "updatedAt", ExtArgs["result"]["productTracking"]>
 export type ProductTrackingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -951,6 +1000,7 @@ export type $ProductTrackingPayload<ExtArgs extends runtime.Types.Extensions.Int
     companyId: number
     name: string
     batch: string
+    batchYear: number
     alias: string | null
     entryDate: Date | null
     createdAt: Date
@@ -1386,6 +1436,7 @@ export interface ProductTrackingFieldRefs {
   readonly companyId: Prisma.FieldRef<"ProductTracking", 'Int'>
   readonly name: Prisma.FieldRef<"ProductTracking", 'String'>
   readonly batch: Prisma.FieldRef<"ProductTracking", 'String'>
+  readonly batchYear: Prisma.FieldRef<"ProductTracking", 'Int'>
   readonly alias: Prisma.FieldRef<"ProductTracking", 'String'>
   readonly entryDate: Prisma.FieldRef<"ProductTracking", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ProductTracking", 'DateTime'>

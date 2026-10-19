@@ -1,3 +1,5 @@
+import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
+import {receiptSearchWhere} from '@/lib/receipt-search';
 import {existingReceiptLines, receiptLineSummary} from '@/lib/cash-register-lines';
 import {isSingleMonthRange} from '@/lib/list-month-groups';
 import MobileRecordViews from '@/components/MobileRecordViews';
@@ -51,16 +53,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
 
     const [receipts, methods, channels, dailyAggregates, receiptYearBounds] = await Promise.all([
         prisma.income.findMany({
-            where: {
-            workspaceId: current.workspace.id,
-            companyId: current.company.id,
-                incomeType: 'CASH_REGISTER',
-                ...(search ? {description: {contains: search.replace(/[\\%_]/g, '\\$&'), mode: 'insensitive' as const}} : {}),
-                creditDate: creditDateFilter,
-                ...(methodId ? {paymentMethodId: methodId} : {}),
-                ...(channelId ? {salesChannelId: channelId} : {}),
-                ...(fiscal === 'yes' ? {isFiscal: true} : fiscal === 'no' ? {OR: [{isFiscal: false}, {receiptLines: {some: {isFiscal: false}}}]} : fiscal === 'mixed' ? {receiptLines: {some: {isFiscal: false}}, isFiscal: true} : {})
-            },
+            where: receiptSearchWhere(current.workspace.id, current.company.id, timeZone, params),
             include: {paymentMethodRef: true, salesChannelRef: true, receiptLines: {orderBy: {position: 'asc'}}},
             orderBy: [{creditDate: 'desc'}, {id: 'desc'}],
             take: 1000
@@ -136,6 +129,7 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
                 </div>;
 
     return <div className="grid cash-register-receipts-page">
+        <ActionFeedbackBanner searchParams={params} savedMessages={{}} errorMessages={{export_empty: 'Nessuno scontrino da esportare per la ricerca corrente.', export_failed: 'Esportazione scontrini non riuscita. Riprova.'}}/>
         <MobileRecordViews kind="income" title="Andamento scontrini" linkLabel="Visualizza scontrini" count={receiptCount} summary={<>
         <CashRegisterReceiptTrendChart key={`${dateFrom}-${dateTo}-${annual}`} points={trend} annual={annual}
             headerActions={<div key="receipt-header-actions" className="toolbar-actions">

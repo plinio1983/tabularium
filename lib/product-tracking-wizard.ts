@@ -1,5 +1,5 @@
 export const trackingWizardSteps = [
-  {title: 'Merce', description: 'Riferimento, lotto, nome e data ingresso.'},
+  {title: 'Merce', description: 'Riferimento, lotto, anno, nome e data ingresso.'},
   {title: 'Documenti di tracciamento', description: 'Aggiungi fino a 5 documenti di tracciamento oppure prosegui senza allegati.'},
   {title: 'Fatture', description: 'Aggiungi e conferma le fatture, poi salva la tracciatura.'},
 ] as const;

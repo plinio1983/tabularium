@@ -17,7 +17,7 @@ import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import {yearMonthInTimeZone} from '@/lib/company-time';
 import CopyValueButton from '@/components/CopyValueButton';
-import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
+import {isExpenseInvoiceNotReceived, isExpenseInvoiceReceived} from '@/lib/expense-invoice';
 
 function valueOrDash(value?: string | null) {
   return value && value.trim() ? value : '-';
@@ -67,6 +67,8 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
   const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
+  const invoicedExpenses = supplier.expenses.filter(isExpenseInvoiceReceived);
+  const invoicedAmount = invoicedExpenses.reduce((sum, expense) => sum + Math.round(Number(expense.amount) * 100), 0) / 100;
   const uninvoicedExpenses = supplier.expenses.filter(isExpenseInvoiceNotReceived);
   const uninvoicedAmount = uninvoicedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
@@ -132,8 +134,11 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
               <h1>{supplier.businessName}</h1>
               <div className="record-detail-meta-line">
                 <span>{valueOrDash(supplier.alias)}</span>
-                <span className="badge">{supplier.expenses.length} spese collegate</span>
-                {/*<span>{valueOrDash(supplier.email)}</span>*/}
+                <span className="badge supplier-default-category-badge">
+                {supplier.defaultExpenseCategory
+                    ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
+                    : 'Non impostata'}
+                </span>
               </div>
             </div>
           </div>
@@ -151,42 +156,30 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
               <span className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>
                 {openExpenses.length} ordini aperti
               </span>
-              <span className="badge supplier-default-category-badge">
-                {supplier.defaultExpenseCategory
-                  ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
-                  : 'Non impostata'}
-              </span>
+              <span className="badge">{supplier.expenses.length} spese collegate</span>
             </div>
           </aside>
         </section>
 
-        <section className="record-detail-status-strip">
+        <section className="record-detail-status-strip supplier-purchase-summary" aria-label="Riepilogo acquisti fornitore">
           <div>
             <span>Spese collegate</span>
             <strong>{supplier.expenses.length}</strong>
           </div>
           <div>
-            <span>Ordini da saldare</span>
-            <strong>{openExpenses.length}</strong>
-          </div>
-          <div>
-            <span>Importo da saldare</span>
-            <strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
-          </div>
-          <div>
             <span>Acquistati {currentYear}</span>
             <strong>{euro(annualPurchasedAmount)}</strong>
           </div>
-          {uninvoicedExpenses.length > 0 ? <>
-            <div>
-              <span>Ordini senza fattura</span>
-              <strong className="text-warning">{uninvoicedExpenses.length}</strong>
-            </div>
-            <div>
-              <span>Importo non ancora fatturato</span>
-              <strong className="text-warning">{euro(uninvoicedAmount)}</strong>
-            </div>
-          </> : null}
+          <div>
+            <span>Totale fatturato</span>
+            <strong>{euro(invoicedAmount)}</strong>
+            <small className="muted">{invoicedExpenses.length} {invoicedExpenses.length === 1 ? 'ordine fatturato' : 'ordini fatturati'}</small>
+          </div>
+          <div>
+            <span>Non ancora fatturato</span>
+            <strong className={uninvoicedAmount > 0 ? 'text-warning' : undefined}>{euro(uninvoicedAmount)}</strong>
+            {uninvoicedExpenses.length > 0 && <small className="muted">{uninvoicedExpenses.length} {uninvoicedExpenses.length === 1 ? 'ordine senza fattura' : 'ordini senza fattura'}</small>}
+          </div>
         </section>
 
         <details className="record-detail-section party-detail-collapsible">

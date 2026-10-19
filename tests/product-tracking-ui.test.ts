@@ -126,10 +126,12 @@ test('required invoice dates reveal a collapsed section on invalid submission', 
 });
 
 
-test('new tracking defaults entry date to today while edits preserve an empty entry date', () => {
+test('new tracking leaves entry date empty while edits preserve an empty entry date', () => {
   const create = editorHarness();
-  assert.equal(create().find(node => node.type === 'DateField' && node.props.name === 'entryDate').props.value, '2026-10-13');
-  const edit = editorHarness({id: 9, name: 'Olio', batch: '001', alias: null, entryDate: '', attachments: []});
+  assert.equal(create().find(node => node.type === 'DateField' && node.props.name === 'entryDate').props.value, '');
+  assert.equal(create().find(node => node.type === 'input' && node.props.name === 'batchYear').props.defaultValue, 2026);
+  const edit = editorHarness({id: 9, name: 'Olio', batch: '001', batchYear: 2025, alias: null, entryDate: '', attachments: []});
+  assert.equal(edit().find(node => node.type === 'input' && node.props.name === 'batchYear').props.defaultValue, 2025);
   assert.equal(edit().find(node => node.type === 'DateField' && node.props.name === 'entryDate').props.value, '');
 });
 
@@ -161,7 +163,7 @@ test('wizard navigation keeps selected tracking files and confirmed invoices', (
 });
 
 test('adding an invoice from a detail entry opens the editor at step three', () => {
-  const render = editorHarness({id: 9, name: 'Olio', batch: '001', alias: null, entryDate: '2026-01-01', attachments: []}, 3, true);
+  const render = editorHarness({id: 9, name: 'Olio', batch: '001', batchYear: 2025, alias: null, entryDate: '2026-01-01', attachments: []}, 3, true);
   assert.equal(render().find(node => node.type === 'Actions').props.currentStep, 3);
   assert.equal(render().find(node => node.type === 'Actions').props.submitDisabled, true);
   assert.equal(render().find(node => node.type === 'Invoices').props.initiallyAddInvoice, true);
@@ -191,7 +193,7 @@ test('final validation returns to the hidden step containing an invalid field', 
 
 
 test('the add-invoice editor trigger opens a modal at step three without changing the page', () => {
-  const render = editorHarness({id: 9, name: 'Olio', batch: '001', alias: null, entryDate: '2026-01-01', attachments: []}, 3, true, false);
+  const render = editorHarness({id: 9, name: 'Olio', batch: '001', batchYear: 2025, alias: null, entryDate: '2026-01-01', attachments: []}, 3, true, false);
   assert.equal(render().some(node => node.type === 'form'), false);
   const trigger = render().find(node => node.type === 'button');
   trigger.props.onClick();
@@ -202,7 +204,7 @@ test('the add-invoice editor trigger opens a modal at step three without changin
 });
 
 test('adding a tracking document opens the modal at step two without navigation', () => {
-  const render = editorHarness({id: 9, name: 'Olio', batch: '001', alias: null, entryDate: '2026-01-01', attachments: []}, 2, false, false, true);
+  const render = editorHarness({id: 9, name: 'Olio', batch: '001', batchYear: 2025, alias: null, entryDate: '2026-01-01', attachments: []}, 2, false, false, true);
   render().find(node => node.type === 'button').props.onClick();
   assert.equal(render().find(node => node.type === 'Actions').props.currentStep, 2);
   assert.equal(render().find(node => node.type === 'Documents').props.initiallyAddDocument, true);

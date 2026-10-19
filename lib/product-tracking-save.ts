@@ -21,6 +21,9 @@ export async function saveTracking(request: Request, id?: number) {
     const name = String(form.get('name') ?? '').trim();
     const batch = String(form.get('batch') ?? '').trim();
     if (!name || !batch || name.length > 250 || batch.length > 250) throw new TrackingValidationError('Riferimento e lotto sono obbligatori (massimo 250 caratteri).');
+    const rawYear = String(form.get('batchYear') ?? '').trim();
+    if (!/^\d{4}$/.test(rawYear) || Number(rawYear) < 1000) throw new TrackingValidationError('Inserisci un anno del lotto valido di quattro cifre.');
+    const batchYear = Number(rawYear);
     const alias = String(form.get('alias') ?? '').trim();
     if (alias.length > 250) throw new TrackingValidationError('Nome troppo lungo.');
     const entryDate = parseTrackingDate(form.get('entryDate'));
@@ -38,23 +41,24 @@ export async function saveTracking(request: Request, id?: number) {
         if (entries.some(f => !(f instanceof File) || f.size === 0)) throw new TrackingValidationError('Gli allegati devono essere file non vuoti.');
         const files = entries as File[];
         if (retained.filter(a => a.kind === kind).length + files.length > 5) throw new TrackingValidationError('Puoi allegare massimo 5 fatture e 5 documenti di tracciamento.');
-        const dates = files.map((_, index) => kind === 'INVOICE' ? parseTrackingDate(form.get(`invoiceDate-new-${index}`), true) : null);
+        const dates = files.map((_, index) => parseTrackingDate(form.get(`${kind === 'INVOICE' ? 'invoiceDate' : 'documentDate'}-new-${index}`), true, kind === 'INVOICE' ? 'fattura' : 'documento'));
         for (const attachment of retained.filter(a => a.kind === kind)) {
-          const invoiceDate = kind === 'INVOICE' ? parseTrackingDate(form.get(`invoiceDate-${attachment.id}`), true) : null;
+          const date = parseTrackingDate(form.get(`${kind === 'INVOICE' ? 'invoiceDate' : 'documentDate'}-${attachment.id}`), true, kind === 'INVOICE' ? 'fattura' : 'documento');
+          const dates = kind === 'INVOICE' ? {invoiceDate: date} : {documentDate: date};
           const replacement = await saveTrackingInvoiceFile(form.getAll(`${kind === 'INVOICE' ? 'invoice' : 'tracking'}Replacement-${attachment.id}`), false);
           if (replacement) {newlySaved.push(replacement.path); removedPaths.push(attachment.path);}
-          await tx.productTrackingAttachment.update({where: {id: attachment.id}, data: {invoiceDate, ...(replacement ?? {})}});
+          await tx.productTrackingAttachment.update({where: {id: attachment.id}, data: {...dates, ...(replacement ?? {})}});
         }
         for (const [index, file] of files.entries()) {
           const [saved] = await saveExpenseAttachmentFiles([file]);
           newlySaved.push(saved.path);
           const {type: _type, ...metadata} = saved;
-          additions.push({...metadata, kind, invoiceDate: dates[index]});
+          additions.push({...metadata, kind, ...(kind === 'INVOICE' ? {invoiceDate: dates[index]} : {documentDate: dates[index]})});
         }
       }
       removedPaths.push(...(existing?.attachments.filter(a => removed.has(String(a.id))).map(a => a.path) ?? []));
       if (id) await tx.productTrackingAttachment.deleteMany({where: {trackingId: id, id: {in: [...removed].map(Number)}}});
-      const data = {name, batch, alias: alias || null, entryDate};
+      const data = {name, batch, batchYear, alias: alias || null, entryDate};
       const record = id
         ? await tx.productTracking.update({where: {id}, data: {...data, attachments: {create: additions}}})
         : await tx.productTracking.create({data: {...scope, ...data, attachments: {create: additions}}});

@@ -1,4 +1,3 @@
-import {ResponsiveRecordEdit} from '@/components/SingleRecordFieldsModal';
 import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import IncomeForm from '@/components/IncomeForm';
@@ -24,7 +23,7 @@ export default async function EditIncomePage({ params, searchParams }: { params:
   const orderedBanks = orderBanks(banks);
   const incomePaymentMethods = orderPaymentMethods(paymentMethods, 'INCOME');
 
-  return <ResponsiveRecordEdit kind="incomes" returnTo={returnTo} record={{id: income.id, amount: income.amount.toString(), vatRate: income.vatRate.toString(), incomeType: income.incomeType, orderDate: income.orderDate, dueDate: income.dueDate, customerId: income.customerId, salesChannelId: income.salesChannelId, billingMonth: income.billingMonth, billingYear: income.billingYear, isFiscal: income.isFiscal, invoiceStatus: income.invoiceStatus, notes: income.notes, description: income.description}} customers={customers} salesChannels={salesChannels}><div className="modal-page-wrap">
+  return <div className="modal-page-wrap">
     <div className="modal-card modal-card-wide modal-page-card income-wizard-page-card">
     <IncomeForm
       initialIncome={income}
@@ -38,5 +37,5 @@ export default async function EditIncomePage({ params, searchParams }: { params:
       customers={customers}
     />
     </div>
-  </div></ResponsiveRecordEdit>;
+  </div>;
 }

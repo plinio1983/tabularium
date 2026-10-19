@@ -138,14 +138,15 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 2px;
+  padding: 5px 2px;
   border: 1px solid rgba(226, 232, 240, .95);
   background: rgba(255, 255, 255, .97);
   box-shadow: 3px -1px 25px rgba(15, 23, 42, .20);
   backdrop-filter: blur(10px);
   pointer-events: auto;
   overflow: visible;
-  background: linear-gradient(359deg, #d6def2, #ffffff);
+  background: linear-gradient(180deg, #d6def2, #ffffff);
+  border-bottom: 1px solid #b2c6ff;
 
   @media (max-width: 760px) {
     overflow-y: visible;
@@ -258,7 +259,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   cursor: not-allowed;
   pointer-events: none;
   color: var(--muted);
-  background: #f8fafc;
+  background: #f2f2f2;
 }
 
 .floating-bulk-menu-wrap {
@@ -392,12 +393,31 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
 }
 
 .recurring-record-detail-page,
-.supplier-detail-page {
+.party-detail-page {
   // La larghezza minima della tabella non deve allargare la colonna del dettaglio.
   grid-template-columns: minmax(0, 1fr);
 
   .record-detail-shell {
     min-width: 0;
+  }
+}
+
+.party-detail-page .record-list-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  .incomes-list-shared,
+  .table-scroll {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .table-scroll {
+    // Keep the table's intrinsic width inside this scrollport.
+    contain: inline-size;
+    overflow-x: auto;
   }
 }
 
@@ -719,6 +739,23 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   line-height: 1.1;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.supplier-purchase-summary {
+  > div {
+    padding: 16px;
+  }
+
+  strong {
+    font-size: clamp(16px, 1.6vw, 20px);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  small {
+    display: block;
+    margin-top: 6px;
+  }
 }
 
 .expense-invoice-quick-action {

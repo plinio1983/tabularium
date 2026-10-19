@@ -157,6 +157,7 @@ export default async function Page({searchParams}: {
                     <tr>
                         <th data-sort-key="name">Riferimento</th>
                         <th data-sort-key="batch">Lotto</th>
+                        <th data-sort-key="batch-year" data-sort-type="number">Anno</th>
                         <th data-sort-key="alias">Nome</th>
                         <th data-sort-key="entry" data-sort-type="date">Data ingresso</th>
                         <th data-sort-key="invoices" data-sort-type="number">Fatture</th>
@@ -172,9 +173,11 @@ export default async function Page({searchParams}: {
                                    data-sort-alias={record.alias ?? ''}
                                    data-sort-entry={record.entryDate?.getTime() ?? ''}
                                    data-sort-created={record.createdAt.getTime()} data-sort-invoices={invoices}
+                                   data-sort-batch-year={record.batchYear}
                                    data-sort-tracking={tracking}>
                             <td><Link href={href}><strong>{record.name}</strong></Link></td>
                             <td>{record.batch}</td>
+                            <td>{record.batchYear}</td>
                             <td>{record.alias || '—'}</td>
                             <td>{dateLabel(record.entryDate)}</td>
                             <td><DocumentCount count={invoices} kind="INVOICE"/></td>
@@ -192,7 +195,7 @@ export default async function Page({searchParams}: {
                         <div className="mobile-record-title-row">
                             <div className="mobile-record-title-left"><strong>{record.name}</strong></div>
                             <div className="mobile-record-title-right"><span
-                                className="badge">Lotto {record.batch}</span></div>
+                                className="badge">Lotto {record.batch} · {record.batchYear}</span></div>
                         </div>
                         <div className="mobile-record-subtitle"><span
                             className="party-mobile-row-grow">{record.alias || 'Nome non indicato'}</span><span

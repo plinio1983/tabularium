@@ -17,5 +17,5 @@ export default async function Page({params, searchParams}: {params: Promise<{id:
  const returnTo = targetPath === '/product-trackings' || targetPath === `/product-trackings/${id}` ? candidate : '/product-trackings';
  const openNewInvoice = value('addInvoice') === '1';
  const initialMobileStep = openNewInvoice ? 3 : normalizeTrackingStep(value('step'));
- return <><h1>Modifica tracciatura</h1><ProductTrackingEditor initiallyOpen returnTo={returnTo} initialMobileStep={initialMobileStep} openNewInvoice={openNewInvoice} record={{...record, entryDate: calendarDateInput(record.entryDate), attachments: record.attachments.map(a => ({...a, invoiceDate: calendarDateInput(a.invoiceDate)}))}}/></>;
+ return <><h1>Modifica tracciatura</h1><ProductTrackingEditor initiallyOpen returnTo={returnTo} initialMobileStep={initialMobileStep} openNewInvoice={openNewInvoice} record={{...record, entryDate: calendarDateInput(record.entryDate), attachments: record.attachments.map(a => ({...a, invoiceDate: calendarDateInput(a.invoiceDate), documentDate: calendarDateInput(a.documentDate)}))}}/></>;
 }

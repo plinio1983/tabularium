@@ -1,3 +1,4 @@
+import {receiptSearchWhere} from '@/lib/receipt-search';
 import {searchExportCsv} from '@/lib/search-export';
 import {expensesCsv, incomesCsv, expensesCsvInclude, incomesCsvInclude} from '@/lib/record-csv-export';
 import {ledgerFilters, type LedgerParams} from '@/lib/movement-ledger';
@@ -146,6 +147,26 @@ export async function GET(request: Request, {params}: {params: Promise<{entity: 
     } catch {
       return errorResponse('export_failed');
     }
+  }
+  if (entity === 'receipts') {
+    const url = new URL(request.url);
+    const query = Object.fromEntries([...url.searchParams.keys()].map(key => [key, url.searchParams.getAll(key)]));
+    const returnHref = filteredListHref('/incomes/cash-register/receipts', query);
+    const errorResponse = (error: string) => NextResponse.redirect(new URL(appendFlash(returnHref, {error}), request.url), 303);
+    const {workspace, company} = access.current;
+    try {
+      const records = await prisma.income.findMany({
+        where: receiptSearchWhere(workspace.id, company.id, company.timeZone, query),
+        include: receiptInclude, orderBy: [{creditDate: 'desc'}, {id: 'desc'}],
+      });
+      if (!records.length) return errorResponse('export_empty');
+      const rows = records.map(receiptToCsvRow);
+      // Validate in import-sized batches without truncating the complete search.
+      for (let start = 0; start < rows.length; start += receiptCsvLimit) {
+        if (parseReceiptCsv(exportReceiptCsv(rows.slice(start, start + receiptCsvLimit))).some(row => row.error)) throw new Error('Scontrini non validi');
+      }
+      return csvDownload(exportReceiptCsv(rows), `receipts-${dateInputInTimeZone(company.timeZone)}.csv`);
+    } catch {return errorResponse('export_failed');}
   }
   if (entity !== 'payments' && entity !== 'credits') return NextResponse.json({error: 'Esportazione non supportata'}, {status: 404});
   const url = new URL(request.url);

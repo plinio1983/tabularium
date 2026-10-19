@@ -17,8 +17,8 @@ import {appendFlash} from '@/lib/flash';
 import {preparePageReturn} from '@/lib/page-transition';
 
 export type TrackingEditorRecord = {
-  id: number; name: string; batch: string; alias: string | null; entryDate: string;
-  attachments: {id: number; kind: 'INVOICE' | 'TRACKING'; originalName: string; invoiceDate: string; sizeBytes?: number | null}[];
+  id: number; name: string; batch: string; batchYear: number; alias: string | null; entryDate: string;
+  attachments: {id: number; kind: 'INVOICE' | 'TRACKING'; originalName: string; invoiceDate: string; documentDate?: string; sizeBytes?: number | null}[];
 };
 
 export default function ProductTrackingEditor({record, returnTo = '/product-trackings', initiallyOpen = false, className, initialMobileStep = 1, openNewInvoice = false, openNewDocument = false, disabled = false, mobileHeaderAction = false}: {
@@ -30,7 +30,7 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
   const [open, setOpen] = useState(initiallyOpen);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [entryDate, setEntryDate] = useState(() => record?.entryDate ?? dateInputInTimeZone(timeZone));
+  const [entryDate, setEntryDate] = useState(() => record?.entryDate ?? '');
   const initialInvoices = useMemo(() => record?.attachments.filter(a => a.kind === 'INVOICE') ?? [], [record?.attachments]);
   const [invoiceState, setInvoiceState] = useState<TrackingInvoiceFormState>(() => ({rows: initialInvoices.map(invoiceRow), removedIds: [], hasDraft: openNewInvoice && initialInvoices.length < 5}));
   const initialDocuments = useMemo(() => record?.attachments.filter(a => a.kind === 'TRACKING') ?? [], [record?.attachments]);
@@ -62,7 +62,7 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
     setDocumentState({rows: initialDocuments.map(invoiceRow), removedIds: [], hasDraft: openNewDocument && initialDocuments.length < 5});
     setInvoiceState({rows: initialInvoices.map(invoiceRow), removedIds: [], hasDraft: openNewInvoice && initialInvoices.length < 5});
     setMobileStep(normalizeTrackingStep(initialMobileStep));
-    setEntryDate(record?.entryDate ?? dateInputInTimeZone(timeZone)); setError(''); setOpen(true);
+    setEntryDate(record?.entryDate ?? ''); setError(''); setOpen(true);
   }
   function goToMobileStep(step: number) {
     if (saving) return;
@@ -158,10 +158,11 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
           </div>
           <fieldset disabled={saving} className="full product-tracking-fields">
             <details className="form-section full entity-form-section app-form-wizard-step app-form-wizard-step-1" data-tracking-step="1" open>
-              <summary><span className="info-label-row"><span><span className="entity-form-section-icon" aria-hidden="true">▤</span>Merce</span><InfoHint compactOnly title="Merce">Riferimento e lotto obbligatori; nome e data ingresso facoltativi.</InfoHint></span><small className="info-hint-desktop-text">Riferimento e lotto obbligatori</small></summary>
+              <summary><span className="info-label-row"><span><span className="entity-form-section-icon" aria-hidden="true">▤</span>Merce</span><InfoHint compactOnly title="Merce">Riferimento, lotto e anno obbligatori; nome e data ingresso facoltativi.</InfoHint></span><small className="info-hint-desktop-text">Riferimento, lotto e anno obbligatori</small></summary>
               <div className="form-section-grid entity-form-section-grid">
                 <FormField label="Riferimento *" icon="▤" htmlFor={`${formId}-name`}><input id={`${formId}-name`} name="name" required autoFocus={initialMobileStep === 1} onChange={event => event.currentTarget.setCustomValidity('')} maxLength={250} defaultValue={record?.name} placeholder="Riferimento del prodotto"/></FormField>
                 <FormField label="Lotto *" icon="#" htmlFor={`${formId}-batch`}><input id={`${formId}-batch`} name="batch" required onChange={event => event.currentTarget.setCustomValidity('')} maxLength={250} autoComplete="off" defaultValue={record?.batch} placeholder="Es. LOT-001"/></FormField>
+                <FormField label="Anno *" icon="▦" htmlFor={`${formId}-batchYear`}><input id={`${formId}-batchYear`} name="batchYear" type="number" required min={1000} max={9999} step={1} defaultValue={record?.batchYear ?? Number(dateInputInTimeZone(timeZone).slice(0, 4))}/></FormField>
                 <FormField label="Nome" icon="◇" htmlFor={`${formId}-alias`}><input id={`${formId}-alias`} name="alias" maxLength={250} defaultValue={record?.alias ?? ''} placeholder="Nome del prodotto"/></FormField>
                 <DateField label="Data ingresso" name="entryDate" value={entryDate} onChange={setEntryDate}/>
               </div>

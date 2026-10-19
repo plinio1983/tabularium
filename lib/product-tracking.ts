@@ -4,9 +4,9 @@ export class TrackingValidationError extends Error {
   constructor(message: string, public status = 400) {super(message); this.name = 'TrackingValidationError';}
 }
 
-export function parseTrackingDate(value: unknown, required = false): Date | null {
+export function parseTrackingDate(value: unknown, required = false, label = 'fattura'): Date | null {
   if (value === '' || value == null) {
-    if (required) throw new TrackingValidationError('La data fattura è obbligatoria per ogni fattura.');
+    if (required) throw new TrackingValidationError(`La data ${label} è obbligatoria per ogni ${label}.`);
     return null;
   }
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new TrackingValidationError('Data non valida.');

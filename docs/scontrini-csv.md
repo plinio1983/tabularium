@@ -1,6 +1,6 @@
 # CSV scontrini
 
-Dalla lista Scontrini selezionare i record e scegliere **Azioni → Esporta CSV**. Il file comprende soltanto i record selezionati della società corrente, non i cumulativi della lista Incassi. Lista, export e import sono limitati a 1.000 righe; restringere il periodo per archivi più grandi.
+Dalla lista Scontrini, **Esporta CSV** nella action bar e nella floating bar esporta tutti gli scontrini della ricerca corrente, indipendentemente dalle checkbox e dal limite di 1.000 record visualizzati. Applica periodo, descrizione, metodo, canale, fiscalità e società corrente. **Azioni → Esporta selezionati** conserva l’esportazione dei soli record selezionati (massimo 1.000); **Azioni → Copia** resta disponibile per un solo scontrino selezionato. L’importazione rimane limitata a 1.000 scontrini per file: per reimportare archivi più grandi esportare periodi più ristretti.
 
 In **Importa dati → Scontrini (CSV)** caricare il file, scegliere **Analizza file**, verificare l'anteprima e confermare. Errori o conflitti bloccano tutto il file. La conferma rilegge dati e configurazione: se l'anteprima è cambiata, è richiesta una nuova analisi. Non è prevista la cancellazione o sovrascrittura dello storico. Anche la cancellazione preventiva dell'importazione Incassi standard conserva gli scontrini.
 

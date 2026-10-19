@@ -14,6 +14,8 @@ function internalNavigableLink(link: HTMLAnchorElement) {
   if (!href || href.startsWith('#')) return null;
   if (link.target && link.target !== '_self') return null;
   if (link.hasAttribute('download')) return null;
+  // Search exports download a file without completing a page navigation.
+  if (link.hasAttribute('data-bulk-search-export')) return null;
   if (link.getAttribute('aria-disabled') === 'true' || link.classList.contains('is-disabled')) return null;
 
   const url = new URL(href, window.location.href);

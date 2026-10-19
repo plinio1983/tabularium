@@ -231,3 +231,24 @@ test('Escape at payment selection restores the last amount and VAT, in the regis
     assert.equal(app.posts.length, 0);
   }
 });
+
+test('editing clears the displayed stored total locally and replaces it only on save', async () => {
+  const receipt = {id: 9, amount: 23.2, isFiscal: true, vatRate: 0, salesChannelId: 1, incomeCategoryId: 1, paymentMethodId: 1, bankId: 1, description: 'Vendita originale', receiptLines: [{amount: 12.2, isFiscal: true, vatRate: 22}, {amount: 11, isFiscal: true, vatRate: 10}]};
+  const app = setup('edit', receipt);
+  const display = () => app.render().find(node => node.props['aria-label'] === 'Importo da aggiungere').props.value;
+  assert.equal(display(), '23,20');
+  app.button('Azzera importo').props.onClick();
+  assert.ok(['', '0,00'].includes(display()));
+  assert.equal(app.button('Cash').props.disabled, true);
+  assert.equal(app.posts.length, 0);
+  app.type('500'); app.button('Aggiungi').props.onClick();
+  app.type('200'); app.button('Azzera importo').props.onClick();
+  assert.equal(display(), '5,00');
+  app.button('Cash').props.onClick();
+  app.button('SALVA MODIFICHE').props.onClick();
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(app.posts.length, 1);
+  assert.equal(app.posts[0].lines.length, 1);
+  assert.equal(app.posts[0].lines[0].amount, 5);
+  assert.equal(app.posts[0].description, 'Vendita originale');
+});
