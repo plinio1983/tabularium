@@ -2144,6 +2144,7 @@ a.record-top-summary-item.is-invoice-waiting:hover {
 
   .cash-register-draft-amount {
     border-top: 1px solid rgba(255, 255, 255, .2);
+    position: relative;
     //padding-top: 8px;
 
     > label {

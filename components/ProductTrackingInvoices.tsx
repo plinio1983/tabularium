@@ -1,11 +1,11 @@
 "use client";
 
-import type {ReactElement} from 'react';
+import type {ReactNode} from 'react';
 import ProductTrackingAttachments from '@/components/ProductTrackingAttachments';
 import type {TrackingInvoice, TrackingInvoiceFormState} from '@/lib/product-tracking-invoice';
 
 export default function ProductTrackingInvoices({initialInvoices, initiallyAddInvoice, addInvoiceTrigger, ...props}: {
-  initialInvoices: TrackingInvoice[]; initiallyAddInvoice?: boolean; addInvoiceTrigger?: ReactElement<{disabled?: boolean}>;
+  initialInvoices: TrackingInvoice[]; initiallyAddInvoice?: boolean; addInvoiceTrigger?: ReactNode;
   trackingId?: number; readOnly?: boolean; disabled?: boolean;
   onStateChange?: (state: TrackingInvoiceFormState) => void;
 }) {

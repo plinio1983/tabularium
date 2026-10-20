@@ -23,14 +23,16 @@ export function sixMonthsAgo(timeZone: string, now = new Date()) {
   target.setUTCDate(Math.min(day, lastDay));
   return target;
 }
-export type TrackingSummaryRecord = {entryDate: Date | null; attachments: {kind: string; invoiceDate: Date | null}[]};
+export type TrackingSummaryRecord = {entryDate: Date | null; attachments: {kind: string; invoiceDate: Date | null; documentDate?: Date | null}[]};
 export function trackingFlags(record: TrackingSummaryRecord, cutoff: Date) {
   const invoices = record.attachments.filter(a => a.kind === 'INVOICE');
   const dates = invoices.flatMap(a => a.invoiceDate ? [a.invoiceDate.getTime()] : []);
+  const documentDates = record.attachments.flatMap(a => a.kind === 'TRACKING' && a.documentDate ? [a.documentDate.getTime()] : []);
   return {
     missingInvoice: invoices.length === 0,
     missingTracking: !record.attachments.some(a => a.kind === 'TRACKING'),
     oldInvoice: dates.length > 0 && Math.max(...dates) < cutoff.getTime(),
+    oldDocument: documentDates.length > 0 && Math.max(...documentDates) < cutoff.getTime(),
     oldEntry: record.entryDate !== null && record.entryDate < cutoff,
   };
 }

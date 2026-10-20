@@ -358,6 +358,7 @@ function openBulkActionModal(sourceMenu: HTMLElement) {
 function makeFloatingBar(sourceBar: HTMLElement) {
   const floating = document.createElement("div");
   floating.className = "floating-bulk-actions-bar fixed";
+  floating.dataset.bulkSource = sourceBar.id;
   floating.setAttribute("aria-hidden", "true");
 
   const inner = document.createElement("div");

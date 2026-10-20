@@ -25,7 +25,7 @@
 }
 
 .product-tracking-mobile-item {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr);
   padding: 12px 0;
 
   .party-mobile-link { padding: 4px; }
@@ -51,7 +51,7 @@
   .record-detail-badge-row .badge { white-space: normal; font-size: 11px; }
 
   @media (max-width: 390px) {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr);
   }
 }
 
@@ -70,7 +70,54 @@
   }
 }
 
+// The tracking wizard switches at 900px; entity forms normally switch at 760px.
+// Keep the modal and its fields on the same breakpoint as the wizard controls.
+@media (max-width: 900px) {
+  .modal-backdrop.product-tracking-modal {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .product-tracking-modal > .modal-card.entity-form-modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    margin: 0 !important;
+    padding: max(14px, env(safe-area-inset-top)) 12px max(14px, env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: none !important;
+  }
+
+  .product-tracking-modal .entity-form-modal-card .product-tracking-wizard {
+    display: flex !important;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 92px;
+  }
+
+  .product-tracking-wizard .entity-form-section-grid {
+    grid-template-columns: minmax(0, 1fr);
+
+    > * {
+      grid-column: 1;
+      min-width: 0;
+    }
+  }
+}
+
 .app-record-form .product-tracking-invoice-summary {
+  position: relative;
   grid-template-columns: minmax(180px, 1.4fr) minmax(145px, .8fr) minmax(90px, .45fr) auto;
 
   .payment-summary-primary strong,
@@ -83,6 +130,23 @@
   @media (max-width: 900px) {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+.product-tracking-attachment-download::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+}
+
+.product-tracking-attachment-download:focus-visible::after {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.product-tracking-invoice-summary .payment-row-actions {
+  position: relative;
+  z-index: 1;
 }
 
 .product-tracking-invoice-editor {
@@ -145,9 +209,37 @@
 .product-tracking-invoice-title {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 
   > h2 { margin: 0; }
+}
+
+.tracking-document-count {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  min-width: 0;
+}
+
+.tracking-document-age {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.payment-summary-date > .tracking-document-age {
+  display: block;
+  margin-top: 4px;
+}
+
+.product-tracking-add-trigger {
+  display: inline-flex;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
 
@@ -160,5 +252,47 @@
     box-shadow: none;
 
     > summary { display: none; }
+  }
+}
+
+#tracking-bulk-feedback:empty { display: none; }
+
+// Use the same selection control in rows and both action bars.
+.product-trackings-page input[type='checkbox'][form='trackingBulkForm'],
+.product-trackings-page input[type='checkbox'][data-bulk-target='trackingBulkForm'],
+.floating-bulk-actions-bar[data-bulk-source='trackingBulkForm'] input[type='checkbox'] {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  max-width: 22px;
+  max-height: 22px;
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+#trackingBulkForm > .bulk-select-all-inline,
+.floating-bulk-actions-bar[data-bulk-source='trackingBulkForm'] .floating-bulk-select-all-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex: 0 0 30px;
+  min-height: 38px;
+  margin: 0;
+  padding: 0;
+}
+
+.product-trackings-page .table .cell-center {
+  vertical-align: middle;
+}
+
+@media (min-width: 761px) {
+  // Desktop already has select-all in the table header.
+  #trackingBulkForm > .bulk-select-all-inline {
+    display: none;
   }
 }

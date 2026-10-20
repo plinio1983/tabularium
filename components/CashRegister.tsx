@@ -102,7 +102,10 @@ export default function CashRegister({
     const registerRef = useRef<HTMLElement>(null);
     const keyboardButtons = useRef<Array<HTMLButtonElement | null>>([]);
     const cancelRef = useRef<HTMLButtonElement>(null);
-    const keyboardVatOptions = [{isFiscal: false, vatRate: 0}, ...[0, 4, 10, 22].map(rate => ({isFiscal: true, vatRate: rate}))];
+    const keyboardVatOptions = [{isFiscal: false, vatRate: 0}, ...[0, 4, 10, 22].map(rate => ({
+        isFiscal: true,
+        vatRate: rate
+    }))];
     const numericAmount = Number(amount.replace(',', '.'));
     const hasDraft = Number.isFinite(numericAmount) && numericAmount > 0;
     const summary = useMemo(() => lines.length ? receiptLineSummary(lines) : null, [lines]);
@@ -270,23 +273,32 @@ export default function CashRegister({
     useEffect(() => {
         const handler = (event: KeyboardEvent) => {
             if (sendingRef.current || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
-            if (event.key === 'Enter' && event.repeat) {event.preventDefault(); return;}
+            if (event.key === 'Enter' && event.repeat) {
+                event.preventDefault();
+                return;
+            }
             if (keyboardSheet) {
                 if (event.key === 'Escape') {
                     event.preventDefault();
                     if (keyboardSheet === 'payment') undoLastLine();
                     closeKeyboardSheet();
-                }
-                else if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) {
+                } else if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) {
                     event.preventDefault();
                     const length = keyboardSheet === 'vat' ? keyboardVatOptions.length : keyboardMethods.length;
                     const step = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1;
                     setKeyboardIndex(index => (index + step + length) % length);
-                } else if (event.key === 'Enter' && !(event.target as HTMLElement | null)?.closest('button[aria-label="Chiudi selezione"]')) {event.preventDefault(); acceptKeyboardChoice(keyboardIndex);}
+                } else if (event.key === 'Enter' && !(event.target as HTMLElement | null)?.closest('button[aria-label="Chiudi selezione"]')) {
+                    event.preventDefault();
+                    acceptKeyboardChoice(keyboardIndex);
+                }
                 return;
             }
             if (selectedMethod) {
-                if (event.key === 'Escape') {event.preventDefault(); closeConfirmation(); return;}
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeConfirmation();
+                    return;
+                }
                 const target = event.target as HTMLElement | null;
                 if (target?.matches('input, select, textarea') || target?.closest('[contenteditable="true"]')) return;
                 if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(event.key)) {
@@ -362,7 +374,8 @@ export default function CashRegister({
         }
     }
 
-    return <main ref={registerRef} className={`cash-register-shell cash-register-multiple ${mode === 'edit' ? 'is-editing' : ''}`}>
+    return <main ref={registerRef}
+                 className={`cash-register-shell cash-register-multiple ${mode === 'edit' ? 'is-editing' : ''}`}>
         <header className="cash-register-header">
             <div>
                 <h1>{mode === 'edit' ? `Modifica scontrino #${initialReceipt?.id}` : mode === 'copy' ? 'Copia scontrino' : 'Registratore di cassa'}</h1>
@@ -402,12 +415,13 @@ export default function CashRegister({
                     <small>IVA Esc. <strong className="text-success">{euro(summary?.net ?? 0)}</strong></small>
                 </div>
             </div>
-            <div className="cash-register-display-amount cash-register-draft-amount"><label><input ref={amountRef}
-                                                                                                   aria-label="Importo da aggiungere"
-                                                                                                   value={formatCurrencyInput(showMethods ? String(summary?.amount ?? 0).replace('.', ',') : amount)}
-                                                                                                   readOnly
-                                                                                                   disabled={Boolean(selectedMethod)}
-                                                                                                   inputMode="none"/></label>
+            <div className="cash-register-display-amount cash-register-draft-amount">
+                <label><input ref={amountRef}
+                           aria-label="Importo da aggiungere"
+                           value={formatCurrencyInput(showMethods ? String(summary?.amount ?? 0).replace('.', ',') : amount)}
+                           readOnly
+                           disabled={Boolean(selectedMethod)}
+                           inputMode="none"/></label>
                 <button type="button" className="amount-clear-button" aria-label="Azzera importo"
                         disabled={Boolean(selectedMethod)} onClick={clearDisplay}><span className="btn-icon">×</span>
                 </button>
@@ -437,7 +451,8 @@ export default function CashRegister({
                     }}>{rate}%</button>)}
                 </section>
                 <button className="btn btn-md btn-primary cash-register-add" type="button"
-                        disabled={!hasDraft || lines.length >= receiptLineLimit} onClick={() => addLine()}><span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Aggiungi
+                        disabled={!hasDraft || lines.length >= receiptLineLimit} onClick={() => addLine()}><span
+                    className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Aggiungi
                 </button>
             </div>
             <div ref={methodPanel} className="cash-register-method-pane">
@@ -467,24 +482,51 @@ export default function CashRegister({
                 <button type="button" aria-label="Chiudi notifica" onClick={() => setNotice(null)}>×</button>
             </div>
         </div>, document.body)}
-        {mounted && keyboardSheet && createPortal(<div className="cash-register-method-backdrop cash-register-keyboard-backdrop" onMouseDown={event => {
+        {mounted && keyboardSheet && createPortal(<div
+            className="cash-register-method-backdrop cash-register-keyboard-backdrop" onMouseDown={event => {
             if (event.target === event.currentTarget) closeKeyboardSheet();
         }}>
-            <section className="cash-register-method-modal cash-register-keyboard-choice-modal" role="dialog" aria-modal="true" aria-labelledby="cash-register-keyboard-title" onKeyDown={event => {
+            <section className="cash-register-method-modal cash-register-keyboard-choice-modal" role="dialog"
+                     aria-modal="true" aria-labelledby="cash-register-keyboard-title" onKeyDown={event => {
                 if (event.key !== 'Tab') return;
                 const controls = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'));
                 const first = controls[0], last = controls[controls.length - 1];
-                if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last?.focus();}
-                else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first?.focus();}
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last?.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first?.focus();
+                }
             }}>
-                <header><h2 id="cash-register-keyboard-title">{keyboardSheet === 'vat' ? 'Seleziona reparto IVA' : 'Seleziona metodo di pagamento'}</h2>
-                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button" aria-label="Chiudi selezione" onClick={closeKeyboardSheet}><span className="btn-icon" aria-hidden="true">×</span></button>
+                <header><h2
+                    id="cash-register-keyboard-title">{keyboardSheet === 'vat' ? 'Seleziona reparto IVA' : 'Seleziona metodo di pagamento'}</h2>
+                    <button className="btn btn-neutral btn-icon-only modal-close-button" type="button"
+                            aria-label="Chiudi selezione" onClick={closeKeyboardSheet}><span className="btn-icon"
+                                                                                             aria-hidden="true">×</span>
+                    </button>
                 </header>
                 <div>
-                    {keyboardSheet === 'vat' ? keyboardVatOptions.map((option, index) => <button key={index} type="button" ref={node => {keyboardButtons.current[index] = node;}} className={`${keyboardIndex === index ? 'is-selected' : ''} ${!option.isFiscal ? 'is-non-fiscal' : ''}`} aria-pressed={keyboardIndex === index} onFocus={() => setKeyboardIndex(index)} onClick={() => acceptKeyboardChoice(index)}>{option.isFiscal ? `Rep. ${option.vatRate}%` : 'Non Fisc.'}</button>) : keyboardMethods.map((method, index) => <button key={method.id} type="button" ref={node => {keyboardButtons.current[index] = node;}} className={keyboardIndex === index ? 'is-selected' : ''} aria-pressed={keyboardIndex === index} onFocus={() => setKeyboardIndex(index)} onClick={() => acceptKeyboardChoice(index)}><span className="btn-icon" aria-hidden="true">{method.icon ?? '•'}</span>{method.name}</button>)}
+                    {keyboardSheet === 'vat' ? keyboardVatOptions.map((option, index) => <button key={index}
+                                                                                                 type="button"
+                                                                                                 ref={node => {
+                                                                                                     keyboardButtons.current[index] = node;
+                                                                                                 }}
+                                                                                                 className={`${keyboardIndex === index ? 'is-selected' : ''} ${!option.isFiscal ? 'is-non-fiscal' : ''}`}
+                                                                                                 aria-pressed={keyboardIndex === index}
+                                                                                                 onFocus={() => setKeyboardIndex(index)}
+                                                                                                 onClick={() => acceptKeyboardChoice(index)}>{option.isFiscal ? `Rep. ${option.vatRate}%` : 'Non Fisc.'}</button>) : keyboardMethods.map((method, index) =>
+                        <button key={method.id} type="button" ref={node => {
+                            keyboardButtons.current[index] = node;
+                        }} className={keyboardIndex === index ? 'is-selected' : ''}
+                                aria-pressed={keyboardIndex === index} onFocus={() => setKeyboardIndex(index)}
+                                onClick={() => acceptKeyboardChoice(index)}><span className="btn-icon"
+                                                                                  aria-hidden="true">{method.icon ?? '•'}</span>{method.name}
+                        </button>)}
                 </div>
                 {notice?.tone === 'error' && <p className="form-error" role="alert">{notice.text}</p>}
-                <p className="cash-register-keyboard-hint">Frecce per scegliere · Invio per confermare · Esc per annullare</p>
+                <p className="cash-register-keyboard-hint">Frecce per scegliere · Invio per confermare · Esc per
+                    annullare</p>
             </section>
         </div>, document.body)}
         {mounted && selectedMethod && summary && createPortal(<div
@@ -551,7 +593,8 @@ export default function CashRegister({
                         {/*<div><dt>Non fiscale</dt><dd>{euro(Math.round((summary.amount - summary.receiptFiscalAmount) * 100) / 100)}</dd></div>*/}
                     </dl>
                     {notice?.tone === 'error' && <p className="form-error" role="alert">{notice.text}</p>}
-                    <button ref={cancelRef} className="btn btn-md btn-link text-critical" type="button" disabled={sending}
+                    <button ref={cancelRef} className="btn btn-md btn-link text-critical" type="button"
+                            disabled={sending}
                             onFocus={() => setConfirmationAction('cancel')}
                             onClick={closeConfirmation}>Annulla e torna al registratore
                     </button>

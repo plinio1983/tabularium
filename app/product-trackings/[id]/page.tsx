@@ -92,11 +92,11 @@ export default async function Page({params, searchParams}: {
                     </div>
                 </section>
                 <ProductTrackingDocuments trackingId={id} readOnly={!canEdit}
-                  addDocumentTrigger={<ProductTrackingEditor record={editor} returnTo={detailHref} initialMobileStep={2} openNewDocument className="btn btn-sm btn-default"/>}
+                  addDocumentTrigger={<ProductTrackingEditor record={editor} returnTo={detailHref} initialMobileStep={2} triggerLabel="Gestisci documenti" className="btn btn-sm btn-default"/>}
                   initialDocuments={record.attachments.filter(a => a.kind === 'TRACKING').map(a => ({id: a.id, originalName: a.originalName, documentDate: calendarDateInput(a.documentDate), sizeBytes: a.sizeBytes}))}/>
                 <ProductTrackingInvoices trackingId={id}
                                          addInvoiceTrigger={<ProductTrackingEditor record={editor} returnTo={detailHref}
-                                                                                   initialMobileStep={3} openNewInvoice
+                                                                                   initialMobileStep={3} triggerLabel="Gestisci fatture"
                                                                                    className="btn btn-sm btn-default"/>}
                                          readOnly={!canEdit}
                                          initialInvoices={record.attachments.filter(a => a.kind === 'INVOICE').map(a => ({

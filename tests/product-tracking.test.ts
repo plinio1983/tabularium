@@ -14,11 +14,22 @@ test('six calendar months clamps month-end and uses company day', () => {
 });
 test('missing documents and age indicators are independent, latest invoice wins', () => {
  const cutoff = new Date('2026-04-13');
- assert.deepEqual(trackingFlags({entryDate: null, attachments: []}, cutoff), {missingInvoice: true, missingTracking: true, oldInvoice: false, oldEntry: false});
+ assert.deepEqual(trackingFlags({entryDate: null, attachments: []}, cutoff), {missingInvoice: true, missingTracking: true, oldInvoice: false, oldDocument: false, oldEntry: false});
  const record = {entryDate: new Date('2026-04-12'), attachments: [{kind: 'INVOICE', invoiceDate: new Date('2025-01-01')}, {kind: 'INVOICE', invoiceDate: cutoff}, {kind: 'TRACKING', invoiceDate: null}]};
- assert.deepEqual(trackingFlags(record, cutoff), {missingInvoice: false, missingTracking: false, oldInvoice: false, oldEntry: true});
+ assert.deepEqual(trackingFlags(record, cutoff), {missingInvoice: false, missingTracking: false, oldInvoice: false, oldDocument: false, oldEntry: true});
  record.attachments.pop(); record.attachments.pop();
  assert.equal(trackingFlags(record, cutoff).oldInvoice, true);
+});
+
+test('document age uses the latest tracking document and excludes invoices', () => {
+ const cutoff = new Date('2026-04-20');
+ const old = {kind: 'TRACKING', invoiceDate: null, documentDate: new Date('2026-04-19')};
+ const invoice = {kind: 'INVOICE', invoiceDate: new Date('2026-10-20'), documentDate: new Date('2026-10-20')};
+ const flags = (attachments: {kind: string; invoiceDate: Date | null; documentDate: Date | null}[]) => trackingFlags({entryDate: null, attachments}, cutoff);
+ assert.equal(flags([old, invoice]).oldDocument, true);
+ assert.equal(flags([old, {...old, documentDate: cutoff}]).oldDocument, false);
+ assert.equal(flags([old, {...old, documentDate: new Date('2026-10-20')}]).oldDocument, false);
+ assert.equal(flags([{...old, documentDate: null}]).oldDocument, false);
 });
 
 test('missing entry date and entry period filters combine instead of overriding the period', async () => {

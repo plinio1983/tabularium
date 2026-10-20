@@ -3,12 +3,12 @@ import { getWorkspaceContext } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { readExpenseAttachment } from '@/lib/attachments';
 
-function contentDisposition(name: string) {
+function contentDisposition(name: string, download: boolean) {
   const fallback = name.replace(/[^\x20-\x7E]/g, '_').replace(/["\\]/g, '_');
-  return `inline; filename="${fallback}"; filename*=UTF-8''${encodeURIComponent(name)}`;
+  return `${download ? 'attachment' : 'inline'}; filename="${fallback}"; filename*=UTF-8''${encodeURIComponent(name)}`;
 }
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const current = await getWorkspaceContext();
   if (!current) return NextResponse.json({ error: 'Autenticazione richiesta' }, { status: 401 });
 
@@ -31,7 +31,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       headers: {
         'Content-Type': attachment.mimeType || 'application/octet-stream',
         'Content-Length': String(file.byteLength),
-        'Content-Disposition': contentDisposition(attachment.originalName),
+        'Content-Disposition': contentDisposition(attachment.originalName, new URL(request.url).searchParams.get('download') === '1'),
         'Cache-Control': 'private, no-store',
         'X-Content-Type-Options': 'nosniff'
       }

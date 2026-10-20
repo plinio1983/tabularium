@@ -1,4 +1,7 @@
+import {latestTrackingDocumentDate, trackingDocumentAge, trackingDocumentAgeClass} from '@/lib/tracking-document-age';
 import Link from 'next/link';
+import BulkSelectionController from '@/components/BulkSelectionController';
+import ProductTrackingBulkController from '@/components/ProductTrackingBulkController';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspace, hasWorkspaceRole, workspaceOperationalRoles} from '@/lib/auth';
 import {
@@ -16,7 +19,7 @@ import InfoHint from '@/components/InfoHint';
 import SortableTableController from '@/components/SortableTableController';
 import ProductTrackingStatus from '@/components/ProductTrackingStatus';
 import ProductTrackingReset from '@/components/ProductTrackingReset';
-import {calendarDateInput} from '@/lib/company-time';
+import {calendarDateInput, dateInputInTimeZone} from '@/lib/company-time';
 import {formatItalianCompactDate} from '@/lib/date-format';
 
 const sortOptions = [
@@ -31,6 +34,7 @@ export default async function Page({searchParams}: {
     searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
     const current = await requireWorkspace('/product-trackings');
+    const today = dateInputInTimeZone(current.company.timeZone);
     const raw = await searchParams;
     const allowed = ['q', 'name', 'batch', 'alias', 'from', 'to', 'invoice', 'tracking', 'indicator', 'missingEntry', 'mobileSort'];
     const filters = Object.fromEntries(allowed.flatMap(key => {
@@ -62,7 +66,7 @@ export default async function Page({searchParams}: {
             ...(filters.alias ? {alias: {contains: filters.alias, mode: 'insensitive'}} : {}),
             ...trackingEntryDateWhere(from, to, filters.missingEntry === '1'),
         },
-        include: {attachments: {select: {kind: true, invoiceDate: true}}},
+        include: {attachments: {select: {kind: true, invoiceDate: true, documentDate: true}}},
         orderBy: mobileSort.startsWith('name_') ? {name: mobileSort.endsWith('_asc') ? 'asc' : 'desc'} : mobileSort.startsWith('entry_') ? {
             entryDate: {
                 sort: mobileSort.endsWith('_asc') ? 'asc' : 'desc',
@@ -98,7 +102,8 @@ export default async function Page({searchParams}: {
         <div className="toolbar-card toolbar-card-wrap">
             <div><h2>Tracciamento prodotti</h2><p className="muted">Prodotti, lotti e documenti
                 dell’azienda {current.company.name}.</p></div>
-            <div className="toolbar-actions">{canEdit && <ProductTrackingEditor returnTo={listHref} mobileHeaderAction/>}</div>
+            <div className="toolbar-actions">{canEdit &&
+                <ProductTrackingEditor returnTo={listHref} mobileHeaderAction/>}</div>
         </div>
         <ActionFeedbackBanner searchParams={raw} savedMessages={{
             created: 'Tracciatura creata.',
@@ -148,6 +153,35 @@ export default async function Page({searchParams}: {
                 <ProductTrackingReset/>
             </div>}
             {dateError && <p role="alert" className="inline-warning">{dateError}</p>}
+            <BulkSelectionController/>
+            <ProductTrackingBulkController/>
+            <form id="trackingBulkForm" className="bulk-actions-bar grouped-bulk-actions-bar party-bulk-actions-bar"
+                  data-bulk-button-group="true" data-bulk-subject="tracciature" data-in-place-submit="true">
+                <label className="bulk-select-all-inline">
+                    <input type="checkbox" className="bulk-select-all" data-bulk-target="trackingBulkForm"
+                           aria-label="Seleziona tutte le tracciature visibili"/>
+                </label>
+                <div className="bulk-action-buttons btn-group">
+                    <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="trackingBulkForm"
+                         data-edit-base="/product-trackings/" data-return-to={encodeURIComponent(listHref)}>
+                        {canEdit && <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
+                            <span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span>
+                        </a>}
+                        {canEdit && <button type="submit" className="bulk-direct-link is-disabled" name="bulkAction" value="delete"
+                            data-bulk-shortcut data-floating-label="Elimina" data-floating-icon="🗑" disabled>
+                            <span className="btn-icon">🗑</span><span className="hidden-sm-down">Elimina</span>
+                        </button>}
+                        <button type="submit" className="bulk-direct-link is-disabled" name="bulkAction" value="documents"
+                            data-bulk-shortcut data-floating-label="Scarica documenti" aria-label="Scarica documenti" title="Scarica documenti" disabled>
+                            <span className="btn-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M20 20H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2Z"/><path d="M12 10v7m-3-3 3 3 3-3"/></svg></span><span className="hidden-sm-down">Scarica documenti</span>
+                        </button>
+                        <button type="submit" className="bulk-direct-link is-disabled" name="bulkAction" value="invoices"
+                            data-bulk-shortcut data-floating-label="Scarica fatture" aria-label="Scarica fatture" title="Scarica fatture" disabled>
+                            <span className="btn-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6m-6 3a3 3 0 0 0-2-1c-2 0-3 2-3 4s1 4 3 4a3 3 0 0 0 2-1m-7-4h6m-6 2h5"/></svg></span><span className="hidden-sm-down">Scarica fatture</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
             <SortableTableController/>
             <div className="table-scroll">
                 <table className="table compact-table" data-sortable-table
@@ -155,6 +189,8 @@ export default async function Page({searchParams}: {
                        data-default-sort-dir={mobileSort.endsWith('_asc') ? 'asc' : 'desc'}>
                     <thead>
                     <tr>
+                        <th className="cell-center"><input type="checkbox" className="bulk-select-all" data-bulk-target="trackingBulkForm"
+                            aria-label="Seleziona tutte le tracciature"/></th>
                         <th data-sort-key="name">Riferimento</th>
                         <th data-sort-key="batch">Lotto</th>
                         <th data-sort-key="batch-year" data-sort-type="number">Anno</th>
@@ -175,13 +211,17 @@ export default async function Page({searchParams}: {
                                    data-sort-created={record.createdAt.getTime()} data-sort-invoices={invoices}
                                    data-sort-batch-year={record.batchYear}
                                    data-sort-tracking={tracking}>
+                            <td className="cell-center"><input form="trackingBulkForm" type="checkbox" name="ids" value={record.id}
+                                aria-label={`Seleziona tracciatura ${record.name}`}/></td>
                             <td><Link href={href}><strong>{record.name}</strong></Link></td>
                             <td>{record.batch}</td>
                             <td>{record.batchYear}</td>
                             <td>{record.alias || '—'}</td>
                             <td>{dateLabel(record.entryDate)}</td>
-                            <td><DocumentCount count={invoices} kind="INVOICE"/></td>
-                            <td><DocumentCount count={tracking} kind="TRACKING"/></td>
+                            <td><DocumentCount count={invoices} kind="INVOICE" attachments={record.attachments}
+                                               today={today}/></td>
+                            <td><DocumentCount count={tracking} kind="TRACKING" attachments={record.attachments}
+                                               today={today}/></td>
                         </tr>;
                     })}</tbody>
                 </table>
@@ -189,6 +229,8 @@ export default async function Page({searchParams}: {
             <div className="party-mobile-list mobile-record-list"
                  aria-label="Lista tracciature mobile">{rows.map(record => <article
                 className="party-mobile-item mobile-record-item product-tracking-mobile-item" key={record.id}>
+                <div className="mobile-record-select"><input form="trackingBulkForm" type="checkbox" name="ids" value={record.id}
+                    aria-label={`Seleziona tracciatura ${record.name}`}/></div>
                 <Link className="mobile-record-link party-mobile-link"
                       href={`/product-trackings/${record.id}?returnTo=${encodeURIComponent(listHref)}`}>
                     <div className="mobile-record-main">
@@ -202,13 +244,15 @@ export default async function Page({searchParams}: {
                             className="text-right">Ingresso: <strong>{dateLabel(record.entryDate)}</strong></span></div>
                         <div className="mobile-record-meta">
                             <span className="party-mobile-row">
-                                <DocumentCount count={record.attachments.filter(a => a.kind === 'TRACKING').length} kind="TRACKING" mobile/>
+                                <DocumentCount count={record.attachments.filter(a => a.kind === 'TRACKING').length}
+                                               kind="TRACKING" attachments={record.attachments} today={today} mobile/>
                             </span>
                             <span className="party-mobile-row-right">
-                                <DocumentCount count={record.attachments.filter(a => a.kind === 'INVOICE').length} kind="INVOICE" mobile/>
+                                <DocumentCount count={record.attachments.filter(a => a.kind === 'INVOICE').length}
+                                               kind="INVOICE" attachments={record.attachments} today={today} mobile/>
                             </span>
                         </div>
-                        <ProductTrackingStatus record={record} cutoff={cutoff} showMissing={false}/>
+                        <ProductTrackingStatus record={record} cutoff={cutoff} showMissing={false} showOldDocument={false}/>
                     </div>
                 </Link>
             </article>)}</div>
@@ -217,13 +261,20 @@ export default async function Page({searchParams}: {
     </div>;
 }
 
-function DocumentCount({count, kind, mobile = false}: {
+function DocumentCount({count, kind, attachments, today, mobile = false}: {
+    attachments: Array<{ kind: string; invoiceDate: Date | null; documentDate: Date | null }>;
+    today: string;
     count: number;
     kind: 'INVOICE' | 'TRACKING';
     mobile?: boolean
 }) {
     if (!count) return <span
         className="badge color-badge tone-warning">{kind === 'INVOICE' ? 'Fattura mancante' : 'Tracciamento mancante'}</span>;
-    return <><span
-        className="badge">{count}</span>{mobile ? kind === 'INVOICE' ? ' Fatture' : ' Tracciamento' : null}</>;
+    const latest = latestTrackingDocumentDate(attachments.filter(item => item.kind === kind).map(item => kind === 'INVOICE' ? item.invoiceDate : item.documentDate));
+    const age = trackingDocumentAge(latest, today);
+    return <span className="tracking-document-count">
+        <span className="badge">{count}</span>{mobile ? kind === 'INVOICE' ? ' Fatture' : ' Tracciamento' : null}
+        <small className={trackingDocumentAgeClass(age)}
+               title={latest ? `Documento più recente: ${formatItalianCompactDate(latest)}` : 'Nessuna data documento disponibile'}> {age.label}</small>
+    </span>;
 }

@@ -103,6 +103,8 @@ npm run import:expenses -- ./file.ods --clear
 
 ## Tracciamento prodotti
 
+Nel dettaglio, cliccare su un allegato ne scarica il file; i pulsanti Modifica ed Elimina restano indipendenti. Ogni sezione offre **Scarica tutti** per ottenere uno ZIP separato di fatture o documenti di tracciamento, fino a 50 MB. Se un file non è disponibile, l’archivio non viene creato parzialmente.
+
 La voce **Tracciamento prodotti** nel menu laterale apre `/product-trackings`.
 Le tracciature appartengono all’azienda attiva e comprendono nome e lotto obbligatori,
 alias e data ingresso facoltativi, fino a 5 fatture e 5 documenti di tracciamento.

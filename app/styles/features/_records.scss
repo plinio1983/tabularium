@@ -1257,6 +1257,11 @@ body.drawer-open {
   padding-left: 30px;
 }
 
+.cash-register-display-amount .amount-clear-button {
+  position: absolute;
+  right: 0;
+}
+
 .amount-clear-button {
   display: inline-flex;
   flex: 0 0 34px;

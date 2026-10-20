@@ -21,8 +21,8 @@ export type TrackingEditorRecord = {
   attachments: {id: number; kind: 'INVOICE' | 'TRACKING'; originalName: string; invoiceDate: string; documentDate?: string; sizeBytes?: number | null}[];
 };
 
-export default function ProductTrackingEditor({record, returnTo = '/product-trackings', initiallyOpen = false, className, initialMobileStep = 1, openNewInvoice = false, openNewDocument = false, disabled = false, mobileHeaderAction = false}: {
-  record?: TrackingEditorRecord; returnTo?: string; initiallyOpen?: boolean; className?: string; initialMobileStep?: number; openNewInvoice?: boolean; openNewDocument?: boolean; disabled?: boolean; mobileHeaderAction?: boolean;
+export default function ProductTrackingEditor({record, returnTo = '/product-trackings', initiallyOpen = false, className, initialMobileStep = 1, openNewInvoice = false, openNewDocument = false, disabled = false, mobileHeaderAction = false, triggerLabel}: {
+  triggerLabel?: string; record?: TrackingEditorRecord; returnTo?: string; initiallyOpen?: boolean; className?: string; initialMobileStep?: number; openNewInvoice?: boolean; openNewDocument?: boolean; disabled?: boolean; mobileHeaderAction?: boolean;
 }) {
   const router = useRouter();
   const timeZone = useCompanyTimeZone();
@@ -116,7 +116,7 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
       <span className="btn-icon btn-icon-add" aria-hidden="true">＋</span>Nuova tracciatura
     </button>, mobileHeader)}
     {!initiallyOpen && <button type="button" className={className ?? (record ? 'btn btn-sm btn-default' : 'btn btn-sm btn-primary btn-stretch')} onClick={startEditing} disabled={disabled}>
-      <span className={record && !openNewInvoice && !openNewDocument ? 'btn-icon' : 'btn-icon btn-icon-add'} aria-hidden="true">{record && !openNewInvoice && !openNewDocument ? '✎' : '＋'}</span>{openNewDocument ? 'Aggiungi documento' : openNewInvoice ? 'Aggiungi fattura' : record ? 'Modifica' : 'Nuova tracciatura'}
+      <span className={record && !openNewInvoice && !openNewDocument ? 'btn-icon' : 'btn-icon btn-icon-add'} aria-hidden="true">{record && !openNewInvoice && !openNewDocument ? '✎' : '＋'}</span>{triggerLabel ?? (openNewDocument ? 'Aggiungi documento' : openNewInvoice ? 'Aggiungi fattura' : record ? 'Modifica' : 'Nuova tracciatura')}
     </button>}
     {mounted && open && createPortal(<div className="modal-backdrop app-form-modal product-tracking-modal" role="dialog" aria-modal="true" aria-label={title}
       onMouseDown={event => {if (event.target === event.currentTarget) close();}}>

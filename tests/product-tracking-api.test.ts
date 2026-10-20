@@ -10,10 +10,11 @@ import ts from 'typescript';
 import * as tracking from '../lib/product-tracking';
 import * as attachmentTools from '../lib/attachments';
 import * as invoiceFileTools from '../lib/product-tracking-invoice-file';
+import {createZip} from '../lib/zip';
 
 const require = createRequire(import.meta.url);
 const current = {workspace: {id: 2}, company: {id: 3}, user: {id: 4}};
-function load(file: string, db: any, options: {denied?: boolean; attachments?: any; audit?: any; invoiceFile?: any} = {}) {
+function load(file: string, db: any, options: {denied?: boolean; apiDenied?: boolean; attachments?: any; audit?: any; invoiceFile?: any} = {}) {
   const exports: any = {};
   const source = ts.transpileModule(readFileSync(file, 'utf8'), {
     compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}
@@ -24,16 +25,17 @@ function load(file: string, db: any, options: {denied?: boolean; attachments?: a
       workspaceOperationalRoles: ['OWNER', 'ADMIN', 'ACCOUNTANT'],
       getWorkspaceApiAccess: async (roles: string[]) => {
         assert.deepEqual(Array.from(roles), ['OWNER', 'ADMIN', 'ACCOUNTANT']);
-        return options.denied ? {ok: false, status: 403, error: 'Permessi insufficienti'} : {ok: true, current};
+        return options.denied || options.apiDenied ? {ok: false, status: 403, error: 'Permessi insufficienti'} : {ok: true, current};
       },
       getWorkspaceContext: async () => options.denied ? null : current,
     },
     '@/lib/product-tracking': tracking,
     '@/lib/attachments': options.attachments ?? attachmentTools,
+    '@/lib/zip': {createZip},
     '@/lib/product-tracking-invoice-file': options.invoiceFile ?? invoiceFileTools,
     '@/lib/audit': {writeAuditLog: options.audit ?? (async () => {})},
   };
-  runInNewContext(source, {exports, require: (name: string) => mocks[name] ?? require(name), File, FormData, Error, Uint8Array,
+  runInNewContext(source, {exports, require: (name: string) => mocks[name] ?? require(name), File, FormData, Error, Uint8Array, URL,
     console: {error() {}}});
   return exports;
 }
@@ -347,4 +349,131 @@ test('batch year is required, validated and saved independently from entry date'
   assert.equal(response.status, 200);
   assert.equal(db.writes[0].batchYear, 2026);
   assert.equal(db.writes[0].entryDate, null);
+});
+
+
+const archiveRoute = 'app/api/product-trackings/[id]/attachments/archive/route.ts';
+const archiveRequest = (kind = 'INVOICE', id = '9') => [new Request(`http://localhost/api/product-trackings/${id}/attachments/archive?kind=${kind}`), {params: Promise.resolve({id})}] as const;
+
+test('single tracking download enforces scope and attachment disposition while retaining inline support', async () => {
+  const api = load('app/api/product-tracking-attachments/[id]/route.ts', {productTrackingAttachment: {findFirst: async ({where}: any) => {
+    assert.equal(where.tracking.workspaceId, 2); assert.equal(where.tracking.companyId, 3);
+    return {path: 'invoices/file.pdf', originalName: 'fattura è.pdf', mimeType: 'application/pdf'};
+  }}}, {attachments: {...attachmentTools, readExpenseAttachment: async () => Buffer.from('%PDF-test')}});
+  const options = () => ({params: Promise.resolve({id: '4'})});
+  const download = await api.GET(new Request('http://localhost/api/product-tracking-attachments/4?download=1'), options());
+  assert.equal(download.status, 200);
+  assert.match(download.headers.get('Content-Disposition'), /^attachment;/);
+  assert.match(download.headers.get('Content-Disposition'), /filename\*=UTF-8''fattura%20%C3%A8.pdf/);
+  assert.equal(await download.text(), '%PDF-test');
+  const inline = await api.GET(new Request('http://localhost/api/product-tracking-attachments/4'), options());
+  assert.match(inline.headers.get('Content-Disposition'), /^inline;/);
+});
+
+test('tracking archives include only the requested category in the current workspace and company', async () => {
+  for (const kind of ['INVOICE', 'TRACKING']) {
+    const api = load(archiveRoute, {productTracking: {findFirst: async (query: any) => {
+      assert.equal(query.where.id, 9); assert.equal(query.where.workspaceId, 2); assert.equal(query.where.companyId, 3);
+      assert.equal(query.select.attachments.where.kind, kind);
+      return {attachments: [{id: 1, originalName: '../documento.pdf', path: 'first', sizeBytes: 4, createdAt: new Date()}, {id: 2, originalName: 'documento.pdf', path: 'second', sizeBytes: 4, createdAt: new Date()}]};
+    }}}, {attachments: {...attachmentTools, readExpenseAttachment: async (name: string) => Buffer.from(name)}});
+    const response = await api.GET(...archiveRequest(kind));
+    assert.equal(response.status, 200); assert.equal(response.headers.get('Content-Type'), 'application/zip');
+    assert.match(response.headers.get('Content-Disposition'), /attachment; filename="tracciatura-9-/);
+    const zip = Buffer.from(await response.arrayBuffer());
+    assert.equal(zip.readUInt32LE(0), 0x04034b50);
+    assert.equal(zip.readUInt16LE(zip.length - 14), 2);
+    assert.ok(zip.includes(Buffer.from('1-documento.pdf'))); assert.ok(zip.includes(Buffer.from('2-documento.pdf')));
+    assert.equal(zip.includes(Buffer.from('../')), false);
+    assert.ok(zip.includes(Buffer.from('first'))); assert.ok(zip.includes(Buffer.from('second')));
+  }
+});
+
+test('tracking archives reject unauthenticated, invalid, foreign and empty requests without reading files', async () => {
+  let queries = 0, reads = 0;
+  const db = {productTracking: {findFirst: async () => {queries++; return null;}}};
+  const options = {attachments: {...attachmentTools, readExpenseAttachment: async () => {reads++; return Buffer.from('file');}}};
+  assert.equal((await load(archiveRoute, db, {...options, denied: true}).GET(...archiveRequest())).status, 401);
+  for (const [kind, id] of [['BAD', '9'], ['INVOICE', '0'], ['TRACKING', 'invalid']]) {
+    assert.equal((await load(archiveRoute, db, options).GET(...archiveRequest(kind, id))).status, 400);
+  }
+  assert.equal(queries, 0);
+  assert.equal((await load(archiveRoute, db, options).GET(...archiveRequest())).status, 404);
+  const empty = {productTracking: {findFirst: async () => ({attachments: []})}};
+  assert.equal((await load(archiveRoute, empty, options).GET(...archiveRequest())).status, 404);
+  assert.equal(reads, 0);
+});
+
+test('tracking archives never return a partial ZIP if a file is missing or the size limit is exceeded', async () => {
+  const attachments = [{id: 1, originalName: 'first.pdf', path: 'first', sizeBytes: 1}, {id: 2, originalName: 'second.pdf', path: 'second', sizeBytes: 1}];
+  const db = {productTracking: {findFirst: async () => ({attachments})}};
+  const missing = load(archiveRoute, db, {attachments: {...attachmentTools, readExpenseAttachment: async (name: string) => {if (name === 'second') throw Error('missing'); return Buffer.from('file');}}});
+  assert.equal((await missing.GET(...archiveRequest())).status, 404);
+  const oversized = load(archiveRoute, db, {attachments: {...attachmentTools, readExpenseAttachment: async () => ({byteLength: 51 * 1024 * 1024})}});
+  assert.equal((await oversized.GET(...archiveRequest())).status, 413);
+});
+
+const bulkRoute = 'app/api/product-trackings/bulk/route.ts';
+function bulkRequest(action: string, ids: string[] = ['9', '10']) {
+  const data = new FormData(); data.set('bulkAction', action); ids.forEach(id => data.append('ids', id));
+  return new Request('http://localhost/api/product-trackings/bulk', {method: 'POST', body: data});
+}
+
+test('bulk download scopes every selected tracking and creates category-specific safe ZIP paths', async () => {
+  for (const action of ['documents', 'invoices']) {
+    const api = load(bulkRoute, {productTracking: {findMany: async (query: any) => {
+      assert.deepEqual(Array.from(query.where.id.in), [9, 10]);
+      assert.equal(query.where.workspaceId, 2); assert.equal(query.where.companyId, 3);
+      assert.equal(query.include.attachments.where.kind, action === 'invoices' ? 'INVOICE' : 'TRACKING');
+      return [9, 10].map(id => ({id, attachments: [{id, path: `${id}.pdf`, originalName: '../../doc.pdf', sizeBytes: 4, createdAt: new Date()}]}));
+    }}}, {attachments: {...attachmentTools, readExpenseAttachment: async () => Buffer.from('test')}});
+    const response = await api.POST(bulkRequest(action, ['9', '10', '9']));
+    assert.equal(response.status, 200);
+    const zip = Buffer.from(await response.arrayBuffer());
+    assert.ok(zip.includes(Buffer.from('tracciatura-9/9-doc.pdf')));
+    assert.ok(zip.includes(Buffer.from('tracciatura-10/10-doc.pdf')));
+    assert.equal(zip.includes(Buffer.from('../')), false);
+  }
+});
+
+test('bulk rejects invalid selection and inaccessible records before reading files or deleting', async () => {
+  const db = {productTracking: {findMany: async () => []}, $transaction: async (fn: any) => fn({$queryRaw: async () => [], productTracking: {findMany: async () => [], deleteMany() {assert.fail('No deletion');}}})};
+  const api = load(bulkRoute, db, {attachments: {...attachmentTools, readExpenseAttachment() {assert.fail('No file reads');}}});
+  for (const [action, ids] of [['documents', []], ['documents', ['0']], ['delete', ['bad']], ['invalid', ['9']]] as [string, string[]][]) {
+    assert.equal((await api.POST(bulkRequest(action, ids))).status, 400);
+  }
+  for (const action of ['delete', 'documents', 'invoices']) assert.equal((await api.POST(bulkRequest(action))).status, 404);
+  assert.equal((await load(bulkRoute, db, {denied: true}).POST(bulkRequest('documents'))).status, 401);
+});
+
+test('bulk deletion is scoped, audited and cleans attachment files after the transaction', async () => {
+  const calls: string[] = [];
+  const tx = {$queryRaw: async () => [], productTracking: {
+    findMany: async ({where}: any) => {assert.equal(where.workspaceId, 2); assert.equal(where.companyId, 3); return [9, 10].map(id => ({id, attachments: [{path: `${id}.pdf`}]}));},
+    deleteMany: async () => {calls.push('delete'); return {count: 2};},
+  }};
+  const api = load(bulkRoute, {$transaction: async (fn: any) => {const result = await fn(tx); calls.push('commit'); return result;}}, {
+    audit: async (input: any, client: any) => {assert.equal(client, tx); assert.equal(input.action, 'BULK_DELETE'); calls.push('audit');},
+    attachments: {...attachmentTools, deleteExpenseAttachmentFile: async (path: string) => {calls.push(path);}},
+  });
+  assert.equal((await api.POST(bulkRequest('delete'))).status, 200);
+  assert.deepEqual(calls, ['delete', 'audit', 'commit', '9.pdf', '10.pdf']);
+});
+
+test('bulk ZIP fails without partial download when files are missing or exceed the limit', async () => {
+  const db = {productTracking: {findMany: async () => [{id: 9, attachments: [{id: 1, path: 'a', originalName: 'a.pdf', sizeBytes: 1}]}]}};
+  const missing = load(bulkRoute, db, {attachments: {...attachmentTools, readExpenseAttachment: async () => {throw Error('missing');}}});
+  assert.equal((await missing.POST(bulkRequest('documents', ['9']))).status, 404);
+  const huge = load(bulkRoute, db, {attachments: {...attachmentTools, readExpenseAttachment: async () => ({byteLength: 51 * 1024 * 1024})}});
+  assert.equal((await huge.POST(bulkRequest('documents', ['9']))).status, 413);
+});
+
+
+test('read-only users may download but cannot bulk-delete', async () => {
+  let queried = false;
+  const api = load(bulkRoute, {productTracking: {findMany: async () => {queried = true; return [];}}}, {apiDenied: true});
+  assert.equal((await api.POST(bulkRequest('delete'))).status, 403);
+  assert.equal(queried, false);
+  assert.equal((await api.POST(bulkRequest('documents'))).status, 404);
+  assert.equal(queried, true);
 });
