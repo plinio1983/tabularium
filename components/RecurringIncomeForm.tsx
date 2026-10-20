@@ -191,7 +191,7 @@ export default function RecurringIncomeForm({
                     }))}/> : null}
                 <div className="switch-toggle-field switch-inline wide push-down">
                     <div className="switch-toggle-field-label app-form-field-label">
-                        <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
+                        <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta data fine</span>
                     </div>
                     <label className="switch"><input type="checkbox" checked={hasEndDate} onChange={event => setHasEndDate(event.currentTarget.checked)}/><span className="slider"/></label>
                 </div>

@@ -729,7 +729,7 @@ export default function RecurringExpenseForm({
                     />
                     <div className="app-form-field app-form-wizard-step app-form-wizard-step-1 switch-toggle-field switch-inline wide">
                         <div className="switch-toggle-field-label app-form-field-label">
-                            <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta scadenza</span>
+                            <span className="app-form-field-icon" aria-hidden="true">◷</span><span className="app-form-label">Imposta data fine</span>
                         </div>
                         <label className="switch"><input type="checkbox" checked={hasEndDate} onChange={event => setHasEndDate(event.currentTarget.checked)}/><span className="slider"/></label>
                     </div>

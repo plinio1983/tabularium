@@ -17,7 +17,7 @@ import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
 import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
 import {yearMonthInTimeZone} from '@/lib/company-time';
 import CopyValueButton from '@/components/CopyValueButton';
-import {isExpenseInvoiceNotReceived, isExpenseInvoiceReceived} from '@/lib/expense-invoice';
+import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
 
 function valueOrDash(value?: string | null) {
   return value && value.trim() ? value : '-';
@@ -67,8 +67,20 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
   const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
   const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
   const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
-  const invoicedExpenses = supplier.expenses.filter(isExpenseInvoiceReceived);
-  const invoicedAmount = invoicedExpenses.reduce((sum, expense) => sum + Math.round(Number(expense.amount) * 100), 0) / 100;
+  const invoiced = await prisma.expense.aggregate({
+    where: {
+      workspaceId: current.workspace.id,
+      companyId: current.company.id,
+      supplierId: supplier.id,
+      isDeclared: true,
+      invoiceStatus: {in: ['RICEVUTA', 'INVIATA_SDI']},
+      expenseType: {notIn: ['VAT_SETTLEMENT', 'TAX_CONTRIBUTION', 'PAYROLL']},
+    },
+    _sum: {amount: true},
+    _count: {_all: true},
+  });
+  const invoicedAmount = Number(invoiced._sum.amount ?? 0);
+  const invoicedOrderCount = invoiced._count._all;
   const uninvoicedExpenses = supplier.expenses.filter(isExpenseInvoiceNotReceived);
   const uninvoicedAmount = uninvoicedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
@@ -173,7 +185,7 @@ export default async function SupplierDetailPage({ params, searchParams }: { par
           <div>
             <span>Totale fatturato</span>
             <strong>{euro(invoicedAmount)}</strong>
-            <small className="muted">{invoicedExpenses.length} {invoicedExpenses.length === 1 ? 'ordine fatturato' : 'ordini fatturati'}</small>
+            <small className="muted">{invoicedOrderCount} {invoicedOrderCount === 1 ? 'ordine fatturato' : 'ordini fatturati'}</small>
           </div>
           <div>
             <span>Non ancora fatturato</span>

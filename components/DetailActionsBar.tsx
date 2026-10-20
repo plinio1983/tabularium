@@ -26,8 +26,13 @@ export default function DetailActionsBar({primary, secondary, controls}: {
   const actions = actionItems(primary);
   return <div className="detail-actions-bar" data-primary-count={actions.length} data-has-secondary={Boolean(secondary)}>
     {controls ? <div className="detail-actions-controls">{controls}</div> : null}
-    <div className="detail-actions-inline">{actions.map((action, index) =>
-      <div className="detail-action-item" key={index}>{inlineActions(action)}</div>
+    <div className="detail-actions-inline btn-group hidden-sm-down">
+      {actions.map((action, index) => inlineActions(action))}
+    </div>
+    <div className="detail-actions-inline hidden-sm-up">{actions.map((action, index) =>
+      <div className="detail-action-item" key={index}>
+        {inlineActions(action)}
+      </div>
     )}</div>
     <DetailActionsMenu desktop={Boolean(secondary)}>
       <div className="detail-actions-mobile-primary">{actions.map((action, index) =>
