@@ -36,7 +36,7 @@ class TestInput {
   focus() {this.focused = true;}
   closest(selector: string) {return selector === 'details' ? {open: false, parentElement: null} : {dataset: {trackingStep: this.step}};}
 }
-function editorHarness(record?: any, initialMobileStep = 1, openNewInvoice = false, initiallyOpen = true, openNewDocument = false) {
+function editorHarness(record?: any, initialMobileStep = 1, openNewInvoice = false, initiallyOpen = true, openNewDocument = false, onClose?: () => void) {
   const state: any[] = [];
   const refs: any[] = [];
   const destinations: string[] = [];
@@ -66,7 +66,7 @@ function editorHarness(record?: any, initialMobileStep = 1, openNewInvoice = fal
     '@/lib/flash': flash,
     '@/lib/page-transition': {preparePageReturn() {}},
   }, {document: {body: {}}, HTMLInputElement: TestInput, window: {matchMedia: () => ({matches: true}), requestAnimationFrame: (callback: Function) => callback()}});
-  const render = () => {cursor = 0; refCursor = 0; return nodes(Editor({initiallyOpen, record, initialMobileStep, openNewInvoice, openNewDocument}));};
+  const render = () => {cursor = 0; refCursor = 0; return nodes(Editor({initiallyOpen, record, initialMobileStep, openNewInvoice, openNewDocument, onClose}));};
   return Object.assign(render, {destinations, setFields(fields: TestInput[]) {
     render();
     const section = {querySelectorAll: () => fields};
@@ -221,4 +221,13 @@ test('an open tracking document draft blocks advancing until confirmed or cancel
   render().find(node => node.type === 'Documents').props.onStateChange({rows: [], removedIds: [], hasDraft: false});
   render().find(node => node.type === 'Actions').props.onNext();
   assert.equal(render().find(node => node.type === 'Actions').props.currentStep, 3);
+});
+
+
+test('closing a list-hosted tracking editor dismisses the modal without navigating', () => {
+  let closed = 0;
+  const ui = editorHarness(undefined, 1, false, true, false, () => {closed++;});
+  ui().find(node => node.type === 'Actions').props.onCancel();
+  assert.equal(closed, 1);
+  assert.deepEqual(ui.destinations, []);
 });

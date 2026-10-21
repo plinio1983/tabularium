@@ -20,18 +20,37 @@
   justify-content: space-between;
   gap: 12px;
 
-  > div:first-child { min-width: 0; }
-  > .app-filter-trigger { flex: 0 0 auto; margin-left: auto; }
+  > div:first-child {
+    min-width: 0;
+  }
+
+  > .app-filter-trigger {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
 }
 
 .product-tracking-mobile-item {
   grid-template-columns: auto minmax(0, 1fr);
   padding: 12px 0;
 
-  .party-mobile-link { padding: 4px; }
-  .mobile-record-title-left { min-width: 0; }
-  .mobile-record-title-left strong { display: block; }
-  .mobile-record-title-right { flex: 0 0 auto; max-width: 45%; }
+  .party-mobile-link {
+    padding: 4px;
+  }
+
+  .mobile-record-title-left {
+    min-width: 0;
+  }
+
+  .mobile-record-title-left strong {
+    display: block;
+  }
+
+  .mobile-record-title-right {
+    flex: 0 0 auto;
+    max-width: 45%;
+  }
+
   .mobile-record-title-right .badge {
     display: block;
     overflow: hidden;
@@ -39,26 +58,56 @@
     font-size: 12px;
     font-weight: 700;
   }
-  .mobile-record-subtitle { gap: 10px; }
+
+  .mobile-record-subtitle {
+    gap: 10px;
+  }
+
   .mobile-record-subtitle > .party-mobile-row-grow {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .mobile-record-meta { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-  .party-mobile-row, .party-mobile-row-right { display: inline-flex; align-items: center; gap: 5px; }
-  .record-detail-badge-row { gap: 5px; }
-  .record-detail-badge-row .badge { white-space: normal; font-size: 11px; }
+
+  .mobile-record-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .party-mobile-row, .party-mobile-row-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .record-detail-badge-row {
+    gap: 5px;
+  }
+
+  .record-detail-badge-row .badge {
+    white-space: normal;
+    font-size: 11px;
+  }
 
   @media (max-width: 390px) {
     grid-template-columns: auto minmax(0, 1fr);
   }
 }
 
+.product-trackings-page .product-tracking-mobile-item {
+  gap: 10px;
+}
+
 @media (max-width: 760px) {
-  .product-trackings-page { gap: 12px; }
+  .product-trackings-page {
+    gap: 12px;
+  }
   .product-trackings-page > .record-list-card,
-  .product-trackings-page > .product-tracking-summary-card { padding: 14px; }
+  .product-trackings-page > .product-tracking-summary-card {
+    padding: 14px;
+  }
 }
 
 .product-tracking-modal .attachment-type-item {
@@ -154,7 +203,9 @@
   gap: 14px;
 
   .product-tracking-fields,
-  .payment-edit-actions { grid-column: 1 / -1; }
+  .payment-edit-actions {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (width < 900px) {
@@ -162,9 +213,15 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
     > .payment-summary-primary,
-    > .payment-row-actions { grid-column: 1 / -1; }
+    > .payment-row-actions {
+      grid-column: 1 / -1;
+    }
 
-    > .payment-summary-date { grid-column: 1; grid-row: 2; }
+    > .payment-summary-date {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
     > .payment-summary-meta {
       grid-column: 2;
       grid-row: 2;
@@ -188,12 +245,18 @@
 
 @media (max-width: 900px) {
   .product-tracking-wizard {
-    .product-tracking-desktop-actions { display: none; }
+    .product-tracking-desktop-actions {
+      display: none;
+    }
 
-    .product-tracking-invoice-list { padding: 0; }
+    .product-tracking-invoice-list {
+      padding: 0;
+    }
 
     .product-tracking-fields > details.app-form-wizard-step > summary,
-    .app-form-wizard-step-3 > details > summary { display: none; }
+    .app-form-wizard-step-3 > details > summary {
+      display: none;
+    }
 
     .product-tracking-fields > .app-form-wizard-step,
     .app-form-wizard-step-3 > details {
@@ -212,7 +275,9 @@
   flex-wrap: wrap;
   gap: 8px;
 
-  > h2 { margin: 0; }
+  > h2 {
+    margin: 0;
+  }
 }
 
 .tracking-document-count {
@@ -251,11 +316,15 @@
     background: transparent;
     box-shadow: none;
 
-    > summary { display: none; }
+    > summary {
+      display: none;
+    }
   }
 }
 
-#tracking-bulk-feedback:empty { display: none; }
+#tracking-bulk-feedback:empty {
+  display: none;
+}
 
 // Use the same selection control in rows and both action bars.
 .product-trackings-page input[type='checkbox'][form='trackingBulkForm'],
@@ -274,19 +343,43 @@
   box-sizing: border-box;
 }
 
-#trackingBulkForm > .bulk-select-all-inline,
+#trackingBulkForm > .bulk-select-all-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0;
+
+  @media (min-width: 761px) and (max-width: 900px) {
+    padding: 0 0 0 18px;
+  }
+}
+
 .floating-bulk-actions-bar[data-bulk-source='trackingBulkForm'] .floating-bulk-select-all-inline {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   align-self: center;
-  flex: 0 0 30px;
+  flex: 0 0 auto;
   min-height: 38px;
-  //margin: 0;
-  padding: 0 0 0 18px;
+  padding: 0 0 0 27px;
 
-  @media (min-width: 761px) and (min-width: 900px) {
-    //padding: 0 0 0 12px;
+  @media (min-width: 761px) and (max-width: 900px) {
+    padding: 0 0 0 17px;
+  }
+
+  @media (min-width: 577px) and (max-width: 760px) {
+    padding: 0 0 0 23px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 0 0 0 23px;
+  }
+
+  @media (max-width: 351px) {
+    padding: 0 0 0 17px;
   }
 }
 
@@ -294,9 +387,12 @@
   vertical-align: middle;
 }
 
-@media (min-width: 761px) {
-  // Desktop already has select-all in the table header.
-  #trackingBulkForm > .bulk-select-all-inline {
+#trackingBulkForm > .bulk-select-all-inline {
+  @media (min-width: 761px) {
+    // Desktop already has select-all in the table header.
     display: none;
+  }
+  @media (max-width: 576px) {
+    padding: 0;
   }
 }

@@ -40,13 +40,17 @@ export default async function Page({params, searchParams}: {
     const editor = {
         ...record,
         entryDate: calendarDateInput(record.entryDate),
-        attachments: record.attachments.map(a => ({...a, invoiceDate: calendarDateInput(a.invoiceDate), documentDate: calendarDateInput(a.documentDate)}))
+        attachments: record.attachments.map(a => ({
+            ...a,
+            invoiceDate: calendarDateInput(a.invoiceDate),
+            documentDate: calendarDateInput(a.documentDate)
+        }))
     };
     return <div className="grid record-detail-page party-detail-page">
         <ActionFeedbackBanner searchParams={query} savedMessages={{updated: 'Tracciatura aggiornata.'}}
                               errorMessages={{}}/>
         <div className="record-detail-shell">
-            <div className="record-detail-action-row record-detail-responsive-actions">
+            <div className="record-detail-action-row record-detail-responsive-actions hidden-sm-up">
                 <div className="left-side"><DetailBackButton href={returnTo}/></div>
                 {canEdit && <div className="right-side"><DetailActionsBar primary={<>
                     <ProductTrackingEditor record={editor} returnTo={detailHref} className="btn btn-sm btn-option"/>
@@ -55,6 +59,14 @@ export default async function Page({params, searchParams}: {
                 </>}/></div>}
             </div>
             <article className="record-detail-document party-detail-document record-tracking">
+                <div className="record-detail-action-row record-detail-responsive-actions hidden-sm-down">
+                    <div className="left-side"><DetailBackButton href={returnTo}/></div>
+                    {canEdit && <div className="right-side"><DetailActionsBar primary={<>
+                        <ProductTrackingEditor record={editor} returnTo={detailHref} className="btn btn-sm btn-option"/>
+                        <ProductTrackingDelete id={id} returnTo={returnTo}
+                                               className="btn btn-sm btn-option detail-actions-delete"/>
+                    </>}/></div>}
+                </div>
                 <section className="record-detail-hero">
                     <div className="record-detail-title-block">
                         <p className="record-detail-kicker">Tracciatura #{record.id}</p>
@@ -76,7 +88,8 @@ export default async function Page({params, searchParams}: {
                     </div>
                     <div className="record-detail-status-strip party-detail-info-strip">
                         <div className="copyable-detail-field">
-                            <span>Riferimento</span><strong>{record.name}</strong><CopyValueButton value={record.name}/></div>
+                            <span>Riferimento</span><strong>{record.name}</strong><CopyValueButton value={record.name}/>
+                        </div>
                         <div className="copyable-detail-field">
                             <span>Lotto</span><strong>{record.batch}</strong><CopyValueButton value={record.batch}/>
                         </div>
@@ -92,11 +105,21 @@ export default async function Page({params, searchParams}: {
                     </div>
                 </section>
                 <ProductTrackingDocuments trackingId={id} readOnly={!canEdit}
-                  addDocumentTrigger={<ProductTrackingEditor record={editor} returnTo={detailHref} initialMobileStep={2} triggerLabel="Gestisci documenti" className="btn btn-sm btn-default"/>}
-                  initialDocuments={record.attachments.filter(a => a.kind === 'TRACKING').map(a => ({id: a.id, originalName: a.originalName, documentDate: calendarDateInput(a.documentDate), sizeBytes: a.sizeBytes}))}/>
+                                          addDocumentTrigger={<ProductTrackingEditor record={editor}
+                                                                                     returnTo={detailHref}
+                                                                                     initialMobileStep={2}
+                                                                                     triggerLabel="Gestisci documenti"
+                                                                                     className="btn btn-sm btn-default"/>}
+                                          initialDocuments={record.attachments.filter(a => a.kind === 'TRACKING').map(a => ({
+                                              id: a.id,
+                                              originalName: a.originalName,
+                                              documentDate: calendarDateInput(a.documentDate),
+                                              sizeBytes: a.sizeBytes
+                                          }))}/>
                 <ProductTrackingInvoices trackingId={id}
                                          addInvoiceTrigger={<ProductTrackingEditor record={editor} returnTo={detailHref}
-                                                                                   initialMobileStep={3} triggerLabel="Gestisci fatture"
+                                                                                   initialMobileStep={3}
+                                                                                   triggerLabel="Gestisci fatture"
                                                                                    className="btn btn-sm btn-default"/>}
                                          readOnly={!canEdit}
                                          initialInvoices={record.attachments.filter(a => a.kind === 'INVOICE').map(a => ({

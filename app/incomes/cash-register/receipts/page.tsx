@@ -10,7 +10,11 @@ import {requireWorkspace} from '@/lib/auth';
 import {prisma} from '@/lib/prisma';
 import {orderPaymentMethods} from '@/lib/workspace-defaults';
 import CashRegisterReceiptTrendChart from '@/components/CashRegisterReceiptTrendChart';
-import {buildDailyReceiptTrendRange, buildMonthlyReceiptTrend, trimReceiptTrendAfterLastMovement} from '@/lib/cash-register-trend';
+import {
+    buildDailyReceiptTrendRange,
+    buildMonthlyReceiptTrend,
+    trimReceiptTrendAfterLastMovement
+} from '@/lib/cash-register-trend';
 import {Prisma} from '@/generated/prisma/client';
 import CashRegisterReceiptFiltersDrawer from '@/components/CashRegisterReceiptFiltersDrawer';
 import CashRegisterReceiptPeriodSelector from '@/components/CashRegisterReceiptPeriodSelector';
@@ -61,21 +65,18 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
         prisma.paymentMethod.findMany({
             where: {workspaceId: current.workspace.id, cashRegisterEnabled: true, kind: {in: ['INCOME', 'BOTH']}}
         }),
-        prisma.incomeSalesChannel.findMany({where: {workspaceId: current.workspace.id}, orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]}),
-        prisma.$queryRaw<Array<{day: string; count: number; total: string}>>(Prisma.sql`
-            SELECT
-                to_char((("creditDate" AT TIME ZONE 'UTC') AT TIME ZONE ${timeZone})::date, 'YYYY-MM-DD') AS day,
+        prisma.incomeSalesChannel.findMany({
+            where: {workspaceId: current.workspace.id},
+            orderBy: [{sortOrder: 'asc'}, {name: 'asc'}]
+        }),
+        prisma.$queryRaw<Array<{ day: string; count: number; total: string }>>(Prisma.sql`
+            SELECT to_char((("creditDate" AT TIME ZONE 'UTC') AT TIME ZONE ${timeZone}):: date, 'YYYY-MM-DD') AS day,
                 count(*)::int AS count,
                 coalesce(sum(amount), 0)::text AS total
             FROM "Income"
             WHERE "workspaceId" = ${current.workspace.id}
               AND "companyId" = ${current.company.id}
-              AND "incomeType" = 'CASH_REGISTER'
-              ${periodSqlFilter}
-              ${methodFilter}
-              ${channelFilter}
-              ${fiscalFilter}
-              ${searchSqlFilter}
+              AND "incomeType" = 'CASH_REGISTER' ${periodSqlFilter} ${methodFilter} ${channelFilter} ${fiscalFilter} ${searchSqlFilter}
             GROUP BY 1
             ORDER BY 1
         `),
@@ -92,10 +93,22 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const selectedChannel = channels.find(item => item.id === channelId);
     const activeFilters = [
         ...(search ? [{label: 'Ricerca', value: search}] : []),
-        {label: 'Periodo', value: `${new Date(`${dateFrom}T12:00:00Z`).toLocaleDateString('it-IT', {timeZone: 'UTC'})} – ${new Date(`${dateTo}T12:00:00Z`).toLocaleDateString('it-IT', {timeZone: 'UTC'})}`},
-        ...(selectedMethod ? [{label: 'Metodo', value: `${selectedMethod.icon ? `${selectedMethod.icon} ` : ''}${selectedMethod.name}`}] : []),
-        ...(selectedChannel ? [{label: 'Canale', value: `${selectedChannel.icon ? `${selectedChannel.icon} ` : ''}${selectedChannel.name}`}] : []),
-        ...(['yes', 'no', 'mixed'].includes(fiscal) ? [{label: 'Fiscalità', value: fiscal === 'mixed' ? 'Misti' : fiscal === 'yes' ? 'Fiscali' : 'Non fiscali'}] : []),
+        {
+            label: 'Periodo',
+            value: `${new Date(`${dateFrom}T12:00:00Z`).toLocaleDateString('it-IT', {timeZone: 'UTC'})} – ${new Date(`${dateTo}T12:00:00Z`).toLocaleDateString('it-IT', {timeZone: 'UTC'})}`
+        },
+        ...(selectedMethod ? [{
+            label: 'Metodo',
+            value: `${selectedMethod.icon ? `${selectedMethod.icon} ` : ''}${selectedMethod.name}`
+        }] : []),
+        ...(selectedChannel ? [{
+            label: 'Canale',
+            value: `${selectedChannel.icon ? `${selectedChannel.icon} ` : ''}${selectedChannel.name}`
+        }] : []),
+        ...(['yes', 'no', 'mixed'].includes(fiscal) ? [{
+            label: 'Fiscalità',
+            value: fiscal === 'mixed' ? 'Misti' : fiscal === 'yes' ? 'Fiscali' : 'Non fiscali'
+        }] : []),
     ];
     const firstAvailableYear = Math.min(
         billingYear,
@@ -120,50 +133,66 @@ export default async function CashRegisterReceiptsPage({searchParams}: {
     const receiptListReturnTo = `/incomes/cash-register/receipts${returnQuery.size ? `?${returnQuery}` : ''}`;
 
     const activeFiltersBox = <div key="receipt-active-filters" className="recurring-active-filters">
-                    <div>
-                        <span className="recurring-active-filters-title">Filtri attivi</span>
-                        <div className="recurring-active-filter-tags">{activeFilters.map(item =>
-                            <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div>
-                    </div>
-                    <Link className="btn btn-xs btn-neutral recurring-active-filters-reset" href="/incomes/cash-register/receipts"><span className="btn-icon">×</span> Reset</Link>
-                </div>;
+        <div>
+            <span className="recurring-active-filters-title">Filtri attivi</span>
+            <div className="recurring-active-filter-tags">{activeFilters.map(item =>
+                <span className="badge" key={`${item.label}-${item.value}`}><strong>{item.label}:</strong> {item.value}</span>)}</div>
+        </div>
+        <Link className="btn btn-xs btn-neutral recurring-active-filters-reset"
+              href="/incomes/cash-register/receipts"><span className="btn-icon">×</span> Reset</Link>
+    </div>;
 
     return <div className="grid cash-register-receipts-page">
-        <ActionFeedbackBanner searchParams={params} savedMessages={{}} errorMessages={{export_empty: 'Nessuno scontrino da esportare per la ricerca corrente.', export_failed: 'Esportazione scontrini non riuscita. Riprova.'}}/>
-        <MobileRecordViews kind="income" title="Andamento scontrini" linkLabel="Visualizza scontrini" count={receiptCount} summary={<>
-        <CashRegisterReceiptTrendChart key={`${dateFrom}-${dateTo}-${annual}`} points={trend} annual={annual}
-            headerActions={<div key="receipt-header-actions" className="toolbar-actions">
-                <Link data-page-transition="backward" className="btn btn-sm btn-ghost" href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
-                <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register"><span className="btn-icon">🧮</span> Reg. di cassa</Link>
-            </div>}
-            activeFilters={activeFiltersBox}
-            periodSelector={<CashRegisterReceiptPeriodSelector key="receipt-period" dateQuick={period.quick} dateYear={String(billingYear)} years={years}/>}/>
+        <ActionFeedbackBanner searchParams={params} savedMessages={{}} errorMessages={{
+            export_empty: 'Nessuno scontrino da esportare per la ricerca corrente.',
+            export_failed: 'Esportazione scontrini non riuscita. Riprova.'
+        }}/>
+        <MobileRecordViews kind="income" title="Andamento scontrini" linkLabel="Visualizza scontrini"
+                           count={receiptCount} summary={<>
+            <CashRegisterReceiptTrendChart key={`${dateFrom}-${dateTo}-${annual}`} points={trend} annual={annual}
+                                           headerActions={<div key="receipt-header-actions" className="toolbar-actions">
+                                               <Link data-page-transition="backward" className="btn btn-sm btn-ghost"
+                                                     href="/incomes"><span className="btn-icon">↩</span>Torna a Incassi</Link>
+                                               <Link className="btn btn-sm btn-secondary" href="/incomes/cash-register"><span
+                                                   className="btn-icon">🧮</span> Reg. di cassa</Link>
+                                           </div>}
+                                           activeFilters={activeFiltersBox}
+                                           periodSelector={<CashRegisterReceiptPeriodSelector key="receipt-period"
+                                                                                              dateQuick={period.quick}
+                                                                                              dateYear={String(billingYear)}
+                                                                                              years={years}/>}/>
         </>}>
-        <CashRegisterReceiptList
-            monthGrouping={!isSingleMonthRange(dateFrom, dateTo)}
-            headerContent={<>
-                <LiveSearch name="search" label="Ricerca scontrino" placeholder="Descrizione scontrino"/>
-            </>}
-            returnTo={receiptListReturnTo}
-            filtersTrigger={<CashRegisterReceiptFiltersDrawer key="receipt-filters" search={search} dateQuick={period.quick} dateYear={String(billingYear)} years={years} dateFrom={dateFrom} dateTo={dateTo} paymentMethodId={methodId} salesChannelId={channelId} fiscal={fiscal} paymentMethods={orderedMethods} salesChannels={channels}/>}
-            receipts={receipts.map(receipt => ({
-                id: receipt.id,
-                recurringIncomeId: receipt.recurringIncomeId,
-                description: receipt.description,
-                amount: Number(receipt.amount),
-                creditDate: receipt.creditDate.toISOString(),
-                isFiscal: receipt.isFiscal,
-                vatRate: Number(receipt.vatRate),
-                mixed: receiptLineSummary(existingReceiptLines(receipt)).mixed,
-                vatLabel: [...new Set(existingReceiptLines(receipt).filter(line => line.isFiscal).map(line => `${line.vatRate}%`))].join(' / '),
-                salesChannelId: receipt.salesChannelId,
-                paymentMethodId: receipt.paymentMethodId,
-                salesChannel: receipt.salesChannelRef.name,
-                salesChannelIcon: receipt.salesChannelRef.icon,
-                paymentMethod: receipt.paymentMethodRef.name,
-                paymentMethodIcon: receipt.paymentMethodRef.icon
-            }))}
-        />
+            <CashRegisterReceiptList
+                monthGrouping={!isSingleMonthRange(dateFrom, dateTo)}
+                headerContent={<>
+                    <LiveSearch name="search" label="Ricerca scontrino" placeholder="Descrizione scontrino"/>
+                </>}
+                returnTo={receiptListReturnTo}
+                filtersTrigger={<CashRegisterReceiptFiltersDrawer key="receipt-filters" search={search}
+                                                                  dateQuick={period.quick}
+                                                                  dateYear={String(billingYear)} years={years}
+                                                                  dateFrom={dateFrom} dateTo={dateTo}
+                                                                  paymentMethodId={methodId} salesChannelId={channelId}
+                                                                  fiscal={fiscal} paymentMethods={orderedMethods}
+                                                                  salesChannels={channels}/>}
+                receipts={receipts.map(receipt => ({
+                    id: receipt.id,
+                    recurringIncomeId: receipt.recurringIncomeId,
+                    description: receipt.description,
+                    amount: Number(receipt.amount),
+                    creditDate: receipt.creditDate.toISOString(),
+                    isFiscal: receipt.isFiscal,
+                    vatRate: Number(receipt.vatRate),
+                    mixed: receiptLineSummary(existingReceiptLines(receipt)).mixed,
+                    vatLabel: [...new Set(existingReceiptLines(receipt).filter(line => line.isFiscal).map(line => `${line.vatRate}%`))].join(' / '),
+                    salesChannelId: receipt.salesChannelId,
+                    paymentMethodId: receipt.paymentMethodId,
+                    salesChannel: receipt.salesChannelRef.name,
+                    salesChannelIcon: receipt.salesChannelRef.icon,
+                    paymentMethod: receipt.paymentMethodRef.name,
+                    paymentMethodIcon: receipt.paymentMethodRef.icon
+                }))}
+            />
         </MobileRecordViews>
     </div>;
 }

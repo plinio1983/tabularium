@@ -74,7 +74,7 @@ export default async function ClientDetailPage({params, searchParams}: {
         <ClientEditModalController salesChannels={salesChannels}/>
         <MobileRecordViews kind="income" title="Incassi collegati" linkLabel="Visualizza incassi collegati" count={listedIncomes.length + cashRegisterGroups.length} summary={<>
         <div className="record-detail-shell">
-            <div className="record-detail-action-row record-detail-responsive-actions">
+            <div className="record-detail-action-row record-detail-responsive-actions hidden-sm-up">
                 <div className="left-side"><DetailBackButton href={backHref}/></div>
                 {!customer.systemRole ? <div className="right-side">
                     <DetailActionsBar
@@ -87,7 +87,18 @@ export default async function ClientDetailPage({params, searchParams}: {
                 </div> : <span className="badge">Cliente di sistema</span>}
             </div>
             <article className="record-detail-document party-detail-document">
-
+                <div className="record-detail-action-row record-detail-responsive-actions hidden-sm-down">
+                    <div className="left-side"><DetailBackButton href={backHref}/></div>
+                    {!customer.systemRole ? <div className="right-side">
+                        <DetailActionsBar
+                            primary={<>
+                                <button className="btn btn-sm btn-option" type="button" data-client-edit-id={customer.id}><span className="btn-icon">✎</span> Modifica</button>
+                                <button className="btn btn-sm btn-option" type="button" data-income-new><span className="btn-icon btn-icon-add">＋</span> Aggiungi incasso</button>
+                                <DeleteActionButton action={'/api/clients/' + customer.id} confirmMessage="Confermi la rimozione del cliente?" className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
+                            </>}
+                        />
+                    </div> : <span className="badge">Cliente di sistema</span>}
+                </div>
                 <section className="record-detail-hero">
                     <div>
                         <div className="record-detail-title-block">

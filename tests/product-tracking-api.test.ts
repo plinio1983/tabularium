@@ -8,6 +8,7 @@ import {createRequire} from 'node:module';
 import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 import * as tracking from '../lib/product-tracking';
+import * as companyTime from '../lib/company-time';
 import * as attachmentTools from '../lib/attachments';
 import * as invoiceFileTools from '../lib/product-tracking-invoice-file';
 import {createZip} from '../lib/zip';
@@ -30,6 +31,7 @@ function load(file: string, db: any, options: {denied?: boolean; apiDenied?: boo
       getWorkspaceContext: async () => options.denied ? null : current,
     },
     '@/lib/product-tracking': tracking,
+    '@/lib/company-time': companyTime,
     '@/lib/attachments': options.attachments ?? attachmentTools,
     '@/lib/zip': {createZip},
     '@/lib/product-tracking-invoice-file': options.invoiceFile ?? invoiceFileTools,
@@ -476,4 +478,28 @@ test('read-only users may download but cannot bulk-delete', async () => {
   assert.equal(queried, false);
   assert.equal((await api.POST(bulkRequest('documents'))).status, 404);
   assert.equal(queried, true);
+});
+
+
+test('tracking edit data checks permissions, tenant scope and serializes document dates without storage paths', async () => {
+  const route = 'app/api/product-trackings/[id]/edit-data/route.ts';
+  const req = new Request('http://localhost/api/product-trackings/9/edit-data');
+  const params = (id = '9') => ({params: Promise.resolve({id})});
+  let queried = false;
+  const db = {productTracking: {findFirst: async (query: any) => {
+    queried = true;
+    assert.deepEqual(JSON.parse(JSON.stringify(query.where)), {id: 9, workspaceId: 2, companyId: 3});
+    assert.equal(query.select.attachments.select.path, undefined);
+    return {id: 9, entryDate: null, attachments: [{id: 1, invoiceDate: new Date('2026-10-01'), documentDate: null}]};
+  }}};
+  assert.equal((await load(route, db, {denied: true}).GET(req, params())).status, 403);
+  assert.equal(queried, false);
+  const api = load(route, db);
+  assert.equal((await api.GET(req, params('bad'))).status, 400);
+  const response = await api.GET(req, params());
+  assert.equal(response.status, 200);
+  const data = await response.json();
+  assert.equal(data.entryDate, ''); assert.equal(data.attachments[0].invoiceDate, '2026-10-01');
+  assert.equal(data.attachments[0].documentDate, '');
+  assert.equal((await load(route, {productTracking: {findFirst: async () => null}}).GET(req, params())).status, 404);
 });

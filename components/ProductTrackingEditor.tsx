@@ -21,8 +21,8 @@ export type TrackingEditorRecord = {
   attachments: {id: number; kind: 'INVOICE' | 'TRACKING'; originalName: string; invoiceDate: string; documentDate?: string; sizeBytes?: number | null}[];
 };
 
-export default function ProductTrackingEditor({record, returnTo = '/product-trackings', initiallyOpen = false, className, initialMobileStep = 1, openNewInvoice = false, openNewDocument = false, disabled = false, mobileHeaderAction = false, triggerLabel}: {
-  triggerLabel?: string; record?: TrackingEditorRecord; returnTo?: string; initiallyOpen?: boolean; className?: string; initialMobileStep?: number; openNewInvoice?: boolean; openNewDocument?: boolean; disabled?: boolean; mobileHeaderAction?: boolean;
+export default function ProductTrackingEditor({record, returnTo = '/product-trackings', initiallyOpen = false, className, initialMobileStep = 1, openNewInvoice = false, openNewDocument = false, disabled = false, mobileHeaderAction = false, triggerLabel, onClose}: {
+  onClose?: () => void; triggerLabel?: string; record?: TrackingEditorRecord; returnTo?: string; initiallyOpen?: boolean; className?: string; initialMobileStep?: number; openNewInvoice?: boolean; openNewDocument?: boolean; disabled?: boolean; mobileHeaderAction?: boolean;
 }) {
   const router = useRouter();
   const timeZone = useCompanyTimeZone();
@@ -43,8 +43,9 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
   const close = useCallback(() => {
     if (saving) return;
     setOpen(false);
-    if (initiallyOpen) {preparePageReturn(returnTo); router.push(returnTo);}
-  }, [saving, initiallyOpen, returnTo, router]);
+    if (onClose) onClose();
+    else if (initiallyOpen) {preparePageReturn(returnTo); router.push(returnTo);}
+  }, [saving, initiallyOpen, returnTo, router, onClose]);
 
   const closeRef = useRef(close);
   closeRef.current = close;
@@ -146,7 +147,7 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
             const response = await fetch(`/api/product-trackings${record ? `/${record.id}` : ''}`, {method: 'POST', body: data});
             const payload = await response.json();
             if (!response.ok) throw new Error(payload.error || 'Impossibile salvare la tracciatura.');
-            setOpen(false); preparePageReturn(returnTo);
+            setOpen(false); onClose?.(); preparePageReturn(returnTo);
             router.push(appendFlash(returnTo, {saved: record ? 'updated' : 'created'})); router.refresh();
           } catch (err) {setError(err instanceof Error ? err.message : 'Impossibile salvare la tracciatura.');}
           finally {setSaving(false);}

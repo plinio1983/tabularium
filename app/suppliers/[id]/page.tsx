@@ -3,254 +3,359 @@ import MobileRecordViews, {MobileRecordCloseButton} from '@/components/MobileRec
 import ExpenseNewTriggerButton from '@/components/ExpenseNewTriggerButton';
 import DetailActionsBar from '@/components/DetailActionsBar';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
-import { euro, moneyTone } from '@/lib/money';
-import { requireWorkspace } from '@/lib/auth';
-import { detailBackHref } from '@/lib/detail-navigation';
+import {notFound} from 'next/navigation';
+import {prisma} from '@/lib/prisma';
+import {euro, moneyTone} from '@/lib/money';
+import {requireWorkspace} from '@/lib/auth';
+import {detailBackHref} from '@/lib/detail-navigation';
 import ExpensesList from '@/components/ExpensesList';
 import NewExpensePanel from '@/components/NewExpensePanel';
 import DetailBackButton from '@/components/DetailBackButton';
 import SupplierEditModalController from '@/components/SupplierEditModalController';
 import DeleteActionButton from '@/components/DeleteActionButton';
-import { badgeClass, paymentStatusStyles, yesNoStyles } from '@/lib/expense-ui';
-import { orderBanks, orderExpenseCategories, orderPaymentMethods } from '@/lib/workspace-defaults';
+import {badgeClass, paymentStatusStyles, yesNoStyles} from '@/lib/expense-ui';
+import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
 import {yearMonthInTimeZone} from '@/lib/company-time';
 import CopyValueButton from '@/components/CopyValueButton';
 import {isExpenseInvoiceNotReceived} from '@/lib/expense-invoice';
 
 function valueOrDash(value?: string | null) {
-  return value && value.trim() ? value : '-';
+    return value && value.trim() ? value : '-';
 }
 
-function CopyableField({ label, value, className }: { label: string; value?: string | null; className?: string | undefined }) {
-  const displayValue = valueOrDash(value);
-  return <div className={`${className} copyable-detail-field`}>
-    <span>{label}</span>
-    <strong className={label === 'Note interne' ? 'displayed-notes' : undefined}>{displayValue}</strong>
-    <CopyValueButton value={displayValue === '-' ? '' : displayValue}/>
-  </div>;
+function CopyableField({label, value, className}: {
+    label: string;
+    value?: string | null;
+    className?: string | undefined
+}) {
+    const displayValue = valueOrDash(value);
+    return <div className={`${className} copyable-detail-field`}>
+        <span>{label}</span>
+        <strong className={label === 'Note interne' ? 'displayed-notes' : undefined}>{displayValue}</strong>
+        <CopyValueButton value={displayValue === '-' ? '' : displayValue}/>
+    </div>;
 }
 
-export default async function SupplierDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
-  const current = await requireWorkspace('/suppliers');
-  const { id } = await params;
-  const query = (await searchParams) ?? {};
-  const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
-  const returnTo = detailBackHref(rawReturnTo, `/suppliers/${id}`, '/suppliers');
-  const [supplier, categories, banks, paymentMethods, suppliers] = await Promise.all([
-    prisma.supplier.findUnique({
-      where: { id: Number(id) },
-      include: {
-        defaultExpenseCategory: true,
-        expenses: { where: {companyId: current.company.id}, include: { payments: { include: { paymentMethod: true }, orderBy: { id: 'asc' } }, category: true, supplier: true }, orderBy: [{ year: 'desc' }, { month: 'desc' }, { receivedDate: 'desc' }] }
-      }
-    }),
-    prisma.expenseCategory.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { id: 'asc' } }),
-    prisma.bank.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.paymentMethod.findMany({ where: { workspaceId: current.workspace.id } }),
-    prisma.supplier.findMany({ where: { workspaceId: current.workspace.id }, orderBy: { businessName: 'asc' }, take: 100 })
-  ]);
-  if (!supplier || supplier.workspaceId !== current.workspace.id) notFound();
-  const orderedCategories = orderExpenseCategories(categories);
-  const orderedBanks = orderBanks(banks);
-  const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
+export default async function SupplierDetailPage({params, searchParams}: {
+    params: Promise<{ id: string }>;
+    searchParams?: Promise<Record<string, string | string[] | undefined>>
+}) {
+    const current = await requireWorkspace('/suppliers');
+    const {id} = await params;
+    const query = (await searchParams) ?? {};
+    const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
+    const returnTo = detailBackHref(rawReturnTo, `/suppliers/${id}`, '/suppliers');
+    const [supplier, categories, banks, paymentMethods, suppliers] = await Promise.all([
+        prisma.supplier.findUnique({
+            where: {id: Number(id)},
+            include: {
+                defaultExpenseCategory: true,
+                expenses: {
+                    where: {companyId: current.company.id},
+                    include: {
+                        payments: {include: {paymentMethod: true}, orderBy: {id: 'asc'}},
+                        category: true,
+                        supplier: true
+                    },
+                    orderBy: [{year: 'desc'}, {month: 'desc'}, {receivedDate: 'desc'}]
+                }
+            }
+        }),
+        prisma.expenseCategory.findMany({where: {workspaceId: current.workspace.id}, orderBy: {id: 'asc'}}),
+        prisma.bank.findMany({where: {workspaceId: current.workspace.id}}),
+        prisma.paymentMethod.findMany({where: {workspaceId: current.workspace.id}}),
+        prisma.supplier.findMany({
+            where: {workspaceId: current.workspace.id},
+            orderBy: {businessName: 'asc'},
+            take: 100
+        })
+    ]);
+    if (!supplier || supplier.workspaceId !== current.workspace.id) notFound();
+    const orderedCategories = orderExpenseCategories(categories);
+    const orderedBanks = orderBanks(banks);
+    const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
 
-  const openExpenses = supplier.expenses.map(expense => {
-    const amount = Number(expense.amount.toString());
-    const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
-    return { expense, residual: Math.max(0, amount - paid) };
-  }).filter(item => item.residual > 0);
-  const amountToPay = openExpenses.reduce((sum, item) => sum + item.residual, 0);
-  const supplierDetailHref = `/suppliers/${supplier.id}`;
-  const encodedSupplierDetailHref = encodeURIComponent(`${supplierDetailHref}?${new URLSearchParams({mobileList: '1', returnTo})}`);
-  const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
-  const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
-  const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
-  const invoiced = await prisma.expense.aggregate({
-    where: {
-      workspaceId: current.workspace.id,
-      companyId: current.company.id,
-      supplierId: supplier.id,
-      isDeclared: true,
-      invoiceStatus: {in: ['RICEVUTA', 'INVIATA_SDI']},
-      expenseType: {notIn: ['VAT_SETTLEMENT', 'TAX_CONTRIBUTION', 'PAYROLL']},
-    },
-    _sum: {amount: true},
-    _count: {_all: true},
-  });
-  const invoicedAmount = Number(invoiced._sum.amount ?? 0);
-  const invoicedOrderCount = invoiced._count._all;
-  const uninvoicedExpenses = supplier.expenses.filter(isExpenseInvoiceNotReceived);
-  const uninvoicedAmount = uninvoicedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
+    const openExpenses = supplier.expenses.map(expense => {
+        const amount = Number(expense.amount.toString());
+        const paid = expense.payments.reduce((sum, payment) => sum + Number(payment.amount.toString()), 0);
+        return {expense, residual: Math.max(0, amount - paid)};
+    }).filter(item => item.residual > 0);
+    const amountToPay = openExpenses.reduce((sum, item) => sum + item.residual, 0);
+    const supplierDetailHref = `/suppliers/${supplier.id}`;
+    const encodedSupplierDetailHref = encodeURIComponent(`${supplierDetailHref}?${new URLSearchParams({
+        mobileList: '1',
+        returnTo
+    })}`);
+    const currentYear = yearMonthInTimeZone(current.company.timeZone).year;
+    const annualExpenses = supplier.expenses.filter(expense => expense.year === currentYear);
+    const annualPurchasedAmount = annualExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
+    const invoiced = await prisma.expense.aggregate({
+        where: {
+            workspaceId: current.workspace.id,
+            companyId: current.company.id,
+            supplierId: supplier.id,
+            isDeclared: true,
+            invoiceStatus: {in: ['RICEVUTA', 'INVIATA_SDI']},
+            expenseType: {notIn: ['VAT_SETTLEMENT', 'TAX_CONTRIBUTION', 'PAYROLL']},
+        },
+        _sum: {amount: true},
+        _count: {_all: true},
+    });
+    const invoicedAmount = Number(invoiced._sum.amount ?? 0);
+    const invoicedOrderCount = invoiced._count._all;
+    const uninvoicedExpenses = supplier.expenses.filter(isExpenseInvoiceNotReceived);
+    const uninvoicedAmount = uninvoicedExpenses.reduce((sum, expense) => sum + Number(expense.amount.toString()), 0);
 
-  return <div className="grid record-detail-page party-detail-page supplier-detail-page">
-    <SupplierEditModalController categories={orderedCategories.map(category => ({ id: category.id, name: category.name, icon: category.icon }))}/>
-    <NewExpensePanel
-      categories={orderedCategories.map(c => ({
-        id: c.id,
-        code: c.code,
-        name: c.name,
-        icon: c.icon,
-        isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId
-      }))}
-      banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
-      paymentMethods={expensePaymentMethods.map(method => ({
-        id: method.id,
-        name: method.name,
-        icon: method.icon,
-        kind: method.kind,
-        isFallback: method.isFallback,
-        systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
-      }))}
-      suppliers={suppliers.map(s => ({
-        id: s.id,
-        businessName: s.businessName,
-        alias: s.alias,
-        email: s.email,
-        vatNumber: s.vatNumber,
-        iban: s.iban,
-        pec: s.pec,
-        taxCodeSdi: s.taxCodeSdi,
-        internalNotes: s.internalNotes,
-        defaultExpenseCategoryId: s.defaultExpenseCategoryId,
-        defaultVatRate: s.defaultVatRate?.toString() ?? null,
-        systemRole: s.systemRole
-      }))}
-      initialExpense={{ supplierId: supplier.id, merchant: supplier.businessName }}
-      initialOpen={(Array.isArray(query.new) ? query.new[0] : query.new) === '1'}
-      showToolbar={false}
-    />
-    <MobileRecordViews kind="expense" title="Spese collegate" linkLabel="Visualizza spese collegate" count={supplier.expenses.length} summary={<>
-        <div className="record-detail-shell">
-        <div className="record-detail-action-row record-detail-responsive-actions">
-            <div className="left-side">
-                <DetailBackButton href={returnTo}/>
-            </div>
-            {!supplier.systemRole ? <div className="right-side">
-                    <DetailActionsBar
-                        primary={<>
-                            <button className="btn btn-sm btn-option" type="button" data-supplier-edit-id={supplier.id}><span className="btn-icon">✎</span> Modifica</button>
-                            <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span className="btn-icon btn-icon-add">＋</span> Spesa</ExpenseNewTriggerButton>
-                            <DeleteActionButton action={'/api/suppliers/' + supplier.id} confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata." className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
-                        </>}
-                    />
-                </div> : <span className="badge">Fornitore di sistema</span>}
-        </div>
-      <article className="record-detail-document party-detail-document">
+    return <div className="grid record-detail-page party-detail-page supplier-detail-page">
+        <SupplierEditModalController categories={orderedCategories.map(category => ({
+            id: category.id,
+            name: category.name,
+            icon: category.icon
+        }))}/>
+        <NewExpensePanel
+            categories={orderedCategories.map(c => ({
+                id: c.id,
+                code: c.code,
+                name: c.name,
+                icon: c.icon,
+                isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId
+            }))}
+            banks={orderedBanks.map(b => ({
+                id: b.id,
+                name: b.name,
+                icon: b.icon,
+                isFallback: b.isFallback,
+                isPrimary: b.id === current.company.primaryBankId
+            }))}
+            paymentMethods={expensePaymentMethods.map(method => ({
+                id: method.id,
+                name: method.name,
+                icon: method.icon,
+                kind: method.kind,
+                isFallback: method.isFallback,
+                systemRole: method.systemRole,
+                isExpenseDefault: method.isExpenseDefault,
+                cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
+            }))}
+            suppliers={suppliers.map(s => ({
+                id: s.id,
+                businessName: s.businessName,
+                alias: s.alias,
+                email: s.email,
+                vatNumber: s.vatNumber,
+                iban: s.iban,
+                pec: s.pec,
+                taxCodeSdi: s.taxCodeSdi,
+                internalNotes: s.internalNotes,
+                defaultExpenseCategoryId: s.defaultExpenseCategoryId,
+                defaultVatRate: s.defaultVatRate?.toString() ?? null,
+                systemRole: s.systemRole
+            }))}
+            initialExpense={{supplierId: supplier.id, merchant: supplier.businessName}}
+            initialOpen={(Array.isArray(query.new) ? query.new[0] : query.new) === '1'}
+            showToolbar={false}
+        />
+        <MobileRecordViews kind="expense" title="Spese collegate" linkLabel="Visualizza spese collegate"
+                           count={supplier.expenses.length} summary={<>
+            <div className="record-detail-shell">
+                <div className="record-detail-action-row record-detail-responsive-actions hidden-sm-up">
+                    <div className="left-side">
+                        <DetailBackButton href={returnTo}/>
+                    </div>
+                    {!supplier.systemRole ? <div className="right-side">
+                        <DetailActionsBar
+                            primary={<>
+                                <button className="btn btn-sm btn-option" type="button"
+                                        data-supplier-edit-id={supplier.id}><span className="btn-icon">✎</span> Modifica
+                                </button>
+                                <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span
+                                    className="btn-icon btn-icon-add">＋</span> Spesa</ExpenseNewTriggerButton>
+                                <DeleteActionButton action={'/api/suppliers/' + supplier.id}
+                                                    confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata."
+                                                    className="btn btn-sm btn-option detail-actions-delete"><span
+                                    className="btn-icon">🗑</span> Elimina</DeleteActionButton>
+                            </>}
+                        />
+                    </div> : <span className="badge">Fornitore di sistema</span>}
+                </div>
+                <article className="record-detail-document party-detail-document">
 
-        <section className="record-detail-hero">
-          <div>
-            <div className="record-detail-title-block">
-              <p className="record-detail-kicker">Fornitore #{supplier.id}</p>
-              <h1>{supplier.businessName}</h1>
-              <div className="record-detail-meta-line">
-                <span>{valueOrDash(supplier.alias)}</span>
-                <span className="badge supplier-default-category-badge">
+                    <div className="record-detail-action-row record-detail-responsive-actions hidden-sm-down">
+                        <div className="left-side">
+                            <DetailBackButton href={returnTo}/>
+                        </div>
+                        {!supplier.systemRole ? <div className="right-side">
+                            <DetailActionsBar
+                                primary={<>
+                                    <button className="btn btn-sm btn-option" type="button"
+                                            data-supplier-edit-id={supplier.id}><span
+                                        className="btn-icon">✎</span> Modifica
+                                    </button>
+                                    <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span
+                                        className="btn-icon btn-icon-add">＋</span> Spesa</ExpenseNewTriggerButton>
+                                    <DeleteActionButton action={'/api/suppliers/' + supplier.id}
+                                                        confirmMessage="Confermi la rimozione del fornitore? L’operazione non può essere annullata."
+                                                        className="btn btn-sm btn-option detail-actions-delete"><span
+                                        className="btn-icon">🗑</span> Elimina</DeleteActionButton>
+                                </>}
+                            />
+                        </div> : <span className="badge">Fornitore di sistema</span>}
+                    </div>
+                    <section className="record-detail-hero">
+                        <div>
+                            <div className="record-detail-title-block">
+                                <p className="record-detail-kicker">Fornitore #{supplier.id}</p>
+                                <h1>{supplier.businessName}</h1>
+                                <div className="record-detail-meta-line">
+                                    <span>{valueOrDash(supplier.alias)}</span>
+                                    <span className="badge supplier-default-category-badge">
                 {supplier.defaultExpenseCategory
                     ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
                     : 'Non impostata'}
                 </span>
-              </div>
-            </div>
-          </div>
+                                </div>
+                            </div>
+                        </div>
 
-          <aside className="record-detail-amount-panel">
-            <div className="record-detail-amount-panel-header-row">
-              <span className="record-detail-amount-panel-header">Da saldare</span>
-            </div>
-            <strong className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
-            <div className="record-detail-badge-row">
-              {/*<span className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>*/}
-              {/*  {amountToPay > 0 ? `${paymentStatusStyles.DA_PAGARE.icon} Da saldare` : `${yesNoStyles.yes.icon} In pari`}*/}
-              {/*</span>*/}
-              {/*<span className="badge">{supplier.expenses.length} spese collegate</span>*/}
-              <span className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>
+                        <aside className="record-detail-amount-panel">
+                            <div className="record-detail-amount-panel-header-row">
+                                <span className="record-detail-amount-panel-header">Da saldare</span>
+                            </div>
+                            <strong
+                                className={amountToPay > 0 ? 'text-warning' : 'text-ok'}>{euro(amountToPay)}</strong>
+                            <div className="record-detail-badge-row">
+                                {/*<span className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>*/}
+                                {/*  {amountToPay > 0 ? `${paymentStatusStyles.DA_PAGARE.icon} Da saldare` : `${yesNoStyles.yes.icon} In pari`}*/}
+                                {/*</span>*/}
+                                {/*<span className="badge">{supplier.expenses.length} spese collegate</span>*/}
+                                <span
+                                    className={badgeClass(amountToPay > 0 ? paymentStatusStyles.DA_PAGARE.className : yesNoStyles.yes.className)}>
                 {openExpenses.length} ordini aperti
               </span>
-              <span className="badge">{supplier.expenses.length} spese collegate</span>
+                                <span className="badge">{supplier.expenses.length} spese collegate</span>
+                            </div>
+                        </aside>
+                    </section>
+
+                    <section className="record-detail-status-strip supplier-purchase-summary"
+                             aria-label="Riepilogo acquisti fornitore">
+                        <div>
+                            <span>Spese collegate</span>
+                            <strong>{supplier.expenses.length}</strong>
+                        </div>
+                        <div>
+                            <span>Acquistati {currentYear}</span>
+                            <strong>{euro(annualPurchasedAmount)}</strong>
+                        </div>
+                        <div>
+                            <span>Totale fatturato</span>
+                            <strong>{euro(invoicedAmount)}</strong>
+                            <small
+                                className="muted">{invoicedOrderCount} {invoicedOrderCount === 1 ? 'ordine fatturato' : 'ordini fatturati'}</small>
+                        </div>
+                        <div>
+                            <span>Non ancora fatturato</span>
+                            <strong
+                                className={uninvoicedAmount > 0 ? 'text-warning' : undefined}>{euro(uninvoicedAmount)}</strong>
+                            {uninvoicedExpenses.length > 0 && <small
+                                className="muted">{uninvoicedExpenses.length} {uninvoicedExpenses.length === 1 ? 'ordine senza fattura' : 'ordini senza fattura'}</small>}
+                        </div>
+                    </section>
+
+                    <details className="record-detail-section party-detail-collapsible">
+                        <summary className="record-detail-section-heading">
+                            <div>
+                                <div className="info-title-row"><h2>Anagrafica</h2><InfoHint compactOnly
+                                                                                             title="Anagrafica">Dati
+                                    principali del fornitore.</InfoHint></div>
+                                <p className="muted info-hint-desktop-text">Dati principali del fornitore.</p>
+                            </div>
+                            <span className="party-detail-collapsible-toggle" aria-hidden="true">⌄</span>
+                        </summary>
+                        <div className="record-detail-status-strip party-detail-info-strip">
+                            <CopyableField label="Ragione sociale" value={supplier.businessName}/>
+                            <CopyableField label="Referente" value={supplier.alias}/>
+                            <CopyableField label="Email" value={supplier.email}/>
+                            <CopyableField label="P.IVA / C.F." value={supplier.vatNumber}/>
+                            <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi}/>
+                            <CopyableField label="PEC" value={supplier.pec}/>
+                            <CopyableField label="IBAN" value={supplier.iban}/>
+                            <CopyableField label="Swift" value={supplier.swift}/>
+                            <CopyableField
+                                label="Categoria predefinita"
+                                value={supplier.defaultExpenseCategory
+                                    ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
+                                    : null}
+                            />
+                            <CopyableField
+                                label="Aliquota IVA predefinita"
+                                value={supplier.defaultVatRate == null ? null : `${supplier.defaultVatRate.toString()}%`}
+                            />
+                            <CopyableField label="Note interne" value={supplier.internalNotes} className="span-2"/>
+                        </div>
+                    </details>
+                </article>
             </div>
-          </aside>
-        </section>
 
-        <section className="record-detail-status-strip supplier-purchase-summary" aria-label="Riepilogo acquisti fornitore">
-          <div>
-            <span>Spese collegate</span>
-            <strong>{supplier.expenses.length}</strong>
-          </div>
-          <div>
-            <span>Acquistati {currentYear}</span>
-            <strong>{euro(annualPurchasedAmount)}</strong>
-          </div>
-          <div>
-            <span>Totale fatturato</span>
-            <strong>{euro(invoicedAmount)}</strong>
-            <small className="muted">{invoicedOrderCount} {invoicedOrderCount === 1 ? 'ordine fatturato' : 'ordini fatturati'}</small>
-          </div>
-          <div>
-            <span>Non ancora fatturato</span>
-            <strong className={uninvoicedAmount > 0 ? 'text-warning' : undefined}>{euro(uninvoicedAmount)}</strong>
-            {uninvoicedExpenses.length > 0 && <small className="muted">{uninvoicedExpenses.length} {uninvoicedExpenses.length === 1 ? 'ordine senza fattura' : 'ordini senza fattura'}</small>}
-          </div>
-        </section>
+        </>}>
+            <div className="card record-list-card record-list-grid supplier-linked-expenses-list">
+                <div className="list-heading mobile-record-list-header">
+                    <div>
+                        <h2>Spese collegate</h2>
+                        <p className="muted">Risultati mostrati: {supplier.expenses.length}</p>
+                    </div>
+                    <MobileRecordCloseButton/>
+                </div>
 
-        <details className="record-detail-section party-detail-collapsible">
-          <summary className="record-detail-section-heading">
-            <div>
-              <div className="info-title-row"><h2>Anagrafica</h2><InfoHint compactOnly title="Anagrafica">Dati principali del fornitore.</InfoHint></div><p className="muted info-hint-desktop-text">Dati principali del fornitore.</p>
+                <ExpensesList
+                    timeZone={current.company.timeZone}
+                    expenses={supplier.expenses}
+                    returnTo={encodedSupplierDetailHref}
+                    showSupplierColumn={false}
+                    selectable
+                    formId="expenseBulkForm"
+                    categories={orderedCategories.map(c => ({
+                        id: c.id,
+                        code: c.code,
+                        name: c.name,
+                        icon: c.icon,
+                        isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId
+                    }))}
+                    banks={orderedBanks.map(b => ({
+                        id: b.id,
+                        name: b.name,
+                        icon: b.icon,
+                        isFallback: b.isFallback,
+                        isPrimary: b.id === current.company.primaryBankId
+                    }))}
+                    paymentMethods={expensePaymentMethods.map(method => ({
+                        id: method.id,
+                        name: method.name,
+                        icon: method.icon,
+                        kind: method.kind,
+                        isFallback: method.isFallback,
+                        systemRole: method.systemRole,
+                        isExpenseDefault: method.isExpenseDefault,
+                        cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
+                    }))}
+                    suppliers={suppliers.map(s => ({
+                        id: s.id,
+                        businessName: s.businessName,
+                        alias: s.alias,
+                        email: s.email,
+                        vatNumber: s.vatNumber,
+                        iban: s.iban,
+                        pec: s.pec,
+                        taxCodeSdi: s.taxCodeSdi,
+                        internalNotes: s.internalNotes,
+                        defaultExpenseCategoryId: s.defaultExpenseCategoryId,
+                        defaultVatRate: s.defaultVatRate?.toString() ?? null,
+                        systemRole: s.systemRole
+                    }))}
+                    mobileLabel="Spese collegate mobile"
+                    emptyMessage="Nessuna spesa collegata a questo fornitore."
+                />
             </div>
-            <span className="party-detail-collapsible-toggle" aria-hidden="true">⌄</span>
-          </summary>
-          <div className="record-detail-status-strip party-detail-info-strip">
-            <CopyableField label="Ragione sociale" value={supplier.businessName} />
-            <CopyableField label="Referente" value={supplier.alias} />
-            <CopyableField label="Email" value={supplier.email} />
-            <CopyableField label="P.IVA / C.F." value={supplier.vatNumber} />
-            <CopyableField label="Cod. SDI" value={supplier.taxCodeSdi} />
-            <CopyableField label="PEC" value={supplier.pec} />
-            <CopyableField label="IBAN" value={supplier.iban} />
-            <CopyableField label="Swift" value={supplier.swift} />
-            <CopyableField
-              label="Categoria predefinita"
-              value={supplier.defaultExpenseCategory
-                ? `${supplier.defaultExpenseCategory.icon ? `${supplier.defaultExpenseCategory.icon} ` : ''}${supplier.defaultExpenseCategory.name}`
-                : null}
-            />
-            <CopyableField
-              label="Aliquota IVA predefinita"
-              value={supplier.defaultVatRate == null ? null : `${supplier.defaultVatRate.toString()}%`}
-            />
-            <CopyableField label="Note interne" value={supplier.internalNotes} className="span-2"/>
-          </div>
-        </details>
-      </article>
-    </div>
-
-    </>}>
-        <div className="card record-list-card record-list-grid supplier-linked-expenses-list">
-      <div className="list-heading mobile-record-list-header">
-        <div>
-          <h2>Spese collegate</h2>
-          <p className="muted">Risultati mostrati: {supplier.expenses.length}</p>
-        </div>
-        <MobileRecordCloseButton/>
-      </div>
-
-      <ExpensesList
-        timeZone={current.company.timeZone}
-        expenses={supplier.expenses}
-        returnTo={encodedSupplierDetailHref}
-        showSupplierColumn={false}
-        selectable
-        formId="expenseBulkForm"
-        categories={orderedCategories.map(c => ({id: c.id, code: c.code, name: c.name, icon: c.icon, isVatSettlementDefault: c.id === current.workspace.vatSettlementCategoryId }))}
-        banks={orderedBanks.map(b => ({ id: b.id, name: b.name, icon: b.icon, isFallback: b.isFallback, isPrimary: b.id === current.company.primaryBankId }))}
-        paymentMethods={expensePaymentMethods.map(method => ({ id: method.id, name: method.name, icon: method.icon, kind: method.kind, isFallback: method.isFallback, systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId }))}
-        suppliers={suppliers.map(s => ({ id: s.id, businessName: s.businessName, alias: s.alias, email: s.email, vatNumber: s.vatNumber, iban: s.iban, pec: s.pec, taxCodeSdi: s.taxCodeSdi, internalNotes: s.internalNotes, defaultExpenseCategoryId: s.defaultExpenseCategoryId, defaultVatRate: s.defaultVatRate?.toString() ?? null, systemRole: s.systemRole }))}
-        mobileLabel="Spese collegate mobile"
-        emptyMessage="Nessuna spesa collegata a questo fornitore."
-      />
-    </div>
         </MobileRecordViews>
-  </div>;
+    </div>;
 }

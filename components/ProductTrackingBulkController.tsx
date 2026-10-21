@@ -1,9 +1,38 @@
 'use client';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
+import ProductTrackingEditor, {type TrackingEditorRecord} from '@/components/ProductTrackingEditor';
 import {useRouter} from 'next/navigation';
 
 export default function ProductTrackingBulkController() {
   const router = useRouter();
+  const [editing, setEditing] = useState<{record: TrackingEditorRecord; returnTo: string} | null>(null);
+  useEffect(() => {
+    let disposed = false;
+    let loading = false;
+    const edit = async (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const trigger = target.closest<HTMLElement>('[data-tracking-edit-id]');
+      if (!trigger) return;
+      event.preventDefault();
+      if (loading || trigger.getAttribute('aria-disabled') === 'true') return;
+      loading = true;
+      trigger.setAttribute('aria-busy', 'true');
+      const feedback = document.getElementById('tracking-bulk-feedback');
+      try {
+        const response = await fetch(`/api/product-trackings/${trigger.dataset.trackingEditId}/edit-data`, {cache: 'no-store'});
+        const record = await response.json();
+        if (!response.ok) throw new Error(record.error || 'Impossibile caricare la tracciatura.');
+        const url = new URL(window.location.href);
+        ['saved', 'error'].forEach(key => url.searchParams.delete(key));
+        if (!disposed) setEditing({record, returnTo: `${url.pathname}${url.search}`});
+      } catch (error) {
+        if (!disposed && feedback) feedback.textContent = error instanceof Error ? error.message : 'Impossibile caricare la tracciatura.';
+      } finally {loading = false; trigger.removeAttribute('aria-busy');}
+    };
+    document.addEventListener('click', edit);
+    return () => {disposed = true; document.removeEventListener('click', edit);};
+  }, []);
   useEffect(() => {
     let busy = false;
     const syncSelection = (event: Event) => {
@@ -58,5 +87,8 @@ export default function ProductTrackingBulkController() {
       document.removeEventListener('change', syncSelection, true);
     };
   }, [router]);
-  return <p id="tracking-bulk-feedback" role="status" aria-live="polite"/>;
+  return <>
+    <p id="tracking-bulk-feedback" role="status" aria-live="polite"/>
+    {editing && <ProductTrackingEditor key={editing.record.id} initiallyOpen record={editing.record} returnTo={editing.returnTo} onClose={() => setEditing(null)}/>}
+  </>;
 }

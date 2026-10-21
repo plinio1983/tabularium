@@ -163,7 +163,7 @@ export default async function Page({searchParams}: {
                 </label>
                 <div className="bulk-action-buttons btn-group">
                     <div className="bulk-direct-actions" data-bulk-direct-actions data-bulk-form="trackingBulkForm"
-                         data-edit-base="/product-trackings/" data-return-to={encodeURIComponent(listHref)}>
+                         data-edit-trigger-attr="data-tracking-edit-id" data-return-to={encodeURIComponent(listHref)}>
                         {canEdit && <a href="#" className="bulk-direct-link is-disabled" data-bulk-edit aria-disabled="true">
                             <span className="btn-icon">✎</span><span className="hidden-sm-down">Modifica</span>
                         </a>}
@@ -237,7 +237,7 @@ export default async function Page({searchParams}: {
                         <div className="mobile-record-title-row">
                             <div className="mobile-record-title-left"><strong>{record.name}</strong></div>
                             <div className="mobile-record-title-right"><span
-                                className="badge">Lotto {record.batch} · {record.batchYear}</span></div>
+                                className="badge">{record.batch} · {record.batchYear}</span></div>
                         </div>
                         <div className="mobile-record-subtitle"><span
                             className="party-mobile-row-grow">{record.alias || 'Nome non indicato'}</span><span

@@ -27,13 +27,14 @@ function Field({label, value, copy = true}: { label: string; value: string; copy
         <CopyValueButton value={value === '—' ? '' : value}/> : null}</div>;
 }
 
-function EmployeeStateSwitch({id, active}: {id: number; active: boolean}) {
+function EmployeeStateSwitch({id, active}: { id: number; active: boolean }) {
     return <form action={`/api/employees/${id}?returnTo=${encodeURIComponent(`/employees/${id}`)}`} method="post">
         <div className="trend-mode-toggle employee-state-switch" role="group" aria-label="Stato del rapporto">
             {[true, false].map(inProgress => <button key={String(inProgress)} type="submit" name="_action"
-                value={inProgress ? 'activate' : 'deactivate'} aria-pressed={active === inProgress}
-                disabled={active === inProgress}
-                className={`trend-mode-button${inProgress ? '' : ' is-off'}${active === inProgress ? ' is-active' : ''}`}>
+                                                     value={inProgress ? 'activate' : 'deactivate'}
+                                                     aria-pressed={active === inProgress}
+                                                     disabled={active === inProgress}
+                                                     className={`trend-mode-button${inProgress ? '' : ' is-off'}${active === inProgress ? ' is-active' : ''}`}>
                 {inProgress ? 'In corso' : 'Sospeso'}
             </button>)}
         </div>
@@ -81,7 +82,10 @@ export default async function EmployeeDetailPage({params, searchParams}: {
     const orderedBanks = orderBanks(banks);
     const expensePaymentMethods = orderPaymentMethods(paymentMethods, 'EXPENSE');
     const employeeDetailHref = `/employees/${employee.id}`;
-    const encodedEmployeeDetailHref = encodeURIComponent(`${employeeDetailHref}?${new URLSearchParams({mobileList: '1', returnTo: back})}`);
+    const encodedEmployeeDetailHref = encodeURIComponent(`${employeeDetailHref}?${new URLSearchParams({
+        mobileList: '1',
+        returnTo: back
+    })}`);
     const categoryOptions = orderedCategories.map(category => ({
         id: category.id,
         code: category.code,
@@ -102,7 +106,9 @@ export default async function EmployeeDetailPage({params, searchParams}: {
         icon: method.icon,
         kind: method.kind,
         isFallback: method.isFallback,
-        systemRole: method.systemRole, isExpenseDefault: method.isExpenseDefault, cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
+        systemRole: method.systemRole,
+        isExpenseDefault: method.isExpenseDefault,
+        cashRegisterDefaultBankId: method.cashRegisterDefaultBankId
     }));
     const supplierOptions = suppliers.map(supplier => ({
         id: supplier.id,
@@ -126,71 +132,124 @@ export default async function EmployeeDetailPage({params, searchParams}: {
         status: item.status
     }));
     return <div className="grid record-detail-page party-detail-page employee-detail-page">
-        <EmployeeEditModalController/><NewExpensePanel categories={categoryOptions} banks={bankOptions} paymentMethods={paymentMethodOptions} suppliers={supplierOptions} employees={employeeOptions} initialExpense={{
+        <EmployeeEditModalController/><NewExpensePanel categories={categoryOptions} banks={bankOptions}
+                                                       paymentMethods={paymentMethodOptions} suppliers={supplierOptions}
+                                                       employees={employeeOptions} initialExpense={{
         expenseType: 'PAYROLL',
         employeeId: employee.id
     }} initialOpen={(Array.isArray(query.new) ? query.new[0] : query.new) === '1'} showToolbar={false}/>
-        <MobileRecordViews kind="expense" title="Spese collegate" linkLabel="Visualizza spese collegate" count={employee.expenses.length} summary={<>
-        <div className="record-detail-shell">
-            <div className="record-detail-action-row record-detail-responsive-actions">
-                <div className="left-side"><DetailBackButton href={back}/></div>
-                <div className="right-side">
-                    <DetailActionsBar controls={<EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>}
-                        primary={<>
-                            <button className="btn btn-sm btn-option" type="button" data-employee-edit-id={employee.id}><span className="btn-icon">✎</span> Modifica</button>
-                            <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span className="btn-icon btn-icon-add">＋</span> Spesa</ExpenseNewTriggerButton>
-                            <DeleteActionButton action={'/api/employees/' + employee.id} confirmMessage="Eliminare definitivamente il dipendente?" className="btn btn-sm btn-option detail-actions-delete"><span className="btn-icon">🗑</span> Elimina</DeleteActionButton>
-                        </>}
-                    />
+        <MobileRecordViews kind="expense" title="Spese collegate" linkLabel="Visualizza spese collegate"
+                           count={employee.expenses.length} summary={<>
+            <div className="record-detail-shell">
+                <div className="record-detail-action-row record-detail-responsive-actions hidden-sm-up">
+                    <div className="left-side"><DetailBackButton href={back}/></div>
+                    <div className="right-side">
+                        <DetailActionsBar
+                            controls={<EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>}
+                            primary={<>
+                                <button className="btn btn-sm btn-option" type="button"
+                                        data-employee-edit-id={employee.id}><span className="btn-icon">✎</span> Modifica
+                                </button>
+                                <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span
+                                    className="btn-icon btn-icon-add">＋</span> Spesa</ExpenseNewTriggerButton>
+                                <DeleteActionButton action={'/api/employees/' + employee.id}
+                                                    confirmMessage="Eliminare definitivamente il dipendente?"
+                                                    className="btn btn-sm btn-option detail-actions-delete"><span
+                                    className="btn-icon">🗑</span> Elimina</DeleteActionButton>
+                            </>}
+                        />
+                    </div>
                 </div>
-            </div>
-            <article className="record-detail-document party-detail-document">
-
-                <section className="record-detail-hero">
-                    <div>
-                        <div className="record-detail-title-block">
-                            <p className="record-detail-kicker">Dipendente #{employee.id}</p>
-                            <h1>{employee.firstName} {employee.lastName}</h1>
-                            <div className="record-detail-meta-line">
-                                <span>{employee.employeeCode ? `Matricola ${employee.employeeCode}` : 'Matricola non inserita'}</span><span className={employee.status === 'ACTIVE' ? 'badge tone-ok' : 'badge tone-neutral'}>{employee.status === 'ACTIVE' ? 'Attivo' : 'Inattivo'}</span>
-                            </div>
+                <article className="record-detail-document party-detail-document">
+                    <div className="record-detail-action-row record-detail-responsive-actions hidden-sm-down">
+                        <div className="left-side"><DetailBackButton href={back}/></div>
+                        <div className="right-side">
+                            <DetailActionsBar
+                                controls={<EmployeeStateSwitch id={employee.id} active={employee.status === 'ACTIVE'}/>}
+                                primary={<>
+                                    <button className="btn btn-sm btn-option" type="button"
+                                            data-employee-edit-id={employee.id}><span
+                                        className="btn-icon">✎</span> Modifica
+                                    </button>
+                                    <ExpenseNewTriggerButton className="btn btn-sm btn-option"><span
+                                        className="btn-icon btn-icon-add">＋</span> Spesa</ExpenseNewTriggerButton>
+                                    <DeleteActionButton action={'/api/employees/' + employee.id}
+                                                        confirmMessage="Eliminare definitivamente il dipendente?"
+                                                        className="btn btn-sm btn-option detail-actions-delete"><span
+                                        className="btn-icon">🗑</span> Elimina</DeleteActionButton>
+                                </>}
+                            />
                         </div>
                     </div>
-                    <aside className="record-detail-amount-panel">
-                        <span className="record-detail-amount-panel-header">Rapporto</span><strong>{employee.status === 'ACTIVE' ? 'In corso' : 'Sospeso'}</strong>
-                        <div className="record-detail-badge-row">
-                            <span className="badge">Dal {date(employee.hiredAt)}</span></div>
-                    </aside>
-                </section>
-                <section className="record-detail-status-strip employee-compensation-summary" aria-label="Riepilogo retribuzione">
-                    <div><span>Retribuzione corrisposta</span><strong className="text-ok">{euro(compensation.paid)}</strong></div>
-                    <div><span>Da corrispondere</span><strong className={compensation.toPay > 0 ? 'text-warning' : 'text-ok'}>{euro(compensation.toPay)}</strong></div>
-                </section>
-                <section className="record-detail-status-strip">
-                    <div><span>Stato</span><strong>{employee.status === 'ACTIVE' ? 'Attivo' : 'Inattivo'}</strong></div>
-                    <div><span>Assunzione</span><strong>{date(employee.hiredAt)}</strong></div>
-                    <div><span>Cessazione</span><strong>{date(employee.terminatedAt)}</strong></div>
-                    <div><span>IBAN</span><strong>{employee.iban ? 'Presente' : 'Mancante'}</strong></div>
-                </section>
-                <details className="record-detail-section party-detail-collapsible" open>
-                    <summary className="record-detail-section-heading">
-                        <div><div className="info-title-row"><h2>Anagrafica</h2><InfoHint compactOnly title="Anagrafica">Dati personali e coordinate del dipendente.</InfoHint></div><p className="muted info-hint-desktop-text">Dati personali e coordinate del dipendente.</p></div>
-                        <span className="party-detail-collapsible-toggle" aria-hidden="true">⌄</span></summary>
-                    <div className="record-detail-status-strip party-detail-info-strip">
-                        <Field label="Nome" value={employee.firstName}/><Field label="Cognome" value={employee.lastName}/><Field label="Matricola" value={show(employee.employeeCode)}/><Field label="Codice fiscale" value={show(employee.taxCode)}/><Field label="Email" value={show(employee.email)}/><Field label="Telefono" value={show(employee.phone)}/><Field label="IBAN" value={show(employee.iban)}/><Field label="Note interne" value={show(employee.internalNotes)}/>
-                    </div>
-                </details>
-            </article>
-        </div>
-        </>}>
-        <div className="card record-list-card record-list-grid">
-            <div className="list-heading mobile-record-list-header">
-                <div><h2>Spese collegate</h2><p className="muted">Risultati mostrati: {employee.expenses.length}</p>
-                </div>
-                <MobileRecordCloseButton/>
+                    <section className="record-detail-hero">
+                        <div>
+                            <div className="record-detail-title-block">
+                                <p className="record-detail-kicker">Dipendente #{employee.id}</p>
+                                <h1>{employee.firstName} {employee.lastName}</h1>
+                                <div className="record-detail-meta-line">
+                                    <span>{employee.employeeCode ? `Matricola ${employee.employeeCode}` : 'Matricola non inserita'}</span><span
+                                    className={employee.status === 'ACTIVE' ? 'badge tone-ok' : 'badge tone-neutral'}>{employee.status === 'ACTIVE' ? 'Attivo' : 'Inattivo'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <aside className="record-detail-amount-panel">
+                            <span
+                                className="record-detail-amount-panel-header">Rapporto</span><strong>{employee.status === 'ACTIVE' ? 'In corso' : 'Sospeso'}</strong>
+                            <div className="record-detail-badge-row">
+                                <span className="badge">Dal {date(employee.hiredAt)}</span></div>
+                        </aside>
+                    </section>
+                    <section className="record-detail-status-strip employee-compensation-summary"
+                             aria-label="Riepilogo retribuzione">
+                        <div><span>Retribuzione corrisposta</span><strong
+                            className="text-ok">{euro(compensation.paid)}</strong></div>
+                        <div><span>Da corrispondere</span><strong
+                            className={compensation.toPay > 0 ? 'text-warning' : 'text-ok'}>{euro(compensation.toPay)}</strong>
+                        </div>
+                    </section>
+                    <section className="record-detail-status-strip">
+                        <div><span>Stato</span><strong>{employee.status === 'ACTIVE' ? 'Attivo' : 'Inattivo'}</strong>
+                        </div>
+                        <div><span>Assunzione</span><strong>{date(employee.hiredAt)}</strong></div>
+                        <div><span>Cessazione</span><strong>{date(employee.terminatedAt)}</strong></div>
+                        <div><span>IBAN</span><strong>{employee.iban ? 'Presente' : 'Mancante'}</strong></div>
+                    </section>
+                    <details className="record-detail-section party-detail-collapsible" open>
+                        <summary className="record-detail-section-heading">
+                            <div>
+                                <div className="info-title-row"><h2>Anagrafica</h2><InfoHint compactOnly
+                                                                                             title="Anagrafica">Dati
+                                    personali e coordinate del dipendente.</InfoHint></div>
+                                <p className="muted info-hint-desktop-text">Dati personali e coordinate del
+                                    dipendente.</p></div>
+                            <span className="party-detail-collapsible-toggle" aria-hidden="true">⌄</span></summary>
+                        <div className="record-detail-status-strip party-detail-info-strip">
+                            <Field label="Nome" value={employee.firstName}/><Field label="Cognome"
+                                                                                   value={employee.lastName}/><Field
+                            label="Matricola" value={show(employee.employeeCode)}/><Field label="Codice fiscale"
+                                                                                          value={show(employee.taxCode)}/><Field
+                            label="Email" value={show(employee.email)}/><Field label="Telefono"
+                                                                               value={show(employee.phone)}/><Field
+                            label="IBAN" value={show(employee.iban)}/><Field label="Note interne"
+                                                                             value={show(employee.internalNotes)}/>
+                        </div>
+                    </details>
+                </article>
             </div>
-            <ExpensesList timeZone={current.company.timeZone} expenses={employee.expenses} returnTo={encodedEmployeeDetailHref} showSupplierColumn={false} selectable formId="employeeExpenseBulkForm" categories={categoryOptions} banks={bankOptions} paymentMethods={paymentMethodOptions} suppliers={supplierOptions} employees={employeeOptions} mobileLabel="Spese collegate al dipendente" emptyMessage="Nessuna spesa collegata a questo dipendente."/>
-        </div>
+        </>}>
+            <div className="card record-list-card record-list-grid">
+                <div className="list-heading mobile-record-list-header">
+                    <div><h2>Spese collegate</h2><p className="muted">Risultati mostrati: {employee.expenses.length}</p>
+                    </div>
+                    <MobileRecordCloseButton/>
+                </div>
+                <ExpensesList timeZone={current.company.timeZone} expenses={employee.expenses}
+                              returnTo={encodedEmployeeDetailHref} showSupplierColumn={false} selectable
+                              formId="employeeExpenseBulkForm" categories={categoryOptions} banks={bankOptions}
+                              paymentMethods={paymentMethodOptions} suppliers={supplierOptions}
+                              employees={employeeOptions} mobileLabel="Spese collegate al dipendente"
+                              emptyMessage="Nessuna spesa collegata a questo dipendente."/>
+            </div>
         </MobileRecordViews>
     </div>;
 }

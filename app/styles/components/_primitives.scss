@@ -468,6 +468,12 @@ button {
   border-radius: 0;
 }
 
+.btn-group > div > .bulk-direct-link:first-child {
+  margin-left: 0 !important;
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+
 .btn-group > :is(button, .btn, a, .btn-group-item):first-child {
   margin-left: 0;
   border-top-left-radius: 10px;
