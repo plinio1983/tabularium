@@ -129,6 +129,37 @@ body:has(.detail-page-no-site-header) .shell {
   }
 }
 
+.employee-detail-page {
+  .cell-order-date {
+    width: 8%;
+  }
+
+  .cell-billing-period {
+    width: 8%;
+    text-align: left;
+  }
+
+  .cell-type {
+    width: 7%;
+  }
+
+  .cell-type {
+    width: 7%;
+  }
+
+  .cell-category {
+    width: 9%;
+  }
+
+  .cell-amount {
+    width: 11%;
+  }
+
+  table .cell-vat {
+    width: 6%;
+  }
+}
+
 table {
   .cell-option {
     width: 46px !important;
