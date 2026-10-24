@@ -273,7 +273,9 @@ function DocumentCount({count, kind, attachments, today, mobile = false}: {
     const latest = latestTrackingDocumentDate(attachments.filter(item => item.kind === kind).map(item => kind === 'INVOICE' ? item.invoiceDate : item.documentDate));
     const age = trackingDocumentAge(latest, today);
     return <span className="tracking-document-count">
-        <span className="badge">{count}</span>{mobile ? kind === 'INVOICE' ? ' Fatture' : ' Tracciamento' : null}
+        <span className="badge">{count}</span>
+        <span className="hidden-sm-up">{mobile ? kind === 'INVOICE' ? ' Fatt.' : ' Tracc.' : null}</span>
+        <span className="hidden-sm-down">{mobile ? kind === 'INVOICE' ? ' Fatture' : ' Tracciamento' : null}</span>
         <small className={trackingDocumentAgeClass(age)}
                title={latest ? `Documento più recente: ${formatItalianCompactDate(latest)}` : 'Nessuna data documento disponibile'}> {age.label}</small>
     </span>;

@@ -32,11 +32,12 @@ export function trackingDocumentAge(value: DocumentDate, today: string) {
   if (days < 0) label = 'Data futura';
   else if (days <= 14) label = `${days} ${days === 1 ? 'giorno' : 'giorni'}`;
   else if (days < 21) label = '<3 sett';
-  else if (days <= 28) label = `${Math.floor(days / 7)} sett`;
-  else if (days < 30) label = '<1 Mese';
+  else if (days <= 42) label = `${Math.floor(days / 7)} sett`;
+  else if (days < 45) label = '>1 Mese';
+  else if (days < 60) label = '<2 mesi';
   else {
     const months = Math.floor(days / 30);
-    label = days % 30 >= 15 ? `<${months + 1} mesi` : `${months} ${months === 1 ? 'Mese' : 'mesi'}`;
+    label = days % 30 >= 15 ? `>${months} mesi` : `${months} ${months === 1 ? 'Mese' : 'mesi'}`;
   }
   return {date, days, label};
 }
