@@ -2207,7 +2207,7 @@ table th, table td {
   z-index: 120;
 }
 
-.entity-autocomplete > label {
+.entity-autocomplete > label:where(:not(.app-form-field-label)) {
   display: grid;
   gap: 7px;
   color: var(--muted);

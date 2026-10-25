@@ -2099,6 +2099,250 @@ body.bulk-attachments-modal-open {
   }
 }
 
+@media (min-width: 761px) {
+  .bulk-expense-payment-modal {
+    width: min(1180px, calc(100vw - 36px));
+    max-width: calc(100vw - 36px);
+  }
+}
+
+// Keep the payment controls in the same layout as the bulk edit forms;
+// the enclosing modal already supplies the sticky action bar.
+.bulk-edit-fields-modal .bulk-payment-content {
+  display: grid;
+  grid-auto-rows: max-content;
+  gap: 12px;
+  padding-bottom: 0;
+  min-width: 0;
+
+  > .payment-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    > .payment-date-field,
+    > .payment-amount-field {
+      grid-column: 1 / -1;
+    }
+  }
+
+}
+
+.bulk-payment-summary {
+  min-width: 0;
+  border: 1px solid #dbe3ee;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .04);
+  overflow: hidden;
+
+  .table-scroll {
+    min-width: 0;
+    border-radius: 0;
+  }
+}
+
+.bulk-payment-summary-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 16px;
+  border-bottom: 1px solid #dbe3ee;
+  background: linear-gradient(180deg, #fff, #f8fafc);
+
+  h3 {
+    margin: 4px 0 0;
+    font-size: 16px;
+    color: var(--text);
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+}
+
+.bulk-payment-summary-total {
+  display: grid;
+  gap: 4px;
+
+  > span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  > strong {
+    color: var(--accent);
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.bulk-payment-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th, td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #edf1f6;
+    vertical-align: middle;
+  }
+
+  thead th {
+    background: #f8fafc;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  th:first-child {
+    text-align: left;
+  }
+
+  th:nth-child(n + 2):nth-child(-n + 4),
+  td:nth-child(n + 2):nth-child(-n + 4) {
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  tbody th {
+    min-width: 150px;
+    font-weight: 650;
+
+    > strong {
+      display: block;
+      margin-top: 3px;
+    }
+  }
+
+  .bulk-payment-expense-id {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 750;
+  }
+
+  .bulk-payment-allocated {
+    color: var(--accent);
+    font-weight: 850;
+  }
+
+  tbody tr.is-allocated {
+    background: rgba(79, 70, 229, .025);
+  }
+
+  td:last-child {
+    white-space: nowrap;
+  }
+
+  tfoot {
+    background: #f8fafc;
+    font-weight: 850;
+
+    th, td {
+      border-bottom: 0;
+      border-top: 1px solid #dbe3ee;
+    }
+  }
+}
+
+.bulk-payment-summary-cards {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.bulk-payment-summary-card {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #dbe3ee;
+  border-radius: 14px;
+  background: #fff;
+
+  &.is-allocated {
+    border-color: #c7d2fe;
+  }
+
+  h4 {
+    margin: 4px 0 0;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+
+  .bulk-payment-expense-id {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 750;
+  }
+
+  .bulk-payment-allocated {
+    color: var(--accent);
+  }
+}
+
+.bulk-payment-card-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+
+  > div {
+    flex: 1 1 130px;
+    min-width: 0;
+  }
+
+  > .badge {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+.bulk-payment-card-amounts {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  font-size: 13px;
+
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 12px;
+    min-width: 0;
+  }
+
+  dt {
+    color: var(--muted);
+  }
+
+  dd {
+    margin: 0 0 0 auto;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  .bulk-payment-card-balance {
+    padding-top: 10px;
+    border-top: 1px solid #edf1f6;
+    font-size: 15px;
+  }
+}
+
+.bulk-payment-summary-totals {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
 .bulk-copy-expenses-modal {
   width: min(760px, calc(100vw - 36px));
   max-height: calc(100dvh - 36px);

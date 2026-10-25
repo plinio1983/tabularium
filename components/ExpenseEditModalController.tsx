@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import CounterExpenseForm from "@/components/CounterExpenseForm";
 import {useRouter} from "next/navigation";
+import BulkExpensePaymentModal from "@/components/BulkExpensePaymentModal";
 import ExpenseForm from "@/components/ExpenseForm";
 import { clampDateToToday, clampPeriodToCurrentMonth } from "@/lib/copy-dates";
 
@@ -88,6 +89,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
   const [mode, setMode] = useState<"edit" | "copy" | "payment">("edit");
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const [bulkPaymentIds, setBulkPaymentIds] = useState<number[] | null>(null);
 
   useEffect(() => {
     if (availableEmployees.length) return;
@@ -139,10 +141,11 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
       let id = Number((copyTrigger ? copyTrigger.dataset.expenseCopyId : paymentTrigger ? paymentTrigger.dataset.expensePaymentId : editTrigger?.dataset.expenseEditId) || 0);
       if (!Number.isInteger(id) || id <= 0) {
         const selectedIds = selectedExpenseIdsFromBulk(formId);
-        if (paymentTrigger && selectedIds.length !== 1) {
+        if (paymentTrigger && selectedIds.length > 1) {
           event.preventDefault();
           event.stopPropagation();
-          window.alert("Seleziona una sola spesa per inserire i pagamenti.");
+          event.stopImmediatePropagation();
+          setBulkPaymentIds(selectedIds);
           return;
         }
         id = selectedIds.length === 1 ? selectedIds[0] : 0;
@@ -160,6 +163,7 @@ export default function ExpenseEditModalController({ categories, banks, paymentM
   }, [formId]);
 
   return <>
+    {bulkPaymentIds && <BulkExpensePaymentModal ids={bulkPaymentIds} banks={banks} methods={paymentMethods} onClose={() => setBulkPaymentIds(null)} onSaved={() => {setBulkPaymentIds(null); router.refresh();}}/>}
     {loadingId ? <div className="inline-modal-loading">Caricamento spesa #{loadingId}…</div> : null}
     {error ? <div className="inline-modal-error">{error}</div> : null}
 

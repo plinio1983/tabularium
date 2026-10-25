@@ -108,11 +108,11 @@ function syncDirectActionGroup(group: HTMLElement) {
   }
 
   if (payment) {
-    const paymentEnabled = singleEnabled && selectedInputs[0]?.dataset.paymentComplete !== "true";
+    const paymentEnabled = anyEnabled && selectedInputs.some(input => input.dataset.paymentComplete !== "true");
     payment.disabled = !paymentEnabled;
     payment.classList.toggle("is-disabled", !paymentEnabled);
     payment.setAttribute("aria-disabled", paymentEnabled ? "false" : "true");
-    if (paymentEnabled) payment.setAttribute("data-expense-payment-id", firstId);
+    if (paymentEnabled && singleEnabled) payment.setAttribute("data-expense-payment-id", firstId);
     else payment.removeAttribute("data-expense-payment-id");
   }
 

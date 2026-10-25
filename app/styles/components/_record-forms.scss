@@ -372,13 +372,15 @@
   font-size: 18px;
 }
 
-.single-expense-form.app-form-wizard .payment-amount-field .money-input > input {
+.single-expense-form.app-form-wizard .payment-amount-field .money-input > input,
+.bulk-expense-payment-modal .payment-amount-field .money-input > input {
   padding-left: 46px !important;
   padding-right: 14px;
   text-align: right;
 }
 
-.single-expense-form.app-form-wizard .payment-amount-field .money-input > span {
+.single-expense-form.app-form-wizard .payment-amount-field .money-input > span,
+.bulk-expense-payment-modal .payment-amount-field .money-input > span {
   left: 14px;
   width: 20px;
 }
@@ -521,7 +523,8 @@
   font-size: 13px;
 }
 
-.income-form .income-credits-box .payment-amount-field {
+.income-form .income-credits-box .payment-amount-field,
+.bulk-expense-payment-modal .payment-amount-field {
   display: grid;
   align-content: start;
   gap: 6px;
