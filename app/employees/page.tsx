@@ -6,7 +6,6 @@ import {requireWorkspaceRole, workspaceOperationalRoles} from '@/lib/auth';
 import NewEmployeePanel from '@/components/NewEmployeePanel';
 import EmployeeEditModalController from '@/components/EmployeeEditModalController';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
-import MobileSortControl from '@/components/MobileSortControl';
 import {stripFlashRecord} from '@/lib/flash';
 import EmployeeFiltersDrawer from '@/components/EmployeeFiltersDrawer';
 import LiveSearch from '@/components/LiveSearch';
@@ -124,7 +123,6 @@ export default async function EmployeesPage({searchParams}: {
             </div>
             <LiveSearch name="search" label="Ricerca dipendente"
                         placeholder="Nome, cognome, matricola o codice fiscale"/>
-            <MobileSortControl action="/employees" currentValue={sort} options={sortOptions} searchParams={filters}/>
             {activeFilters.length ? <div className="recurring-active-filters">
                 <div><span className="recurring-active-filters-title">Filtri attivi</span>
                     <div className="recurring-active-filter-tags">{activeFilters.map(item => <span className="badge"

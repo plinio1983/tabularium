@@ -7,6 +7,7 @@ import MobileFormStickyActions from '@/components/MobileFormStickyActions';
 import {normalizeTrackingStep, trackingDocumentError, trackingWizardSteps} from '@/lib/product-tracking-wizard';
 import {DateField, FormField} from '@/components/FormControls';
 import InfoHint from '@/components/InfoHint';
+import SupplierAutocomplete, {type SupplierAutocompleteOption} from '@/components/SupplierAutocomplete';
 import ProductTrackingDocuments from '@/components/ProductTrackingDocuments';
 import {appendTrackingDocuments, type TrackingDocumentFormState} from '@/lib/product-tracking-document';
 import ProductTrackingInvoices from '@/components/ProductTrackingInvoices';
@@ -18,6 +19,7 @@ import {preparePageReturn} from '@/lib/page-transition';
 
 export type TrackingEditorRecord = {
   id: number; name: string; batch: string; batchYear: number; inStock: boolean; alias: string | null; entryDate: string;
+  supplierId?: number | null; supplier?: SupplierAutocompleteOption | null;
   attachments: {id: number; kind: 'INVOICE' | 'TRACKING'; originalName: string; invoiceDate: string; documentDate?: string; sizeBytes?: number | null}[];
 };
 
@@ -167,6 +169,8 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
                 <FormField label="Lotto *" icon="#" htmlFor={`${formId}-batch`}><input id={`${formId}-batch`} name="batch" required onChange={event => event.currentTarget.setCustomValidity('')} maxLength={250} autoComplete="off" defaultValue={record?.batch} placeholder="Es. LOT-001"/></FormField>
                 <FormField label="Anno *" icon="▦" htmlFor={`${formId}-batchYear`}><input id={`${formId}-batchYear`} name="batchYear" type="number" required min={1000} max={9999} step={1} defaultValue={record?.batchYear ?? Number(dateInputInTimeZone(timeZone).slice(0, 4))}/></FormField>
                 <FormField label="Nome" icon="◇" htmlFor={`${formId}-alias`}><input id={`${formId}-alias`} name="alias" maxLength={250} defaultValue={record?.alias ?? ''} placeholder="Nome del prodotto"/></FormField>
+                <SupplierAutocomplete label="Fornitore" required={false} allowCreate={false} wizardStep={false}
+                  initialSupplierId={record?.supplierId} suppliers={record?.supplier ? [record.supplier] : []}/>
                 <DateField label="Data ingresso" name="entryDate" value={entryDate} onChange={setEntryDate}/>
                 <div className="switch-toggle-field switch-inline wide">
                   <div className="switch-toggle-field-label app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">●</span><label htmlFor={`${formId}-inStock`}>In stock</label></div>

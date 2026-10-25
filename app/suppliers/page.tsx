@@ -7,7 +7,6 @@ import NewSupplierPanel from '@/components/NewSupplierPanel';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import SupplierFiltersDrawer from '@/components/SupplierFiltersDrawer';
 import SortableTableController from '@/components/SortableTableController';
-import MobileSortControl from '@/components/MobileSortControl';
 import SupplierEditModalController from '@/components/SupplierEditModalController';
 import {requireWorkspace} from '@/lib/auth';
 import {stripFlashRecord, stripFlashSearchParams} from '@/lib/flash';
@@ -251,8 +250,6 @@ export default async function SuppliersPage({searchParams}: {
                 </div>
             </div>
             <LiveSearch name="businessName" label="Ricerca fornitore" placeholder="Nome o ragione sociale"/>
-            <MobileSortControl action="/suppliers" currentValue={mobileSort} options={supplierMobileSortOptions}
-                               searchParams={filters}/>
 
             {activeFilterItems.length ? <div className="recurring-active-filters">
                 <div>

@@ -55,19 +55,19 @@ export default async function Page({searchParams}: {
         where: {
             workspaceId: current.workspace.id, companyId: current.company.id,
             ...(filters.q ? {
-                OR: ['name', 'batch', 'alias'].map(key => ({
+                OR: [...['name', 'batch', 'alias'].map(key => ({
                     [key]: {
                         contains: filters.q,
                         mode: 'insensitive' as const
                     }
-                }))
+                })), {supplier: {businessName: {contains: filters.q, mode: 'insensitive' as const}}}]
             } : {}),
             ...(filters.name ? {name: {contains: filters.name, mode: 'insensitive'}} : {}),
             ...(filters.batch ? {batch: {contains: filters.batch, mode: 'insensitive'}} : {}),
             ...(filters.alias ? {alias: {contains: filters.alias, mode: 'insensitive'}} : {}),
             ...trackingEntryDateWhere(from, to, filters.missingEntry === '1'),
         },
-        include: {attachments: {select: {kind: true, invoiceDate: true, documentDate: true}}},
+        include: {supplier: {select: {id: true, businessName: true}}, attachments: {select: {kind: true, invoiceDate: true, documentDate: true}}},
         orderBy: mobileSort.startsWith('name_') ? {name: mobileSort.endsWith('_asc') ? 'asc' : 'desc'} : mobileSort.startsWith('entry_') ? {
             entryDate: {
                 sort: mobileSort.endsWith('_asc') ? 'asc' : 'desc',
@@ -138,7 +138,7 @@ export default async function Page({searchParams}: {
                         per riferimento, lotto e nome e verifica dei documenti mancanti.</InfoHint></div>
                     <p className="muted">Risultati mostrati: {rows.length}</p></div>
                 <ProductTrackingFilters filters={filters}/></div>
-            <LiveSearch name="q" label="Ricerca merce" placeholder="Riferimento, lotto o nome"/>
+            <LiveSearch name="q" label="Ricerca merce" placeholder="Riferimento, lotto, nome o fornitore"/>
             {Object.entries(filters).some(([key]) => key !== 'mobileSort') && <div className="recurring-active-filters">
                 <div><span className="recurring-active-filters-title">Filtri attivi</span>
                     <div className="recurring-active-filter-tags">
@@ -196,6 +196,7 @@ export default async function Page({searchParams}: {
                         <th data-sort-key="batch">Lotto</th>
                         <th data-sort-key="batch-year" data-sort-type="number">Anno</th>
                         <th data-sort-key="alias">Nome</th>
+                        <th data-sort-key="supplier">Fornitore</th>
                         <th data-sort-key="in-stock" data-sort-type="number">In stock</th>
                         <th data-sort-key="entry" data-sort-type="date">Data ingresso</th>
                         <th data-sort-key="invoices" data-sort-type="number">Fatture</th>
@@ -208,7 +209,7 @@ export default async function Page({searchParams}: {
                         const tracking = record.attachments.filter(a => a.kind === 'TRACKING').length;
                         return <tr key={record.id} className="clickable-desktop-row" data-row-href={href} tabIndex={0}
                                    data-sort-row data-sort-name={record.name} data-sort-batch={record.batch}
-                                   data-sort-alias={record.alias ?? ''}
+                                   data-sort-alias={record.alias ?? ''} data-sort-supplier={record.supplier?.businessName ?? ''}
                                    data-sort-entry={record.entryDate?.getTime() ?? ''}
                                    data-sort-created={record.createdAt.getTime()} data-sort-invoices={invoices}
                                    data-sort-batch-year={record.batchYear} data-sort-in-stock={record.inStock ? 1 : 0}
@@ -219,6 +220,7 @@ export default async function Page({searchParams}: {
                             <td>{record.batch}</td>
                             <td>{record.batchYear}</td>
                             <td>{record.alias || '—'}</td>
+                            <td>{record.supplier?.businessName || '—'}</td>
                             <td><StockIndicator inStock={record.inStock}/></td>
                             <td>{dateLabel(record.entryDate)}</td>
                             <td><DocumentCount count={invoices} kind="INVOICE" attachments={record.attachments}
@@ -255,8 +257,9 @@ export default async function Page({searchParams}: {
                                                kind="INVOICE" attachments={record.attachments} today={today} mobile/>
                             </span>
                         </div>
-                        <div>
+                        <div className="product-tracking-stock-supplier">
                             <StockIndicatorMobile inStock={record.inStock}/>
+                            <span className="product-tracking-supplier" title={record.supplier?.businessName}>Fornitore: {record.supplier?.businessName || '—'}</span>
                         </div>
                         <ProductTrackingStatus record={record} cutoff={cutoff} showMissing={false} showOldDocument={false}/>
                     </div>

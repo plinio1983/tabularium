@@ -61,6 +61,7 @@ function editorHarness(record?: any, initialMobileStep = 1, openNewInvoice = fal
     '@/lib/product-tracking-invoice': invoiceTools,
     '@/components/FormControls': {FormField: 'Field', DateField: 'DateField'},
     '@/components/InfoHint': {default: 'InfoHint'},
+    '@/components/SupplierAutocomplete': {default: 'SupplierAutocomplete'},
     '@/components/CompanyTimeZoneProvider': {useCompanyTimeZone: () => 'Europe/Rome'},
     '@/lib/company-time': {...companyTime, dateInputInTimeZone: (timeZone: string) => {assert.equal(timeZone, 'Europe/Rome'); return '2026-10-13';}},
     '@/lib/flash': flash,
@@ -244,4 +245,33 @@ test('tracking stock switch defaults to yes and preserves false on edit and rese
   ui().find(node => node.type === 'Actions').props.onCancel();
   ui().find(node => node.type === 'button' && node.props.children?.[1] === 'Modifica').props.onClick();
   assert.equal(ui().find(node => node.props.name === 'inStock').props.value, 'false');
+});
+
+
+test('tracking supplier is optional, seeded on edit and uses the shared autocomplete in the merchandise step', () => {
+  const supplier = {id: 7, businessName: 'Fornitore test'};
+  const record = {id: 9, name: 'Olio', batch: 'L1', batchYear: 2026, inStock: true, entryDate: '', alias: null, supplierId: 7, supplier, attachments: []};
+  const field = editorHarness(record)().find(node => node.type === 'SupplierAutocomplete');
+  assert.equal(field.props.label, 'Fornitore');
+  assert.equal(field.props.required, false);
+  assert.equal(field.props.wizardStep, false);
+  assert.equal(field.props.initialSupplierId, 7);
+  assert.equal(field.props.suppliers[0], supplier);
+});
+
+test('shared supplier autocomplete remains required by default and permits an empty tracking supplier', () => {
+  const state: any[] = []; let cursor = 0;
+  const Autocomplete = load('SupplierAutocomplete', {
+    react: {useState(initial: any) {const index = cursor++; if (!(index in state)) state[index] = initial; return [state[index], (next: any) => {state[index] = typeof next === 'function' ? next(state[index]) : next;}];}, useRef: () => ({current: null}), useId: () => 'supplier', useEffect() {}},
+    '@/components/SupplierCreateModal': {default: 'SupplierCreateModal'},
+  });
+  const supplier = {id: 7, businessName: 'Fornitore test'};
+  const render = (optional = true) => {cursor = 0; return nodes(Autocomplete({suppliers: [supplier], initialSupplierId: 7, allowCreate: false, wizardStep: false, ...(optional ? {label: 'Fornitore', required: false} : {})}));};
+  assert.equal(render(false).find(node => node.props.role === 'combobox').props.required, true);
+  assert.equal(render().find(node => node.props.role === 'combobox').props.required, false);
+  assert.equal(render().find(node => node.props.name === 'supplierId').props.value, 7);
+  render().find(node => node.props.role === 'combobox').props.onChange({target: {value: 'Nome non selezionato'}});
+  assert.equal(render().find(node => node.props.name === 'supplierId').props.value, '');
+  render().find(node => node.props['aria-label'] === 'Cancella fornitore').props.onClick();
+  assert.equal(render().find(node => node.props.role === 'combobox').props.value, '');
 });

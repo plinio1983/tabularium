@@ -31,6 +31,7 @@ export type ProductTrackingAvgAggregateOutputType = {
   workspaceId: number | null
   companyId: number | null
   batchYear: number | null
+  supplierId: number | null
 }
 
 export type ProductTrackingSumAggregateOutputType = {
@@ -38,6 +39,7 @@ export type ProductTrackingSumAggregateOutputType = {
   workspaceId: number | null
   companyId: number | null
   batchYear: number | null
+  supplierId: number | null
 }
 
 export type ProductTrackingMinAggregateOutputType = {
@@ -48,6 +50,7 @@ export type ProductTrackingMinAggregateOutputType = {
   batch: string | null
   batchYear: number | null
   inStock: boolean | null
+  supplierId: number | null
   alias: string | null
   entryDate: Date | null
   createdAt: Date | null
@@ -62,6 +65,7 @@ export type ProductTrackingMaxAggregateOutputType = {
   batch: string | null
   batchYear: number | null
   inStock: boolean | null
+  supplierId: number | null
   alias: string | null
   entryDate: Date | null
   createdAt: Date | null
@@ -76,6 +80,7 @@ export type ProductTrackingCountAggregateOutputType = {
   batch: number
   batchYear: number
   inStock: number
+  supplierId: number
   alias: number
   entryDate: number
   createdAt: number
@@ -89,6 +94,7 @@ export type ProductTrackingAvgAggregateInputType = {
   workspaceId?: true
   companyId?: true
   batchYear?: true
+  supplierId?: true
 }
 
 export type ProductTrackingSumAggregateInputType = {
@@ -96,6 +102,7 @@ export type ProductTrackingSumAggregateInputType = {
   workspaceId?: true
   companyId?: true
   batchYear?: true
+  supplierId?: true
 }
 
 export type ProductTrackingMinAggregateInputType = {
@@ -106,6 +113,7 @@ export type ProductTrackingMinAggregateInputType = {
   batch?: true
   batchYear?: true
   inStock?: true
+  supplierId?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -120,6 +128,7 @@ export type ProductTrackingMaxAggregateInputType = {
   batch?: true
   batchYear?: true
   inStock?: true
+  supplierId?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -134,6 +143,7 @@ export type ProductTrackingCountAggregateInputType = {
   batch?: true
   batchYear?: true
   inStock?: true
+  supplierId?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -235,6 +245,7 @@ export type ProductTrackingGroupByOutputType = {
   batch: string
   batchYear: number
   inStock: boolean
+  supplierId: number | null
   alias: string | null
   entryDate: Date | null
   createdAt: Date
@@ -272,12 +283,14 @@ export type ProductTrackingWhereInput = {
   batch?: Prisma.StringFilter<"ProductTracking"> | string
   batchYear?: Prisma.IntFilter<"ProductTracking"> | number
   inStock?: Prisma.BoolFilter<"ProductTracking"> | boolean
+  supplierId?: Prisma.IntNullableFilter<"ProductTracking"> | number | null
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
+  supplier?: Prisma.XOR<Prisma.SupplierNullableScalarRelationFilter, Prisma.SupplierWhereInput> | null
   attachments?: Prisma.ProductTrackingAttachmentListRelationFilter
 }
 
@@ -289,12 +302,14 @@ export type ProductTrackingOrderByWithRelationInput = {
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
   inStock?: Prisma.SortOrder
+  supplierId?: Prisma.SortOrderInput | Prisma.SortOrder
   alias?: Prisma.SortOrderInput | Prisma.SortOrder
   entryDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   company?: Prisma.CompanyOrderByWithRelationInput
+  supplier?: Prisma.SupplierOrderByWithRelationInput
   attachments?: Prisma.ProductTrackingAttachmentOrderByRelationAggregateInput
 }
 
@@ -309,12 +324,14 @@ export type ProductTrackingWhereUniqueInput = Prisma.AtLeast<{
   batch?: Prisma.StringFilter<"ProductTracking"> | string
   batchYear?: Prisma.IntFilter<"ProductTracking"> | number
   inStock?: Prisma.BoolFilter<"ProductTracking"> | boolean
+  supplierId?: Prisma.IntNullableFilter<"ProductTracking"> | number | null
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
+  supplier?: Prisma.XOR<Prisma.SupplierNullableScalarRelationFilter, Prisma.SupplierWhereInput> | null
   attachments?: Prisma.ProductTrackingAttachmentListRelationFilter
 }, "id">
 
@@ -326,6 +343,7 @@ export type ProductTrackingOrderByWithAggregationInput = {
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
   inStock?: Prisma.SortOrder
+  supplierId?: Prisma.SortOrderInput | Prisma.SortOrder
   alias?: Prisma.SortOrderInput | Prisma.SortOrder
   entryDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -348,6 +366,7 @@ export type ProductTrackingScalarWhereWithAggregatesInput = {
   batch?: Prisma.StringWithAggregatesFilter<"ProductTracking"> | string
   batchYear?: Prisma.IntWithAggregatesFilter<"ProductTracking"> | number
   inStock?: Prisma.BoolWithAggregatesFilter<"ProductTracking"> | boolean
+  supplierId?: Prisma.IntNullableWithAggregatesFilter<"ProductTracking"> | number | null
   alias?: Prisma.StringNullableWithAggregatesFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductTracking"> | Date | string
@@ -365,6 +384,7 @@ export type ProductTrackingCreateInput = {
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutProductTrackingsInput
   company: Prisma.CompanyCreateNestedOneWithoutProductTrackingsInput
+  supplier?: Prisma.SupplierCreateNestedOneWithoutProductTrackingsInput
   attachments?: Prisma.ProductTrackingAttachmentCreateNestedManyWithoutTrackingInput
 }
 
@@ -376,6 +396,7 @@ export type ProductTrackingUncheckedCreateInput = {
   batch: string
   batchYear: number
   inStock?: boolean
+  supplierId?: number | null
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -394,6 +415,7 @@ export type ProductTrackingUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutProductTrackingsNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutProductTrackingsNestedInput
+  supplier?: Prisma.SupplierUpdateOneWithoutProductTrackingsNestedInput
   attachments?: Prisma.ProductTrackingAttachmentUpdateManyWithoutTrackingNestedInput
 }
 
@@ -405,6 +427,7 @@ export type ProductTrackingUncheckedUpdateInput = {
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -420,6 +443,7 @@ export type ProductTrackingCreateManyInput = {
   batch: string
   batchYear: number
   inStock?: boolean
+  supplierId?: number | null
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -445,6 +469,7 @@ export type ProductTrackingUncheckedUpdateManyInput = {
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -469,6 +494,7 @@ export type ProductTrackingCountOrderByAggregateInput = {
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
   inStock?: Prisma.SortOrder
+  supplierId?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -480,6 +506,7 @@ export type ProductTrackingAvgOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
+  supplierId?: Prisma.SortOrder
 }
 
 export type ProductTrackingMaxOrderByAggregateInput = {
@@ -490,6 +517,7 @@ export type ProductTrackingMaxOrderByAggregateInput = {
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
   inStock?: Prisma.SortOrder
+  supplierId?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -504,6 +532,7 @@ export type ProductTrackingMinOrderByAggregateInput = {
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
   inStock?: Prisma.SortOrder
+  supplierId?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -515,6 +544,7 @@ export type ProductTrackingSumOrderByAggregateInput = {
   workspaceId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
+  supplierId?: Prisma.SortOrder
 }
 
 export type ProductTrackingScalarRelationFilter = {
@@ -606,6 +636,48 @@ export type ProductTrackingUncheckedUpdateManyWithoutCompanyNestedInput = {
   deleteMany?: Prisma.ProductTrackingScalarWhereInput | Prisma.ProductTrackingScalarWhereInput[]
 }
 
+export type ProductTrackingCreateNestedManyWithoutSupplierInput = {
+  create?: Prisma.XOR<Prisma.ProductTrackingCreateWithoutSupplierInput, Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput> | Prisma.ProductTrackingCreateWithoutSupplierInput[] | Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput[]
+  connectOrCreate?: Prisma.ProductTrackingCreateOrConnectWithoutSupplierInput | Prisma.ProductTrackingCreateOrConnectWithoutSupplierInput[]
+  createMany?: Prisma.ProductTrackingCreateManySupplierInputEnvelope
+  connect?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+}
+
+export type ProductTrackingUncheckedCreateNestedManyWithoutSupplierInput = {
+  create?: Prisma.XOR<Prisma.ProductTrackingCreateWithoutSupplierInput, Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput> | Prisma.ProductTrackingCreateWithoutSupplierInput[] | Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput[]
+  connectOrCreate?: Prisma.ProductTrackingCreateOrConnectWithoutSupplierInput | Prisma.ProductTrackingCreateOrConnectWithoutSupplierInput[]
+  createMany?: Prisma.ProductTrackingCreateManySupplierInputEnvelope
+  connect?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+}
+
+export type ProductTrackingUpdateManyWithoutSupplierNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductTrackingCreateWithoutSupplierInput, Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput> | Prisma.ProductTrackingCreateWithoutSupplierInput[] | Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput[]
+  connectOrCreate?: Prisma.ProductTrackingCreateOrConnectWithoutSupplierInput | Prisma.ProductTrackingCreateOrConnectWithoutSupplierInput[]
+  upsert?: Prisma.ProductTrackingUpsertWithWhereUniqueWithoutSupplierInput | Prisma.ProductTrackingUpsertWithWhereUniqueWithoutSupplierInput[]
+  createMany?: Prisma.ProductTrackingCreateManySupplierInputEnvelope
+  set?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+  disconnect?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+  delete?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+  connect?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+  update?: Prisma.ProductTrackingUpdateWithWhereUniqueWithoutSupplierInput | Prisma.ProductTrackingUpdateWithWhereUniqueWithoutSupplierInput[]
+  updateMany?: Prisma.ProductTrackingUpdateManyWithWhereWithoutSupplierInput | Prisma.ProductTrackingUpdateManyWithWhereWithoutSupplierInput[]
+  deleteMany?: Prisma.ProductTrackingScalarWhereInput | Prisma.ProductTrackingScalarWhereInput[]
+}
+
+export type ProductTrackingUncheckedUpdateManyWithoutSupplierNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductTrackingCreateWithoutSupplierInput, Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput> | Prisma.ProductTrackingCreateWithoutSupplierInput[] | Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput[]
+  connectOrCreate?: Prisma.ProductTrackingCreateOrConnectWithoutSupplierInput | Prisma.ProductTrackingCreateOrConnectWithoutSupplierInput[]
+  upsert?: Prisma.ProductTrackingUpsertWithWhereUniqueWithoutSupplierInput | Prisma.ProductTrackingUpsertWithWhereUniqueWithoutSupplierInput[]
+  createMany?: Prisma.ProductTrackingCreateManySupplierInputEnvelope
+  set?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+  disconnect?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+  delete?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+  connect?: Prisma.ProductTrackingWhereUniqueInput | Prisma.ProductTrackingWhereUniqueInput[]
+  update?: Prisma.ProductTrackingUpdateWithWhereUniqueWithoutSupplierInput | Prisma.ProductTrackingUpdateWithWhereUniqueWithoutSupplierInput[]
+  updateMany?: Prisma.ProductTrackingUpdateManyWithWhereWithoutSupplierInput | Prisma.ProductTrackingUpdateManyWithWhereWithoutSupplierInput[]
+  deleteMany?: Prisma.ProductTrackingScalarWhereInput | Prisma.ProductTrackingScalarWhereInput[]
+}
+
 export type ProductTrackingCreateNestedOneWithoutAttachmentsInput = {
   create?: Prisma.XOR<Prisma.ProductTrackingCreateWithoutAttachmentsInput, Prisma.ProductTrackingUncheckedCreateWithoutAttachmentsInput>
   connectOrCreate?: Prisma.ProductTrackingCreateOrConnectWithoutAttachmentsInput
@@ -630,6 +702,7 @@ export type ProductTrackingCreateWithoutWorkspaceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutProductTrackingsInput
+  supplier?: Prisma.SupplierCreateNestedOneWithoutProductTrackingsInput
   attachments?: Prisma.ProductTrackingAttachmentCreateNestedManyWithoutTrackingInput
 }
 
@@ -640,6 +713,7 @@ export type ProductTrackingUncheckedCreateWithoutWorkspaceInput = {
   batch: string
   batchYear: number
   inStock?: boolean
+  supplierId?: number | null
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -684,6 +758,7 @@ export type ProductTrackingScalarWhereInput = {
   batch?: Prisma.StringFilter<"ProductTracking"> | string
   batchYear?: Prisma.IntFilter<"ProductTracking"> | number
   inStock?: Prisma.BoolFilter<"ProductTracking"> | boolean
+  supplierId?: Prisma.IntNullableFilter<"ProductTracking"> | number | null
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
@@ -700,6 +775,7 @@ export type ProductTrackingCreateWithoutCompanyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutProductTrackingsInput
+  supplier?: Prisma.SupplierCreateNestedOneWithoutProductTrackingsInput
   attachments?: Prisma.ProductTrackingAttachmentCreateNestedManyWithoutTrackingInput
 }
 
@@ -710,6 +786,7 @@ export type ProductTrackingUncheckedCreateWithoutCompanyInput = {
   batch: string
   batchYear: number
   inStock?: boolean
+  supplierId?: number | null
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -743,6 +820,61 @@ export type ProductTrackingUpdateManyWithWhereWithoutCompanyInput = {
   data: Prisma.XOR<Prisma.ProductTrackingUpdateManyMutationInput, Prisma.ProductTrackingUncheckedUpdateManyWithoutCompanyInput>
 }
 
+export type ProductTrackingCreateWithoutSupplierInput = {
+  name: string
+  batch: string
+  batchYear: number
+  inStock?: boolean
+  alias?: string | null
+  entryDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutProductTrackingsInput
+  company: Prisma.CompanyCreateNestedOneWithoutProductTrackingsInput
+  attachments?: Prisma.ProductTrackingAttachmentCreateNestedManyWithoutTrackingInput
+}
+
+export type ProductTrackingUncheckedCreateWithoutSupplierInput = {
+  id?: number
+  workspaceId: number
+  companyId: number
+  name: string
+  batch: string
+  batchYear: number
+  inStock?: boolean
+  alias?: string | null
+  entryDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  attachments?: Prisma.ProductTrackingAttachmentUncheckedCreateNestedManyWithoutTrackingInput
+}
+
+export type ProductTrackingCreateOrConnectWithoutSupplierInput = {
+  where: Prisma.ProductTrackingWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductTrackingCreateWithoutSupplierInput, Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput>
+}
+
+export type ProductTrackingCreateManySupplierInputEnvelope = {
+  data: Prisma.ProductTrackingCreateManySupplierInput | Prisma.ProductTrackingCreateManySupplierInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductTrackingUpsertWithWhereUniqueWithoutSupplierInput = {
+  where: Prisma.ProductTrackingWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductTrackingUpdateWithoutSupplierInput, Prisma.ProductTrackingUncheckedUpdateWithoutSupplierInput>
+  create: Prisma.XOR<Prisma.ProductTrackingCreateWithoutSupplierInput, Prisma.ProductTrackingUncheckedCreateWithoutSupplierInput>
+}
+
+export type ProductTrackingUpdateWithWhereUniqueWithoutSupplierInput = {
+  where: Prisma.ProductTrackingWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductTrackingUpdateWithoutSupplierInput, Prisma.ProductTrackingUncheckedUpdateWithoutSupplierInput>
+}
+
+export type ProductTrackingUpdateManyWithWhereWithoutSupplierInput = {
+  where: Prisma.ProductTrackingScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductTrackingUpdateManyMutationInput, Prisma.ProductTrackingUncheckedUpdateManyWithoutSupplierInput>
+}
+
 export type ProductTrackingCreateWithoutAttachmentsInput = {
   name: string
   batch: string
@@ -754,6 +886,7 @@ export type ProductTrackingCreateWithoutAttachmentsInput = {
   updatedAt?: Date | string
   workspace: Prisma.WorkspaceCreateNestedOneWithoutProductTrackingsInput
   company: Prisma.CompanyCreateNestedOneWithoutProductTrackingsInput
+  supplier?: Prisma.SupplierCreateNestedOneWithoutProductTrackingsInput
 }
 
 export type ProductTrackingUncheckedCreateWithoutAttachmentsInput = {
@@ -764,6 +897,7 @@ export type ProductTrackingUncheckedCreateWithoutAttachmentsInput = {
   batch: string
   batchYear: number
   inStock?: boolean
+  supplierId?: number | null
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -797,6 +931,7 @@ export type ProductTrackingUpdateWithoutAttachmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutProductTrackingsNestedInput
   company?: Prisma.CompanyUpdateOneRequiredWithoutProductTrackingsNestedInput
+  supplier?: Prisma.SupplierUpdateOneWithoutProductTrackingsNestedInput
 }
 
 export type ProductTrackingUncheckedUpdateWithoutAttachmentsInput = {
@@ -807,6 +942,7 @@ export type ProductTrackingUncheckedUpdateWithoutAttachmentsInput = {
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -820,6 +956,7 @@ export type ProductTrackingCreateManyWorkspaceInput = {
   batch: string
   batchYear: number
   inStock?: boolean
+  supplierId?: number | null
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -836,6 +973,7 @@ export type ProductTrackingUpdateWithoutWorkspaceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutProductTrackingsNestedInput
+  supplier?: Prisma.SupplierUpdateOneWithoutProductTrackingsNestedInput
   attachments?: Prisma.ProductTrackingAttachmentUpdateManyWithoutTrackingNestedInput
 }
 
@@ -846,6 +984,7 @@ export type ProductTrackingUncheckedUpdateWithoutWorkspaceInput = {
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -860,6 +999,7 @@ export type ProductTrackingUncheckedUpdateManyWithoutWorkspaceInput = {
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
   inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -873,6 +1013,7 @@ export type ProductTrackingCreateManyCompanyInput = {
   batch: string
   batchYear: number
   inStock?: boolean
+  supplierId?: number | null
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -889,12 +1030,71 @@ export type ProductTrackingUpdateWithoutCompanyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutProductTrackingsNestedInput
+  supplier?: Prisma.SupplierUpdateOneWithoutProductTrackingsNestedInput
   attachments?: Prisma.ProductTrackingAttachmentUpdateManyWithoutTrackingNestedInput
 }
 
 export type ProductTrackingUncheckedUpdateWithoutCompanyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.ProductTrackingAttachmentUncheckedUpdateManyWithoutTrackingNestedInput
+}
+
+export type ProductTrackingUncheckedUpdateManyWithoutCompanyInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  supplierId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductTrackingCreateManySupplierInput = {
+  id?: number
+  workspaceId: number
+  companyId: number
+  name: string
+  batch: string
+  batchYear: number
+  inStock?: boolean
+  alias?: string | null
+  entryDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProductTrackingUpdateWithoutSupplierInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  batch?: Prisma.StringFieldUpdateOperationsInput | string
+  batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutProductTrackingsNestedInput
+  company?: Prisma.CompanyUpdateOneRequiredWithoutProductTrackingsNestedInput
+  attachments?: Prisma.ProductTrackingAttachmentUpdateManyWithoutTrackingNestedInput
+}
+
+export type ProductTrackingUncheckedUpdateWithoutSupplierInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -906,9 +1106,10 @@ export type ProductTrackingUncheckedUpdateWithoutCompanyInput = {
   attachments?: Prisma.ProductTrackingAttachmentUncheckedUpdateManyWithoutTrackingNestedInput
 }
 
-export type ProductTrackingUncheckedUpdateManyWithoutCompanyInput = {
+export type ProductTrackingUncheckedUpdateManyWithoutSupplierInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   workspaceId?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -958,12 +1159,14 @@ export type ProductTrackingSelect<ExtArgs extends runtime.Types.Extensions.Inter
   batch?: boolean
   batchYear?: boolean
   inStock?: boolean
+  supplierId?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  supplier?: boolean | Prisma.ProductTracking$supplierArgs<ExtArgs>
   attachments?: boolean | Prisma.ProductTracking$attachmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductTrackingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productTracking"]>
@@ -976,12 +1179,14 @@ export type ProductTrackingSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   batch?: boolean
   batchYear?: boolean
   inStock?: boolean
+  supplierId?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  supplier?: boolean | Prisma.ProductTracking$supplierArgs<ExtArgs>
 }, ExtArgs["result"]["productTracking"]>
 
 export type ProductTrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -992,12 +1197,14 @@ export type ProductTrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   batch?: boolean
   batchYear?: boolean
   inStock?: boolean
+  supplierId?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  supplier?: boolean | Prisma.ProductTracking$supplierArgs<ExtArgs>
 }, ExtArgs["result"]["productTracking"]>
 
 export type ProductTrackingSelectScalar = {
@@ -1008,26 +1215,30 @@ export type ProductTrackingSelectScalar = {
   batch?: boolean
   batchYear?: boolean
   inStock?: boolean
+  supplierId?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "name" | "batch" | "batchYear" | "inStock" | "alias" | "entryDate" | "createdAt" | "updatedAt", ExtArgs["result"]["productTracking"]>
+export type ProductTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "name" | "batch" | "batchYear" | "inStock" | "supplierId" | "alias" | "entryDate" | "createdAt" | "updatedAt", ExtArgs["result"]["productTracking"]>
 export type ProductTrackingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  supplier?: boolean | Prisma.ProductTracking$supplierArgs<ExtArgs>
   attachments?: boolean | Prisma.ProductTracking$attachmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ProductTrackingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductTrackingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  supplier?: boolean | Prisma.ProductTracking$supplierArgs<ExtArgs>
 }
 export type ProductTrackingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  supplier?: boolean | Prisma.ProductTracking$supplierArgs<ExtArgs>
 }
 
 export type $ProductTrackingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1035,6 +1246,7 @@ export type $ProductTrackingPayload<ExtArgs extends runtime.Types.Extensions.Int
   objects: {
     workspace: Prisma.$WorkspacePayload<ExtArgs>
     company: Prisma.$CompanyPayload<ExtArgs>
+    supplier: Prisma.$SupplierPayload<ExtArgs> | null
     attachments: Prisma.$ProductTrackingAttachmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1045,6 +1257,7 @@ export type $ProductTrackingPayload<ExtArgs extends runtime.Types.Extensions.Int
     batch: string
     batchYear: number
     inStock: boolean
+    supplierId: number | null
     alias: string | null
     entryDate: Date | null
     createdAt: Date
@@ -1445,6 +1658,7 @@ export interface Prisma__ProductTrackingClient<T, Null = never, ExtArgs extends 
   readonly [Symbol.toStringTag]: "PrismaPromise"
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  supplier<T extends Prisma.ProductTracking$supplierArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductTracking$supplierArgs<ExtArgs>>): Prisma.Prisma__SupplierClient<runtime.Types.Result.GetResult<Prisma.$SupplierPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   attachments<T extends Prisma.ProductTracking$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductTracking$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductTrackingAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1482,6 +1696,7 @@ export interface ProductTrackingFieldRefs {
   readonly batch: Prisma.FieldRef<"ProductTracking", 'String'>
   readonly batchYear: Prisma.FieldRef<"ProductTracking", 'Int'>
   readonly inStock: Prisma.FieldRef<"ProductTracking", 'Boolean'>
+  readonly supplierId: Prisma.FieldRef<"ProductTracking", 'Int'>
   readonly alias: Prisma.FieldRef<"ProductTracking", 'String'>
   readonly entryDate: Prisma.FieldRef<"ProductTracking", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ProductTracking", 'DateTime'>
@@ -1884,6 +2099,25 @@ export type ProductTrackingDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
    * Limit how many ProductTrackings to delete.
    */
   limit?: number
+}
+
+/**
+ * ProductTracking.supplier
+ */
+export type ProductTracking$supplierArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Supplier
+   */
+  select?: Prisma.SupplierSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Supplier
+   */
+  omit?: Prisma.SupplierOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SupplierInclude<ExtArgs> | null
+  where?: Prisma.SupplierWhereInput
 }
 
 /**

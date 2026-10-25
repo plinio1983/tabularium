@@ -8,7 +8,6 @@ import NewClientPanel from '@/components/NewClientPanel';
 import ClientEditModalController from '@/components/ClientEditModalController';
 import ClientFiltersDrawer from '@/components/ClientFiltersDrawer';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
-import MobileSortControl from '@/components/MobileSortControl';
 import SortableTableController from '@/components/SortableTableController';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ClickableDesktopRows from '@/components/ClickableDesktopRows';
@@ -126,8 +125,6 @@ export default async function ClientsPage({searchParams}: {
                     <p className="muted">Risultati mostrati: {rows.length}</p></div>
             </div>
             <LiveSearch name="businessName" label="Ricerca cliente" placeholder="Nome o ragione sociale"/>
-            <MobileSortControl action="/clients" currentValue={mobileSort} options={mobileSortOptions}
-                               searchParams={filters}/>
             {active.length ? <div className="recurring-active-filters">
                 <div><span className="recurring-active-filters-title">Filtri attivi</span>
                     <div className="recurring-active-filter-tags">{active.map(key =>

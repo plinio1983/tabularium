@@ -28,7 +28,7 @@ export default async function Page({params, searchParams}: {
             id,
             workspaceId: current.workspace.id,
             companyId: current.company.id
-        }, include: {attachments: {orderBy: {createdAt: 'asc'}}}
+        }, include: {supplier: {select: {id: true, businessName: true, alias: true}}, attachments: {orderBy: {createdAt: 'asc'}}}
     });
     if (!record) notFound();
     const query = await searchParams;
@@ -73,10 +73,9 @@ export default async function Page({params, searchParams}: {
                         <div className="record-detail-title-main">
                             <h1>{record.name}</h1>
                             <div className="record-detail-meta-line">
-                                <span
-                                    className={`badge color-badge ${record.inStock ? 'tone-yes' : 'tone-muted'}`}>{record.inStock ? 'In stock' : 'Out of stock'}</span>
+                                <strong className={`badge color-badge ${record.inStock ? 'tone-yes' : 'tone-muted'}`}>{record.inStock ? 'In stock' : 'Out of stock'}</strong>
                                 <span>Lotto: {record.batch} · {record.batchYear}</span>
-                                {record.alias && <span>{record.alias}</span>}
+                                {/*{record.alias && <span>{record.alias}</span>}*/}
                             </div>
                         </div>
                         <ProductTrackingStatus record={record} cutoff={sixMonthsAgo(current.company.timeZone)}/>
@@ -104,7 +103,8 @@ export default async function Page({params, searchParams}: {
                         <div>
                             <span>Data ingresso</span><strong>{record.entryDate ? formatItalianCompactDate(calendarDateInput(record.entryDate)) : '—'}</strong>
                         </div>
-                        <div><span>Disponibilità</span>
+                        <div><span>Fornitore</span><strong>{record.supplier ? <Link href={`/suppliers/${record.supplier.id}?returnTo=${encodeURIComponent(detailHref)}`}>{record.supplier.businessName}</Link> : '—'}</strong></div>
+                        <div className="record-detail-availability"><span>Disponibilità</span>
                             <div><span className={`badge color-badge ${record.inStock ? 'tone-yes' : 'tone-muted'}`}>{record.inStock ? 'In stock' : 'Out of stock'}</span></div>
                         </div>
                     </div>

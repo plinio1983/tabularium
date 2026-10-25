@@ -529,7 +529,7 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   max-width: fit-content;
 }
 
-.record-detail-meta-line span {
+.record-detail-meta-line span:not(.badge) {
   display: inline-flex;
   white-space: nowrap;
   align-items: center;
@@ -2586,6 +2586,12 @@ body.invoice-attachments-modal-open {
 @media (max-width: 700px) {
   .mobile-expense-payment-timeline .expense-payment-date {
     border-right: 0;
+  }
+}
+
+.record-detail-availability {
+  .badge {
+    max-width: max-content;
   }
 }
 

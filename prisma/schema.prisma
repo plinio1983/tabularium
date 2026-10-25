@@ -521,6 +521,7 @@ model Supplier {
   defaultVatRate           Decimal?            @db.Decimal(5, 2)
   expenses                 Expense[]
   recurringExpenses        RecurringExpense[]
+  productTrackings         ProductTracking[]
   createdAt                DateTime            @default(now())
   updatedAt                DateTime            @updatedAt
 
@@ -928,6 +929,8 @@ model ProductTracking {
   batch       String
   batchYear   Int
   inStock     Boolean                     @default(true)
+  supplierId  Int?
+  supplier    Supplier?                   @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   alias       String?
   entryDate   DateTime?                   @db.Date
   createdAt   DateTime                    @default(now())
@@ -936,6 +939,7 @@ model ProductTracking {
 
   @@index([workspaceId, companyId, createdAt])
   @@index([companyId, entryDate])
+  @@index([supplierId])
 }
 
 enum ProductTrackingAttachmentKind {

@@ -11,7 +11,6 @@ import {euro, moneyTone} from '@/lib/money';
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import IncomeFiltersDrawer from '@/components/IncomeFiltersDrawer';
 import IncomeTrendSelectors from '@/components/IncomeTrendSelectors';
-import MobileSortControl from '@/components/MobileSortControl';
 import IncomesList from '@/components/IncomesList';
 import {prepareIncomeList} from '@/lib/income-list';
 import {badgeClass, fiscalStyles} from '@/lib/income-ui';
@@ -831,7 +830,6 @@ export default async function IncomesPage({searchParams}: {
               `
             }}/>
 
-            <MobileSortControl action="/incomes" currentValue={mobileSort} options={incomeMobileSortOptions} searchParams={filters}/>
 
             <IncomesList
                 searchExport

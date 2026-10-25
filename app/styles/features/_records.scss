@@ -2063,7 +2063,8 @@ table th, table td {
 }
 
 .app-form-field-label {
-  display: flex !important;
+  //display: flex !important;
+  display: flex;
   align-items: center;
   gap: 7px;
   color: var(--muted);

@@ -8,7 +8,6 @@ import Link from 'next/link';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import RecurringIncomeBulkEditModal from '@/components/RecurringIncomeBulkEditModal';
 import RecurringIncomeFiltersDrawer from '@/components/RecurringIncomeFiltersDrawer';
-import MobileSortControl from '@/components/MobileSortControl';
 import {euro} from '@/lib/money';
 import {badgeClass} from '@/lib/expense-ui';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
@@ -117,7 +116,6 @@ export default function RecurringIncomesList({items, filters = {}, channels = []
     <LiveSearch name="search" label="Ricerca incasso ricorrente" placeholder="Cliente o descrizione"/>
     {activeFilters.length ? <div className="recurring-active-filters"><div><span className="recurring-active-filters-title">Filtri attivi</span><div className="recurring-active-filter-tags">{activeFilters.map(filter => <span className="badge" key={filter}>{filter}</span>)}</div></div><Link className="btn btn-sm btn-default recurring-active-filters-reset" href="/recurring-incomes"><span className="btn-icon">↺</span> Reset</Link></div> : null}
         <p className="muted">Risultati mostrati: {items.length}</p>
-        <MobileSortControl action="/recurring-incomes" currentValue={mobileSort} options={sortOptions} searchParams={filters}/>
         <form id={formId} action={`/api/recurring-incomes/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar recurring-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
             <label className="bulk-select-all-inline"><input type="checkbox" className="bulk-select-all" data-bulk-target={formId} aria-label="Seleziona tutte le entrate ricorrenti visibili"/></label>
             <div className="bulk-action-buttons btn-group">

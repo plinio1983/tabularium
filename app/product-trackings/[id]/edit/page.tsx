@@ -8,7 +8,7 @@ import ProductTrackingEditor from '@/components/ProductTrackingEditor';
 export default async function Page({params, searchParams}: {params: Promise<{id: string}>; searchParams: Promise<Record<string, string | string[] | undefined>>}) {
  const current = await requireWorkspaceRole(workspaceOperationalRoles, '/product-trackings'); const id = Number((await params).id);
  if (!Number.isInteger(id) || id <= 0) notFound();
- const record = await prisma.productTracking.findFirst({where: {id, workspaceId: current.workspace.id, companyId: current.company.id}, include: {attachments: true}});
+ const record = await prisma.productTracking.findFirst({where: {id, workspaceId: current.workspace.id, companyId: current.company.id}, include: {supplier: {select: {id: true, businessName: true, alias: true}}, attachments: true}});
  if (!record) notFound();
  const query = await searchParams;
  const value = (key: string) => Array.isArray(query[key]) ? query[key][0] : query[key];

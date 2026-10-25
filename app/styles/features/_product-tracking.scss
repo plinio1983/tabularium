@@ -1,4 +1,25 @@
 // Shared form, list and detail primitives own the visual styling.
+.product-tracking-stock-supplier {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+
+  > :first-child { flex: 0 0 auto; }
+
+  .product-tracking-supplier {
+    font-size: 13px;
+    line-height: 1;
+    color: var(--muted);
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+  }
+}
+
 .product-tracking-fields {
   display: grid;
   gap: 14px;
@@ -297,6 +318,7 @@
 .payment-summary-date > .tracking-document-age {
   display: block;
   margin-top: 4px;
+  max-width: max-content;
 }
 
 .product-tracking-add-trigger {

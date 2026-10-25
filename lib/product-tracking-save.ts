@@ -18,6 +18,9 @@ export async function saveTracking(request: Request, id?: number) {
   try {
     let form: FormData;
     try {form = await request.formData();} catch {throw new TrackingValidationError('Dati del form non validi.');}
+    const rawSupplierId = form.get('supplierId');
+    const supplierId = rawSupplierId === null ? undefined : rawSupplierId === '' ? null : Number(rawSupplierId);
+    if (supplierId !== undefined && supplierId !== null && (!Number.isSafeInteger(supplierId) || supplierId <= 0)) throw new TrackingValidationError('Fornitore non valido.');
     const name = String(form.get('name') ?? '').trim();
     const batch = String(form.get('batch') ?? '').trim();
     if (!name || !batch || name.length > 250 || batch.length > 250) throw new TrackingValidationError('Riferimento e lotto sono obbligatori (massimo 250 caratteri).');
@@ -35,6 +38,10 @@ export async function saveTracking(request: Request, id?: number) {
       if (id) await tx.$queryRaw`SELECT "id" FROM "ProductTracking" WHERE "id" = ${id} AND "workspaceId" = ${scope.workspaceId} AND "companyId" = ${scope.companyId} FOR UPDATE`;
       const existing = id ? await tx.productTracking.findFirst({where: {id, ...scope}, include: {attachments: true}}) : null;
       if (id && !existing) throw new TrackingValidationError('Tracciatura non trovata.', 404);
+      if (supplierId) {
+        const supplier = await tx.supplier.findFirst({where: {id: supplierId, workspaceId: scope.workspaceId, systemRole: null}, select: {id: true}});
+        if (!supplier) throw new TrackingValidationError('Fornitore non valido per questo workspace.');
+      }
       const removed = new Set(form.getAll('removedIds').map(String));
       if ([...removed].some(value => !existing?.attachments.some(a => String(a.id) === value))) throw new TrackingValidationError('Allegato non valido.');
       const retained = existing?.attachments.filter(a => !removed.has(String(a.id))) ?? [];
@@ -61,7 +68,7 @@ export async function saveTracking(request: Request, id?: number) {
       }
       removedPaths.push(...(existing?.attachments.filter(a => removed.has(String(a.id))).map(a => a.path) ?? []));
       if (id) await tx.productTrackingAttachment.deleteMany({where: {trackingId: id, id: {in: [...removed].map(Number)}}});
-      const data = {name, batch, batchYear, alias: alias || null, entryDate, ...(inStock === undefined ? {} : {inStock})};
+      const data = {name, batch, batchYear, ...(supplierId === undefined ? {} : {supplierId}), alias: alias || null, entryDate, ...(inStock === undefined ? {} : {inStock})};
       const record = id
         ? await tx.productTracking.update({where: {id}, data: {...data, attachments: {create: additions}}})
         : await tx.productTracking.create({data: {...scope, ...data, attachments: {create: additions}}});

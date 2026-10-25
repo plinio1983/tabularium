@@ -51,10 +51,11 @@ function request(files: {kind: string; name: string; content?: string; date?: st
   }
   return new Request('http://localhost/api/product-trackings', {method: 'POST', body: form});
 }
-function database(existing: any = null, createError?: Error) {
-  const queries: any[] = [], writes: any[] = [];
+function database(existing: any = null, createError?: Error, supplier: any = null) {
+  const queries: any[] = [], writes: any[] = [], supplierQueries: any[] = [];
   const tx = {
     $queryRaw: async () => [],
+    supplier: {findFirst: async (query: any) => {supplierQueries.push(query); return supplier;}},
     productTracking: {
       findFirst: async (args: any) => {queries.push(args); return existing;},
       create: async ({data}: any) => {if (createError) throw createError; writes.push(data); return {id: 9};},
@@ -63,7 +64,7 @@ function database(existing: any = null, createError?: Error) {
     },
     productTrackingAttachment: {update: async () => {}, deleteMany: async () => {}},
   };
-  return {queries, writes, $transaction: async (fn: any) => fn(tx)};
+  return {queries, writes, supplierQueries, $transaction: async (fn: any) => fn(tx)};
 }
 
 test('viewer cannot create or delete and no database access happens', async () => {
@@ -520,4 +521,25 @@ test('tracking in-stock values persist on creation and edit and invalid values a
   const form = new FormData(); form.set('name', 'Olio'); form.set('batch', 'L1'); form.set('batchYear', '2026'); form.set('inStock', 'maybe');
   assert.equal((await service.saveTracking(new Request('http://localhost/api/product-trackings', {method: 'POST', body: form}))).status, 400);
   assert.equal(db.writes.length, 0);
+});
+
+
+test('tracking supplier may be selected or cleared but must belong to the workspace', async () => {
+  for (const id of [undefined, 9]) {
+    for (const value of ['', '7']) {
+      const db = database(id ? {id, attachments: []} : null, undefined, {id: 7});
+      const service = load('lib/product-tracking-save.ts', db);
+      const form = new FormData(); form.set('name', 'Olio'); form.set('batch', 'L1'); form.set('batchYear', '2026'); form.set('supplierId', value);
+      assert.equal((await service.saveTracking(new Request('http://localhost/api/product-trackings', {method: 'POST', body: form}), id)).status, 200);
+      assert.equal(db.writes[0].supplierId, value ? 7 : null);
+      if (value) assert.deepEqual(JSON.parse(JSON.stringify(db.supplierQueries[0].where)), {id: 7, workspaceId: 2, systemRole: null});
+    }
+  }
+  for (const value of ['777', '-1', 'invalid']) {
+    const db = database();
+    const form = new FormData(); form.set('name', 'Olio'); form.set('batch', 'L1'); form.set('batchYear', '2026'); form.set('supplierId', value);
+    const service = load('lib/product-tracking-save.ts', db);
+    assert.equal((await service.saveTracking(new Request('http://localhost/api/product-trackings', {method: 'POST', body: form}))).status, 400);
+    assert.equal(db.writes.length, 0);
+  }
 });

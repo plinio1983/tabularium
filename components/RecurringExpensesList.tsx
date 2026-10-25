@@ -10,7 +10,6 @@ import BulkChangeCategoryModal from '@/components/BulkChangeCategoryModal';
 import RecurringExpenseBulkEditModal from '@/components/RecurringExpenseBulkEditModal';
 import RecurringExpenseFiltersDrawer from '@/components/RecurringExpenseFiltersDrawer';
 import RecurringExpenseDetailEditModalController from '@/components/RecurringExpenseDetailEditModalController';
-import MobileSortControl from '@/components/MobileSortControl';
 import {euro} from '@/lib/money';
 import {badgeClass, categoryLabel, categoryTone} from '@/lib/expense-ui';
 import {compareDate, compareNumber, compareText} from '@/lib/mobile-sort';
@@ -288,7 +287,6 @@ export default function RecurringExpensesList({
     `
         }}/>
         <p className="muted">Risultati mostrati: {itemCount}</p>
-        <MobileSortControl action="/recurring-expenses" currentValue={mobileSort} options={recurringMobileSortOptions} searchParams={currentFilters}/>
         <form id="recurringExpenseBulkForm" action={`/api/recurring-expenses/bulk?returnTo=${returnTo}`} method="post" className="bulk-actions-bar grouped-bulk-actions-bar recurring-bulk-actions-bar confirm-bulk-form" data-bulk-button-group="true">
             <label className="bulk-select-all-inline">
                 <input type="checkbox" className="bulk-select-all" data-bulk-target="recurringExpenseBulkForm" aria-label="Seleziona tutte le uscite ricorrenti visibili"/>

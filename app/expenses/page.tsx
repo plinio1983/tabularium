@@ -13,7 +13,6 @@ import {expenseResidualAmount, isExpensePastDue} from '@/lib/expense-calculation
 import ActionFeedbackBanner from '@/components/ActionFeedbackBanner';
 import ExpenseFiltersDrawer from '@/components/ExpenseFiltersDrawer';
 import ExpenseTrendSelectors from '@/components/ExpenseTrendSelectors';
-import MobileSortControl from '@/components/MobileSortControl';
 import {requireWorkspace} from '@/lib/auth';
 import {calendarDateInput, civilDateInTimeZone} from '@/lib/company-time';
 import {orderBanks, orderExpenseCategories, orderPaymentMethods} from '@/lib/workspace-defaults';
@@ -936,7 +935,6 @@ export default async function ExpensesPage({searchParams}: {
       `
             }}/>
 
-            <MobileSortControl action="/expenses" currentValue={mobileSort} options={expenseMobileSortOptions} searchParams={filters}/>
 
             <ExpensesList
                 searchExport
