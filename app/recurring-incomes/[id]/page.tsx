@@ -6,7 +6,7 @@ import {notFound} from 'next/navigation';
 import {prisma} from '@/lib/prisma';
 import {requireWorkspace} from '@/lib/auth';
 import {euro} from '@/lib/money';
-import {stripFlashParams} from '@/lib/flash';
+import {detailBackHref} from '@/lib/detail-navigation';
 import {orderBanks, orderPaymentMethods} from '@/lib/workspace-defaults';
 import RecurringStateProvider from '@/components/RecurringStateProvider';
 import RecurringStateToggle from '@/components/RecurringStateToggle';
@@ -38,8 +38,8 @@ export default async function RecurringIncomeDetailPage({params, searchParams}: 
     if (!Number.isSafeInteger(id) || id <= 0) notFound();
     const query = (await searchParams) ?? {};
     const rawReturnTo = Array.isArray(query.returnTo) ? query.returnTo[0] : query.returnTo;
-    const returnTo = rawReturnTo && /^\/recurring-incomes(?:\?|$)/.test(rawReturnTo)
-        ? stripFlashParams(rawReturnTo) : '/recurring-incomes';
+    const candidate = detailBackHref(rawReturnTo, `/recurring-incomes/${id}`, '/recurring-incomes');
+    const returnTo = ['/', '/recurring-incomes'].includes(candidate.split('?')[0]) ? candidate : '/recurring-incomes';
     const detailHref = `/recurring-incomes/${id}?returnTo=${encodeURIComponent(returnTo)}`;
     const encodedDetailHref = encodeURIComponent(detailHref);
     const workspaceId = current.workspace.id;

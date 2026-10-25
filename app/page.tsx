@@ -1,4 +1,5 @@
 import InfoHint from '@/components/InfoHint';
+import DashboardSearch from '@/components/DashboardSearch';
 import type {ReactNode} from 'react';
 import Link from 'next/link';
 import {prisma} from '@/lib/prisma';
@@ -1279,9 +1280,9 @@ function VatSituationCard({months, year}: { months: DashboardMonth[]; year: numb
             <div>
                 <div className="info-title-row"><h2>Situazione IVA</h2><InfoHint compactOnly title="Come leggere il riepilogo">Stima ricavata dai movimenti fiscali registrati nel {year}.</InfoHint></div><p className="muted info-hint-desktop-text">Stima ricavata dai movimenti fiscali registrati nel {year}.</p>
             </div>
-            <span className={`vat-balance-badge ${balance > 0 ? 'is-debit' : balance < 0 ? 'is-credit' : ''}`}>
+            <div><span className={`vat-balance-badge ${balance > 0 ? 'is-debit' : balance < 0 ? 'is-credit' : ''}`}>
                 {balance > 0 ? 'A debito' : balance < 0 ? 'A credito' : 'In equilibrio'}
-            </span>
+            </span></div>
         </div>
         <div className="vat-kpi-grid">
             <div><span>IVA generata</span><strong>{chartEuro(generated)}</strong></div>
@@ -1606,11 +1607,12 @@ export default async function Dashboard({searchParams}: {
                 <p className="muted">Dati consolidati <strong>{consolidatedPeriodCopy}</strong>. Liquidità e scadenze sono aggiornate a oggi.</p>
             </div>
             <div className="actions-row dashboard-top-actions">
-                <ExpenseNewTriggerButton className="btn btn-sm btn-primary"><span
-                    className="btn-icon btn-icon-add">＋</span> Spesa
+                <ExpenseNewTriggerButton className="btn btn-sm btn-primary">
+                    <span className="btn-icon btn-icon-add">＋</span> Spesa
                 </ExpenseNewTriggerButton>
-                <Link className="btn btn-sm btn-primary" href="/incomes?new=1"><span
-                    className="btn-icon btn-icon-add">＋</span> Incasso</Link>
+                <Link className="btn btn-sm btn-primary" href="/incomes?new=1">
+                    <span className="btn-icon btn-icon-add">＋</span> Incasso
+                </Link>
                 {/*<Link className="btn btn-lg btn-primary" href="/suppliers?new=1"><span className="btn-icon btn-icon-add">＋</span> Fornitore</Link>*/}
             </div>
             {/*<div className="flex align-center justify-end dashboard-link-selector h100">*/}
@@ -1627,7 +1629,9 @@ export default async function Dashboard({searchParams}: {
             {/*            Vai al Report mensile*/}
             {/*        </Link> : null}*/}
             {/*</div>*/}
+            <DashboardSearch key={`${current.workspace.id}-${current.company.id}`}/>
         </div>
+
         <div className="dashboard-body-wrapper">
             <DashboardTasks workspaceId={current.workspace.id} companyId={current.company.id} timeZone={current.company.timeZone} now={now}/>
 

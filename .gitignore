@@ -91,3 +91,8 @@ data/Spese-Ricavi.xlsx
 /tsconfig.tsbuildinfo
 /resources/
 /storage/uploads/
+/.agents/
+/.aws/
+/.codex/
+/.junie/
+!/storage/uploads/invoices/.gitkeep
