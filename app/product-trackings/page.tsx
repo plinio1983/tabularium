@@ -1,5 +1,6 @@
 import {latestTrackingDocumentDate, trackingDocumentAge, trackingDocumentAgeClass} from '@/lib/tracking-document-age';
 import Link from 'next/link';
+import {badgeClass, yesNoStyles} from '@/lib/expense-ui';
 import BulkSelectionController from '@/components/BulkSelectionController';
 import ProductTrackingBulkController from '@/components/ProductTrackingBulkController';
 import {prisma} from '@/lib/prisma';
@@ -195,6 +196,7 @@ export default async function Page({searchParams}: {
                         <th data-sort-key="batch">Lotto</th>
                         <th data-sort-key="batch-year" data-sort-type="number">Anno</th>
                         <th data-sort-key="alias">Nome</th>
+                        <th data-sort-key="in-stock" data-sort-type="number">In stock</th>
                         <th data-sort-key="entry" data-sort-type="date">Data ingresso</th>
                         <th data-sort-key="invoices" data-sort-type="number">Fatture</th>
                         <th data-sort-key="tracking" data-sort-type="number">Tracciamento</th>
@@ -209,7 +211,7 @@ export default async function Page({searchParams}: {
                                    data-sort-alias={record.alias ?? ''}
                                    data-sort-entry={record.entryDate?.getTime() ?? ''}
                                    data-sort-created={record.createdAt.getTime()} data-sort-invoices={invoices}
-                                   data-sort-batch-year={record.batchYear}
+                                   data-sort-batch-year={record.batchYear} data-sort-in-stock={record.inStock ? 1 : 0}
                                    data-sort-tracking={tracking}>
                             <td className="cell-center"><input form="trackingBulkForm" type="checkbox" name="ids" value={record.id}
                                 aria-label={`Seleziona tracciatura ${record.name}`}/></td>
@@ -217,6 +219,7 @@ export default async function Page({searchParams}: {
                             <td>{record.batch}</td>
                             <td>{record.batchYear}</td>
                             <td>{record.alias || '—'}</td>
+                            <td><StockIndicator inStock={record.inStock}/></td>
                             <td>{dateLabel(record.entryDate)}</td>
                             <td><DocumentCount count={invoices} kind="INVOICE" attachments={record.attachments}
                                                today={today}/></td>
@@ -252,6 +255,9 @@ export default async function Page({searchParams}: {
                                                kind="INVOICE" attachments={record.attachments} today={today} mobile/>
                             </span>
                         </div>
+                        <div>
+                            <StockIndicatorMobile inStock={record.inStock}/>
+                        </div>
                         <ProductTrackingStatus record={record} cutoff={cutoff} showMissing={false} showOldDocument={false}/>
                     </div>
                 </Link>
@@ -268,8 +274,14 @@ function DocumentCount({count, kind, attachments, today, mobile = false}: {
     kind: 'INVOICE' | 'TRACKING';
     mobile?: boolean
 }) {
-    if (!count) return <span
-        className="badge color-badge tone-warning">{kind === 'INVOICE' ? 'Fattura mancante' : 'Tracciamento mancante'}</span>;
+    if (!count) return <span className="badge color-badge tone-warning">
+        <span className="hidden-sm-down">
+            {kind === 'INVOICE' ? 'Fattura mancante' : 'Tracciamento mancante'}
+        </span>
+        <span className="hidden-sm-up">
+            {kind === 'INVOICE' ? 'Fatt. mancante' : 'Tracc. mancante'}
+        </span>
+    </span>;
     const latest = latestTrackingDocumentDate(attachments.filter(item => item.kind === kind).map(item => kind === 'INVOICE' ? item.invoiceDate : item.documentDate));
     const age = trackingDocumentAge(latest, today);
     return <span className="tracking-document-count">
@@ -279,4 +291,11 @@ function DocumentCount({count, kind, attachments, today, mobile = false}: {
         <small className={trackingDocumentAgeClass(age)}
                title={latest ? `Documento più recente: ${formatItalianCompactDate(latest)}` : 'Nessuna data documento disponibile'}> {age.label}</small>
     </span>;
+}
+
+function StockIndicator({inStock}: {inStock: boolean}) {
+    return <span className={badgeClass(inStock ? yesNoStyles.yes.className : 'tone-muted')}>{inStock ? 'In stock' : 'Out of stock'}</span>;
+}
+function StockIndicatorMobile({inStock}: {inStock: boolean}) {
+    return <span className={badgeClass(inStock ? yesNoStyles.yes.className : 'tone-muted')}>{inStock ? '✓ Stock' : '× Stock'}</span>;
 }

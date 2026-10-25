@@ -522,6 +522,13 @@ body:has(.modal-backdrop, .app-form-modal-backdrop, .bulk-category-modal-backdro
   margin-top: 6px;
 }
 
+.record-detail-meta-line strong {
+  display: inline-flex;
+  white-space: nowrap;
+  align-items: center;
+  max-width: fit-content;
+}
+
 .record-detail-meta-line span {
   display: inline-flex;
   white-space: nowrap;

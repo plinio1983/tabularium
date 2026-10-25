@@ -10,7 +10,7 @@ export async function GET(_request: Request, {params}: {params: Promise<{id: str
   if (!Number.isSafeInteger(id) || id <= 0) return NextResponse.json({error: 'Tracciatura non valida.'}, {status: 400});
   const record = await prisma.productTracking.findFirst({
     where: {id, workspaceId: access.current.workspace.id, companyId: access.current.company.id},
-    select: {id: true, name: true, batch: true, batchYear: true, alias: true, entryDate: true,
+    select: {id: true, name: true, batch: true, batchYear: true, inStock: true, alias: true, entryDate: true,
       attachments: {select: {id: true, kind: true, originalName: true, invoiceDate: true, documentDate: true, sizeBytes: true}, orderBy: {id: 'asc'}}},
   });
   if (!record) return NextResponse.json({error: 'Tracciatura non trovata.'}, {status: 404});

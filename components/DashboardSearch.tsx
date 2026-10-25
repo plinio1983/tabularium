@@ -87,7 +87,7 @@ export default function DashboardSearch() {
         </label>
         <div className="app-autocomplete-control dashboard-search-control">
             <span className="app-autocomplete-search-icon" aria-hidden="true"><SearchIcon/></span>
-            <input ref={input} id={id} type="search" role="combobox" autoComplete="off" maxLength={120}
+            <input ref={input} id={id} type="text" enterKeyHint="search" role="combobox" autoComplete="off" maxLength={120}
                    placeholder="Cerca spese, incassi, ricorrenze, fornitori, clienti e dipendenti"
                    value={value} aria-autocomplete="list" aria-expanded={visible}
                    aria-controls={visible ? `${id}-results` : undefined}

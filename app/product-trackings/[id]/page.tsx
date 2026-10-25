@@ -73,6 +73,8 @@ export default async function Page({params, searchParams}: {
                         <div className="record-detail-title-main">
                             <h1>{record.name}</h1>
                             <div className="record-detail-meta-line">
+                                <span
+                                    className={`badge color-badge ${record.inStock ? 'tone-yes' : 'tone-muted'}`}>{record.inStock ? 'In stock' : 'Out of stock'}</span>
                                 <span>Lotto: {record.batch} · {record.batchYear}</span>
                                 {record.alias && <span>{record.alias}</span>}
                             </div>
@@ -101,6 +103,9 @@ export default async function Page({params, searchParams}: {
                             value={record.alias ?? ''}/></div>
                         <div>
                             <span>Data ingresso</span><strong>{record.entryDate ? formatItalianCompactDate(calendarDateInput(record.entryDate)) : '—'}</strong>
+                        </div>
+                        <div><span>Disponibilità</span>
+                            <div><span className={`badge color-badge ${record.inStock ? 'tone-yes' : 'tone-muted'}`}>{record.inStock ? 'In stock' : 'Out of stock'}</span></div>
                         </div>
                     </div>
                 </section>

@@ -17,7 +17,7 @@ import {appendFlash} from '@/lib/flash';
 import {preparePageReturn} from '@/lib/page-transition';
 
 export type TrackingEditorRecord = {
-  id: number; name: string; batch: string; batchYear: number; alias: string | null; entryDate: string;
+  id: number; name: string; batch: string; batchYear: number; inStock: boolean; alias: string | null; entryDate: string;
   attachments: {id: number; kind: 'INVOICE' | 'TRACKING'; originalName: string; invoiceDate: string; documentDate?: string; sizeBytes?: number | null}[];
 };
 
@@ -30,6 +30,7 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
   const [open, setOpen] = useState(initiallyOpen);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [inStock, setInStock] = useState(record?.inStock ?? true);
   const [entryDate, setEntryDate] = useState(() => record?.entryDate ?? '');
   const initialInvoices = useMemo(() => record?.attachments.filter(a => a.kind === 'INVOICE') ?? [], [record?.attachments]);
   const [invoiceState, setInvoiceState] = useState<TrackingInvoiceFormState>(() => ({rows: initialInvoices.map(invoiceRow), removedIds: [], hasDraft: openNewInvoice && initialInvoices.length < 5}));
@@ -63,6 +64,7 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
     setDocumentState({rows: initialDocuments.map(invoiceRow), removedIds: [], hasDraft: openNewDocument && initialDocuments.length < 5});
     setInvoiceState({rows: initialInvoices.map(invoiceRow), removedIds: [], hasDraft: openNewInvoice && initialInvoices.length < 5});
     setMobileStep(normalizeTrackingStep(initialMobileStep));
+    setInStock(record?.inStock ?? true);
     setEntryDate(record?.entryDate ?? ''); setError(''); setOpen(true);
   }
   function goToMobileStep(step: number) {
@@ -166,6 +168,15 @@ export default function ProductTrackingEditor({record, returnTo = '/product-trac
                 <FormField label="Anno *" icon="▦" htmlFor={`${formId}-batchYear`}><input id={`${formId}-batchYear`} name="batchYear" type="number" required min={1000} max={9999} step={1} defaultValue={record?.batchYear ?? Number(dateInputInTimeZone(timeZone).slice(0, 4))}/></FormField>
                 <FormField label="Nome" icon="◇" htmlFor={`${formId}-alias`}><input id={`${formId}-alias`} name="alias" maxLength={250} defaultValue={record?.alias ?? ''} placeholder="Nome del prodotto"/></FormField>
                 <DateField label="Data ingresso" name="entryDate" value={entryDate} onChange={setEntryDate}/>
+                <div className="switch-toggle-field switch-inline wide">
+                  <div className="switch-toggle-field-label app-form-field-label"><span className="app-form-field-icon" aria-hidden="true">●</span><label htmlFor={`${formId}-inStock`}>In stock</label></div>
+                  <input type="hidden" name="inStock" value={inStock ? 'true' : 'false'}/>
+                  <label className="switch" htmlFor={`${formId}-inStock`}>
+                    <small className="text-muted">{inStock ? 'In stock' : 'Out of stock'}</small>
+                    <input id={`${formId}-inStock`} type="checkbox" role="switch" checked={inStock} onChange={event => setInStock(event.currentTarget.checked)}/>
+                    <span className="slider"/>
+                  </label>
+                </div>
               </div>
             </details>
             <div className="full app-form-wizard-step app-form-wizard-step-2" data-tracking-step="2">

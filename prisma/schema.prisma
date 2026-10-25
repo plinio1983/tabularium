@@ -927,6 +927,7 @@ model ProductTracking {
   name        String
   batch       String
   batchYear   Int
+  inStock     Boolean                     @default(true)
   alias       String?
   entryDate   DateTime?                   @db.Date
   createdAt   DateTime                    @default(now())

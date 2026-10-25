@@ -231,3 +231,17 @@ test('closing a list-hosted tracking editor dismisses the modal without navigati
   assert.equal(closed, 1);
   assert.deepEqual(ui.destinations, []);
 });
+
+test('tracking stock switch defaults to yes and preserves false on edit and reset', () => {
+  const fresh = editorHarness();
+  assert.equal(fresh().find(node => node.props.name === 'inStock').props.value, 'true');
+  const record = {id: 9, name: 'Olio', batch: 'L1', batchYear: 2026, inStock: false, alias: null, entryDate: '', attachments: []};
+  const ui = editorHarness(record, 1, false, false);
+  ui().find(node => node.type === 'button' && node.props.onClick && node.props.children?.[1] === 'Modifica').props.onClick();
+  assert.equal(ui().find(node => node.props.role === 'switch').props.checked, false);
+  ui().find(node => node.props.role === 'switch').props.onChange({currentTarget: {checked: true}});
+  assert.equal(ui().find(node => node.props.name === 'inStock').props.value, 'true');
+  ui().find(node => node.type === 'Actions').props.onCancel();
+  ui().find(node => node.type === 'button' && node.props.children?.[1] === 'Modifica').props.onClick();
+  assert.equal(ui().find(node => node.props.name === 'inStock').props.value, 'false');
+});

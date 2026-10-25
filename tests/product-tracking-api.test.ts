@@ -503,3 +503,21 @@ test('tracking edit data checks permissions, tenant scope and serializes documen
   assert.equal(data.attachments[0].documentDate, '');
   assert.equal((await load(route, {productTracking: {findFirst: async () => null}}).GET(req, params())).status, 404);
 });
+
+test('tracking in-stock values persist on creation and edit and invalid values are rejected', async () => {
+  for (const id of [undefined, 9]) {
+    for (const inStock of ['true', 'false']) {
+      const db = database(id ? {id, inStock: true, attachments: []} : null);
+      const service = load('lib/product-tracking-save.ts', db);
+      const form = new FormData(); form.set('name', 'Olio'); form.set('batch', 'L1'); form.set('batchYear', '2026'); form.set('inStock', inStock);
+      const response = await service.saveTracking(new Request('http://localhost/api/product-trackings', {method: 'POST', body: form}), id);
+      assert.equal(response.status, 200);
+      assert.equal(db.writes[0].inStock, inStock === 'true');
+    }
+  }
+  const db = database();
+  const service = load('lib/product-tracking-save.ts', db);
+  const form = new FormData(); form.set('name', 'Olio'); form.set('batch', 'L1'); form.set('batchYear', '2026'); form.set('inStock', 'maybe');
+  assert.equal((await service.saveTracking(new Request('http://localhost/api/product-trackings', {method: 'POST', body: form}))).status, 400);
+  assert.equal(db.writes.length, 0);
+});

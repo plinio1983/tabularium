@@ -47,6 +47,7 @@ export type ProductTrackingMinAggregateOutputType = {
   name: string | null
   batch: string | null
   batchYear: number | null
+  inStock: boolean | null
   alias: string | null
   entryDate: Date | null
   createdAt: Date | null
@@ -60,6 +61,7 @@ export type ProductTrackingMaxAggregateOutputType = {
   name: string | null
   batch: string | null
   batchYear: number | null
+  inStock: boolean | null
   alias: string | null
   entryDate: Date | null
   createdAt: Date | null
@@ -73,6 +75,7 @@ export type ProductTrackingCountAggregateOutputType = {
   name: number
   batch: number
   batchYear: number
+  inStock: number
   alias: number
   entryDate: number
   createdAt: number
@@ -102,6 +105,7 @@ export type ProductTrackingMinAggregateInputType = {
   name?: true
   batch?: true
   batchYear?: true
+  inStock?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -115,6 +119,7 @@ export type ProductTrackingMaxAggregateInputType = {
   name?: true
   batch?: true
   batchYear?: true
+  inStock?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -128,6 +133,7 @@ export type ProductTrackingCountAggregateInputType = {
   name?: true
   batch?: true
   batchYear?: true
+  inStock?: true
   alias?: true
   entryDate?: true
   createdAt?: true
@@ -228,6 +234,7 @@ export type ProductTrackingGroupByOutputType = {
   name: string
   batch: string
   batchYear: number
+  inStock: boolean
   alias: string | null
   entryDate: Date | null
   createdAt: Date
@@ -264,6 +271,7 @@ export type ProductTrackingWhereInput = {
   name?: Prisma.StringFilter<"ProductTracking"> | string
   batch?: Prisma.StringFilter<"ProductTracking"> | string
   batchYear?: Prisma.IntFilter<"ProductTracking"> | number
+  inStock?: Prisma.BoolFilter<"ProductTracking"> | boolean
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
@@ -280,6 +288,7 @@ export type ProductTrackingOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
+  inStock?: Prisma.SortOrder
   alias?: Prisma.SortOrderInput | Prisma.SortOrder
   entryDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -299,6 +308,7 @@ export type ProductTrackingWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"ProductTracking"> | string
   batch?: Prisma.StringFilter<"ProductTracking"> | string
   batchYear?: Prisma.IntFilter<"ProductTracking"> | number
+  inStock?: Prisma.BoolFilter<"ProductTracking"> | boolean
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
@@ -315,6 +325,7 @@ export type ProductTrackingOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
+  inStock?: Prisma.SortOrder
   alias?: Prisma.SortOrderInput | Prisma.SortOrder
   entryDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -336,6 +347,7 @@ export type ProductTrackingScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"ProductTracking"> | string
   batch?: Prisma.StringWithAggregatesFilter<"ProductTracking"> | string
   batchYear?: Prisma.IntWithAggregatesFilter<"ProductTracking"> | number
+  inStock?: Prisma.BoolWithAggregatesFilter<"ProductTracking"> | boolean
   alias?: Prisma.StringNullableWithAggregatesFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductTracking"> | Date | string
@@ -346,6 +358,7 @@ export type ProductTrackingCreateInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -362,6 +375,7 @@ export type ProductTrackingUncheckedCreateInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -373,6 +387,7 @@ export type ProductTrackingUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -389,6 +404,7 @@ export type ProductTrackingUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -403,6 +419,7 @@ export type ProductTrackingCreateManyInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -413,6 +430,7 @@ export type ProductTrackingUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -426,6 +444,7 @@ export type ProductTrackingUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -449,6 +468,7 @@ export type ProductTrackingCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
+  inStock?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -469,6 +489,7 @@ export type ProductTrackingMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
+  inStock?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -482,6 +503,7 @@ export type ProductTrackingMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   batch?: Prisma.SortOrder
   batchYear?: Prisma.SortOrder
+  inStock?: Prisma.SortOrder
   alias?: Prisma.SortOrder
   entryDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -602,6 +624,7 @@ export type ProductTrackingCreateWithoutWorkspaceInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -616,6 +639,7 @@ export type ProductTrackingUncheckedCreateWithoutWorkspaceInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -659,6 +683,7 @@ export type ProductTrackingScalarWhereInput = {
   name?: Prisma.StringFilter<"ProductTracking"> | string
   batch?: Prisma.StringFilter<"ProductTracking"> | string
   batchYear?: Prisma.IntFilter<"ProductTracking"> | number
+  inStock?: Prisma.BoolFilter<"ProductTracking"> | boolean
   alias?: Prisma.StringNullableFilter<"ProductTracking"> | string | null
   entryDate?: Prisma.DateTimeNullableFilter<"ProductTracking"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductTracking"> | Date | string
@@ -669,6 +694,7 @@ export type ProductTrackingCreateWithoutCompanyInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -683,6 +709,7 @@ export type ProductTrackingUncheckedCreateWithoutCompanyInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -720,6 +747,7 @@ export type ProductTrackingCreateWithoutAttachmentsInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -735,6 +763,7 @@ export type ProductTrackingUncheckedCreateWithoutAttachmentsInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -761,6 +790,7 @@ export type ProductTrackingUpdateWithoutAttachmentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -776,6 +806,7 @@ export type ProductTrackingUncheckedUpdateWithoutAttachmentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -788,6 +819,7 @@ export type ProductTrackingCreateManyWorkspaceInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -798,6 +830,7 @@ export type ProductTrackingUpdateWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -812,6 +845,7 @@ export type ProductTrackingUncheckedUpdateWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -825,6 +859,7 @@ export type ProductTrackingUncheckedUpdateManyWithoutWorkspaceInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -837,6 +872,7 @@ export type ProductTrackingCreateManyCompanyInput = {
   name: string
   batch: string
   batchYear: number
+  inStock?: boolean
   alias?: string | null
   entryDate?: Date | string | null
   createdAt?: Date | string
@@ -847,6 +883,7 @@ export type ProductTrackingUpdateWithoutCompanyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -861,6 +898,7 @@ export type ProductTrackingUncheckedUpdateWithoutCompanyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -874,6 +912,7 @@ export type ProductTrackingUncheckedUpdateManyWithoutCompanyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   batch?: Prisma.StringFieldUpdateOperationsInput | string
   batchYear?: Prisma.IntFieldUpdateOperationsInput | number
+  inStock?: Prisma.BoolFieldUpdateOperationsInput | boolean
   alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   entryDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -918,6 +957,7 @@ export type ProductTrackingSelect<ExtArgs extends runtime.Types.Extensions.Inter
   name?: boolean
   batch?: boolean
   batchYear?: boolean
+  inStock?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
@@ -935,6 +975,7 @@ export type ProductTrackingSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   name?: boolean
   batch?: boolean
   batchYear?: boolean
+  inStock?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
@@ -950,6 +991,7 @@ export type ProductTrackingSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   name?: boolean
   batch?: boolean
   batchYear?: boolean
+  inStock?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
@@ -965,13 +1007,14 @@ export type ProductTrackingSelectScalar = {
   name?: boolean
   batch?: boolean
   batchYear?: boolean
+  inStock?: boolean
   alias?: boolean
   entryDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "name" | "batch" | "batchYear" | "alias" | "entryDate" | "createdAt" | "updatedAt", ExtArgs["result"]["productTracking"]>
+export type ProductTrackingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "companyId" | "name" | "batch" | "batchYear" | "inStock" | "alias" | "entryDate" | "createdAt" | "updatedAt", ExtArgs["result"]["productTracking"]>
 export type ProductTrackingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -1001,6 +1044,7 @@ export type $ProductTrackingPayload<ExtArgs extends runtime.Types.Extensions.Int
     name: string
     batch: string
     batchYear: number
+    inStock: boolean
     alias: string | null
     entryDate: Date | null
     createdAt: Date
@@ -1437,6 +1481,7 @@ export interface ProductTrackingFieldRefs {
   readonly name: Prisma.FieldRef<"ProductTracking", 'String'>
   readonly batch: Prisma.FieldRef<"ProductTracking", 'String'>
   readonly batchYear: Prisma.FieldRef<"ProductTracking", 'Int'>
+  readonly inStock: Prisma.FieldRef<"ProductTracking", 'Boolean'>
   readonly alias: Prisma.FieldRef<"ProductTracking", 'String'>
   readonly entryDate: Prisma.FieldRef<"ProductTracking", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ProductTracking", 'DateTime'>

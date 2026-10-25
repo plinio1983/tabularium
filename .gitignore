@@ -11,6 +11,8 @@ backups/
 prisma/migrations
 !prisma/migrations/
 prisma/migrations/*
+!prisma/migrations/20261025100000_tracking_in_stock/
+!prisma/migrations/20261025100000_tracking_in_stock/migration.sql
 !prisma/migrations/20261019200000_tracking_batch_year/
 !prisma/migrations/20261019200000_tracking_batch_year/migration.sql
 !prisma/migrations/20261019190000_tracking_document_date/

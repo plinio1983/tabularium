@@ -41,7 +41,7 @@ export default function ProductTrackingAttachments({
     const timeZone = useCompanyTimeZone();
     const today = dateInputInTimeZone(timeZone);
     const isInvoice = kind === 'INVOICE';
-    const title = isInvoice ? 'Fatture' : 'Documenti di tracciamento';
+    const title = isInvoice ? 'Fatture' : 'Documenti';
     const addLabel = isInvoice ? 'Aggiungi fattura' : 'Aggiungi documento';
     const endpoint = isInvoice ? 'invoices' : 'documents';
     const fieldId = useId();

@@ -27,6 +27,9 @@ export async function saveTracking(request: Request, id?: number) {
     const alias = String(form.get('alias') ?? '').trim();
     if (alias.length > 250) throw new TrackingValidationError('Nome troppo lungo.');
     const entryDate = parseTrackingDate(form.get('entryDate'));
+    const rawInStock = form.get('inStock');
+    if (rawInStock !== null && rawInStock !== 'true' && rawInStock !== 'false') throw new TrackingValidationError('Valore In stock non valido.');
+    const inStock = rawInStock === null ? undefined : rawInStock === 'true';
     resultId = await prisma.$transaction(async tx => {
       // Serialize edits, including uploads and attachment counts, on the parent row.
       if (id) await tx.$queryRaw`SELECT "id" FROM "ProductTracking" WHERE "id" = ${id} AND "workspaceId" = ${scope.workspaceId} AND "companyId" = ${scope.companyId} FOR UPDATE`;
@@ -58,7 +61,7 @@ export async function saveTracking(request: Request, id?: number) {
       }
       removedPaths.push(...(existing?.attachments.filter(a => removed.has(String(a.id))).map(a => a.path) ?? []));
       if (id) await tx.productTrackingAttachment.deleteMany({where: {trackingId: id, id: {in: [...removed].map(Number)}}});
-      const data = {name, batch, batchYear, alias: alias || null, entryDate};
+      const data = {name, batch, batchYear, alias: alias || null, entryDate, ...(inStock === undefined ? {} : {inStock})};
       const record = id
         ? await tx.productTracking.update({where: {id}, data: {...data, attachments: {create: additions}}})
         : await tx.productTracking.create({data: {...scope, ...data, attachments: {create: additions}}});

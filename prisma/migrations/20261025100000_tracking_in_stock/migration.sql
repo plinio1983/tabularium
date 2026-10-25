@@ -1,0 +1,1 @@
+ALTER TABLE "ProductTracking" ADD COLUMN "inStock" BOOLEAN NOT NULL DEFAULT true;
